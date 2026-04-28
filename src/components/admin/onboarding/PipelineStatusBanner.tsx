@@ -174,7 +174,7 @@ export default function PipelineStatusBanner({ client }: PipelineStatusBannerPro
             <span className="inline-flex items-center gap-1 text-xs font-medium text-red-600">
               <AlertTriangle className="h-3.5 w-3.5" />
               {stuckPending
-                ? `Inngest event not picked up (last update ${getRelative(client.updated_at)}) — try Run Inline`
+                ? `Background runner did not start (last update ${getRelative(client.updated_at)}) — click Run Now`
                 : `Stuck — last update ${getRelative(client.updated_at)}`}
             </span>
           )}
@@ -195,27 +195,27 @@ export default function PipelineStatusBanner({ client }: PipelineStatusBannerPro
             onClick={handleRegenerate}
             leftIcon={<RefreshCw className="h-3.5 w-3.5" />}
           >
-            Re-run Copy (Inngest)
+            Re-run Copy
           </Button>
           <Button
-            variant="outline"
+            variant={isStuck || hasFailed ? 'default' : 'outline'}
             size="sm"
             loading={restarting}
             disabled={regenerating || runningInline}
             onClick={handleRestart}
             leftIcon={<Zap className="h-3.5 w-3.5" />}
           >
-            Restart (Inngest)
+            Restart Pipeline
           </Button>
           <Button
-            variant={isStuck || hasFailed ? 'default' : 'outline'}
+            variant="outline"
             size="sm"
             loading={runningInline}
             disabled={regenerating || restarting}
             onClick={handleRunInline}
             leftIcon={<PlayCircle className="h-3.5 w-3.5" />}
           >
-            Run Inline (bypass Inngest)
+            Run Now (synchronous)
           </Button>
         </div>
       </div>

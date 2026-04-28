@@ -3,11 +3,13 @@
 // even if Inngest is misconfigured or the function isn't deployed.
 //
 // Skips Slack / email / CRM sync (non-critical, can be retried separately).
+//
+// Auth: admin session OR x-automation-secret header (so server actions can
+// fire-and-forget this endpoint via after()).
 
 export const maxDuration = 60
 
 import { NextRequest, NextResponse } from 'next/server'
-import { requireAdmin } from '@/lib/auth/admin'
 import { OnboardingClientRepository } from '@/lib/repositories/onboarding-client.repository'
 import { enrichClientICP } from '@/lib/services/onboarding/claude-enrichment'
 import { generateEmailSequences } from '@/lib/services/onboarding/copy-generation'
@@ -16,12 +18,28 @@ import { needsOutboundSetup } from '@/types/onboarding'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import type { PackageSlug } from '@/types/onboarding'
 
+async function isAuthorized(request: NextRequest): Promise<boolean> {
+  const secret = request.headers.get('x-automation-secret')
+  const expectedSecret = process.env.AUTOMATION_SECRET
+  if (expectedSecret && secret === expectedSecret) return true
+
+  try {
+    const { requireAdmin } = await import('@/lib/auth/admin')
+    await requireAdmin()
+    return true
+  } catch {
+    return false
+  }
+}
+
 export async function POST(
-  _req: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    await requireAdmin()
+    if (!(await isAuthorized(request))) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
     const { id: clientId } = await params
 
     const repo = new OnboardingClientRepository()
