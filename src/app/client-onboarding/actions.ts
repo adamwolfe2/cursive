@@ -168,7 +168,7 @@ export async function submitOnboardingForm(
     const supabase = createAdminClient()
 
     // ---------------------------------------------------------------
-    // (a) Duplicate submission check — same email within the last hour
+    // (a) Duplicate submission check, same email within the last hour
     // ---------------------------------------------------------------
     const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString()
     const { data: existing } = await supabase
@@ -181,6 +181,26 @@ export async function submitOnboardingForm(
 
     if (existing) {
       return { success: true, clientId: existing.id }
+    }
+
+    // ---------------------------------------------------------------
+    // Burst rate limit: hard cap on global form submissions per 5 min.
+    // Each submission triggers a Claude enrichment + copy gen run (~$0.50
+    // to $2). Without a global cap, an attacker spinning unique emails can
+    // burn the daily Claude budget in minutes. The daily spend cap is the
+    // ultimate floor; this is the early canary.
+    // ---------------------------------------------------------------
+    const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString()
+    const { count: recentSubmissions } = await supabase
+      .from('onboarding_clients')
+      .select('id', { count: 'exact', head: true })
+      .gte('created_at', fiveMinAgo)
+    if ((recentSubmissions ?? 0) >= 20) {
+      safeError(`[Onboarding] Burst rate limit hit, ${recentSubmissions} submissions in last 5 min, rejecting`)
+      return {
+        success: false,
+        error: 'We are receiving an unusually high volume of submissions right now. Please try again in a few minutes or email us directly.',
+      }
     }
 
     // ---------------------------------------------------------------

@@ -121,7 +121,9 @@ export default function PipelineStatusBanner({ client }: PipelineStatusBannerPro
   }
 
   async function handleRestart() {
-    if (!confirm('Re-fire the full intake pipeline via Inngest? Use "Run Inline" instead if Inngest seems broken.')) {
+    // Note: this fires the inline runner via after(), Inngest is no longer in
+    // the intake path. Confirm copy reflects that.
+    if (!confirm('Re-fire the full intake pipeline (enrichment + copy gen)? This may take 30-60 seconds in the background.')) {
       return
     }
     setRestarting(true)
@@ -134,25 +136,35 @@ export default function PipelineStatusBanner({ client }: PipelineStatusBannerPro
   }
 
   async function handleRunInline() {
-    if (!confirm('Run enrichment + copy generation INLINE (bypassing Inngest)? This will block for ~30-60 seconds.')) {
+    if (!confirm('Run enrichment + copy generation INLINE? This will block for up to 3 minutes.')) {
       return
     }
     setRunningInline(true)
     setInlineResult(null)
+    // Abort if the request runs past the maxDuration of the route. Without
+    // this the button stays in "Running" forever on a serverless timeout.
+    const controller = new AbortController()
+    const abortTimer = setTimeout(() => controller.abort(), 5 * 60 * 1000)
     try {
       const res = await fetch(`/api/admin/onboarding/${client.id}/run-pipeline-sync`, {
         method: 'POST',
+        signal: controller.signal,
       })
-      const data = await res.json()
+      const data = await res.json().catch(() => ({}))
       if (!res.ok) {
         setInlineResult(`Failed: ${data.error || JSON.stringify(data)}`)
       } else {
-        setInlineResult(`Done — enrichment: ${data.enrichment}, copy: ${data.copy}`)
+        setInlineResult(`Done. enrichment: ${data.enrichment}, copy: ${data.copy}`)
         router.refresh()
       }
     } catch (e: any) {
-      setInlineResult(`Error: ${e?.message || 'Network error'}`)
+      if (e?.name === 'AbortError') {
+        setInlineResult('Took longer than 5 min, check the timeline for status.')
+      } else {
+        setInlineResult(`Error: ${e?.message || 'Network error'}`)
+      }
     } finally {
+      clearTimeout(abortTimer)
       setRunningInline(false)
     }
   }
