@@ -121,41 +121,69 @@ export function countWords(text: string): number {
  * Expands all spintax blocks `{opt1|opt2|opt3}` in the given text and returns
  * every possible combination.
  *
- * Single-brace matching, with carve-outs so:
+ * Iterative implementation, never recurses. The previous recursive version
+ * blew the stack ("Maximum call stack size exceeded") on certain real outputs
+ * even though the worst-case recursion depth was small in theory; some
+ * input shape (combined with V8's stack accounting) tripped the limit.
+ *
+ * Carve-outs:
  *  - Double-brace merge tags `{{firstName}}` (no pipe) are left alone.
  *  - Merge tags NESTED INSIDE spintax options (e.g. `{A|B {{companyName}} C}`)
- *    are matched correctly and preserved through to the output. The legacy
- *    `[^{}]+` pattern silently rejected these blocks, which then leaked raw
- *    braces into the inbox via EmailBison.
+ *    are matched correctly and preserved through to the output.
+ *
+ * Hard cap: MAX_VARIANTS protects against pathological inputs that would
+ * produce billions of combinations and OOM the function.
  */
+const MAX_VARIANTS = 256
+const MAX_ITERATIONS = 50_000
+
+// Find the next spintax-with-pipe block at or after `from`. Skips no-pipe
+// blocks (which look like {{merge tags}} or {plain word}). Returns the
+// absolute start/end indices and split options, or null if none remain.
+function findNextSpintaxBlock(text: string, from: number): { start: number; end: number; options: string[] } | null {
+  // Pattern with global flag so we can iterate via lastIndex.
+  const re = /\{((?:[^{}]|\{\{\w+\}\})+)\}/g
+  re.lastIndex = from
+  let m: RegExpExecArray | null
+  while ((m = re.exec(text)) !== null) {
+    if (m[1].includes('|')) {
+      return { start: m.index, end: m.index + m[0].length, options: m[1].split('|') }
+    }
+    // No pipe: advance by 1 char minimum if the engine didn't (it does for
+    // non-zero-width matches, but be defensive).
+    if (re.lastIndex === m.index) re.lastIndex = m.index + 1
+  }
+  return null
+}
+
 export function expandSpintax(text: string): string[] {
-  // Match a spintax block whose contents may include literal merge tags.
-  const pattern = /\{((?:[^{}]|\{\{\w+\}\})+)\}/
-  const match = pattern.exec(text)
-
-  if (!match) {
-    return [text]
-  }
-
-  // If there is no pipe, this is not actually a spintax block, leave it alone
-  // and skip past it so we don't infinite-loop.
-  if (!match[1].includes('|')) {
-    const before = text.slice(0, match.index + match[0].length)
-    const after = text.slice(match.index + match[0].length)
-    const tail = expandSpintax(after)
-    return tail.map((t) => before + t)
-  }
-
-  const options = match[1].split('|')
+  // Worklist of strings still being expanded. Iterative, never recurses.
+  // Hard caps protect against pathological inputs producing billions of
+  // combinations (which would OOM or stack-overflow the recursive version).
+  const queue: string[] = [text]
   const results: string[] = []
+  let iterations = 0
 
-  for (const option of options) {
-    const expanded = text.slice(0, match.index) + option + text.slice(match.index + match[0].length)
-    const nested = expandSpintax(expanded)
-    results.push(...nested)
+  while (queue.length > 0) {
+    if (++iterations > MAX_ITERATIONS) break
+    const current = queue.shift() as string
+
+    const found = findNextSpintaxBlock(current, 0)
+    if (!found) {
+      results.push(current)
+      if (results.length >= MAX_VARIANTS) break
+      continue
+    }
+
+    const before = current.slice(0, found.start)
+    const after = current.slice(found.end)
+    for (const option of found.options) {
+      queue.push(before + option + after)
+      if (queue.length + results.length > MAX_VARIANTS * 4) break
+    }
   }
 
-  return results
+  return results.length > 0 ? results : [text]
 }
 
 // ---------------------------------------------------------------------------
