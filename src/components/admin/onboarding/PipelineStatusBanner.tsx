@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -14,6 +15,7 @@ import {
   CheckCircle2,
   Clock,
   Loader2,
+  PlayCircle,
   RefreshCw,
   XCircle,
   Zap,
@@ -82,8 +84,11 @@ function statusBadge(status: StageStatus) {
 }
 
 export default function PipelineStatusBanner({ client }: PipelineStatusBannerProps) {
+  const router = useRouter()
   const [restarting, setRestarting] = useState(false)
   const [regenerating, setRegenerating] = useState(false)
+  const [runningInline, setRunningInline] = useState(false)
+  const [inlineResult, setInlineResult] = useState<string | null>(null)
 
   const stages: Stage[] = [
     { key: 'enrichment', label: 'ICP Enrichment', status: client.enrichment_status as StageStatus },
@@ -95,15 +100,19 @@ export default function PipelineStatusBanner({ client }: PipelineStatusBannerPro
   const isProcessing = stages.some((s) => s.status === 'processing')
   const hasFailed = stages.some((s) => s.status === 'failed')
 
-  // Stuck detection: any stage in 'processing' AND last update > threshold ago
+  // Stuck detection: in 'processing' OR 'pending' and last update > threshold ago.
+  // 'pending' >10min after restart = Inngest never picked up the event.
   const lastUpdated = new Date(client.updated_at).getTime()
   const ageMs = Date.now() - lastUpdated
-  const isStuck = isProcessing && ageMs > STUCK_THRESHOLD_MS
+  const stuckProcessing = isProcessing && ageMs > STUCK_THRESHOLD_MS
+  const stuckPending = stages.some((s) => s.status === 'pending') && ageMs > STUCK_THRESHOLD_MS
+  const isStuck = stuckProcessing || stuckPending
 
   const lastLogEntry = client.automation_log?.[client.automation_log.length - 1] ?? null
 
   async function handleRegenerate() {
     setRegenerating(true)
+    setInlineResult(null)
     try {
       await regenerateCopy(client.id)
     } finally {
@@ -112,14 +121,39 @@ export default function PipelineStatusBanner({ client }: PipelineStatusBannerPro
   }
 
   async function handleRestart() {
-    if (!confirm('Re-fire the full intake pipeline (enrichment + copy generation)? This is safe to run multiple times.')) {
+    if (!confirm('Re-fire the full intake pipeline via Inngest? Use "Run Inline" instead if Inngest seems broken.')) {
       return
     }
     setRestarting(true)
+    setInlineResult(null)
     try {
       await restartIntakePipeline(client.id)
     } finally {
       setRestarting(false)
+    }
+  }
+
+  async function handleRunInline() {
+    if (!confirm('Run enrichment + copy generation INLINE (bypassing Inngest)? This will block for ~30-60 seconds.')) {
+      return
+    }
+    setRunningInline(true)
+    setInlineResult(null)
+    try {
+      const res = await fetch(`/api/admin/onboarding/${client.id}/run-pipeline-sync`, {
+        method: 'POST',
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setInlineResult(`Failed: ${data.error || JSON.stringify(data)}`)
+      } else {
+        setInlineResult(`Done — enrichment: ${data.enrichment}, copy: ${data.copy}`)
+        router.refresh()
+      }
+    } catch (e: any) {
+      setInlineResult(`Error: ${e?.message || 'Network error'}`)
+    } finally {
+      setRunningInline(false)
     }
   }
 
@@ -139,7 +173,9 @@ export default function PipelineStatusBanner({ client }: PipelineStatusBannerPro
           {isStuck && (
             <span className="inline-flex items-center gap-1 text-xs font-medium text-red-600">
               <AlertTriangle className="h-3.5 w-3.5" />
-              Stuck — last update {getRelative(client.updated_at)}
+              {stuckPending
+                ? `Inngest event not picked up (last update ${getRelative(client.updated_at)}) — try Run Inline`
+                : `Stuck — last update ${getRelative(client.updated_at)}`}
             </span>
           )}
           {!isStuck && isProcessing && (
@@ -150,29 +186,51 @@ export default function PipelineStatusBanner({ client }: PipelineStatusBannerPro
           )}
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <Button
             variant="outline"
             size="sm"
             loading={regenerating}
-            disabled={restarting}
+            disabled={restarting || runningInline}
             onClick={handleRegenerate}
             leftIcon={<RefreshCw className="h-3.5 w-3.5" />}
           >
-            Re-run Copy Only
+            Re-run Copy (Inngest)
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            loading={restarting}
+            disabled={regenerating || runningInline}
+            onClick={handleRestart}
+            leftIcon={<Zap className="h-3.5 w-3.5" />}
+          >
+            Restart (Inngest)
           </Button>
           <Button
             variant={isStuck || hasFailed ? 'default' : 'outline'}
             size="sm"
-            loading={restarting}
-            disabled={regenerating}
-            onClick={handleRestart}
-            leftIcon={<Zap className="h-3.5 w-3.5" />}
+            loading={runningInline}
+            disabled={regenerating || restarting}
+            onClick={handleRunInline}
+            leftIcon={<PlayCircle className="h-3.5 w-3.5" />}
           >
-            Restart Full Pipeline
+            Run Inline (bypass Inngest)
           </Button>
         </div>
       </div>
+
+      {inlineResult && (
+        <div
+          className={`mt-3 rounded-md px-3 py-2 text-xs font-medium ${
+            inlineResult.startsWith('Done')
+              ? 'bg-green-50 text-green-700 border border-green-200'
+              : 'bg-red-50 text-red-700 border border-red-200'
+          }`}
+        >
+          {inlineResult}
+        </div>
+      )}
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
         {stages.map((stage) => (
