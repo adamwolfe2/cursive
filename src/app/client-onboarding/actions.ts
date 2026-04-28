@@ -1,8 +1,8 @@
 'use server'
 
 import { z } from 'zod'
+import { after } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { inngest } from '@/inngest/client'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import type { OnboardingFormData } from '@/types/onboarding'
 
@@ -355,38 +355,29 @@ export async function submitOnboardingForm(
     }
 
     // ---------------------------------------------------------------
-    // (e) Fire Inngest event with delivery confirmation + fallback
+    // (e) Fire the inline pipeline runner in the background.
+    //     after() runs this after the response is sent, so the form
+    //     submission stays fast. The runner spawns its own function
+    //     with maxDuration=60. No Inngest dependency.
     // ---------------------------------------------------------------
-    try {
-      await inngest.send({
-        name: 'onboarding/intake-complete',
-        data: {
-          client_id: clientId,
-          company_name: validatedData.company_name,
-          packages: validatedData.packages_selected,
-          contact_email: validatedData.primary_contact_email,
-        },
-      })
-    } catch (inngestError) {
-      safeError('[Onboarding]','Inngest event delivery failed, falling back to direct API call:', inngestError)
-      // Fallback: call the intake API endpoint directly
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || (process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : 'http://localhost:3000')
+
+    after(async () => {
       try {
-        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || (process.env.VERCEL_URL
-          ? `https://${process.env.VERCEL_URL}`
-          : 'http://localhost:3000')
-        await fetch(`${baseUrl}/api/automations/intake`, {
+        await fetch(`${baseUrl}/api/admin/onboarding/${clientId}/run-pipeline-sync`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'x-automation-secret': process.env.AUTOMATION_SECRET || '',
           },
-          body: JSON.stringify({ client_id: clientId }),
         })
-      } catch (fallbackError) {
-        safeError('[Onboarding]','Fallback intake API call also failed:', fallbackError)
-        // Non-fatal: client record is saved, automation can be retried manually
+      } catch (e) {
+        safeError('[Onboarding] Pipeline runner failed to dispatch:', e)
+        // Non-fatal: client record saved, admin can retry from /admin/onboarding/[id].
       }
-    }
+    })
 
     return { success: true, clientId }
   } catch (error) {

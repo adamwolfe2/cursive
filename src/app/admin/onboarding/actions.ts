@@ -1,6 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+import { after } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/server'
 import { getInngest } from '@/inngest/client'
 import type { ClientStatus } from '@/types/onboarding'
@@ -180,13 +181,14 @@ export async function updateDomainsApprovalUrl(clientId: string, url: string) {
   revalidatePath(`/admin/onboarding/${clientId}`)
 }
 
-export async function regenerateCopy(clientId: string, feedback?: string) {
+export async function regenerateCopy(clientId: string, _feedback?: string) {
   const supabase = createAdminClient()
 
+  // Reset copy state so the inline runner re-generates it.
   const { error: updateError } = await supabase
     .from('onboarding_clients')
     .update({
-      copy_generation_status: 'processing',
+      copy_generation_status: 'pending',
       copy_approval_status: 'regenerating',
       updated_at: new Date().toISOString(),
     })
@@ -196,22 +198,24 @@ export async function regenerateCopy(clientId: string, feedback?: string) {
     throw new Error(`Failed to trigger copy regeneration: ${updateError.message}`)
   }
 
-  try {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || (process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}`
-      : 'http://localhost:3000')
+  // Fire the inline runner in the background. No Inngest involved.
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || (process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : 'http://localhost:3000')
 
-    await fetch(`${baseUrl}/api/automations/regenerate-copy`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-automation-secret': process.env.AUTOMATION_SECRET || '',
-      },
-      body: JSON.stringify({ client_id: clientId, feedback }),
-    })
-  } catch {
-    // The automation endpoint will handle its own error logging
-  }
+  after(async () => {
+    try {
+      await fetch(`${baseUrl}/api/admin/onboarding/${clientId}/run-pipeline-sync`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-automation-secret': process.env.AUTOMATION_SECRET || '',
+        },
+      })
+    } catch {
+      // Non-fatal: admin can hit Run Inline manually.
+    }
+  })
 
   revalidatePath(`/admin/onboarding/${clientId}`)
 }
@@ -238,10 +242,9 @@ export async function retryAutomationStep(clientId: string, step: string) {
 }
 
 /**
- * Re-fire the full onboarding intake pipeline for a client.
- * Resets enrichment + copy generation to 'pending' and dispatches the
- * `onboarding/intake-complete` Inngest event. Use this when a run is
- * stuck in 'processing' or failed and you need to restart from scratch.
+ * Re-fire the full onboarding intake pipeline for a client by resetting
+ * state to 'pending' and triggering the inline runner. Runs in the
+ * background via after() so the response returns immediately.
  */
 export async function restartIntakePipeline(clientId: string) {
   const supabase = createAdminClient()
@@ -260,10 +263,22 @@ export async function restartIntakePipeline(clientId: string) {
     throw new Error(`Failed to reset pipeline state: ${resetError.message}`)
   }
 
-  const inngest = getInngest()
-  await inngest.send({
-    name: 'onboarding/intake-complete',
-    data: { client_id: clientId },
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || (process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : 'http://localhost:3000')
+
+  after(async () => {
+    try {
+      await fetch(`${baseUrl}/api/admin/onboarding/${clientId}/run-pipeline-sync`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-automation-secret': process.env.AUTOMATION_SECRET || '',
+        },
+      })
+    } catch {
+      // Non-fatal: admin can hit Run Inline manually.
+    }
   })
 
   revalidatePath(`/admin/onboarding/${clientId}`)

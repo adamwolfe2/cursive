@@ -1,8 +1,8 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+import { after } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/server'
-import { inngest } from '@/inngest/client'
 import type { ParsedIntakeData } from '@/types/onboarding-templates'
 import type { DealState } from '@/types/onboarding-wizard'
 
@@ -131,37 +131,29 @@ export async function createClientFromIntake(
 
     const clientId = client.id
 
-    // Fire Inngest pipeline
-    try {
-      await inngest.send({
-        name: 'onboarding/intake-complete',
-        data: {
-          client_id: clientId,
-          company_name: data.company_name,
-          packages: data.packages_selected,
-          contact_email: data.primary_contact_email,
-        },
-      })
-    } catch (_inngestError) {
-      // Fallback: direct API call
+    // Fire the inline pipeline runner in the background. We use after() so
+    // the form response returns immediately while the pipeline (enrichment +
+    // copy generation) runs in a separate function with its own 60s budget.
+    // No Inngest dependency.
+    const baseUrl =
+      process.env.NEXT_PUBLIC_APP_URL ||
+      (process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}`
+        : 'http://localhost:3000')
+
+    after(async () => {
       try {
-        const baseUrl =
-          process.env.NEXT_PUBLIC_APP_URL ||
-          (process.env.VERCEL_URL
-            ? `https://${process.env.VERCEL_URL}`
-            : 'http://localhost:3000')
-        await fetch(`${baseUrl}/api/automations/intake`, {
+        await fetch(`${baseUrl}/api/admin/onboarding/${clientId}/run-pipeline-sync`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'x-automation-secret': process.env.AUTOMATION_SECRET || '',
           },
-          body: JSON.stringify({ client_id: clientId }),
         })
       } catch {
-        // Non-fatal: client record saved, automation can be retried manually
+        // Non-fatal: client record saved. Admin can hit "Run Inline" manually.
       }
-    }
+    })
 
     revalidatePath('/admin/onboarding')
     return { success: true, clientId }
