@@ -41,6 +41,15 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // Kill switch — set ONBOARDING_PIPELINE_DISABLED=1 in Vercel env to
+    // stop ALL automated runs (cron + after()) without a code deploy.
+    if (process.env.ONBOARDING_PIPELINE_DISABLED === '1') {
+      return NextResponse.json(
+        { error: 'Pipeline disabled by ONBOARDING_PIPELINE_DISABLED env var' },
+        { status: 503 }
+      )
+    }
+
     if (!(await isAuthorized(request))) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -51,6 +60,32 @@ export async function POST(
     if (!client) {
       return NextResponse.json({ error: 'Client not found' }, { status: 404 })
     }
+
+    // Concurrency guard — refuse to start if another run is already in
+    // flight. Prevents duplicate Claude calls when cron + manual button
+    // race each other.
+    const isInFlight =
+      (client.enrichment_status === 'processing' ||
+        client.copy_generation_status === 'processing') &&
+      Date.now() - new Date(client.updated_at).getTime() < 5 * 60 * 1000
+
+    if (isInFlight) {
+      return NextResponse.json(
+        {
+          error: 'Another pipeline run is already in progress for this client',
+          last_updated: client.updated_at,
+        },
+        { status: 409 }
+      )
+    }
+
+    // Log that we started so even if the function dies mid-Claude-call,
+    // the timeline shows "started but never finished" → timeout.
+    await repo.appendAutomationLog(clientId, {
+      step: 'pipeline_run_started',
+      status: 'complete',
+      timestamp: new Date().toISOString(),
+    })
 
     const result: { enrichment: string; copy: string; errors: string[] } = {
       enrichment: 'skipped',
@@ -103,6 +138,13 @@ export async function POST(
       result.copy = 'not_applicable'
     } else if (client.copy_generation_status !== 'complete') {
       await repo.update(clientId, { copy_generation_status: 'processing' })
+      // Marker entry so we can tell from the timeline whether copy gen
+      // started (and timed out) vs never reached this step.
+      await repo.appendAutomationLog(clientId, {
+        step: 'copy_generation_started',
+        status: 'complete',
+        timestamp: new Date().toISOString(),
+      })
       try {
         const seqs = await generateEmailSequences(client, icpBrief, checkCopyQuality)
         await repo.update(clientId, {
