@@ -795,3 +795,235 @@ export async function regenerateEmailSequences(
 
   return sequences
 }
+
+// ---------------------------------------------------------------------------
+// Per-email regeneration (portal self-serve feedback loop)
+// ---------------------------------------------------------------------------
+//
+// The portal lets the client comment on a specific email step. When they
+// click "Apply feedback", we pull the OPEN comments scoped to that email,
+// hand them to Claude with the surrounding sequence as coherence context,
+// and rewrite ONLY that one email. Every other email in the draft is
+// untouched. The endpoint that calls this is responsible for atomically
+// patching the email back into draft_sequences.
+//
+// Why a separate prompt:
+//   - We do NOT want Claude rewriting the whole sequence again ($$ + risks
+//     breaking the angle the client already accepted).
+//   - We need to surface the prior + downstream emails as constraints so
+//     callbacks ("as I mentioned in the last email") stay grounded.
+//   - The output schema is a SINGLE email object, not the full sequences.
+
+const SINGLE_EMAIL_REVISION_PROMPT = `You are an elite B2B cold email copywriter editing ONE email in a 4-step cold sequence based on direct client feedback. The client owns the brand and gave specific notes. Your job is to revise this single email to address every note while keeping the email coherent with the rest of the sequence.
+
+YOUR HARD RULES:
+
+THE OFFER:
+- The user message includes a <service_offering> block. The revised email must reinforce THAT offer. Do not pivot to generic agency-revenue, partnership-income, or growth narratives.
+
+NO EM-DASHES, NO EN-DASHES:
+- Never use the em-dash character (—) anywhere. Use commas, periods, parentheses, or two short sentences instead.
+- Never use the en-dash character (–) anywhere.
+- This is a hard deliverability + human-feel rule. Em-dashes are a known AI tell.
+
+SEQUENCE COHERENCE:
+- The user message includes <prior_email> (the email immediately before this one in the sequence) and <downstream_emails> (every email AFTER this one). Your revision must stay coherent with both.
+- If a downstream email references a topic, fact, or hook from this email, your revised email must keep that topic/fact/hook intact.
+- Do NOT add new callbacks to conversations that did not happen. Only reference content that actually appears in <prior_email>. If this is email step 1 (no prior email), do not callback to anything.
+- Do NOT change the core ANGLE of this email if a downstream email builds on it. The client wants the email rewritten, not the angle reworked.
+
+FORMAT RULES:
+- Email body under 95 words. Count them.
+- Subject line 1-6 words, lowercase casual feel, no clickbait, no exclamation marks.
+- Use {{firstName}} and {{companyName}} merge tags only where they read naturally.
+- One CTA per email. Short paragraphs (1-2 sentences each). White space.
+
+SPINTAX RULES:
+- Use SINGLE-BRACE spintax format only: {option1|option2|option3}
+- DOUBLE-BRACE {{ }} is reserved for merge tags ONLY (e.g. {{firstName}}). NEVER put a pipe inside double braces. {{quick q|hi}} is INVALID.
+- The revised email MUST include spintax in the subject line (3-5 variants), the opening line (2-3 variants), and the CTA phrasing (2-3 variants). Match the structure of the original email if possible.
+- Spintax options must read naturally for ALL combinations and be roughly equal length.
+
+DELIVERABILITY:
+- No spam trigger words: free, guarantee, act now, limited time, click here, buy now, discount, etc.
+- No ALL CAPS words except acronyms (CEO, SaaS, ROI, B2B, etc.).
+
+ADDRESSING THE FEEDBACK:
+- The user message includes a <client_feedback> block with one or more comments from the client.
+- You MUST address every distinct piece of feedback. If the client said "make it shorter", make it shorter. If they said "less salesy", rewrite to be less salesy. If they said "use 'audiences' instead of 'segments'", swap the term.
+- If two pieces of feedback conflict, follow the more specific one and note the conflict in the why_it_works field.
+- Treat the client's word choices as preferences, mirror them in the revised copy when natural.
+
+OUTPUT FORMAT, EXACT:
+{
+  "step": <number, same as the email being revised>,
+  "delay_days": <number, same as before unless feedback explicitly asks to change>,
+  "subject_line": "<string, with single-brace spintax, 3-5 variants>",
+  "preview_text": "<string, ~40 chars inbox preview>",
+  "body": "<string, full email body with spintax, under 95 words per variant path>",
+  "word_count": <number, count of the longest variant path>,
+  "purpose": "<string, what this email is trying to achieve>",
+  "why_it_works": "<string, specific reasoning AND a one-line summary of how you addressed each piece of feedback>",
+  "spintax_test_notes": "<string, what you are testing with the spintax variants>"
+}
+
+Return ONLY the JSON object. No prose, no markdown fences, no preamble.`
+
+interface OpenComment {
+  body: string
+  author_type: 'admin' | 'client' | string
+  author_name?: string | null
+  created_at?: string
+}
+
+function buildSingleEmailRevisionMessage(args: {
+  client: OnboardingClient
+  icpBrief: EnrichedICPBrief
+  sequences: DraftSequences
+  sequenceIndex: number
+  emailStep: number
+  comments: OpenComment[]
+}): string {
+  const { client, icpBrief, sequences, sequenceIndex, emailStep, comments } = args
+  const sequence = sequences.sequences[sequenceIndex]
+  if (!sequence) throw new Error(`Sequence index ${sequenceIndex} out of range`)
+  const emails = [...sequence.emails].sort((a, b) => a.step - b.step)
+  const targetIdx = emails.findIndex((e) => e.step === emailStep)
+  if (targetIdx === -1) throw new Error(`Email step ${emailStep} not found in sequence ${sequenceIndex}`)
+  const target = emails[targetIdx]
+  const priorEmail = targetIdx > 0 ? emails[targetIdx - 1] : null
+  const downstreamEmails = emails.slice(targetIdx + 1)
+
+  const offering = icpBrief.service_offering || icpBrief.company_summary
+
+  const feedbackBlock =
+    comments.length === 0
+      ? '(No comments provided. Improve the email overall while preserving its purpose and angle.)'
+      : comments
+          .map((c, i) => `${i + 1}. [${c.author_type}${c.author_name ? `: ${c.author_name}` : ''}] ${c.body}`)
+          .join('\n')
+
+  return [
+    'Revise the targeted email below based on the client feedback. Keep the angle, keep the sequence coherent, and address every comment.',
+    '',
+    '<service_offering>',
+    offering,
+    '</service_offering>',
+    '',
+    '<client_company>',
+    `Company: ${client.company_name}`,
+    `Service offering (THE message to reinforce): ${offering}`,
+    `Brand voice: ${client.copy_tone || 'Conversational'}`,
+    `Primary CTA: ${client.primary_cta || 'Book a call'}`,
+    '</client_company>',
+    '',
+    '<target_prospects>',
+    `Ideal buyer: ${icpBrief.ideal_buyer_profile}`,
+    `Target titles: ${(client.target_titles || []).join(', ')}`,
+    '</target_prospects>',
+    '',
+    '<sequence_context>',
+    `Sequence name: ${sequence.sequence_name}`,
+    `Strategy: ${sequence.strategy}`,
+    `This is email step ${target.step} of ${emails.length}.`,
+    '</sequence_context>',
+    '',
+    priorEmail
+      ? [
+          '<prior_email>',
+          `Step ${priorEmail.step} subject: ${priorEmail.subject_line}`,
+          `Step ${priorEmail.step} body:`,
+          priorEmail.body,
+          '</prior_email>',
+        ].join('\n')
+      : '<prior_email>(none, this is the first email in the sequence)</prior_email>',
+    '',
+    '<email_to_revise>',
+    `Step: ${target.step}`,
+    `Delay days: ${target.delay_days}`,
+    `Current subject line: ${target.subject_line}`,
+    target.preview_text ? `Current preview text: ${target.preview_text}` : '',
+    'Current body:',
+    target.body,
+    '</email_to_revise>',
+    '',
+    downstreamEmails.length > 0
+      ? [
+          '<downstream_emails>',
+          'These come AFTER the email you are revising. Stay coherent with them, do not break callbacks they make to the email you are revising.',
+          ...downstreamEmails.map((e) => `--- Step ${e.step} ---\nSubject: ${e.subject_line}\nBody:\n${e.body}`),
+          '</downstream_emails>',
+        ].join('\n')
+      : '<downstream_emails>(none)</downstream_emails>',
+    '',
+    '<client_feedback>',
+    'These are the OPEN comments from the client on this specific email. Address every one in your revision.',
+    feedbackBlock,
+    '</client_feedback>',
+    '',
+    'Return ONLY the JSON object for the revised single email. No prose, no markdown fences.',
+  ]
+    .filter(Boolean)
+    .join('\n')
+}
+
+/**
+ * Revise ONE email in an existing sequence based on client feedback comments.
+ * Returns just the revised email object, the caller is responsible for
+ * splicing it back into draft_sequences atomically.
+ *
+ * Throws on Claude failure or invalid response shape.
+ */
+export async function regenerateSingleEmail(args: {
+  client: OnboardingClient
+  icpBrief: EnrichedICPBrief
+  sequences: DraftSequences
+  sequenceIndex: number
+  emailStep: number
+  comments: OpenComment[]
+}): Promise<{
+  step: number
+  delay_days: number
+  subject_line: string
+  body: string
+  preview_text?: string
+  word_count?: number
+  purpose: string
+  why_it_works?: string
+  spintax_test_notes?: string
+}> {
+  const userMessage = buildSingleEmailRevisionMessage(args)
+  const raw = await callClaude<{
+    step: number
+    delay_days: number
+    subject_line: string
+    body: string
+    preview_text?: string
+    word_count?: number
+    purpose?: string
+    why_it_works?: string
+    spintax_test_notes?: string
+  }>(SINGLE_EMAIL_REVISION_PROMPT, userMessage, 'Single Email Revision', 4096)
+
+  // Validate
+  if (typeof raw.step !== 'number' || !raw.subject_line || !raw.body) {
+    throw new Error('Single email revision response missing step, subject_line, or body')
+  }
+  if (raw.step !== args.emailStep) {
+    // Defensive, Claude must keep the same step number
+    raw.step = args.emailStep
+  }
+
+  // Sanitize: strip em-dashes, normalize double-brace spintax.
+  return {
+    step: raw.step,
+    delay_days: typeof raw.delay_days === 'number' ? raw.delay_days : 0,
+    subject_line: sanitizeText(raw.subject_line),
+    body: sanitizeText(raw.body),
+    preview_text: raw.preview_text ? sanitizeText(raw.preview_text) : undefined,
+    word_count: raw.word_count,
+    purpose: raw.purpose ? sanitizeText(raw.purpose) : '',
+    why_it_works: raw.why_it_works ? sanitizeText(raw.why_it_works) : undefined,
+    spintax_test_notes: raw.spintax_test_notes,
+  }
+}

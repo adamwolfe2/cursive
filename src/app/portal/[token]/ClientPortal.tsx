@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { useRouter } from 'next/navigation'
 import type { PackageSlug } from '@/types/onboarding'
 import { PACKAGES } from '@/types/onboarding'
 import type { CopyComment } from '@/types/copy-comments'
@@ -759,11 +760,52 @@ function CopyStep({
   commentsByEmail: Map<string, CopyComment[]>
   onCommentsChange: () => void
 }) {
+  const router = useRouter()
   const [showNotes, setShowNotes] = useState(false)
   const [notes, setNotes] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [expandedSeqs, setExpandedSeqs] = useState<Set<number>>(new Set([0]))
+  // Track which (sequenceIndex, emailStep) is currently regenerating, plus
+  // any error message scoped to that pair. Keyed by `${seq}:${step}`.
+  const [regeneratingKey, setRegeneratingKey] = useState<string | null>(null)
+  const [regenErrors, setRegenErrors] = useState<Record<string, string>>({})
+  // Recently revised emails get a brief highlight so the client sees the
+  // change land. Keyed by `${seq}:${step}` -> timestamp.
+  const [recentlyRevised, setRecentlyRevised] = useState<Record<string, number>>({})
+
+  async function handleApplyFeedback(sequenceIndex: number, emailStep: number) {
+    const key = `${sequenceIndex}:${emailStep}`
+    setRegeneratingKey(key)
+    setRegenErrors((prev) => {
+      const next = { ...prev }
+      delete next[key]
+      return next
+    })
+    try {
+      const res = await fetch(`/api/portal/${token}/regenerate-email`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sequence_index: sequenceIndex, email_step: emailStep }),
+      })
+      const json = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        const msg = (json as { error?: string }).error || `Regeneration failed (HTTP ${res.status})`
+        setRegenErrors((prev) => ({ ...prev, [key]: msg }))
+        return
+      }
+      setRecentlyRevised((prev) => ({ ...prev, [key]: Date.now() }))
+      // Refresh comments (resolved ones flip to resolved) and the page-level
+      // server fetch (picks up the revised draft_sequences).
+      await onCommentsChange()
+      router.refresh()
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Network error'
+      setRegenErrors((prev) => ({ ...prev, [key]: msg }))
+    } finally {
+      setRegeneratingKey(null)
+    }
+  }
   const bodyRefs = useRef<Map<string, HTMLDivElement | null>>(new Map())
 
   const isApproved = approvalStatus === 'approved'
@@ -911,10 +953,21 @@ function CopyStep({
                   <div className="divide-y divide-gray-100">
                     {seq.emails.map((email, emailIdx) => {
                       const key = commentKey(seqIdx, email.step)
+                      const regenKey = `${seqIdx}:${email.step}`
                       const emailComments = commentsByEmail.get(key) ?? []
                       const openCount = emailComments.filter((c) => c.status === 'open').length
+                      const isRegenerating = regeneratingKey === regenKey
+                      const regenError = regenErrors[regenKey]
+                      const wasJustRevised =
+                        recentlyRevised[regenKey] !== undefined &&
+                        Date.now() - recentlyRevised[regenKey] < 8_000
                       return (
-                        <div key={emailIdx} className="px-4 py-4">
+                        <div
+                          key={emailIdx}
+                          className={`px-4 py-4 transition-colors ${
+                            wasJustRevised ? 'bg-emerald-50/40' : ''
+                          }`}
+                        >
                           <div className="flex items-center gap-2 mb-2.5 flex-wrap">
                             <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700">
                               Email {email.step}
@@ -925,6 +978,44 @@ function CopyStep({
                                 {openCount} open comment{openCount === 1 ? '' : 's'}
                               </span>
                             )}
+                            {wasJustRevised && (
+                              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-medium text-emerald-800">
+                                Just revised
+                              </span>
+                            )}
+                            {/* Apply Feedback button — only active when there are open comments. */}
+                            <div className="ml-auto flex items-center gap-2">
+                              {isRegenerating ? (
+                                <span className="inline-flex items-center gap-1.5 text-xs text-blue-700">
+                                  <svg className="h-3.5 w-3.5 animate-spin" viewBox="0 0 24 24" fill="none">
+                                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeOpacity="0.25" strokeWidth="3" />
+                                    <path d="M4 12a8 8 0 018-8" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+                                  </svg>
+                                  Updating with your feedback&hellip;
+                                </span>
+                              ) : (
+                                <button
+                                  type="button"
+                                  disabled={openCount === 0 || regeneratingKey !== null}
+                                  onClick={() => handleApplyFeedback(seqIdx, email.step)}
+                                  className={`inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs font-medium transition-colors ${
+                                    openCount === 0
+                                      ? 'border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed'
+                                      : 'border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100'
+                                  }`}
+                                  title={
+                                    openCount === 0
+                                      ? 'Add a comment first to give feedback on this email'
+                                      : 'Send your feedback to Cursive AI to revise this email'
+                                  }
+                                >
+                                  <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" strokeWidth={2.2} stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                                  </svg>
+                                  Apply feedback
+                                </button>
+                              )}
+                            </div>
                           </div>
                           <div
                             ref={(el) => {
@@ -936,6 +1027,11 @@ function CopyStep({
                               body={email.body}
                             />
                           </div>
+                          {regenError && (
+                            <p className="mt-2 text-xs text-red-600 bg-red-50 border border-red-200 rounded-md px-3 py-2">
+                              {regenError}
+                            </p>
+                          )}
                           <CopyCommentThread
                             token={token}
                             clientName={clientName}
