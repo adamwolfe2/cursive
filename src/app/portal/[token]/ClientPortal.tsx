@@ -209,7 +209,19 @@ function ContractStep({ client }: { client: PortalClient }) {
   return (
     <StepShell number={1} title="Sign Your Contract" state={stepState} locked={false}>
       {isDone ? (
-        <p className="text-sm font-medium text-emerald-700">Contract signed — you&apos;re all set.</p>
+        <div className="space-y-2">
+          <p className="text-sm font-medium text-emerald-700">Contract signed — you&apos;re all set.</p>
+          {client.rabbitsign_folder_id && (
+            <a
+              href={`https://mail.google.com/mail/u/0/#search/${encodeURIComponent(`from:admin@rabbitsign.com "${client.company_name}"`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-xs font-medium text-blue-600 hover:text-blue-700 hover:underline"
+            >
+              View signed contract in email →
+            </a>
+          )}
+        </div>
       ) : client.rabbitsign_folder_id ? (
         <div className="flex flex-col gap-3">
           <div className="flex flex-col sm:flex-row gap-3 items-start">
@@ -256,7 +268,19 @@ function InvoiceStep({ client }: { client: PortalClient }) {
   return (
     <StepShell number={2} title="Pay Your Setup Invoice" state={stepState} locked={false}>
       {isPaid ? (
-        <p className="text-sm font-medium text-emerald-700">Invoice paid — thank you!</p>
+        <div className="space-y-2">
+          <p className="text-sm font-medium text-emerald-700">Invoice paid — thank you!</p>
+          {client.stripe_invoice_url && (
+            <a
+              href={client.stripe_invoice_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-xs font-medium text-blue-600 hover:text-blue-700 hover:underline"
+            >
+              View invoice / receipt →
+            </a>
+          )}
+        </div>
       ) : isOpen && client.stripe_invoice_url ? (
         <div className="flex flex-col sm:flex-row gap-3 items-start">
           <p className="text-sm text-gray-500 flex-1">
@@ -360,7 +384,19 @@ function DomainsStep({
       {locked ? (
         <p className="text-sm text-gray-400">Complete Step 2 (pay invoice) to unlock this step.</p>
       ) : isApproved ? (
-        <p className="text-sm font-medium text-emerald-700">Domains and sender names approved.</p>
+        <div className="space-y-2">
+          <p className="text-sm font-medium text-emerald-700">Domains and sender names approved.</p>
+          {hasApprovalUrl && (
+            <a
+              href={approvalUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-xs font-medium text-blue-600 hover:text-blue-700 hover:underline"
+            >
+              View domains &amp; sender names →
+            </a>
+          )}
+        </div>
       ) : isChangesRequested ? (
         <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3">
           <p className="text-sm font-medium text-amber-800">
