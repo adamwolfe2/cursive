@@ -6,8 +6,12 @@
 //
 // Auth: admin session OR x-automation-secret header (so server actions can
 // fire-and-forget this endpoint via after()).
+//
+// Timeout: 300s — enrichment ~25s + copy generation ~90-120s (3 Claude
+// calls). 60s default is not enough; the function gets killed mid-call
+// before it can write a failure log entry.
 
-export const maxDuration = 60
+export const maxDuration = 300
 
 import { NextRequest, NextResponse } from 'next/server'
 import { OnboardingClientRepository } from '@/lib/repositories/onboarding-client.repository'
