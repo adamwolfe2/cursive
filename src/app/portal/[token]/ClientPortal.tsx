@@ -1,11 +1,206 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import type { PackageSlug } from '@/types/onboarding'
 import { PACKAGES } from '@/types/onboarding'
 import type { CopyComment } from '@/types/copy-comments'
 import { commentKey, groupCommentsByEmail } from '@/types/copy-comments'
 import CopyCommentThread from './CopyCommentThread'
+
+// ---------------------------------------------------------------------------
+// Portal email viewer — client-friendly spintax rendering (Preview / Variants)
+// Spintax: {a|b|c} picks one option. Merge tags: {{firstName}} get sample values.
+// ---------------------------------------------------------------------------
+
+const MERGE_TAG_PLACEHOLDERS: Record<string, string> = {
+  '{{firstName}}': 'Sarah',
+  '{{lastName}}': 'Chen',
+  '{{companyName}}': 'AcmeTech',
+  '{{title}}': 'VP Marketing',
+}
+
+const SPINTAX_RE = /\{([^{}]+)\}/g
+const MERGE_TAG_RE = /\{\{(\w+)\}\}/g
+
+function resolveSpintax(text: string, seed: number): string {
+  let blockIndex = 0
+  return text.replace(SPINTAX_RE, (_match, inner: string) => {
+    if (!inner.includes('|')) return _match
+    const options = inner.split('|')
+    const picked = options[(seed + blockIndex) % options.length]
+    blockIndex += 1
+    return picked
+  })
+}
+
+function expandSubjectVariants(subject: string): string[] {
+  const blocks: string[][] = []
+  const segments: string[] = []
+  let lastIndex = 0
+  const re = /\{([^{}]+)\}/g
+  let m = re.exec(subject)
+  while (m !== null) {
+    const inner = m[1]
+    if (inner.includes('|')) {
+      segments.push(subject.slice(lastIndex, m.index))
+      blocks.push(inner.split('|'))
+      lastIndex = m.index + m[0].length
+    }
+    m = re.exec(subject)
+  }
+  segments.push(subject.slice(lastIndex))
+  if (blocks.length === 0) return [subject]
+  const total = blocks.reduce((acc, b) => acc * b.length, 1)
+  const limit = Math.min(total, 50)
+  const results: string[] = []
+  for (let combo = 0; combo < limit; combo++) {
+    let remaining = combo
+    const picks: string[] = []
+    for (let i = blocks.length - 1; i >= 0; i--) {
+      picks.unshift(blocks[i][remaining % blocks[i].length])
+      remaining = Math.floor(remaining / blocks[i].length)
+    }
+    let result = ''
+    for (let i = 0; i < segments.length; i++) {
+      result += segments[i]
+      if (i < picks.length) result += picks[i]
+    }
+    results.push(result)
+  }
+  return results
+}
+
+function replaceMergeTags(text: string): string {
+  return text.replace(MERGE_TAG_RE, (full) => MERGE_TAG_PLACEHOLDERS[full] ?? full)
+}
+
+function highlightSpintax(text: string): ReactNode {
+  const parts: ReactNode[] = []
+  let lastIndex = 0
+  let key = 0
+  const re = /(\{\{(\w+)\}\}|\{([^{}]+)\})/g
+  let match = re.exec(text)
+  while (match !== null) {
+    if (match.index > lastIndex) parts.push(text.slice(lastIndex, match.index))
+    if (match[2]) {
+      parts.push(
+        <span key={key} className="inline-flex items-center rounded bg-emerald-100 px-1 mx-0.5 text-sm font-medium text-emerald-700">
+          {match[0]}
+        </span>
+      )
+    } else if (match[3]?.includes('|')) {
+      parts.push(
+        <span key={key} className="inline-flex items-center rounded bg-blue-100 px-1 mx-0.5 text-sm font-medium text-blue-700">
+          {match[3].split('|').join(' | ')}
+        </span>
+      )
+    } else {
+      parts.push(match[0])
+    }
+    key++
+    lastIndex = match.index + match[0].length
+    match = re.exec(text)
+  }
+  if (lastIndex < text.length) parts.push(text.slice(lastIndex))
+  return parts
+}
+
+type EmailViewMode = 'preview' | 'variants'
+
+function PortalEmailViewer({ subjectLine, body }: { subjectLine: string; body: string }) {
+  const [mode, setMode] = useState<EmailViewMode>('preview')
+  const [seed, setSeed] = useState(0)
+
+  const resolvedSubject = useMemo(
+    () => replaceMergeTags(resolveSpintax(subjectLine, seed)),
+    [subjectLine, seed]
+  )
+  const resolvedBody = useMemo(
+    () => replaceMergeTags(resolveSpintax(body, seed)),
+    [body, seed]
+  )
+  const variants = useMemo(() => expandSubjectVariants(subjectLine), [subjectLine])
+
+  return (
+    <div className="rounded-lg border border-gray-200 overflow-hidden mt-2">
+      <div className="flex border-b border-gray-200 bg-gray-50">
+        {(['preview', 'variants'] as EmailViewMode[]).map((tab) => (
+          <button
+            key={tab}
+            type="button"
+            onClick={() => setMode(tab)}
+            className={`px-4 py-2 text-xs font-medium transition-colors ${
+              mode === tab
+                ? 'text-blue-700 border-b-2 border-blue-600 bg-white'
+                : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+            }`}
+          >
+            {tab === 'preview' ? 'Preview' : `All Variants (${variants.length})`}
+          </button>
+        ))}
+      </div>
+
+      <div className="p-4 space-y-3">
+        {mode === 'preview' && (
+          <>
+            <div className="flex items-center justify-between">
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">
+                One possible version of this email
+              </p>
+              <button
+                type="button"
+                onClick={() => setSeed((s) => s + 1)}
+                className="inline-flex items-center gap-1 rounded bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700 hover:bg-blue-100 transition-colors"
+              >
+                <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                </svg>
+                Shuffle
+              </button>
+            </div>
+            <div className="rounded-md border border-gray-200 bg-white shadow-sm">
+              <div className="border-b border-gray-100 px-4 py-2.5">
+                <p className="text-[10px] text-gray-400 mb-0.5">Subject</p>
+                <p className="text-sm font-semibold text-gray-900">{resolvedSubject}</p>
+              </div>
+              <div className="px-4 py-3">
+                <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
+                  {resolvedBody}
+                </p>
+              </div>
+            </div>
+          </>
+        )}
+
+        {mode === 'variants' && (
+          <>
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mb-2">
+                Subject line variants ({variants.length})
+              </p>
+              <div className="rounded-md border border-gray-200 divide-y divide-gray-100 max-h-48 overflow-y-auto">
+                {variants.map((v, i) => (
+                  <div key={i} className="flex items-start gap-2 px-3 py-2 text-sm">
+                    <span className="text-[11px] text-gray-400 font-mono shrink-0 w-5 text-right pt-0.5">{i + 1}.</span>
+                    <span className="text-gray-800">{v}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mb-2">
+                Body — variations highlighted
+              </p>
+              <div className="text-sm text-gray-700 whitespace-pre-wrap bg-gray-50 rounded-md p-3 leading-relaxed border border-gray-100">
+                {highlightSpintax(body)}
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  )
+}
 
 // ---------------------------------------------------------------------------
 // Types
@@ -683,16 +878,15 @@ function CopyStep({
                               </span>
                             )}
                           </div>
-                          <p className="text-sm font-semibold text-gray-900 mb-2">
-                            Subject: {email.subject_line}
-                          </p>
                           <div
                             ref={(el) => {
                               bodyRefs.current.set(key, el)
                             }}
-                            className="text-sm text-gray-600 whitespace-pre-line leading-relaxed selection:bg-blue-100"
                           >
-                            {email.body}
+                            <PortalEmailViewer
+                              subjectLine={email.subject_line}
+                              body={email.body}
+                            />
                           </div>
                           <CopyCommentThread
                             token={token}
