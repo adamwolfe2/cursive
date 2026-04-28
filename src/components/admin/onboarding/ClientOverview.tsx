@@ -296,6 +296,18 @@ export default function ClientOverview({ client }: ClientOverviewProps) {
           </Card>
         ) : brief ? (
           <div className="space-y-6">
+            {/* Service Offering, drives the copy engine. Optional for older briefs. */}
+            {brief.service_offering ? (
+              <Card padding="default">
+                <CardHeader>
+                  <CardTitle className="text-base">Service Offering (drives copy)</CardTitle>
+                </CardHeader>
+                <CardContent className="mt-2">
+                  <p className="text-sm font-medium leading-relaxed">{brief.service_offering}</p>
+                </CardContent>
+              </Card>
+            ) : null}
+
             {/* Company Summary */}
             <Card padding="default">
               <CardHeader>

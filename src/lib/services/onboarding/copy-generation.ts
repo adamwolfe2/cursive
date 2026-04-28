@@ -296,10 +296,17 @@ function sanitizeText(text: string): string {
   // a pipe inside. Merge tags like {{firstName}} have no pipe, so they pass.
   s = s.replace(/\{\{([^{}]*\|[^{}]*)\}\}/g, '{$1}')
 
-  // Strip em-dashes and en-dashes. Replace with a comma + space, then collapse
-  // any double-spaces created.
+  // Strip em-dashes and en-dashes carefully:
+  // 1. After sentence-end punctuation (".—", "!—", "?—") -> just a space.
+  // 2. At the start of a line (leading whitespace + dash) -> remove (it was
+  //    being used as a bullet or aside).
+  // 3. Otherwise -> replace with ", ".
+  s = s.replace(/([.!?])\s*[—–]\s*/g, '$1 ')
+  s = s.replace(/(^|\n)\s*[—–]\s*/g, '$1')
   s = s.replace(/\s*[—–]\s*/g, ', ')
+  // Collapse runs of spaces and any ", ," artifacts created by adjacency.
   s = s.replace(/ {2,}/g, ' ')
+  s = s.replace(/,\s*,/g, ',')
 
   return s
 }
