@@ -3,6 +3,66 @@ export const maxDuration = 10
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { getFolderStatus } from '@/lib/integrations/rabbitsign'
+import { getInvoiceStatus } from '@/lib/integrations/stripe-invoice'
+
+/**
+ * Refresh stale contract / invoice status from upstream APIs.
+ * Returns the patched client object. Failures are non-fatal — falls back to
+ * the stored values so the portal still renders if upstream is down.
+ */
+async function refreshStaleStatuses(
+  supabase: ReturnType<typeof createAdminClient>,
+  client: Record<string, unknown>
+): Promise<Record<string, unknown>> {
+  const updates: Record<string, string> = {}
+  const folderId = client.rabbitsign_folder_id as string | null
+  const contractStatus = client.rabbitsign_status as string | null
+  const stripeInvoiceId = client.stripe_invoice_id as string | null
+  const invoiceStatus = client.stripe_invoice_status as string | null
+
+  // Contract: refresh if folder exists and status is not yet 'signed'
+  if (folderId && contractStatus !== 'signed' && folderId !== 'external') {
+    try {
+      const folder = await getFolderStatus(folderId)
+      const allSigned = folder.signers.every((s) => s.status === 'SIGNED')
+      const anyViewed = folder.signers.some((s) => s.status === 'NOTIFIED')
+      const newStatus = allSigned ? 'signed' : anyViewed ? 'sent' : contractStatus
+      if (newStatus && newStatus !== contractStatus) {
+        updates.rabbitsign_status = newStatus
+      }
+    } catch (err) {
+      safeError('[Portal] RabbitSign status refresh failed:', err)
+    }
+  }
+
+  // Invoice: refresh if Stripe invoice exists and status is not yet 'paid'
+  if (stripeInvoiceId && invoiceStatus !== 'paid') {
+    try {
+      const invoice = await getInvoiceStatus(stripeInvoiceId)
+      // Stripe statuses: draft / open / paid / uncollectible / void
+      const newStatus =
+        invoice.status === 'paid' ? 'paid' :
+        invoice.status === 'open' ? 'open' :
+        invoiceStatus
+      if (newStatus && newStatus !== invoiceStatus) {
+        updates.stripe_invoice_status = newStatus
+      }
+    } catch (err) {
+      safeError('[Portal] Stripe status refresh failed:', err)
+    }
+  }
+
+  if (Object.keys(updates).length === 0) return client
+
+  // Persist updates so the next load is fast and other surfaces (admin) see them
+  await supabase
+    .from('onboarding_clients')
+    .update(updates)
+    .eq('id', client.id as string)
+
+  return { ...client, ...updates }
+}
 
 export async function GET(
   _req: NextRequest,
@@ -48,7 +108,7 @@ export async function GET(
       .then()
 
     // Fetch client data (safe fields only)
-    const { data: client, error: clientError } = await supabase
+    const { data: clientRow, error: clientError } = await supabase
       .from('onboarding_clients')
       .select(
         [
@@ -64,6 +124,7 @@ export async function GET(
           'draft_sequences',
           'copy_generation_status',
           'copy_approval_status',
+          'stripe_invoice_id',
           'stripe_invoice_url',
           'stripe_invoice_status',
           'rabbitsign_folder_id',
@@ -76,10 +137,14 @@ export async function GET(
       .eq('id', tokenRecord.client_id)
       .maybeSingle()
 
-    if (clientError || !client) {
+    if (clientError || !clientRow) {
       safeError('[Portal] Failed to fetch client:', clientError)
       return NextResponse.json({ error: 'Client not found' }, { status: 404 })
     }
+
+    // Lazy-refresh stale contract / invoice status from upstream APIs.
+    // Catches signing & payment events that webhooks may not have delivered.
+    const client = await refreshStaleStatuses(supabase, clientRow as unknown as Record<string, unknown>)
 
     // Fetch approvals
     const { data: approvalRows } = await supabase
