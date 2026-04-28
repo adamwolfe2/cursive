@@ -8,6 +8,7 @@ import type {
 } from '@/types/onboarding'
 import ClientDetailTabs from './ClientDetailTabs'
 import PortalLinkSection from './PortalLinkSection'
+import PipelineStatusBanner from '@/components/admin/onboarding/PipelineStatusBanner'
 import { generateStatusToken } from '@/lib/utils/status-token'
 import { ArrowLeft, ExternalLink } from 'lucide-react'
 
@@ -95,6 +96,10 @@ export default async function OnboardingClientDetailPage({ params }: PageProps) 
           primaryContactEmail={client.primary_contact_email}
         />
       </div>
+
+      {/* Pipeline Status — surfaces stuck runs and re-run controls so we
+          don't depend on the Inngest dashboard. */}
+      <PipelineStatusBanner client={client} />
 
       {/* Tabs Content */}
       <ClientDetailTabs client={client} files={files} checklist={checklist} />

@@ -237,6 +237,38 @@ export async function retryAutomationStep(clientId: string, step: string) {
   revalidatePath(`/admin/onboarding/${clientId}`)
 }
 
+/**
+ * Re-fire the full onboarding intake pipeline for a client.
+ * Resets enrichment + copy generation to 'pending' and dispatches the
+ * `onboarding/intake-complete` Inngest event. Use this when a run is
+ * stuck in 'processing' or failed and you need to restart from scratch.
+ */
+export async function restartIntakePipeline(clientId: string) {
+  const supabase = createAdminClient()
+
+  const { error: resetError } = await supabase
+    .from('onboarding_clients')
+    .update({
+      enrichment_status: 'pending',
+      copy_generation_status: 'pending',
+      copy_approval_status: 'pending',
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', clientId)
+
+  if (resetError) {
+    throw new Error(`Failed to reset pipeline state: ${resetError.message}`)
+  }
+
+  const inngest = getInngest()
+  await inngest.send({
+    name: 'onboarding/intake-complete',
+    data: { client_id: clientId },
+  })
+
+  revalidatePath(`/admin/onboarding/${clientId}`)
+}
+
 export async function getFileSignedUrl(storagePath: string): Promise<string> {
   const supabase = createAdminClient()
   const { data, error } = await supabase.storage
