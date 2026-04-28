@@ -68,7 +68,7 @@ export function ProspectsList({ agentId }: ProspectsListProps) {
         </div>
         <p className="text-sm font-medium text-foreground">No prospects yet</p>
         <p className="mt-1.5 max-w-xs text-xs text-muted-foreground">
-          Click <span className="font-semibold text-foreground">Run Now</span> in the header to pull prospects from AudienceLab matching your ICP filters.
+          Click <span className="font-semibold text-foreground">Run Now</span> in the header to pull prospects matching your ICP filters.
         </p>
         {isFetching && (
           <p className="mt-4 text-[10px] text-muted-foreground/60">

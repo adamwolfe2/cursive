@@ -84,7 +84,7 @@ export default async function OutboundListPage() {
                 <p className="text-sm font-semibold text-foreground">How it works</p>
                 <p className="mt-1 text-sm text-muted-foreground">
                   Define your ICP, persona, and product in three sentences. Click Run, and Cursive
-                  prospects high-intent leads from AudienceLab, enriches each one, and drafts a
+                  prospects high-intent leads, enriches each one, and drafts a
                   personalized email — all waiting for your one-click approval. Connect your
                   Gmail when you&apos;re ready to send.
                 </p>

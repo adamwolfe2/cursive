@@ -1,0 +1,11 @@
+-- STUB: remote-only migration already applied in production.
+--
+-- This timestamp exists in Supabase's schema_migrations history on the
+-- cursive DB but the original SQL was authored directly in the dashboard
+-- SQL editor rather than as a local migration file. This empty stub exists
+-- only to satisfy the Supabase CLI's requirement that every entry in
+-- schema_migrations have a matching local file; the schema changes are
+-- already live on remote.
+--
+-- Do NOT add SQL here. If you need to reproduce the remote state locally,
+-- pull the schema via: supabase db pull

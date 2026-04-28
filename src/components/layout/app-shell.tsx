@@ -76,6 +76,8 @@ const navigationItems: NavItemConfig[] = [
       { name: 'Billing', href: '/settings/billing' },
       { name: 'Team', href: '/settings/team' },
       { name: 'Integrations', href: '/settings/integrations' },
+      { name: 'GoHighLevel', href: '/integrations/ghl' },
+      { name: 'Shopify', href: '/integrations/shopify' },
     ],
   },
 

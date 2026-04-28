@@ -188,9 +188,9 @@ export function EnrichLeadPanel({
                 <Zap className="h-6 w-6 text-blue-600" />
               </div>
               <div>
-                <p className="font-semibold text-blue-900">AudienceLab API not configured</p>
+                <p className="font-semibold text-blue-900">Enrichment not configured</p>
                 <p className="text-sm text-blue-700 mt-1">
-                  Lead enrichment requires an AudienceLab connection. Ask your admin to connect AudienceLab in Settings.
+                  Lead enrichment requires a Cursive connection. Ask your admin to finish enrichment setup in Settings.
                 </p>
               </div>
               <Button asChild variant="outline" className="w-full">

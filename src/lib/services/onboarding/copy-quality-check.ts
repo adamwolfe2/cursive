@@ -550,6 +550,133 @@ function checkSubjectLowercase(
   return issues
 }
 
+function checkEmDashes(
+  body: string,
+  subjectLine: string,
+  previewText: string | undefined,
+  seqIdx: number,
+  emailIdx: number,
+): QualityIssue[] {
+  // Em-dashes (—) and en-dashes (–) are forbidden. They are a known AI tell
+  // and tank reply rates. The post-generation sanitizer in copy-generation.ts
+  // strips them, but this check catches anything that slipped through (or
+  // was added manually) before the copy ships.
+  const haystack = `${subjectLine}\n${previewText ?? ''}\n${body}`
+  if (/[—–]/.test(haystack)) {
+    return [
+      {
+        sequence_index: seqIdx,
+        email_index: emailIdx,
+        severity: 'error',
+        check: 'em_dash',
+        detail: 'Email contains an em-dash (—) or en-dash (–). Replace with a comma, period, or rephrasing. Em-dashes are an AI-generation tell.',
+      },
+    ]
+  }
+  return []
+}
+
+function checkDoubleBraceSpintax(
+  body: string,
+  subjectLine: string,
+  previewText: string | undefined,
+  seqIdx: number,
+  emailIdx: number,
+): QualityIssue[] {
+  // Catches {{a|b|c}} spintax-with-double-braces, which the renderer treats
+  // as a merge tag and won't expand, so it leaks raw braces into the inbox.
+  // Single-brace {a|b|c} is correct spintax. Double-brace {{firstName}} (no
+  // pipe) is a real merge tag and is fine.
+  const haystack = `${subjectLine}\n${previewText ?? ''}\n${body}`
+  const match = /\{\{[^{}]*\|[^{}]*\}\}/.exec(haystack)
+  if (match) {
+    return [
+      {
+        sequence_index: seqIdx,
+        email_index: emailIdx,
+        severity: 'error',
+        check: 'double_brace_spintax',
+        detail: `Found spintax with double braces "${match[0]}". Use single braces {a|b|c} so the renderer expands variants. Double braces are reserved for merge tags like {{firstName}}.`,
+      },
+    ]
+  }
+  return []
+}
+
+function checkPhantomCallback(
+  body: string,
+  emails: ReadonlyArray<{ body: string; subject_line: string }>,
+  seqIdx: number,
+  emailIdx: number,
+): QualityIssue[] {
+  // Email 1 cannot have a phantom callback (no prior email exists).
+  // Emails 2+ may reference prior content only if it actually appears in an
+  // earlier email of THIS sequence. Email 4 (breakup) is allowed to say
+  // "haven't heard back" / "no response" because that is honest.
+  if (emailIdx === 0) {
+    // Email 1 should never reference a "prior conversation". Flag if it does.
+    const lower = body.toLowerCase()
+    const phantomPhrases = [
+      'as we discussed',
+      'as you mentioned',
+      'following up on our',
+      'following up on the',
+      'following up on that',
+      'from our last',
+      'your response to',
+      'your reply to',
+      'that comment',
+      'that conversation',
+      'circling back on',
+    ]
+    const hit = phantomPhrases.find((p) => lower.includes(p))
+    if (hit) {
+      return [
+        {
+          sequence_index: seqIdx,
+          email_index: emailIdx,
+          severity: 'error',
+          check: 'phantom_callback',
+          detail: `Email 1 references a prior conversation that does not exist (matched "${hit}"). Email 1 is the first contact. Open cold.`,
+        },
+      ]
+    }
+    return []
+  }
+
+  // Email 4 (breakup, idx 3) is allowed to acknowledge no response.
+  if (emailIdx >= 3) return []
+
+  // For emails 2 and 3: search for callback patterns that reference content
+  // not present in earlier emails.
+  const calloutPattern = /(that\s+(\w+(?:\s+\w+)?)\s+(?:comment|comment\.|comment,|conversation|note|point|line))|((?:following up|circling back) on (?:the|that|our)\s+(\w+(?:\s+\w+)?))/i
+  const match = calloutPattern.exec(body)
+  if (!match) return []
+
+  // The thing being referenced (e.g. "creative waste" from "that creative waste comment")
+  const referenced = (match[2] || match[4] || '').trim().toLowerCase()
+  if (!referenced || referenced.length < 3) return []
+
+  const earlier = emails
+    .slice(0, emailIdx)
+    .map((e) => `${e.subject_line} ${e.body}`)
+    .join(' ')
+    .toLowerCase()
+
+  if (!earlier.includes(referenced)) {
+    return [
+      {
+        sequence_index: seqIdx,
+        email_index: emailIdx,
+        severity: 'error',
+        check: 'phantom_callback',
+        detail: `Email ${emailIdx + 1} references "${referenced}" as if it appeared in an earlier email, but it does not. Either remove the callback or add the topic to email ${emailIdx} first.`,
+      },
+    ]
+  }
+  return []
+}
+
 function checkBodyStartsWithI(
   body: string,
   seqIdx: number,
@@ -634,7 +761,7 @@ export function checkCopyQuality(sequences: DraftSequences): QualityCheckResult 
 
     for (let emailIdx = 0; emailIdx < sequence.emails.length; emailIdx++) {
       const email = sequence.emails[emailIdx]
-      const { subject_line, body } = email
+      const { subject_line, body, preview_text } = email
 
       issues.push(
         ...checkWordCount(body, seqIdx, emailIdx),
@@ -649,6 +776,10 @@ export function checkCopyQuality(sequences: DraftSequences): QualityCheckResult 
         ...checkSubjectExclamation(subject_line, seqIdx, emailIdx),
         ...checkExcessiveExclamations(body, seqIdx, emailIdx),
         ...checkAllCaps(body, seqIdx, emailIdx),
+        // Hard rules
+        ...checkEmDashes(body, subject_line, preview_text, seqIdx, emailIdx),
+        ...checkDoubleBraceSpintax(body, subject_line, preview_text, seqIdx, emailIdx),
+        ...checkPhantomCallback(body, sequence.emails, seqIdx, emailIdx),
         // Masterclass checks
         ...checkCorporateKillSignals(body, seqIdx, emailIdx),
         ...checkLlmIsms(body, subject_line, seqIdx, emailIdx),

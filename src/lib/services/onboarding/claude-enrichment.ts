@@ -30,11 +30,19 @@ function getAnthropicClient(): Anthropic {
 
 const SYSTEM_PROMPT = `You are an expert B2B sales strategist and audience intelligence analyst at Cursive, a demand generation agency. Your job is to take a client's raw ICP (Ideal Customer Profile) intake form and produce a comprehensive, enriched ICP brief that the fulfillment team can use to build precise audience segments AND that the cold email copy engine can use to write high-converting outbound sequences.
 
-You must return ONLY valid JSON matching the schema below. No markdown, no explanation, no preamble — just the JSON object.
+You must return ONLY valid JSON matching the schema below. No markdown, no explanation, no preamble, just the JSON object.
+
+CRITICAL GROUNDING RULES — VIOLATING THESE PRODUCES BAD COPY:
+- service_offering and company_summary must be SPECIFIC to THIS client. Quote and synthesize from the actual intake fields (icp_description, pain_points, must_have_traits, best_customers).
+- Do NOT default to generic industry positioning ("agency that scales revenue", "platform that helps companies grow"). That kind of summary will produce off-message cold email copy.
+- If the intake clearly says the client helps companies find intent-based audiences already searching for them, write THAT, not a generic agency-revenue narrative.
+- If the intake is too thin to determine the offering, set service_offering to "UNCLEAR — admin must complete" rather than inventing one.
+- Do NOT use em-dashes (—) or en-dashes (–) anywhere in the output. Use commas, periods, or rephrasing.
 
 Schema:
 {
-  "company_summary": "string — 2-3 sentence summary of the client's business, value prop, and market position",
+  "service_offering": "string — REQUIRED. The single most specific sentence describing exactly what this client SELLS to their customers. Pull verbs and nouns from the intake. Example of GOOD: 'We help B2B companies find and reach the exact intent-based audiences already searching for their product.' Example of BAD (do not write this): 'A revenue growth agency for ambitious companies.'",
+  "company_summary": "string — 2-3 sentence summary that EXPANDS on service_offering with market position and key differentiators. Stay grounded in the intake.",
   "ideal_buyer_profile": "string — detailed paragraph describing the ideal buyer: who they are, what they care about, and why they'd buy from this client",
   "primary_verticals": ["string — top 3-5 industry verticals to target"],
   "buyer_personas": [
@@ -101,6 +109,9 @@ Schema:
 
 function buildUserMessage(client: OnboardingClient): string {
   const sections: string[] = [
+    `## INSTRUCTIONS`,
+    `Read the intake below carefully. The MOST IMPORTANT field for the cold email copy engine is "service_offering" — what THIS client actually sells. Ground it in the ICP Description, Pain Points, Must-Have Traits, Best Customers, and Sample Accounts below. Do NOT invent a generic agency narrative. If the intake describes intent-based audience matching, say that. If it describes anything else specific, say that exactly.`,
+    '',
     `## Company Information`,
     `- Company: ${client.company_name}`,
     `- Website: ${client.company_website}`,
@@ -245,8 +256,15 @@ export async function enrichClientICP(client: OnboardingClient): Promise<Enriche
   if (!brief.audience_labs_search_strategy) missingFields.push('audience_labs_search_strategy')
 
   if (missingFields.length > 0) {
-    throw new Error(`Claude returned an incomplete ICP brief — missing: ${missingFields.join(', ')}`)
+    throw new Error(`Claude returned an incomplete ICP brief, missing: ${missingFields.join(', ')}`)
   }
 
-  return brief
+  // Strip dashes that Claude may emit despite the rule (defensive)
+  const stripDashes = (s: string) => s.replace(/[—–]/g, ', ')
+  return {
+    ...brief,
+    service_offering: brief.service_offering ? stripDashes(brief.service_offering) : undefined,
+    company_summary: stripDashes(brief.company_summary),
+    ideal_buyer_profile: stripDashes(brief.ideal_buyer_profile),
+  }
 }

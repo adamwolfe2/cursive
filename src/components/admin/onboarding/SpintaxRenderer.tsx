@@ -26,10 +26,19 @@ const MERGE_TAG_PLACEHOLDERS: Record<string, string> = {
 
 const SPINTAX_PATTERN = /\{([^{}]+)\}/g
 const MERGE_TAG_PATTERN = /\{\{(\w+)\}\}/g
+// Catches double-brace spintax like {{a|b|c}} that older copy may have. The
+// generation pipeline now prevents this at write time (see sanitizeText in
+// copy-generation.ts), but historical drafts in the DB may still contain it.
+const DOUBLE_BRACE_SPINTAX_PATTERN = /\{\{([^{}]*\|[^{}]*)\}\}/g
+
+function normalizeDoubleBraceSpintax(text: string): string {
+  return text.replace(DOUBLE_BRACE_SPINTAX_PATTERN, '{$1}')
+}
 
 function resolveSpintax(text: string, seed: number): string {
   let blockIndex = 0
-  return text.replace(SPINTAX_PATTERN, (match, inner: string) => {
+  const normalized = normalizeDoubleBraceSpintax(text)
+  return normalized.replace(SPINTAX_PATTERN, (match, inner: string) => {
     if (inner.startsWith('{') || !inner.includes('|')) {
       return match
     }
@@ -40,7 +49,8 @@ function resolveSpintax(text: string, seed: number): string {
   })
 }
 
-function expandAllSpintax(text: string): string[] {
+function expandAllSpintax(rawText: string): string[] {
+  const text = normalizeDoubleBraceSpintax(rawText)
   const MAX_VARIANTS = 50
   const blocks: string[][] = []
   const segments: string[] = []
@@ -96,7 +106,8 @@ function expandAllSpintax(text: string): string[] {
   return results
 }
 
-function highlightSpintax(text: string): ReactNode {
+function highlightSpintax(rawText: string): ReactNode {
+  const text = normalizeDoubleBraceSpintax(rawText)
   const parts: ReactNode[] = []
   let lastIndex = 0
   let key = 0

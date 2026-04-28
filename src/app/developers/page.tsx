@@ -11,14 +11,14 @@ const ENDPOINTS = [
     method: 'POST',
     path: '/api/ext/lookup',
     title: 'Person Lookup',
-    description: 'Enrich a person with identity data from AudienceLab. Supply at least one identifier: email, phone, (first_name + last_name), or company_domain. Returns personal/business emails, mobile phone, job title, demographics, and SHA-256 hashed identifiers. Scope: ext:lookup. Rate limit: 30/min per workspace, 500/day per workspace.',
+    description: 'Enrich a person with identity data from the Cursive identity graph. Supply at least one identifier: email, phone, (first_name + last_name), or company_domain. Returns personal/business emails, mobile phone, job title, demographics, and SHA-256 hashed identifiers. Scope: ext:lookup. Rate limit: 30/min per workspace, 500/day per workspace.',
     cost: '1 credit',
     request: `{
   "email": "jensen@nvidia.com"
 }`,
     response: `{
   "found": true,
-  "provider": "audiencelab",
+  "provider": "cursive",
   "data": {
     "first_name": "Jensen",
     "last_name": "Huang",
@@ -46,7 +46,7 @@ const ENDPOINTS = [
 }`,
     response: `{
   "found": true,
-  "provider": "audiencelab",
+  "provider": "cursive",
   "data": {
     "company_name": "NVIDIA",
     "company_domain": "nvidia.com",
@@ -65,7 +65,7 @@ const ENDPOINTS = [
     method: 'POST',
     path: '/api/ext/verify-email',
     title: 'Email Verification',
-    description: 'Verify email deliverability via the AudienceLab identity graph. Returns status (valid / catch_all / invalid / unknown) and is_deliverable boolean. Scope: ext:verify. Rate limit: 30/min per workspace, 500/day per workspace.',
+    description: 'Verify email deliverability via the Cursive identity graph. Returns status (valid / catch_all / invalid / unknown) and is_deliverable boolean. Scope: ext:verify. Rate limit: 30/min per workspace, 500/day per workspace.',
     cost: '1 credit',
     request: `{
   "email": "jensen@nvidia.com"
@@ -74,7 +74,7 @@ const ENDPOINTS = [
   "email": "jensen@nvidia.com",
   "status": "valid",
   "is_deliverable": true,
-  "provider": "audiencelab"
+  "provider": "cursive"
 }`,
   },
   {
@@ -260,7 +260,7 @@ export default function DevelopersPage() {
           <h2 className="text-xl font-bold text-gray-900 mb-4">MCP Server (for AI agents)</h2>
           <p className="text-sm text-gray-600 mb-4">
             Cursive ships a <strong>Model Context Protocol</strong> server that exposes the
-            AudienceLab identity graph as tools any MCP-compatible AI agent can call — Claude
+            Cursive identity graph as tools any MCP-compatible AI agent can call — Claude
             Desktop, Claude Code, Cursor, Rox, and custom agents. The server speaks standard
             JSON-RPC 2.0 over HTTP POST.
           </p>
@@ -299,7 +299,7 @@ export default function DevelopersPage() {
                 <li>
                   <code className="font-mono text-xs bg-gray-50 px-1.5 py-0.5 rounded">pull_in_market_identities</code>
                   {' '}— Pull a sample of live in-market identities (up to 50) matching your workspace&apos;s
-                  targeting preferences. Refreshes every 6 hours via the AudienceLab intent graph.
+                  targeting preferences. Refreshes every 6 hours via the Cursive intent graph.
                   Returns SHA-256 hashed emails, job titles, companies, and geographies. Caller args
                   can only <em>narrow</em> your configured targeting, never broaden it. Rate limit: 5/hour/workspace.
                 </li>

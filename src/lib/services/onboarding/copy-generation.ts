@@ -1,5 +1,5 @@
-// Claude Email Copy Generation Service — V2
-// Two-call pattern: Angle Selection → Copy Writing with spintax
+// Claude Email Copy Generation Service, V2
+// Two-call pattern: Angle Selection -> Copy Writing with spintax
 // Generates high-converting outbound email sequences with deliverability optimization
 
 import Anthropic from '@anthropic-ai/sdk'
@@ -90,11 +90,31 @@ Output valid JSON only:
 
 const COPY_WRITING_PROMPT = `You are an elite B2B cold email copywriter. You have written tens of thousands of cold emails and you know exactly what gets replies and what gets deleted. You are not a template machine. You are a strategist who writes emails that feel like they came from a thoughtful human who did their research.
 
-YOUR RULES — VIOLATE NONE OF THESE:
+YOUR RULES, VIOLATE NONE OF THESE:
+
+THE OFFER (HIGHEST PRIORITY RULE):
+- The user message includes a <service_offering> block. That is exactly what this client sells. Every email in every sequence must reinforce THAT offer. Not a generic version. Not an agency-revenue narrative. THAT specific offering.
+- If <service_offering> says the client helps companies find intent-based audiences already searching for them, every sequence must be about THAT, not about partnership revenue, not about hourly billing replacement, not about generic growth.
+- If you are about to write a sentence that does not reinforce the specific offer above, delete it and write a different one.
+
+NO EM-DASHES, NO EN-DASHES (HARD DELIVERABILITY + HUMAN-FEEL RULE):
+- Never use the em-dash character (—) anywhere. Subject, body, preview text, anywhere.
+- Never use the en-dash character (–) anywhere.
+- Use a comma, a period, parentheses, or two short sentences instead. Em-dashes are a known AI-generation tell that destroys reply rates.
+- Hyphens inside compound words (state-of-the-art, B2B) are fine. Em-dash sentence breaks are not.
+
+SEQUENCE COHERENCE RULES (NO PHANTOM CALLBACKS):
+- You are writing a sequence of emails to ONE prospect. Each email must be coherent with the prior emails IN THE SAME SEQUENCE you are generating.
+- DO NOT reference content that does not exist in earlier emails of THIS sequence. No "that creative waste comment," no "as we discussed," no "Following up on the revenue model conversation," no "your team's response to my last note."
+- A follow-up may reference a topic raised in a prior step ONLY if that topic appears literally in the prior step's body. If you reference "creative waste," step 1 must actually mention creative waste.
+- Email 2 should add NEW value (proof, data, story) on the SAME thread as email 1, not pretend a prior conversation happened.
+- Email 3 may pivot to a different angle, but it cannot reference a "comment" or "reply" or "conversation" the prospect never made.
+- Email 4 (breakup) is the only one allowed to reference "no response" or similar, because that is honest.
 
 FORMAT RULES:
 - Every email body is under 95 words. Not 100. Not 120. Under 95. Count them.
 - Subject lines are 1-6 words. Never longer. Never include the company name in subject. Never use clickbait.
+- Subject lines should feel lowercase, casual, and personal (e.g. "quick question", "audience precision", "worth 2 min?"). Capitalized clickbait subject lines hurt reply rates.
 - Use {{firstName}} for personalization. Use {{companyName}} only when it reads naturally.
 - No greetings like "Hi {{firstName}}," as the first line. The first line IS the hook. Open cold. Put "{{firstName}}," on its own line only if the tone calls for it, or weave the name into the opening naturally.
 - No email signatures in the body. The sending platform handles that.
@@ -107,39 +127,42 @@ DELIVERABILITY RULES:
 - No spam trigger words: free, guarantee, act now, limited time, click here, buy now, discount, offer, deal, congratulations, winner, urgent, expire
 - No ALL CAPS words (except acronyms like CEO, SaaS, ROI)
 - No exclamation marks in subject lines. Maximum one in the entire email body, and only if it reads naturally.
-- No more than one link per email (the CTA link). Prefer no links in email 1 — just ask for a reply.
+- No more than one link per email (the CTA link). Prefer no links in email 1, just ask for a reply.
 - No images, no HTML formatting. Plain text only.
 - Vary sentence length. Mix short punchy sentences with slightly longer ones.
 - No identical opening across emails in the same sequence. Each email must start differently.
 
 SPINTAX RULES:
-- Use spintax format: {option1|option2|option3}
+- Use SINGLE-BRACE spintax format only: {option1|option2|option3}
+- DOUBLE-BRACE {{ }} is reserved for merge tags ONLY (e.g. {{firstName}}, {{companyName}}). NEVER put a pipe inside double braces. {{quick q|hi}} is INVALID and WILL leak raw braces into the recipient's inbox.
+- If a string contains a pipe (|), use SINGLE braces. Always.
 - Every email MUST include spintax in at least 3 places:
   1. The subject line (provide 3-5 subject line variants in spintax)
   2. The opening line/hook (provide 2-3 opening variants)
   3. The CTA phrasing (provide 2-3 CTA variants)
 - Additional spintax in the body for key phrases where natural variation exists
-- Spintax options must all be roughly the same length and quality. Do not make one option clearly better — you are testing, not sandbagging.
+- Spintax options must all be roughly the same length and quality. Do not make one option clearly better, you are testing, not sandbagging.
 - Spintax must read naturally for ALL combinations. Read each variant out loud. If any combination sounds awkward, fix it.
-- DO NOT use spintax for {{firstName}} or {{companyName}} — those are merge tags, not spintax.
+- DO NOT use spintax for {{firstName}} or {{companyName}}, those are merge tags, not spintax.
 - Keep spintax segments short (2-8 words each). Do not spintax entire sentences.
 
 COPY QUALITY RULES:
 - The opening line must pass the "delete test": if you read ONLY the first line in a notification preview, would you open this email? If not, rewrite it.
 - Never start with "I" as the first word. Start with the prospect, their world, or a provocative observation.
 - Never say "I wanted to reach out", "I came across your company", "I noticed that", "I'd love to", "I think you'd be interested". These are invisible words that every cold email uses. Find a different way in.
-- Never use "just", "actually", "honestly", "frankly", "to be honest" — filler words that weaken the copy.
+- Never use "just", "actually", "honestly", "frankly", "to be honest", filler words that weaken the copy.
+- Never use AI-tell words: "delve", "leverage", "elevate", "in today's fast-paced", "unlock", "harness", "navigate", "robust", "seamless", "cutting-edge". They scream AI-generated.
 - Never mention your product name in email 1. Earn the right to pitch first.
-- Never ask "Is this something you'd be interested in?" — weak CTA. Be specific.
+- Never ask "Is this something you'd be interested in?", weak CTA. Be specific.
 - The tone must match what the PROSPECT expects, not just what the client prefers.
 - Reference specifics: industry names, common tools, known challenges, competitor dynamics.
-- Every follow-up must add new value, shift the angle, or reframe — never just "following up."
+- Every follow-up must add new value, shift the angle, or reframe, never just "following up."
 
 SEQUENCE STRUCTURE:
-- Email 1 (Day 0): The hook. Open the conversation. No pitch. Earn curiosity. Get the reply.
-- Email 2 (Day 2-3): The proof. Back up the hook with evidence. A result, a case study, a data point. Still short.
-- Email 3 (Day 5-7): The shift. Change the angle entirely. Catch people who did not resonate with the first angle.
-- Email 4 (Day 10-14): The breakup. Short, human, low-pressure. This consistently gets the highest reply rates because it removes pressure.
+- Email 1 (Day 0): The hook. Open the conversation. No pitch. Earn curiosity. Get the reply. NO callbacks to prior conversation, this is the first contact.
+- Email 2 (Day 2-3): The proof. Back up email 1's hook with evidence: a specific result, a case study, a data point. Reference the SAME thread as email 1. Do not invent prior conversation. Acceptable openings: a fresh data point, a specific case study line ("Here is what happened with a similar X..."), a clarifying angle. NOT acceptable: "Following up on the X conversation," "that comment about Y," "your team's response."
+- Email 3 (Day 5-7): The shift. Change the angle entirely. Catch people who did not resonate with the first angle. Open as if it is a new note from the same sender, not a reply to a phantom conversation.
+- Email 4 (Day 10-14): The breakup. Short, human, low-pressure. This consistently gets the highest reply rates because it removes pressure. This is the ONLY email allowed to acknowledge no response ("haven't heard back, closing the loop").
 
 OFFER ARCHITECTURE (use one of these patterns for the offer in each sequence):
 - Revenue guarantee: "I will guarantee you {number} {outcome} in {days} days or you don't pay"
@@ -153,12 +176,12 @@ Match the offer type to the client's service and the prospect's decision-making 
 
 FOLLOW-UP RULES:
 - Start with ONLY 2 emails in the initial test
-- Follow-ups must be SHORT — simple pings, not newsletter-style
+- Follow-ups must be SHORT, simple pings, not newsletter-style
 - Each follow-up needs a DIFFERENT subject line
 - Reformulate the offer briefly, never repeat verbatim
 - Human follow-up examples: "Hey {name}, checking in on this. TLDR: {offer}. Let me know."
 
-PERSONALIZATION — COLD READING TECHNIQUE:
+PERSONALIZATION, COLD READING TECHNIQUE:
 - Make statements that SEEM specific but apply to 80%+ of the target audience
 - Combine one researched data point with a cold-read observation
 - The prospect must think "wait, do I know this person?"
@@ -170,7 +193,40 @@ TEXT MESSAGE TEST:
 - If it feels like marketing or a mass email, rewrite it
 - If it feels like something a real person would actually send to one person, it passes
 
-EXAMPLE — Pain Agitation Sequence for B2B SaaS Client Targeting VP Marketing:
+EXAMPLE, Intent-Based Audience Sequence (the kind of offer this engine is being asked to write for):
+SEQUENCE: 4 emails for a B2B agency-owner prospect.
+EMAIL 1 SUBJECT: {audience targeting q|quick targeting question|worth 2 min?}
+EMAIL 1 BODY (no callbacks, opens cold, on-message about intent-based audiences):
+{{firstName}},
+{Most agencies running paid|Teams running paid for clients|A lot of media buyers we talk to} are paying full CPM to reach audiences {who haven't shown a single buying signal|with zero intent data|that don't actually need the product yet}.
+The audiences that are actually searching, comparing tools, hitting competitor sites, are usually invisible.
+What if you could pull THOSE specific people into your retargeting and outbound, by name, before competitors do?
+{Worth 2 min to walk through how it works?|Open to seeing the live data?|Curious to see how the matching works?}
+
+EMAIL 2 SUBJECT: {a real example|how this works in practice|same creative, 3x reply}
+EMAIL 2 BODY (proof, on the SAME thread, no phantom callback):
+{{firstName}},
+A {mid-market performance agency|growth agency similar in profile to {{companyName}}|75-person agency we worked with} ran the same creative against two audiences. Standard lookalike vs intent-matched.
+Same spend. Same week. Same ads.
+Intent-matched audience replied at 3.1x the rate.
+The lift came from targeting {people already searching for the category|prospects with documented intent signals|buyers further down the funnel}, not from new creative.
+{Want me to show you how the audiences are built?|Open to seeing the targeting layer?|Worth a quick walkthrough?}
+
+EMAIL 3 SUBJECT: {one different angle|missed something|switching gears}
+EMAIL 3 BODY (different angle, no phantom callback, on-message):
+{{firstName}},
+{Different angle|Switching gears|One more thought}: most of the data your DSPs use is 30-90 days stale.
+By the time someone shows up in a lookalike, they have already bought (or churned).
+{Real-time intent signals|Live searcher data|Same-day buying intent} change which audiences you target this week, not next quarter.
+{Want to see what your live audience looks like?|Open to a live pull on your category?|Worth a quick look?}
+
+EMAIL 4 SUBJECT: {closing the loop|last note|moving on}
+EMAIL 4 BODY (breakup, the only place "no response" is allowed):
+{{firstName}},
+Haven't heard back so closing the loop here.
+If intent-based audiences become a priority, the {door is open|inbox is open|note stays open}.
+
+EXAMPLE, Pain Agitation Sequence for B2B SaaS Client Targeting VP Marketing:
 {
   "step": 1,
   "delay_days": 0,
@@ -183,13 +239,13 @@ EXAMPLE — Pain Agitation Sequence for B2B SaaS Client Targeting VP Marketing:
   "spintax_test_notes": "Testing whether leading with the overpaying angle or the invisible traffic angle gets more replies. Also testing CTA directness."
 }
 
-OUTPUT FORMAT — THIS IS EXACT:
+OUTPUT FORMAT, THIS IS EXACT:
 {
   "sequences": [
     {
-      "sequence_name": "string — descriptive name based on the angle",
+      "sequence_name": "string, descriptive name based on the angle",
       "angle": {
-        "category": "string — from angle selection",
+        "category": "string, from angle selection",
         "core_insight": "string",
         "emotional_driver": "string"
       },
@@ -198,13 +254,13 @@ OUTPUT FORMAT — THIS IS EXACT:
         {
           "step": 1,
           "delay_days": 0,
-          "subject_line": "string — WITH SPINTAX. 3-5 variants.",
-          "preview_text": "string — first ~40 chars the prospect sees in inbox preview",
-          "body": "string — full email body WITH SPINTAX. Under 95 words per variant path.",
-          "word_count": "number — count of the longest variant path",
-          "purpose": "string — what this email is trying to achieve",
-          "why_it_works": "string — specific reasoning",
-          "spintax_test_notes": "string — what you are testing with the spintax variants"
+          "subject_line": "string, WITH SPINTAX, 3-5 variants",
+          "preview_text": "string, first ~40 chars the prospect sees in inbox preview",
+          "body": "string, full email body WITH SPINTAX, under 95 words per variant path",
+          "word_count": "number, count of the longest variant path",
+          "purpose": "string, what this email is trying to achieve",
+          "why_it_works": "string, specific reasoning",
+          "spintax_test_notes": "string, what you are testing with the spintax variants"
         }
       ]
     }
@@ -216,6 +272,55 @@ OUTPUT FORMAT — THIS IS EXACT:
     "scaling_notes": "string"
   }
 }`
+
+// ---------------------------------------------------------------------------
+// Sanitizer: defensive cleanup of LLM output before storage
+// ---------------------------------------------------------------------------
+//
+// Two issues we fix at write time even though the prompt forbids them:
+//
+// 1. Em-dashes (—) and en-dashes (–): hard rule, no exceptions. Replace with
+//    a comma or period depending on context. Models still emit them sometimes
+//    despite the prompt rule.
+//
+// 2. Double-brace spintax: {{quick q|hi|hey}} is invalid (the renderer skips
+//    it because double braces are merge tags). Normalize to single braces
+//    when there is a pipe inside. {{firstName}} (no pipe) stays as a merge
+//    tag and is left alone.
+
+function sanitizeText(text: string): string {
+  if (!text) return text
+  let s = text
+
+  // Normalize double-brace spintax: {{a|b|c}} -> {a|b|c}. Only when there is
+  // a pipe inside. Merge tags like {{firstName}} have no pipe, so they pass.
+  s = s.replace(/\{\{([^{}]*\|[^{}]*)\}\}/g, '{$1}')
+
+  // Strip em-dashes and en-dashes. Replace with a comma + space, then collapse
+  // any double-spaces created.
+  s = s.replace(/\s*[—–]\s*/g, ', ')
+  s = s.replace(/ {2,}/g, ' ')
+
+  return s
+}
+
+function sanitizeSequences(seqs: DraftSequences): DraftSequences {
+  return {
+    ...seqs,
+    sequences: seqs.sequences.map((seq) => ({
+      ...seq,
+      sequence_name: sanitizeText(seq.sequence_name),
+      strategy: sanitizeText(seq.strategy),
+      emails: seq.emails.map((email) => ({
+        ...email,
+        subject_line: sanitizeText(email.subject_line),
+        preview_text: email.preview_text ? sanitizeText(email.preview_text) : email.preview_text,
+        body: sanitizeText(email.body),
+        purpose: email.purpose ? sanitizeText(email.purpose) : email.purpose,
+      })),
+    })),
+  }
+}
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -319,21 +424,29 @@ function buildCopyResearchContext(icpBrief: EnrichedICPBrief): string {
 
 function buildAngleSelectionMessage(client: OnboardingClient, icpBrief: EnrichedICPBrief): string {
   const personas = icpBrief.buyer_personas
-    .map((p) => `- ${p.title} (${p.seniority}, ${p.department}): Pain points — ${p.pain_points.join('; ')}`)
+    .map((p) => `- ${p.title} (${p.seniority}, ${p.department}): Pain points: ${p.pain_points.join('; ')}`)
     .join('\n')
 
   const angles = icpBrief.messaging_angles
     .map((a) => `- ${a.angle_name}: ${a.hook} | Value prop: ${a.value_prop} | Proof: ${a.proof_point}`)
     .join('\n')
 
+  const offering = icpBrief.service_offering || icpBrief.company_summary
+
   return [
     'Analyze this client and their target prospects, then select the 3 strongest messaging angles.',
+    '',
+    'CRITICAL: Every angle you pick must reinforce the service_offering below. Do NOT pick angles that drift into generic agency-revenue, partnership-income, or growth narratives unless THAT is literally what the client sells.',
+    '',
+    '<service_offering>',
+    offering,
+    '</service_offering>',
     '',
     '<client_company>',
     `Company: ${client.company_name}`,
     `Website: ${client.company_website}`,
     `Industry: ${client.industry}`,
-    `What they sell: ${icpBrief.company_summary}`,
+    `What they sell (use THIS, not the company_summary, as the north star): ${offering}`,
     '</client_company>',
     '',
     '<target_prospects>',
@@ -381,13 +494,24 @@ function buildCopyWritingMessage(
   const toneCalibration = cr?.email_specific?.tone_calibration || client.copy_tone || 'Conversational'
   const wordsToAvoid = cr?.email_specific?.words_to_avoid?.join(', ') || 'standard spam trigger words'
 
+  // Hard-prioritize service_offering. Fall back to company_summary for older
+  // briefs where service_offering wasn't generated. This is THE message every
+  // sequence must reinforce; surface it loudly.
+  const offering = icpBrief.service_offering || icpBrief.company_summary
+
   return [
     'Write 3 cold email sequences for this Cursive AI client\'s outbound campaign.',
+    '',
+    '<service_offering>',
+    'THIS is what the client sells. Every email in every sequence must reinforce THIS specific offer. Do not pivot to generic agency-revenue, partnership-income, or growth narratives.',
+    offering,
+    '</service_offering>',
     '',
     '<client_company>',
     `Company: ${client.company_name}`,
     `Website: ${client.company_website}`,
-    `What they sell: ${icpBrief.company_summary}`,
+    `Service offering (THE message to reinforce): ${offering}`,
+    `Company summary (context only, do not pivot to this): ${icpBrief.company_summary}`,
     `Brand voice: ${client.copy_tone || 'Conversational'}`,
     '</client_company>',
     '',
@@ -417,7 +541,7 @@ function buildCopyWritingMessage(
     '',
     `Compliance notes: ${client.compliance_disclaimers || 'Standard CAN-SPAM compliance'}`,
     '',
-    'Write one sequence per selected angle. Follow every rule in your system prompt. Include spintax in every email. Count your words — stay under 95.',
+    'Write one sequence per selected angle. Follow every rule in your system prompt. Include spintax in every email. Count your words and stay under 95.',
   ]
     .filter(Boolean)
     .join('\n')
@@ -429,14 +553,14 @@ async function writeCopy(
   angleSelection: AngleSelection
 ): Promise<DraftSequences> {
   const userMessage = buildCopyWritingMessage(client, icpBrief, angleSelection)
-  const result = await callClaude<DraftSequences>(COPY_WRITING_PROMPT, userMessage, 'Copy Writing', 12000)
+  const raw = await callClaude<DraftSequences>(COPY_WRITING_PROMPT, userMessage, 'Copy Writing', 12000)
 
   // Validate structure
-  if (!result.sequences || !Array.isArray(result.sequences) || result.sequences.length === 0) {
+  if (!raw.sequences || !Array.isArray(raw.sequences) || raw.sequences.length === 0) {
     throw new Error('Claude returned no email sequences')
   }
 
-  for (const seq of result.sequences) {
+  for (const seq of raw.sequences) {
     if (!seq.sequence_name || !Array.isArray(seq.emails) || seq.emails.length === 0) {
       throw new Error(`Invalid sequence structure: ${seq.sequence_name || 'unnamed'}`)
     }
@@ -446,6 +570,9 @@ async function writeCopy(
       }
     }
   }
+
+  // Sanitize before returning: strips em-dashes, normalizes double-brace spintax.
+  const result = sanitizeSequences(raw)
 
   // Attach angle selection metadata
   return {
@@ -478,7 +605,8 @@ async function autoFixSequences(
     JSON.stringify(sequences, null, 2),
   ].join('\n')
 
-  const fixed = await callClaude<DraftSequences>(FIX_PROMPT, userMessage, 'Copy Fix', 12000)
+  const fixedRaw = await callClaude<DraftSequences>(FIX_PROMPT, userMessage, 'Copy Fix', 12000)
+  const fixed = sanitizeSequences(fixedRaw)
 
   // Preserve metadata from original
   return {
@@ -594,9 +722,12 @@ export async function regenerateEmailSequences(
   const userMessage = buildRegenerationMessage(client, icpBrief, previousSequences, feedback)
   const rawSequences = await callClaude<DraftSequences>(COPY_WRITING_PROMPT, userMessage, 'Copy Regeneration', 12000)
 
+  // Sanitize: strip em-dashes, normalize double-brace spintax, before storage.
+  const cleanSequences = sanitizeSequences(rawSequences)
+
   // Preserve angle selection from original (immutable)
   let sequences: DraftSequences = {
-    ...rawSequences,
+    ...cleanSequences,
     angle_selection: previousSequences.angle_selection,
   }
 

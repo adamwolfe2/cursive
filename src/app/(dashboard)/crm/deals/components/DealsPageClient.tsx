@@ -153,7 +153,7 @@ export function DealsPageClient({ initialData }: DealsPageClientProps) {
           </div>
           <h3 className="text-lg font-semibold text-gray-900">No deals yet</h3>
           <p className="mt-2 max-w-sm text-sm text-gray-500">
-            Deals track revenue opportunities through your pipeline. Connect your AudienceLab account in{' '}
+            Deals track revenue opportunities through your pipeline. Connect your integrations in{' '}
             <a href="/settings/integrations" className="text-blue-600 hover:underline">
               Settings &rarr; Integrations
             </a>{' '}

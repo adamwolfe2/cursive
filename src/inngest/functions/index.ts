@@ -190,6 +190,12 @@ export { ghlDeliverLeads } from './ghl-deliver-leads'
 // GHL Client Sync (sync leads to client's own GHL via OAuth)
 export { ghlSyncContact, ghlBulkSync } from './ghl-sync-contact'
 
+// GHL Marketplace App — visitor sync (6h cron, post-marketplace-install)
+export { marketplaceGhlSync } from './marketplace-ghl-sync'
+
+// Shopify Marketplace App — metafield writeback (6h cron)
+export { marketplaceShopifyMetafields } from './marketplace-shopify-metafields'
+
 // DFY Onboarding Sequence (post-onboarding form drip)
 export { dfyOnboardingSequence } from './dfy-onboarding-sequence'
 
