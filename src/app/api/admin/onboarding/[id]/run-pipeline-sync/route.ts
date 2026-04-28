@@ -18,7 +18,7 @@ export const maxDuration = 300
 import { NextRequest, NextResponse } from 'next/server'
 import { OnboardingClientRepository } from '@/lib/repositories/onboarding-client.repository'
 import { enrichClientICP } from '@/lib/services/onboarding/claude-enrichment'
-import { generateEmailSequences } from '@/lib/services/onboarding/copy-generation'
+import { generateEmailSequences, isCreditBalanceError } from '@/lib/services/onboarding/copy-generation'
 import { checkCopyQuality } from '@/lib/services/onboarding/copy-quality-check'
 import { sendOnboardingConfirmation } from '@/lib/services/onboarding/onboarding-email'
 import { sendNewClientSlackAlert, sendCopyReviewSlackAlert } from '@/lib/services/onboarding/onboarding-slack'
@@ -180,16 +180,20 @@ export async function POST(
         result.enrichment = 'complete'
       } catch (e: any) {
         const msg = e?.message || 'Unknown enrichment error'
+        const credits = isCreditBalanceError(e)
         await repo.update(clientId, { enrichment_status: 'failed' })
         await repo.appendAutomationLog(clientId, {
           step: 'enrichment',
           status: 'failed',
-          error: msg,
+          error: credits ? `BLOCKED: Anthropic credits exhausted, top up at console.anthropic.com/settings/billing then retry. (${msg})` : msg,
           timestamp: new Date().toISOString(),
         })
+        if (credits) {
+          await fireCreditAlert(clientId, 'enrichment').catch(() => {})
+        }
         result.enrichment = 'failed'
         result.errors.push(`enrichment: ${msg}`)
-        return NextResponse.json(result, { status: 500 })
+        return NextResponse.json(result, { status: credits ? 402 : 500 })
       }
     } else {
       result.enrichment = 'already_complete'
@@ -236,16 +240,20 @@ export async function POST(
         result.copy = 'complete'
       } catch (e: any) {
         const msg = e?.message || 'Unknown copy generation error'
+        const credits = isCreditBalanceError(e)
         await repo.update(clientId, { copy_generation_status: 'failed' })
         await repo.appendAutomationLog(clientId, {
           step: 'copy_generation',
           status: 'failed',
-          error: msg,
+          error: credits ? `BLOCKED: Anthropic credits exhausted, top up at console.anthropic.com/settings/billing then retry. (${msg})` : msg,
           timestamp: new Date().toISOString(),
         })
+        if (credits) {
+          await fireCreditAlert(clientId, 'copy_generation').catch(() => {})
+        }
         result.copy = 'failed'
         result.errors.push(`copy: ${msg}`)
-        return NextResponse.json(result, { status: 500 })
+        return NextResponse.json(result, { status: credits ? 402 : 500 })
       }
     } else {
       result.copy = 'already_complete'
@@ -256,5 +264,22 @@ export async function POST(
     safeError('[run-pipeline-sync] Error:', error)
     const msg = error instanceof Error ? error.message : 'Internal error'
     return NextResponse.json({ error: msg }, { status: 500 })
+  }
+}
+
+// Critical Slack alert when Anthropic credits are exhausted. Prevents
+// silent platform-wide failure where new client intakes pile up with no
+// admin notification.
+async function fireCreditAlert(clientId: string, step: 'enrichment' | 'copy_generation'): Promise<void> {
+  try {
+    const { sendSlackAlert } = await import('@/lib/monitoring/alerts')
+    await sendSlackAlert({
+      type: 'system_health',
+      severity: 'critical',
+      message: `Anthropic credit balance exhausted, ${step} failed for client ${clientId}. Onboarding pipeline is BLOCKED until you top up at console.anthropic.com/settings/billing.`,
+      metadata: { client_id: clientId, step },
+    })
+  } catch {
+    // best effort, don't crash the runner over a Slack hiccup
   }
 }

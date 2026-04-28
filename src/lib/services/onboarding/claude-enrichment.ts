@@ -302,7 +302,16 @@ export async function enrichClientICP(client: OnboardingClient): Promise<Enriche
         // output can run 7-10K tokens. 8K caused truncation -> "not valid
         // JSON" parse failures (Olander hit this on 2026-04-28).
         max_tokens: 16384,
-        system: SYSTEM_PROMPT,
+        // Prompt caching: the system prompt is ~2K tokens of static rules.
+        // Anthropic caches it for 5 min so the angle-selection + copy-writing
+        // calls that follow this one in the pipeline pay 90% less on input.
+        system: [
+          {
+            type: 'text',
+            text: SYSTEM_PROMPT,
+            cache_control: { type: 'ephemeral' },
+          },
+        ],
         messages: [
           {
             role: 'user',

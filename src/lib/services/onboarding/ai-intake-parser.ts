@@ -5,7 +5,10 @@
 import type { ParsedIntakeData, ContextFormat, TemplateData } from '@/types/onboarding-templates'
 
 const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages'
-const MODEL = 'claude-sonnet-4-20250514'
+// Haiku 4.5 for the intake parser, this is mechanical extraction (read raw
+// notes -> structured fields), no creative reasoning required. ~3x cheaper
+// than Sonnet at near-identical extraction quality on this task shape.
+const MODEL = 'claude-haiku-4-5-20251001'
 
 const SYSTEM_PROMPT = `You are an expert at extracting structured client onboarding data from unstructured business context. You will receive raw text that could be: sales call notes, meeting transcripts, email threads, voice memo summaries, client briefs, CRM notes, or any combination of these.
 

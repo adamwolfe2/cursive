@@ -12,11 +12,36 @@ import type {
 } from '@/types/onboarding'
 import { checkSpendLimit, recordSpend } from '@/lib/services/api-spend-guard'
 
-const MODEL = 'claude-sonnet-4-20250514'
+// Models, picked per call site:
+//   - Sonnet 4 for the creative/strategic core (writeCopy, regenerateSingleEmail, regenerateEmailSequences)
+//   - Haiku 4.5 for mechanical tasks (angle selection from a fixed taxonomy, autoFix bounded edits)
+// Haiku is ~3x cheaper at similar quality on bounded structured tasks.
+const MODEL_SONNET = 'claude-sonnet-4-20250514'
+const MODEL_HAIKU = 'claude-haiku-4-5-20251001'
+// Default for unattributed calls.
+const MODEL = MODEL_SONNET
 
-// Sonnet pricing: $3/M input, $15/M output
-const INPUT_COST_PER_TOKEN = 3.0 / 1_000_000
-const OUTPUT_COST_PER_TOKEN = 15.0 / 1_000_000
+// Pricing (per 1M tokens)
+const SONNET_INPUT_PER_TOKEN = 3.0 / 1_000_000
+const SONNET_OUTPUT_PER_TOKEN = 15.0 / 1_000_000
+const HAIKU_INPUT_PER_TOKEN = 1.0 / 1_000_000
+const HAIKU_OUTPUT_PER_TOKEN = 5.0 / 1_000_000
+
+function pricingFor(model: string): { input: number; output: number } {
+  if (model.includes('haiku')) return { input: HAIKU_INPUT_PER_TOKEN, output: HAIKU_OUTPUT_PER_TOKEN }
+  return { input: SONNET_INPUT_PER_TOKEN, output: SONNET_OUTPUT_PER_TOKEN }
+}
+
+// Anthropic returns a 400 with this message when the org's credit balance
+// is exhausted. Detect it explicitly so the runner can abort cleanly with a
+// useful admin alert instead of looking like a generic 400.
+export function isCreditBalanceError(err: unknown): boolean {
+  const msg = err instanceof Error ? err.message : String(err ?? '')
+  return /credit balance is too low/i.test(msg)
+}
+
+const INPUT_COST_PER_TOKEN = SONNET_INPUT_PER_TOKEN
+const OUTPUT_COST_PER_TOKEN = SONNET_OUTPUT_PER_TOKEN
 
 // ---------------------------------------------------------------------------
 // Lazy-initialized Anthropic client
@@ -387,27 +412,60 @@ async function callAnthropicWithRetry<T>(
   throw lastErr
 }
 
-async function callClaude<T>(systemPrompt: string, userMessage: string, label: string, maxTokens = 8192): Promise<T> {
+async function callClaude<T>(
+  systemPrompt: string,
+  userMessage: string,
+  label: string,
+  maxTokens = 8192,
+  options: { model?: string; cacheSystemPrompt?: boolean } = {}
+): Promise<T> {
   const client = getAnthropicClient()
+  const model = options.model || MODEL_SONNET
+  const cacheSystemPrompt = options.cacheSystemPrompt ?? false
 
   await checkSpendLimit()
+
+  // Prompt caching: when enabled, send the system prompt as a content block
+  // with cache_control. Anthropic caches the prompt for 5 minutes (ephemeral)
+  // and back-to-back calls within that window pay 90% less on the cached
+  // input tokens. The whole onboarding pipeline (enrichment -> angle -> copy
+  // -> fix -> sometimes single-email regen) typically completes inside that
+  // window so caching is highly effective.
+  const systemArg = cacheSystemPrompt
+    ? [
+        {
+          type: 'text' as const,
+          text: systemPrompt,
+          cache_control: { type: 'ephemeral' as const },
+        },
+      ]
+    : systemPrompt
 
   const response = await callAnthropicWithRetry(
     () =>
       client.messages.create({
-        model: MODEL,
+        model,
         max_tokens: maxTokens,
-        system: systemPrompt,
+        system: systemArg,
         messages: [{ role: 'user', content: userMessage }],
       }),
     label,
   )
 
-  // Track spend
+  // Track spend, pricing depends on model. Cached input tokens are billed at
+  // 10% of normal input cost so we account for them separately.
   const usage = response.usage
   if (usage) {
-    const cost = usage.input_tokens * INPUT_COST_PER_TOKEN + usage.output_tokens * OUTPUT_COST_PER_TOKEN
-    recordSpend(cost)
+    const pricing = pricingFor(model)
+    const cachedInputTokens = (usage as { cache_read_input_tokens?: number }).cache_read_input_tokens ?? 0
+    const cacheCreationTokens = (usage as { cache_creation_input_tokens?: number }).cache_creation_input_tokens ?? 0
+    const regularInputTokens = Math.max(usage.input_tokens - cachedInputTokens - cacheCreationTokens, 0)
+    const cost =
+      regularInputTokens * pricing.input +
+      cachedInputTokens * pricing.input * 0.1 +
+      cacheCreationTokens * pricing.input * 1.25 +
+      usage.output_tokens * pricing.output
+    recordSpend(cost, { service: 'anthropic', model })
   }
 
   if (!response.content || response.content.length === 0) {
@@ -515,7 +573,12 @@ function buildAngleSelectionMessage(client: OnboardingClient, icpBrief: Enriched
 
 async function selectAngles(client: OnboardingClient, icpBrief: EnrichedICPBrief): Promise<AngleSelection> {
   const userMessage = buildAngleSelectionMessage(client, icpBrief)
-  return callClaude<AngleSelection>(ANGLE_SELECTION_PROMPT, userMessage, 'Angle Selection', 4096)
+  // Angle selection is a structured pick from a fixed taxonomy. Haiku 4.5
+  // handles this reliably at ~3x lower cost than Sonnet. Skip caching here
+  // because the prompt is borderline below Haiku's 2K cache minimum.
+  return callClaude<AngleSelection>(ANGLE_SELECTION_PROMPT, userMessage, 'Angle Selection', 4096, {
+    model: MODEL_HAIKU,
+  })
 }
 
 // ---------------------------------------------------------------------------
@@ -590,7 +653,12 @@ async function writeCopy(
   angleSelection: AngleSelection
 ): Promise<DraftSequences> {
   const userMessage = buildCopyWritingMessage(client, icpBrief, angleSelection)
-  const raw = await callClaude<DraftSequences>(COPY_WRITING_PROMPT, userMessage, 'Copy Writing', 12000)
+  // Sonnet for the creative core. The system prompt is ~5K tokens of static
+  // rules so prompt caching saves ~$0.03/call after the first.
+  const raw = await callClaude<DraftSequences>(COPY_WRITING_PROMPT, userMessage, 'Copy Writing', 12000, {
+    model: MODEL_SONNET,
+    cacheSystemPrompt: true,
+  })
 
   // Validate structure
   if (!raw.sequences || !Array.isArray(raw.sequences) || raw.sequences.length === 0) {
@@ -642,7 +710,12 @@ async function autoFixSequences(
     JSON.stringify(sequences, null, 2),
   ].join('\n')
 
-  const fixedRaw = await callClaude<DraftSequences>(FIX_PROMPT, userMessage, 'Copy Fix', 12000)
+  // Auto-fix is a bounded edit: take existing sequences and patch the listed
+  // quality issues. Haiku 4.5 handles this reliably at ~3x lower cost. The
+  // FIX_PROMPT itself is small (~200 tokens) so caching is irrelevant.
+  const fixedRaw = await callClaude<DraftSequences>(FIX_PROMPT, userMessage, 'Copy Fix', 12000, {
+    model: MODEL_HAIKU,
+  })
   const fixed = sanitizeSequences(fixedRaw)
 
   // Preserve metadata from original
@@ -757,7 +830,10 @@ export async function regenerateEmailSequences(
   qualityChecker?: (sequences: DraftSequences) => { passed: boolean; issues: Array<{ sequence_index: number; email_index: number; severity: string; check: string; detail: string }> }
 ): Promise<DraftSequences> {
   const userMessage = buildRegenerationMessage(client, icpBrief, previousSequences, feedback)
-  const rawSequences = await callClaude<DraftSequences>(COPY_WRITING_PROMPT, userMessage, 'Copy Regeneration', 12000)
+  const rawSequences = await callClaude<DraftSequences>(COPY_WRITING_PROMPT, userMessage, 'Copy Regeneration', 12000, {
+    model: MODEL_SONNET,
+    cacheSystemPrompt: true,
+  })
 
   // Sanitize: strip em-dashes, normalize double-brace spintax, before storage.
   const cleanSequences = sanitizeSequences(rawSequences)
@@ -1003,7 +1079,10 @@ export async function regenerateSingleEmail(args: {
     purpose?: string
     why_it_works?: string
     spintax_test_notes?: string
-  }>(SINGLE_EMAIL_REVISION_PROMPT, userMessage, 'Single Email Revision', 4096)
+  }>(SINGLE_EMAIL_REVISION_PROMPT, userMessage, 'Single Email Revision', 4096, {
+    model: MODEL_SONNET,
+    cacheSystemPrompt: true,
+  })
 
   // Validate
   if (typeof raw.step !== 'number' || !raw.subject_line || !raw.body) {

@@ -7,7 +7,7 @@
 
 import { NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { regenerateSingleEmail } from '@/lib/services/onboarding/copy-generation'
+import { regenerateSingleEmail, isCreditBalanceError } from '@/lib/services/onboarding/copy-generation'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import type {
   DraftSequences,
@@ -139,14 +139,28 @@ export async function runRegen(args: {
     })
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Unknown regen error'
+    const credits = isCreditBalanceError(err)
     safeError('[regenerate-email] Claude call failed:', msg)
     await appendLog(supabase, clientId, {
       step: 'email_regen',
       status: 'failed',
-      error: msg,
+      error: credits
+        ? `BLOCKED: Anthropic credits exhausted, top up at console.anthropic.com/settings/billing then retry.`
+        : msg,
       timestamp: new Date().toISOString(),
       metadata: { sequence_index: sequenceIndex, email_step: emailStep, author_type: authorType },
     })
+    if (credits) {
+      // Surface a clear, action-oriented message to the user instead of a
+      // confusing "Regeneration failed: 400 ...credit balance...".
+      return NextResponse.json(
+        {
+          error:
+            'Our AI service is temporarily unavailable (out of credits). Cursive has been notified, please try again in a few minutes.',
+        },
+        { status: 503 }
+      )
+    }
     return NextResponse.json({ error: `Regeneration failed: ${msg}` }, { status: 502 })
   }
 
