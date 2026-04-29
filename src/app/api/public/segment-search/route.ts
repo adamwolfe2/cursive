@@ -14,36 +14,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { sanitizeSearchTerm } from '@/lib/utils/sanitize-search'
 import { safeError } from '@/lib/utils/log-sanitizer'
-
-// Simple in-memory rate limiting per IP (resets on cold start, which is fine)
-const rateLimitMap = new Map<string, { count: number; resetAt: number }>()
-const RATE_LIMIT = 15 // requests per window
-const RATE_WINDOW_MS = 60_000 // 1 minute
-
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now()
-  const entry = rateLimitMap.get(ip)
-
-  if (!entry || now > entry.resetAt) {
-    rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_WINDOW_MS })
-    return true
-  }
-
-  if (entry.count >= RATE_LIMIT) return false
-  entry.count++
-  return true
-}
-
-// Lazy cleanup to prevent memory leak (no setInterval in serverless)
-let lastCleanup = Date.now()
-function maybeCleanup() {
-  const now = Date.now()
-  if (now - lastCleanup < 60_000) return
-  lastCleanup = now
-  for (const [key, entry] of rateLimitMap.entries()) {
-    if (now > entry.resetAt) rateLimitMap.delete(key)
-  }
-}
+import { checkRateLimit } from '@/lib/middleware/rate-limiter'
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
@@ -62,9 +33,8 @@ export async function GET(req: NextRequest) {
     req.headers.get('x-real-ip') ||
     'unknown'
 
-  maybeCleanup()
-
-  if (!checkRateLimit(ip)) {
+  const rateLimitResult = await checkRateLimit(ip, 'read', 60)
+  if (!rateLimitResult.success) {
     return NextResponse.json(
       { error: 'Too many requests. Please wait a moment.' },
       { status: 429, headers: CORS_HEADERS }

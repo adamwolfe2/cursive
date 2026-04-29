@@ -64,11 +64,6 @@ export const onboardingEmailBisonPush = inngest.createFunction(
     // Step 2: Push to EmailBison
     const pushResult = await step.run('push-to-emailbison', async () => {
       const repo = new OnboardingClientRepository()
-      await repo.appendAutomationLog(client_id, {
-        step: 'emailbison_push',
-        status: 'complete',
-        timestamp: new Date().toISOString(),
-      })
 
       try {
         const result = await pushCopyToEmailBison({

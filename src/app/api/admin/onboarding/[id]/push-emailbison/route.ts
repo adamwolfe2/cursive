@@ -18,6 +18,7 @@ import { pushCopyToEmailBison } from '@/lib/services/onboarding/emailbison-push'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
 import { getErrorMessage } from '@/lib/utils/error-helpers'
+import { createAdminClient } from '@/lib/supabase/server'
 import type { DraftSequences } from '@/types/onboarding'
 
 async function isAuthorized(request: NextRequest): Promise<boolean> {
@@ -62,12 +63,26 @@ export async function POST(
       return NextResponse.json({ error: 'Client has no draft sequences' }, { status: 400 })
     }
 
-    // Idempotency: refuse a re-push if campaigns already deployed unless caller
-    // explicitly opts in via ?force=1. Cheap insurance against double-fires
-    // from after() + manual click racing each other.
     const url = new URL(request.url)
     const force = url.searchParams.get('force') === '1'
-    if (client.campaign_deployed && !force) {
+
+    // Atomically claim the push lock before any EB API calls.
+    // Only succeeds if campaign_deployed is currently false (or force=true).
+    const supabaseAdmin = createAdminClient()
+    const { data: locked, error: lockErr } = await supabaseAdmin
+      .from('onboarding_clients')
+      .update({ campaign_deployed: true, updated_at: new Date().toISOString() })
+      .eq('id', clientId)
+      .eq('campaign_deployed', force ? true : false)
+      .select('id')
+      .maybeSingle()
+
+    if (lockErr) {
+      safeError(`[push-emailbison] lock acquisition error for ${clientId}: ${lockErr.message}`)
+      return NextResponse.json({ error: 'Failed to acquire push lock' }, { status: 500 })
+    }
+
+    if (!locked && !force) {
       return NextResponse.json(
         {
           error: 'Campaigns already deployed for this client',
@@ -92,9 +107,23 @@ export async function POST(
         sequences: client.draft_sequences as DraftSequences,
         workspaceId,
         dryRun,
+        onCampaignCreated: async (campaign) => {
+          const fresh = await repo.findById(clientId)
+          const existing = (fresh?.emailbison_campaign_ids as string[] | null) ?? []
+          if (!existing.includes(campaign.campaignId)) {
+            await repo.update(clientId, {
+              emailbison_campaign_ids: [...existing, campaign.campaignId],
+            } as never)
+          }
+        },
       })
     } catch (error: unknown) {
       const errorMessage = getErrorMessage(error)
+      // Release lock so retry works
+      await supabaseAdmin
+        .from('onboarding_clients')
+        .update({ campaign_deployed: false })
+        .eq('id', clientId)
       await repo.appendAutomationLog(clientId, {
         step: 'emailbison_push',
         status: 'failed',
@@ -118,7 +147,6 @@ export async function POST(
 
     await repo.update(clientId, {
       emailbison_campaign_ids: campaignIds,
-      campaign_deployed: true,
     } as never)
 
     await repo.appendAutomationLog(clientId, {

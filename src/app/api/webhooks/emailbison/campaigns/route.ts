@@ -68,29 +68,32 @@ const bounceSchema = z.object({
   bounce_reason: z.string().optional(),
 })
 
-// Webhook secret from environment
-const WEBHOOK_SECRET = process.env.EMAILBISON_WEBHOOK_SECRET || ''
-
 export async function POST(request: NextRequest) {
   let idempotencyKey: string | undefined
 
   try {
+    // SECURITY: Require webhook secret — fail closed if not configured
+    const WEBHOOK_SECRET = process.env.EMAILBISON_WEBHOOK_SECRET
+    if (!WEBHOOK_SECRET) {
+      safeError('[Campaign Webhook] EMAILBISON_WEBHOOK_SECRET is not set — rejecting request')
+      return NextResponse.json(
+        { error: 'Webhook signature verification not configured' },
+        { status: 500 }
+      )
+    }
+
     // Get raw body for signature verification
     const rawBody = await request.text()
     const signature = request.headers.get('x-emailbison-signature') || ''
 
-    // SECURITY: Verify webhook signature if secret is configured.
-    // EmailBison's hosted (dedi) instances may not provide HMAC signing,
-    // so signature verification is optional when no secret is set.
-    if (WEBHOOK_SECRET) {
-      const isValid = await verifyHmacSignature(rawBody, signature, WEBHOOK_SECRET)
-      if (!isValid) {
-        safeError('[Campaign Webhook] Signature verification failed')
-        return NextResponse.json(
-          { error: 'Invalid signature' },
-          { status: 401 }
-        )
-      }
+    // SECURITY: Always verify signature — no fail-open path
+    const isValid = await verifyHmacSignature(rawBody, signature, WEBHOOK_SECRET)
+    if (!isValid) {
+      safeError('[Campaign Webhook] Signature verification failed')
+      return NextResponse.json(
+        { error: 'Invalid signature' },
+        { status: 401 }
+      )
     }
 
     // Parse the webhook payload
@@ -368,7 +371,8 @@ async function handleReplyReceived(
 
 /**
  * Handle unsubscribe event
- * Updates lead and campaign_lead status
+ * Updates lead and campaign_lead status — scoped to the workspace resolved
+ * from email_sends to prevent cross-tenant data corruption.
  */
 async function handleUnsubscribe(
   supabase: ReturnType<typeof createAdminClient>,
@@ -381,11 +385,27 @@ async function handleUnsubscribe(
   }
   const data = parsed.data
 
-  // Find leads by email and mark as unsubscribed
+  // Resolve workspace from email_sends — required for tenant-scoped update
+  const { data: emailSend } = await supabase
+    .from('email_sends')
+    .select('workspace_id')
+    .eq('recipient_email', data.email)
+    .order('sent_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  if (!emailSend?.workspace_id) {
+    safeError(`[Campaign Webhook] Cannot resolve workspace for unsubscribe event — skipping global update for ${data.email}`)
+    return
+  }
+  const workspaceId = emailSend.workspace_id
+
+  // Find leads scoped to this workspace
   const { data: leads } = await supabase
     .from('leads')
-    .select('id, workspace_id')
+    .select('id')
     .eq('email', data.email)
+    .eq('workspace_id', workspaceId)
     .limit(50)
 
   if (leads && leads.length > 0) {
@@ -407,13 +427,13 @@ async function handleUnsubscribe(
         status: 'unsubscribed',
       })
       .in('lead_id', leadIds)
-
   }
 }
 
 /**
  * Handle bounce event
- * Updates lead email status and campaign_lead status
+ * Updates lead email status and campaign_lead status — scoped to the
+ * workspace resolved from email_sends to prevent cross-tenant data corruption.
  */
 async function handleBounce(
   supabase: ReturnType<typeof createAdminClient>,
@@ -426,35 +446,50 @@ async function handleBounce(
   }
   const data = parsed.data
 
-  // Find leads by email
-  const { data: leads } = await supabase
-    .from('leads')
-    .select('id')
-    .eq('email', data.email)
-    .limit(50)
+  // Resolve workspace from email_sends — required for tenant-scoped update
+  const { data: emailSend } = await supabase
+    .from('email_sends')
+    .select('workspace_id')
+    .eq('recipient_email', data.email)
+    .order('sent_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
 
-  if (leads && leads.length > 0) {
-    const leadIds = leads.map((l) => l.id)
-    const bounceStatus = data.bounce_type === 'hard' ? 'invalid' : 'soft_bounce'
+  if (!emailSend?.workspace_id) {
+    safeError(`[Campaign Webhook] Cannot resolve workspace for bounce event — skipping global update for ${data.email}`)
+  } else {
+    const workspaceId = emailSend.workspace_id
 
-    // Update leads
-    await supabase
+    // Find leads scoped to this workspace
+    const { data: leads } = await supabase
       .from('leads')
-      .update({
-        email_status: bounceStatus,
-        updated_at: new Date().toISOString(),
-      })
-      .in('id', leadIds)
+      .select('id')
+      .eq('email', data.email)
+      .eq('workspace_id', workspaceId)
+      .limit(50)
 
-    // Update campaign_leads
-    await supabase
-      .from('campaign_leads')
-      .update({
-        status: 'bounced',
-        bounce_reason: data.bounce_reason,
-      })
-      .in('lead_id', leadIds)
+    if (leads && leads.length > 0) {
+      const leadIds = leads.map((l) => l.id)
+      const bounceStatus = data.bounce_type === 'hard' ? 'invalid' : 'soft_bounce'
 
+      // Update leads
+      await supabase
+        .from('leads')
+        .update({
+          email_status: bounceStatus,
+          updated_at: new Date().toISOString(),
+        })
+        .in('id', leadIds)
+
+      // Update campaign_leads
+      await supabase
+        .from('campaign_leads')
+        .update({
+          status: 'bounced',
+          bounce_reason: data.bounce_reason,
+        })
+        .in('lead_id', leadIds)
+    }
   }
 
   // Slack alert for hard bounces only (soft bounces are expected noise)

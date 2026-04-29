@@ -53,8 +53,14 @@ export async function pushCopyToEmailBison(params: {
   sequences: DraftSequences
   workspaceId: string
   dryRun?: boolean
+  onCampaignCreated?: (campaign: CampaignResult) => Promise<void>
 }): Promise<PushResult> {
   const { clientName, sequences, workspaceId, dryRun = false } = params
+
+  if (!sequences || !Array.isArray(sequences.sequences) || sequences.sequences.length === 0) {
+    throw new Error('Invalid draft_sequences: missing or empty sequences array')
+  }
+
   const dateStr = formatDate(new Date())
   const campaigns: CampaignResult[] = []
 
@@ -89,6 +95,12 @@ export async function pushCopyToEmailBison(params: {
     })
     campaigns.push(result)
 
+    try {
+      await params.onCampaignCreated?.(result)
+    } catch (cbErr) {
+      safeError(`[EmailBison Push] onCampaignCreated callback failed (continuing): ${getErrorMessage(cbErr)}`)
+    }
+
     // Rate limit between campaign creations
     await delay(300)
   }
@@ -107,6 +119,11 @@ async function pushSingleSequence(params: {
   workspaceId: string
 }): Promise<CampaignResult> {
   const { clientName, sequence, dateStr, workspaceId } = params
+
+  if (!Array.isArray(sequence.emails) || sequence.emails.length === 0) {
+    throw new Error(`Invalid sequence "${sequence.sequence_name}": missing or empty emails array`)
+  }
+
   // Prefix with workspace ID so all campaigns can be attributed back to their
   // workspace even though EmailBison has no native multi-tenant scoping.
   const campaignName = `[ws:${workspaceId}] ${clientName} - ${sequence.sequence_name} - ${dateStr}`

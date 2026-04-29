@@ -4,6 +4,9 @@ import { revalidatePath } from 'next/cache'
 import { after } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/server'
 import { getInngest } from '@/inngest/client'
+import { safeError } from '@/lib/utils/log-sanitizer'
+import { OnboardingClientRepository } from '@/lib/repositories/onboarding-client.repository'
+import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import type { ClientStatus } from '@/types/onboarding'
 
 export async function updateClientStatus(clientId: string, status: ClientStatus, expectedUpdatedAt?: string) {
@@ -86,7 +89,6 @@ export async function approveSequences(clientId: string) {
         },
       })
     } catch (err) {
-      const { safeError } = await import('@/lib/utils/log-sanitizer')
       const msg = err instanceof Error ? err.message : String(err)
       safeError(`[approveSequences] inline push dispatch failed for ${clientId}: ${msg}`)
     }
@@ -104,12 +106,10 @@ export async function approveSequences(clientId: string) {
     })
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err)
-    const { safeError } = await import('@/lib/utils/log-sanitizer')
     safeError(`[approveSequences] inngest.send failed for ${clientId}: ${msg}`)
     // Append failure to automation_log so admin sees it in the timeline.
     try {
-      const repoMod = await import('@/lib/repositories/onboarding-client.repository')
-      const repo = new repoMod.OnboardingClientRepository()
+      const repo = new OnboardingClientRepository()
       await repo.appendAutomationLog(clientId, {
         step: 'emailbison_push_dispatch',
         status: 'failed',
@@ -121,7 +121,6 @@ export async function approveSequences(clientId: string) {
     }
     // Best-effort Slack heads-up.
     try {
-      const { sendSlackAlert } = await import('@/lib/monitoring/alerts')
       await sendSlackAlert({
         type: 'inngest_failure',
         severity: 'critical',
@@ -261,15 +260,31 @@ export async function regenerateCopy(clientId: string, _feedback?: string) {
 
   after(async () => {
     try {
-      await fetch(`${baseUrl}/api/admin/onboarding/${clientId}/run-pipeline-sync`, {
+      const res = await fetch(`${baseUrl}/api/admin/onboarding/${clientId}/run-pipeline-sync`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'x-automation-secret': process.env.AUTOMATION_SECRET || '',
         },
       })
-    } catch {
-      // Non-fatal: admin can hit Run Inline manually.
+      if (!res.ok) throw new Error(`Runner returned ${res.status}`)
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err)
+      safeError(`[regenerateCopy] runner dispatch failed for ${clientId}: ${msg}`)
+      try {
+        const repo = new OnboardingClientRepository()
+        await repo.appendAutomationLog(clientId, {
+          step: 'copy_regeneration_dispatch',
+          status: 'failed',
+          error: msg,
+          timestamp: new Date().toISOString(),
+        })
+        const supabaseInner = createAdminClient()
+        await supabaseInner
+          .from('onboarding_clients')
+          .update({ copy_approval_status: 'needs_edits' })
+          .eq('id', clientId)
+      } catch {}
     }
   })
 
@@ -311,6 +326,8 @@ export async function restartIntakePipeline(clientId: string) {
       enrichment_status: 'pending',
       copy_generation_status: 'pending',
       copy_approval_status: 'pending',
+      campaign_deployed: false,
+      emailbison_campaign_ids: [],
       updated_at: new Date().toISOString(),
     })
     .eq('id', clientId)

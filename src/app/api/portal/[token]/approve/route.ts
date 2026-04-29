@@ -92,10 +92,15 @@ export async function POST(
       }
 
       if (stepType === 'copy') {
-        await supabase
+        const { error: copyStatusErr } = await supabase
           .from('onboarding_clients')
           .update({ copy_approval_status: 'approved' })
           .eq('id', tokenRecord.client_id)
+
+        if (copyStatusErr) {
+          safeError('[Portal] Failed to set copy_approval_status:', copyStatusErr)
+          return NextResponse.json({ error: 'Failed to record copy approval' }, { status: 500 })
+        }
 
         // Fire the inline push endpoint. Inngest is orphaned in prod (see
         // project_inngest_orphaned memory) so this is the authoritative path.
@@ -150,7 +155,7 @@ export async function POST(
         ? `${companyName} approved ${stepLabel} via portal`
         : `${companyName} requested changes on ${stepLabel} via portal${notes ? `: ${notes}` : ''}`
 
-    await sendSlackAlert({
+    sendSlackAlert({
       type: 'dfy_onboarding_complete',
       severity: status === 'approved' ? 'info' : 'warning',
       message: slackMessage,
@@ -160,7 +165,7 @@ export async function POST(
         decision: status,
         ...(notes ? { notes } : {}),
       },
-    })
+    }).catch((err) => safeError('[Portal] Slack alert failed:', err))
 
     return NextResponse.json({ success: true })
   } catch (error) {

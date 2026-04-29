@@ -1,7 +1,7 @@
 export const runtime = 'nodejs'
 
 import { NextRequest, NextResponse } from 'next/server'
-import { requireAdminRole as requireAdmin } from '@/lib/auth/admin'
+import { requireAdmin } from '@/lib/auth/admin'
 import { SdrInboxRepository } from '@/lib/repositories/sdr-inbox.repository'
 import { safeError } from '@/lib/utils/log-sanitizer'
 

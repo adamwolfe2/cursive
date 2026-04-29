@@ -2,16 +2,16 @@ export const maxDuration = 15
 
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
-import { withRateLimit } from '@/lib/middleware/rate-limiter'
+import { withRateLimit, getRequestIdentifier } from '@/lib/middleware/rate-limiter'
 
 export async function GET(req: NextRequest) {
-  const rateLimited = await withRateLimit(req, 'default')
-  if (rateLimited) return rateLimited
-
   const user = await getCurrentUser()
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
+
+  const rateLimited = await withRateLimit(req, 'ai-qualify', getRequestIdentifier(req, user.id))
+  if (rateLimited) return rateLimited
 
   const domain = req.nextUrl.searchParams.get('domain')
   if (!domain) {

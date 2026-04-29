@@ -8,6 +8,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import Stripe from 'stripe'
 import { sendPartnerPayoutSummary } from '@/lib/email/affiliate-emails'
+import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
 
 export const maxDuration = 60
@@ -128,45 +129,88 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
           },
         })
 
+        // SAFETY: Wrap all post-transfer DB writes individually.
+        // If any fail, the affiliate has been paid but our records won't reflect it.
+        // Log a critical Slack alert so it can be manually reconciled.
+        let dbWritesFailed = false
+
         // Mark commissions paid
         if (commissionIds.length > 0) {
-          await admin
-            .from('affiliate_commissions')
-            .update({
-              status: 'paid',
-              stripe_transfer_id: transfer.id,
-              paid_at: now.toISOString(),
-            })
-            .in('id', commissionIds)
+          try {
+            await admin
+              .from('affiliate_commissions')
+              .update({
+                status: 'paid',
+                stripe_transfer_id: transfer.id,
+                paid_at: now.toISOString(),
+              })
+              .in('id', commissionIds)
+          } catch (dbErr) {
+            dbWritesFailed = true
+            safeError(`[affiliate-payouts] CRITICAL: Failed to mark commissions paid for ${affiliateId} (transfer ${transfer.id}):`, dbErr)
+          }
         }
 
         // Mark bonuses paid
         if (bonusIds.length > 0) {
-          await admin
-            .from('affiliate_milestone_bonuses')
-            .update({
-              status: 'paid',
-              stripe_transfer_id: transfer.id,
-              paid_at: now.toISOString(),
-            })
-            .in('id', bonusIds)
+          try {
+            await admin
+              .from('affiliate_milestone_bonuses')
+              .update({
+                status: 'paid',
+                stripe_transfer_id: transfer.id,
+                paid_at: now.toISOString(),
+              })
+              .in('id', bonusIds)
+          } catch (dbErr) {
+            dbWritesFailed = true
+            safeError(`[affiliate-payouts] CRITICAL: Failed to mark bonuses paid for ${affiliateId} (transfer ${transfer.id}):`, dbErr)
+          }
         }
 
         // Update total earnings (direct update — avoid RPC that may not exist)
-        const { data: currentAffiliate } = await admin.from('affiliates').select('total_earnings').eq('id', affiliateId).single()
-        if (currentAffiliate) {
-          await admin.from('affiliates').update({ total_earnings: (currentAffiliate.total_earnings || 0) + total }).eq('id', affiliateId)
+        try {
+          const { data: currentAffiliate } = await admin.from('affiliates').select('total_earnings').eq('id', affiliateId).single()
+          if (currentAffiliate) {
+            await admin.from('affiliates').update({ total_earnings: (currentAffiliate.total_earnings || 0) + total }).eq('id', affiliateId)
+          }
+        } catch (dbErr) {
+          dbWritesFailed = true
+          safeError(`[affiliate-payouts] CRITICAL: Failed to update total_earnings for ${affiliateId} (transfer ${transfer.id}):`, dbErr)
         }
 
         // Record payout
-        await admin.from('affiliate_payouts').insert({
-          affiliate_id: affiliateId,
-          amount: total,
-          stripe_payout_id: transfer.id,
-          status: 'paid',
-          period_start: periodStart.toISOString(),
-          period_end: periodEnd.toISOString(),
-        })
+        try {
+          await admin.from('affiliate_payouts').insert({
+            affiliate_id: affiliateId,
+            amount: total,
+            stripe_payout_id: transfer.id,
+            status: 'paid',
+            period_start: periodStart.toISOString(),
+            period_end: periodEnd.toISOString(),
+          })
+        } catch (dbErr) {
+          dbWritesFailed = true
+          safeError(`[affiliate-payouts] CRITICAL: Failed to insert payout record for ${affiliateId} (transfer ${transfer.id}):`, dbErr)
+        }
+
+        // Alert if any DB write failed — manual reconciliation required
+        if (dbWritesFailed) {
+          await sendSlackAlert({
+            type: 'system_event',
+            severity: 'critical',
+            message: `MANUAL RECONCILIATION REQUIRED: Stripe transfer succeeded but DB record write failed for affiliate ${affiliateId}`,
+            metadata: {
+              affiliate_id: affiliateId,
+              affiliate_email: affiliate.email,
+              stripe_transfer_id: transfer.id,
+              amount_cents: String(total),
+              period: periodLabel,
+              commission_ids: commissionIds.join(','),
+              bonus_ids: bonusIds.join(','),
+            },
+          }).catch((alertErr) => safeError('[affiliate-payouts] Failed to send reconciliation alert:', alertErr))
+        }
 
         // Send payout email (non-blocking)
         sendPartnerPayoutSummary(

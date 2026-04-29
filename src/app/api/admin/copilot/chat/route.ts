@@ -17,8 +17,7 @@
 
 import { NextRequest } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
-import { createClient } from '@/lib/supabase/server'
-import { getUserWithRole } from '@/lib/auth/roles'
+import { requireAdmin } from '@/lib/auth/admin'
 import { ADMIN_SYSTEM_PROMPT } from '@/lib/copilot/system-prompt'
 import { ADMIN_TOOLS, runTool, type CopilotToolName } from '@/lib/copilot/tools'
 import { checkDailyBudget, logTurn, type CopilotModel } from '@/lib/copilot/cost'
@@ -50,15 +49,11 @@ export async function POST(req: NextRequest) {
   const startedAt = Date.now()
 
   // ── Auth ─────────────────────────────────────────────────────────
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) return new Response('Unauthorized', { status: 401 })
-
-  const userWithRole = await getUserWithRole(user)
-  if (!userWithRole || !['owner', 'admin'].includes(userWithRole.role)) {
-    return new Response('Forbidden', { status: 403 })
+  let platformAdmin: { id: string; email: string }
+  try {
+    platformAdmin = await requireAdmin()
+  } catch {
+    return new Response('Unauthorized', { status: 401 })
   }
 
   // ── Kill-switch ──────────────────────────────────────────────────
@@ -97,7 +92,7 @@ export async function POST(req: NextRequest) {
   const firstUserMessage = history[history.length - 1].content
   await ensureSession({
     session_id: sessionId,
-    user_id: userWithRole.id,
+    user_id: platformAdmin.id,
     first_user_message: firstUserMessage,
     surface: 'admin',
   })
@@ -261,7 +256,7 @@ export async function POST(req: NextRequest) {
 
         await logTurn({
           session_id: sessionId,
-          user_id: userWithRole.id,
+          user_id: platformAdmin.id,
           workspace_id: null,
           model: DEFAULT_MODEL,
           surface: 'admin',

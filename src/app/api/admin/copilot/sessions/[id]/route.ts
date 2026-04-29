@@ -4,25 +4,19 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
-import { getUserWithRole } from '@/lib/auth/roles'
+import { requireAdmin } from '@/lib/auth/admin'
 import { loadSession, deleteSession } from '@/lib/copilot/sessions'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
 async function resolveAdmin() {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) return { ok: false as const, status: 401, message: 'Unauthorized' }
-
-  const userWithRole = await getUserWithRole(user)
-  if (!userWithRole || !['owner', 'admin'].includes(userWithRole.role)) {
-    return { ok: false as const, status: 403, message: 'Forbidden' }
+  try {
+    const admin = await requireAdmin()
+    return { ok: true as const, userId: admin.id }
+  } catch {
+    return { ok: false as const, status: 401, message: 'Unauthorized' }
   }
-  return { ok: true as const, userId: userWithRole.id }
 }
 
 export async function GET(
