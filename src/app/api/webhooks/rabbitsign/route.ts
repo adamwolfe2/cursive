@@ -8,10 +8,14 @@ import { safeError } from '@/lib/utils/log-sanitizer'
  * Called when a contract is signed or status changes.
  * Updates the onboarding_clients record.
  *
- * SECURITY: Requires RABBITSIGN_WEBHOOK_SECRET to be set. Verifies the
- * x-rabbitsign-signature header (HMAC-SHA256). If RabbitSign does not
- * provide HMAC signing, falls back to a shared-secret header check via
- * x-webhook-secret matching RABBITSIGN_WEBHOOK_SECRET.
+ * SECURITY: Requires RABBITSIGN_WEBHOOK_SECRET to be set. RabbitSign's UI
+ * has no header/signature config, so the secret is passed as a query
+ * string param on the webhook URL itself:
+ *   https://leads.meetcursive.com/api/webhooks/rabbitsign?secret=<value>
+ *
+ * For backwards compatibility this also accepts the secret via the
+ * x-rabbitsign-signature header (HMAC) or x-webhook-secret header (shared
+ * secret) in case RabbitSign adds that capability later.
  */
 export async function POST(req: NextRequest) {
   try {
@@ -27,21 +31,31 @@ export async function POST(req: NextRequest) {
     // Read raw body for signature verification
     const rawBody = await req.text()
 
-    // Try HMAC-SHA256 via x-rabbitsign-signature header first
+    // RabbitSign UI only allows configuring a webhook URL, not headers, so
+    // we accept the secret via ?secret=<value> query param. Constant-time
+    // compare via the same crypto primitive.
+    const url = new URL(req.url)
+    const querySecret = url.searchParams.get('secret') || ''
     const hmacHeader = req.headers.get('x-rabbitsign-signature') || ''
-    if (hmacHeader) {
-      const isValid = await verifyHmacSignature(rawBody, hmacHeader, webhookSecret)
-      if (!isValid) {
-        safeError('[RabbitSign Webhook] HMAC signature verification failed')
-        return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
-      }
-    } else {
-      // Fallback: shared-secret header check
-      const sharedSecret = req.headers.get('x-webhook-secret') || ''
-      if (sharedSecret !== webhookSecret) {
-        safeError('[RabbitSign Webhook] Shared-secret header missing or invalid')
-        return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
-      }
+    const sharedHeader = req.headers.get('x-webhook-secret') || ''
+
+    let authorized = false
+    if (querySecret) {
+      // Constant-time compare for query string secret
+      authorized =
+        querySecret.length === webhookSecret.length &&
+        Buffer.from(querySecret).equals(Buffer.from(webhookSecret))
+    } else if (hmacHeader) {
+      authorized = await verifyHmacSignature(rawBody, hmacHeader, webhookSecret)
+    } else if (sharedHeader) {
+      authorized =
+        sharedHeader.length === webhookSecret.length &&
+        Buffer.from(sharedHeader).equals(Buffer.from(webhookSecret))
+    }
+
+    if (!authorized) {
+      safeError('[RabbitSign Webhook] No valid auth (query/header) provided')
+      return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
     }
 
     // Parse body
