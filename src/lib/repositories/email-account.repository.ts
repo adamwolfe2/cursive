@@ -1,6 +1,15 @@
 /**
  * Email Account Repository
  * Handles all DB access for email_accounts table
+ *
+ * Schema truth (supabase/migrations/20260125000001_enrichment_queue_system.sql):
+ *   email_address TEXT NOT NULL   — NOT "email"
+ *   display_name TEXT             — NOT "name"
+ *   credentials_encrypted JSONB   — SMTP + OAuth creds; no smtp_* flat columns
+ *
+ * SMTP credentials are stored inside credentials_encrypted as:
+ *   { smtp_host, smtp_port, smtp_username, smtp_password }
+ * The password is never returned in public-facing methods.
  */
 
 import { createClient } from '@/lib/supabase/server'
@@ -14,15 +23,12 @@ export interface EmailAccountRow {
   id: string
   workspace_id: string
   provider: 'gmail' | 'outlook' | 'smtp' | 'resend'
-  email: string
-  name: string | null
+  email_address: string
+  display_name: string | null
   is_primary: boolean
   is_verified: boolean
   daily_send_limit: number
   sends_today: number
-  smtp_host: string | null
-  smtp_port: number | null
-  smtp_username: string | null
   created_at: string
   updated_at: string
 }
@@ -31,14 +37,18 @@ export interface EmailAccountPublic {
   id: string
   workspace_id: string
   provider: 'gmail' | 'outlook' | 'smtp' | 'resend'
-  email: string
-  name: string | null
+  /** Canonical column name from schema */
+  email_address: string
+  display_name: string | null
   is_primary: boolean
   is_verified: boolean
   daily_send_limit: number
   sends_today: number
+  /** SMTP host — populated from credentials_encrypted for SMTP accounts, null otherwise */
   smtp_host: string | null
+  /** SMTP port — populated from credentials_encrypted for SMTP accounts, null otherwise */
   smtp_port: number | null
+  /** SMTP username — populated from credentials_encrypted for SMTP accounts, null otherwise */
   smtp_username: string | null
   created_at: string
   updated_at: string
@@ -56,27 +66,70 @@ export interface CreateSmtpAccountInput {
 }
 
 // ============================================================================
+// PRIVATE HELPERS
+// ============================================================================
+
+/**
+ * Map a raw DB row (which has credentials_encrypted JSONB) to the public shape
+ * that the rest of the app already consumes (smtp_host / smtp_port / smtp_username).
+ * The smtp_password is intentionally NEVER included in the public shape.
+ */
+function toPublic(row: {
+  id: string
+  workspace_id: string
+  provider: string
+  email_address: string
+  display_name: string | null
+  is_primary: boolean
+  is_verified: boolean
+  daily_send_limit: number
+  sends_today: number
+  credentials_encrypted?: Record<string, unknown> | null
+  created_at: string
+  updated_at: string
+}): EmailAccountPublic {
+  const creds = (row.credentials_encrypted ?? {}) as Record<string, unknown>
+  return {
+    id: row.id,
+    workspace_id: row.workspace_id,
+    provider: row.provider as EmailAccountPublic['provider'],
+    email_address: row.email_address,
+    display_name: row.display_name,
+    is_primary: row.is_primary,
+    is_verified: row.is_verified,
+    daily_send_limit: row.daily_send_limit,
+    sends_today: row.sends_today,
+    smtp_host: typeof creds.smtp_host === 'string' ? creds.smtp_host : null,
+    smtp_port: typeof creds.smtp_port === 'number' ? creds.smtp_port : null,
+    smtp_username: typeof creds.smtp_username === 'string' ? creds.smtp_username : null,
+    created_at: row.created_at,
+    updated_at: row.updated_at,
+  }
+}
+
+const PUBLIC_COLUMNS =
+  'id, workspace_id, provider, email_address, display_name, is_primary, is_verified, daily_send_limit, sends_today, credentials_encrypted, created_at, updated_at'
+
+// ============================================================================
 // REPOSITORY
 // ============================================================================
 
 export class EmailAccountRepository {
   // --------------------------------------------------------
-  // List accounts for a workspace (never return tokens/password)
+  // List accounts for a workspace (never return smtp_password)
   // --------------------------------------------------------
   async findByWorkspace(workspaceId: string): Promise<EmailAccountPublic[]> {
     const supabase = await createClient()
 
     const { data, error } = await supabase
       .from('email_accounts')
-      .select(
-        'id, workspace_id, provider, email, name, is_primary, is_verified, daily_send_limit, sends_today, smtp_host, smtp_port, smtp_username, created_at, updated_at'
-      )
+      .select(PUBLIC_COLUMNS)
       .eq('workspace_id', workspaceId)
       .order('is_primary', { ascending: false })
       .order('created_at', { ascending: true })
 
     if (error) throw new DatabaseError(error.message)
-    return (data ?? []) as EmailAccountPublic[]
+    return (data ?? []).map(toPublic)
   }
 
   // --------------------------------------------------------
@@ -90,19 +143,19 @@ export class EmailAccountRepository {
 
     const { data, error } = await supabase
       .from('email_accounts')
-      .select(
-        'id, workspace_id, provider, email, name, is_primary, is_verified, daily_send_limit, sends_today, smtp_host, smtp_port, smtp_username, created_at, updated_at'
-      )
+      .select(PUBLIC_COLUMNS)
       .eq('id', id)
       .eq('workspace_id', workspaceId)
       .maybeSingle()
 
     if (error) throw new DatabaseError(error.message)
-    return data as EmailAccountPublic | null
+    if (!data) return null
+    return toPublic(data)
   }
 
   // --------------------------------------------------------
-  // Create SMTP account (password stored directly — no encryption layer yet)
+  // Create SMTP account — credentials stored in credentials_encrypted JSONB.
+  // smtp_password is NEVER stored in plaintext flat columns.
   // --------------------------------------------------------
   async createSmtp(input: CreateSmtpAccountInput): Promise<EmailAccountPublic> {
     const supabase = await createClient()
@@ -116,24 +169,24 @@ export class EmailAccountRepository {
       .insert({
         workspace_id: input.workspaceId,
         provider: 'smtp',
-        email: input.email,
-        name: input.name,
+        email_address: input.email,
+        display_name: input.name,
         is_primary: isPrimary,
         is_verified: false,
         daily_send_limit: input.dailySendLimit,
         sends_today: 0,
-        smtp_host: input.smtpHost,
-        smtp_port: input.smtpPort,
-        smtp_username: input.smtpUsername,
-        smtp_password: input.smtpPassword,
+        credentials_encrypted: {
+          smtp_host: input.smtpHost,
+          smtp_port: input.smtpPort,
+          smtp_username: input.smtpUsername,
+          smtp_password: input.smtpPassword,
+        },
       })
-      .select(
-        'id, workspace_id, provider, email, name, is_primary, is_verified, daily_send_limit, sends_today, smtp_host, smtp_port, smtp_username, created_at, updated_at'
-      )
+      .select(PUBLIC_COLUMNS)
       .single()
 
     if (error) throw new DatabaseError(error.message)
-    return data as EmailAccountPublic
+    return toPublic(data)
   }
 
   // --------------------------------------------------------
@@ -204,7 +257,7 @@ export class EmailAccountRepository {
   }
 
   // --------------------------------------------------------
-  // Get SMTP credentials for sending (includes password)
+  // Get SMTP credentials for sending (includes password — never expose to client)
   // --------------------------------------------------------
   async getSmtpCredentials(
     id: string,
@@ -214,14 +267,14 @@ export class EmailAccountRepository {
     smtp_port: number
     smtp_username: string
     smtp_password: string
-    email: string
-    name: string | null
+    email_address: string
+    display_name: string | null
   } | null> {
     const supabase = await createClient()
 
     const { data, error } = await supabase
       .from('email_accounts')
-      .select('smtp_host, smtp_port, smtp_username, smtp_password, email, name')
+      .select('credentials_encrypted, email_address, display_name')
       .eq('id', id)
       .eq('workspace_id', workspaceId)
       .eq('provider', 'smtp')
@@ -229,13 +282,24 @@ export class EmailAccountRepository {
 
     if (error) throw new DatabaseError(error.message)
     if (!data) return null
-    return data as {
-      smtp_host: string
-      smtp_port: number
-      smtp_username: string
-      smtp_password: string
-      email: string
-      name: string | null
+
+    const creds = (data.credentials_encrypted ?? {}) as Record<string, unknown>
+    if (
+      typeof creds.smtp_host !== 'string' ||
+      typeof creds.smtp_port !== 'number' ||
+      typeof creds.smtp_username !== 'string' ||
+      typeof creds.smtp_password !== 'string'
+    ) {
+      return null
+    }
+
+    return {
+      smtp_host: creds.smtp_host,
+      smtp_port: creds.smtp_port,
+      smtp_username: creds.smtp_username,
+      smtp_password: creds.smtp_password,
+      email_address: data.email_address,
+      display_name: data.display_name,
     }
   }
 

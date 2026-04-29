@@ -63,9 +63,9 @@ export async function POST(
       return NextResponse.json({ error: 'Client has no draft sequences' }, { status: 400 })
     }
 
-    if (!client.assigned_workspace_id && !client.is_test_client) {
+    if (!client.eb_workspace_id && !client.is_test_client) {
       return NextResponse.json(
-        { error: 'Workspace must be assigned before push. Set assigned_workspace_id on the onboarding client.' },
+        { error: 'EmailBison workspace must be assigned before push.' },
         { status: 400 }
       )
     }
@@ -113,6 +113,7 @@ export async function POST(
         clientName: client.company_name,
         sequences: client.draft_sequences as DraftSequences,
         workspaceId,
+        ebWorkspaceId: client.eb_workspace_id,
         dryRun,
         onCampaignCreated: async (campaign) => {
           const fresh = await repo.findById(clientId)

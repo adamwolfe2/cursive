@@ -220,6 +220,7 @@ export interface OnboardingClient {
   emailbison_campaign_ids: string[]
   campaign_stats: Record<string, unknown> | null
   assigned_workspace_id: string | null
+  eb_workspace_id: number | null
   is_test_client: boolean
 
   // Invoice & contract tracking

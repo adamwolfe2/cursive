@@ -201,10 +201,10 @@ export default function SequenceReview({ client }: SequenceReviewProps) {
 
   return (
     <div className="space-y-4">
-      {/* Destination workspace picker — must be set before approve fires the EB push */}
+      {/* Destination EB workspace picker — must be set before approve fires the EB push */}
       <WorkspaceAssignmentPicker
         clientId={client.id}
-        initialWorkspaceId={client.assigned_workspace_id ?? null}
+        initialEbWorkspaceId={client.eb_workspace_id ?? null}
         isTestClient={client.is_test_client ?? false}
         copyApprovalStatus={client.copy_approval_status}
         campaignDeployed={client.campaign_deployed ?? false}

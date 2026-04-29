@@ -67,8 +67,8 @@ export async function PATCH(
 
         // Send actual test email to the account's own address
         await transporter.sendMail({
-          from: `"${creds.name ?? 'Cursive'}" <${creds.email}>`,
-          to: creds.email,
+          from: `"${creds.display_name ?? 'Cursive'}" <${creds.email_address}>`,
+          to: creds.email_address,
           subject: 'Cursive — SMTP Connection Test',
           text: 'This is a test email from Cursive confirming your SMTP connection is working.',
           html: '<p>This is a test email from <strong>Cursive</strong> confirming your SMTP connection is working.</p>',
@@ -77,7 +77,7 @@ export async function PATCH(
         // Mark as verified now that we know it works
         await repo.markVerified(id, user.workspace_id)
 
-        return success({ message: `Test email sent to ${creds.email}` })
+        return success({ message: `Test email sent to ${creds.email_address}` })
       } catch (smtpErr) {
         const msg =
           smtpErr instanceof Error ? smtpErr.message : 'Connection failed'

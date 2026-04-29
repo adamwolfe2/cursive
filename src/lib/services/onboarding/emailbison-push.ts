@@ -11,7 +11,6 @@ import {
   createCampaignSchedule,
 } from '@/lib/integrations/emailbison'
 import { expandSpintax } from '@/lib/services/onboarding/copy-quality-check'
-import { createAdminClient } from '@/lib/supabase/admin'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { getErrorMessage } from '@/lib/utils/error-helpers'
 import type { DraftSequences, EmailSequence } from '@/types/onboarding'
@@ -19,6 +18,15 @@ import type { DraftSequences, EmailSequence } from '@/types/onboarding'
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
+
+export interface PushParams {
+  clientName: string
+  sequences: DraftSequences
+  workspaceId: string
+  ebWorkspaceId?: number | null
+  dryRun?: boolean
+  onCampaignCreated?: (campaign: CampaignResult) => Promise<void>
+}
 
 export interface PushResult {
   campaigns: CampaignResult[]
@@ -48,14 +56,8 @@ export interface CampaignResult {
  *
  * Returns campaign IDs for storage on the client record.
  */
-export async function pushCopyToEmailBison(params: {
-  clientName: string
-  sequences: DraftSequences
-  workspaceId: string
-  dryRun?: boolean
-  onCampaignCreated?: (campaign: CampaignResult) => Promise<void>
-}): Promise<PushResult> {
-  const { clientName, sequences, workspaceId, dryRun = false } = params
+export async function pushCopyToEmailBison(params: PushParams): Promise<PushResult> {
+  const { clientName, sequences, workspaceId, ebWorkspaceId, dryRun = false } = params
 
   if (!sequences || !Array.isArray(sequences.sequences) || sequences.sequences.length === 0) {
     throw new Error('Invalid draft_sequences: missing or empty sequences array')
@@ -92,6 +94,7 @@ export async function pushCopyToEmailBison(params: {
       sequence,
       dateStr,
       workspaceId,
+      ebWorkspaceId: ebWorkspaceId ?? undefined,
     })
     campaigns.push(result)
 
@@ -117,8 +120,9 @@ async function pushSingleSequence(params: {
   sequence: EmailSequence
   dateStr: string
   workspaceId: string
+  ebWorkspaceId?: number
 }): Promise<CampaignResult> {
-  const { clientName, sequence, dateStr, workspaceId } = params
+  const { clientName, sequence, dateStr, workspaceId, ebWorkspaceId } = params
 
   if (!Array.isArray(sequence.emails) || sequence.emails.length === 0) {
     throw new Error(`Invalid sequence "${sequence.sequence_name}": missing or empty emails array`)
@@ -128,8 +132,8 @@ async function pushSingleSequence(params: {
   // workspace even though EmailBison has no native multi-tenant scoping.
   const campaignName = `[ws:${workspaceId}] ${clientName} - ${sequence.sequence_name} - ${dateStr}`
 
-  // 1. Create campaign
-  const { campaign_id } = await createCampaign(campaignName)
+  // 1. Create campaign in the target EB workspace
+  const { campaign_id } = await createCampaign(campaignName, ebWorkspaceId)
 
   // 2. Add sequence steps with spintax variants
   let totalSteps = 0
@@ -138,7 +142,7 @@ async function pushSingleSequence(params: {
   const sortedEmails = [...sequence.emails].sort((a, b) => a.step - b.step)
 
   for (const email of sortedEmails) {
-    const { steps, variants } = await addEmailWithVariants(campaign_id, email)
+    const { steps, variants } = await addEmailWithVariants(campaign_id, email, ebWorkspaceId)
     totalSteps += steps
     totalVariants += variants
     await delay(200)
@@ -151,10 +155,10 @@ async function pushSingleSequence(params: {
     plain_text: true,
     open_tracking: false,
     reputation_building: true,
-  })
+  }, ebWorkspaceId)
 
-  // 4. Attach connected sender emails for this workspace only (non-fatal)
-  await attachSenderEmails(campaign_id, workspaceId)
+  // 4. Attach connected sender emails scoped to the EB workspace (non-fatal)
+  await attachSenderEmails(campaign_id, ebWorkspaceId)
 
   // 5. Apply weekday business-hours schedule
   await createCampaignSchedule(campaign_id, {
@@ -168,7 +172,7 @@ async function pushSingleSequence(params: {
     start_hour: 8,
     end_hour: 17,
     timezone: 'America/New_York',
-  })
+  }, ebWorkspaceId)
 
   return {
     campaignId: campaign_id,
@@ -193,7 +197,8 @@ async function pushSingleSequence(params: {
  */
 async function addEmailWithVariants(
   campaignId: string,
-  email: { step: number; delay_days: number; subject_line: string; body: string }
+  email: { step: number; delay_days: number; subject_line: string; body: string },
+  ebWorkspaceId?: number
 ): Promise<{ steps: number; variants: number }> {
   const subjectVariants = expandSpintax(email.subject_line)
 
@@ -212,7 +217,7 @@ async function addEmailWithVariants(
       subject,
       body: email.body,
       wait_days: email.delay_days,
-    })
+    }, ebWorkspaceId)
     stepsAdded++
     await delay(200)
   }
@@ -228,62 +233,34 @@ async function addEmailWithVariants(
 // ---------------------------------------------------------------------------
 
 /**
- * Attaches sender emails to a campaign.
+ * Attaches sender emails to a campaign using EB workspace-scoped lookup.
  *
- * Onboarding clients pass their `client.id` as `workspaceId` because they have
- * no real workspace. Production users pass a true `workspace_id`. The lookup
- * works the same in both cases: try to match by workspace, and if zero rows
- * match (which is always the case for onboarding clients) fall back to ALL
- * connected senders. Without this fallback, campaigns ship with zero senders
- * and silently never send, the worst possible failure mode at launch.
+ * When ebWorkspaceId is set, fetches connected senders directly from that EB
+ * workspace via the super-admin key and attaches all of them. No local DB
+ * lookup required — the workspace boundary is enforced by EB itself.
  *
- * EmailBison has no native workspace scoping, so:
- * 1. Try to resolve workspace-owned email addresses from email_accounts.
- * 2. If none found, attach all connected senders (onboarding fallback).
- * 3. Otherwise intersect with the EB connected list and attach only the match.
+ * If ebWorkspaceId is null/undefined, logs a warning and skips — there is no
+ * safe fallback because attaching all senders would leak other clients' sending
+ * identities.
  */
-async function attachSenderEmails(campaignId: string, workspaceId: string): Promise<void> {
+async function attachSenderEmails(campaignId: string, ebWorkspaceId?: number): Promise<void> {
+  if (!ebWorkspaceId) {
+    safeError('[EmailBison Push] No eb_workspace_id set; skipping sender attachment. Admin must attach senders manually in EmailBison.')
+    return
+  }
+
   try {
-    // Always fetch the EB connected list, we need it either way.
-    const { sender_emails } = await listSenderEmails({ status: 'connected' })
+    const { sender_emails } = await listSenderEmails({ status: 'connected' }, ebWorkspaceId)
 
     if (!sender_emails || sender_emails.length === 0) {
-      safeError('[EmailBison Push] No connected sender emails available, campaign will have zero senders')
+      safeError(`[EmailBison Push] No connected senders in EB workspace ${ebWorkspaceId}; campaign will have zero senders. Go to EmailBison UI to connect sender accounts.`)
       return
     }
 
-    // 1. Resolve workspace-owned email addresses from local DB
-    const supabase = createAdminClient()
-    const { data: localAccounts, error: dbError } = await supabase
-      .from('email_accounts')
-      .select('email_address')
-      .eq('workspace_id', workspaceId)
-      .eq('is_verified', true)
-
-    if (dbError) {
-      safeError(`[EmailBison Push] Could not fetch local email accounts: ${dbError.message}, falling back to all connected senders`)
-    }
-
-    const matched = (localAccounts || []).map((a) => a.email_address.toLowerCase())
-    const workspaceAddresses = new Set(matched)
-
-    if (workspaceAddresses.size === 0) {
-      safeError(`[EmailBison Push] No workspace-matched senders for ${workspaceId}; SKIPPING sender attachment to avoid cross-tenant leak. Admin must attach manually.`)
-      return
-    }
-
-    const senderIdsToAttach = sender_emails
-      .filter((s) => workspaceAddresses.has(s.email.toLowerCase()))
-      .map((s) => s.id)
-
-    if (senderIdsToAttach.length === 0) {
-      safeError(`[EmailBison Push] Workspace ${workspaceId} accounts did not match any EB connected sender; SKIPPING sender attachment to avoid cross-tenant leak. Admin must attach manually.`)
-      return
-    }
-
-    await addSenderEmailsToCampaign(campaignId, senderIdsToAttach)
+    const senderIds = sender_emails.map((s) => s.id)
+    await addSenderEmailsToCampaign(campaignId, senderIds, ebWorkspaceId)
   } catch (error: unknown) {
-    safeError(`[EmailBison Push] Could not attach sender emails: ${getErrorMessage(error)}`)
+    safeError(`[EmailBison Push] Could not attach sender emails for EB workspace ${ebWorkspaceId}: ${getErrorMessage(error)}`)
   }
 }
 

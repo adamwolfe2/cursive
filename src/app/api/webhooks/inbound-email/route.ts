@@ -40,9 +40,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Find the original email send by looking up the reply-to or message ID
-    let emailSend = null
-    let lead = null
-    let workspaceId = null
+    let emailSend: { id: string; workspace_id: string; lead_id: string | null; campaign_id: string | null } | null = null
+    let workspaceId: string | null = null
 
     // Try to match by In-Reply-To header
     if (inboundEmail.inReplyTo) {
@@ -58,30 +57,32 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Try to match by recipient email
-    if (!emailSend && inboundEmail.to) {
-      // Look for leads with this email address
-      const { data: matchedLead } = await supabase
-        .from('leads')
-        .select('id, workspace_id, email')
-        .eq('email', inboundEmail.from)
-        .maybeSingle()
-
-      if (matchedLead) {
-        lead = matchedLead
-        workspaceId = matchedLead.workspace_id
-      }
-    }
+    // NOTE: Cross-workspace fallback (global lead lookup by from_email) has been intentionally
+    // removed. A spoofed reply or shared email address (e.g. john@acme.com in 3 workspaces)
+    // would cause cross-tenant data contamination. We only trust the In-Reply-To match above.
 
     // Reject emails we can't attribute to a workspace
     if (!workspaceId) {
-      safeError('Inbound email could not be matched to a workspace:', {
+      safeError('Inbound email could not be matched to a workspace — writing to DLQ for triage:', {
         from: inboundEmail.from,
         to: inboundEmail.to,
         subject: inboundEmail.subject,
       })
-      // Return success to the email provider so they don't retry
-      // but don't store the message since we can't attribute it
+      // Write to DLQ for admin triage rather than silently dropping
+      await supabase.from('webhook_dead_letter').insert({
+        source: 'inbound_email_unmatched',
+        payload: {
+          from: inboundEmail.from,
+          to: inboundEmail.to ?? null,
+          subject: inboundEmail.subject ?? null,
+          inReplyTo: inboundEmail.inReplyTo ?? null,
+        },
+        error: 'Could not match inbound email to a workspace via In-Reply-To header',
+        workspace_id: null,
+      }).then(({ error: dlqError }) => {
+        if (dlqError) safeError('[Inbound Email] [DLQ] failed to store dead-letter row:', dlqError)
+      })
+      // Return 200 to the provider so they don't retry (message is preserved in DLQ)
       return NextResponse.json({
         success: true,
         matched: false,
@@ -114,7 +115,7 @@ export async function POST(request: NextRequest) {
       .from('inbound_messages')
       .insert({
         workspace_id: workspaceId,
-        lead_id: lead?.id || emailSend?.lead_id,
+        lead_id: emailSend?.lead_id ?? null,
         email_send_id: emailSend?.id,
         message_type: 'email_reply',
         from_email: inboundEmail.from,
@@ -162,8 +163,8 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Record engagement if we have a lead
-    const leadId = lead?.id || emailSend?.lead_id
+    // Record engagement if we have a lead (lead is always null — no cross-workspace fallback)
+    const leadId = emailSend?.lead_id ?? null
     if (leadId && workspaceId) {
       await supabase.from('lead_engagements').insert({
         workspace_id: workspaceId,
@@ -194,7 +195,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       message_id: inboundMessage.id,
-      matched: !!emailSend || !!lead,
+      matched: !!emailSend,
     })
   } catch (error: unknown) {
     safeError('Inbound email webhook error:', error)
