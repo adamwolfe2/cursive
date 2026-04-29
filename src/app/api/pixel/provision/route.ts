@@ -188,7 +188,7 @@ export async function POST(request: NextRequest) {
         if (claimablePixel.workspace_id === null) {
           const trialEndsAt = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
 
-          const { error: claimErr } = await adminSupabase
+          const { data: claimedRows, error: claimErr } = await adminSupabase
             .from('audiencelab_pixels')
             .update({
               workspace_id: user.workspace_id,
@@ -198,9 +198,16 @@ export async function POST(request: NextRequest) {
               label: claimablePixel.label || websiteName,
             })
             .eq('id', claimablePixel.id)
-            .is('workspace_id', null) // guard against race condition
+            .is('workspace_id', null)
+            .select('id')
 
-          if (!claimErr) {
+          if (claimErr) {
+            safeError('[Pixel Provision] Claim-by-id update failed:', claimErr)
+          } else if (!claimedRows || claimedRows.length === 0) {
+            return NextResponse.json({ error: 'Pixel already claimed by another workspace' }, { status: 409 })
+          }
+
+          if (!claimErr && claimedRows && claimedRows.length > 0) {
             // Backfill any events that came in before the claim
             const backfill = await backfillOrphanedEvents(
               adminSupabase,
@@ -242,8 +249,7 @@ export async function POST(request: NextRequest) {
             })
           }
 
-          // Claim update failed — log and fall through to normal flow
-          safeError('[Pixel Provision] Claim-by-id update failed:', claimErr)
+          // Fall through to normal flow if claim failed or race-lost
         } else {
           // Pixel is already claimed by a DIFFERENT workspace. Don't steal
           // it. Log for visibility, fall through to normal flow so the user

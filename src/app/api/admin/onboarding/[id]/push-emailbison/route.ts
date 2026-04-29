@@ -63,6 +63,13 @@ export async function POST(
       return NextResponse.json({ error: 'Client has no draft sequences' }, { status: 400 })
     }
 
+    if (!client.assigned_workspace_id && !client.is_test_client) {
+      return NextResponse.json(
+        { error: 'Workspace must be assigned before push. Set assigned_workspace_id on the onboarding client.' },
+        { status: 400 }
+      )
+    }
+
     const url = new URL(request.url)
     const force = url.searchParams.get('force') === '1'
 

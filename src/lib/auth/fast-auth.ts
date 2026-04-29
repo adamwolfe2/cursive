@@ -19,6 +19,7 @@
 
 import { type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { verifyWorkspaceCookie } from '@/lib/auth/workspace-cookie'
 
 export interface FastAuthUser {
   userId: string
@@ -39,8 +40,9 @@ export async function fastAuth(request: NextRequest): Promise<FastAuthUser | nul
 
   if (!user) return null
 
-  // Middleware sets x-workspace-id after verifying auth — read from cookie
-  const workspaceId = request.cookies.get('x-workspace-id')?.value
+  // Middleware sets a signed x-workspace-id cookie — verify signature before trusting
+  const cookieRaw = request.cookies.get('x-workspace-id')?.value
+  const workspaceId = verifyWorkspaceCookie(user.id, cookieRaw)
 
   if (!workspaceId) return null
 

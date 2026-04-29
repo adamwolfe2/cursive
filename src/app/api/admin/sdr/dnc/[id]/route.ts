@@ -1,7 +1,7 @@
 export const runtime = 'nodejs'
 
 import { NextRequest, NextResponse } from 'next/server'
-import { requireAdmin } from '@/lib/auth/admin'
+import { requirePlatformAdmin } from '@/lib/auth/admin'
 import { DncRepository } from '@/lib/repositories/dnc.repository'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
@@ -10,7 +10,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    await requireAdmin()
+    await requirePlatformAdmin()
     const { id } = await params
     const repo = new DncRepository()
     await repo.remove(id)

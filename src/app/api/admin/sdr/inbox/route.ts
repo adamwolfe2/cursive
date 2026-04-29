@@ -1,13 +1,13 @@
 export const runtime = 'nodejs'
 
 import { NextRequest, NextResponse } from 'next/server'
-import { requireAdmin } from '@/lib/auth/admin'
+import { requirePlatformAdmin } from '@/lib/auth/admin'
 import { SdrInboxRepository } from '@/lib/repositories/sdr-inbox.repository'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 export async function GET(req: NextRequest) {
   try {
-    await requireAdmin()
+    await requirePlatformAdmin()
 
     const { searchParams } = new URL(req.url)
     const draft_status = searchParams.get('draft_status') || undefined

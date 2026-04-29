@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { requireAdmin } from '@/lib/auth/admin'
+import { requirePlatformAdmin } from '@/lib/auth/admin'
 import { checkDailyBudget } from '@/lib/copilot/cost'
 
 export const runtime = 'nodejs'
@@ -12,7 +12,7 @@ export const dynamic = 'force-dynamic'
 
 export async function GET(_req: NextRequest) {
   try {
-    await requireAdmin()
+    await requirePlatformAdmin()
   } catch {
     return new NextResponse('Unauthorized', { status: 401 })
   }

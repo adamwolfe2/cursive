@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/middleware'
 // import { logger } from '@/lib/monitoring/logger'  // TEMP: Disabled for Edge Runtime debugging
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { checkRateLimit } from '@/lib/middleware/rate-limiter'
+import { signWorkspaceCookie, verifyWorkspaceCookie } from '@/lib/auth/workspace-cookie'
 
 // ─── Rate Limiting (distributed via Upstash Redis) ────────────────────────
 // checkRateLimit() uses Upstash Redis REST API when UPSTASH_REDIS_REST_URL
@@ -288,14 +289,15 @@ export async function middleware(req: NextRequest) {
     }
 
     // Workspace check: verify authenticated users have a workspace for dashboard routes.
-    // Caches workspace_id in a cookie to avoid DB query on every request (~50-100ms savings).
+    // Caches a signed workspace_id cookie to avoid DB query on every request (~50-100ms savings).
+    // The cookie is HMAC-signed with the user's auth_user_id so it cannot be forged.
     // Exclude /api/auth/* — needed during onboarding before workspace exists.
     if (user && !isPublicRoute && !isAdminRoute && !isPartnerRoute && !isAffiliateRoute && !pathname.startsWith('/portal') && !pathname.startsWith('/onboarding') && !pathname.startsWith('/client-onboarding') && !pathname.startsWith('/welcome') && !pathname.startsWith('/api/onboarding') && !pathname.startsWith('/api/auth') && !pathname.startsWith('/api/affiliate')) {
-      // Check cookie cache first to avoid DB roundtrip on every request
-      const cachedWorkspaceId = req.cookies.get('x-workspace-id')?.value
+      const cookieRaw = req.cookies.get('x-workspace-id')?.value
+      const verifiedWs = verifyWorkspaceCookie(user.id, cookieRaw)
 
-      if (!cachedWorkspaceId) {
-        // Use Edge-compatible client (RLS policies allow users to query their own record)
+      if (!verifiedWs) {
+        // Signature missing or invalid — do DB lookup and re-issue a signed cookie
         const { data: userRecord } = await supabase
           .from('users')
           .select('workspace_id')
@@ -315,14 +317,18 @@ export async function middleware(req: NextRequest) {
           return redirectWithCookies(onboardingUrl)
         }
 
-        // Cache workspace_id in a cookie (httpOnly, same-site, 1 hour TTL)
-        client.response.cookies.set('x-workspace-id', userRecord.workspace_id, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'lax',
-          maxAge: 3600, // 1 hour
-          path: '/',
-        })
+        // Issue a signed cookie (httpOnly, same-site, 1 hour TTL)
+        client.response.cookies.set(
+          'x-workspace-id',
+          signWorkspaceCookie(user.id, userRecord.workspace_id),
+          {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 3600,
+            path: '/',
+          }
+        )
       }
     }
 

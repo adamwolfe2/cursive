@@ -7,9 +7,11 @@ import { getInngest } from '@/inngest/client'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { OnboardingClientRepository } from '@/lib/repositories/onboarding-client.repository'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
+import { requireAdmin } from '@/lib/auth/admin'
 import type { ClientStatus } from '@/types/onboarding'
 
 export async function updateClientStatus(clientId: string, status: ClientStatus, expectedUpdatedAt?: string) {
+  await requireAdmin()
   const supabase = createAdminClient()
 
   let query = supabase
@@ -41,6 +43,7 @@ export async function updateClientStatus(clientId: string, status: ClientStatus,
 }
 
 export async function approveSequences(clientId: string) {
+  await requireAdmin()
   const supabase = createAdminClient()
 
   // Load the client to get workspace context for the push event.
@@ -136,6 +139,7 @@ export async function approveSequences(clientId: string) {
 }
 
 export async function requestSequenceEdits(clientId: string) {
+  await requireAdmin()
   const supabase = createAdminClient()
 
   const { error } = await supabase
@@ -158,6 +162,7 @@ export async function updateChecklistItem(
   itemId: string,
   completed: boolean
 ) {
+  await requireAdmin()
   const supabase = createAdminClient()
 
   const { data: checklist, error: fetchError } = await supabase
@@ -200,6 +205,7 @@ export async function updateChecklistItem(
 }
 
 export async function updateAdminNotes(clientId: string, notes: string) {
+  await requireAdmin()
   const supabase = createAdminClient()
 
   const { error } = await supabase
@@ -215,6 +221,7 @@ export async function updateAdminNotes(clientId: string, notes: string) {
 }
 
 export async function updateDomainsApprovalUrl(clientId: string, url: string) {
+  await requireAdmin()
   const supabase = createAdminClient()
 
   const trimmed = url.trim()
@@ -237,6 +244,7 @@ export async function updateDomainsApprovalUrl(clientId: string, url: string) {
 }
 
 export async function regenerateCopy(clientId: string, _feedback?: string) {
+  await requireAdmin()
   const supabase = createAdminClient()
 
   // Reset copy state so the inline runner re-generates it.
@@ -292,6 +300,7 @@ export async function regenerateCopy(clientId: string, _feedback?: string) {
 }
 
 export async function retryAutomationStep(clientId: string, step: string) {
+  await requireAdmin()
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || (process.env.VERCEL_URL
     ? `https://${process.env.VERCEL_URL}`
     : 'http://localhost:3000')
@@ -318,6 +327,7 @@ export async function retryAutomationStep(clientId: string, step: string) {
  * background via after() so the response returns immediately.
  */
 export async function restartIntakePipeline(clientId: string) {
+  await requireAdmin()
   const supabase = createAdminClient()
 
   const { error: resetError } = await supabase
@@ -358,6 +368,7 @@ export async function restartIntakePipeline(clientId: string) {
 }
 
 export async function getFileSignedUrl(storagePath: string): Promise<string> {
+  await requireAdmin()
   const supabase = createAdminClient()
   const { data, error } = await supabase.storage
     .from('client-uploads')
@@ -380,6 +391,7 @@ export async function addAdminComment(args: {
   parentCommentId?: string | null
   authorName?: string | null
 }) {
+  await requireAdmin()
   const { clientId, sequenceIndex, emailStep, body, parentCommentId, authorName } = args
 
   const trimmed = body.trim()
@@ -421,6 +433,7 @@ export async function addAdminComment(args: {
 }
 
 export async function resolveComment(commentId: string, clientId: string) {
+  await requireAdmin()
   const supabase = createAdminClient()
   const now = new Date().toISOString()
 
@@ -438,6 +451,7 @@ export async function resolveComment(commentId: string, clientId: string) {
 }
 
 export async function reopenComment(commentId: string, clientId: string) {
+  await requireAdmin()
   const supabase = createAdminClient()
   const now = new Date().toISOString()
 
@@ -455,6 +469,7 @@ export async function reopenComment(commentId: string, clientId: string) {
 }
 
 export async function deleteComment(commentId: string, clientId: string) {
+  await requireAdmin()
   const supabase = createAdminClient()
 
   const { error } = await supabase

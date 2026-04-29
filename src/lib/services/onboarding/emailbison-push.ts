@@ -267,26 +267,21 @@ async function attachSenderEmails(campaignId: string, workspaceId: string): Prom
     const matched = (localAccounts || []).map((a) => a.email_address.toLowerCase())
     const workspaceAddresses = new Set(matched)
 
-    let senderIdsToAttach: string[]
     if (workspaceAddresses.size === 0) {
-      // ONBOARDING FALLBACK: attach all connected senders so the campaign is
-      // not empty. Real-workspace users go through the matched path below.
-      senderIdsToAttach = sender_emails.map((s) => s.id)
-      safeError(`[EmailBison Push] No workspace-matched senders for ${workspaceId}, attaching all ${senderIdsToAttach.length} connected senders as fallback`)
-    } else {
-      senderIdsToAttach = sender_emails
-        .filter((s) => workspaceAddresses.has(s.email.toLowerCase()))
-        .map((s) => s.id)
-      if (senderIdsToAttach.length === 0) {
-        // Workspace had local accounts but none matched EB. Fall back too.
-        senderIdsToAttach = sender_emails.map((s) => s.id)
-        safeError(`[EmailBison Push] Workspace ${workspaceId} accounts did not match any EB connected sender, attaching all ${senderIdsToAttach.length} as fallback`)
-      }
+      safeError(`[EmailBison Push] No workspace-matched senders for ${workspaceId}; SKIPPING sender attachment to avoid cross-tenant leak. Admin must attach manually.`)
+      return
     }
 
-    if (senderIdsToAttach.length > 0) {
-      await addSenderEmailsToCampaign(campaignId, senderIdsToAttach)
+    const senderIdsToAttach = sender_emails
+      .filter((s) => workspaceAddresses.has(s.email.toLowerCase()))
+      .map((s) => s.id)
+
+    if (senderIdsToAttach.length === 0) {
+      safeError(`[EmailBison Push] Workspace ${workspaceId} accounts did not match any EB connected sender; SKIPPING sender attachment to avoid cross-tenant leak. Admin must attach manually.`)
+      return
     }
+
+    await addSenderEmailsToCampaign(campaignId, senderIdsToAttach)
   } catch (error: unknown) {
     safeError(`[EmailBison Push] Could not attach sender emails: ${getErrorMessage(error)}`)
   }

@@ -17,7 +17,7 @@
 
 import { NextRequest } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
-import { requireAdmin } from '@/lib/auth/admin'
+import { requirePlatformAdmin } from '@/lib/auth/admin'
 import { ADMIN_SYSTEM_PROMPT } from '@/lib/copilot/system-prompt'
 import { ADMIN_TOOLS, runTool, type CopilotToolName } from '@/lib/copilot/tools'
 import { checkDailyBudget, logTurn, type CopilotModel } from '@/lib/copilot/cost'
@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
   // ── Auth ─────────────────────────────────────────────────────────
   let platformAdmin: { id: string; email: string }
   try {
-    platformAdmin = await requireAdmin()
+    platformAdmin = await requirePlatformAdmin()
   } catch {
     return new Response('Unauthorized', { status: 401 })
   }

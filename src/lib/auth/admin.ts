@@ -103,6 +103,30 @@ export async function requireAdmin(): Promise<{ id: string; email: string }> {
 }
 
 /**
+ * Require PLATFORM admin authentication only.
+ * Unlike requireAdmin(), this does NOT fall back to users.role; only
+ * platform_admins.is_active=true rows pass. Use for cross-tenant routes
+ * where a paying customer's workspace owner must NOT have access.
+ */
+export async function requirePlatformAdmin(): Promise<{ id: string; email: string }> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user?.email || !user?.id) {
+    throw new Error('Unauthorized: Platform admin access required')
+  }
+  const { data: admin } = await supabase
+    .from('platform_admins')
+    .select('id, email')
+    .eq('email', user.email)
+    .eq('is_active', true)
+    .maybeSingle()
+  if (!admin) {
+    throw new Error('Unauthorized: Platform admin access required')
+  }
+  return { id: admin.id, email: admin.email ?? user.email }
+}
+
+/**
  * Require admin authentication using workspace role (owner/admin).
  * Use this in SDR API routes — matches the layout's auth pattern via users.role,
  * not the platform_admins table used by requireAdmin().

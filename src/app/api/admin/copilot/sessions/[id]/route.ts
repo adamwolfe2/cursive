@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { requireAdmin } from '@/lib/auth/admin'
+import { requirePlatformAdmin } from '@/lib/auth/admin'
 import { loadSession, deleteSession } from '@/lib/copilot/sessions'
 
 export const runtime = 'nodejs'
@@ -12,7 +12,7 @@ export const dynamic = 'force-dynamic'
 
 async function resolveAdmin() {
   try {
-    const admin = await requireAdmin()
+    const admin = await requirePlatformAdmin()
     return { ok: true as const, userId: admin.id }
   } catch {
     return { ok: false as const, status: 401, message: 'Unauthorized' }
