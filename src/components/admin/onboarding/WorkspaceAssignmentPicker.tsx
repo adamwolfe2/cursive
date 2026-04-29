@@ -26,6 +26,7 @@ interface Props {
   initialWorkspaceId: string | null
   isTestClient: boolean
   copyApprovalStatus: string
+  campaignDeployed: boolean
   defaultCreateName?: string
   onChange?: (workspaceId: string | null) => void
 }
@@ -37,6 +38,7 @@ export default function WorkspaceAssignmentPicker({
   initialWorkspaceId,
   isTestClient,
   copyApprovalStatus,
+  campaignDeployed,
   defaultCreateName,
   onChange,
 }: Props) {
@@ -113,6 +115,10 @@ export default function WorkspaceAssignmentPicker({
 
   const isApproved = copyApprovalStatus === 'approved'
   const usingFallback = selected === null
+  // Lock the picker only AFTER campaigns are actually pushed to EmailBison.
+  // Pre-deploy, workspace changes still affect what gets pushed, so the
+  // admin needs to be able to switch workspaces even after approval.
+  const isLocked = campaignDeployed
 
   return (
     <Card padding="sm" className="border-blue-100 bg-blue-50/40">
@@ -154,7 +160,7 @@ export default function WorkspaceAssignmentPicker({
           <Select
             value={selected ?? FALLBACK_VALUE}
             onChange={(e) => handleChange(e.target.value)}
-            disabled={loading || saving || isApproved}
+            disabled={loading || saving || isLocked}
             options={options}
             selectSize="sm"
             className="flex-1"
@@ -171,7 +177,7 @@ export default function WorkspaceAssignmentPicker({
           <button
             type="button"
             onClick={() => setCreateOpen(true)}
-            disabled={isApproved}
+            disabled={isLocked}
             title="Create a new workspace tied to EmailBison senders"
             className="inline-flex items-center gap-1 rounded-md border border-blue-200 bg-blue-50 h-9 px-3 text-xs font-medium text-blue-700 hover:bg-blue-100 disabled:opacity-50 transition-colors"
           >
@@ -187,10 +193,17 @@ export default function WorkspaceAssignmentPicker({
           onCreated={handleCreated}
         />
 
-        {isApproved && (
+        {isLocked && (
           <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-3 py-2">
-            Copy is already approved. Changing the workspace now will not affect campaigns
-            already pushed to EmailBison.
+            Campaigns have already been pushed to EmailBison. Changing the workspace now
+            will not affect campaigns that were already created.
+          </p>
+        )}
+
+        {isApproved && !isLocked && (
+          <p className="text-xs text-blue-700 bg-blue-50 border border-blue-200 rounded-md px-3 py-2">
+            Copy is approved but campaigns have not been pushed yet. The workspace you pick
+            here will be used for the next push.
           </p>
         )}
 
