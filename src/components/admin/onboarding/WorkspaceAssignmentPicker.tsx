@@ -12,7 +12,8 @@ import { useCallback, useEffect, useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Select } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
-import { Building2, AlertTriangle, CheckCircle2, FlaskConical } from 'lucide-react'
+import { Building2, AlertTriangle, CheckCircle2, FlaskConical, Plus, RefreshCw } from 'lucide-react'
+import CreateWorkspaceModal from './CreateWorkspaceModal'
 
 interface Workspace {
   id: string
@@ -25,6 +26,7 @@ interface Props {
   initialWorkspaceId: string | null
   isTestClient: boolean
   copyApprovalStatus: string
+  defaultCreateName?: string
   onChange?: (workspaceId: string | null) => void
 }
 
@@ -35,6 +37,7 @@ export default function WorkspaceAssignmentPicker({
   initialWorkspaceId,
   isTestClient,
   copyApprovalStatus,
+  defaultCreateName,
   onChange,
 }: Props) {
   const [workspaces, setWorkspaces] = useState<Workspace[]>([])
@@ -42,6 +45,7 @@ export default function WorkspaceAssignmentPicker({
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [selected, setSelected] = useState<string | null>(initialWorkspaceId)
+  const [createOpen, setCreateOpen] = useState(false)
 
   const loadWorkspaces = useCallback(async () => {
     setLoading(true)
@@ -61,29 +65,42 @@ export default function WorkspaceAssignmentPicker({
     loadWorkspaces()
   }, [loadWorkspaces])
 
+  const persistAssignment = useCallback(
+    async (workspaceId: string | null) => {
+      setError(null)
+      setSaving(true)
+      try {
+        const res = await fetch(`/api/admin/onboarding/${clientId}/assign-workspace`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ workspace_id: workspaceId }),
+        })
+        if (!res.ok) {
+          const json = (await res.json().catch(() => ({}))) as { error?: string }
+          throw new Error(json.error ?? 'Failed to save workspace assignment')
+        }
+        onChange?.(workspaceId)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to save')
+        setSelected(initialWorkspaceId)
+      } finally {
+        setSaving(false)
+      }
+    },
+    [clientId, initialWorkspaceId, onChange]
+  )
+
   const handleChange = async (next: string) => {
     const workspaceId = next === FALLBACK_VALUE ? null : next
     setSelected(workspaceId)
-    setError(null)
-    setSaving(true)
+    await persistAssignment(workspaceId)
+  }
 
-    try {
-      const res = await fetch(`/api/admin/onboarding/${clientId}/assign-workspace`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ workspace_id: workspaceId }),
-      })
-      if (!res.ok) {
-        const json = (await res.json().catch(() => ({}))) as { error?: string }
-        throw new Error(json.error ?? 'Failed to save workspace assignment')
-      }
-      onChange?.(workspaceId)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save')
-      setSelected(initialWorkspaceId)
-    } finally {
-      setSaving(false)
-    }
+  const handleCreated = async (workspace: { id: string; name: string; slug: string }) => {
+    // Pull the fresh list so the new workspace shows in the dropdown.
+    await loadWorkspaces()
+    setSelected(workspace.id)
+    await persistAssignment(workspace.id)
   }
 
   const options = [
@@ -133,12 +150,41 @@ export default function WorkspaceAssignmentPicker({
           </div>
         </div>
 
-        <Select
-          value={selected ?? FALLBACK_VALUE}
-          onChange={(e) => handleChange(e.target.value)}
-          disabled={loading || saving || isApproved}
-          options={options}
-          selectSize="sm"
+        <div className="flex items-center gap-2">
+          <Select
+            value={selected ?? FALLBACK_VALUE}
+            onChange={(e) => handleChange(e.target.value)}
+            disabled={loading || saving || isApproved}
+            options={options}
+            selectSize="sm"
+            className="flex-1"
+          />
+          <button
+            type="button"
+            onClick={loadWorkspaces}
+            disabled={loading || saving}
+            title="Refresh workspace list"
+            className="inline-flex items-center justify-center rounded-md border border-input bg-background h-9 w-9 text-muted-foreground hover:text-foreground hover:bg-muted/50 disabled:opacity-50 transition-colors"
+          >
+            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+          </button>
+          <button
+            type="button"
+            onClick={() => setCreateOpen(true)}
+            disabled={isApproved}
+            title="Create a new workspace tied to EmailBison senders"
+            className="inline-flex items-center gap-1 rounded-md border border-blue-200 bg-blue-50 h-9 px-3 text-xs font-medium text-blue-700 hover:bg-blue-100 disabled:opacity-50 transition-colors"
+          >
+            <Plus className="h-3.5 w-3.5" />
+            New workspace
+          </button>
+        </div>
+
+        <CreateWorkspaceModal
+          open={createOpen}
+          onClose={() => setCreateOpen(false)}
+          defaultName={defaultCreateName}
+          onCreated={handleCreated}
         />
 
         {isApproved && (

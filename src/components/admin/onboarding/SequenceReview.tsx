@@ -207,6 +207,7 @@ export default function SequenceReview({ client }: SequenceReviewProps) {
         initialWorkspaceId={client.assigned_workspace_id ?? null}
         isTestClient={client.is_test_client ?? false}
         copyApprovalStatus={client.copy_approval_status}
+        defaultCreateName={client.company_name}
       />
 
       {/* Deployment status — surfaces whether the inline push actually
