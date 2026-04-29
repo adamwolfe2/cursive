@@ -75,6 +75,7 @@ export const onboardingEmailBisonPush = inngest.createFunction(
           clientName: client.company_name,
           sequences: client.draft_sequences as DraftSequences,
           workspaceId: workspace_id,
+          dryRun: client.is_test_client === true,
         })
 
         // Log success before returning so it's captured even if subsequent steps fail

@@ -40,10 +40,13 @@ export async function updateClientStatus(clientId: string, status: ClientStatus,
 export async function approveSequences(clientId: string) {
   const supabase = createAdminClient()
 
-  // Load the client to get workspace context for the push event
+  // Load the client to get workspace context for the push event.
+  // assigned_workspace_id (if set) determines which Cursive workspace's
+  // senders get attached to the campaigns; falling back to clientId
+  // preserves the legacy onboarding behaviour (attach all connected senders).
   const { data: client, error: fetchError } = await supabase
     .from('onboarding_clients')
-    .select('id, packages_selected')
+    .select('id, packages_selected, assigned_workspace_id')
     .eq('id', clientId)
     .single()
 
@@ -63,17 +66,40 @@ export async function approveSequences(clientId: string) {
     throw new Error(`Failed to approve sequences: ${error.message}`)
   }
 
-  // Trigger EmailBison push when copy is approved.
-  // Two-channel approach: try Inngest first (production path), fall back to
-  // an inline call to /api/admin/onboarding/[id]/push-emailbison if Inngest
-  // is misconfigured. Either way, surface the failure instead of swallowing.
+  const workspaceId = client.assigned_workspace_id || clientId
+
+  // Fire-and-forget inline push. This is the authoritative path because the
+  // prod Inngest project is unreachable (see project_inngest_orphaned memory).
+  // We still call inngest.send() below as belt-and-suspenders if it ever
+  // comes back online, but the inline call is what actually deploys campaigns.
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || (process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : 'http://localhost:3000')
+
+  after(async () => {
+    try {
+      await fetch(`${baseUrl}/api/admin/onboarding/${clientId}/push-emailbison`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-automation-secret': process.env.AUTOMATION_SECRET || '',
+        },
+      })
+    } catch (err) {
+      const { safeError } = await import('@/lib/utils/log-sanitizer')
+      const msg = err instanceof Error ? err.message : String(err)
+      safeError(`[approveSequences] inline push dispatch failed for ${clientId}: ${msg}`)
+    }
+  })
+
+  // Inngest fallback (currently a no-op in prod — Inngest project missing).
   try {
     const inngest = getInngest()
     await inngest.send({
       name: 'onboarding/copy-approved',
       data: {
         client_id: clientId,
-        workspace_id: clientId, // Onboarding clients use their own ID as workspace scope
+        workspace_id: workspaceId,
       },
     })
   } catch (err: unknown) {

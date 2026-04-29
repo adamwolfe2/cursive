@@ -1,6 +1,7 @@
 export const maxDuration = 15
 
 import { NextRequest, NextResponse } from 'next/server'
+import { after } from 'next/server'
 import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/server'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
@@ -96,10 +97,29 @@ export async function POST(
           .update({ copy_approval_status: 'approved' })
           .eq('id', tokenRecord.client_id)
 
-        // Trigger EmailBison push, same event the admin approval fires.
-        // workspace_id mirrors the admin path: onboarding clients use their
-        // own client_id as workspace scope (the EB push then falls back to
-        // all connected senders when no email_accounts row matches).
+        // Fire the inline push endpoint. Inngest is orphaned in prod (see
+        // project_inngest_orphaned memory) so this is the authoritative path.
+        // The endpoint reads assigned_workspace_id and is_test_client off the
+        // client record, so we don't need to pass them in.
+        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || (process.env.VERCEL_URL
+          ? `https://${process.env.VERCEL_URL}`
+          : 'http://localhost:3000')
+
+        after(async () => {
+          try {
+            await fetch(`${baseUrl}/api/admin/onboarding/${tokenRecord.client_id}/push-emailbison`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'x-automation-secret': process.env.AUTOMATION_SECRET || '',
+              },
+            })
+          } catch (err) {
+            safeError('[Portal] Inline EB push dispatch failed:', err)
+          }
+        })
+
+        // Inngest fallback — no-op in prod today, kept in case it comes back.
         try {
           const inngest = getInngest()
           await inngest.send({
@@ -110,8 +130,7 @@ export async function POST(
             },
           })
         } catch (err) {
-          safeError('[Portal] Failed to trigger EmailBison push:', err)
-          // Non-fatal, approval is saved, pipeline will retry or admin can manually push
+          safeError('[Portal] Inngest send failed (expected in current prod):', err)
         }
       }
     }

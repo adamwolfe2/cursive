@@ -19,6 +19,8 @@ import type { CopyComment } from '@/types/copy-comments'
 import { commentKey, groupCommentsByEmail } from '@/types/copy-comments'
 import SpintaxRenderer from './SpintaxRenderer'
 import AdminCommentThread from './AdminCommentThread'
+import WorkspaceAssignmentPicker from './WorkspaceAssignmentPicker'
+import DeploymentStatusCard from './DeploymentStatusCard'
 import {
   ChevronDown,
   ChevronRight,
@@ -199,6 +201,25 @@ export default function SequenceReview({ client }: SequenceReviewProps) {
 
   return (
     <div className="space-y-4">
+      {/* Destination workspace picker — must be set before approve fires the EB push */}
+      <WorkspaceAssignmentPicker
+        clientId={client.id}
+        initialWorkspaceId={client.assigned_workspace_id ?? null}
+        isTestClient={client.is_test_client ?? false}
+        copyApprovalStatus={client.copy_approval_status}
+      />
+
+      {/* Deployment status — surfaces whether the inline push actually
+          ran after approval, with a manual button to retry. Independent
+          of Inngest (which is orphaned in prod). */}
+      <DeploymentStatusCard
+        clientId={client.id}
+        copyApprovalStatus={client.copy_approval_status}
+        campaignDeployed={client.campaign_deployed ?? false}
+        campaignIds={client.emailbison_campaign_ids ?? []}
+        isTestClient={client.is_test_client ?? false}
+      />
+
       {/* Approval Status Bar */}
       <Card padding="sm">
         <CardContent className="flex items-center justify-between flex-wrap gap-3">

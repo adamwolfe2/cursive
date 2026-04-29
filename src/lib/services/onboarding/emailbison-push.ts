@@ -52,10 +52,33 @@ export async function pushCopyToEmailBison(params: {
   clientName: string
   sequences: DraftSequences
   workspaceId: string
+  dryRun?: boolean
 }): Promise<PushResult> {
-  const { clientName, sequences, workspaceId } = params
+  const { clientName, sequences, workspaceId, dryRun = false } = params
   const dateStr = formatDate(new Date())
   const campaigns: CampaignResult[] = []
+
+  // Dry-run mode is used for test/preview clients (is_test_client=true) so the
+  // admin can click Approve and see the full downstream flow — Slack
+  // notification, automation_log entries, status promotion to active — without
+  // creating real EmailBison campaigns. We synthesize a result that matches
+  // the real shape closely enough for the UI to render correctly.
+  if (dryRun) {
+    for (const sequence of sequences.sequences) {
+      const subjectVariantsTotal = sequence.emails.reduce((sum, email) => {
+        const expanded = expandSpintax(email.subject_line)
+        const unique = new Set(expanded).size
+        return sum + Math.min(unique, 5)
+      }, 0)
+      campaigns.push({
+        campaignId: `dryrun_${workspaceId.slice(0, 8)}_${campaigns.length + 1}`,
+        campaignName: `[DRY-RUN ws:${workspaceId}] ${clientName} - ${sequence.sequence_name} - ${dateStr}`,
+        sequenceSteps: subjectVariantsTotal,
+        variants: subjectVariantsTotal,
+      })
+    }
+    return { campaigns }
+  }
 
   for (const sequence of sequences.sequences) {
     const result = await pushSingleSequence({

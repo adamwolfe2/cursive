@@ -219,6 +219,8 @@ export interface OnboardingClient {
   campaign_deployed: boolean
   emailbison_campaign_ids: string[]
   campaign_stats: Record<string, unknown> | null
+  assigned_workspace_id: string | null
+  is_test_client: boolean
 
   // Invoice & contract tracking
   stripe_invoice_id: string | null
