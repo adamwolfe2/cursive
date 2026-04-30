@@ -257,78 +257,40 @@ export default function MarketplacePage() {
           <UpsellBanner creditsBalance={credits} totalSpend={totalSpend} leadCount={leadCount} />
 
           {/* Header */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-            <div className="flex-1 min-w-0">
-              <h1 className="text-xl font-semibold text-zinc-900">Lead Marketplace</h1>
-              <p className="text-[13px] text-zinc-500 mt-1">{totalLeads.toLocaleString()} leads available</p>
+          <div className="mb-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+              <div>
+                <h1 className="text-xl font-bold text-zinc-900">Lead Marketplace</h1>
+                <p className="text-sm text-zinc-500 mt-0.5">{totalLeads.toLocaleString()} leads available</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-white border border-zinc-200 rounded-lg text-sm">
+                  <svg className="w-4 h-4 text-blue-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span className="font-semibold text-zinc-900">{credits.toFixed(0)}</span>
+                  <span className="text-zinc-500">credits</span>
+                </div>
+                <Button asChild size="sm" className="bg-blue-600 hover:bg-blue-700">
+                  <Link href="/marketplace/credits">Buy Credits</Link>
+                </Button>
+              </div>
             </div>
 
-            {/* Mobile: Show only essential buttons + filters */}
-            <div className="flex lg:hidden items-center gap-2 w-full sm:w-auto flex-wrap">
-              <div className="flex items-center gap-1.5 px-3 py-2 bg-white border border-zinc-200 rounded-lg flex-1 sm:flex-initial min-w-[100px]">
-                <svg className="w-4 h-4 text-zinc-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span className="text-[13px] font-medium text-zinc-900">${credits.toFixed(2)}</span>
-              </div>
-              <Button asChild variant="outline" size="sm">
-                <Link href="/marketplace/my-leads" className="gap-2">
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                  </svg>
-                  <span className="hidden sm:inline">My Leads</span>
-                </Link>
-              </Button>
-              <Button asChild size="sm">
-                <Link href="/marketplace/credits">
-                  <span className="hidden sm:inline">Buy Credits</span>
-                  <span className="sm:hidden">Buy</span>
-                </Link>
-              </Button>
-            </div>
-
-            {/* Desktop: Show all buttons */}
-            <div className="hidden lg:flex items-center gap-3">
-              <div className="flex items-center gap-2 px-4 py-2 bg-white border border-zinc-200 rounded-lg">
-                <svg className="w-4 h-4 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span className="text-[13px] font-medium text-zinc-900">${credits.toFixed(2)} credits</span>
-              </div>
-              <Button asChild variant="outline" size="sm">
-                <Link href="/marketplace/custom-audience" className="gap-2">
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-                  </svg>
-                  Request Custom Audience
-                </Link>
-              </Button>
-              <Button asChild variant="outline" size="sm">
-                <Link href="/marketplace/my-leads" className="gap-2">
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                  </svg>
-                  My Leads
-                </Link>
-              </Button>
-              <Button asChild size="sm">
-                <Link href="/marketplace/credits">
-                  Buy Credits
-                </Link>
-              </Button>
-              <Button asChild size="sm">
-                <Link href="/marketplace/history">
-                  Purchase History
-                </Link>
-              </Button>
-              <Button asChild variant="outline" size="sm">
-                <Link href="/marketplace/referrals" className="gap-1.5">
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                  </svg>
-                  Refer &amp; Earn
-                </Link>
-              </Button>
+            {/* Navigation tabs */}
+            <div className="flex items-center gap-1 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-none">
+              <Link href="/marketplace/custom-audience" className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-zinc-600 bg-white border border-zinc-200 rounded-md hover:bg-zinc-50 whitespace-nowrap">
+                Request Custom Audience
+              </Link>
+              <Link href="/marketplace/my-leads" className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-zinc-600 bg-white border border-zinc-200 rounded-md hover:bg-zinc-50 whitespace-nowrap">
+                My Leads
+              </Link>
+              <Link href="/marketplace/history" className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-zinc-600 bg-white border border-zinc-200 rounded-md hover:bg-zinc-50 whitespace-nowrap">
+                Purchase History
+              </Link>
+              <Link href="/marketplace/referrals" className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-zinc-600 bg-white border border-zinc-200 rounded-md hover:bg-zinc-50 whitespace-nowrap">
+                Refer &amp; Earn
+              </Link>
             </div>
           </div>
 
@@ -351,8 +313,8 @@ export default function MarketplacePage() {
             {/* Main Content */}
             <div className="flex-1">
               {/* Toolbar */}
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+                <div className="flex items-center gap-2 sm:gap-3">
                   {/* Desktop: Toggle Filters Sidebar */}
                   <Button
                     onClick={() => setShowFilters(!showFilters)}
@@ -399,7 +361,7 @@ export default function MarketplacePage() {
                       }
                       setPage(0)
                     }}
-                    className="h-11 px-3 text-[13px] border border-zinc-200 bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-500"
+                    className="h-9 sm:h-11 px-2 sm:px-3 text-xs sm:text-[13px] border border-zinc-200 bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-500"
                     aria-label="Sort leads"
                   >
                     <option value="relevant">Most Relevant</option>
@@ -410,8 +372,8 @@ export default function MarketplacePage() {
                 </div>
 
                 {selectedLeads.size > 0 && (
-                  <div className="flex items-center gap-3">
-                    <span className="text-[13px] text-zinc-600">
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <span className="text-xs sm:text-[13px] text-zinc-600">
                       {selectedLeads.size} selected (${selectedTotal.toFixed(2)})
                     </span>
                     {selectedTotal > credits ? (
@@ -425,7 +387,7 @@ export default function MarketplacePage() {
                         variant="outline"
                         size="sm"
                       >
-                        Top Up to Purchase
+                        Top Up
                       </Button>
                     ) : (
                       <Button
@@ -434,7 +396,7 @@ export default function MarketplacePage() {
                         loading={isPurchasing}
                         size="sm"
                       >
-                        Purchase Selected
+                        Purchase
                       </Button>
                     )}
                   </div>
@@ -446,34 +408,28 @@ export default function MarketplacePage() {
 
               {/* Service Tier Upsell Banner */}
               {credits < 50 && (
-                <div className="bg-gradient-to-r from-primary to-primary/90 rounded-lg p-6 mb-6 text-white">
-                  <div className="flex flex-col sm:flex-row items-start gap-4">
-                    <div className="flex-1">
-                      <h3 className="text-lg font-bold mb-2">
-                        Running low on credits?
-                      </h3>
-                      <p className="text-white/90 text-sm mb-4">
-                        Save 40% with Cursive Data—get custom lead lists delivered automatically every month instead of buying one by one.
-                      </p>
-                      <div className="flex flex-col sm:flex-row gap-3">
-                        <a
-                          href={getServiceLink('data')}
-                          className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-white hover:bg-zinc-50 text-primary font-medium rounded-lg transition-colors text-sm"
-                        >
-                          See Data Plans
-                          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                          </svg>
-                        </a>
-                        <button
-                          type="button"
-                          onClick={() => showUpgradeModal('credits_low', `You have $${credits.toFixed(2)} in credits remaining.`)}
-                          className="inline-flex items-center justify-center gap-2 px-4 py-2 border-2 border-white hover:bg-white/10 text-white font-medium rounded-lg transition-colors text-sm"
-                        >
-                          Buy More Credits
-                        </button>
-                      </div>
-                    </div>
+                <div className="bg-blue-600 rounded-lg p-5 mb-6 text-white">
+                  <h3 className="text-base font-bold mb-1">Running low on credits?</h3>
+                  <p className="text-blue-100 text-sm mb-3">
+                    Save 40% with Cursive Data — get custom lead lists delivered automatically every month instead of buying one by one.
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <a
+                      href={getServiceLink('data')}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white hover:bg-blue-50 text-blue-700 font-medium rounded-md text-sm transition-colors"
+                    >
+                      See Data Plans
+                      <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </a>
+                    <button
+                      type="button"
+                      onClick={() => showUpgradeModal('credits_low', `You have ${credits.toFixed(0)} credits remaining.`)}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-white/40 hover:bg-white/10 text-white font-medium rounded-md text-sm transition-colors"
+                    >
+                      Buy Credits
+                    </button>
                   </div>
                 </div>
               )}

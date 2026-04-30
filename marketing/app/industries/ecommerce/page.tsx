@@ -58,7 +58,7 @@ export default function EcommercePage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
               >
-                <Button size="lg" href="https://cal.com/gotdarrenhill/30min">
+                <Button size="lg" href="https://cal.com/cursiveteam/30min">
                   Schedule a Strategy Call
                 </Button>
               </motion.div>
@@ -178,7 +178,7 @@ export default function EcommercePage() {
 
               <Button
                 size="lg"
-                href="https://cal.com/gotdarrenhill/30min"
+                href="https://cal.com/cursiveteam/30min"
                 target="_blank"
                 className="bg-primary text-white hover:bg-primary-dark text-lg px-10 py-5 mb-4"
               >
@@ -248,7 +248,7 @@ export default function EcommercePage() {
           <MachineList items={[
             {
               label: "Visitor Identification",
-              description: "Identify up to 70% of anonymous website visitors—turn browsers into buyers"
+              description: "40–60% deterministic pixel match rate (vs 2–5% for cookies, 10–15% for IP databases)—turn anonymous browsers into named buyers"
             },
             {
               label: "Cart Abandonment Recovery",
@@ -278,7 +278,7 @@ export default function EcommercePage() {
           <MachineList items={[
             {
               label: "Schedule Strategy Call",
-              href: "https://cal.com/gotdarrenhill/30min",
+              href: "https://cal.com/cursiveteam/30min",
               description: "Book a free consultation for your eCommerce marketing needs"
             },
             {
@@ -297,7 +297,7 @@ export default function EcommercePage() {
 const benefits = [
   {
     title: 'Visitor Identification',
-    description: 'Identify up to 70% of anonymous website visitors—turn browsers into buyers.',
+    description: '40–60% deterministic pixel match rate (vs 2–5% for cookies, 10–15% for IP databases)—turn anonymous browsers into named buyers.',
   },
   {
     title: 'Cart Abandonment Recovery',

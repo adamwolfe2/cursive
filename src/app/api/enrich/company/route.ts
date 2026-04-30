@@ -7,7 +7,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { getCompanyEnrichmentService } from '@/lib/services/company-enrichment.service'
-import { checkRateLimit } from '@/lib/utils/rate-limit'
+import { checkRateLimit } from '@/lib/middleware/rate-limiter'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { z } from 'zod'
@@ -91,21 +91,20 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    // Apply rate limiting for public endpoint
+    // Apply distributed rate limiting for public endpoint (Upstash-backed)
     const clientIp = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
       || request.headers.get('x-real-ip')
       || 'unknown'
 
-    const enrichRateConfig = { windowMs: 60 * 1000, max: 30 }
-    const rateLimitResult = checkRateLimit(`enrich-company:${clientIp}`, enrichRateConfig)
-    if (!rateLimitResult.allowed) {
+    const rateLimitResult = await checkRateLimit(clientIp, 'ext', 60)
+    if (!rateLimitResult.success) {
       return NextResponse.json(
         { error: 'Rate limit exceeded. Please try again later.' },
         {
           status: 429,
           headers: {
-            'Retry-After': String(rateLimitResult.retryAfter),
-            'X-RateLimit-Limit': String(enrichRateConfig.max),
+            'Retry-After': String(Math.ceil((rateLimitResult.reset - Date.now()) / 1000)),
+            'X-RateLimit-Limit': String(rateLimitResult.limit),
             'X-RateLimit-Remaining': String(rateLimitResult.remaining),
           },
         }
@@ -146,18 +145,25 @@ export async function GET(request: NextRequest) {
       cacheTtlMinutes: 60 * 24 * 7, // Cache for 7 days
     })
 
-    return NextResponse.json({
-      success: result.success,
-      data: {
-        name: result.data.name,
-        domain: result.data.domain,
-        logoUrl: result.data.logoUrl,
-        faviconUrl: result.data.faviconUrl,
-        industry: result.data.industry,
-        employeeRange: result.data.employeeRange,
-        description: result.data.description?.substring(0, 200),
+    return NextResponse.json(
+      {
+        success: result.success,
+        data: {
+          name: result.data.name,
+          domain: result.data.domain,
+          logoUrl: result.data.logoUrl,
+          faviconUrl: result.data.faviconUrl,
+          industry: result.data.industry,
+          employeeRange: result.data.employeeRange,
+          description: result.data.description?.substring(0, 200),
+        },
       },
-    })
+      {
+        headers: {
+          'Cache-Control': 's-maxage=86400, stale-while-revalidate=43200',
+        },
+      }
+    )
   } catch (error) {
     safeError('[Company Enrichment GET] Error:', error)
     return handleApiError(error)

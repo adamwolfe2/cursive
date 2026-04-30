@@ -5,9 +5,9 @@
  * meetcursive.com visitor feed for outreach
  */
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { createClient } from '@/lib/supabase/client'
+import { useAdminAuth } from '@/hooks/use-admin-auth'
 import Link from 'next/link'
 import {
   Eye, Mail, Phone, Linkedin, Copy, Check, ExternalLink,
@@ -144,29 +144,12 @@ function VisitorCard({ v }: { v: Visitor }) {
 }
 
 export default function VisitorsPage() {
-  const [authChecked, setAuthChecked] = useState(false)
-  const [isAdmin, setIsAdmin] = useState(false)
+  const { isAdmin, authChecked } = useAdminAuth()
   const [days, setDays] = useState('30')
   const [minScore, setMinScore] = useState(0)
   const [enrichmentFilter, setEnrichmentFilter] = useState('')
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState('')
-  const supabase = createClient()
-
-  useEffect(() => {
-    const checkAdmin = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) { window.location.href = '/login'; return }
-      const { data: userData } = await supabase
-        .from('users').select('role').eq('auth_user_id', user.id).maybeSingle() as { data: { role: string } | null }
-      if (!userData || (userData.role !== 'admin' && userData.role !== 'owner')) {
-        window.location.href = '/dashboard'; return
-      }
-      setIsAdmin(true)
-      setAuthChecked(true)
-    }
-    checkAdmin()
-  }, [supabase])
 
   const { data, isLoading } = useQuery<VisitorsData>({
     queryKey: ['admin', 'ops', 'visitors', days, minScore, enrichmentFilter, page],

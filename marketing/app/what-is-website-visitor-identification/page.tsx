@@ -17,7 +17,7 @@ const faqs = [
   {
     question: "How accurate is website visitor identification in 2026?",
     answer:
-      "Accuracy varies by method and provider. Reverse IP lookup alone identifies 30-40% of B2B traffic at the company level. Advanced platforms like Cursive that combine multiple identification methods achieve match rates of up to 70%, including individual-level identification with verified email addresses and job titles.",
+      "Accuracy varies dramatically by method. Cookie-based tools resolve only 2–5% of visitors. IP databases resolve 10–15%. Cursive uses a deterministic pixel that resolves visitors against an identity graph of 280M+ verified consumer and 140M+ business profiles, achieving a 40–60% match rate with 60–80% pixel-level accuracy — not modeled or probabilistic.",
   },
   {
     question: "Is website visitor identification legal?",
@@ -42,7 +42,7 @@ const faqs = [
   {
     question: "What is the ROI of website visitor identification?",
     answer:
-      "The ROI depends on your traffic volume and sales cycle, but most B2B companies see a 3-5x return within the first quarter. For example, a company with 10,000 monthly visitors identifying 70% of traffic gains access to 7,000 potential leads per month. Even converting 1% of those to qualified opportunities can generate significant pipeline.",
+      "The ROI depends on your traffic volume and sales cycle, but most B2B companies see a 3–5x return within the first quarter. For example, a company with 10,000 monthly visitors using a deterministic pixel that resolves 40–60% of traffic gains access to 4,000–6,000 identified prospects per month — vs 200–500 from a cookie-based tool. Even converting 1% of those into qualified opportunities can generate significant pipeline.",
   },
   {
     question: "Can visitor identification work for B2C companies?",
@@ -87,7 +87,7 @@ export default function WhatIsWebsiteVisitorIdentificationPage() {
 
               <p className="text-lg text-gray-600 mb-8">
                 In 2026, visitor identification has become a foundational capability for B2B revenue teams. With buyer journeys happening increasingly online and anonymously, the ability to see who is researching your product before they raise their hand gives sales and marketing teams a decisive competitive advantage. According to Forrester, 68% of the B2B buying process now happens digitally, making the ability to identify anonymous visitors more valuable than ever. Platforms like{" "}
-                <Link href="/platform" className="text-primary hover:underline">Cursive</Link> now achieve identification rates of up to 70%, a substantial leap from the 20-30% industry average just two years ago.
+                <Link href="/platform" className="text-primary hover:underline">Cursive</Link> are the identity layer for outbound, intent, and enrichment &mdash; delivering a 40&ndash;60% deterministic pixel match rate (vs 2&ndash;5% for cookie-based tools and 10&ndash;15% for IP databases) backed by 280M+ verified consumer and 140M+ business profiles refreshed every 30 days via NCOA.
               </p>
 
               {/* Table of Contents */}
@@ -385,7 +385,7 @@ export default function WhatIsWebsiteVisitorIdentificationPage() {
                 1. B2B Lead Generation
               </h3>
               <p>
-                The most common use case is turning anonymous traffic into a pipeline of qualified leads. Instead of waiting for the 2% of visitors who fill out forms, visitor identification captures the other 98%. A mid-market SaaS company with 20,000 monthly visitors and a 70% identification rate generates 14,000 identified visitors per month. If 10% match their ICP, that is 1,400 qualified leads, compared to roughly 400 from forms alone, representing a 3.5x increase in lead volume. Platforms like{" "}
+                The most common use case is turning anonymous traffic into a pipeline of qualified leads. Instead of waiting for the 2% of visitors who fill out forms, visitor identification captures a much larger share. A mid-market SaaS company with 20,000 monthly visitors using Cursive&apos;s deterministic pixel (40&ndash;60% match rate) generates 8,000&ndash;12,000 identified visitors per month &mdash; vs 400&ndash;1,000 from a cookie-based tool (2&ndash;5%) and 2,000&ndash;3,000 from an IP database (10&ndash;15%). If 10% match the ICP, that is 800&ndash;1,200 qualified leads from a single month of existing traffic. Platforms like{" "}
                 <Link href="/platform" className="text-primary hover:underline">Cursive</Link> automate the process from identification through outreach, so these leads enter your pipeline without manual effort.
               </p>
 
@@ -548,7 +548,7 @@ export default function WhatIsWebsiteVisitorIdentificationPage() {
                   <tbody>
                     <tr>
                       <td className="border border-gray-200 px-4 py-3 font-medium">Cursive</td>
-                      <td className="border border-gray-200 px-4 py-3">Up to 70%</td>
+                      <td className="border border-gray-200 px-4 py-3">40&ndash;60% (deterministic)</td>
                       <td className="border border-gray-200 px-4 py-3">Company + Individual</td>
                       <td className="border border-gray-200 px-4 py-3">Yes (built-in)</td>
                       <td className="border border-gray-200 px-4 py-3">200+</td>
@@ -628,7 +628,7 @@ export default function WhatIsWebsiteVisitorIdentificationPage() {
                   <Link href="/what-is-ai-sdr" className="text-primary hover:underline">What is an AI SDR?</Link> &mdash; Learn how AI-powered sales development automates outreach to identified visitors.
                 </li>
                 <li>
-                  <Link href="/visitor-identification" className="text-primary hover:underline">Cursive Visitor Identification</Link> &mdash; See how Cursive identifies up to 70% of your website traffic.
+                  <Link href="/visitor-identification" className="text-primary hover:underline">Cursive Visitor Identification</Link> &mdash; See how Cursive&apos;s deterministic pixel resolves 40&ndash;60% of your website traffic.
                 </li>
                 <li>
                   <Link href="/audience-builder" className="text-primary hover:underline">Audience Builder</Link> &mdash; Build targeted segments from identified visitors using firmographic and behavioral filters.
@@ -682,8 +682,8 @@ export default function WhatIsWebsiteVisitorIdentificationPage() {
             <MachineList items={[
               "95-98% of B2B website visitors leave without filling out a form",
               "Visitor identification reveals companies and contacts behind anonymous traffic",
-              "Methods: Reverse IP lookup (30-40% match), cookie matching, device fingerprinting, email resolution",
-              "Advanced platforms like Cursive achieve up to 70% match rates with multi-method identification",
+              "Methods: Cookie matching (2–5%), reverse IP lookup (10–15%), device fingerprinting, email resolution",
+              "Cursive uses a deterministic pixel achieving 40–60% match rates with 60–80% pixel-level accuracy — backed by 280M+ verified consumer and 140M+ business profiles refreshed every 30 days via NCOA",
               "Legal under GDPR (legitimate interest) and CCPA (with disclosure) for B2B use cases"
             ]} />
           </MachineSection>
@@ -701,18 +701,18 @@ export default function WhatIsWebsiteVisitorIdentificationPage() {
 
           <MachineSection title="Identification Methods">
             <MachineList items={[
-              "Reverse IP Lookup — Maps IP addresses to companies; identifies 30-40% of B2B traffic at company level",
-              "First-Party Cookie Matching — Links return visits to known users from previous form fills or email clicks",
+              "Cookie-Based Tracking — Links return visits to known users; resolves 2–5% of visitors",
+              "Reverse IP Lookup — Maps IP addresses to companies; resolves 10–15% of B2B traffic at company level",
               "Device Fingerprinting — Combines browser, OS, screen, fonts, and WebGL data for unique device signatures",
               "Email-Based Resolution — Matches hashed email addresses from ad platforms and data cooperatives",
               "Cross-Device Identity Graphs — Links multiple devices to single user profiles for complete journey tracking",
-              "Multi-Method (Cursive) — Combines all methods for up to 70% identification including individual-level contacts"
+              "Cursive Deterministic Pixel — Resolves visitors against 280M+ verified consumer and 140M+ business profiles for a 40–60% match rate with 60–80% pixel-level accuracy"
             ]} />
           </MachineSection>
 
           <MachineSection title="Accuracy Benchmarks">
             <MachineList items={[
-              "Company-Level Identification: 30-40% (IP only), 50-60% (multi-method), up to 70% (advanced platforms)",
+              "Match Rate Comparison: Cookies 2–5%, IP databases 10–15%, Cursive deterministic pixel 40–60%",
               "Individual-Level Identification: 10-20% (basic), 30-50% (advanced platforms with email resolution)",
               "Email Accuracy: 92-97% deliverability for verified enriched emails",
               "Firmographic Data: 90-95% accuracy for company size, industry, location",
@@ -754,7 +754,7 @@ export default function WhatIsWebsiteVisitorIdentificationPage() {
 
           <MachineSection title="Provider Comparison">
             <MachineList items={[
-              "Cursive — Individual + company ID (up to 70%), integrated enrichment + AI outreach + direct mail ($1,000/mo+)",
+              "Cursive — Deterministic individual + company ID (40–60% match, 60–80% pixel-level accuracy), integrated enrichment + AI outreach + direct mail ($1,000/mo+ managed, from $15K/mo committed data partnerships)",
               "Clearbit Reveal — Company-level IP resolution, deep HubSpot integration (included in HubSpot plans)",
               "6sense — Company-level ID with predictive buying stage AI ($60,000+/yr)",
               "Demandbase — Company-level ID with ABM ad activation ($50,000+/yr)",
@@ -770,7 +770,7 @@ export default function WhatIsWebsiteVisitorIdentificationPage() {
               { label: "Lead Enrichment Guide", href: "/what-is-lead-enrichment", description: "Enrich identified visitor profiles with full contact data" },
               { label: "AI SDR Guide", href: "/what-is-ai-sdr", description: "Automate outreach to identified website visitors" },
               { label: "Account-Based Marketing Guide", href: "/what-is-account-based-marketing", description: "ABM strategies powered by visitor identification" },
-              { label: "Cursive Visitor Identification", href: "/visitor-identification", description: "Up to 70% identification for B2B traffic" },
+              { label: "Cursive Visitor Identification", href: "/visitor-identification", description: "40–60% deterministic pixel match rate for B2B traffic" },
               { label: "Cursive Platform", href: "/platform", description: "Full-stack visitor ID, enrichment, and outreach" },
               { label: "Pricing", href: "/pricing", description: "Cursive pricing and plans" }
             ]} />
@@ -778,7 +778,7 @@ export default function WhatIsWebsiteVisitorIdentificationPage() {
 
           <MachineSection title="Get Started">
             <p className="text-gray-700 mb-3">
-              Cursive identifies up to 70% of your website visitors at the individual level, with integrated enrichment and multi-channel outreach to turn anonymous traffic into qualified pipeline.
+              Cursive is the identity layer for outbound, intent, and enrichment — resolving visitors against 280M+ verified consumer and 140M+ business profiles with a 40–60% deterministic pixel match rate (vs 2–5% for cookies, 10–15% for IP databases) and 60–80% pixel-level accuracy. Integrated enrichment, ~50,000 intent segments, and multi-channel outreach turn anonymous traffic into qualified pipeline.
             </p>
             <MachineList items={[
               { label: "Get Your Free Audit", href: "/free-audit", description: "See how many visitors can be identified on your site" },

@@ -5,55 +5,21 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/middleware'
 // import { logger } from '@/lib/monitoring/logger'  // TEMP: Disabled for Edge Runtime debugging
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { checkRateLimit } from '@/lib/middleware/rate-limiter'
+import { signWorkspaceCookie, verifyWorkspaceCookie } from '@/lib/auth/workspace-cookie'
 
-// ─── Rate Limiting (in-memory, Edge-compatible) ───────────────────────────
-// Shared across requests within the same Edge instance.
-// Not durable across cold starts, but provides burst protection.
-// KNOWN LIMITATION: In-memory store is per-instance — multiple Vercel replicas each have
-// independent counters. A distributed attacker could bypass limits by hitting different replicas.
-// This is adequate for current scale. Future enhancement: Upstash Redis for durable,
-// cross-instance rate limiting (see https://upstash.com/docs/redis/quickstarts/vercel-edge).
-const rateLimitStore = new Map<string, { count: number; resetAt: number }>()
-
-const RATE_LIMIT_TIERS = {
-  auth:  { windowMs: 60_000, max: 10 },   // /api/auth/*: 10 req/min
-  write: { windowMs: 60_000, max: 30 },   // POST/PUT/DELETE: 30 req/min
-  read:  { windowMs: 60_000, max: 60 },   // GET: 60 req/min
-} as const
+// ─── Rate Limiting (distributed via Upstash Redis) ────────────────────────
+// checkRateLimit() uses Upstash Redis REST API when UPSTASH_REDIS_REST_URL
+// and UPSTASH_REDIS_REST_TOKEN are set, giving durable cross-replica limits.
+// Falls back to per-instance in-memory when those env vars are absent.
+//
+// Tiers: auth=10/min, write=30/min, read=60/min
+// See src/lib/middleware/rate-limiter.ts for full documentation.
 
 function getClientIp(req: NextRequest): string {
   return req.headers.get('x-forwarded-for')?.split(',')[0].trim()
     || req.headers.get('x-real-ip')?.trim()
     || 'unknown'
-}
-
-function checkRateLimit(key: string, tier: keyof typeof RATE_LIMIT_TIERS): {
-  allowed: boolean; remaining: number; retryAfter: number
-} {
-  const { windowMs, max } = RATE_LIMIT_TIERS[tier]
-  const now = Date.now()
-  let entry = rateLimitStore.get(key)
-
-  if (!entry || now > entry.resetAt) {
-    entry = { count: 0, resetAt: now + windowMs }
-  }
-  entry.count++
-  rateLimitStore.set(key, entry)
-
-  const remaining = Math.max(0, max - entry.count)
-  const retryAfter = Math.ceil((entry.resetAt - now) / 1000)
-  return { allowed: entry.count <= max, remaining, retryAfter }
-}
-
-// Cleanup expired entries every 60 seconds
-let lastCleanup = Date.now()
-function maybeCleanup() {
-  const now = Date.now()
-  if (now - lastCleanup < 60_000) return
-  lastCleanup = now
-  for (const [key, entry] of rateLimitStore) {
-    if (now > entry.resetAt) rateLimitStore.delete(key)
-  }
 }
 
 /**
@@ -90,8 +56,19 @@ export async function middleware(req: NextRequest) {
       return NextResponse.next()
     }
 
-    // Webhook and Inngest paths handle their own auth — return immediately
-    // without creating a Supabase client (which can hang on serverless functions)
+    if (pathname === '/my-leads') {
+      const url = new URL('/leads?tab=assigned', req.url)
+      return NextResponse.redirect(url, 308)
+    }
+
+    if (
+      pathname.startsWith('/my-leads/') &&
+      !pathname.startsWith('/my-leads/preferences')
+    ) {
+      const url = new URL('/leads?tab=assigned', req.url)
+      return NextResponse.redirect(url, 308)
+    }
+
     if (
       pathname.startsWith('/api/webhooks') ||
       pathname.startsWith('/api/cron') ||
@@ -108,9 +85,17 @@ export async function middleware(req: NextRequest) {
     const FULLY_PUBLIC_API_ROUTES = [
       '/api/affiliate/apply',
       '/api/affiliate/track-click',
+      '/api/enrich/website',
+      '/api/ext/',
       '/api/lead-capture',
+      '/api/onboarding/icp-suggestions',
       '/api/pixel/provision-demo',
       '/api/public/segment-search',
+      // MCP server — uses bearer token auth via workspace API keys, not session cookies.
+      // Route handler enforces its own auth, workspace isolation, and multi-layer rate limiting.
+      '/api/mcp',
+      // Automation endpoint — uses x-automation-secret, no user session needed
+      '/api/admin/run-enrichment',
     ]
     if (FULLY_PUBLIC_API_ROUTES.some(r => pathname.startsWith(r))) {
       // For OPTIONS (CORS preflight) — pass through immediately, no rate limit needed
@@ -118,13 +103,13 @@ export async function middleware(req: NextRequest) {
         return NextResponse.next({ request: req })
       }
       // Rate limit POST/GET on these routes (lightweight, no Supabase client)
-      maybeCleanup()
       const ip = getClientIp(req)
-      const rl = checkRateLimit(`write:${ip}`, 'write')
-      if (!rl.allowed) {
+      const rl = await checkRateLimit(ip, 'write')
+      if (!rl.success) {
+        const retryAfter = Math.ceil((rl.reset - Date.now()) / 1000)
         return NextResponse.json(
-          { error: 'Too many requests', retryAfter: rl.retryAfter },
-          { status: 429, headers: { 'Retry-After': String(rl.retryAfter) } }
+          { error: 'Too many requests', retryAfter },
+          { status: 429, headers: { 'Retry-After': String(retryAfter) } }
         )
       }
       return NextResponse.next({ request: req })
@@ -132,20 +117,20 @@ export async function middleware(req: NextRequest) {
 
     // ─── Rate Limiting for API routes ───────────────────────────────
     if (pathname.startsWith('/api')) {
-      maybeCleanup()
       const ip = getClientIp(req)
-      const tier: keyof typeof RATE_LIMIT_TIERS =
-        pathname.startsWith('/api/auth') ? 'auth'
-        : req.method !== 'GET' ? 'write'
-        : 'read'
-      const rl = checkRateLimit(`${tier}:${ip}`, tier)
-      if (!rl.allowed) {
+      const tier =
+        pathname.startsWith('/api/auth') ? 'auth' as const
+        : req.method !== 'GET' ? 'write' as const
+        : 'read' as const
+      const rl = await checkRateLimit(ip, tier)
+      if (!rl.success) {
+        const retryAfter = Math.ceil((rl.reset - Date.now()) / 1000)
         return NextResponse.json(
-          { error: 'Too many requests', retryAfter: rl.retryAfter },
+          { error: 'Too many requests', retryAfter },
           {
             status: 429,
             headers: {
-              'Retry-After': String(rl.retryAfter),
+              'Retry-After': String(retryAfter),
               'X-RateLimit-Remaining': '0',
             },
           }
@@ -163,10 +148,10 @@ export async function middleware(req: NextRequest) {
     const subdomain = getSubdomain(hostname)
 
     // Admin-only routes
-    const isAdminRoute = pathname.startsWith('/admin')
+    const isAdminRoute = pathname.startsWith('/admin') || pathname.startsWith('/api/admin')
 
-    // Partner-only routes
-    const isPartnerRoute = pathname.startsWith('/partner')
+    // Partner-only routes (page routes and API routes)
+    const isPartnerRoute = pathname.startsWith('/partner') || pathname.startsWith('/api/partner')
 
     // Affiliate portal routes (public marketing + portal)
     const isAffiliateRoute = pathname.startsWith('/affiliate')
@@ -177,12 +162,17 @@ export async function middleware(req: NextRequest) {
       pathname.startsWith('/signup') ||
       pathname.startsWith('/welcome') ||
       pathname.startsWith('/onboarding') ||
+      pathname.startsWith('/status/') ||
+      pathname.startsWith('/developers') ||
+      pathname.startsWith('/client-onboarding') ||
       pathname.startsWith('/role-selection') ||
       pathname.startsWith('/forgot-password') ||
       pathname.startsWith('/reset-password') ||
       pathname.startsWith('/verify-email') ||
       pathname.startsWith('/auth/callback') ||
       pathname.startsWith('/auth/accept-invite') ||
+      pathname.startsWith('/auth/signout') ||
+      pathname.startsWith('/mfa-challenge') ||
       pathname.startsWith('/superpixel') ||
       pathname.startsWith('/privacy') ||
       pathname.startsWith('/terms') ||
@@ -193,7 +183,12 @@ export async function middleware(req: NextRequest) {
       pathname.startsWith('/api/similarweb') ||
       pathname.startsWith('/api/pixel/provision-demo') ||
       pathname.startsWith('/api/public/segment-search') ||
+      pathname.startsWith('/api/public/copilot') ||
+      pathname.startsWith('/audience-builder') ||
       pathname.startsWith('/audience-intelligence') ||
+      // Client portal — token-based auth, no user session required
+      pathname.startsWith('/portal/') ||
+      pathname.startsWith('/api/portal/') ||
       pathname === '/' ||
       pathname.startsWith('/_next') ||
       pathname.startsWith('/api/webhooks') ||
@@ -223,6 +218,15 @@ export async function middleware(req: NextRequest) {
     }
 
     const user = authenticatedUser
+
+    // Enforce MFA for enrolled users on page routes only (not API routes)
+    if (user && !isPublicRoute && !isApiRoute) {
+      const { data: aalData } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel()
+      if (aalData?.nextLevel === 'aal2' && aalData?.currentLevel !== 'aal2') {
+        const mfaChallengePath = '/mfa-challenge'
+        return NextResponse.redirect(new URL(`${mfaChallengePath}?redirect=${pathname}`, req.url))
+      }
+    }
 
     // Helper to create redirect with cookies preserved
     const redirectWithCookies = (url: URL) => {
@@ -268,15 +272,32 @@ export async function middleware(req: NextRequest) {
       }
     }
 
-    // Workspace check: verify authenticated users have a workspace for dashboard routes.
-    // Caches workspace_id in a cookie to avoid DB query on every request (~50-100ms savings).
-    // Exclude /api/auth/* — needed during onboarding before workspace exists.
-    if (user && !isPublicRoute && !isAdminRoute && !isPartnerRoute && !isAffiliateRoute && !pathname.startsWith('/onboarding') && !pathname.startsWith('/welcome') && !pathname.startsWith('/api/onboarding') && !pathname.startsWith('/api/auth') && !pathname.startsWith('/api/affiliate')) {
-      // Check cookie cache first to avoid DB roundtrip on every request
-      const cachedWorkspaceId = req.cookies.get('x-workspace-id')?.value
+    // Partner routes require partner/admin/owner role
+    if (isPartnerRoute && user) {
+      const { data: userData } = await supabase
+        .from('users')
+        .select('role')
+        .eq('auth_user_id', user.id)
+        .single()
 
-      if (!cachedWorkspaceId) {
-        // Use Edge-compatible client (RLS policies allow users to query their own record)
+      if (!userData || !['partner', 'admin', 'owner'].includes(userData.role)) {
+        if (isApiRoute) {
+          return NextResponse.json({ error: 'Partner access required' }, { status: 403 })
+        }
+        return NextResponse.redirect(new URL('/dashboard', req.url))
+      }
+    }
+
+    // Workspace check: verify authenticated users have a workspace for dashboard routes.
+    // Caches a signed workspace_id cookie to avoid DB query on every request (~50-100ms savings).
+    // The cookie is HMAC-signed with the user's auth_user_id so it cannot be forged.
+    // Exclude /api/auth/* — needed during onboarding before workspace exists.
+    if (user && !isPublicRoute && !isAdminRoute && !isPartnerRoute && !isAffiliateRoute && !pathname.startsWith('/portal') && !pathname.startsWith('/onboarding') && !pathname.startsWith('/client-onboarding') && !pathname.startsWith('/welcome') && !pathname.startsWith('/api/onboarding') && !pathname.startsWith('/api/auth') && !pathname.startsWith('/api/affiliate')) {
+      const cookieRaw = req.cookies.get('x-workspace-id')?.value
+      const verifiedWs = verifyWorkspaceCookie(user.id, cookieRaw)
+
+      if (!verifiedWs) {
+        // Signature missing or invalid — do DB lookup and re-issue a signed cookie
         const { data: userRecord } = await supabase
           .from('users')
           .select('workspace_id')
@@ -296,14 +317,18 @@ export async function middleware(req: NextRequest) {
           return redirectWithCookies(onboardingUrl)
         }
 
-        // Cache workspace_id in a cookie (httpOnly, same-site, 1 hour TTL)
-        client.response.cookies.set('x-workspace-id', userRecord.workspace_id, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'lax',
-          maxAge: 3600, // 1 hour
-          path: '/',
-        })
+        // Issue a signed cookie (httpOnly, same-site, 1 hour TTL)
+        client.response.cookies.set(
+          'x-workspace-id',
+          signWorkspaceCookie(user.id, userRecord.workspace_id),
+          {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 3600,
+            path: '/',
+          }
+        )
       }
     }
 
@@ -323,6 +348,8 @@ export async function middleware(req: NextRequest) {
       pathname.startsWith('/signup') ||
       pathname.startsWith('/welcome') ||
       pathname.startsWith('/onboarding') ||
+      pathname.startsWith('/client-onboarding') ||
+      pathname.startsWith('/audience-builder') ||
       pathname.startsWith('/role-selection') ||
       pathname.startsWith('/forgot-password') ||
       pathname.startsWith('/reset-password') ||
@@ -331,7 +358,8 @@ export async function middleware(req: NextRequest) {
       pathname.startsWith('/partner') ||
       pathname.startsWith('/affiliate') ||
       pathname.startsWith('/affiliates') ||
-      pathname.startsWith('/superpixel')
+      pathname.startsWith('/superpixel') ||
+      pathname.startsWith('/portal')
     if (isAppRoute) {
       client.response.headers.set('X-Robots-Tag', 'noindex, nofollow')
     }

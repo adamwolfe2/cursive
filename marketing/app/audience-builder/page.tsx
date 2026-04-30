@@ -46,7 +46,7 @@ export default function AudienceBuilderPage() {
                 Stop paying per contact or hitting export limits. Build audiences of any size and launch campaigns in minutes, not weeks.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <Button size="lg" href="https://cal.com/gotdarrenhill/30min">
+                <Button size="lg" href="https://cal.com/cursiveteam/30min">
                   Build Your First Audience
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
@@ -144,13 +144,13 @@ export default function AudienceBuilderPage() {
               {[
                 {
                   icon: Database,
-                  title: "420M+ Verified Profiles",
-                  description: "Access 280M consumer and 140M business profiles. The largest combined B2B + B2C database—all in one platform."
+                  title: "280M+ Verified Consumer Profiles",
+                  description: "Sourced from offline data partners (TransUnion, Experian) and refreshed every 30 days against NCOA. Plus 140M+ business profiles in the same graph."
                 },
                 {
                   icon: Sparkles,
-                  title: "60B+ Monthly Intent Signals",
-                  description: "Know when prospects are actively researching. Filter audiences by topics, keywords, and behaviors across 30,000+ categories."
+                  title: "~50K Intent Segments",
+                  description: "White-label segments via taxonomy endpoint, layered on a 15M+ domain organic intent network on top of standard SSP feeds. The closed feedback loop validates against real conversion outcomes."
                 },
                 {
                   icon: Layers,
@@ -314,8 +314,8 @@ export default function AudienceBuilderPage() {
                     "Topics and keywords searched",
                     "Content consumed (whitepapers, reviews, comparisons)",
                     "Recency (7-day, 14-day, 30-day windows)",
-                    "30,000+ intent categories",
-                    "60B+ behaviors & URLs scanned weekly tracked"
+                    "~50,000 white-label intent segments via taxonomy endpoint",
+                    "15M+ domain organic intent network layered on standard SSP feeds"
                   ]
                 },
                 {
@@ -386,7 +386,7 @@ export default function AudienceBuilderPage() {
               {[
                 {
                   question: "How large is your B2B and B2C database?",
-                  answer: "Cursive provides access to 280M US consumer profiles and 140M+ business profiles across the United States. Our database is updated in real-time with fresh intent signals and verified contact information."
+                  answer: "Cursive provides access to 280M+ verified consumer profiles and 140M+ business profiles. The consumer file is sourced primarily from offline data partners (TransUnion, Experian) rather than purely digital signals, then refreshed every 30 days against the National Change of Address database \u2014 most providers run NCOA reconciliation annually."
                 },
                 {
                   question: "Are there limits on audience size?",
@@ -394,7 +394,7 @@ export default function AudienceBuilderPage() {
                 },
                 {
                   question: "How fresh is your intent data?",
-                  answer: "Our intent signals are updated in real-time. We track 60B+ behaviors & URLs scanned weekly across 30,000+ categories, so you're always reaching prospects at the right moment."
+                  answer: "Our intent signals are updated continuously. Cursive layers a 15M+ domain organic intent network on top of standard SSP feeds and exposes ~50,000 white-label segments via a taxonomy endpoint. Audiences refresh every 7 days, and the closed feedback loop validates signals against real conversion outcomes."
                 },
                 {
                   question: "Can I filter audiences by intent signals?",
@@ -540,12 +540,12 @@ export default function AudienceBuilderPage() {
                 Audiences?
               </p>
               <p className="text-xl text-gray-600 mb-10 max-w-2xl mx-auto">
-                Access 420M+ profiles with unlimited audience building. No caps, no limits, no per-contact fees—just pure targeting power.
+                Access 280M+ verified consumer and 140M+ business profiles with unlimited audience building. No caps, no limits, no per-contact fees &mdash; just pure targeting power.
               </p>
 
               <Button
                 size="lg"
-                href="https://cal.com/gotdarrenhill/30min"
+                href="https://cal.com/cursiveteam/30min"
                 target="_blank"
                 className="bg-primary text-white hover:bg-primary-dark text-lg px-10 py-5 mb-4"
               >
@@ -599,19 +599,20 @@ export default function AudienceBuilderPage() {
         <div className="mb-12 pb-6 border-b border-gray-200">
           <h1 className="text-2xl text-gray-900 font-bold mb-4">CURSIVE AUDIENCE BUILDER</h1>
           <p className="text-gray-700 leading-relaxed">
-            Build unlimited B2B and B2C audiences with 280M US consumer profiles and 140M+ business profiles. Filter by demographics, firmographics, technographics, and 60B+ behaviors & URLs scanned weekly. No size limits, no caps.
+            Build unlimited B2B and B2C audiences from 280M+ verified consumer profiles and 140M+ business profiles. Filter by demographics, firmographics, technographics, and ~50,000 white-label intent segments. No size limits, no caps.
           </p>
         </div>
 
         {/* Overview */}
         <MachineSection title="Platform Overview">
           <p className="text-gray-700 mb-4">
-            Cursive Audience Builder provides access to 420M+ verified profiles across consumer and business markets. Build audiences of any size—from 100 to 100 million contacts—with advanced filtering across firmographics, demographics, technographics, and real-time intent signals. No restrictive licensing, no per-contact fees, no export limits.
+            Cursive Audience Builder provides access to 280M+ verified consumer profiles and 140M+ business profiles &mdash; sourced from offline data partners and refreshed every 30 days against NCOA. Build audiences of any size with advanced filtering across firmographics, demographics, technographics, and ~50,000 white-label intent segments. The closed feedback loop maps signals back to source URLs/apps/exchanges and validates against real conversion outcomes.
           </p>
           <MachineList items={[
-            "280M consumer profiles with demographic data",
+            "280M+ verified consumer profiles, refreshed every 30 days against NCOA",
             "140M+ business profiles with firmographic data",
-            "60B+ behaviors & URLs scanned weekly across 30,000+ categories",
+            "15M+ organic-network domains layered on standard SSP feeds (the moat)",
+            "~50,000 white-label intent segments via taxonomy endpoint",
             "Real-time data updates and fresh contact information",
             "One-click activation to 200+ marketing platforms"
           ]} />
@@ -633,12 +634,12 @@ export default function AudienceBuilderPage() {
         <MachineSection title="Key Features">
           <MachineList items={[
             {
-              label: "420M+ Verified Profiles",
-              description: "Combined B2B and B2C database with 280M consumer and 140M business profiles"
+              label: "280M+ Verified Consumer / 140M+ Business Profiles",
+              description: "Offline-rooted (TransUnion, Experian), refreshed every 30 days against NCOA"
             },
             {
-              label: "60B+ Monthly Intent Signals",
-              description: "Real-time intent tracking across 30,000+ categories. Filter by topics, keywords, and behaviors"
+              label: "~50K Intent Segments",
+              description: "White-label segments via taxonomy endpoint, layered on a 15M+ domain organic intent network on top of standard SSP feeds"
             },
             {
               label: "No Size Limits",
@@ -706,8 +707,8 @@ export default function AudienceBuilderPage() {
                 "Topics and keywords searched",
                 "Content consumed (whitepapers, reviews, comparisons)",
                 "Recency windows (7-day, 14-day, 30-day)",
-                "30,000+ intent categories",
-                "60B+ behaviors & URLs scanned weekly tracked"
+                "~50,000 white-label intent segments via taxonomy endpoint",
+                "15M+ domain organic intent network layered on standard SSP feeds"
               ]} />
             </div>
           </div>
@@ -761,7 +762,7 @@ export default function AudienceBuilderPage() {
             },
             {
               label: "Schedule Demo",
-              href: "https://cal.com/gotdarrenhill/30min",
+              href: "https://cal.com/cursiveteam/30min",
               description: "Book a personalized walkthrough of the platform"
             }
           ]} />
@@ -772,7 +773,7 @@ export default function AudienceBuilderPage() {
           <MachineList items={[
             {
               label: "Build First Audience",
-              href: "https://cal.com/gotdarrenhill/30min",
+              href: "https://cal.com/cursiveteam/30min",
               description: "Schedule a demo to see the platform in action"
             },
             {

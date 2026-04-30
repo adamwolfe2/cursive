@@ -675,4 +675,4 @@ Show the impact in business terms executives care about: revenue, customer acqui
 
 ---
 
-**Ready to make data-driven marketing decisions?** [Book a demo](https://cal.com/cursive/30min) to see how Cursive identifies visitors, tracks behavior, and attributes revenue across all your marketing channels.
+**Ready to make data-driven marketing decisions?** [Book a demo](https://cal.com/cursiveteam/30min) to see how Cursive identifies visitors, tracks behavior, and attributes revenue across all your marketing channels.

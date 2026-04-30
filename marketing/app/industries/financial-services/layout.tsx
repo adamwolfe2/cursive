@@ -12,7 +12,7 @@ export const metadata = generateMetadata({
 const financialServicesFAQs = [
   {
     question: 'How does Cursive help financial services firms generate qualified leads?',
-    answer: 'Cursive identifies up to 70% of anonymous companies and contacts visiting your financial services website, revealing which businesses are researching your advisory services, fintech products, or investment solutions. Your team can then engage these warm prospects with personalized outreach at the moment of peak interest, significantly improving conversion rates compared to cold prospecting.',
+    answer: 'Cursive resolves anonymous visitors on your financial services site against a deterministic identity graph of 280M+ verified consumer and 140M+ business profiles, with a 40–60% pixel match rate (vs 2–5% for cookie-based tools and 10–15% for IP databases). Your team can then engage these warm prospects with personalized outreach at the moment of peak interest, significantly improving conversion rates compared to cold prospecting.',
   },
   {
     question: 'Is Cursive compliant with financial services regulations?',

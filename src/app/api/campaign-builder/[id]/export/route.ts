@@ -270,7 +270,7 @@ export async function POST(
       steps_added: result.stepsAdded,
       leads_added: result.leadsAdded,
       message: 'Campaign pushed to EmailBison. It starts paused — review and activate in your EmailBison dashboard.',
-      dashboard_url: 'https://send.meetcursive.com',
+      dashboard_url: process.env.EMAILBISON_API_URL?.replace('/api', '') || 'https://send.meetcursive.com',
     })
   } catch (error) {
     return handleApiError(error)

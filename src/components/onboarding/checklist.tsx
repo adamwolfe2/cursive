@@ -28,8 +28,8 @@ const CHECKLIST_ITEMS: Omit<ChecklistItem, 'completed'>[] = [
   {
     id: 'leads',
     title: 'Receive your first lead',
-    description: 'Matched leads will appear in My Leads',
-    href: '/my-leads',
+    description: 'Matched leads will appear in your Leads page',
+    href: '/leads?tab=assigned',
   },
 ]
 

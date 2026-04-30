@@ -17,7 +17,7 @@ import { inngest } from '../client'
 import { sendEmail } from '@/lib/email/service'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://leads.meetcursive.com'
+import { APP_URL } from '@/lib/config/urls'
 const LOG_PREFIX = '[WeeklySummary]'
 const BATCH_SIZE = 50
 
@@ -44,6 +44,7 @@ interface WeeklyStats {
   contacted: number
   wonThisWeek: number
   hotLeadsWaiting: number
+  meetingsBooked7d: number
 }
 
 // ============================================================
@@ -369,6 +370,13 @@ async function getWeeklyStats(
     .gte('intent_score_calculated', 70)
     .not('status', 'in', '("contacted","qualified","proposal","negotiation","won","lost")')
 
+  // Meetings booked via Cal.com in the past 7 days
+  const { count: meetingsBooked7d } = await supabase
+    .from('cal_bookings')
+    .select('id', { count: 'exact', head: true })
+    .eq('workspace_id', workspaceId)
+    .gte('created_at', sevenDaysAgo)
+
   return {
     leadsReceived: leadsReceived ?? 0,
     leadsEnriched: leadsEnriched ?? 0,
@@ -378,6 +386,7 @@ async function getWeeklyStats(
     contacted: contacted ?? 0,
     wonThisWeek: wonThisWeek ?? 0,
     hotLeadsWaiting: hotLeadsWaiting ?? 0,
+    meetingsBooked7d: meetingsBooked7d ?? 0,
   }
 }
 
@@ -632,11 +641,23 @@ function buildWeeklySummaryEmail({
 
                 <!-- Credits Remaining -->
                 <tr>
-                  <td style="padding: 14px 20px; border-bottom: ${stats.topSource ? '1px solid #f3f4f6' : 'none'};">
+                  <td style="padding: 14px 20px; border-bottom: 1px solid #f3f4f6; background-color: #f9fafb;">
                     <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
                       <tr>
                         <td style="font-size: 13px; color: #6b7280; line-height: 1.4;">Credits Remaining</td>
                         <td style="font-size: 22px; font-weight: 700; color: ${lowCredits ? '#f59e0b' : '#22c55e'}; text-align: right; line-height: 1.4;">${stats.creditsRemaining}</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+                <!-- Meetings Booked -->
+                <tr>
+                  <td style="padding: 14px 20px; border-bottom: ${stats.topSource ? '1px solid #f3f4f6' : 'none'};">
+                    <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                      <tr>
+                        <td style="font-size: 13px; color: #6b7280; line-height: 1.4;">Meetings Booked (7d)</td>
+                        <td style="font-size: 22px; font-weight: 700; color: ${stats.meetingsBooked7d > 0 ? '#4f46e5' : '#111827'}; text-align: right; line-height: 1.4;">${stats.meetingsBooked7d}</td>
                       </tr>
                     </table>
                   </td>

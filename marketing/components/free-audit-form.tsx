@@ -112,7 +112,7 @@ export function FreeAuditForm() {
                 <strong>within 5 minutes.</strong> Free 14-day trial — no credit card.
               </p>
               <a
-                href="https://cal.com/gotdarrenhill/30min"
+                href="https://cal.com/cursiveteam/30min"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary hover:bg-primary-dark text-white text-sm font-semibold rounded-lg transition-colors"

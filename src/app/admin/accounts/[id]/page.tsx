@@ -1,11 +1,12 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
 import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
+import { useAdminAuth } from '@/hooks/use-admin-auth'
 
 interface ProductTier {
   id: string
@@ -65,8 +66,7 @@ export default function AdminWorkspaceDetailPage() {
   const queryClient = useQueryClient()
   const supabase = createClient()
 
-  const [isAdmin, setIsAdmin] = useState(false)
-  const [authChecked, setAuthChecked] = useState(false)
+  const { isAdmin, authChecked } = useAdminAuth()
   const [activeTab, setActiveTab] = useState<'overview' | 'tier' | 'users' | 'usage' | 'logs'>('overview')
   const [tierModalOpen, setTierModalOpen] = useState(false)
   const [overrideModalOpen, setOverrideModalOpen] = useState(false)
@@ -74,29 +74,6 @@ export default function AdminWorkspaceDetailPage() {
   const [dailyOverride, setDailyOverride] = useState<string>('')
   const [monthlyOverride, setMonthlyOverride] = useState<string>('')
   const [tierNotes, setTierNotes] = useState('')
-
-  // Admin role check - prevent non-admins from accessing
-  useEffect(() => {
-    const checkAdmin = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
-        window.location.href = '/login'
-        return
-      }
-      const { data: userData } = await supabase
-        .from('users')
-        .select('role')
-        .eq('auth_user_id', user.id)
-        .maybeSingle() as { data: { role: string } | null }
-      if (!userData || (userData.role !== 'admin' && userData.role !== 'owner')) {
-        window.location.href = '/dashboard'
-        return
-      }
-      setIsAdmin(true)
-      setAuthChecked(true)
-    }
-    checkAdmin()
-  }, [supabase])
 
   // Fetch workspace details
   const { data: workspace, isLoading } = useQuery({

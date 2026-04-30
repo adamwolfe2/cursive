@@ -1,3 +1,5 @@
+export const maxDuration = 30
+
 /**
  * Lead Purchase Confirmation API
  * POST /api/leads/[id]/confirm-purchase

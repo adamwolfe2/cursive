@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { RevenueCalculator } from '@/components/revenue-calculator/RevenueCalculator'
 
 // ─── CONSTANTS ────────────────────────────────────────────────────────────────
-const CAL_LINK = 'https://cal.com/gotdarrenhill/30min'
+const CAL_LINK = 'https://cal.com/cursiveteam/30min'
 const SLIDE_COUNT = 9
 
 const VISITORS = [
@@ -32,8 +32,8 @@ const VISITORS = [
 
 const PHASES = [
   { num: '01', title: 'Install', desc: 'One script tag on your site. Works on WordPress, Webflow, React, Shopify — any stack. No engineering sprint.', code: '<script src="https://cdn.meetcursive.com/pixel.js">' },
-  { num: '02', title: 'Match', desc: 'Every visitor cross-referenced against 420M+ verified contacts in real-time. No cookies. No fingerprinting.', code: '420M+ profiles · <200ms match' },
-  { num: '03', title: 'Score', desc: 'Intent AI scores each visitor on page visited, scroll depth, return frequency, and session behavior.', code: '60B+ daily intent signals' },
+  { num: '02', title: 'Match', desc: 'Every visitor matched deterministically against an offline-rooted graph of 280M+ verified consumer profiles. No cookies. No modeling.', code: '280M+ profiles · 30-day NCOA' },
+  { num: '03', title: 'Score', desc: 'Intent layer maps signals back to source URLs/apps/exchanges and validates against real conversions. ~50K white-label segments.', code: '15M+ organic-network domains' },
   { num: '04', title: 'Deliver', desc: 'Verified name, email, phone, and intent score delivered to your CRM or inbox before the session ends.', code: 'HubSpot · Salesforce · Slack' },
 ]
 
@@ -51,10 +51,10 @@ const PROBLEMS = [
 ]
 
 const DIFFS = [
-  { metric: '70%', vs: '15% competitor avg', title: 'Identification Rate', body: 'Standard pixels rely on cookie syncing — blocked by iOS, degrading on Chrome. Our first-party graph covers 98% of US households without any browser dependency.' },
-  { metric: '0.05%', vs: '20% industry avg', title: 'Email Bounce Rate', body: 'Every email is live-verified against SMTP at delivery. Bounced contacts are replaced automatically. Your sender score stays pristine.' },
-  { metric: 'Person', vs: 'Company only', title: 'Identity Depth', body: 'IP tools give you the company. We give you the person: full name, direct email, mobile phone, job title, LinkedIn, and company firmographics.' },
-  { metric: '30-day', vs: 'Quarterly refresh', title: 'Data Freshness', body: 'Our contact graph syncs with NCOA every 30 days. You never pay for a contact who changed jobs or went out of business last quarter.' },
+  { metric: '40\u201360%', vs: 'Cookie sync 2\u20135% / IP DB 10\u201315%', title: 'Pixel Match Rate', body: 'Deterministic match driven by geo-framing and an offline-rooted identity graph of 280M+ verified consumer profiles. Not modeled. Not probabilistic. No browser dependency.' },
+  { metric: '0.05%', vs: '20% industry avg', title: 'Email Bounce Rate', body: 'Cursive validates ~20M emails per day in-house via Deep Verify. Your sender score stays pristine.' },
+  { metric: '15M+', vs: '~40K SSP-only sources', title: 'Organic Intent Network', body: 'Bombora and 6sense pull from the same ~40,000 publisher domains the rest of the industry uses. Cursive layers a 15M+ domain organic intent network on top of those SSP feeds. That\u2019s the moat.' },
+  { metric: '30-day', vs: 'Annual NCOA', title: 'Refresh Cadence', body: 'Cursive runs NCOA reconciliation every 30 days. Most providers do annually; serious providers do quarterly. With ~15% of the US population moving each year, our cycle keeps records meaningfully more current.' },
 ]
 
 const SAMPLE_LEAD = {
@@ -184,7 +184,7 @@ function VisitorDemo({ compact = false }: { compact?: boolean }) {
             </div>
             <div className="space-y-2.5">
               <div className="flex justify-between text-xs text-gray-500">
-                <span>Cross-referencing 420M+ profiles...</span>
+                <span>Matching against 280M+ verified profiles...</span>
                 <span>{Math.round(progress)}%</span>
               </div>
               <div className="bg-gray-200 rounded-full h-1.5 overflow-hidden">
@@ -287,7 +287,7 @@ function S1() {
             <span className="block font-cursive text-gray-500 mt-1">You just didn&apos;t capture it.</span>
           </h1>
           <p className="text-xl text-gray-600 leading-relaxed mb-6">
-            The average B2B website loses <strong className="text-gray-900">97% of visitors</strong> without capturing their identity. The Cursive Super Pixel v4 recovers <strong className="text-gray-900">70% of them</strong> — automatically enriched with:
+            The average B2B website loses <strong className="text-gray-900">97% of visitors</strong> without capturing their identity. The Cursive Super Pixel matches <strong className="text-gray-900">40&ndash;60% of them deterministically</strong> against an offline-rooted graph of 280M+ verified consumer profiles &mdash; automatically enriched with:
           </p>
           <div className="space-y-2 mb-6">
             {[
@@ -346,7 +346,7 @@ function S2() {
           <div className="flex flex-wrap items-center gap-2 text-sm">
             <span className="bg-gray-50 border border-gray-200 px-3 py-1.5 rounded font-mono text-gray-700">Monthly visitors</span>
             <span className="text-gray-400">×</span>
-            <span className="bg-primary/8 border border-primary/20 px-3 py-1.5 rounded font-mono text-primary">70% ID rate</span>
+            <span className="bg-primary/8 border border-primary/20 px-3 py-1.5 rounded font-mono text-primary">40&ndash;60% match rate</span>
             <span className="text-gray-400">×</span>
             <span className="bg-gray-50 border border-gray-200 px-3 py-1.5 rounded font-mono text-gray-700">Avg deal size</span>
             <span className="text-gray-400">×</span>
@@ -442,8 +442,8 @@ function S4() {
             {
               num: '02',
               title: 'Cursive Identifies',
-              desc: 'Our Super Pixel matches their IP and digital fingerprint to our 420M+ contact database in under 200ms.',
-              detail: '70% identification rate · No cookies',
+              desc: 'Our Super Pixel matches their digital signals deterministically against an offline-rooted graph of 280M+ verified consumer profiles in under 200ms.',
+              detail: '40\u201360% match rate · Deterministic, not modeled',
             },
             {
               num: '03',
@@ -480,10 +480,10 @@ function S5() {
       <div className="max-w-4xl mx-auto w-full">
         <Label>The Identity Graph</Label>
         <h2 className="text-5xl font-light text-gray-900 leading-[1.05] mb-4">
-          420 million reasons
+          280 million reasons
           <span className="block font-cursive text-gray-500 text-5xl">it actually works.</span>
         </h2>
-        <p className="text-gray-500 text-lg mb-6">Most tools give you a company name. Cursive cross-references device signals against a <strong className="text-gray-900">420M+ first-party identity graph</strong> to give you the actual person — no cookies required.</p>
+        <p className="text-gray-500 text-lg mb-6">Most tools give you a company name. Cursive cross-references device signals deterministically against a <strong className="text-gray-900">280M+ verified consumer identity graph &mdash; offline-rooted, refreshed every 30 days against NCOA</strong> &mdash; to give you the actual person, no cookies required.</p>
 
         <div className="border border-gray-200 rounded-xl overflow-hidden mb-5">
           <div className="bg-gray-50 px-4 py-2 border-b border-gray-200 flex items-center justify-between">
@@ -500,7 +500,7 @@ function S5() {
             </thead>
             <tbody className="divide-y divide-gray-50">
               {[
-                ['ID Rate', '15–35%', '70%'],
+                ['Match Rate (deterministic)', 'Cookie 2\u20135% / IP 10\u201315%', '40\u201360%'],
                 ['Email Accuracy', '~78%', '95%+'],
                 ['Phone Numbers', 'Add-on', '✓ Included'],
                 ['URL Intent Score', 'Not available', '✓ Real-time v4'],
@@ -696,26 +696,26 @@ function S8() {
               accent: 'text-gray-400',
               bg: 'bg-white',
               items: [
-                { ok: false, text: '30–40% identification rate' },
+                { ok: false, text: 'Cookie sync 2\u20135% / IP DB 10\u201315% match rates' },
                 { ok: false, text: 'Company-level only, no contacts' },
-                { ok: false, text: 'Stale data, quarterly refresh' },
+                { ok: false, text: 'Stale data, quarterly or annual refresh' },
                 { ok: false, text: 'No intent signals included' },
                 { ok: false, text: 'Complex setup (weeks)' },
                 { ok: false, text: 'Phone numbers as paid add-on' },
               ],
             },
             {
-              label: 'Cursive Super Pixel v4',
+              label: 'Cursive Super Pixel',
               accent: 'text-primary',
               bg: 'bg-white',
               highlight: true,
               items: [
-                { ok: true, text: '70% identification rate' },
+                { ok: true, text: '40\u201360% deterministic pixel match rate' },
                 { ok: true, text: 'Individual contact + verified email' },
                 { ok: true, text: 'DNC compliance flags (mobile + landline)' },
                 { ok: true, text: 'Department, seniority & career history' },
-                { ok: true, text: 'URL-based intent score from page visited' },
-                { ok: true, text: '30-day NCOA · income + net worth data' },
+                { ok: true, text: '15M+ domain organic intent network' },
+                { ok: true, text: '30-day NCOA refresh \u00b7 ~50K intent segments' },
               ],
             },
             {
@@ -1052,7 +1052,7 @@ function S9() {
         </div>
         <div className="grid grid-cols-3 gap-4 pt-6 border-t border-gray-200">
           {[
-            { v: '70%', l: 'Visitor ID Rate' },
+            { v: '40\u201360%', l: 'Pixel Match Rate' },
             { v: '0.05%', l: 'Email Bounce Rate' },
             { v: '5 min', l: 'Time to First Lead' },
           ].map(s => (
@@ -1110,7 +1110,7 @@ function DeckGate({ onUnlock }: { onUnlock: () => void }) {
     Cal.ns['deck-gate']('inline', {
       elementOrSelector: '#cal-deck-embed',
       config: { layout: 'month_view', theme: 'light' },
-      calLink: 'gotdarrenhill/30min',
+      calLink: 'cursiveteam/30min',
     })
     Cal.ns['deck-gate']('ui', {
       hideEventTypeDetails: true,

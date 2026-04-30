@@ -1,3 +1,5 @@
+export const maxDuration = 30
+
 
 import { NextRequest, NextResponse } from 'next/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
@@ -54,69 +56,75 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to create request' }, { status: 500 })
     }
 
-    // Send Slack notification (best-effort, don't fail the request)
     try {
       const slackWebhookUrl = process.env.SLACK_WEBHOOK_URL
       if (slackWebhookUrl) {
-        await fetch(slackWebhookUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            text: '🎯 New Custom Audience Request',
-            blocks: [
-              {
-                type: 'header',
-                text: { type: 'plain_text', text: '🎯 New Custom Audience Request' },
-              },
-              {
-                type: 'section',
-                fields: [
-                  { type: 'mrkdwn', text: `*User:* ${user.full_name || user.email}` },
-                  { type: 'mrkdwn', text: `*Workspace:* ${user.workspace_id}` },
-                  { type: 'mrkdwn', text: `*Industry:* ${validated.industry}` },
-                  { type: 'mrkdwn', text: `*Geography:* ${validated.geography}` },
-                  { type: 'mrkdwn', text: `*Volume:* ${validated.volume} leads` },
-                  { type: 'mrkdwn', text: `*Company Size:* ${validated.companySize}` },
-                ],
-              },
-              {
-                type: 'section',
-                text: {
-                  type: 'mrkdwn',
-                  text: `*Seniority:* ${validated.seniorityLevels.join(', ')}`,
+        const slackController = new AbortController()
+        const slackTimeout = setTimeout(() => slackController.abort(), 5000)
+        try {
+          await fetch(slackWebhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            signal: slackController.signal,
+            body: JSON.stringify({
+              text: 'New Custom Audience Request',
+              blocks: [
+                {
+                  type: 'header',
+                  text: { type: 'plain_text', text: 'New Custom Audience Request' },
                 },
-              },
-              ...(validated.intentSignals ? [{
-                type: 'section',
-                text: {
-                  type: 'mrkdwn',
-                  text: `*Intent Signals:*\n${validated.intentSignals}`,
+                {
+                  type: 'section',
+                  fields: [
+                    { type: 'mrkdwn', text: `*User:* ${user.full_name || user.email}` },
+                    { type: 'mrkdwn', text: `*Workspace:* ${user.workspace_id}` },
+                    { type: 'mrkdwn', text: `*Industry:* ${validated.industry}` },
+                    { type: 'mrkdwn', text: `*Geography:* ${validated.geography}` },
+                    { type: 'mrkdwn', text: `*Volume:* ${validated.volume} leads` },
+                    { type: 'mrkdwn', text: `*Company Size:* ${validated.companySize}` },
+                  ],
                 },
-              }] : []),
-              ...(validated.additionalNotes ? [{
-                type: 'section',
-                text: {
-                  type: 'mrkdwn',
-                  text: `*Additional Notes:*\n${validated.additionalNotes}`,
-                },
-              }] : []),
-              {
-                type: 'divider',
-              },
-              {
-                type: 'actions',
-                elements: [
-                  {
-                    type: 'button',
-                    text: { type: 'plain_text', text: '👀 View in Admin' },
-                    url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://leads.meetcursive.com'}/admin/custom-audiences`,
-                    style: 'primary',
+                {
+                  type: 'section',
+                  text: {
+                    type: 'mrkdwn',
+                    text: `*Seniority:* ${validated.seniorityLevels.join(', ')}`,
                   },
-                ],
-              },
-            ],
-          }),
-        })
+                },
+                ...(validated.intentSignals ? [{
+                  type: 'section',
+                  text: {
+                    type: 'mrkdwn',
+                    text: `*Intent Signals:*\n${validated.intentSignals}`,
+                  },
+                }] : []),
+                ...(validated.additionalNotes ? [{
+                  type: 'section',
+                  text: {
+                    type: 'mrkdwn',
+                    text: `*Additional Notes:*\n${validated.additionalNotes}`,
+                  },
+                }] : []),
+                {
+                  type: 'divider',
+                },
+                {
+                  type: 'actions',
+                  elements: [
+                    {
+                      type: 'button',
+                      text: { type: 'plain_text', text: 'View in Admin' },
+                      url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://leads.meetcursive.com'}/admin/custom-audiences`,
+                      style: 'primary',
+                    },
+                  ],
+                },
+              ],
+            }),
+          })
+        } finally {
+          clearTimeout(slackTimeout)
+        }
       }
     } catch (slackError) {
       safeError('Failed to send Slack notification:', slackError)

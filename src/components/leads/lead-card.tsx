@@ -327,8 +327,9 @@ export const LeadCard = memo(function LeadCard({
               )}
             </div>
 
-            {/* Intent badge */}
-            {lead.intent_score_calculated !== null && (
+            {/* Intent badge — typeof check, not !== null, so undefined values
+                from the DB don't slip through and render an empty badge. */}
+            {typeof lead.intent_score_calculated === 'number' && (
               <div className="shrink-0">
                 <IntentScoreBadge score={lead.intent_score_calculated} />
               </div>

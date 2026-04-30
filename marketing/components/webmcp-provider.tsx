@@ -400,7 +400,7 @@ export function WebMCPProvider() {
       annotations: { readOnlyHint: true },
       execute: async () => {
         return {
-          booking_url: "https://cal.com/gotdarrenhill/30min",
+          booking_url: "https://cal.com/cursiveteam/30min",
           message:
             "Book a free 30-minute demo with the Cursive team. No commitment required.",
           what_to_expect: [
@@ -414,7 +414,7 @@ export function WebMCPProvider() {
               "https://www.meetcursive.com/free-audit",
             marketplace_signup:
               "https://leads.meetcursive.com/signup",
-            email: "hello@meetcursive.com",
+            email: "hey@meetcursive.com",
           },
         }
       },

@@ -108,7 +108,7 @@ Taking the initiative to review and refresh your lists during Q4 means you head 
 
 Whether it's an introduction, a thank you, or a follow-up, clean data ensures your message is not only delivered but also received by the right person.
 
-Ready to make your year-end outreach count? **[Book a demo](https://cal.com/cursive/30min)** to see how Cursive keeps contact data current, tracks engagement signals, and automates personalized campaigns for maximum impact.
+Ready to make your year-end outreach count? **[Book a demo](https://cal.com/cursiveteam/30min)** to see how Cursive keeps contact data current, tracks engagement signals, and automates personalized campaigns for maximum impact.
 
 ---
 

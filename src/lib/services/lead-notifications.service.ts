@@ -312,9 +312,10 @@ export async function notifyNewLead(
     const supabase = createAdminClient()
 
     // Look up users in the workspace who have webhooks configured
+    // Also select notification_preferences so we respect per-user channel toggles
     const { data: users, error } = await supabase
       .from('users')
-      .select('id, slack_webhook_url, zapier_webhook_url')
+      .select('id, slack_webhook_url, zapier_webhook_url, notification_preferences')
       .eq('workspace_id', workspaceId)
 
     if (error) {
@@ -327,15 +328,20 @@ export async function notifyNewLead(
       return result
     }
 
-    // Collect unique webhook URLs
+    // Collect unique webhook URLs, honouring per-user notification_preferences
     const slackUrls = new Set<string>()
     const zapierUrls = new Set<string>()
 
     for (const user of users) {
-      if (user.slack_webhook_url) {
+      const prefs = (user.notification_preferences as Record<string, boolean | string> | null) ?? {}
+      // Slack: send unless user has explicitly disabled slack_notifications
+      const slackEnabled = prefs.slack_notifications !== false
+      if (user.slack_webhook_url && slackEnabled) {
         slackUrls.add(user.slack_webhook_url)
       }
-      if (user.zapier_webhook_url) {
+      // Zapier/webhook: send unless user has explicitly disabled webhook_delivery
+      const webhookEnabled = prefs.webhook_delivery !== false
+      if (user.zapier_webhook_url && webhookEnabled) {
         zapierUrls.add(user.zapier_webhook_url)
       }
     }

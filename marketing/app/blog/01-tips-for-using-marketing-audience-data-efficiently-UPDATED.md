@@ -94,7 +94,7 @@ Here's what that looks like in practice:
 
 The difference between good marketing and great marketing isn't just what you say. It's knowing who to say it to, when to say it, and how to meet them where they are.
 
-Ready to turn your audience insights into qualified leads? **[Book a demo](https://cal.com/cursive/30min)** to see how Cursive identifies up to 70% of your anonymous website traffic and helps you convert visitors into customers.
+Ready to turn your audience insights into qualified leads? **[Book a demo](https://cal.com/cursiveteam/30min)** to see how Cursive identifies up to 70% of your anonymous website traffic and helps you convert visitors into customers.
 
 ---
 

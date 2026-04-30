@@ -12,7 +12,7 @@ export const metadata = generateMetadata({
 const technologyFAQs = [
   {
     question: 'How does Cursive help technology companies identify website visitors?',
-    answer: 'Cursive identifies up to 70% of anonymous companies visiting your technology website by matching visitor behavior to its proprietary identity graph, revealing the organizations exploring your product pages, solution briefs, and pricing. Technology companies use this identification to build a warm prospect list from their existing web traffic and prioritize outreach to the highest-intent accounts.',
+    answer: 'Cursive resolves anonymous visitors on your technology website against a deterministic identity graph of 280M+ verified consumer and 140M+ business profiles, with a 40–60% pixel match rate (vs 2–5% for cookie-based tools and 10–15% for IP databases). Technology companies use this identification to build a warm prospect list from their existing web traffic and prioritize outreach to the highest-intent accounts exploring product, solution, and pricing pages.',
   },
   {
     question: 'What intent signals indicate a prospect is evaluating technology solutions?',
@@ -28,7 +28,7 @@ const technologyFAQs = [
   },
   {
     question: 'How does Cursive compare to other B2B data tools for technology companies?',
-    answer: "Unlike traditional B2B data providers that sell static contact lists, Cursive combines first-party website visitor identification (up to 70% ID rate) with real-time intent data from 450 billion+ signals to surface accounts that are actively in-market right now. This combination of live behavioral data and proprietary identity resolution gives technology companies a significant advantage over competitors relying on cold outbound lists or generic intent data alone.",
+    answer: "Unlike traditional B2B data providers that sell static contact lists, Cursive is the identity layer for outbound, intent, and enrichment. We combine first-party website visitor identification (40–60% deterministic pixel match rate, vs 2–5% for cookies and 10–15% for IP databases) with real-time intent data sourced from a proprietary network of 15M+ organic domains layered on top of standard SSP feeds — vastly larger than the ~40,000 industry-wide signal-source domains that providers like Bombora and 6sense pull from. This combination of deterministic identity resolution and a much wider intent net gives technology companies a meaningful advantage over competitors relying on cold lists or modeled intent data alone.",
   },
   {
     question: 'What is the typical implementation timeline for technology companies?',

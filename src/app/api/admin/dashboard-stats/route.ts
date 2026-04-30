@@ -42,9 +42,9 @@ export async function GET() {
         .select("id", { count: "exact", head: true })
         .eq("is_active", true),
       adminClient
-        .from("credit_transactions")
-        .select("amount")
-        .eq("transaction_type", "purchase")
+        .from("credit_purchases")
+        .select("amount_paid")
+        .eq("status", "completed")
         .gte("created_at", monthStart)
         .limit(5000),
       adminClient
@@ -64,7 +64,7 @@ export async function GET() {
     const creditsPurchasedThisMonth =
       creditsPurchasedResult.status === "fulfilled"
         ? (creditsPurchasedResult.value.data ?? []).reduce(
-            (sum: number, t: { amount: number }) => sum + Number(t.amount),
+            (sum: number, t: { amount_paid: number }) => sum + Number(t.amount_paid),
             0
           )
         : 0

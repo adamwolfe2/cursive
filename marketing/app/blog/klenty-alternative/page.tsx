@@ -575,7 +575,7 @@ export default function BlogPost() {
                 <Link href="/free-audit">Get Your Free AI Audit</Link>
               </Button>
               <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10" asChild>
-                <a href="https://cal.com/gotdarrenhill/30min" target="_blank" rel="noopener noreferrer">Book a Demo</a>
+                <a href="https://cal.com/cursiveteam/30min" target="_blank" rel="noopener noreferrer">Book a Demo</a>
               </Button>
             </div>
           </div>
@@ -706,7 +706,7 @@ export default function BlogPost() {
               { label: "Free AI Audit", href: "/free-audit", description: "See which visitors you are missing and your potential pipeline" },
               { label: "Platform Overview", href: "/platform", description: "Visitor ID + AI SDR + intent data + direct mail in one platform" },
               { label: "Pricing", href: "/pricing", description: "Starting at $1,000/mo — replaces Klenty + data provider + enrichment at flat rate" },
-              { label: "Book a Demo", href: "https://cal.com/gotdarrenhill/30min", description: "30-minute walkthrough of Cursive with your traffic data" },
+              { label: "Book a Demo", href: "https://cal.com/cursiveteam/30min", description: "30-minute walkthrough of Cursive with your traffic data" },
               { label: "Managed Services", href: "/services", description: "Done-for-you outbound — no internal team required" },
               { label: "Integrations", href: "/integrations", description: "200+ integrations including Salesforce, HubSpot, Pipedrive" }
             ]} />

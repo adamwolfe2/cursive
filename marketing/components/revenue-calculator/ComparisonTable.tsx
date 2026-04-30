@@ -26,9 +26,9 @@ export function ComparisonTable({ results, monthlyVisitors: _monthlyVisitors, vi
         <tbody className="divide-y divide-gray-100">
           <tr>
             <td className="py-3 px-4 text-gray-600">Visitor ID Rate</td>
-            <td className="py-3 px-4 text-center text-gray-400">~2%</td>
-            <td className="py-3 px-4 text-center text-gray-400">~15%</td>
-            <td className="py-3 px-4 text-center text-primary font-bold">70%</td>
+            <td className="py-3 px-4 text-center text-gray-400">2&ndash;5% (cookies)</td>
+            <td className="py-3 px-4 text-center text-gray-400">10&ndash;15% (IP DBs)</td>
+            <td className="py-3 px-4 text-center text-primary font-bold">40&ndash;60% (deterministic)</td>
           </tr>
           <tr>
             <td className="py-3 px-4 text-gray-600">Email Bounce Rate</td>

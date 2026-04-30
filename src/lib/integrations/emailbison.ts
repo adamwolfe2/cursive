@@ -13,9 +13,13 @@
  * - Scheduled emails (generic endpoint)
  * - Campaign scheduling with templates
  *
- * Auth: Bearer token via EMAILBISON_API_KEY env var
+ * Auth: Prefers EMAILBISON_SUPER_ADMIN_API_KEY (full workspace access);
+ *       falls back to EMAILBISON_API_KEY (bound to Adam's Team only).
  * Base URL: Your custom host URL + /api/ (e.g. https://send.meetcursive.com/api/)
  * Each EmailBison instance has its own host URL (configured via EMAILBISON_API_URL)
+ *
+ * Multi-workspace routing: pass ebWorkspaceId to any exported function to scope
+ * the request to a specific EmailBison workspace. Requires the super-admin key.
  */
 
 import { fetchWithTimeout } from '@/lib/utils/retry'
@@ -27,8 +31,15 @@ import { getErrorMessage } from '@/lib/utils/error-helpers'
 // ============================================================================
 
 const EMAILBISON_API_URL = process.env.EMAILBISON_API_URL || 'https://send.meetcursive.com'
+// Prefer super-admin key (sees all workspaces); fall back to regular key.
+const EMAILBISON_SUPER_ADMIN_API_KEY = process.env.EMAILBISON_SUPER_ADMIN_API_KEY || ''
 const EMAILBISON_API_KEY = process.env.EMAILBISON_API_KEY || ''
 const EMAILBISON_TIMEOUT = 30000
+
+/** Returns the best available API key (super-admin first). */
+function resolveApiKey(): string {
+  return EMAILBISON_SUPER_ADMIN_API_KEY || EMAILBISON_API_KEY
+}
 
 // ============================================================================
 // TYPES
@@ -127,21 +138,29 @@ class EmailBisonApiError extends Error {
 
 async function bisonFetch<T = any>(
   endpoint: string,
-  options: RequestInit & { timeout?: number } = {}
+  options: RequestInit & { timeout?: number; ebWorkspaceId?: number } = {}
 ): Promise<T> {
-  if (!EMAILBISON_API_KEY) {
-    throw new Error('EMAILBISON_API_KEY not configured')
+  const apiKey = resolveApiKey()
+  if (!apiKey) {
+    throw new Error('No EmailBison API key configured (EMAILBISON_SUPER_ADMIN_API_KEY or EMAILBISON_API_KEY)')
   }
 
-  const { timeout = EMAILBISON_TIMEOUT, ...fetchOptions } = options
+  const { timeout = EMAILBISON_TIMEOUT, ebWorkspaceId, ...fetchOptions } = options
 
-  const url = `${EMAILBISON_API_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`
+  // Build the URL and append workspace_id query param when requested.
+  let rawEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`
+  if (ebWorkspaceId !== undefined) {
+    const separator = rawEndpoint.includes('?') ? '&' : '?'
+    rawEndpoint = `${rawEndpoint}${separator}workspace_id=${ebWorkspaceId}`
+  }
+
+  const url = `${EMAILBISON_API_URL}${rawEndpoint}`
 
   const response = await fetchWithTimeout(url, {
     ...fetchOptions,
     timeout,
     headers: {
-      'Authorization': `Bearer ${EMAILBISON_API_KEY}`,
+      'Authorization': `Bearer ${apiKey}`,
       'Content-Type': 'application/json',
       ...fetchOptions.headers,
     },
@@ -173,38 +192,44 @@ async function bisonFetch<T = any>(
  * Create a new campaign
  */
 export async function createCampaign(
-  name: string
+  name: string,
+  ebWorkspaceId?: number
 ): Promise<{ campaign_id: string }> {
   return bisonFetch('/api/campaigns', {
     method: 'POST',
     body: JSON.stringify({ name }),
+    ebWorkspaceId,
   })
 }
 
 /**
  * List all campaigns
  */
-export async function listCampaigns(params?: {
-  page?: number
-  per_page?: number
-  status?: string
-}): Promise<{ campaigns: EmailBisonCampaign[]; total: number }> {
+export async function listCampaigns(
+  params?: {
+    page?: number
+    per_page?: number
+    status?: string
+  },
+  ebWorkspaceId?: number
+): Promise<{ campaigns: EmailBisonCampaign[]; total: number }> {
   const searchParams = new URLSearchParams()
   if (params?.page) searchParams.set('page', params.page.toString())
   if (params?.per_page) searchParams.set('per_page', params.per_page.toString())
   if (params?.status) searchParams.set('status', params.status)
 
   const query = searchParams.toString()
-  return bisonFetch(`/api/campaigns${query ? `?${query}` : ''}`)
+  return bisonFetch(`/api/campaigns${query ? `?${query}` : ''}`, { ebWorkspaceId })
 }
 
 /**
  * Get campaign details
  */
 export async function getCampaign(
-  campaignId: string
+  campaignId: string,
+  ebWorkspaceId?: number
 ): Promise<EmailBisonCampaign> {
-  return bisonFetch(`/api/campaigns/${campaignId}`)
+  return bisonFetch(`/api/campaigns/${campaignId}`, { ebWorkspaceId })
 }
 
 /**
@@ -212,11 +237,13 @@ export async function getCampaign(
  */
 export async function updateCampaignSettings(
   campaignId: string,
-  settings: CampaignSettings
+  settings: CampaignSettings,
+  ebWorkspaceId?: number
 ): Promise<void> {
   await bisonFetch(`/api/campaigns/${campaignId}`, {
     method: 'PATCH',
     body: JSON.stringify(settings),
+    ebWorkspaceId,
   })
 }
 
@@ -224,10 +251,12 @@ export async function updateCampaignSettings(
  * Pause a campaign
  */
 export async function pauseCampaign(
-  campaignId: string
+  campaignId: string,
+  ebWorkspaceId?: number
 ): Promise<void> {
   await bisonFetch(`/api/campaigns/${campaignId}/pause`, {
     method: 'POST',
+    ebWorkspaceId,
   })
 }
 
@@ -241,7 +270,8 @@ export async function pauseCampaign(
  */
 export async function addSequenceStep(
   campaignId: string,
-  step: SequenceStep
+  step: SequenceStep,
+  ebWorkspaceId?: number
 ): Promise<{ step_id: string }> {
   return bisonFetch('/api/campaigns/sequence-steps', {
     method: 'POST',
@@ -251,6 +281,7 @@ export async function addSequenceStep(
       body: step.body,
       wait_days: step.wait_days || 1,
     }),
+    ebWorkspaceId,
   })
 }
 
@@ -300,11 +331,14 @@ export async function sendTestEmail(
 /**
  * List/search leads
  */
-export async function listLeads(params?: {
-  search?: string
-  tag_ids?: string[]
-  page?: number
-}): Promise<{ leads: EmailBisonLead[]; total: number }> {
+export async function listLeads(
+  params?: {
+    search?: string
+    tag_ids?: string[]
+    page?: number
+  },
+  ebWorkspaceId?: number
+): Promise<{ leads: EmailBisonLead[]; total: number }> {
   const searchParams = new URLSearchParams()
   if (params?.search) searchParams.set('search', params.search)
   if (params?.page) searchParams.set('page', params.page.toString())
@@ -313,7 +347,7 @@ export async function listLeads(params?: {
   }
 
   const query = searchParams.toString()
-  return bisonFetch(`/api/leads${query ? `?${query}` : ''}`)
+  return bisonFetch(`/api/leads${query ? `?${query}` : ''}`, { ebWorkspaceId })
 }
 
 /**
@@ -321,11 +355,13 @@ export async function listLeads(params?: {
  */
 export async function addLeadsToCampaign(
   campaignId: string,
-  leads: EmailBisonLead[]
+  leads: EmailBisonLead[],
+  ebWorkspaceId?: number
 ): Promise<{ added: number; skipped: number }> {
   return bisonFetch(`/api/campaigns/${campaignId}/leads`, {
     method: 'POST',
     body: JSON.stringify({ leads }),
+    ebWorkspaceId,
   })
 }
 
@@ -351,11 +387,13 @@ export async function moveLeadsToCampaign(
  * Create or update a lead (global, not campaign-specific)
  */
 export async function createOrUpdateLead(
-  lead: EmailBisonLead
+  lead: EmailBisonLead,
+  ebWorkspaceId?: number
 ): Promise<{ lead_id: string }> {
   return bisonFetch('/api/leads', {
     method: 'POST',
     body: JSON.stringify(lead),
+    ebWorkspaceId,
   })
 }
 
@@ -366,11 +404,13 @@ export async function createOrUpdateLead(
 export async function addLeadTagsInCampaign(
   campaignId: string,
   leadId: string,
-  tagIds: string[]
+  tagIds: string[],
+  ebWorkspaceId?: number
 ): Promise<void> {
   await bisonFetch(`/api/campaigns/${campaignId}/leads/${leadId}/tags`, {
     method: 'POST',
     body: JSON.stringify({ tag_ids: tagIds }),
+    ebWorkspaceId,
   })
 }
 
@@ -382,15 +422,19 @@ export async function addLeadTagsInCampaign(
  * List sender emails with optional status filter
  * Status options: connected, not_connected, pending_move, pending_deletion
  * (Status filter new in Feb 3 release, warmup_enabled boolean also new)
+ * Pass ebWorkspaceId to scope to a specific EB workspace (requires super-admin key).
  */
-export async function listSenderEmails(params?: {
-  status?: 'connected' | 'not_connected' | 'pending_move' | 'pending_deletion'
-}): Promise<{ sender_emails: EmailBisonSenderEmail[] }> {
+export async function listSenderEmails(
+  params?: {
+    status?: 'connected' | 'not_connected' | 'pending_move' | 'pending_deletion'
+  },
+  ebWorkspaceId?: number
+): Promise<{ sender_emails: EmailBisonSenderEmail[] }> {
   const searchParams = new URLSearchParams()
   if (params?.status) searchParams.set('status', params.status)
 
   const query = searchParams.toString()
-  return bisonFetch(`/api/sender-emails${query ? `?${query}` : ''}`)
+  return bisonFetch(`/api/sender-emails${query ? `?${query}` : ''}`, { ebWorkspaceId })
 }
 
 /**
@@ -399,11 +443,13 @@ export async function listSenderEmails(params?: {
  */
 export async function addSenderEmailsToCampaign(
   campaignId: string,
-  senderEmailIds: string[]
+  senderEmailIds: string[],
+  ebWorkspaceId?: number
 ): Promise<void> {
   await bisonFetch(`/api/campaigns/${campaignId}/attach-sender-emails`, {
     method: 'POST',
     body: JSON.stringify({ sender_email_ids: senderEmailIds }),
+    ebWorkspaceId,
   })
 }
 
@@ -413,11 +459,13 @@ export async function addSenderEmailsToCampaign(
  */
 export async function removeSenderEmailsFromCampaign(
   campaignId: string,
-  senderEmailIds: string[]
+  senderEmailIds: string[],
+  ebWorkspaceId?: number
 ): Promise<void> {
   await bisonFetch(`/api/campaigns/${campaignId}/remove-sender-emails`, {
     method: 'POST',
     body: JSON.stringify({ sender_email_ids: senderEmailIds }),
+    ebWorkspaceId,
   })
 }
 
@@ -517,11 +565,50 @@ export async function applyScheduleTemplate(
  */
 export async function createCampaignSchedule(
   campaignId: string,
-  schedule: CampaignSchedule
+  schedule: CampaignSchedule,
+  ebWorkspaceId?: number
 ): Promise<void> {
   await bisonFetch(`/api/campaigns/${campaignId}/schedule`, {
     method: 'POST',
     body: JSON.stringify(schedule),
+    ebWorkspaceId,
+  })
+}
+
+// ============================================================================
+// WORKSPACES (super-admin only)
+// ============================================================================
+
+export interface EBWorkspace {
+  id: number
+  name: string
+  parent_id: number | null
+}
+
+/**
+ * List all EmailBison workspaces visible to the super-admin key.
+ * Returns every workspace (parent + children); callers can filter as needed.
+ */
+export async function listEBWorkspaces(): Promise<{ workspaces: EBWorkspace[] }> {
+  return bisonFetch('/api/workspaces')
+}
+
+/**
+ * Create a new EmailBison child workspace.
+ * EmailBison automatically sets parent_id to the super-admin's root workspace.
+ *
+ * @param name - Workspace display name (2-100 chars, will be trimmed).
+ */
+export async function createEBWorkspace(
+  name: string
+): Promise<{ id: number; name: string }> {
+  const trimmed = name.trim()
+  if (trimmed.length < 2 || trimmed.length > 100) {
+    throw new Error('EmailBison workspace name must be between 2 and 100 characters')
+  }
+  return bisonFetch('/api/workspaces', {
+    method: 'POST',
+    body: JSON.stringify({ name: trimmed }),
   })
 }
 

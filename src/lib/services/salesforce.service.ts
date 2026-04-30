@@ -502,6 +502,167 @@ export class SalesforceService {
       .replace(/\n/g, '\\n')
       .replace(/\r/g, '\\r')
   }
+
+  /**
+   * Low-level Tooling API request (different URL path than standard REST).
+   * Used for metadata operations like creating custom fields.
+   */
+  private async toolingApiRequest<T = unknown>(
+    endpoint: string,
+    method: string = 'GET',
+    body?: object
+  ): Promise<T> {
+    if (!this.accessToken) {
+      throw new Error('Salesforce service not initialized.')
+    }
+    const url = `${this.instanceUrl}/services/data/${SALESFORCE_API_VERSION}/tooling${endpoint}`
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 30000)
+    try {
+      const response = await fetch(url, {
+        method,
+        headers: {
+          Authorization: `Bearer ${this.accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: body ? JSON.stringify(body) : undefined,
+        signal: controller.signal,
+      })
+      if (!response.ok) {
+        const text = await response.text()
+        throw new Error(`Tooling API ${response.status}: ${text.slice(0, 500)}`)
+      }
+      return (await response.json()) as T
+    } finally {
+      clearTimeout(timeoutId)
+    }
+  }
+
+  /**
+   * Provision Cursive custom fields on the Salesforce Contact and Lead objects.
+   *
+   * Uses the Tooling API to create CustomField metadata. Idempotent — catches
+   * "DUPLICATE_DEVELOPER_NAME" errors and treats them as "already exists".
+   *
+   * Fields created on BOTH Contact and Lead:
+   *   - Cursive_Intent_Category__c  (Text 255)
+   *   - Cursive_Intent_Score__c     (Number 3,0)
+   *   - Cursive_Sha256_Email__c     (Text 255)
+   *   - Cursive_Last_Intent_Refresh__c (DateTime)
+   *   - Cursive_Behavioral_Signals__c (LongTextArea 3200)
+   *   - Cursive_Workspace_Id__c     (Text 36)
+   *
+   * Note: after provisioning, the user may need to manually add these fields
+   * to page layouts and grant Field Level Security (FLS) via Setup. The
+   * Tooling API creates the fields but doesn't auto-update layouts.
+   */
+  async provisionIntentFields(): Promise<{
+    created: string[]
+    existed: string[]
+    failed: Array<{ field: string; error: string }>
+  }> {
+    interface FieldDef {
+      devName: string
+      label: string
+      type: string
+      length?: number
+      precision?: number
+      scale?: number
+      description: string
+    }
+
+    const fields: FieldDef[] = [
+      {
+        devName: 'Cursive_Intent_Category',
+        label: 'Cursive Intent Category',
+        type: 'Text',
+        length: 255,
+        description: 'Behavioral intent category from Cursive AudienceLab pixel',
+      },
+      {
+        devName: 'Cursive_Intent_Score',
+        label: 'Cursive Intent Score',
+        type: 'Number',
+        precision: 3,
+        scale: 0,
+        description: 'Numeric 0-100 intent freshness score from Cursive',
+      },
+      {
+        devName: 'Cursive_Sha256_Email',
+        label: 'Cursive SHA-256 Identity Hash',
+        type: 'Text',
+        length: 255,
+        description: 'SHA-256 hashed email from AudienceLab identity graph',
+      },
+      {
+        devName: 'Cursive_Last_Intent_Refresh',
+        label: 'Cursive Last Intent Refresh',
+        type: 'DateTime',
+        description: 'Timestamp of the most recent intent signal refresh',
+      },
+      {
+        devName: 'Cursive_Behavioral_Signals',
+        label: 'Cursive Behavioral Signals',
+        type: 'LongTextArea',
+        length: 3200,
+        description: 'Semicolon-delimited list of recent behavioral signals',
+      },
+      {
+        devName: 'Cursive_Workspace_Id',
+        label: 'Cursive Workspace ID',
+        type: 'Text',
+        length: 36,
+        description: 'Source Cursive workspace for audit trail',
+      },
+    ]
+
+    const result = {
+      created: [] as string[],
+      existed: [] as string[],
+      failed: [] as Array<{ field: string; error: string }>,
+    }
+
+    const TARGET_OBJECTS = ['Contact', 'Lead'] as const
+
+    for (const obj of TARGET_OBJECTS) {
+      for (const field of fields) {
+        const fullName = `${obj}.${field.devName}__c`
+        const metadata: Record<string, unknown> = {
+          label: field.label,
+          type: field.type,
+          description: field.description,
+        }
+        if (field.length !== undefined) metadata.length = field.length
+        if (field.precision !== undefined) metadata.precision = field.precision
+        if (field.scale !== undefined) metadata.scale = field.scale
+        // LongTextArea requires visibleLines
+        if (field.type === 'LongTextArea') {
+          metadata.visibleLines = 4
+        }
+
+        try {
+          await this.toolingApiRequest('/sobjects/CustomField/', 'POST', {
+            FullName: fullName,
+            Metadata: metadata,
+          })
+          result.created.push(fullName)
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : String(err)
+          if (
+            msg.includes('DUPLICATE_DEVELOPER_NAME') ||
+            msg.includes('duplicate value found') ||
+            msg.includes('already exists')
+          ) {
+            result.existed.push(fullName)
+          } else {
+            result.failed.push({ field: fullName, error: msg.slice(0, 400) })
+          }
+        }
+      }
+    }
+
+    return result
+  }
 }
 
 /**

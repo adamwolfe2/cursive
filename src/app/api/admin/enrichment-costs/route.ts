@@ -2,12 +2,39 @@
  * GET /api/admin/enrichment-costs
  * Returns enrichment cost analytics for the admin dashboard (last 30 days).
  * Auth: platform admin only via requireAdmin() from @/lib/auth/admin.
+ *
+ * Returns graceful empty state if the enrichment_costs table does not yet exist
+ * in this environment (PostgreSQL error 42P01 — relation does not exist).
  */
 
 import { NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { requireAdmin } from '@/lib/auth/admin'
 import { safeError } from '@/lib/utils/log-sanitizer'
+
+// PostgreSQL error code for "relation does not exist"
+const PG_UNDEFINED_TABLE = '42P01'
+
+const EMPTY_RESPONSE = {
+  summary: {
+    total_revenue: 0,
+    total_cost: 0,
+    gross_margin: '0%',
+    total_enrichments: 0,
+  },
+  by_tier: {},
+  by_provider: {},
+  raw_workspace_costs: [],
+  period_days: 30,
+}
+
+function isTableMissingError(err: unknown): boolean {
+  return (
+    typeof err === 'object' &&
+    err !== null &&
+    (err as { code?: string }).code === PG_UNDEFINED_TABLE
+  )
+}
 
 export async function GET() {
   try {
@@ -36,6 +63,12 @@ export async function GET() {
         .select('workspace_id, credits_charged, api_cost_usd')
         .gte('created_at', thirtyDaysAgo),
     ])
+
+    // Check if the table is missing (any result will have the same error)
+    if (isTableMissingError(byTierResult.error)) {
+      safeError('[AdminEnrichmentCosts] enrichment_costs table missing — returning empty state')
+      return NextResponse.json(EMPTY_RESPONSE)
+    }
 
     // Aggregate by tier
     const aggregateByTier = (byTierResult.data ?? []).reduce<

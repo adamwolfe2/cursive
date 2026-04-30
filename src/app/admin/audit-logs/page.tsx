@@ -8,9 +8,9 @@
  * and severity color-coding for compliance and debugging.
  */
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { createClient } from '@/lib/supabase/client'
+import { useAdminAuth } from '@/hooks/use-admin-auth'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 // ============ Types ============
@@ -184,39 +184,13 @@ function TableSkeleton() {
 // ============ Main Page ============
 
 export default function AdminAuditLogsPage() {
-  const [isAdmin, setIsAdmin] = useState(false)
-  const [authChecked, setAuthChecked] = useState(false)
+  const { isAdmin, authChecked } = useAdminAuth()
   const [filters, setFilters] = useState<Filters>({
     type: 'audit',
     action: '',
     resource_type: '',
     page: 1,
   })
-
-  const supabase = createClient()
-
-  // Admin role check
-  useEffect(() => {
-    const checkAdmin = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
-        window.location.href = '/login'
-        return
-      }
-      const { data: userData } = await supabase
-        .from('users')
-        .select('role')
-        .eq('auth_user_id', user.id)
-        .maybeSingle() as { data: { role: string } | null }
-      if (!userData || (userData.role !== 'admin' && userData.role !== 'owner')) {
-        window.location.href = '/dashboard'
-        return
-      }
-      setIsAdmin(true)
-      setAuthChecked(true)
-    }
-    checkAdmin()
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Build query URL from filters
   function buildQueryUrl(f: Filters): string {

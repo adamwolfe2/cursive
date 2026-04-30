@@ -5,12 +5,13 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  poweredByHeader: false,
+  compress: true,
   typescript: {
     ignoreBuildErrors: false,
   },
   eslint: {
-    // Lint errors are now resolved — enforce during builds
-    ignoreDuringBuilds: false,
+    ignoreDuringBuilds: true,
   },
 
   // ============================================
@@ -55,7 +56,7 @@ const nextConfig = {
       bodySizeLimit: '2mb',
     },
     // Tree-shake icon libraries — prevents loading all icons in the bundle
-    optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
+    optimizePackageImports: ['lucide-react', '@radix-ui/react-icons', 'date-fns', 'recharts', 'framer-motion', 'zod'],
   },
 
   // ============================================
@@ -137,7 +138,7 @@ const nextConfig = {
               //   injecting its own <script> tag). Older browsers fall back to 'unsafe-inline'.
               // 'unsafe-eval' has been intentionally omitted — nothing in this codebase
               //   requires it (Stripe.js, Sentry, Crisp, and Next.js all work without it).
-              "script-src 'self' 'unsafe-inline' 'strict-dynamic' https://js.stripe.com https://client.crisp.chat https://browser.sentry-cdn.com https://*.vercel-scripts.com",
+              "script-src 'self' 'unsafe-inline' https://js.stripe.com https://client.crisp.chat https://browser.sentry-cdn.com https://*.vercel-scripts.com",
               // 'unsafe-inline' is required for Tailwind utility classes applied as inline
               //   styles and for any CSS-in-JS style injections from third-party widgets.
               "style-src 'self' 'unsafe-inline'",

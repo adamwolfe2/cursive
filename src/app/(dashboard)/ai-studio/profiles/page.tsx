@@ -42,7 +42,6 @@ function ProfilesPageInner() {
 
   useEffect(() => {
     if (!workspaceId) {
-      router.push('/ai-studio')
       return
     }
     fetchProfiles()
@@ -63,6 +62,22 @@ function ProfilesPageInner() {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  if (!workspaceId) {
+    return (
+      <PageContainer>
+        <EmptyState
+          icon={Users}
+          title="Select a Brand Workspace"
+          description="Open a brand workspace from AI Studio home to view customer profiles."
+          action={{
+            label: 'Go to AI Studio',
+            onClick: () => router.push('/ai-studio')
+          }}
+        />
+      </PageContainer>
+    )
   }
 
   if (isLoading) {

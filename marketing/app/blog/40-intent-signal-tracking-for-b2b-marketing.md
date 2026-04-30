@@ -188,7 +188,7 @@ Knowing which prospects are in-market right now changes everything. You stop was
 
 Intent signal tracking isn't about collecting more data. It's about knowing who to talk to, when to reach out, and what to say when you do.
 
-**Ready to identify high-intent prospects before your competitors do?** [Book a demo](https://cal.com/cursive/30min) to see how Cursive tracks 450 billion+ intent signals and helps B2B teams prioritize accounts showing real buying behavior.
+**Ready to identify high-intent prospects before your competitors do?** [Book a demo](https://cal.com/cursiveteam/30min) to see how Cursive tracks 450 billion+ intent signals and helps B2B teams prioritize accounts showing real buying behavior.
 
 ---
 

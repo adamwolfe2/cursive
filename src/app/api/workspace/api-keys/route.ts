@@ -58,6 +58,11 @@ export async function GET(_request: NextRequest) {
         { key: 'read:conversations', description: 'Read conversation threads' },
         { key: 'write:conversations', description: 'Reply to conversations' },
         { key: 'read:analytics', description: 'Read analytics and reports' },
+        { key: 'ext:lookup', description: 'Chrome Extension — Person lookup' },
+        { key: 'ext:company', description: 'Chrome Extension — Company lookup' },
+        { key: 'ext:verify', description: 'Chrome Extension — Email verification' },
+        { key: 'ext:save', description: 'Chrome Extension — Save leads' },
+        { key: '*', description: 'Full access (all permissions)' },
       ],
     })
   } catch (error) {

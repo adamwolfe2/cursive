@@ -559,4 +559,4 @@ Track conversion rate for single-channel vs. multi-channel exposed prospects. Us
 
 ---
 
-**Ready to orchestrate marketing across all channels?** [Book a demo](https://cal.com/cursive/30min) to see how Cursive unifies visitor identification, audience building, and multi-channel campaign activation.
+**Ready to orchestrate marketing across all channels?** [Book a demo](https://cal.com/cursiveteam/30min) to see how Cursive unifies visitor identification, audience building, and multi-channel campaign activation.

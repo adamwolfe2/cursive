@@ -20,17 +20,17 @@ function FunnelBar({ label, count, total }: { label: string; count: number; tota
   const width = total > 0 ? Math.max(4, Math.round((count / total) * 100)) : 0
   return (
     <div className="flex items-center gap-3">
-      <span className="text-sm text-gray-500 w-24 shrink-0 text-right">{label}</span>
-      <div className="flex-1 h-6 bg-gray-100 rounded-lg overflow-hidden">
+      <span className="text-sm text-muted-foreground w-24 shrink-0 text-right">{label}</span>
+      <div className="flex-1 h-6 bg-muted rounded-lg overflow-hidden">
         <div
-          className="h-full bg-gray-300 rounded-lg flex items-center px-2 transition-all"
+          className="h-full bg-border rounded-lg flex items-center px-2 transition-all"
           style={{ width: `${width}%` }}
         >
-          {width > 12 && <span className="text-gray-700 text-xs font-bold">{count.toLocaleString()}</span>}
+          {width > 12 && <span className="text-foreground text-xs font-bold">{count.toLocaleString()}</span>}
         </div>
       </div>
-      {width <= 12 && <span className="text-xs font-semibold text-gray-600 w-8">{count}</span>}
-      <span className="text-xs text-gray-400 w-10 text-right shrink-0">{pct(count, total)}</span>
+      {width <= 12 && <span className="text-xs font-semibold text-muted-foreground w-8">{count}</span>}
+      <span className="text-xs text-muted-foreground w-10 text-right shrink-0">{pct(count, total)}</span>
     </div>
   )
 }
@@ -174,8 +174,8 @@ export default async function AnalyticsPage() {
       <AnimatedSection delay={0}>
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Analytics</h1>
-            <p className="text-sm text-gray-500 mt-0.5">Your lead pipeline performance at a glance.</p>
+            <h1 className="text-2xl font-bold text-foreground">Analytics</h1>
+            <p className="text-sm text-muted-foreground mt-0.5">Your lead pipeline performance at a glance.</p>
           </div>
           <Link
             href="/leads"
@@ -189,25 +189,25 @@ export default async function AnalyticsPage() {
       {/* KPI Row */}
       <AnimatedSection delay={0.04}>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="bg-white rounded-xl border border-gray-200 p-6">
-            <span className="text-sm text-gray-500">Total Leads</span>
-            <div className="text-3xl font-semibold text-gray-900 mt-1">{stats.total.toLocaleString()}</div>
-            <p className="text-xs text-gray-400 mt-1">{enrichRate} enriched</p>
+          <div className="bg-card rounded-xl border border-border p-6">
+            <span className="text-sm text-muted-foreground">Total Leads</span>
+            <div className="text-3xl font-semibold text-foreground mt-1">{stats.total.toLocaleString()}</div>
+            <p className="text-xs text-muted-foreground mt-1">{enrichRate} enriched</p>
           </div>
-          <div className="bg-white rounded-xl border border-gray-200 p-6">
-            <span className="text-sm text-gray-500">Contacted</span>
-            <div className="text-3xl font-semibold text-gray-900 mt-1">{stats.contacted.toLocaleString()}</div>
-            <p className="text-xs text-gray-400 mt-1">{contactRate} of total</p>
+          <div className="bg-card rounded-xl border border-border p-6">
+            <span className="text-sm text-muted-foreground">Contacted</span>
+            <div className="text-3xl font-semibold text-foreground mt-1">{stats.contacted.toLocaleString()}</div>
+            <p className="text-xs text-muted-foreground mt-1">{contactRate} of total</p>
           </div>
-          <div className="bg-white rounded-xl border border-gray-200 p-6">
-            <span className="text-sm text-gray-500">Hot Leads</span>
-            <div className="text-3xl font-semibold text-gray-900 mt-1">{stats.hot.toLocaleString()}</div>
-            <p className="text-xs text-gray-400 mt-1">intent score &ge;70</p>
+          <div className="bg-card rounded-xl border border-border p-6">
+            <span className="text-sm text-muted-foreground">Hot Leads</span>
+            <div className="text-3xl font-semibold text-foreground mt-1">{stats.hot.toLocaleString()}</div>
+            <p className="text-xs text-muted-foreground mt-1">intent score ≥70</p>
           </div>
-          <div className="bg-white rounded-xl border border-gray-200 p-6">
-            <span className="text-sm text-gray-500">Won</span>
-            <div className="text-3xl font-semibold text-gray-900 mt-1">{stats.won.toLocaleString()}</div>
-            <p className="text-xs text-gray-400 mt-1">{winRate} close rate</p>
+          <div className="bg-card rounded-xl border border-border p-6">
+            <span className="text-sm text-muted-foreground">Won</span>
+            <div className="text-3xl font-semibold text-foreground mt-1">{stats.won.toLocaleString()}</div>
+            <p className="text-xs text-muted-foreground mt-1">{winRate} close rate</p>
           </div>
         </div>
       </AnimatedSection>
@@ -216,8 +216,8 @@ export default async function AnalyticsPage() {
 
         {/* Pipeline Funnel */}
         <AnimatedSection delay={0.08}>
-          <div className="bg-white rounded-xl border border-gray-200 p-6">
-            <h2 className="font-semibold text-gray-900 mb-5">Pipeline Funnel</h2>
+          <div className="bg-card rounded-xl border border-border p-6">
+            <h2 className="font-semibold text-foreground mb-5">Pipeline Funnel</h2>
             <div className="space-y-3">
               <FunnelBar label="All Leads" count={stats.total} total={stats.total} />
               <FunnelBar label="Enriched" count={stats.enriched} total={stats.total} />
@@ -226,26 +226,26 @@ export default async function AnalyticsPage() {
               <FunnelBar label="Won" count={stats.won} total={stats.total} />
             </div>
             {stats.lost > 0 && (
-              <p className="mt-4 text-xs text-gray-400">{stats.lost} marked not interested</p>
+              <p className="mt-4 text-xs text-muted-foreground">{stats.lost} marked not interested</p>
             )}
-            <div className="mt-5 pt-4 border-t border-gray-100 grid grid-cols-1 sm:grid-cols-3 gap-3 text-center">
+            <div className="mt-5 pt-4 border-t border-border grid grid-cols-1 sm:grid-cols-3 gap-3 text-center">
               <div>
-                <p className="text-lg font-bold text-gray-900">{enrichRate}</p>
-                <p className="text-xs text-gray-500">Enrich rate</p>
+                <p className="text-lg font-bold text-foreground">{enrichRate}</p>
+                <p className="text-xs text-muted-foreground">Enrich rate</p>
               </div>
               <div>
-                <p className="text-lg font-bold text-gray-900">{contactRate}</p>
-                <p className="text-xs text-gray-500">Contact rate</p>
+                <p className="text-lg font-bold text-foreground">{contactRate}</p>
+                <p className="text-xs text-muted-foreground">Contact rate</p>
               </div>
               <div>
-                <p className="text-lg font-bold text-gray-900">{winRate}</p>
-                <p className="text-xs text-gray-500">Close rate</p>
+                <p className="text-lg font-bold text-foreground">{winRate}</p>
+                <p className="text-xs text-muted-foreground">Close rate</p>
               </div>
             </div>
             {stats.contacted === 0 && (
-              <div className="mt-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
-                <p className="text-xs text-gray-700 font-medium">Start tracking outreach</p>
-                <p className="text-xs text-gray-500 mt-0.5">
+              <div className="mt-4 p-3 bg-muted rounded-lg border border-border">
+                <p className="text-xs text-foreground font-medium">Start tracking outreach</p>
+                <p className="text-xs text-muted-foreground mt-0.5">
                   Mark leads as &ldquo;Contacted&rdquo; from the{' '}
                   <Link href="/leads" className="text-primary underline">leads page</Link> to see your pipeline fill up.
                 </p>
@@ -256,8 +256,8 @@ export default async function AnalyticsPage() {
 
         {/* Intent Score Distribution */}
         <AnimatedSection delay={0.1}>
-          <div className="bg-white rounded-xl border border-gray-200 p-6">
-            <h2 className="font-semibold text-gray-900 mb-5">Lead Quality</h2>
+          <div className="bg-card rounded-xl border border-border p-6">
+            <h2 className="font-semibold text-foreground mb-5">Lead Quality</h2>
             <div className="space-y-4">
               {[
                 { label: 'Hot (70+)', count: stats.hot },
@@ -267,13 +267,13 @@ export default async function AnalyticsPage() {
               ].map(({ label, count }) => {
                 const barPct = stats.total > 0 ? Math.round((count / stats.total) * 100) : 0
                 return (
-                  <div key={label} className="rounded-lg border border-gray-200 bg-white p-3">
+                  <div key={label} className="rounded-lg border border-border bg-card p-3">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium text-gray-700">{label}</span>
-                      <span className="text-sm font-semibold text-gray-900">{count.toLocaleString()} <span className="text-xs font-normal text-gray-400">({barPct}%)</span></span>
+                      <span className="text-sm font-medium text-foreground">{label}</span>
+                      <span className="text-sm font-semibold text-foreground">{count.toLocaleString()} <span className="text-xs font-normal text-muted-foreground">({barPct}%)</span></span>
                     </div>
-                    <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                      <div className="h-full bg-gray-300 rounded-full transition-all" style={{ width: `${barPct}%` }} />
+                    <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                      <div className="h-full bg-border rounded-full transition-all" style={{ width: `${barPct}%` }} />
                     </div>
                   </div>
                 )
@@ -282,12 +282,12 @@ export default async function AnalyticsPage() {
             {stats.hot > 0 && (
               <Link
                 href="/leads"
-                className="mt-4 flex items-center justify-between rounded-lg bg-gray-50 border border-gray-200 px-3 py-2.5 hover:bg-gray-100 transition-colors"
+                className="mt-4 flex items-center justify-between rounded-lg bg-muted border border-border px-3 py-2.5 hover:bg-muted transition-colors"
               >
-                <span className="text-xs font-semibold text-gray-700">
+                <span className="text-xs font-semibold text-foreground">
                   {stats.hot} hot lead{stats.hot !== 1 ? 's' : ''} ready for outreach
                 </span>
-                <ArrowRight className="h-3.5 w-3.5 text-gray-400" />
+                <ArrowRight className="h-3.5 w-3.5 text-muted-foreground" />
               </Link>
             )}
           </div>
@@ -295,45 +295,45 @@ export default async function AnalyticsPage() {
 
         {/* Lead Sources */}
         <AnimatedSection delay={0.12}>
-          <div className="bg-white rounded-xl border border-gray-200 p-6">
-            <h2 className="font-semibold text-gray-900 mb-5">Lead Sources</h2>
+          <div className="bg-card rounded-xl border border-border p-6">
+            <h2 className="font-semibold text-foreground mb-5">Lead Sources</h2>
             {sourceSorted.length > 0 ? (
               <div className="space-y-3">
                 {sourceSorted.map(([source, count]) => {
                   const barPct = stats.total > 0 ? Math.round((count / stats.total) * 100) : 0
                   return (
                     <div key={source} className="flex items-center gap-3">
-                      <span className="text-sm text-gray-600 w-28 shrink-0 truncate">{source}</span>
-                      <div className="flex-1 h-4 bg-gray-100 rounded-full overflow-hidden">
+                      <span className="text-sm text-muted-foreground w-28 shrink-0 truncate">{source}</span>
+                      <div className="flex-1 h-4 bg-muted rounded-full overflow-hidden">
                         <div
-                          className="h-full rounded-full bg-gray-300"
+                          className="h-full rounded-full bg-border"
                           style={{ width: `${Math.max(4, barPct)}%` }}
                         />
                       </div>
-                      <span className="text-xs font-medium text-gray-600 w-8 text-right">{count}</span>
-                      <span className="text-xs text-gray-400 w-8 text-right">{barPct}%</span>
+                      <span className="text-xs font-medium text-muted-foreground w-8 text-right">{count}</span>
+                      <span className="text-xs text-muted-foreground w-8 text-right">{barPct}%</span>
                     </div>
                   )
                 })}
               </div>
             ) : (
-              <p className="text-sm text-gray-400">No leads yet</p>
+              <p className="text-sm text-muted-foreground">No leads yet</p>
             )}
           </div>
         </AnimatedSection>
 
         {/* Weekly Trend */}
         <AnimatedSection delay={0.14}>
-          <div className="bg-white rounded-xl border border-gray-200 p-6">
-            <h2 className="font-semibold text-gray-900 mb-5">Weekly Lead Volume</h2>
+          <div className="bg-card rounded-xl border border-border p-6">
+            <h2 className="font-semibold text-foreground mb-5">Weekly Lead Volume</h2>
             <div className="flex items-end gap-2 h-32">
               {stats.weeks.map((week) => {
                 const height = maxWeek > 0 ? Math.max(4, Math.round((week.count / maxWeek) * 100)) : 4
                 return (
                   <div key={week.label} className="flex-1 flex flex-col items-center gap-1">
-                    <span className="text-[10px] text-gray-500 font-medium">{week.count > 0 ? week.count : ''}</span>
+                    <span className="text-[10px] text-muted-foreground font-medium">{week.count > 0 ? week.count : ''}</span>
                     <div
-                      className="w-full rounded-t-sm transition-all bg-gray-200 hover:bg-gray-300"
+                      className="w-full rounded-t-sm transition-all bg-muted hover:bg-border"
                       style={{ height: `${height}%` }}
                       title={`${week.label}: ${week.count} leads`}
                     />
@@ -344,23 +344,23 @@ export default async function AnalyticsPage() {
             <div className="flex gap-2 mt-2">
               {stats.weeks.map((week) => (
                 <div key={week.label} className="flex-1 text-center">
-                  <span className="text-[9px] text-gray-400 leading-none">{week.label.split(' ')[1]}</span>
+                  <span className="text-[9px] text-muted-foreground leading-none">{week.label.split(' ')[1]}</span>
                 </div>
               ))}
             </div>
-            <p className="text-xs text-gray-400 mt-3 text-center">Last 8 weeks</p>
+            <p className="text-xs text-muted-foreground mt-3 text-center">Last 8 weeks</p>
           </div>
         </AnimatedSection>
 
       </div>
 
-      {/* Bottom CTA if user isn&apos;t using pipeline features */}
+      {/* Bottom CTA if user isn't using pipeline features */}
       {stats.contacted === 0 && stats.total > 0 && (
         <AnimatedSection delay={0.16}>
-          <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="bg-muted border border-border rounded-xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
-              <p className="font-semibold text-gray-900">Track your outreach to unlock full analytics</p>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="font-semibold text-foreground">Track your outreach to unlock full analytics</p>
+              <p className="text-sm text-muted-foreground mt-1">
                 Mark leads as &ldquo;Contacted,&rdquo; &ldquo;Won,&rdquo; or &ldquo;Not Interested&rdquo; directly from the leads page.
                 Your pipeline funnel and close rate will update automatically.
               </p>

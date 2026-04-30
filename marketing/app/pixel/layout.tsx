@@ -4,7 +4,7 @@ import { generateBreadcrumbSchema } from '@/lib/seo/structured-data'
 
 export const metadata = generateMetadata({
   title: 'Website Visitor Tracking Pixel - Identify Anonymous Traffic',
-  description: 'Install Cursive\'s lightweight tracking pixel to identify 70% of anonymous website visitors in real-time. Get company names, decision-maker contacts, and page-level behavior data.',
+  description: 'Install Cursive\'s lightweight tracking pixel to match 40\u201360% of anonymous website visitors deterministically against an offline-rooted identity graph of 280M+ verified consumer profiles. Get company names, decision-maker contacts, and page-level behavior data.',
   keywords: [
     'website tracking pixel',
     'visitor identification pixel',

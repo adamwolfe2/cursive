@@ -312,7 +312,7 @@ When you stop broadcasting generic messages to broad audiences and start deliver
 
 The difference between campaigns that struggle and campaigns that scale profitably often comes down to segment precision. With [200+ integrations](/integrations), your segmentation strategy works across every platform. Learn about [improving CRM integration workflows](/blog/30-tips-for-improving-crm-integration-workflows).
 
-**Ready to build multifactor segments that actually convert?** [Book a demo](https://cal.com/cursive/30min) to see how Cursive combines firmographic data, behavioral tracking, and 450B+ intent signals into unified audience segments that drive measurable growth.
+**Ready to build multifactor segments that actually convert?** [Book a demo](https://cal.com/cursiveteam/30min) to see how Cursive combines firmographic data, behavioral tracking, and 450B+ intent signals into unified audience segments that drive measurable growth.
 
 ---
 

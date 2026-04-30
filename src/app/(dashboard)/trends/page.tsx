@@ -22,13 +22,14 @@ export default function TrendsPage() {
   const [activeTab, setActiveTab] = useState<TrendType>('gainers')
   const router = useRouter()
 
-  const { data: trendsData, isLoading } = useQuery({
+  const { data: trendsData, isLoading, isError } = useQuery({
     queryKey: ['trends', activeTab],
     queryFn: async () => {
       const response = await fetch(`/api/trends?type=${activeTab}&limit=20`)
       if (!response.ok) throw new Error('Failed to fetch trends')
       return response.json()
     },
+    retry: 1,
   })
 
   const topics = trendsData?.data?.[activeTab] || []
@@ -123,7 +124,7 @@ export default function TrendsPage() {
       )}
 
       {/* Topics Grid */}
-      {!isLoading && topics.length > 0 && (
+      {!isLoading && !isError && topics.length > 0 && (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {topics.map((topic: Topic) => (
             <TopicCard
@@ -135,8 +136,8 @@ export default function TrendsPage() {
         </div>
       )}
 
-      {/* Empty State */}
-      {!isLoading && topics.length === 0 && (
+      {/* Empty State — shown when data returns empty OR the API errors out */}
+      {!isLoading && (isError || topics.length === 0) && (
         <div className="text-center py-12">
           <svg
             className="mx-auto h-12 w-12 text-zinc-400"
@@ -152,12 +153,10 @@ export default function TrendsPage() {
             />
           </svg>
           <h3 className="mt-2 text-[14px] font-medium text-zinc-900">
-            No trends available
+            No trending data available yet
           </h3>
           <p className="mt-1 text-[13px] text-zinc-600 max-w-sm mx-auto">
-            {activeTab === 'gainers'
-              ? 'No gaining topics found in the current period. Create a query to start tracking industry trends.'
-              : 'No declining topics found in the current period. Create a query to start tracking industry trends.'}
+            Trends update weekly as search volume data is collected. Create a query to start tracking industry topics.
           </p>
           <Link
             href="/queries"

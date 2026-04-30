@@ -59,3 +59,11 @@ supabase/.temp
 # Temporary cloned repos
 square-ui/
 temp-file-uploader/
+.env.all
+
+# Chrome extension build artifacts
+chrome-extension/node_modules/
+chrome-extension/dist/
+
+# Build output
+dist/

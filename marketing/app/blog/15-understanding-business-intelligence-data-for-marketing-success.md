@@ -287,7 +287,7 @@ When you unify customer data across all touchpoints, layer in intent signals, an
 
 The difference between companies that grow predictably and those that struggle often comes down to how quickly they can turn intelligence into action.
 
-**Ready to unify your marketing data and start making intelligence-driven decisions?** [Book a demo](https://cal.com/cursive/30min) to see how Cursive identifies 70% of website visitors, tracks 450B+ intent signals, and syncs unified customer intelligence across 200+ platforms.
+**Ready to unify your marketing data and start making intelligence-driven decisions?** [Book a demo](https://cal.com/cursiveteam/30min) to see how Cursive identifies 70% of website visitors, tracks 450B+ intent signals, and syncs unified customer intelligence across 200+ platforms.
 
 ---
 

@@ -308,7 +308,7 @@ Intent-based marketing transforms how B2B companies identify and engage prospect
 
 The tactics are straightforward: prioritize high-intent accounts, segment by journey stage, personalize across channels, and coordinate sales and marketing around shared intent data. The results speak for themselves—higher conversion rates, shorter sales cycles, and better ROI.
 
-**Ready to build an intent-based marketing engine?** [Book a demo](https://cal.com/cursive/30min) to see how Cursive tracks 450 billion+ intent signals and helps B2B teams convert prospects at exactly the right moment.
+**Ready to build an intent-based marketing engine?** [Book a demo](https://cal.com/cursiveteam/30min) to see how Cursive tracks 450 billion+ intent signals and helps B2B teams convert prospects at exactly the right moment.
 
 ---
 

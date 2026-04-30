@@ -8,8 +8,9 @@ import { quickClassify, type IntentCategory, type SuggestedAction } from '@/lib/
 import { sendEmail } from '@/lib/services/outreach/email-sender.service'
 import { SdrConfigRepository } from '@/lib/repositories/sdr-config.repository'
 import { DncRepository } from '@/lib/repositories/dnc.repository'
+import { sendSlackAlert } from '@/lib/monitoring/alerts'
 
-const CAL_BOOKING_URL = process.env.CAL_BOOKING_URL || 'https://cal.com/gotdarrenhill/30min'
+const CAL_BOOKING_URL = process.env.CAL_BOOKING_URL || 'https://cal.com/cursiveteam/30min'
 const OUTREACH_FROM_EMAIL = process.env.OUTREACH_FROM_EMAIL || 'team@meetcursive.com'
 const OUTREACH_FROM_NAME = process.env.OUTREACH_FROM_NAME || 'The Cursive Team'
 
@@ -53,6 +54,22 @@ export const processReply = inngest.createFunction(
     retries: 3,
     timeouts: { finish: "5m" },
     concurrency: { limit: 3 },
+    onFailure: async ({ error, event }) => {
+      const replyId = (event?.data?.event?.data as { reply_id?: string })?.reply_id
+      try {
+        await sendSlackAlert({
+          type: 'inngest_failure',
+          severity: 'critical',
+          message: `Campaign reply processing failed for reply ${replyId ?? 'unknown'}`,
+          metadata: {
+            reply_id: replyId ?? 'unknown',
+            error: error?.message ?? 'Unknown error',
+          },
+        })
+      } catch {
+        // Failure handler must not throw
+      }
+    },
   },
   { event: 'emailbison/reply-received' },
   async ({ event, step, logger }) => {
@@ -84,7 +101,8 @@ export const processReply = inngest.createFunction(
           email_send:email_sends!email_send_id(
             id,
             subject,
-            body_text
+            body_text,
+            provider_message_id
           )
         `)
 
@@ -233,6 +251,12 @@ export const processReply = inngest.createFunction(
         // Append booking link to the Claude-generated body
         const bodyWithCTA = `${suggestedResponse!.body}\n\n---\nBook a time that works for you: ${calUrl}`
 
+        // Build In-Reply-To / References headers for proper email threading
+        const originalMessageId = (reply.email_send as any)?.provider_message_id
+        const threadingHeaders = originalMessageId
+          ? { 'In-Reply-To': originalMessageId, References: originalMessageId }
+          : undefined
+
         try {
           const result = await sendEmail({
             to: reply.from_email,
@@ -242,6 +266,7 @@ export const processReply = inngest.createFunction(
             bodyText: bodyWithCTA,
             replyTo: fromEmail,
             ...(wsConfig?.auto_bcc_address ? { bcc: wsConfig.auto_bcc_address } : {}),
+            ...(threadingHeaders ? { headers: threadingHeaders } : {}),
           })
 
           // Record the auto-send result on the reply
@@ -313,9 +338,21 @@ export const batchProcessReplies = inngest.createFunction(
   {
     id: 'campaign-batch-process-replies',
     name: 'Batch Process Unclassified Replies',
-    retries: 2,
+    retries: 3,
     timeouts: { finish: "5m" },
     concurrency: { limit: 3 },
+    onFailure: async ({ error }) => {
+      try {
+        await sendSlackAlert({
+          type: 'inngest_failure',
+          severity: 'critical',
+          message: 'Batch reply processing failed',
+          metadata: { error: error?.message ?? 'Unknown error' },
+        })
+      } catch {
+        // Failure handler must not throw
+      }
+    },
   },
   { cron: '*/15 * * * *' }, // Every 15 minutes
   async ({ step, logger }) => {

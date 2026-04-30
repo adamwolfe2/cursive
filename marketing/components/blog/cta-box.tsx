@@ -26,9 +26,9 @@ const ctaConfig: Record<
     icon: Target,
     title: 'See Cursive in action',
     description:
-      'Book a personalized demo and discover how Cursive identifies 70% of your anonymous website visitors and turns them into qualified leads.',
+      'Book a personalized demo and discover how Cursive resolves 40–60% of your anonymous website visitors with a deterministic pixel — vs 2–5% for cookie-based tools — and turns them into qualified leads.',
     buttonText: 'Book Your Demo',
-    buttonHref: 'https://cal.com/gotdarrenhill/30min',
+    buttonHref: 'https://cal.com/cursiveteam/30min',
     accentColor: 'bg-blue-50 border-blue-200',
   },
   trial: {

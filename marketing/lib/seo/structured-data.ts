@@ -13,8 +13,8 @@ export function generateOrganizationSchema() {
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'Sales',
-      url: 'https://cal.com/gotdarrenhill/30min',
-      email: 'hello@meetcursive.com',
+      url: 'https://cal.com/cursiveteam/30min',
+      email: 'hey@meetcursive.com',
     },
   }
 }

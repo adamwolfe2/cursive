@@ -27,11 +27,11 @@ const visitorIdFAQs = [
   },
   {
     question: 'How does website visitor identification work?',
-    answer: 'Visitor identification uses multiple techniques: (1) IP address resolution — mapping the visitor\'s IP to a known business or individual; (2) Device fingerprinting — combining browser, device, and network signals into a unique identifier; (3) Probabilistic matching — cross-referencing signals against an identity graph of 200M+ profiles; (4) Deterministic matching — directly matching against cookie data from opted-in profiles. Best-in-class tools combine all methods for maximum accuracy.',
+    answer: 'Visitor identification uses several techniques. Cookie-based tracking links return visits but only resolves 2–5% of visitors. IP address resolution maps the visitor\'s IP to a known business and resolves 10–15%. Cursive uses a deterministic pixel that resolves visitors against an identity graph of 280M+ verified consumer and 140M+ business profiles refreshed every 30 days via NCOA — achieving a 40–60% match rate with 60–80% pixel-level accuracy, not modeled or probabilistic.',
   },
   {
     question: 'What percentage of website visitors can be identified?',
-    answer: 'Identification rates vary by tool and traffic type. For B2B US traffic, leading tools identify 50-70% of visitors as individual people with contact data. Cursive identifies ~70% of US B2B visitors. Competitors like Warmly identify ~40%, RB2B ~50-60%, and Clearbit ~30-40%. Company-level identification (knowing the company but not the person) typically reaches 80-90% of B2B traffic.',
+    answer: 'Match rates vary dramatically by method. Cookie-based tools resolve 2–5% of visitors. IP databases resolve 10–15%. Cursive\'s deterministic pixel achieves a 40–60% match rate with 60–80% pixel-level accuracy — driven by our proprietary geo-framing methodology and an identity graph of 280M+ verified consumer and 140M+ business profiles refreshed every 30 days via NCOA.',
   },
   {
     question: 'Is website visitor identification legal and GDPR compliant?',

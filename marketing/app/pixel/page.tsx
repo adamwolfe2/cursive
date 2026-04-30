@@ -103,7 +103,7 @@ export default function PixelPage() {
                   Included with all service plans. Flat monthly pricing, no per-visitor fees. Setup done in 48 hours.
                 </p>
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                  <Button size="lg" href="https://cal.com/gotdarrenhill/30min" target="_blank">
+                  <Button size="lg" href="https://cal.com/cursiveteam/30min" target="_blank">
                     Book Pixel Setup Call
                     <ArrowRight className="w-5 h-5" />
                   </Button>
@@ -118,7 +118,7 @@ export default function PixelPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="h-5 w-5 text-green-600" />
-                    <span>70% identification rate</span>
+                    <span>40&ndash;60% pixel match rate</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="h-5 w-5 text-green-600" />
@@ -172,7 +172,7 @@ export default function PixelPage() {
                 </div>
 
                 <div className="mt-8 text-center">
-                  <Button size="lg" className="w-full" href="https://cal.com/gotdarrenhill/30min" target="_blank">
+                  <Button size="lg" className="w-full" href="https://cal.com/cursiveteam/30min" target="_blank">
                     Book Pixel Setup Call
                     <ArrowRight className="w-5 h-5" />
                   </Button>
@@ -345,11 +345,11 @@ export default function PixelPage() {
                     </div>
 
                     <div className="p-6 bg-primary/5 rounded-xl text-center border-2 border-primary">
-                      <div className="text-sm text-primary font-medium mb-2">Identification Rate</div>
+                      <div className="text-sm text-primary font-medium mb-2">Pixel Match Rate</div>
                       <div className="text-3xl font-light text-gray-900 mb-1">
-                        70%
+                        40&ndash;60%
                       </div>
-                      <div className="text-xs text-gray-500">of anonymous visitors identified</div>
+                      <div className="text-xs text-gray-500">deterministic, not modeled</div>
                     </div>
                   </div>
 
@@ -407,7 +407,7 @@ export default function PixelPage() {
                       </div>
                     ))}
                   </div>
-                  <Button className="w-full" href="https://cal.com/gotdarrenhill/30min" target="_blank">
+                  <Button className="w-full" href="https://cal.com/cursiveteam/30min" target="_blank">
                     Book Pixel Setup
                     <ArrowRight className="w-4 h-4" />
                   </Button>
@@ -424,7 +424,7 @@ export default function PixelPage() {
                     Cold Outreach to New Prospects
                   </h3>
                   <p className="text-gray-600 mb-6">
-                    Browse and buy leads from our database of 420M+ verified B2B contacts. Perfect for proactive outbound when you need to reach people who haven't found you yet.
+                    Browse and buy leads from our database of 280M+ verified consumer and 140M+ business profiles — offline-rooted, refreshed every 30 days against NCOA. Perfect for proactive outbound when you need to reach people who haven&apos;t found you yet.
                   </p>
                   <div className="space-y-3 mb-6">
                     {[
@@ -478,7 +478,7 @@ export default function PixelPage() {
                   Book a 15-minute setup call. We'll install the pixel on your website within 48 hours and you'll start getting leads immediately.
                 </p>
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
-                  <Button size="lg" href="https://cal.com/gotdarrenhill/30min" target="_blank">
+                  <Button size="lg" href="https://cal.com/cursiveteam/30min" target="_blank">
                     Book Pixel Setup Call
                     <ArrowRight className="w-5 h-5" />
                   </Button>
@@ -507,7 +507,7 @@ export default function PixelPage() {
             subheadline="Website Visitors"
             description="Book a setup call and we'll install the Cursive Pixel on your website within 48 hours. Start identifying anonymous visitors and converting them into leads."
             ctaText="Book Pixel Setup Call"
-            ctaUrl="https://cal.com/gotdarrenhill/30min"
+            ctaUrl="https://cal.com/cursiveteam/30min"
           />
         </main>
       </HumanView>
@@ -532,7 +532,8 @@ export default function PixelPage() {
               "Included with all Cursive service plans starting at $1,000/month (Cursive Data tier)",
               "Flat monthly pricing -- no per-visitor or per-lead fees",
               "Your cost stays the same regardless of website traffic volume",
-              "70% average identification rate on anonymous visitors",
+              "40\u201360% pixel match rate (deterministic, not modeled). For context: cookie sync averages 2\u20135%, IP-only databases 10\u201315%.",
+              "60\u201380% pixel-level accuracy on a matched record, driven by geo-framing methodology",
               "No setup fees. No long-term contracts. Cancel anytime."
             ]} />
           </MachineSection>
@@ -567,7 +568,7 @@ export default function PixelPage() {
               For a website with 5,000 monthly visitors:
             </p>
             <MachineList items={[
-              "Identified contacts: ~3,500 (at 70% identification rate)",
+              "Identified contacts: ~2,000\u20133,000 (at a 40\u201360% pixel match rate)",
               "Monthly cost: flat rate starting at $1,000/month -- same price regardless of traffic",
               "No per-visitor or per-lead charges",
               "Compared to traditional lead gen: $50-$100+ per lead",
@@ -587,7 +588,7 @@ export default function PixelPage() {
               <div>
                 <p className="text-gray-900 font-medium mb-2">Lead Marketplace (Outbound/Cold Leads):</p>
                 <p className="text-gray-700">
-                  Self-serve access to 420M+ verified B2B contacts. Browse and buy leads filtered by industry, seniority, and intent. Best for: proactive outreach to new prospects who haven't found you yet.
+                  Self-serve access to 280M+ verified consumer and 140M+ business profiles. Browse and buy leads filtered by industry, seniority, and intent. Best for: proactive outreach to new prospects who haven&apos;t found you yet.
                 </p>
               </div>
               <p className="text-gray-700">
@@ -601,13 +602,13 @@ export default function PixelPage() {
             <MachineList items={[
               {
                 label: "Book Pixel Setup Call",
-                href: "https://cal.com/gotdarrenhill/30min",
+                href: "https://cal.com/cursiveteam/30min",
                 description: "15-minute call to scope installation. Pixel installed within 48 hours."
               },
               {
                 label: "Browse Lead Marketplace",
                 href: "https://www.meetcursive.com/marketplace",
-                description: "Self-serve access to 420M+ verified B2B leads"
+                description: "Self-serve access to 280M+ verified consumer and 140M+ business profiles"
               },
               {
                 label: "View All Services",

@@ -12,7 +12,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
-import { enrich } from '@/lib/audiencelab/api-client'
+import { enrich, AudienceLabApiError } from '@/lib/audiencelab/api-client'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { withRateLimit, getRequestIdentifier } from '@/lib/middleware/rate-limiter'
 
@@ -269,6 +269,25 @@ export async function POST(
       credits_remaining: creditsRemaining - ENRICH_CREDIT_COST,
     })
   } catch (error) {
+    // AudienceLab API configuration errors — return friendly message instead of 500
+    if (error instanceof AudienceLabApiError && (error.statusCode === 401 || error.statusCode === 403)) {
+      return NextResponse.json(
+        {
+          error: 'AudienceLab API not configured. Contact your admin to set up the AudienceLab integration in Settings → Integrations.',
+          code: 'AUDIENCELAB_NOT_CONFIGURED',
+        },
+        { status: 503 }
+      )
+    }
+    if (error instanceof Error && error.message === 'AUDIENCELAB_ACCOUNT_API_KEY not configured') {
+      return NextResponse.json(
+        {
+          error: 'AudienceLab API not configured. Contact your admin to set up the AudienceLab integration in Settings → Integrations.',
+          code: 'AUDIENCELAB_NOT_CONFIGURED',
+        },
+        { status: 503 }
+      )
+    }
     return handleApiError(error)
   }
 }

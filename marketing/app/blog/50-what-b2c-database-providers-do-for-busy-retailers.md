@@ -334,7 +334,7 @@ By identifying anonymous shoppers, enriching customer profiles, and enabling per
 
 The retailers winning market share aren't just attracting more traffic—they're converting more of the traffic they already have.
 
-**Ready to stop losing 95% of your website traffic?** [Book a demo](https://cal.com/cursive/30min) to see how Cursive identifies 70% of retail visitors, enriches profiles with verified consumer data from 220M+ records, and delivers measurable revenue lift within weeks.
+**Ready to stop losing 95% of your website traffic?** [Book a demo](https://cal.com/cursiveteam/30min) to see how Cursive identifies 70% of retail visitors, enriches profiles with verified consumer data from 220M+ records, and delivers measurable revenue lift within weeks.
 
 ---
 

@@ -129,7 +129,7 @@ Real-time data makes marketing more responsive, not just faster. When you can se
 
 **You don't guess. You see. You act.**
 
-Ready to stop working from yesterday's data? **[Book a demo](https://cal.com/cursive/30min)** to see how Cursive provides real-time visitor tracking, live campaign analytics, and instant optimization triggers.
+Ready to stop working from yesterday's data? **[Book a demo](https://cal.com/cursiveteam/30min)** to see how Cursive provides real-time visitor tracking, live campaign analytics, and instant optimization triggers.
 
 ---
 

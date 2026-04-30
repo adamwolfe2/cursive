@@ -21,7 +21,7 @@ const organizationSchema = {
   contactPoint: {
     '@type': 'ContactPoint',
     contactType: 'Sales',
-    email: 'hello@meetcursive.com',
+    email: 'hey@meetcursive.com',
     areaServed: 'US',
     availableLanguage: ['en'],
   },

@@ -45,7 +45,7 @@ export default function PlatformPage() {
                 Try the Platform
                 <ArrowRight className="w-5 h-5" />
               </Button>
-              <Button size="lg" variant="outline" href="https://cal.com/gotdarrenhill/30min" target="_blank">
+              <Button size="lg" variant="outline" href="https://cal.com/cursiveteam/30min" target="_blank">
                 Book a Demo
               </Button>
             </div>
@@ -231,7 +231,7 @@ export default function PlatformPage() {
               className="order-1 lg:order-2"
             >
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-600 rounded-full text-sm mb-6">
-                420M+ Verified Contacts
+                280M+ Consumer &middot; 140M+ Business Profiles
               </div>
               <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
                 People Search
@@ -240,7 +240,7 @@ export default function PlatformPage() {
                 </span>
               </h2>
               <p className="text-xl text-gray-600 mb-6">
-                Search 420M+ verified B2B contacts by name, company, title, location, industry, and more.
+                Search 280M+ verified consumer and 140M+ business profiles &mdash; offline-rooted, refreshed every 30 days against NCOA &mdash; by name, company, title, location, industry, and more.
               </p>
 
               <div className="space-y-4 mb-8">
@@ -479,7 +479,7 @@ export default function PlatformPage() {
                 </div>
               </div>
 
-              <Button size="lg" href="https://cal.com/gotdarrenhill/30min" target="_blank">
+              <Button size="lg" href="https://cal.com/cursiveteam/30min" target="_blank">
                 Schedule a Demo
                 <ArrowRight className="w-5 h-5" />
               </Button>
@@ -541,7 +541,7 @@ export default function PlatformPage() {
                 <p className="text-gray-600 text-sm">Includes pixel installation and setup</p>
               </div>
 
-              <Button size="lg" href="https://cal.com/gotdarrenhill/30min" target="_blank">
+              <Button size="lg" href="https://cal.com/cursiveteam/30min" target="_blank">
                 Add Visitor Tracking
                 <ArrowRight className="w-5 h-5" />
               </Button>
@@ -705,9 +705,9 @@ export default function PlatformPage() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto mb-12">
             {[
-              { title: "Visitor Identification", description: "Identify up to 70% of anonymous site visitors with company and individual-level data.", href: "/visitor-identification" },
-              { title: "Audience Builder", description: "Build unlimited lead lists from 280M US consumer and 140M+ business profiles.", href: "/audience-builder" },
-              { title: "Intent Data", description: "Reach prospects actively searching for solutions like yours with 60B+ behaviors & URLs scanned weekly.", href: "/intent-audiences" },
+              { title: "Visitor Identification", description: "40\u201360% deterministic pixel match against 280M+ verified consumer profiles, refreshed every 30 days against NCOA.", href: "/visitor-identification" },
+              { title: "Audience Builder", description: "Build unlimited lead lists from 280M+ verified consumer and 140M+ business profiles.", href: "/audience-builder" },
+              { title: "Intent Data", description: "Reach prospects actively researching, surfaced through a 15M+ domain organic intent network and ~50K white-label segments.", href: "/intent-audiences" },
               { title: "Direct Mail Automation", description: "Turn website visits into physical postcards with 3-5x higher offline conversion rates.", href: "/direct-mail" },
               { title: "Data Access", description: "Access Cursive's enriched data through APIs and integrations for your custom workflows.", href: "/data-access" },
               { title: "Integrations", description: "Native connections to Salesforce, HubSpot, and 200+ CRMs, ad platforms, and marketing tools.", href: "/integrations" },
@@ -781,7 +781,7 @@ export default function PlatformPage() {
           {
             label: "People Search",
             href: "https://leads.meetcursive.com/people-search",
-            description: "Search 420M+ verified B2B contacts with real-time email verification and LinkedIn enrichment"
+            description: "Search 280M+ verified consumer and 140M+ business profiles with real-time email verification and LinkedIn enrichment"
           },
           {
             label: "Lead Marketplace",
@@ -812,9 +812,9 @@ export default function PlatformPage() {
       </MachineSection>
 
       {/* People Search Details */}
-      <MachineSection title="People Search - 420M+ Contacts">
+      <MachineSection title="People Search - 280M+ Consumer / 140M+ Business Profiles">
         <p className="text-gray-700 mb-4">
-          Search verified B2B contacts by name, company, title, location, industry, and more with real-time validation.
+          Search 280M+ verified consumer and 140M+ business profiles &mdash; offline-rooted (TransUnion, Experian), refreshed every 30 days against NCOA &mdash; by name, company, title, location, industry, and more with real-time validation.
         </p>
         <MachineList items={[
           "Real-time Email Verification - Every email validated before export",
@@ -881,7 +881,7 @@ export default function PlatformPage() {
           },
           {
             label: "Book a Demo",
-            href: "https://cal.com/gotdarrenhill/30min",
+            href: "https://cal.com/cursiveteam/30min",
             description: "See personalized walkthrough of Campaign Manager and Visitor Intelligence"
           },
           {

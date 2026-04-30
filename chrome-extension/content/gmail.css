@@ -1,0 +1,190 @@
+/**
+ * Cursive AI — Gmail Content Script Styles
+ *
+ * All classes prefixed with `cursive-` to avoid conflicts
+ * with Gmail's own styles.
+ */
+
+/* ---------------------------------------------------------------------------
+   Email Verification Badge (inline, next to email address)
+   --------------------------------------------------------------------------- */
+
+.cursive-email-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  cursor: pointer;
+  vertical-align: middle;
+  margin-left: 4px;
+  flex-shrink: 0;
+  transition: transform 0.1s, box-shadow 0.1s;
+  position: relative;
+}
+
+.cursive-email-badge:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.cursive-email-badge--valid {
+  background: #22c55e;
+}
+
+.cursive-email-badge--catch-all {
+  background: #eab308;
+}
+
+.cursive-email-badge--invalid {
+  background: #ef4444;
+}
+
+.cursive-email-badge--checking {
+  background: #9ca3af;
+  animation: cursive-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes cursive-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Enrichment Popup Card
+   --------------------------------------------------------------------------- */
+
+.cursive-email-card {
+  position: absolute;
+  width: 280px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
+  z-index: 99999;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  animation: cursive-card-in 0.15s ease-out;
+  overflow: hidden;
+}
+
+@keyframes cursive-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Card Header */
+
+.cursive-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px 8px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.cursive-card-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.3;
+}
+
+.cursive-card-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  background: none;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  color: #9ca3af;
+  cursor: pointer;
+  line-height: 1;
+  transition: background 0.1s, color 0.1s;
+}
+
+.cursive-card-close:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+/* Card Body */
+
+.cursive-card-body {
+  padding: 10px 14px 14px;
+}
+
+.cursive-card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 4px 0;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.cursive-card-label {
+  color: #9ca3af;
+  font-weight: 500;
+  flex-shrink: 0;
+  margin-right: 12px;
+}
+
+.cursive-card-value {
+  color: #374151;
+  text-align: right;
+  word-break: break-word;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Inline badge dot (used inside card) */
+
+.cursive-badge-inline {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Loading State */
+
+.cursive-card-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 20px 14px;
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.cursive-gmail-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #e5e7eb;
+  border-top-color: #2563eb;
+  border-radius: 50%;
+  animation: cursive-gmail-spin 0.6s linear infinite;
+}
+
+@keyframes cursive-gmail-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

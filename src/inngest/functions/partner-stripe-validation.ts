@@ -7,7 +7,7 @@ import { sendEmail } from '@/lib/email/service'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 import { emailLayout, ctaButton, BRAND, escapeHtml } from '@/lib/email/templates/layout'
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://leads.meetcursive.com'
+import { APP_URL } from '@/lib/config/urls'
 const LOG_PREFIX = '[PartnerStripeValidation]'
 const NOTIFICATION_TITLE = 'Stripe onboarding reminder sent'
 const COOLDOWN_DAYS = 7

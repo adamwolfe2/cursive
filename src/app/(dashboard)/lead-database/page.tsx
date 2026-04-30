@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -16,6 +16,27 @@ import { Database, Search, Coins, Users, AlertCircle } from 'lucide-react'
 import { toast } from 'sonner'
 import { UpgradeModal } from '@/components/marketplace/UpgradeModal'
 import { useUpgradeModal } from '@/lib/hooks/use-upgrade-modal'
+
+const FALLBACK_INDUSTRIES = [
+  'Accommodation and Food Services',
+  'Administrative and Support Services',
+  'Agriculture, Forestry, Fishing and Hunting',
+  'Arts, Entertainment, and Recreation',
+  'Construction',
+  'Educational Services',
+  'Finance and Insurance',
+  'Health Care and Social Assistance',
+  'Information',
+  'Manufacturing',
+  'Mining, Quarrying, and Oil and Gas Extraction',
+  'Professional, Scientific, and Technical Services',
+  'Real Estate and Rental and Leasing',
+  'Retail Trade',
+  'Technology',
+  'Transportation and Warehousing',
+  'Utilities',
+  'Wholesale Trade',
+]
 
 interface PreviewResult {
   count: number
@@ -33,9 +54,20 @@ export default function LeadDatabasePage() {
   const [preview, setPreview] = useState<PreviewResult | null>(null)
   const [loading, setLoading] = useState(false)
   const [pulling, setPulling] = useState(false)
+  const [industries, setIndustries] = useState<string[]>(FALLBACK_INDUSTRIES)
 
-  // Upgrade modal — triggered when a 402 credit error is returned
   const { isOpen: upgradeModalOpen, trigger: upgradeTrigger, context: upgradeContext, showUpgradeModal, closeModal: closeUpgradeModal } = useUpgradeModal()
+
+  useEffect(() => {
+    fetch('/api/segments/catalog?per_page=1')
+      .then(res => res.json())
+      .then(data => {
+        if (data.categories?.length > 0) {
+          setIndustries(data.categories)
+        }
+      })
+      .catch(() => {})
+  }, [])
 
   const handlePreview = async () => {
     try {
@@ -166,14 +198,12 @@ export default function LeadDatabasePage() {
               <SelectTrigger>
                 <SelectValue placeholder="Select industries..." />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Technology">Technology</SelectItem>
-                <SelectItem value="Healthcare">Healthcare</SelectItem>
-                <SelectItem value="Finance">Finance</SelectItem>
-                <SelectItem value="Manufacturing">Manufacturing</SelectItem>
-                <SelectItem value="Retail">Retail</SelectItem>
-                <SelectItem value="Real Estate">Real Estate</SelectItem>
-                <SelectItem value="Professional Services">Professional Services</SelectItem>
+              <SelectContent className="max-h-[300px]">
+                {industries.map((industry) => (
+                  <SelectItem key={industry} value={industry}>
+                    {industry}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
             {selectedIndustries.length > 0 && (

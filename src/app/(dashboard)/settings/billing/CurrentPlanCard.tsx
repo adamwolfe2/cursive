@@ -223,7 +223,7 @@ export function CurrentPlanCard({
                 <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
                   <h3 className="text-xl font-bold text-foreground">Pro Plan</h3>
                 </div>
-                <p className="text-sm text-muted-foreground mt-1">Contact us for pricing details</p>
+                <p className="text-2xl font-bold text-foreground mt-1">$149<span className="text-base font-normal text-muted-foreground">/month</span></p>
 
                 {/* Integration Logos */}
                 <div className="mt-4">

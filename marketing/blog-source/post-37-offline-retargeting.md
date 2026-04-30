@@ -546,4 +546,4 @@ No. Filter for high-intent (pricing page viewers), high-fit (matches ICP), and h
 
 ---
 
-**Ready to convert website visitors with offline retargeting?** [Book a demo](https://cal.com/cursive/30min) to see how Cursive identifies visitors and triggers automated direct mail campaigns based on behavior.
+**Ready to convert website visitors with offline retargeting?** [Book a demo](https://cal.com/cursiveteam/30min) to see how Cursive identifies visitors and triggers automated direct mail campaigns based on behavior.

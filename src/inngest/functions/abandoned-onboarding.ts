@@ -21,7 +21,7 @@ import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 const LOG_PREFIX = '[AbandonedOnboarding]'
 const BATCH_SIZE = 50
 const NOTIFICATION_TITLE = 'Onboarding Recovery Email Sent'
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://leads.meetcursive.com'
+import { APP_URL } from '@/lib/config/urls'
 
 interface IncompleteUser {
   id: string

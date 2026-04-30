@@ -353,7 +353,7 @@ The key is starting with clear goals, connecting your core systems, building hig
 
 The difference between companies that get ROI from CDPs and those that struggle often comes down to focus: Solve one problem well before trying to solve everything at once.
 
-**Ready to unify your customer data and start driving revenue?** [Book a demo](https://cal.com/cursive/30min) to see how Cursive identifies 70% of website visitors, integrates with 200+ platforms, and delivers measurable ROI within 60-90 days.
+**Ready to unify your customer data and start driving revenue?** [Book a demo](https://cal.com/cursiveteam/30min) to see how Cursive identifies 70% of website visitors, integrates with 200+ platforms, and delivers measurable ROI within 60-90 days.
 
 ---
 

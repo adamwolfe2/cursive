@@ -162,7 +162,7 @@ Each post includes strategic links to:
 
 1. **Solution pages:** /audience-builder, /visitor-identification, /integrations
 2. **Related blog posts:** Cross-linking within Batch 2 and to Batch 1/4 posts
-3. **Demo CTAs:** cal.com/cursive/30min (primary CTA)
+3. **Demo CTAs:** cal.com/cursiveteam/30min (primary CTA)
 4. **Value propositions:** Links include specific benefits in anchor text
 
 ## Quality Metrics

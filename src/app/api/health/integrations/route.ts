@@ -1,3 +1,5 @@
+export const maxDuration = 30
+
 /**
  * Integration Health Check API Route
  * GET /api/health/integrations

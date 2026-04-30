@@ -223,7 +223,7 @@
 ## 🔗 Links Used
 
 ### **Cal.com (Your Calendar)**
-- ✅ Updated everywhere: `https://cal.com/cursive/30min`
+- ✅ Updated everywhere: `https://cal.com/cursiveteam/30min`
 
 ### **Stripe Checkout** ⚠️ **NEEDS YOUR INPUT**
 Current placeholders (need to be replaced):

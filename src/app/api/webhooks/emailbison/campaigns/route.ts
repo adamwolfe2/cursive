@@ -23,6 +23,8 @@ import {
 } from '@/lib/services/emailbison'
 
 import { verifyHmacSignature, sha256Hex } from '@/lib/utils/crypto'
+import { sendSlackAlert } from '@/lib/monitoring/alerts'
+import { captureError } from '@/lib/monitoring/sentry'
 import { z } from 'zod'
 
 // Zod schemas for each event type's data payload
@@ -67,27 +69,25 @@ const bounceSchema = z.object({
   bounce_reason: z.string().optional(),
 })
 
-// Webhook secret from environment
-const WEBHOOK_SECRET = process.env.EMAILBISON_WEBHOOK_SECRET || ''
-
 export async function POST(request: NextRequest) {
   let idempotencyKey: string | undefined
 
   try {
-    // Get raw body for signature verification
-    const rawBody = await request.text()
-    const signature = request.headers.get('x-emailbison-signature') || ''
-
-    // SECURITY: Always require webhook secret for signature verification
+    // SECURITY: Require webhook secret — fail closed if not configured
+    const WEBHOOK_SECRET = process.env.EMAILBISON_WEBHOOK_SECRET
     if (!WEBHOOK_SECRET) {
-      safeError('[Campaign Webhook] Missing EMAILBISON_WEBHOOK_SECRET')
+      safeError('[Campaign Webhook] EMAILBISON_WEBHOOK_SECRET is not set — rejecting request')
       return NextResponse.json(
-        { error: 'Webhook not configured' },
+        { error: 'Webhook signature verification not configured' },
         { status: 500 }
       )
     }
 
-    // Verify signature - REQUIRED for security (Edge-compatible)
+    // Get raw body for signature verification
+    const rawBody = await request.text()
+    const signature = request.headers.get('x-emailbison-signature') || ''
+
+    // SECURITY: Always verify signature — no fail-open path
     const isValid = await verifyHmacSignature(rawBody, signature, WEBHOOK_SECRET)
     if (!isValid) {
       safeError('[Campaign Webhook] Signature verification failed')
@@ -149,12 +149,28 @@ export async function POST(request: NextRequest) {
       // Request failed previously - allow retry (don't return early)
     } else {
       // Create new idempotency key record
-      await supabase.from('api_idempotency_keys').insert({
+      const { error: insertError } = await supabase.from('api_idempotency_keys').insert({
         idempotency_key: idempotencyKey,
         workspace_id: 'system',
         endpoint: '/api/webhooks/emailbison/campaigns',
         status: 'processing',
       })
+
+      if (insertError) {
+        // Postgres unique_violation (23505) means a concurrent request already inserted
+        // this key — treat as duplicate-in-flight and return 409.
+        if (insertError.code === '23505') {
+          return NextResponse.json(
+            { error: 'Webhook already being processed. Please retry later.' },
+            { status: 409 }
+          )
+        }
+        // Other insert failures are non-fatal: log and continue processing.
+        safeError('[Campaign Webhook] Failed to insert idempotency key:', insertError)
+        captureError(new Error(`Idempotency key insert failed: ${insertError.message}`), {
+          tags: { source: 'emailbison-webhook', key: idempotencyKey },
+        })
+      }
     }
 
     // Handle different event types
@@ -165,11 +181,15 @@ export async function POST(request: NextRequest) {
     } else if (isEmailClickedEvent(event)) {
       await handleEmailClicked(supabase, event)
     } else if (isReplyReceivedEvent(event)) {
-      await handleReplyReceived(supabase, event)
+      await handleReplyReceived(supabase, event, false)
     } else if (isLeadUnsubscribedEvent(event)) {
       await handleUnsubscribe(supabase, event)
     } else if (isBounceReceivedEvent(event)) {
       await handleBounce(supabase, event)
+    } else if ((payload as any)?.event === 'contact_interested') {
+      // contact_interested fires as a separate event in some platform versions
+      // Treat as a positive reply using the same payload shape
+      await handleContactInterested(supabase, payload as any)
     } else {
       safeError(`[Campaign Webhook] Unhandled event type: ${event.event.type}`)
     }
@@ -179,7 +199,7 @@ export async function POST(request: NextRequest) {
 
     // Update idempotency key with successful response
     if (idempotencyKey) {
-      await supabase
+      const { error: finalUpdateError } = await supabase
         .from('api_idempotency_keys')
         .update({
           status: 'completed',
@@ -188,6 +208,25 @@ export async function POST(request: NextRequest) {
         })
         .eq('idempotency_key', idempotencyKey)
         .eq('workspace_id', 'system')
+
+      if (finalUpdateError) {
+        // The event was processed but the completed-status write failed.
+        // Log to Sentry so we know the key is stuck in 'processing', and write a
+        // dead-letter row so the admin dashboard surfaces it for manual resolution.
+        safeError('[Campaign Webhook] Failed to mark idempotency key completed:', finalUpdateError)
+        captureError(new Error(`Idempotency key final update failed: ${finalUpdateError.message}`), {
+          tags: { source: 'emailbison-webhook', key: idempotencyKey },
+        })
+
+        // Best-effort dead-letter write — non-blocking
+        supabase.from('webhook_dead_letter').insert({
+          source: 'emailbison.campaigns.idempotency_update_failed',
+          payload: { idempotency_key: idempotencyKey, response },
+          error: finalUpdateError.message,
+        }).then(({ error: dlErr }) => {
+          if (dlErr) safeError('[Campaign Webhook] Dead-letter write failed:', dlErr)
+        })
+      }
     }
 
     return NextResponse.json(response)
@@ -260,7 +299,8 @@ async function handleEmailSent(
  */
 async function handleReplyReceived(
   supabase: ReturnType<typeof createAdminClient>,
-  event: ReplyReceivedEvent
+  event: ReplyReceivedEvent,
+  isInterested = false
 ) {
   const parsed = replyReceivedSchema.safeParse(event.data)
   if (!parsed.success) {
@@ -345,14 +385,30 @@ async function handleReplyReceived(
       })
     } catch (inngestError) {
       safeError('[Campaign Webhook] Failed to queue reply for AI processing:', inngestError)
-      // Non-fatal: reply data is already saved to DB
     }
   }
+
+  // Slack notification — use warning (yellow) for interested, info (blue) for regular reply
+  const sender = data.from_name ? `${data.from_name} <${data.from_email}>` : data.from_email
+  const preview = (data.body_plain || data.body || '').slice(0, 300)
+  await sendSlackAlert({
+    type: 'system_event',
+    severity: isInterested ? 'warning' : 'info',
+    message: isInterested
+      ? `🔥 *Interested reply* from ${sender}`
+      : `📨 *Reply received* from ${sender}`,
+    metadata: {
+      subject: data.subject || '(no subject)',
+      preview,
+      received_at: data.received_at,
+    },
+  }).catch(() => {}) // non-fatal
 }
 
 /**
  * Handle unsubscribe event
- * Updates lead and campaign_lead status
+ * Updates lead and campaign_lead status — scoped to the workspace resolved
+ * from email_sends to prevent cross-tenant data corruption.
  */
 async function handleUnsubscribe(
   supabase: ReturnType<typeof createAdminClient>,
@@ -365,11 +421,27 @@ async function handleUnsubscribe(
   }
   const data = parsed.data
 
-  // Find leads by email and mark as unsubscribed
+  // Resolve workspace from email_sends — required for tenant-scoped update
+  const { data: emailSend } = await supabase
+    .from('email_sends')
+    .select('workspace_id')
+    .eq('recipient_email', data.email)
+    .order('sent_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  if (!emailSend?.workspace_id) {
+    safeError(`[Campaign Webhook] Cannot resolve workspace for unsubscribe event — skipping global update for ${data.email}`)
+    return
+  }
+  const workspaceId = emailSend.workspace_id
+
+  // Find leads scoped to this workspace
   const { data: leads } = await supabase
     .from('leads')
-    .select('id, workspace_id')
+    .select('id')
     .eq('email', data.email)
+    .eq('workspace_id', workspaceId)
     .limit(50)
 
   if (leads && leads.length > 0) {
@@ -391,13 +463,13 @@ async function handleUnsubscribe(
         status: 'unsubscribed',
       })
       .in('lead_id', leadIds)
-
   }
 }
 
 /**
  * Handle bounce event
- * Updates lead email status and campaign_lead status
+ * Updates lead email status and campaign_lead status — scoped to the
+ * workspace resolved from email_sends to prevent cross-tenant data corruption.
  */
 async function handleBounce(
   supabase: ReturnType<typeof createAdminClient>,
@@ -410,38 +482,61 @@ async function handleBounce(
   }
   const data = parsed.data
 
-  // Find leads by email
-  const { data: leads } = await supabase
-    .from('leads')
-    .select('id')
-    .eq('email', data.email)
-    .limit(50)
+  // Resolve workspace from email_sends — required for tenant-scoped update
+  const { data: emailSend } = await supabase
+    .from('email_sends')
+    .select('workspace_id')
+    .eq('recipient_email', data.email)
+    .order('sent_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
 
-  if (leads && leads.length > 0) {
-    const leadIds = leads.map((l) => l.id)
-    const bounceStatus = data.bounce_type === 'hard' ? 'invalid' : 'soft_bounce'
+  if (!emailSend?.workspace_id) {
+    safeError(`[Campaign Webhook] Cannot resolve workspace for bounce event — skipping global update for ${data.email}`)
+  } else {
+    const workspaceId = emailSend.workspace_id
 
-    // Update leads
-    await supabase
+    // Find leads scoped to this workspace
+    const { data: leads } = await supabase
       .from('leads')
-      .update({
-        email_status: bounceStatus,
-        updated_at: new Date().toISOString(),
-      })
-      .in('id', leadIds)
+      .select('id')
+      .eq('email', data.email)
+      .eq('workspace_id', workspaceId)
+      .limit(50)
 
-    // Update campaign_leads
-    await supabase
-      .from('campaign_leads')
-      .update({
-        status: 'bounced',
-        bounce_reason: data.bounce_reason,
-      })
-      .in('lead_id', leadIds)
+    if (leads && leads.length > 0) {
+      const leadIds = leads.map((l) => l.id)
+      const bounceStatus = data.bounce_type === 'hard' ? 'invalid' : 'soft_bounce'
 
+      // Update leads
+      await supabase
+        .from('leads')
+        .update({
+          email_status: bounceStatus,
+          updated_at: new Date().toISOString(),
+        })
+        .in('id', leadIds)
+
+      // Update campaign_leads
+      await supabase
+        .from('campaign_leads')
+        .update({
+          status: 'bounced',
+          bounce_reason: data.bounce_reason,
+        })
+        .in('lead_id', leadIds)
+    }
   }
 
-  // Bounce data saved to leads and campaign_leads tables above — no further async processing needed
+  // Slack alert for hard bounces only (soft bounces are expected noise)
+  if (data.bounce_type === 'hard') {
+    await sendSlackAlert({
+      type: 'email_failure',
+      severity: 'warning',
+      message: `⚠️ *Hard bounce* — ${data.email}`,
+      metadata: { reason: data.bounce_reason || 'unknown' },
+    }).catch(() => {})
+  }
 }
 
 /**
@@ -499,6 +594,51 @@ async function handleEmailOpened(
     }
   }
 
+}
+
+/**
+ * Handle contact_interested event (positive reply — fired as a separate event type by some EB versions)
+ */
+async function handleContactInterested(
+  supabase: ReturnType<typeof createAdminClient>,
+  payload: any
+) {
+  const fromEmail: string = payload?.data?.from_email || payload?.contact?.email || ''
+  const fromName: string = payload?.data?.from_name || payload?.contact?.name || ''
+  const subject: string = payload?.data?.subject || ''
+  const body: string = payload?.data?.body_plain || payload?.data?.body || ''
+
+  if (!fromEmail) return
+
+  // Slack alert — 🔥 interested reply gets prominent treatment
+  const sender = fromName ? `${fromName} <${fromEmail}>` : fromEmail
+  await sendSlackAlert({
+    type: 'system_event',
+    severity: 'warning',
+    message: `🔥 *Interested reply* from ${sender}`,
+    metadata: {
+      subject: subject || '(no subject)',
+      preview: body.slice(0, 300),
+    },
+  }).catch(() => {})
+
+  // Update campaign_lead to interested if we can find a match
+  const { data: emailSend } = await supabase
+    .from('email_sends')
+    .select('id, campaign_id, lead_id, workspace_id')
+    .eq('recipient_email', fromEmail)
+    .eq('status', 'sent')
+    .order('sent_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  if (emailSend) {
+    await supabase
+      .from('campaign_leads')
+      .update({ status: 'interested' })
+      .eq('lead_id', emailSend.lead_id)
+      .eq('campaign_id', emailSend.campaign_id)
+  }
 }
 
 /**

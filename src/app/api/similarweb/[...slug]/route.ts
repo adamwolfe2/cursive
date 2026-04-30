@@ -1,9 +1,24 @@
+export const maxDuration = 15
+
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { withRateLimit } from '@/lib/middleware/rate-limiter'
 
 const BASE_URL = 'https://api.similarweb.com/v1/website'
 const API_KEY = process.env.SIMILARWEB_API_KEY
+
+const SAFE_SLUG_SEGMENT = /^[a-zA-Z0-9._-]+$/
+
+function isValidSlug(segments: string[]): boolean {
+  return segments.every(
+    (segment) =>
+      segment.length > 0 &&
+      segment.length <= 200 &&
+      SAFE_SLUG_SEGMENT.test(segment) &&
+      !segment.includes('..') &&
+      !segment.startsWith('.')
+  )
+}
 
 export async function GET(
   req: NextRequest,
@@ -22,6 +37,14 @@ export async function GET(
   }
 
   const { slug } = await params
+
+  if (!slug.length || !isValidSlug(slug)) {
+    return NextResponse.json(
+      { error: 'Invalid path segments' },
+      { status: 400 }
+    )
+  }
+
   const path = slug.join('/')
   const searchParams = req.nextUrl.searchParams
   const apiParams = new URLSearchParams(searchParams)
@@ -29,9 +52,12 @@ export async function GET(
 
   const url = `${BASE_URL}/${path}?${apiParams.toString()}`
 
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 10000)
   try {
     const res = await fetch(url, {
       headers: { accept: 'application/json' },
+      signal: controller.signal,
       next: { revalidate: 3600 },
     })
 
@@ -43,5 +69,7 @@ export async function GET(
     return NextResponse.json(data)
   } catch {
     return NextResponse.json({ error: true }, { status: 200 })
+  } finally {
+    clearTimeout(timeout)
   }
 }

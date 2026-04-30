@@ -91,6 +91,11 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/data-partnerships" className="hover:text-primary transition-colors">
+                  Data Partnerships
+                </Link>
+              </li>
+              <li>
                 <Link href="/pricing" className="hover:text-primary transition-colors">
                   Pricing
                 </Link>
@@ -315,7 +320,7 @@ export function Footer() {
                 </a>
               </li>
               <li>
-                <a href="https://cal.com/gotdarrenhill/30min" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+                <a href="https://cal.com/cursiveteam/30min" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
                   Book a Demo
                 </a>
               </li>

@@ -25,26 +25,26 @@ export async function GET(_req: NextRequest) {
 
     // Fetch recent enrichments (last 30 days, max 50)
     const { data: enrichments } = await adminSupabase
-      .from('enrichment_log')
-      .select('id, lead_id, status, credits_used, fields_added, created_at')
+      .from('enrichment_logs')
+      .select('id, lead_id, status, credits_used, created_at')
       .eq('workspace_id', user.workspace_id)
       .order('created_at', { ascending: false })
       .limit(50)
 
     // Get summary stats
     const { count: totalEnrichments } = await adminSupabase
-      .from('enrichment_log')
+      .from('enrichment_logs')
       .select('*', { count: 'exact', head: true })
       .eq('workspace_id', user.workspace_id)
 
     const { count: successCount } = await adminSupabase
-      .from('enrichment_log')
+      .from('enrichment_logs')
       .select('*', { count: 'exact', head: true })
       .eq('workspace_id', user.workspace_id)
       .eq('status', 'success')
 
     const { count: todayCount } = await adminSupabase
-      .from('enrichment_log')
+      .from('enrichment_logs')
       .select('*', { count: 'exact', head: true })
       .eq('workspace_id', user.workspace_id)
       .gte('created_at', new Date(new Date().setHours(0, 0, 0, 0)).toISOString())

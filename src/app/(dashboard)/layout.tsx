@@ -69,6 +69,7 @@ export default async function DashboardLayout({
                 creditsRemaining: mockUser.daily_credit_limit,
                 totalCredits: mockUser.daily_credit_limit,
                 avatarUrl: null,
+                isPartner: false,
               }}
               workspace={{
                 name: mockUser.workspaces.name,
@@ -96,7 +97,7 @@ export default async function DashboardLayout({
       const admin = createAdminClient()
       const { data } = await admin
         .from('users')
-        .select('id, auth_user_id, full_name, email, plan, role, workspace_id, daily_credit_limit, daily_credits_used, workspaces(id, name, subdomain, website_url, branding)')
+        .select('id, auth_user_id, full_name, email, plan, role, workspace_id, daily_credit_limit, daily_credits_used, is_partner, workspaces(id, name, subdomain, website_url, branding)')
         .eq('auth_user_id', authUserId)
         .maybeSingle()
       return data
@@ -186,6 +187,7 @@ export default async function DashboardLayout({
     workspace_id: string | null
     daily_credit_limit: number
     daily_credits_used: number
+    is_partner: boolean
     workspaces: {
       name: string
       subdomain?: string
@@ -244,6 +246,7 @@ export default async function DashboardLayout({
             creditsRemaining: creditBalance,
             totalCredits: creditBalance,
             avatarUrl: null,
+            isPartner: userProfile.is_partner,
           }}
           workspace={
             workspace

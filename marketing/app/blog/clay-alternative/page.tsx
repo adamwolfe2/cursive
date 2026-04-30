@@ -917,7 +917,7 @@ export default function BlogPost() {
                 <div className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm shrink-0">6</div>
                 <div>
                   <h4 className="font-bold mb-1">Deprecate Clay Tables Incrementally</h4>
-                  <p className="text-sm text-gray-600">As Cursive&apos;s automated enrichment proves itself (usually within 1-2 weeks), start turning off Clay tables one by one. Most teams find that 90% of their Clay workflows become unnecessary once Cursive&apos;s built-in enrichment and visitor identification are running. Schedule a <a href="https://cal.com/gotdarrenhill/30min" className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">free consultation</a> for migration support.</p>
+                  <p className="text-sm text-gray-600">As Cursive&apos;s automated enrichment proves itself (usually within 1-2 weeks), start turning off Clay tables one by one. Most teams find that 90% of their Clay workflows become unnecessary once Cursive&apos;s built-in enrichment and visitor identification are running. Schedule a <a href="https://cal.com/cursiveteam/30min" className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">free consultation</a> for migration support.</p>
                 </div>
               </div>
             </div>
@@ -1032,7 +1032,7 @@ export default function BlogPost() {
                 <Link href="/free-audit">Get Your Free AI Audit</Link>
               </Button>
               <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10" asChild>
-                <a href="https://cal.com/gotdarrenhill/30min" target="_blank" rel="noopener noreferrer">Book a Demo</a>
+                <a href="https://cal.com/cursiveteam/30min" target="_blank" rel="noopener noreferrer">Book a Demo</a>
               </Button>
             </div>
           </div>
@@ -1259,7 +1259,7 @@ export default function BlogPost() {
               { label: "Pricing", href: "/pricing", description: "Self-serve marketplace + done-for-you services" },
               { label: "Visitor Identification", href: "/visitor-identification", description: "85%+ identification rate for B2B traffic" },
               { label: "Free AI Audit", href: "/free-audit", description: "See hidden pipeline from unidentified visitors" },
-              { label: "Book a Demo", href: "https://cal.com/gotdarrenhill/30min", description: "30-minute consultation and product walkthrough" }
+              { label: "Book a Demo", href: "https://cal.com/cursiveteam/30min", description: "30-minute consultation and product walkthrough" }
             ]} />
           </MachineSection>
         </MachineContent>

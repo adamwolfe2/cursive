@@ -25,9 +25,9 @@ const dancingScript = Dancing_Script({
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.meetcursive.com'),
   ...generateMetadata({
-    title: "Turn Website Visitors Into Booked Meetings",
-    description: "Identify 70% of website visitors and automate personalized outreach. Turn anonymous traffic into booked meetings with AI-powered lead generation.",
-    keywords: ['website visitor identification', 'B2B lead generation', 'anonymous visitor tracking', 'automated outbound', 'AI SDR', 'lead enrichment', 'outbound automation', 'intent data', 'visitor deanonymization'],
+    title: "Identity & Intent Infrastructure for Outbound",
+    description: "Cursive is the identity layer for outbound, intent, and enrichment — 280M+ verified consumer profiles refreshed every 30 days, a 15M-domain organic intent network, and a closed feedback loop validated against real conversions.",
+    keywords: ['identity infrastructure', 'B2B intent data', 'visitor identification', 'enrichment', 'outbound automation', 'AI SDR', 'pixel match rate', 'NCOA refresh', 'intent network'],
     canonical: 'https://www.meetcursive.com',
   }),
   icons: {

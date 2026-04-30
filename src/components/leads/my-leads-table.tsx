@@ -31,8 +31,10 @@ interface LeadAssignment {
   id: string
   lead_id: string
   status: string
-  matching_criteria: Record<string, any> | null
-  created_at: string
+  matched_industry: string | null
+  matched_sic_code: string | null
+  matched_geo: string | null
+  assigned_at: string
   viewed_at: string | null
   leads: {
     id: string
@@ -137,8 +139,10 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
         id,
         lead_id,
         status,
-        matching_criteria,
-        created_at,
+        matched_industry,
+        matched_sic_code,
+        matched_geo,
+        assigned_at,
         viewed_at,
         leads (
           id,
@@ -160,7 +164,7 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
       )
       .eq('user_id', userId)
       .eq('workspace_id', workspaceId)
-      .order('created_at', { ascending: false })
+      .order('assigned_at', { ascending: false })
 
     if (filter !== 'all') {
       query = query.eq('status', filter)
@@ -207,7 +211,7 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
             .from('user_lead_assignments')
             .select(
               `
-              id, lead_id, status, matching_criteria, created_at, viewed_at,
+              id, lead_id, status, matched_industry, matched_sic_code, matched_geo, assigned_at, viewed_at,
               leads (id, first_name, last_name, full_name, email, phone, company_name, job_title, city, state, state_code, company_industry, created_at)
               `
             )
@@ -545,14 +549,14 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
                   </td>
                   <td className="px-4 py-3">
                     <div className="text-sm">
-                      {assignment.matching_criteria?.industry && (
+                      {assignment.matched_industry && (
                         <span className="inline-flex items-center px-2 py-0.5 rounded bg-blue-50 text-blue-700 mr-1">
-                          {assignment.matching_criteria.industry}
+                          {assignment.matched_industry}
                         </span>
                       )}
-                      {assignment.matching_criteria?.geo && (
+                      {assignment.matched_geo && (
                         <span className="inline-flex items-center px-2 py-0.5 rounded bg-blue-50 text-blue-700">
-                          {assignment.matching_criteria.geo}
+                          {assignment.matched_geo}
                         </span>
                       )}
                     </div>
@@ -569,7 +573,7 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
                     </span>
                   </td>
                   <td className="px-4 py-3 text-sm text-zinc-500">
-                    {formatDate(assignment.created_at)}
+                    {formatDate(assignment.assigned_at)}
                   </td>
                   <td className="px-4 py-3">
                     <select
@@ -798,23 +802,23 @@ const LeadDetailModal = memo(function LeadDetailModal({
           )}
 
           {/* Match info */}
-          {assignment.matching_criteria && Object.keys(assignment.matching_criteria).length > 0 && (
+          {(assignment.matched_industry || assignment.matched_sic_code || assignment.matched_geo) && (
             <div>
               <h3 className="text-sm font-medium text-zinc-500 mb-3">Match Info</h3>
               <div className="flex flex-wrap gap-2">
-                {assignment.matching_criteria.industry && (
+                {assignment.matched_industry && (
                   <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-sm">
-                    Industry: {assignment.matching_criteria.industry}
+                    Industry: {assignment.matched_industry}
                   </span>
                 )}
-                {assignment.matching_criteria.sic_code && (
+                {assignment.matched_sic_code && (
                   <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-700 text-sm">
-                    SIC: {assignment.matching_criteria.sic_code}
+                    SIC: {assignment.matched_sic_code}
                   </span>
                 )}
-                {assignment.matching_criteria.geo && (
+                {assignment.matched_geo && (
                   <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-sm">
-                    Location: {assignment.matching_criteria.geo}
+                    Location: {assignment.matched_geo}
                   </span>
                 )}
               </div>

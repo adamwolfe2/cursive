@@ -76,7 +76,7 @@ export function ResultsDashboard({ results, domain, monthlyVisitors, dealSize, i
         </div>
         {!deck && (
           <p className="text-gray-500 text-sm mt-3 max-w-lg mx-auto">
-            {domain} gets an estimated {formatNumber(monthlyVisitors)} visitors/month. With the Super Pixel identifying 70% of them at a 0.05% bounce rate, that&apos;s {formatNumber(results.cursive.intentQualified)} verified, intent-scored leads your sales team isn&apos;t getting right now.
+            {domain} gets an estimated {formatNumber(monthlyVisitors)} visitors/month. With the Super Pixel resolving 40&ndash;60% of them deterministically (vs 2&ndash;5% for cookies, 10&ndash;15% for IP databases), that&apos;s {formatNumber(results.cursive.intentQualified)} verified, intent-scored leads your sales team isn&apos;t getting right now.
           </p>
         )}
       </div>

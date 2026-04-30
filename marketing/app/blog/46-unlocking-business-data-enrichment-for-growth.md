@@ -465,7 +465,7 @@ When you enrich leads with [Cursive's 220M+ consumer and business profiles](http
 
 Ready to unlock growth through smarter data?
 
-[**Book a demo**](https://cal.com/cursive/30min) to see how Cursive's business data enrichment transforms incomplete leads into high-converting opportunities.
+[**Book a demo**](https://cal.com/cursiveteam/30min) to see how Cursive's business data enrichment transforms incomplete leads into high-converting opportunities.
 
 ---
 

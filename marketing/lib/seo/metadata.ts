@@ -37,7 +37,7 @@ export function generateMetadata({
           url: fullOgImage,
           width: 1314,
           height: 1129,
-          alt: 'Cursive - Turn Website Visitors Into Booked Meetings - Full-stack lead generation platform',
+          alt: 'Cursive — Identity & Intent Infrastructure for Outbound, Intent, and Enrichment',
         }
       ],
       locale: 'en_US',

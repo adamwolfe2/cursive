@@ -12,7 +12,7 @@ export const metadata = generateMetadata({
 const mediaAdvertisingFAQs = [
   {
     question: 'How does Cursive help media and advertising companies generate revenue leads?',
-    answer: 'Cursive identifies up to 70% of anonymous advertisers, agencies, and brand marketers visiting your media platform or advertising rate card pages, turning invisible traffic into a warm pipeline of potential advertising partners. Your sales team can then reach out proactively with personalized sponsorship proposals or advertising packages tailored to what those visitors explored on your site.',
+    answer: 'Cursive resolves anonymous advertisers, agencies, and brand marketers visiting your media platform or rate card pages against a deterministic identity graph of 280M+ verified consumer and 140M+ business profiles, with a 40–60% pixel match rate (vs 2–5% for cookie-based tools and 10–15% for IP databases). Your sales team can then reach out proactively with personalized sponsorship proposals or advertising packages tailored to what those visitors explored on your site.',
   },
   {
     question: 'How do advertising agencies use Cursive for new business development?',
@@ -28,7 +28,7 @@ const mediaAdvertisingFAQs = [
   },
   {
     question: "How does Cursive's visitor identification help media publishers monetize traffic?",
-    answer: "Media publishers use Cursive to identify the brands and agencies visiting their site and reading their content — traffic that represents a self-selected pool of potential advertising partners already engaged with the publication's audience. By converting this anonymous traffic into identified prospects at a 70% identification rate, publishers can build a proactive advertiser outreach program that dramatically expands their addressable revenue base.",
+    answer: "Media publishers use Cursive to identify the brands and agencies visiting their site and reading their content — traffic that represents a self-selected pool of potential advertising partners already engaged with the publication's audience. By converting this anonymous traffic into identified prospects at a 40–60% deterministic match rate (vs 2–5% for cookie-based tools and 10–15% for IP databases), publishers can build a proactive advertiser outreach program that dramatically expands their addressable revenue base.",
   },
   {
     question: 'What CRM integrations work best for media companies with Cursive?',

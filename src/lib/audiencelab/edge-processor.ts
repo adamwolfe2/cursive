@@ -12,6 +12,7 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { normalizeALPayload, extractEventType, isLeadWorthy, isVerifiedEmail } from '@/lib/audiencelab/field-map'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
+import { checkQuota, incrementQuota } from '@/lib/services/al-quota.service'
 
 const LOG_PREFIX = '[AL EdgeProcessor]'
 
@@ -339,7 +340,7 @@ export async function processEventInline(
       })
 
       if (worthy) {
-        // Check for duplicates
+        // Check for duplicates via hash key (covers same email+company+phone combo globally)
         const dedupResult = await checkDuplicate(
           supabase,
           normalized.primary_email,
@@ -347,14 +348,53 @@ export async function processEventInline(
           normalized.phones[0] || null
         )
 
-        if (dedupResult.isDuplicate) {
-          // Link identity to existing lead
-          await supabase
-            .from('audiencelab_identities')
-            .update({ lead_id: dedupResult.existingLeadId })
-            .eq('id', identityId!)
-          leadId = dedupResult.existingLeadId!
+        // Global email dedup: also check raw email across all workspaces.
+        // This catches same-email leads with different company/phone (different hash).
+        // admin client bypasses RLS — no cross-workspace data is exposed, just the ID.
+        let globalEmailDuplicate: { id: string; workspace_id: string } | null = null
+        if (!dedupResult.isDuplicate) {
+          const { data: emailMatch, error: emailErr } = await supabase
+            .from('leads')
+            .select('id, workspace_id')
+            .eq('email', normalized.primary_email.toLowerCase())
+            .limit(1)
+            .maybeSingle()
+
+          if (emailErr && emailErr.code !== 'PGRST116') {
+            safeError(`${LOG_PREFIX} Global email dedup check error`, emailErr)
+          } else if (emailMatch) {
+            globalEmailDuplicate = emailMatch
+          }
+        }
+
+        if (dedupResult.isDuplicate || globalEmailDuplicate) {
+          const existingLeadId = dedupResult.existingLeadId || globalEmailDuplicate?.id
+          const crossWorkspace = !dedupResult.isDuplicate && globalEmailDuplicate?.workspace_id !== targetWorkspaceId
+
+          if (crossWorkspace) {
+            safeLog(`${LOG_PREFIX} Cross-workspace duplicate skipped: email exists in workspace ${globalEmailDuplicate?.workspace_id}`)
+          }
+
+          // Link identity to existing lead (regardless of whether it's same-workspace or cross-workspace)
+          if (existingLeadId) {
+            await supabase
+              .from('audiencelab_identities')
+              .update({ lead_id: existingLeadId })
+              .eq('id', identityId!)
+            leadId = existingLeadId
+          }
         } else {
+          // Quota gate: check workspace daily AL quota before inserting
+          const quotaAllowed = await checkQuota(targetWorkspaceId)
+          if (!quotaAllowed) {
+            safeLog(`${LOG_PREFIX} Workspace ${targetWorkspaceId} quota exhausted, skipping lead insert for event ${eventId}`)
+            await supabase
+              .from('audiencelab_events')
+              .update({ processed: true, error: 'quota_exhausted' })
+              .eq('id', eventId)
+            return { success: false, error: 'quota_exhausted' }
+          }
+
           // Create new lead
           const { data: newLead, error: leadError } = await supabase
             .from('leads')
@@ -399,6 +439,9 @@ export async function processEventInline(
           } else if (newLead) {
             leadId = newLead.id
             isNewLead = true
+
+            // Increment daily quota counter for this workspace
+            await incrementQuota(targetWorkspaceId, 1)
 
             // Link identity to new lead
             await supabase

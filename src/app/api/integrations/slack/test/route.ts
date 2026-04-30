@@ -6,6 +6,8 @@
  * to verify the connection is working.
  */
 
+export const maxDuration = 10
+
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
@@ -39,13 +41,21 @@ export async function POST(_req: NextRequest) {
       ],
     }
 
-    const webhookResponse = await fetch(user.slack_webhook_url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(testMessage),
-    })
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 5000)
+    let webhookResponse: Response
+    try {
+      webhookResponse = await fetch(user.slack_webhook_url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        signal: controller.signal,
+        body: JSON.stringify(testMessage),
+      })
+    } finally {
+      clearTimeout(timeout)
+    }
 
     if (!webhookResponse.ok) {
       const errorText = await webhookResponse.text()

@@ -5,6 +5,7 @@
 
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useUser } from '@/hooks/use-user'
@@ -29,13 +30,13 @@ export function NavBar() {
       roles: ['owner', 'admin', 'member'],
     },
     {
-      name: 'Marketplace',
-      href: '/marketplace',
+      name: 'Leads',
+      href: '/crm/leads',
       roles: ['owner', 'admin', 'member'],
     },
     {
-      name: 'Lead Search',
-      href: '/queries',
+      name: 'Marketplace',
+      href: '/marketplace',
       roles: ['owner', 'admin', 'member'],
     },
     {
@@ -44,33 +45,18 @@ export function NavBar() {
       roles: ['owner', 'admin', 'member'],
     },
     {
-      name: 'Partner Dashboard',
+      name: 'Settings',
+      href: '/settings',
+      roles: ['owner', 'admin', 'member'],
+    },
+    {
+      name: 'Partner',
       href: '/partner',
       roles: ['partner'],
     },
     {
-      name: 'Partner Upload',
-      href: '/partner/upload',
-      roles: ['partner'],
-    },
-    {
-      name: 'Payouts',
-      href: '/partner/payouts',
-      roles: ['partner'],
-    },
-    {
-      name: 'Admin Dashboard',
-      href: '/admin/dashboard',
-      roles: ['owner', 'admin'],
-    },
-    {
-      name: 'Admin Accounts',
-      href: '/admin/accounts',
-      roles: ['owner', 'admin'],
-    },
-    {
-      name: 'API Tests',
-      href: '/admin/monitoring',
+      name: 'Admin',
+      href: '/admin/onboarding',
       roles: ['owner', 'admin'],
     },
   ]
@@ -91,14 +77,9 @@ export function NavBar() {
             {/* Logo */}
             <Link
               href="/"
-              className="flex items-center gap-2 flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-primary rounded-lg"
+              className="flex items-center flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-primary rounded-lg"
             >
-              <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-primary/90 flex items-center justify-center">
-                <span className="text-white font-bold text-sm">C</span>
-              </div>
-              <span className="text-base font-semibold text-foreground hidden sm:inline">
-                Cursive
-              </span>
+              <Image src="/cursive-logo.png" alt="Cursive" width={105} height={28} className="h-7 w-auto" priority />
             </Link>
 
             {/* Desktop Navigation */}

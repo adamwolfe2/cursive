@@ -1,3 +1,5 @@
+export const maxDuration = 300
+
 // Inngest API Route
 // Serves Inngest functions for background job processing
 // Requires Node.js runtime — Inngest functions transitively import nodemailer
@@ -152,8 +154,16 @@ export const { GET, POST, PUT } = serve({
     functions.ghlSyncContact,
     functions.ghlBulkSync,
 
-    // DFY Onboarding Sequence
+    // GHL Marketplace App (post-install visitor sync, 6h cron)
+    functions.marketplaceGhlSync,
+
+    // Shopify Marketplace App (metafield writeback, 6h cron)
+    functions.marketplaceShopifyMetafields,
+
+    // DFY Onboarding Sequence + AL Fulfillment Automation
     functions.dfyOnboardingSequence,
+    functions.alAudienceRefresh,
+    functions.alEnrichmentPoller,
 
     // Autonomous Monitoring & Pipeline Tracking
     functions.universalFailureHandler,
@@ -230,5 +240,25 @@ export const { GET, POST, PUT } = serve({
     // Cleanup crons (prevent unbounded table growth)
     functions.cleanupRateLimitLogs,
     functions.cleanupWebhookEvents,
+
+    // Client Onboarding Pipeline
+    functions.onboardingIntakePipeline,
+    functions.onboardingCopyRegeneration,
+    functions.onboardingRetryEnrichment,
+    functions.onboardingEmailBisonPush,
+
+    // Autoresearch (Karpathy loop: generate -> wait -> evaluate -> repeat)
+    functions.startAutoresearchProgram,
+    functions.generateAutoresearchExperiment,
+    functions.evaluateAutoresearchExperiment,
+    functions.autoresearchReplySync,
+
+    // AI SDR Inbox Sync (processes replies through AI reply engine)
+    functions.sdrInboxSync,
+
+    // User lead cap resets (prevents leads from permanently stopping after cap hit)
+    functions.resetUserDailyLeadCaps,
+    functions.resetUserWeeklyLeadCaps,
+    functions.resetUserMonthlyLeadCaps,
   ],
 })

@@ -18,7 +18,7 @@ export interface PixelDeliveryEmailData {
 
 export async function sendPixelDeliveryEmail(data: PixelDeliveryEmailData) {
   const { to, domain, snippet, pixelId } = data
-  const signupUrl = 'https://leads.meetcursive.com/signup'
+  const signupUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://leads.meetcursive.com'}/signup`
   const displayDomain = domain.replace(/^www\./, '')
 
   const content = `
@@ -94,7 +94,7 @@ export async function sendPixelDeliveryEmail(data: PixelDeliveryEmailData) {
       <span style="color:#6b7280;font-size:13px;">Cursive · <a href="https://meetcursive.com" style="color:#007AFF;">meetcursive.com</a></span></p>
       <p style="margin:12px 0 0;font-size:12px;color:#9ca3af;">
         Need anything? Reply here or grab time at
-        <a href="https://cal.com/gotdarrenhill/30min" style="color:#007AFF;">cal.com/gotdarrenhill/30min</a>
+        <a href="https://cal.com/cursiveteam/30min" style="color:#007AFF;">cal.com/cursiveteam/30min</a>
       </p>
     </div>
   `
@@ -152,8 +152,14 @@ export interface PostCallRecapEmailData {
 
 export async function sendPostCallRecapEmail(data: PostCallRecapEmailData) {
   const { to, domain, snippet, pixelId } = data
-  const loginUrl = 'https://leads.meetcursive.com/welcome?ref=call'
-  const calendarLink = 'https://cal.com/gotdarrenhill/30min'
+  // URL carries the pixel_id and domain so the signup flow can (a) skip the
+  // qualification quiz entirely and (b) deterministically claim THIS exact
+  // pixel when the user creates their account. Without these params the
+  // claim falls back to email-domain matching, which breaks for any user
+  // whose signup email domain doesn't match their marketing site domain.
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://leads.meetcursive.com'
+  const loginUrl = `${siteUrl}/welcome?ref=call&claim=${encodeURIComponent(pixelId)}&domain=${encodeURIComponent(domain)}&email=${encodeURIComponent(to)}`
+  const calendarLink = 'https://cal.com/cursiveteam/30min'
   const displayDomain = domain.replace(/^www\./, '')
 
   const content = `
@@ -223,7 +229,7 @@ export async function sendPostCallRecapEmail(data: PostCallRecapEmailData) {
       <span style="color:#6b7280;font-size:13px;">Cursive · <a href="https://meetcursive.com" style="color:#007AFF;">meetcursive.com</a></span></p>
       <p style="margin:12px 0 0;font-size:12px;color:#9ca3af;">
         Questions? Reply here or grab time at
-        <a href="${calendarLink}" style="color:#007AFF;">cal.com/gotdarrenhill/30min</a>
+        <a href="${calendarLink}" style="color:#007AFF;">cal.com/cursiveteam/30min</a>
       </p>
     </div>
   `

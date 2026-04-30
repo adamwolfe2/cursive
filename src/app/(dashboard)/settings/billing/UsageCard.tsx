@@ -97,7 +97,7 @@ export function UsageCard({ user, isPro }: UsageCardProps) {
                   <div>
                     <p className="text-sm font-medium text-amber-800">Running low on credits</p>
                     <p className="text-xs text-amber-700 mt-0.5">
-                      You have {user.credits_remaining} credit{user.credits_remaining === 1 ? '' : 's'} left today.
+                      You have {user.credits_remaining ?? 0} credit{(user.credits_remaining ?? 0) === 1 ? '' : 's'} left today.
                       {!isPro && ' Upgrade to Pro for 1,000 credits/day, or buy a credit pack below.'}
                       {isPro && ' Buy a credit pack below for extra enrichments.'}
                     </p>

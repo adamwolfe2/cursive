@@ -184,6 +184,16 @@ export function PricingCards({ plans, currentPlan }: PricingCardsProps) {
               <div className="mb-6">
                 {plan.name === 'free' ? (
                   <span className="text-sm text-zinc-500">Free forever</span>
+                ) : displayPrice > 0 ? (
+                  <div className="flex items-end gap-1">
+                    <span className="text-4xl font-bold text-zinc-900">${displayPrice.toLocaleString()}</span>
+                    <span className="text-zinc-500 mb-1">/mo</span>
+                    {billingCycle === 'yearly' && savings > 0 && (
+                      <span className="ml-2 mb-1 text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
+                        Save {savings}%
+                      </span>
+                    )}
+                  </div>
                 ) : (
                   <span className="text-sm font-medium text-primary">Contact us for pricing</span>
                 )}

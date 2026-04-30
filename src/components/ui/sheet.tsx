@@ -14,13 +14,17 @@ const SheetClose = DialogPrimitive.Close
 
 const SheetPortal = DialogPrimitive.Portal
 
+// Use z-[100] (not z-50) so the overlay always covers the platform's
+// fixed sidebar (z-40/z-50) and header. Without this, opening the chat
+// panel left the sidebar + nav bar visible above the dimmed backdrop,
+// which made the modal look broken.
 const SheetOverlay = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Overlay>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Overlay
     className={cn(
-      "fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+      "fixed inset-0 z-[100] bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
       className
     )}
     {...props}
@@ -50,7 +54,9 @@ const SheetContent = React.forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed z-50 gap-4 bg-background p-6 shadow-lg transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:duration-500",
+        // z-[101] so the panel content sits above its own backdrop (z-[100])
+        // and above the platform sidebar/header.
+        "fixed z-[101] gap-4 bg-background p-6 shadow-lg transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:duration-500",
         sheetVariants[side],
         className
       )}

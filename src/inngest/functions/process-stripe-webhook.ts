@@ -16,6 +16,14 @@ import { MarketplaceRepository } from '@/lib/repositories/marketplace.repository
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 import { recordFailedOperation } from '@/lib/monitoring/failed-operations'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
+import * as Sentry from '@sentry/nextjs'
+
+/**
+ * Stripe metadata types that legitimately produce no fulfilment action.
+ * E.g. test-mode events from the Stripe dashboard.
+ * Any OTHER unknown or missing type is an error — Inngest will retry.
+ */
+const KNOWN_SKIP_TYPES = new Set(['stripe_test', 'dashboard_test'])
 
 /**
  * Process Stripe checkout.session.completed webhook
@@ -41,8 +49,16 @@ export const processStripeWebhook = inngest.createFunction(
       const metadataType = metadata?.type
 
       if (!metadataType) {
-        safeLog('[Stripe Webhook] checkout.session.completed missing metadata type, skipping')
-        return { success: true, skipped: true }
+        // Missing metadata.type means no fulfilment will run — money captured, value NOT delivered.
+        // Throw so Inngest retries and the failure surfaces in the dashboard.
+        const err = new Error(
+          `[Stripe Webhook] checkout.session.completed missing metadata.type — eventId=${eventId} sessionId=${sessionId}`
+        )
+        safeError(err.message)
+        Sentry.captureException(err, {
+          tags: { stripe_event_id: eventId, stripe_session_id: sessionId },
+        })
+        throw err
       }
 
       switch (metadataType) {
@@ -51,8 +67,22 @@ export const processStripeWebhook = inngest.createFunction(
         case 'lead_purchase':
           return await processLeadPurchase({ event, step, attempt, metadata, sessionId })
         default:
-          safeLog(`[Stripe Webhook] Unknown checkout metadata type: ${metadataType}`)
-          return { success: true, skipped: true }
+          // If this is a known no-op type, skip silently.
+          if (KNOWN_SKIP_TYPES.has(metadataType)) {
+            safeLog(`[Stripe Webhook] Skipping known no-op metadata type: ${metadataType}`)
+            return { success: true, skipped: true }
+          }
+          // Unknown type — throw so Inngest retries and the failure is visible.
+          {
+            const unknownErr = new Error(
+              `[Stripe Webhook] Unknown checkout metadata type: ${metadataType} — eventId=${eventId}`
+            )
+            safeError(unknownErr.message)
+            Sentry.captureException(unknownErr, {
+              tags: { stripe_event_id: eventId, metadata_type: metadataType },
+            })
+            throw unknownErr
+          }
       }
     }
 

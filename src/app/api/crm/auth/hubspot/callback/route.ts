@@ -6,11 +6,14 @@
  * in the crm_connections table for use by HubSpotService.
  */
 
+export const maxDuration = 15
+
 import { NextRequest, NextResponse } from 'next/server'
-import { safeError } from '@/lib/utils/log-sanitizer'
+import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
 import { cookies } from 'next/headers'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
+import { createHubSpotService } from '@/lib/services/hubspot.service'
 
 // HubSpot OAuth Token URL
 const HS_TOKEN_URL = 'https://api.hubapi.com/oauth/v1/token'
@@ -157,20 +160,28 @@ export async function GET(req: NextRequest) {
     // Exchange code for tokens
     const redirectUri = `${process.env.NEXT_PUBLIC_APP_URL}/api/crm/auth/hubspot/callback`
 
-    const tokenResponse = await fetch(HS_TOKEN_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        Accept: 'application/json',
-      },
-      body: new URLSearchParams({
-        grant_type: 'authorization_code',
-        code,
-        client_id: clientId,
-        client_secret: clientSecret,
-        redirect_uri: redirectUri,
-      }),
-    })
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 10000)
+    let tokenResponse: Response
+    try {
+      tokenResponse = await fetch(HS_TOKEN_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          Accept: 'application/json',
+        },
+        body: new URLSearchParams({
+          grant_type: 'authorization_code',
+          code,
+          client_id: clientId,
+          client_secret: clientSecret,
+          redirect_uri: redirectUri,
+        }),
+        signal: controller.signal,
+      })
+    } finally {
+      clearTimeout(timeout)
+    }
 
     if (!tokenResponse.ok) {
       const errorData = await tokenResponse.text()
@@ -259,6 +270,24 @@ export async function GET(req: NextRequest) {
       },
       severity: 'info',
     })
+
+    // Provision Cursive intent custom properties on the Contact object.
+    // Idempotent — safe on reconnect. Failures don't block the OAuth flow;
+    // users can retry provisioning from Settings > Integrations later.
+    try {
+      const hsService = await createHubSpotService(context.workspace_id)
+      if (hsService) {
+        const provisionResult = await hsService.provisionIntentProperties()
+        safeLog('[HubSpot OAuth] Intent properties provisioned', {
+          workspace_id: context.workspace_id,
+          created: provisionResult.created.length,
+          existed: provisionResult.existed.length,
+          failed: provisionResult.failed.length,
+        })
+      }
+    } catch (provisionErr) {
+      safeError('[HubSpot OAuth] Intent property provisioning failed (non-fatal):', provisionErr)
+    }
 
     // Redirect to success page
     return NextResponse.redirect(

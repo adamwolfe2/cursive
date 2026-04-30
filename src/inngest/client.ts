@@ -201,6 +201,20 @@ export type Events = {
       payload: Record<string, unknown>
     }
   }
+  'ghl/webhook.contact': {
+    data: {
+      event_type: string
+      location_id: string
+      payload: Record<string, unknown>
+    }
+  }
+  'ghl/webhook.opportunity': {
+    data: {
+      event_type: string
+      location_id: string
+      payload: Record<string, unknown>
+    }
+  }
 
   // System Events
   'credits/reset': {
@@ -596,6 +610,79 @@ export type Events = {
         | 'credit_purchase'
         | 'lead_purchase'
       metadata?: Record<string, any>
+    }
+  }
+
+  // Client Onboarding Pipeline Events
+  'onboarding/intake-complete': {
+    data: {
+      client_id: string
+    }
+  }
+  'onboarding/regenerate-copy': {
+    data: {
+      client_id: string
+      feedback?: string
+    }
+  }
+  'onboarding/retry-enrichment': {
+    data: {
+      client_id: string
+    }
+  }
+  'onboarding/copy-approved': {
+    data: {
+      client_id: string
+      workspace_id: string
+    }
+  }
+
+  // Gmail Reply Poller Events (Phase 2.5)
+  'gmail/reply.poll-account': {
+    data: {
+      account_id: string
+    }
+  }
+
+  // Outbound Agent Events (Rox-inspired workflow)
+  'outbound/workflow.run': {
+    data: {
+      run_id: string
+      agent_id: string
+      workspace_id: string
+      target_count: number
+      triggered_by: string | null
+    }
+  }
+  'outbound/workflow.completed': {
+    data: {
+      run_id: string
+      agent_id: string
+      workspace_id: string
+      status: 'completed' | 'failed'
+    }
+  }
+  'outbound/stats.refresh': {
+    data: Record<string, never>
+  }
+
+  // Autoresearch Events (Karpathy loop)
+  'autoresearch/program.start': {
+    data: {
+      program_id: string
+      workspace_id: string
+    }
+  }
+  'autoresearch/experiment.generate': {
+    data: {
+      program_id: string
+      workspace_id: string
+    }
+  }
+  'autoresearch/experiment.evaluate': {
+    data: {
+      experiment_id: string
+      workspace_id: string
     }
   }
 }

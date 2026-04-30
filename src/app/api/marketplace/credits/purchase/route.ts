@@ -1,3 +1,5 @@
+export const maxDuration = 30
+
 // Credit Purchase API
 // Creates Stripe checkout session for credit purchases
 

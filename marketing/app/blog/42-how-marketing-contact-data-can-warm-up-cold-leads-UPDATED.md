@@ -126,7 +126,7 @@ The right message backed by current marketing contact data makes all the differe
 
 **Some of the best outcomes come from people you already know.** You just need to send a message that meets them where they are now, not where they were six months ago.
 
-Ready to turn cold leads into closed deals? **[Book a demo](https://cal.com/cursive/30min)** to see how Cursive enriches contact records, tracks re-engagement signals, and automates personalized outreach to warm up your coldest prospects.
+Ready to turn cold leads into closed deals? **[Book a demo](https://cal.com/cursiveteam/30min)** to see how Cursive enriches contact records, tracks re-engagement signals, and automates personalized outreach to warm up your coldest prospects.
 
 ---
 

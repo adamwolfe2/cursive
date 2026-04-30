@@ -131,7 +131,11 @@ export function ExportButton({
   const config = PLATFORM_CONFIGS[platform]
   const Icon = config.icon
   const hasSelection = selectedCount > 0
-  const isDisabled = !hasSelection || isExporting
+
+  // Non-CSV platforms that are not connected are disabled with "Coming soon"
+  const isCrmPlatform = platform !== 'csv'
+  const isNotConnected = isCrmPlatform && connectionStatus !== 'connected'
+  const isDisabled = !hasSelection || isExporting || isNotConnected
 
   const buttonContent = (
     <Button
@@ -141,9 +145,11 @@ export function ExportButton({
       onClick={() => onExport(platform)}
       className={cn(
         'h-9 gap-2 border transition-all duration-150',
-        hasSelection && !isExporting && !exportSuccess
-          ? `${config.borderColor} ${config.bgColor} ${config.hoverBgColor} ${config.color}`
-          : 'border-gray-200 text-gray-400',
+        isNotConnected
+          ? 'border-gray-200 text-gray-300 cursor-not-allowed'
+          : hasSelection && !isExporting && !exportSuccess
+            ? `${config.borderColor} ${config.bgColor} ${config.hoverBgColor} ${config.color}`
+            : 'border-gray-200 text-gray-400',
         exportSuccess && 'border-green-300 bg-green-50 text-green-600',
         isExporting && 'opacity-70'
       )}
@@ -156,14 +162,22 @@ export function ExportButton({
         <Icon className="size-4" />
       )}
       <span className="text-xs font-medium">{config.name}</span>
-      {connectionStatus === 'connected' && platform !== 'csv' && (
+      {connectionStatus === 'connected' && isCrmPlatform && (
         <span className="size-1.5 rounded-full bg-green-500" />
       )}
-      {connectionStatus === 'not_connected' && platform !== 'csv' && (
+      {isNotConnected && (
         <span className="size-1.5 rounded-full bg-gray-300" />
       )}
     </Button>
   )
+
+  if (isNotConnected) {
+    return (
+      <Tooltip content="Coming soon" side="bottom">
+        {buttonContent}
+      </Tooltip>
+    )
+  }
 
   if (!hasSelection) {
     return (

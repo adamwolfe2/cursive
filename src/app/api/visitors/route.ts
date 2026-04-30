@@ -56,8 +56,6 @@ export async function GET(req: NextRequest) {
       query = query.neq('enrichment_status', 'enriched')
     }
 
-    // When no enrichment filter is active, visitorsResult already counts the full
-    // unfiltered set — reuse that count instead of firing a redundant totalResult query.
     // When a filter IS active, we need a separate unfiltered count for stats.total.
     const totalResultPromise = enrichmentFilter
       ? adminSupabase
@@ -68,38 +66,21 @@ export async function GET(req: NextRequest) {
           .gte('created_at', since)
       : Promise.resolve({ count: null as number | null, error: null })
 
-    // Fire main query + all stats queries + pixel info in parallel
+    // Fire main query + single-RPC stats + pixel info in parallel.
+    // get_visitor_stats replaces the previous 4 separate COUNT queries.
     const [
       visitorsResult,
       totalResult,
-      enrichedResult,
-      thisWeekResult,
-      scoreResult,
+      statsResult,
       pixelResult,
     ] = await Promise.all([
       query,
       totalResultPromise,
-      adminSupabase
-        .from('leads')
-        .select('*', { count: 'exact', head: true })
-        .eq('workspace_id', workspaceId)
-        .or('source.ilike.%pixel%,source.ilike.%superpixel%')
-        .gte('created_at', since)
-        .eq('enrichment_status', 'enriched'),
-      adminSupabase
-        .from('leads')
-        .select('*', { count: 'exact', head: true })
-        .eq('workspace_id', workspaceId)
-        .or('source.ilike.%pixel%,source.ilike.%superpixel%')
-        .gte('created_at', weekAgo),
-      adminSupabase
-        .from('leads')
-        .select('intent_score_calculated')
-        .eq('workspace_id', workspaceId)
-        .or('source.ilike.%pixel%,source.ilike.%superpixel%')
-        .gte('created_at', since)
-        .not('intent_score_calculated', 'is', null)
-        .limit(1000),
+      adminSupabase.rpc('get_visitor_stats', {
+        p_workspace_id: workspaceId,
+        p_since: since,
+        p_week_ago: weekAgo,
+      }),
       adminSupabase
         .from('audiencelab_pixels')
         .select('pixel_id, domain, trial_status, trial_ends_at, is_active')
@@ -109,23 +90,18 @@ export async function GET(req: NextRequest) {
 
     if (visitorsResult.error) throw visitorsResult.error
     if (totalResult.error) safeError('[Visitors API] Total count query failed:', totalResult.error)
-    if (enrichedResult.error) safeError('[Visitors API] Enriched count query failed:', enrichedResult.error)
-    if (thisWeekResult.error) safeError('[Visitors API] This week count query failed:', thisWeekResult.error)
-    if (scoreResult.error) safeError('[Visitors API] Score query failed:', scoreResult.error)
+    if (statsResult.error) safeError('[Visitors API] Stats RPC failed:', statsResult.error)
 
-    const enrichedCount = enrichedResult.count
-    const thisWeekCount = thisWeekResult.count
-    const scoreData = scoreResult.data
+    const statsRow = Array.isArray(statsResult.data) ? statsResult.data[0] : statsResult.data
     const pixel = pixelResult.data
 
     // When no enrichment filter is active, visitorsResult.count IS the unfiltered total
     const totalCount = enrichmentFilter ? totalResult.count : visitorsResult.count
 
-    const scores = (scoreData ?? []).map((l) => l.intent_score_calculated).filter((s): s is number => s !== null)
-    const avgScore = scores.length ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0
-    const total = totalCount ?? 0
-    const enriched = enrichedCount ?? 0
-    const thisWeek = thisWeekCount ?? 0
+    const total = totalCount ?? Number(statsRow?.total ?? 0)
+    const enriched = Number(statsRow?.enriched ?? 0)
+    const thisWeek = Number(statsRow?.this_week ?? 0)
+    const avgScore = Math.round(Number(statsRow?.avg_score ?? 0))
 
     return NextResponse.json({
       visitors: visitorsResult.data ?? [],

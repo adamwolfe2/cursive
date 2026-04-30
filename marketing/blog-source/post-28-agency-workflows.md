@@ -545,4 +545,4 @@ Absolutely. Small agencies benefit most because inefficient workflows hurt more 
 
 ---
 
-**Ready to scale your agency operations?** [Book a demo](https://cal.com/cursive/30min) to see how Cursive helps agencies automate visitor identification, audience building, and campaign activation across dozens of clients.
+**Ready to scale your agency operations?** [Book a demo](https://cal.com/cursiveteam/30min) to see how Cursive helps agencies automate visitor identification, audience building, and campaign activation across dozens of clients.

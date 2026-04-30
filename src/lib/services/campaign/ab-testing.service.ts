@@ -295,7 +295,7 @@ export async function getAssignedVariant(
     return null
   }
 
-  return mapVariant(assignment.variant as any)
+  return mapVariant(assignment.variant as unknown as Record<string, unknown>)
 }
 
 /**
@@ -712,7 +712,7 @@ function getMetricKey(metric: string): string {
 }
 
 function getMetricValue(stats: VariantStats, metricKey: string): number {
-  return (stats as any)[metricKey] || 0
+  return (stats as unknown as Record<string, number>)[metricKey] || 0
 }
 
 function getConversions(stats: VariantStats, metricKey: string): number {
@@ -722,5 +722,5 @@ function getConversions(stats: VariantStats, metricKey: string): number {
     replyRate: 'emailsReplied',
   }
   const key = mapping[metricKey] || 'uniqueOpens'
-  return (stats as any)[key] || 0
+  return (stats as unknown as Record<string, number>)[key] || 0
 }

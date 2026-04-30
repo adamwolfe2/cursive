@@ -1,15 +1,17 @@
+export const maxDuration = 15
+
 import { NextRequest, NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
-import { withRateLimit } from '@/lib/middleware/rate-limiter'
+import { withRateLimit, getRequestIdentifier } from '@/lib/middleware/rate-limiter'
 
 export async function GET(req: NextRequest) {
-  const rateLimited = await withRateLimit(req, 'default')
-  if (rateLimited) return rateLimited
-
   const user = await getCurrentUser()
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
+
+  const rateLimited = await withRateLimit(req, 'ai-qualify', getRequestIdentifier(req, user.id))
+  if (rateLimited) return rateLimited
 
   const domain = req.nextUrl.searchParams.get('domain')
   if (!domain) {
@@ -20,7 +22,14 @@ export async function GET(req: NextRequest) {
     const cleanDomain = domain.replace(/^https?:\/\//, '').split('/')[0]
     const url = `https://api.microlink.io?url=https://${cleanDomain}&screenshot=true`
 
-    const res = await fetch(url, { next: { revalidate: 86400 } })
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 10000)
+    let res: Response
+    try {
+      res = await fetch(url, { signal: controller.signal, next: { revalidate: 86400 } })
+    } finally {
+      clearTimeout(timeout)
+    }
     if (!res.ok) {
       return NextResponse.json({ error: true }, { status: 200 })
     }

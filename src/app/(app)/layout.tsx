@@ -66,6 +66,7 @@ export default async function AppLayout({
                 creditsRemaining: mockUser.daily_credit_limit,
                 totalCredits: mockUser.daily_credit_limit,
                 avatarUrl: null,
+                isPartner: false,
               }}
               workspace={{
                 name: mockUser.workspaces.name,
@@ -90,7 +91,7 @@ export default async function AppLayout({
   const [userProfileResult, adminResult, creditsResult, leadsResult, hotLeadsResult] = await Promise.all([
     supabase
       .from('users')
-      .select('id, auth_user_id, full_name, email, plan, role, workspace_id, daily_credit_limit, daily_credits_used, workspaces(id, name, subdomain, website_url, branding)')
+      .select('id, auth_user_id, full_name, email, plan, role, workspace_id, daily_credit_limit, daily_credits_used, is_partner, workspaces(id, name, subdomain, website_url, branding)')
       .eq('auth_user_id', user.id)
       .maybeSingle(),
     user.email
@@ -137,6 +138,7 @@ export default async function AppLayout({
     workspace_id: string | null
     daily_credit_limit: number
     daily_credits_used: number
+    is_partner: boolean
     workspaces: {
       name: string
       subdomain?: string
@@ -209,6 +211,7 @@ export default async function AppLayout({
             creditsRemaining: creditBalance,
             totalCredits: creditBalance,
             avatarUrl: null,
+            isPartner: userProfile.is_partner,
           }}
           workspace={
             workspace

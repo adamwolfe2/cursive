@@ -259,8 +259,8 @@ function VisitorIdentificationDemo() {
             transition={{ delay: 0.2 }}
             className="bg-white rounded-xl shadow-lg px-6 py-4 border border-gray-200"
           >
-            <div className="text-3xl font-bold text-gray-900">70%</div>
-            <div className="text-sm text-gray-600">Identified</div>
+            <div className="text-3xl font-bold text-gray-900">40&ndash;60%</div>
+            <div className="text-sm text-gray-600">Pixel match (deterministic)</div>
           </motion.div>
           <motion.div
             initial={{ opacity: 0, y: 20 }}

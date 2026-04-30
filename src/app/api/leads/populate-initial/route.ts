@@ -8,6 +8,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { createClient } from '@/lib/supabase/server'
 import { fetchLeadsFromSegment, type AudienceLabLead } from '@/lib/services/audiencelab.service'
@@ -45,11 +46,21 @@ export async function POST(_req: NextRequest) {
       return NextResponse.json({ error: 'No workspace assigned' }, { status: 400 })
     }
 
+    // If segments aren't set yet, return a friendly "pending" state instead
+    // of a 400 error. This happens for users who signed up via /signup
+    // (no quiz, no industry choice) before completing the setup wizard.
+    // The wizard's success screen uses pending_setup to show the right copy.
+    // Without this graceful handling, the setup-wizard's populate-initial
+    // call (in Promise.allSettled) would silently fail and the user would
+    // see an empty leads page forever.
     if (!userProfile.industry_segment || !userProfile.location_segment) {
-      return NextResponse.json(
-        { error: 'Industry and location segments required' },
-        { status: 400 }
-      )
+      return NextResponse.json({
+        success: true,
+        message: 'Your audience is being configured. Complete the setup wizard to pull your first leads.',
+        count: 0,
+        filtered: 0,
+        pending_setup: true,
+      })
     }
 
     // Check if user already received leads today (prevent multiple calls)
@@ -112,14 +123,29 @@ export async function POST(_req: NextRequest) {
           .maybeSingle()
 
         if (anySegment) {
-          segmentMapping = anySegment
+          // Do NOT use this fallback for lead delivery — it would serve cross-industry
+          // leads (e.g. roofing leads to a SaaS user) which are irrelevant and confusing.
+          // Instead, return a honest "pending" state so the user gets a clear message.
           matchType = 'fallback'
-          safeError('[PopulateInitialLeads] Using fallback segment (no industry match):', {
+          safeError('[PopulateInitialLeads] No industry match found, skipping cross-industry fallback:', {
             requested: { industry: userProfile.industry_segment, location: userProfile.location_segment },
-            matched: { segment: segmentMapping!.segment_name, matchType },
+            skipped_segment: anySegment.segment_name,
           })
         }
       }
+    }
+
+    // If the only option left was a cross-industry fallback (matchType === 'fallback'),
+    // don't serve irrelevant leads. Inform the user honestly instead.
+    if (matchType === 'fallback') {
+      const supportedList = 'Real Estate, Commercial Real Estate, Roofing, HVAC, Plumbing, Home Security, Home Services, Contractor, Logistics & Shipping, Security'
+      return NextResponse.json({
+        success: true,
+        count: 0,
+        filtered: 0,
+        pending_setup: true,
+        message: `We're configuring your lead pipeline for ${userProfile.industry_segment ?? 'your industry'}. Your first leads will arrive within 24 hours, or switch to a supported industry (${supportedList}) for instant leads.`,
+      })
     }
 
     if (!segmentMapping) {
@@ -272,6 +298,27 @@ export async function POST(_req: NextRequest) {
         location: userProfile.location_segment ?? null,
       },
     }).catch(() => null)
+
+    // Revalidate the dashboard + leads pages so the user sees the new leads
+    // immediately when the setup wizard redirects them. Without this, the
+    // unstable_cache wrappers on /dashboard can serve stale empty state for
+    // up to 120 seconds — long enough for a new user to think the wizard
+    // failed and bounce.
+    //
+    // Two layers of invalidation:
+    //   1. revalidateTag('workspace-leads') purges the unstable_cache calls
+    //      tagged on /dashboard (recent-leads, hot-leads, recent-enrichments,
+    //      pipeline-stats — all wrapped with that tag).
+    //   2. revalidatePath() invalidates the route's data cache so the next
+    //      navigation re-renders with fresh data.
+    try {
+      revalidateTag('workspace-leads')
+      revalidatePath('/dashboard')
+      revalidatePath('/leads')
+      revalidatePath('/website-visitors')
+    } catch (revalidateErr) {
+      safeError('[PopulateInitialLeads] Cache revalidation failed (non-fatal):', revalidateErr)
+    }
 
     return NextResponse.json({
       success: true,

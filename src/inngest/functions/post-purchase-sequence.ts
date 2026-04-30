@@ -8,7 +8,7 @@ import { inngest } from '../client'
 import { sendEmail } from '@/lib/email/service'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://leads.meetcursive.com'
+import { APP_URL } from '@/lib/config/urls'
 
 // ---------------------------------------------------------------------------
 // Helpers

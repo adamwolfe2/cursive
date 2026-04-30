@@ -25,6 +25,7 @@ import {
   BarChart3,
   ArrowLeft,
   Copy,
+  FlaskConical,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { SequenceStepsList } from './sequence-steps-list'
@@ -166,6 +167,12 @@ export function SequenceBuilder({ sequenceId }: SequenceBuilderProps) {
             <Link href={`/email-sequences/${sequenceId}/enrollments`}>
               <Users className="mr-2 h-4 w-4" />
               Enrollments
+            </Link>
+          </Button>
+          <Button variant="outline" size="sm" asChild>
+            <Link href={`/email-sequences/${sequenceId}/ab-testing`}>
+              <FlaskConical className="mr-2 h-4 w-4" />
+              A/B Tests
             </Link>
           </Button>
           <Button

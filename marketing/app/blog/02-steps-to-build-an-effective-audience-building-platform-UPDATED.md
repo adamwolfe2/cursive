@@ -114,7 +114,7 @@ A strong audience-building platform works in the background, letting you focus o
 
 When you combine clear goals, connected tools, behavioral data, and smart automation, your marketing finds its rhythm. You're not guessing who to reach or when to reach them. You're responding to real signals from real buyers.
 
-**Ready to build an audience that converts?** [Book a demo](https://cal.com/cursive/30min) to see how Cursive identifies anonymous visitors, builds intent-based audiences, and automates multi-channel outreach.
+**Ready to build an audience that converts?** [Book a demo](https://cal.com/cursiveteam/30min) to see how Cursive identifies anonymous visitors, builds intent-based audiences, and automates multi-channel outreach.
 
 ---
 

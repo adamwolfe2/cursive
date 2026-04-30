@@ -24,7 +24,7 @@ import { getStoredRefCode } from '@/components/affiliate/affiliate-ref-capture'
 
 // ─── Cal.com config ───────────────────────────────────────────────────────────
 const CAL_NAMESPACE = '30min'
-const CAL_LINK = 'gotdarrenhill/30min'
+const CAL_LINK = 'cursiveteam/30min'
 const CAL_EMBED_URL = 'https://app.cal.com/embed/embed.js'
 const CAL_ELEMENT_ID = 'cal-inline-embed'
 

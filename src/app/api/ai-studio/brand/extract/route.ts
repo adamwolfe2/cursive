@@ -16,9 +16,24 @@ import { generateKnowledgeBase, generateCustomerProfiles } from '@/lib/ai-studio
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { getErrorMessage } from '@/lib/utils/error-helpers'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
+import { withRateLimit, getRequestIdentifier } from '@/lib/middleware/rate-limiter'
 import { z } from 'zod'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { Database } from '@/types/database.types'
+
+function normalizeUrl(input: string): string {
+  try {
+    const u = new URL(input)
+    u.hash = ''
+    u.search = ''
+    u.hostname = u.hostname.toLowerCase()
+    let path = u.pathname.replace(/\/+$/, '')
+    if (path === '') path = '/'
+    return `${u.protocol}//${u.hostname}${path}`
+  } catch {
+    return input.trim().toLowerCase()
+  }
+}
 
 const PROCESSING_TIMEOUT = 60000 // 60 seconds
 
@@ -51,6 +66,9 @@ export async function POST(request: NextRequest) {
       return unauthorized()
     }
 
+    const limited = await withRateLimit(request, 'ai-generate-email', getRequestIdentifier(request, user.id))
+    if (limited) return limited
+
     // 2. Validate input
     const body = await request.json()
     const { url } = extractSchema.parse(body)
@@ -62,14 +80,15 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    const normalizedUrl = normalizeUrl(url)
     const supabase = await createClient()
 
-    // 3. Check if workspace already exists for this URL
+    // 3. Check if workspace already exists for this URL (dedup on normalized URL)
     const { data: existing } = await supabase
       .from('brand_workspaces')
       .select('id, name, extraction_status')
       .eq('workspace_id', user.workspace_id)
-      .eq('url', url)
+      .eq('url', normalizedUrl)
       .maybeSingle()
 
     if (existing) {
@@ -88,7 +107,7 @@ export async function POST(request: NextRequest) {
         user_id: user.auth_user_id,
         workspace_id: user.workspace_id,
         name: 'Processing...',
-        url,
+        url: normalizedUrl,
         extraction_status: 'processing',
       })
       .select('id, name')
@@ -99,7 +118,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 5. Extract brand DNA with Firecrawl (async - don't await)
-    processBrandExtractionWithTimeout(workspace.id, url, supabase)
+    processBrandExtractionWithTimeout(workspace.id, normalizedUrl, supabase)
 
     // 6. Return immediately with workspace ID
     return NextResponse.json({

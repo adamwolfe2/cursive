@@ -12,11 +12,11 @@ export const metadata = generateMetadata({
 const b2bSoftwareFAQs = [
   {
     question: 'How does Cursive help B2B SaaS companies generate leads?',
-    answer: 'Cursive identifies up to 70% of anonymous B2B visitors on your SaaS website, revealing the companies and contacts browsing your pricing, trial, and product pages. Once identified, Cursive automatically triggers personalized outreach via email, LinkedIn, or direct mail so your sales team can engage in-market buyers before they convert on a competitor.',
+    answer: 'Cursive resolves anonymous B2B visitors on your SaaS site against a deterministic identity graph of 280M+ verified consumer and 140M+ business profiles, with a 40–60% pixel match rate (vs 2–5% for cookie-based tools and 10–15% for IP databases). Once identified, Cursive automatically triggers personalized outreach via email, LinkedIn, or direct mail so your sales team can engage in-market buyers before they convert on a competitor.',
   },
   {
     question: 'What visitor identification rate can B2B software companies expect?',
-    answer: 'B2B software companies using Cursive typically identify up to 70% of their anonymous website visitors, far exceeding the industry average of 2-5% achieved through form fills alone. This identification rate applies across pricing pages, feature pages, and free trial signup flows, giving your team a complete view of in-market demand.',
+    answer: 'B2B software companies using Cursive see a 40–60% deterministic pixel match rate — driven by our proprietary geo-framing methodology — far exceeding the 1–3% conversion rate of form fills, the 2–5% resolution of cookie-based tools, and the 10–15% resolution of IP databases. This match rate applies across pricing pages, feature pages, and free trial signup flows, giving your team a complete view of in-market demand.',
   },
   {
     question: 'How does intent data help SaaS companies find in-market buyers?',

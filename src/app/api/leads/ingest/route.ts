@@ -1,3 +1,5 @@
+export const maxDuration = 30
+
 /**
  * Lead Ingestion API
  *
@@ -20,6 +22,7 @@ import { createMatchingEngine } from '@/lib/services/matching-engine.service'
 import { createUserLeadRouter } from '@/lib/services/user-lead-router.service'
 import { createClient } from '@/lib/supabase/server'
 import { logDedupRejections } from '@/lib/services/deduplication.service'
+import { sanitizeSearchTerm } from '@/lib/utils/sanitize-search'
 
 // Schema for direct lead push
 const LeadPushSchema = z.object({
@@ -262,9 +265,9 @@ async function createLeadFromPush(
       .from('leads')
       .select('id')
       .eq('workspace_id', workspaceId)
-      .ilike('first_name', leadData.first_name.trim())
-      .ilike('last_name', leadData.last_name.trim())
-      .ilike('company_name', leadData.company_name.trim())
+      .ilike('first_name', sanitizeSearchTerm(leadData.first_name.trim()))
+      .ilike('last_name', sanitizeSearchTerm(leadData.last_name.trim()))
+      .ilike('company_name', sanitizeSearchTerm(leadData.company_name.trim()))
       .maybeSingle()
 
     if (nameMatch) {

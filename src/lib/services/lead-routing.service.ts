@@ -300,7 +300,7 @@ export class LeadRoutingService {
     const allowedRegions = workspace.allowed_regions || []
 
     const industry = lead.company_industry
-    const location = lead.company_location as any
+    const location = lead.company_location as unknown as { country?: string; state?: string } | null
     const country = location?.country || 'US'
     const state = location?.state
 
@@ -334,13 +334,13 @@ export class LeadRoutingService {
     leadData: Partial<Lead>,
     rule: RoutingRule
   ): boolean {
-    const conditions = rule.conditions as any
+    const conditions = rule.conditions as unknown as { industries?: string[]; company_sizes?: string[]; revenue_ranges?: string[]; regions?: string[]; countries?: string[]; us_states?: string[] }
 
     // Extract lead attributes
     const industry = leadData.company_industry
     const companySize = leadData.company_size
     const revenue = leadData.company_revenue
-    const location = leadData.company_location as any
+    const location = leadData.company_location as unknown as { country?: string; state?: string } | null
     const country = location?.country || 'US'
     const state = location?.state
 
@@ -559,7 +559,7 @@ export class LeadRoutingService {
     const supabase = await createClient()
 
     const industry = leadData.company_industry
-    const location = leadData.company_location as any
+    const location = leadData.company_location as unknown as { country?: string; state?: string } | null
     const country = location?.country || 'US'
     const state = location?.state
 
@@ -672,7 +672,7 @@ export class LeadRoutingService {
     }
 
     leads.forEach(lead => {
-      const metadata = lead.routing_metadata as any
+      const metadata = lead.routing_metadata as unknown as { original_workspace_id?: string } | null
       const originalWorkspace = metadata?.original_workspace_id
 
       if (originalWorkspace === workspaceId && lead.workspace_id !== workspaceId) {
@@ -689,7 +689,7 @@ export class LeadRoutingService {
       }
 
       // Count by region
-      const location = lead.company_location as any
+      const location = lead.company_location as unknown as { country?: string; state?: string } | null
       const state = location?.state
       if (state) {
         const region = this.getStateRegionMap()[state]

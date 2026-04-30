@@ -6,6 +6,7 @@ import { CompaniesPageClient } from './components/CompaniesPageClient'
 import { createClient } from '@/lib/supabase/server'
 import { CompanyRepository } from '@/lib/repositories/company.repository'
 import { redirect } from 'next/navigation'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export const metadata = {
   title: 'Companies - CRM',
@@ -25,13 +26,19 @@ export default async function CRMCompaniesPage() {
     .maybeSingle()
   if (!userData?.workspace_id) redirect('/welcome')
 
-  // Fetch initial companies data
+  // Fetch initial companies data — fail gracefully so the page still renders
   const companyRepo = new CompanyRepository()
-  const initialData = await companyRepo.findByWorkspace(userData.workspace_id, undefined, undefined, 1, 100)
+  let initialCompanies: Awaited<ReturnType<CompanyRepository['findByWorkspace']>>['data'] = []
+  try {
+    const initialData = await companyRepo.findByWorkspace(userData.workspace_id, undefined, undefined, 1, 100)
+    initialCompanies = initialData.data
+  } catch (err) {
+    safeError('[CRMCompanies] Failed to prefetch initial companies:', err)
+  }
 
   return (
     <QueryProvider>
-      <CompaniesPageClient initialData={initialData.data} />
+      <CompaniesPageClient initialData={initialCompanies} />
     </QueryProvider>
   )
 }

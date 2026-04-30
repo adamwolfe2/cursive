@@ -1,0 +1,40 @@
+# Cursive Web Pixel Extension
+#
+# Bundled with the Cursive Shopify marketplace app. webPixelCreate at install
+# auto-deploys this extension storefront-wide. The pixel runtime fetches the
+# resolution endpoint on each event subscription with the workspace-scoped
+# pixel_id passed via settings.
+#
+# Settings schema MUST match what the OAuth callback writes via webPixelCreate
+# settings: { pixelId } — adding fields here without updating the install
+# flow will cause webPixelCreate to fail with userErrors.
+
+api_version = "2024-10"
+
+[[extensions]]
+type = "web_pixel_extension"
+name = "Cursive Visitor Pixel"
+runtime_context = "strict"
+
+[settings]
+type = "object"
+
+[[settings.fields]]
+key = "pixelId"
+name = "Pixel ID"
+description = "The Cursive pixel UUID provisioned at install. Set automatically; do not edit."
+type = "single_line_text_field"
+
+# Privacy purposes — Shopify renders these in the merchant's consent banner.
+# Resolution calls are gated by analytics.visitor.consent.* checks in the
+# extension code so EU/CCPA visitors only fire after consent.
+[privacy]
+
+[[privacy.purposes]]
+name = "analytics"
+
+[[privacy.purposes]]
+name = "marketing"
+
+[[privacy.purposes]]
+name = "sale_of_data"

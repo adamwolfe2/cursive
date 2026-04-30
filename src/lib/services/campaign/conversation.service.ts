@@ -4,6 +4,7 @@
  */
 
 import { createClient } from '@/lib/supabase/server'
+import { sanitizeSearchTerm } from '@/lib/utils/sanitize-search'
 
 export interface Conversation {
   id: string
@@ -81,6 +82,7 @@ export interface ConversationFilters {
   priority?: Conversation['priority']
   hasUnread?: boolean
   sentiment?: string
+  stage?: string | string[]
   intent?: string
   search?: string
 }
@@ -149,13 +151,20 @@ export async function getConversations(
     query = query.eq('sentiment', filters.sentiment)
   }
 
+  if (filters.stage) {
+    if (Array.isArray(filters.stage)) {
+      query = query.in('sentiment', filters.stage)
+    } else {
+      query = query.eq('sentiment', filters.stage)
+    }
+  }
+
   if (filters.intent) {
     query = query.eq('intent', filters.intent)
   }
 
   if (filters.search) {
-    // Escape SQL wildcard chars so literal % and _ don't act as wildcards
-    const escapedSearch = filters.search.replace(/[%_\\]/g, '\\$&')
+    const escapedSearch = sanitizeSearchTerm(filters.search)
     query = query.ilike('subject_normalized', `%${escapedSearch}%`)
   }
 
@@ -655,11 +664,17 @@ export async function addMessageToConversation(
       throw new Error('Failed to add message: no data returned')
     }
 
-    // Update conversation stats manually
+    // Update conversation stats manually — read current count then increment
+    const { data: current } = await supabase
+      .from('email_conversations')
+      .select('message_count')
+      .eq('id', conversationId)
+      .maybeSingle()
+
     await supabase
       .from('email_conversations')
       .update({
-        message_count: supabase.rpc('increment', { x: 1 }) as any, // Placeholder
+        message_count: ((current as any)?.message_count ?? 0) + 1,
         last_message_at: message.sentAt || message.receivedAt || new Date().toISOString(),
         last_message_direction: message.direction,
         updated_at: new Date().toISOString(),

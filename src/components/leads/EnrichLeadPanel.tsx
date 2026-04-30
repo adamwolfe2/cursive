@@ -58,7 +58,7 @@ const FIELD_META: Record<string, { label: string; icon: React.ReactNode }> = {
   linkedin_url:   { label: 'LinkedIn profile', icon: <Linkedin className="h-4 w-4" /> },
 }
 
-type Phase = 'idle' | 'scanning' | 'revealing' | 'done' | 'empty' | 'no_credits'
+type Phase = 'idle' | 'scanning' | 'revealing' | 'done' | 'empty' | 'no_credits' | 'audiencelab_not_configured'
 
 export function EnrichLeadPanel({
   leadId,
@@ -93,6 +93,12 @@ export function EnrichLeadPanel({
         const data = await res.json()
         throw Object.assign(new Error('no_credits'), { data })
       }
+      if (res.status === 503) {
+        const data = await res.json().catch(() => ({}))
+        if (data.code === 'AUDIENCELAB_NOT_CONFIGURED') {
+          throw Object.assign(new Error('audiencelab_not_configured'), { data })
+        }
+      }
       if (!res.ok) {
         const data = await res.json().catch(() => ({}))
         throw new Error(data.error || 'Enrichment failed')
@@ -124,6 +130,8 @@ export function EnrichLeadPanel({
     onError: (err: unknown) => {
       if (err instanceof Error && err.message === 'no_credits') {
         setPhase('no_credits')
+      } else if (err instanceof Error && err.message === 'audiencelab_not_configured') {
+        setPhase('audiencelab_not_configured' as Phase)
       } else {
         setPhase('idle')
       }
@@ -173,6 +181,26 @@ export function EnrichLeadPanel({
         {/* Content */}
         <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
 
+          {/* AudienceLab not configured state */}
+          {phase === 'audiencelab_not_configured' && (
+            <div className="rounded-xl border border-blue-200 bg-blue-50 p-6 text-center space-y-4">
+              <div className="mx-auto w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
+                <Zap className="h-6 w-6 text-blue-600" />
+              </div>
+              <div>
+                <p className="font-semibold text-blue-900">Enrichment not configured</p>
+                <p className="text-sm text-blue-700 mt-1">
+                  Lead enrichment requires a Cursive connection. Ask your admin to finish enrichment setup in Settings.
+                </p>
+              </div>
+              <Button asChild variant="outline" className="w-full">
+                <a href="/settings/integrations">
+                  Go to Settings &rarr; Integrations
+                </a>
+              </Button>
+            </div>
+          )}
+
           {/* No credits state */}
           {phase === 'no_credits' && (
             <div className="rounded-xl border border-amber-200 bg-amber-50 p-6 text-center space-y-4">
@@ -186,10 +214,13 @@ export function EnrichLeadPanel({
                 </p>
               </div>
               <Button asChild className="w-full">
-                <a href="/settings/billing">
-                  <Sparkles className="h-4 w-4 mr-2" />
-                  Upgrade to Pro
-                  <ArrowRight className="h-4 w-4 ml-2" />
+                <a
+                  href="/settings/billing"
+                  className="inline-flex w-full items-center justify-center gap-2 whitespace-nowrap"
+                >
+                  <Sparkles className="h-4 w-4 shrink-0" />
+                  <span>Upgrade to Pro</span>
+                  <ArrowRight className="h-4 w-4 shrink-0" />
                 </a>
               </Button>
             </div>

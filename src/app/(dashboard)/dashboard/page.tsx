@@ -18,9 +18,9 @@ import { CreditService } from '@/lib/services/credit.service'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import {
-  Users, ArrowRight,
+  ArrowRight,
   Star, Target, CheckCircle2, Circle,
-  Eye, Rocket, Activity,
+  Eye, Rocket, Activity, Calendar,
 } from 'lucide-react'
 import { sanitizeName, sanitizeCompanyName, sanitizeText } from '@/lib/utils/sanitize-text'
 import { DashboardAnimationWrapper, AnimatedSection } from '@/components/dashboard/dashboard-animation-wrapper'
@@ -33,6 +33,11 @@ import { TargetingMissingBanner } from '@/components/dashboard/TargetingMissingB
 import { TrialCountdown } from '@/components/dashboard/TrialCountdown'
 import { FirstEnrichmentModal } from '@/components/onboarding/FirstEnrichmentModal'
 import { ProvisioningWidget } from '@/components/dashboard/ProvisioningWidget'
+import { FreePlanBanner } from '@/components/dashboard/FreePlanBanner'
+import { LiveLeadsFeed } from '@/components/leads/live-leads-feed'
+import { MarketplaceSetupBanner } from '@/components/marketplace/MarketplaceSetupBanner'
+import { UnsupportedIndustryBanner } from '@/components/dashboard/UnsupportedIndustryBanner'
+import { isSupportedIndustry } from '@/lib/utils/waitlist-validation'
 
 export const metadata: Metadata = {
   title: 'Dashboard | Cursive',
@@ -77,7 +82,11 @@ const getCachedWorkspaceStats = unstable_cache(
     return fresh
   },
   ['workspace-stats'],
-  { revalidate: 120 },
+  // Same workspace-leads tag as the other lead-derived caches so
+  // populate-initial's revalidateTag purges the stats too. Otherwise the
+  // dashboard's "Total leads" stat could lag the actual lead count by up
+  // to 120s after the wizard completes.
+  { revalidate: 120, tags: ['workspace-leads'] },
 )
 
 const getCachedRecentLeads = unstable_cache(
@@ -93,7 +102,11 @@ const getCachedRecentLeads = unstable_cache(
     return data ?? []
   },
   ['recent-leads'],
-  { revalidate: 120 },
+  // Tags let revalidateTag('workspace-leads') from populate-initial purge
+  // this cache immediately when new leads arrive — without it, a brand new
+  // user could land on the dashboard right after the wizard and see stale
+  // empty state for up to 120s.
+  { revalidate: 120, tags: ['workspace-leads'] },
 )
 
 const getCachedRecentEnrichments = unstable_cache(
@@ -109,7 +122,7 @@ const getCachedRecentEnrichments = unstable_cache(
     return data ?? []
   },
   ['recent-enrichments'],
-  { revalidate: 120 },
+  { revalidate: 120, tags: ['workspace-leads'] },
 )
 
 const getCachedHotLeads = unstable_cache(
@@ -127,7 +140,7 @@ const getCachedHotLeads = unstable_cache(
     return data ?? []
   },
   ['hot-leads'],
-  { revalidate: 300 },
+  { revalidate: 300, tags: ['workspace-leads'] },
 )
 
 const getCachedPipelineStats = unstable_cache(
@@ -163,7 +176,7 @@ const getCachedPipelineStats = unstable_cache(
     return counts as { new: number; contacted: number; qualified: number; proposal: number; negotiation: number; won: number; lost: number }
   },
   ['pipeline-stats'],
-  { revalidate: 120 },
+  { revalidate: 120, tags: ['workspace-leads'] },
 )
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -270,16 +283,31 @@ async function DashboardMainGrid(props: MainGridProps) {
     : null
 
   return (
-    <>
-      {/* Hot leads */}
+    <div className="space-y-8">
+      {/* Marketplace install setup banner — only shown when a GHL or Shopify
+          install needs the pixel embed completed. Dismissible per session. */}
+      <MarketplaceSetupBanner />
+
+      {/* Hot leads — the aha-moment surface. When pixel is active these are
+          typically the highest-intent visitors the pixel just identified.
+          Each card surfaces Draft Email as the primary action because this is
+          the point in the flow where outreach actually makes sense (enriched,
+          verified, ICP-matched leads only — never raw visitors). */}
       {typedHotLeads.length > 0 && (
         <AnimatedSection delay={0.08}>
-          <div className="bg-white rounded-xl border border-gray-200 p-6">
+          <div className="bg-card rounded-xl border border-border p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-semibold text-gray-900">
-                Top Leads to Act On
-              </h2>
-              <Link href="/leads?sort=intent" className="text-sm text-primary hover:underline flex items-center gap-1">
+              <div>
+                <h2 className="font-semibold text-foreground">
+                  {hasVerifiedPixel ? 'Hot Leads from Your Website' : 'Top Leads to Act On'}
+                </h2>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {hasVerifiedPixel
+                    ? 'Enriched & verified visitors matching your ICP — ready for personalized outreach.'
+                    : 'Your highest-intent prospects right now.'}
+                </p>
+              </div>
+              <Link href="/leads?sort=intent" className="text-sm text-primary hover:underline flex items-center gap-1 shrink-0">
                 All leads <ArrowRight className="h-3.5 w-3.5" />
               </Link>
             </div>
@@ -291,32 +319,30 @@ async function DashboardMainGrid(props: MainGridProps) {
                 const score = lead.intent_score_calculated
                 const isEnriched = lead.enrichment_status === 'enriched'
                 return (
-                  <div key={lead.id} className="rounded-lg border border-gray-200 bg-white p-4 flex flex-col gap-2.5">
+                  <Link
+                    key={lead.id}
+                    href={`/crm/leads/${lead.id}`}
+                    className="rounded-lg border border-border bg-card p-4 flex flex-col gap-2.5 hover:border-primary/40 hover:shadow-sm transition-all"
+                  >
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
-                        <p className="text-sm font-medium text-gray-900 truncate">{name}</p>
-                        {lead.company_name && <p className="text-xs text-gray-500 truncate">{sanitizeCompanyName(lead.company_name)}</p>}
+                        <p className="text-sm font-medium text-foreground truncate">{name}</p>
+                        {lead.company_name && <p className="text-xs text-muted-foreground truncate">{sanitizeCompanyName(lead.company_name)}</p>}
                       </div>
                       {score !== null && (
-                        <span className="text-xs text-gray-500 shrink-0">{score}</span>
+                        <span className="text-xs font-medium text-muted-foreground shrink-0">{score}</span>
                       )}
                     </div>
-                    <div className="flex items-center gap-3">
-                      {isEnriched && lead.email && (
-                        <a href={`mailto:${lead.email}`} className="text-xs text-gray-500 hover:text-gray-700 transition-colors">
-                          Email
-                        </a>
+                    <div className="flex items-center gap-2 mt-auto pt-1">
+                      {isEnriched ? (
+                        <span className="text-xs font-medium text-primary group-hover:underline">
+                          Draft email →
+                        </span>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">Enrich to unlock</span>
                       )}
-                      {isEnriched && lead.phone && (
-                        <a href={`tel:${lead.phone}`} className="text-xs text-gray-500 hover:text-gray-700 transition-colors">
-                          Call
-                        </a>
-                      )}
-                      <Link href={`/crm/leads/${lead.id}`} className="text-xs text-gray-500 hover:text-gray-700 transition-colors ml-auto flex items-center gap-1">
-                        View <ArrowRight className="h-2.5 w-2.5" />
-                      </Link>
                     </div>
-                  </div>
+                  </Link>
                 )
               })}
             </div>
@@ -329,9 +355,9 @@ async function DashboardMainGrid(props: MainGridProps) {
 
         {/* Recent Leads — 2/3 width */}
         <AnimatedSection delay={0.1} className="lg:col-span-2">
-          <div className="bg-white rounded-xl border border-gray-200 p-6">
+          <div className="bg-card rounded-xl border border-border p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-semibold text-gray-900">
+              <h2 className="font-semibold text-foreground">
                 Recent Leads
               </h2>
               <Link href="/leads" className="text-sm text-primary hover:underline flex items-center gap-1">
@@ -347,7 +373,7 @@ async function DashboardMainGrid(props: MainGridProps) {
               const n = l.full_name || [l.first_name, l.last_name].filter(Boolean).join(' ')
               return n && n.trim().length > 1
             }).length > 0 ? (
-              <div className="divide-y divide-gray-100">
+              <div className="divide-y divide-border">
                 {((recentLeads ?? []) as Array<{
                   id: string; full_name: string | null; first_name: string | null; last_name: string | null
                   email: string | null; phone: string | null; company_name: string | null
@@ -363,10 +389,10 @@ async function DashboardMainGrid(props: MainGridProps) {
                   const validEmail = lead.email?.includes('@') ? sanitizeText(lead.email) : null
                   const displaySub = sanitizeCompanyName(lead.company_name) || validEmail || sanitizeText(lead.phone) || ''
                   return (
-                    <Link key={lead.id} href={`/crm/leads/${lead.id}`} className="flex items-center gap-3 py-3 hover:bg-gray-50 transition-colors group px-1">
+                    <Link key={lead.id} href={`/crm/leads/${lead.id}`} className="flex items-center gap-3 py-3 hover:bg-muted transition-colors group px-1">
                       <div className="flex-1 min-w-0">
-                        <span className="text-sm font-medium text-gray-900 group-hover:text-primary transition-colors">{displayName}</span>
-                        {displaySub && <span className="text-sm text-gray-500 ml-2">{displaySub}</span>}
+                        <span className="text-sm font-medium text-foreground group-hover:text-primary transition-colors">{displayName}</span>
+                        {displaySub && <span className="text-sm text-muted-foreground ml-2">{displaySub}</span>}
                       </div>
                     </Link>
                   )
@@ -374,11 +400,17 @@ async function DashboardMainGrid(props: MainGridProps) {
               </div>
             ) : (
               <div className="text-center py-10">
-                <p className="text-sm font-medium text-gray-600">No leads yet today</p>
-                <p className="text-xs text-gray-500 mt-1">Leads arrive every morning at 8am CT based on your targeting preferences.</p>
+                <p className="text-sm font-medium text-muted-foreground">
+                  {hasPreferences ? 'No leads yet — your audience is being built' : 'Tell us who you sell to'}
+                </p>
+                <p className="text-xs text-muted-foreground mt-1 max-w-sm mx-auto">
+                  {hasPreferences
+                    ? 'Your first leads should arrive within a few minutes. We\'re also pulling fresh ones every morning at 8am CT.'
+                    : 'Complete setup to unlock your first batch of enriched leads matching your ICP.'}
+                </p>
                 {!hasPreferences && (
-                  <Link href="/my-leads/preferences" className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">
-                    Set preferences <ArrowRight className="h-3.5 w-3.5" />
+                  <Link href="/setup" className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">
+                    Complete setup <ArrowRight className="h-3.5 w-3.5" />
                   </Link>
                 )}
               </div>
@@ -387,14 +419,14 @@ async function DashboardMainGrid(props: MainGridProps) {
         </AnimatedSection>
 
         {/* Right column */}
-        <div className="space-y-4">
+        <div className="space-y-6">
 
           {/* Pixel health */}
           <AnimatedSection delay={0.12}>
-            <div className="rounded-xl border border-gray-200 bg-white p-3">
+            <div className="rounded-xl border border-border bg-card p-3">
               <div className="flex items-center gap-2">
-                <div className={`h-2 w-2 rounded-full shrink-0 ${hasVerifiedPixel ? 'bg-gray-900' : hasPixel ? 'bg-gray-400' : 'bg-gray-300'}`} />
-                <span className="text-xs font-medium text-gray-600">
+                <div className={`h-2 w-2 rounded-full shrink-0 ${hasVerifiedPixel ? 'bg-foreground' : hasPixel ? 'bg-muted-foreground' : 'bg-border'}`} />
+                <span className="text-xs font-medium text-muted-foreground">
                   {hasVerifiedPixel ? 'Pixel Active' : hasPixel ? 'Pixel Installed — awaiting first event' : 'Pixel not installed'}
                 </span>
                 <Link href="/settings/pixel" className="ml-auto text-xs text-primary hover:underline shrink-0">
@@ -402,14 +434,17 @@ async function DashboardMainGrid(props: MainGridProps) {
                 </Link>
               </div>
               {hasPixel && (
-                <div className="flex items-center gap-3 mt-1.5 pl-4 text-[11px] text-gray-500">
+                <div className="flex items-center gap-3 mt-1.5 pl-4 text-[11px] text-muted-foreground">
                   {pixelEventCount > 0 && <span>{pixelEventCount.toLocaleString()} events</span>}
                   {visitorCountTotal ? <span>{visitorCountTotal.toLocaleString()} visitors identified</span> : null}
-                  {isOnTrial && trialEndsAtStr && (
-                    <span className="text-gray-500 font-medium">
-                      Trial: {Math.max(0, Math.ceil((new Date(trialEndsAtStr).getTime() - Date.now()) / 86400000))}d left
-                    </span>
-                  )}
+                  {isOnTrial && trialEndsAtStr && (() => {
+                    const trialDays = Math.ceil((new Date(trialEndsAtStr).getTime() - Date.now()) / 86400000)
+                    return (
+                      <span className="text-muted-foreground font-medium">
+                        {trialDays < 0 ? 'Trial expired' : `Trial: ${trialDays}d left`}
+                      </span>
+                    )
+                  })()}
                 </div>
               )}
             </div>
@@ -418,21 +453,21 @@ async function DashboardMainGrid(props: MainGridProps) {
           {/* Next step */}
           <AnimatedSection delay={0.15}>
             {step ? (
-              <Link href={step.href} className="block rounded-xl border border-gray-200 bg-white p-5 transition-all hover:shadow-sm">
-                <p className="text-xs text-gray-400 mb-1">Next Step</p>
-                <p className="text-sm font-medium text-gray-900">{step.label}</p>
-                <p className="text-xs text-gray-500 mt-0.5">{step.desc}</p>
+              <Link href={step.href} className="block rounded-xl border border-border bg-card p-5 transition-all hover:shadow-sm">
+                <p className="text-xs text-muted-foreground mb-1">Next Step</p>
+                <p className="text-sm font-medium text-foreground">{step.label}</p>
+                <p className="text-xs text-muted-foreground mt-0.5">{step.desc}</p>
                 <span className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-primary">
                   Get started <ArrowRight className="h-3 w-3" />
                 </span>
               </Link>
             ) : (
-              <div className="rounded-xl border border-gray-200 bg-white p-5">
+              <div className="rounded-xl border border-border bg-card p-5">
                 <div className="flex items-center gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-gray-400 shrink-0" />
+                  <CheckCircle2 className="h-5 w-5 text-muted-foreground shrink-0" />
                   <div>
-                    <p className="text-sm font-semibold text-gray-900">You&apos;re all set!</p>
-                    <p className="text-xs text-gray-500">Check your leads for fresh matches every morning at 8am CT.</p>
+                    <p className="text-sm font-semibold text-foreground">You&apos;re all set!</p>
+                    <p className="text-xs text-muted-foreground">Check your leads for fresh matches every morning at 8am CT.</p>
                   </div>
                 </div>
               </div>
@@ -442,12 +477,12 @@ async function DashboardMainGrid(props: MainGridProps) {
           {/* Setup checklist */}
           {showChecklist && (
             <AnimatedSection delay={0.2}>
-              <div className="bg-white rounded-xl border border-gray-200 p-5">
+              <div className="bg-card rounded-xl border border-border p-5">
                 <div className="flex items-center justify-between mb-1">
-                  <h3 className="font-semibold text-gray-900 text-sm">Setup Checklist</h3>
-                  <span className="text-xs text-gray-500">{checklistProgress}/{checklistTotal}</span>
+                  <h3 className="font-semibold text-foreground text-sm">Setup Checklist</h3>
+                  <span className="text-xs text-muted-foreground">{checklistProgress}/{checklistTotal}</span>
                 </div>
-                <div className="mt-1 h-1.5 bg-gray-100 rounded-full overflow-hidden mb-4">
+                <div className="mt-1 h-1.5 bg-muted rounded-full overflow-hidden mb-4">
                   <div className="h-full bg-gradient-to-r from-blue-500 to-primary rounded-full transition-all" style={{ width: `${(checklistProgress / checklistTotal) * 100}%` }} />
                 </div>
                 <div className="space-y-3">
@@ -455,11 +490,11 @@ async function DashboardMainGrid(props: MainGridProps) {
                     <div key={item.id} className="flex items-center gap-2.5">
                       {item.done
                         ? <CheckCircle2 className="h-4 w-4 text-green-500 shrink-0" />
-                        : <Circle className="h-4 w-4 text-gray-400 shrink-0" />}
+                        : <Circle className="h-4 w-4 text-muted-foreground shrink-0" />}
                       {item.href && !item.done
-                        ? <Link href={item.href} className="text-sm text-gray-700 hover:text-primary transition-colors">{item.label}</Link>
-                        : <span className={`text-sm ${item.done ? 'text-gray-500 line-through' : 'text-gray-700'}`}>{item.label}</span>}
-                      {!item.done && item.href && <ArrowRight className="h-3 w-3 text-gray-400 ml-auto" />}
+                        ? <Link href={item.href} className="text-sm text-foreground hover:text-primary transition-colors">{item.label}</Link>
+                        : <span className={`text-sm ${item.done ? 'text-muted-foreground line-through' : 'text-foreground'}`}>{item.label}</span>}
+                      {!item.done && item.href && <ArrowRight className="h-3 w-3 text-muted-foreground ml-auto" />}
                     </div>
                   ))}
                 </div>
@@ -469,34 +504,34 @@ async function DashboardMainGrid(props: MainGridProps) {
 
           {/* Quick actions */}
           <AnimatedSection delay={0.22}>
-            <div className="bg-white rounded-xl border border-gray-200 p-5">
-              <h3 className="font-semibold text-gray-900 text-sm mb-3">Quick Actions</h3>
+            <div className="bg-card rounded-xl border border-border p-5">
+              <h3 className="font-semibold text-foreground text-sm mb-3">Quick Actions</h3>
               <div className="space-y-1">
-                <Link href="/leads" className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-gray-50 transition-colors group">
-                  <Star className="h-4 w-4 text-gray-400 shrink-0" />
+                <Link href="/leads" className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-muted transition-colors group">
+                  <Star className="h-4 w-4 text-muted-foreground shrink-0" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-800">Daily Leads</p>
-                    <p className="text-xs text-gray-500">{todayCount} new today</p>
+                    <p className="text-sm font-medium text-foreground">Daily Leads</p>
+                    <p className="text-xs text-muted-foreground">{todayCount} new today</p>
                   </div>
-                  <ArrowRight className="h-3.5 w-3.5 text-gray-400 group-hover:text-gray-600 transition-colors" />
+                  <ArrowRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-muted-foreground transition-colors" />
                 </Link>
-                <Link href="/website-visitors" className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-gray-50 transition-colors group">
-                  <Eye className="h-4 w-4 text-gray-400 shrink-0" />
+                <Link href="/website-visitors" className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-muted transition-colors group">
+                  <Eye className="h-4 w-4 text-muted-foreground shrink-0" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-800">Website Visitors</p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-sm font-medium text-foreground">Website Visitors</p>
+                    <p className="text-xs text-muted-foreground">
                       {visitorCountTotal ? `${visitorCountTotal} identified` : hasPixel ? 'Pixel active' : 'Setup pixel'}
                     </p>
                   </div>
-                  <ArrowRight className="h-3.5 w-3.5 text-gray-400 group-hover:text-gray-600 transition-colors" />
+                  <ArrowRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-muted-foreground transition-colors" />
                 </Link>
-                <Link href="/activate" className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-gray-50 transition-colors group">
-                  <Rocket className="h-4 w-4 text-gray-400 shrink-0" />
+                <Link href="/activate" className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-muted transition-colors group">
+                  <Rocket className="h-4 w-4 text-muted-foreground shrink-0" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-800">Activate</p>
-                    <p className="text-xs text-gray-500">Audiences + campaigns</p>
+                    <p className="text-sm font-medium text-foreground">Activate</p>
+                    <p className="text-xs text-muted-foreground">Audiences + campaigns</p>
                   </div>
-                  <ArrowRight className="h-3.5 w-3.5 text-gray-400 group-hover:text-gray-600 transition-colors" />
+                  <ArrowRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-muted-foreground transition-colors" />
                 </Link>
               </div>
             </div>
@@ -505,28 +540,28 @@ async function DashboardMainGrid(props: MainGridProps) {
           {/* Recent activity */}
           {activityLog.length > 0 && (
             <AnimatedSection delay={0.24}>
-              <div className="bg-white rounded-xl border border-gray-200 p-5">
-                <h3 className="font-semibold text-gray-900 text-sm mb-3 flex items-center gap-2">
-                  <Activity className="h-3.5 w-3.5 text-gray-500" />
+              <div className="bg-card rounded-xl border border-border p-5">
+                <h3 className="font-semibold text-foreground text-sm mb-3 flex items-center gap-2">
+                  <Activity className="h-3.5 w-3.5 text-muted-foreground" />
                   Recent Activity
                 </h3>
                 <div className="space-y-3">
                   {activityLog.slice(0, 6).map((event, i) => (
                     <div key={i} className="flex items-start gap-2.5">
                       <div className="mt-0.5 h-5 w-5 shrink-0 flex items-center justify-center">
-                        <div className="h-1.5 w-1.5 rounded-full bg-gray-300" />
+                        <div className="h-1.5 w-1.5 rounded-full bg-border" />
                       </div>
                       <div className="flex-1 min-w-0">
                         {event.type === 'delivery' ? (
-                          <p className="text-xs text-gray-700"><span className="font-medium">{event.count} leads</span> delivered today</p>
+                          <p className="text-xs text-foreground"><span className="font-medium">{event.count} leads</span> delivered today</p>
                         ) : (
-                          <p className="text-xs text-gray-700 truncate">
+                          <p className="text-xs text-foreground truncate">
                             <span className="font-medium">{event.leadName}</span>
-                            {event.company && <span className="text-gray-500"> · {event.company}</span>}
-                            <span className="text-gray-500 ml-1">enriched</span>
+                            {event.company && <span className="text-muted-foreground"> · {event.company}</span>}
+                            <span className="text-muted-foreground ml-1">enriched</span>
                           </p>
                         )}
-                        <p className="text-[10px] text-gray-500 mt-0.5">
+                        <p className="text-[10px] text-muted-foreground mt-0.5">
                           {formatDistanceToNow(new Date(event.time), { addSuffix: true })}
                         </p>
                       </div>
@@ -540,10 +575,10 @@ async function DashboardMainGrid(props: MainGridProps) {
           {/* Pipeline funnel */}
           {showPipeline && (
             <AnimatedSection delay={0.26}>
-              <div className="bg-white rounded-xl border border-gray-200 p-5">
+              <div className="bg-card rounded-xl border border-border p-5">
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="font-semibold text-gray-900 text-sm flex items-center gap-2">
-                    <Target className="h-3.5 w-3.5 text-gray-500" />
+                  <h3 className="font-semibold text-foreground text-sm flex items-center gap-2">
+                    <Target className="h-3.5 w-3.5 text-muted-foreground" />
                     Pipeline
                   </h3>
                   <Link href="/crm/leads" className="text-xs text-primary hover:underline">View CRM</Link>
@@ -559,17 +594,17 @@ async function DashboardMainGrid(props: MainGridProps) {
                     const pct = Math.round((count / Math.max(pipeline.contacted, 1)) * 100)
                     return (
                       <div key={key} className="flex items-center gap-2">
-                        <span className="text-xs text-gray-500 w-16 shrink-0">{label}</span>
-                        <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                          <div className="h-full bg-gray-300 rounded-full transition-all" style={{ width: `${pct}%` }} />
+                        <span className="text-xs text-muted-foreground w-16 shrink-0">{label}</span>
+                        <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
+                          <div className="h-full bg-border rounded-full transition-all" style={{ width: `${pct}%` }} />
                         </div>
-                        <span className={`text-xs font-semibold ${count > 0 ? 'text-gray-700' : 'text-gray-400'} w-6 text-right`}>{count}</span>
+                        <span className={`text-xs font-semibold ${count > 0 ? 'text-foreground' : 'text-muted-foreground'} w-6 text-right`}>{count}</span>
                       </div>
                     )
                   })}
                 </div>
                 {pipeline.won > 0 && (
-                  <p className="mt-3 text-[11px] text-gray-600 bg-gray-50 rounded-lg px-2.5 py-1.5 font-medium">
+                  <p className="mt-3 text-[11px] text-muted-foreground bg-muted rounded-lg px-2.5 py-1.5 font-medium">
                     {pipeline.won} lead{pipeline.won !== 1 ? 's' : ''} won
                   </p>
                 )}
@@ -579,26 +614,14 @@ async function DashboardMainGrid(props: MainGridProps) {
 
           {/* Upgrade CTA */}
           {isFree && (
-            <AnimatedSection delay={0.25}>
-              <div className="rounded-xl border border-gray-200 bg-white p-5">
-                <span className="text-sm font-semibold text-gray-900">Free Plan</span>
-                <div className="text-xs text-gray-500 mt-2 mb-3 space-y-1">
-                  <p className="flex justify-between"><span>Daily leads</span><span className="font-medium text-gray-700">{dailyLimit}/day</span></p>
-                  <p className="flex justify-between"><span>Enrichment credits</span><span className="font-medium text-gray-700">{creditLimit}/day</span></p>
-                  <p className="flex justify-between"><span>Credits reset</span><span className="font-medium text-gray-700">8am CT</span></p>
-                </div>
-                <Link href="/settings/billing" className="w-full inline-flex items-center justify-center gap-1.5 rounded-lg bg-primary px-3 py-2 text-sm font-semibold text-white hover:bg-primary/90 transition-colors">
-                  Upgrade to Pro
-                </Link>
-              </div>
-            </AnimatedSection>
+            <FreePlanBanner dailyLimit={dailyLimit} creditLimit={creditLimit} />
           )}
         </div>
       </div>
 
       <WhatsNewModal />
       {firstEnrichmentResult && <FirstEnrichmentModal lead={firstEnrichmentResult} workspaceId={workspaceId} />}
-    </>
+    </div>
   )
 }
 
@@ -608,23 +631,23 @@ function DashboardMainGridSkeleton() {
   return (
     <div className="space-y-6 animate-pulse">
       {/* Hot leads skeleton */}
-      <div className="bg-white rounded-xl border border-gray-200 p-5">
-        <div className="h-5 w-44 bg-gray-200 rounded mb-4" />
+      <div className="bg-card rounded-xl border border-border p-5">
+        <div className="h-5 w-44 bg-muted rounded mb-4" />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {[1, 2, 3].map(i => <div key={i} className="rounded-lg border border-gray-100 bg-gray-50 h-24" />)}
+          {[1, 2, 3].map(i => <div key={i} className="rounded-lg border border-border bg-muted h-24" />)}
         </div>
       </div>
       {/* Main grid skeleton */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-white rounded-xl border border-gray-200 p-5">
-          <div className="h-5 w-32 bg-gray-200 rounded mb-4" />
+        <div className="lg:col-span-2 bg-card rounded-xl border border-border p-5">
+          <div className="h-5 w-32 bg-muted rounded mb-4" />
           <div className="space-y-3">
             {[1, 2, 3, 4, 5].map(i => (
-              <div key={i} className="flex items-center gap-3 p-3 rounded-lg bg-gray-50">
-                <div className="h-8 w-8 rounded-full bg-gray-200 shrink-0" />
+              <div key={i} className="flex items-center gap-3 p-3 rounded-lg bg-muted">
+                <div className="h-8 w-8 rounded-full bg-muted shrink-0" />
                 <div className="flex-1 space-y-1.5">
-                  <div className="h-3.5 w-36 bg-gray-200 rounded" />
-                  <div className="h-3 w-24 bg-gray-100 rounded" />
+                  <div className="h-3.5 w-36 bg-muted rounded" />
+                  <div className="h-3 w-24 bg-muted rounded" />
                 </div>
               </div>
             ))}
@@ -632,7 +655,7 @@ function DashboardMainGridSkeleton() {
         </div>
         <div className="space-y-4">
           {[64, 80, 96].map(h => (
-            <div key={h} className="rounded-xl border border-gray-200 bg-gray-50" style={{ height: h }} />
+            <div key={h} className="rounded-xl border border-border bg-muted" style={{ height: h }} />
           ))}
         </div>
       </div>
@@ -674,12 +697,19 @@ export default async function DashboardPage({
   const workspaceId = userProfile.workspace_id
 
   // ── Fast phase: data needed for above-the-fold content ──
+  const thisMonthStart = new Date()
+  thisMonthStart.setUTCDate(1)
+  thisMonthStart.setUTCHours(0, 0, 0, 0)
+  const thisMonthStartIso = thisMonthStart.toISOString()
+
   const [
     statsData,
     pixelResult,
     userTargetingResult,
     creditsData,
     activationResult,
+    meetingsThisMonthResult,
+    meetingsAllTimeResult,
   ] = await Promise.all([
     // Stats: 2 s outer timeout (inner refresh still runs up to 4 s, but we don't wait)
     Promise.race([
@@ -707,11 +737,21 @@ export default async function DashboardPage({
       .from('custom_audience_requests')
       .select('id', { count: 'exact', head: true })
       .eq('workspace_id', workspaceId),
+    // Meetings booked this calendar month
+    supabase
+      .from('cal_bookings')
+      .select('id', { count: 'exact', head: true })
+      .eq('workspace_id', workspaceId)
+      .gte('created_at', thisMonthStartIso),
+    // Meetings booked all time
+    supabase
+      .from('cal_bookings')
+      .select('id', { count: 'exact', head: true })
+      .eq('workspace_id', workspaceId),
   ])
 
   // Derived state for above-fold rendering
   const todayCount      = statsData?.today_leads      ?? 0
-  const weekCount       = statsData?.week_leads       ?? 0
   const totalCount      = statsData?.total_leads      ?? 0
   const enrichedCount   = statsData?.enriched_leads   ?? 0
   const pixelEventCount = statsData?.pixel_event_count ?? 0
@@ -732,6 +772,9 @@ export default async function DashboardPage({
   const creditsRemaining = creditsData?.remaining ?? 0
   const creditLimit      = creditsData?.limit ?? 3
   const isFree           = !userProfile.plan || userProfile.plan === 'free'
+
+  const meetingsThisMonth = meetingsThisMonthResult.count ?? 0
+  const meetingsAllTime   = meetingsAllTimeResult.count ?? 0
   const dailyLimit       = userProfile.daily_lead_limit ?? 10
 
   const outboundUpgradeTiers = ['outbound', 'pipeline', 'venture_studio']
@@ -741,6 +784,17 @@ export default async function DashboardPage({
   const workspaceAgeHours  = workspaceCreatedAt
     ? (Date.now() - new Date(workspaceCreatedAt).getTime()) / 3_600_000
     : 9999
+
+  // Detect users whose industry_segment does not have a matching audience_lab_segments row.
+  // These users will receive 0 leads from the daily cron and populate-initial until fixed.
+  // A "broken targeting" user has:
+  //   - an industry that is not in our supported list (e.g. 'other', 'saas', 'insurance'), AND
+  //   - OR target_industries is ['Other'] / contains only unsupported values
+  const rawIndustry = userProfile.industry_segment ?? ''
+  const hasUnsupportedIndustry =
+    totalCount === 0 &&
+    rawIndustry !== '' &&
+    !isSupportedIndustry(rawIndustry)
 
   const checklistItems: ChecklistItem[] = [
     { id: 'account',          label: 'Create your account',             done: true,              href: null },
@@ -759,28 +813,43 @@ export default async function DashboardPage({
     <div className="space-y-8 p-6">
       <DashboardAnimationWrapper>
 
-        {/* Header */}
+        {/* Header — pixel-aware. When pixel is installed we lead with the
+            live-visitor story; otherwise we nudge toward installing the pixel. */}
         <AnimatedSection delay={0}>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">
-                Welcome back, {userProfile.full_name?.split(' ')[0] || 'there'}!
+              <h1 className="text-2xl font-bold text-foreground">
+                Welcome back, {userProfile.full_name?.split(' ')[0] || 'there'}
               </h1>
-              <p className="text-sm text-gray-500 mt-0.5">
+              <p className="text-sm text-muted-foreground mt-0.5">
                 {userProfile.workspaces?.name && (
-                  <span className="font-medium text-gray-700">{userProfile.workspaces.name} · </span>
+                  <span className="font-medium text-foreground">{userProfile.workspaces.name} · </span>
                 )}
-                Here&apos;s your lead pipeline. New leads arrive every morning at 8am CT.
+                {hasVerifiedPixel
+                  ? `Your pixel is live${pixel?.trial_status === 'trial' ? ' (trial)' : ''}. Here's who visited your site recently.`
+                  : hasPixel
+                    ? 'Your pixel is installed — waiting for the first visitor. Leads will appear here automatically.'
+                    : 'Install your pixel to start identifying anonymous website visitors in real time.'}
               </p>
             </div>
             <div className="flex items-center gap-2">
-              <Link
-                href="/leads"
-                className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary/90 transition-colors"
-              >
-                <Star className="h-4 w-4 fill-white" />
-                Today&apos;s Leads
-              </Link>
+              {!hasPixel ? (
+                <Link
+                  href="/setup"
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary/90 transition-colors"
+                >
+                  <Rocket className="h-4 w-4" />
+                  Install Pixel
+                </Link>
+              ) : (
+                <Link
+                  href="/leads"
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary/90 transition-colors"
+                >
+                  <Star className="h-4 w-4 fill-white" />
+                  View Leads
+                </Link>
+              )}
             </div>
           </div>
         </AnimatedSection>
@@ -806,19 +875,37 @@ export default async function DashboardPage({
           </AnimatedSection>
         )}
 
-        {/* Onboarding complete banner */}
+        {/* Onboarding complete banner — the celebration moment after the
+            setup wizard. Upgraded copy + primary-color accent so users feel
+            they accomplished something rather than landing on a beige notice. */}
         {onboarding === 'complete' && (
-          <div className="rounded-xl bg-gray-50 border border-gray-200 p-4 flex items-start gap-3">
-            <CheckCircle2 className="h-5 w-5 text-gray-400 shrink-0 mt-0.5" />
-            <div>
-              <p className="font-semibold text-gray-900">Setup complete!</p>
-              <p className="text-sm text-gray-600">
-                {totalCount > 0
-                  ? `Your first ${totalCount} leads are ready — check them out below.`
-                  : 'We\'re setting up your lead pipeline now. Your first leads will arrive shortly.'}
-              </p>
+          <AnimatedSection delay={0.02}>
+            <div className="rounded-xl border-2 border-primary/30 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent p-5 flex items-start gap-4">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/15 shrink-0">
+                <CheckCircle2 className="h-6 w-6 text-primary" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-base font-bold text-foreground">
+                  {totalCount > 0
+                    ? `${totalCount} enriched lead${totalCount === 1 ? '' : 's'} ready — you're all set up.`
+                    : 'You\'re all set up.'}
+                </p>
+                <p className="mt-1 text-sm text-muted-foreground leading-relaxed">
+                  {totalCount > 0
+                    ? 'Your audience is configured, your pixel is ready, and your first leads are waiting below. Click any lead to see the full enrichment.'
+                    : 'Your audience is configured and your pipeline is being built. Your first leads will land here shortly — we\'ll email you the moment they arrive.'}
+                </p>
+                {hasPixel && (
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    Want to track YOUR website visitors too?{' '}
+                    <Link href="/settings/pixel" className="font-medium text-primary hover:underline">
+                      Install your pixel →
+                    </Link>
+                  </p>
+                )}
+              </div>
             </div>
-          </div>
+          </AnimatedSection>
         )}
 
         {/* Targeting failed during onboarding — immediate corrective action */}
@@ -826,13 +913,20 @@ export default async function DashboardPage({
           <TargetingMissingBanner />
         )}
 
+        {/* Unsupported industry — user picked an industry we have no segments for.
+            Daily cron and populate-initial will deliver 0 leads until they change.
+            Show this in place of the generic TargetingMissingBanner for these users. */}
+        {hasUnsupportedIndustry && onboarding !== 'complete' && (
+          <UnsupportedIndustryBanner industry={rawIndustry} />
+        )}
+
         {/* Zero leads — targeting missing warning (takes priority over pending banner) */}
-        {totalCount === 0 && onboarding !== 'complete' && !hasPreferences && workspaceAgeHours >= 48 && (
+        {totalCount === 0 && onboarding !== 'complete' && !hasPreferences && workspaceAgeHours >= 48 && !hasUnsupportedIndustry && (
           <TargetingMissingBanner />
         )}
 
         {/* Zero leads — new workspace pending banner (< 48h, or missing prefs on fresh account) */}
-        {totalCount === 0 && onboarding !== 'complete' && (hasPreferences || workspaceAgeHours < 48) && (
+        {totalCount === 0 && onboarding !== 'complete' && !hasUnsupportedIndustry && (hasPreferences || workspaceAgeHours < 48) && (
           <>
             {!hasPreferences && workspaceAgeHours < 48 && (
               <TargetingMissingBanner />
@@ -855,21 +949,21 @@ export default async function DashboardPage({
           )
           if (creditsRemaining <= 3) return (
             <AnimatedSection delay={0.03}>
-              <div className="rounded-xl p-4 flex items-center justify-between gap-4 bg-gray-50 border border-gray-200">
+              <div className="rounded-xl p-4 flex items-center justify-between gap-4 bg-muted border border-border">
                 <div>
                   {isFree ? (
                     <>
-                      <p className="font-semibold text-gray-900 text-sm">
+                      <p className="font-semibold text-foreground text-sm">
                         {creditsRemaining === 0 ? 'No free credits remaining today' : `${creditsRemaining} free credit${creditsRemaining === 1 ? '' : 's'} left`}
                       </p>
-                      <p className="text-xs text-gray-500">Upgrade to Pro for 1,000 daily credits and full CRM access.</p>
+                      <p className="text-xs text-muted-foreground">Upgrade to Pro for 1,000 daily credits and full CRM access.</p>
                     </>
                   ) : (
                     <>
-                      <p className="font-semibold text-gray-900 text-sm">
+                      <p className="font-semibold text-foreground text-sm">
                         {creditsRemaining === 0 ? 'No enrichment credits remaining' : `${creditsRemaining} credit${creditsRemaining === 1 ? '' : 's'} remaining`}
                       </p>
-                      <p className="text-xs text-gray-500">Each lead enrichment costs 1 credit. Credits reset daily.</p>
+                      <p className="text-xs text-muted-foreground">Each lead enrichment costs 1 credit. Credits reset daily.</p>
                     </>
                   )}
                 </div>
@@ -881,10 +975,10 @@ export default async function DashboardPage({
           )
           if (showOutboundUpsell) return (
             <AnimatedSection delay={0.03}>
-              <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="rounded-xl border border-border bg-muted p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <p className="font-semibold text-gray-900 text-sm">Your pixel has identified {pixelEventCount.toLocaleString()} visitors</p>
-                  <p className="text-xs text-gray-500 mt-0.5">Cursive Outbound can email and follow up with every identified visitor.</p>
+                  <p className="font-semibold text-foreground text-sm">Your pixel has identified {pixelEventCount.toLocaleString()} visitors</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">Cursive Outbound can email and follow up with every identified visitor.</p>
                 </div>
                 <a href="mailto:darren@meetcursive.com?subject=Cursive Outbound interest" className="inline-flex items-center gap-1.5 shrink-0 rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-white hover:bg-primary/90 transition-colors whitespace-nowrap">
                   Talk to Darren
@@ -900,46 +994,64 @@ export default async function DashboardPage({
           return null
         })()}
 
-        {/* 4 stat cards — above the fold, rendered from fast-phase data */}
+        {/* Stat cards — pared down from 5 to 3 to reduce dashboard noise.
+            When pixel is installed we lead with visitors identified; otherwise
+            we lead with daily leads. */}
         <AnimatedSection delay={0.05}>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* Today's leads */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            {/* Pixel identified visitors (when pixel active) — otherwise Today's leads */}
+            {hasPixel ? (
+              <Link href="/website-visitors" className="group">
+                <div className="rounded-xl border border-border bg-card p-5 hover:border-primary/30 transition-all h-full">
+                  <div className="flex items-center gap-1.5">
+                    <Eye className="h-3.5 w-3.5 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Visitors Identified</span>
+                  </div>
+                  <div className="text-3xl font-semibold text-foreground mt-2">
+                    {(visitorCountTotal ?? pixelEventCount).toLocaleString()}
+                  </div>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    {hasVerifiedPixel ? 'From your website pixel' : 'Waiting for first visitor'}
+                  </p>
+                </div>
+              </Link>
+            ) : (
+              <Link href="/leads" className="group">
+                <div className="rounded-xl border border-border bg-card p-5 hover:border-primary/30 transition-all h-full">
+                  <span className="text-sm text-muted-foreground">Today&apos;s Leads</span>
+                  <div className="text-3xl font-semibold text-foreground mt-2">{todayCount}</div>
+                  <p className="text-sm text-muted-foreground mt-1">{todayCount} of {dailyLimit} delivered</p>
+                </div>
+              </Link>
+            )}
+
+            {/* Total enriched leads */}
             <Link href="/leads" className="group">
-              <div className="bg-white rounded-xl border border-gray-200 p-6 hover:border-gray-300 transition-all h-full">
-                <span className="text-sm text-gray-500">Today&apos;s Leads</span>
-                <div className="text-3xl font-semibold text-gray-900 mt-2">{todayCount}</div>
-                <p className="text-sm text-gray-500 mt-1">{todayCount} of {dailyLimit} delivered</p>
+              <div className="rounded-xl border border-border bg-card p-5 hover:border-primary/30 transition-all h-full">
+                <span className="text-sm text-muted-foreground">Total Leads</span>
+                <div className="text-3xl font-semibold text-foreground mt-2">{totalCount}</div>
+                <p className="text-sm text-muted-foreground mt-1">{enrichedCount} enriched & verified</p>
               </div>
             </Link>
 
-            {/* This week */}
-            <Link href="/leads" className="group">
-              <div className="bg-white rounded-xl border border-gray-200 p-6 hover:border-gray-300 transition-all h-full">
-                <span className="text-sm text-gray-500">This Week</span>
-                <div className="text-3xl font-semibold text-gray-900 mt-2">{weekCount}</div>
-                <p className="text-sm text-gray-500 mt-1">{(weekCount / 7).toFixed(1)} avg/day</p>
+            {/* Meetings booked */}
+            <div className="rounded-xl border border-border bg-card p-5 h-full">
+              <div className="flex items-center gap-1.5">
+                <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
+                <span className="text-sm text-muted-foreground">Meetings Booked</span>
               </div>
-            </Link>
-
-            {/* Credits */}
-            <Link href="/settings/billing" className="group">
-              <div className="bg-white rounded-xl border border-gray-200 p-6 hover:border-gray-300 transition-all h-full">
-                <span className="text-sm text-gray-500" title="2 credits per Intel Pack · 10 credits per Deep Research">Enrichment Credits</span>
-                <div className="text-3xl font-semibold text-gray-900 mt-2">{creditsRemaining}</div>
-                <p className="text-sm text-gray-500 mt-1">of {creditLimit}/day · resets daily</p>
-              </div>
-            </Link>
-
-            {/* Total leads */}
-            <Link href="/crm/leads" className="group">
-              <div className="bg-white rounded-xl border border-gray-200 p-6 hover:border-gray-300 transition-all h-full">
-                <span className="text-sm text-gray-500">Total Leads</span>
-                <div className="text-3xl font-semibold text-gray-900 mt-2">{totalCount}</div>
-                <p className="text-sm text-gray-500 mt-1">{enrichedCount} enriched</p>
-              </div>
-            </Link>
+              <div className="text-3xl font-semibold text-foreground mt-2">{meetingsThisMonth}</div>
+              <p className="text-sm text-muted-foreground mt-1">{meetingsAllTime} all time</p>
+            </div>
           </div>
         </AnimatedSection>
+
+        {/* ── Live AudienceLab leads feed (only shown when pixel active) ── */}
+        {hasPixel && (
+          <AnimatedSection delay={0.07}>
+            <LiveLeadsFeed workspaceId={workspaceId} />
+          </AnimatedSection>
+        )}
 
         {/* ── Streamed section: hot leads + main content grid ── */}
         <Suspense fallback={<DashboardMainGridSkeleton />}>

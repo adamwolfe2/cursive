@@ -188,7 +188,7 @@ export function AutoSubmitOnboarding({ isMarketplace, isReturning }: AutoSubmitO
           // Check if it's a slug collision vs already-has-workspace
           const body409 = await lastResponse.json()
           if (body409.workspace_id) {
-            // Already has workspace — redirect to dashboard
+            // Already has workspace — skip setup wizard, go straight to dashboard
             localStorage.removeItem('cursive_onboarding')
             localStorage.removeItem(RETRY_KEY)
             router.push(isMarketplace ? '/marketplace' : '/dashboard?onboarding=complete')
@@ -233,6 +233,34 @@ export function AutoSubmitOnboarding({ isMarketplace, isReturning }: AutoSubmitO
 
         const CONSUMER_EMAIL_DOMAINS = ['gmail.com', 'googlemail.com', 'yahoo.com', 'yahoo.co.uk', 'hotmail.com', 'hotmail.co.uk', 'outlook.com', 'live.com', 'icloud.com', 'me.com', 'aol.com', 'msn.com', 'protonmail.com', 'proton.me']
 
+        // ── Deterministic pixel claim ─────────────────────────────────────
+        // If the user came through the post-sales-call recap flow
+        // (?claim=<pixelId>&domain=<domain>), we'll claim that SPECIFIC
+        // pixel by ID — no reliance on email-domain matching, no double
+        // pixel creation. When both claim_pixel_id and pixel_domain are
+        // present, we prefer the pixel_domain as the website_url so the
+        // claim endpoint knows what site the pixel was installed on.
+        const claimPixelId: string | undefined = onboardingData.claim_pixel_id
+        const pixelDomainFromClaim: string | undefined = onboardingData.pixel_domain
+
+        let pixelProvisionBody: Record<string, unknown> | null = null
+
+        if (claimPixelId && pixelDomainFromClaim) {
+          // Claim-by-ID path: deterministic, bypasses email-domain heuristics
+          pixelProvisionBody = {
+            website_url: `https://${pixelDomainFromClaim}`,
+            website_name: businessName,
+            claim_pixel_id: claimPixelId,
+          }
+        } else if (emailDomain && !CONSUMER_EMAIL_DOMAINS.includes(emailDomain.toLowerCase())) {
+          // Legacy fallback: auto-provision from email domain. Works for
+          // business email signups where email domain matches site domain.
+          pixelProvisionBody = {
+            website_url: `https://${emailDomain}`,
+            website_name: businessName,
+          }
+        }
+
         await Promise.allSettled([
           // Populate leads immediately (don't wait for 8am cron)
           // Only for business users — partner role has no industry_segment and returns 400
@@ -240,27 +268,26 @@ export function AutoSubmitOnboarding({ isMarketplace, isReturning }: AutoSubmitO
             ? fetchWithTimeout('/api/leads/populate-initial', { method: 'POST' })
             : Promise.resolve(),
 
-          // Auto-provision SuperPixel using email domain as the website URL
-          // If no valid domain, skip silently — user can do it from /settings/pixel
-          emailDomain && !CONSUMER_EMAIL_DOMAINS.includes(emailDomain.toLowerCase())
+          // Provision / claim the pixel
+          pixelProvisionBody
             ? fetchWithTimeout('/api/pixel/provision', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  website_url: `https://${emailDomain}`,
-                  website_name: businessName,
-                }),
+                body: JSON.stringify(pixelProvisionBody),
               })
             : Promise.resolve(),
         ])
 
-        // Clear storage (including retry counter) and redirect to dashboard
+        // Clear storage (including retry counter) and send the user into the
+        // 3-step setup wizard. /setup is the aha-moment onboarding — URL → ICP
+        // → pixel install — and redirects to /dashboard when done. Marketplace
+        // users bypass it since they have their own post-signup flow.
         localStorage.removeItem('cursive_onboarding')
         localStorage.removeItem(RETRY_KEY)
-        const dashboardUrl = isMarketplace
+        const nextUrl = isMarketplace
           ? '/marketplace'
-          : `/dashboard?onboarding=complete${targetingFailed ? '&targeting_failed=true' : ''}`
-        router.push(dashboardUrl)
+          : `/setup${targetingFailed ? '?targeting_failed=true' : ''}`
+        router.push(nextUrl)
       } catch (err: unknown) {
         // Increment the persistent failure counter so reloads don't cause
         // an infinite retry loop.

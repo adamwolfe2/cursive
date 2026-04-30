@@ -12,11 +12,11 @@ export const metadata = generateMetadata({
 const ecommerceFAQs = [
   {
     question: 'How does Cursive help B2B ecommerce companies identify buyers?',
-    answer: 'Cursive identifies up to 70% of the anonymous companies and contacts visiting your B2B ecommerce site, revealing which buyers are browsing your product catalog, wholesale pricing pages, and bulk order flows. This identification enables your sales team to proactively reach out to high-intent prospects with personalized offers before they abandon the site.',
+    answer: 'Cursive resolves anonymous visitors on your B2B ecommerce site against a deterministic identity graph of 280M+ verified consumer and 140M+ business profiles, with a 40–60% pixel match rate (vs 2–5% for cookie-based tools and 10–15% for IP databases). This identification enables your sales team to proactively reach out to high-intent prospects with personalized offers before they abandon the site.',
   },
   {
     question: 'What visitor identification rate can ecommerce companies expect?',
-    answer: 'B2B ecommerce companies using Cursive typically identify up to 70% of their anonymous website visitors, a dramatic improvement over the 1-3% conversion rate of standard contact forms. This high identification rate ensures your team has a continuous stream of warm wholesale buyer leads without relying solely on inbound form submissions.',
+    answer: 'B2B ecommerce companies using Cursive see a 40–60% deterministic pixel match rate — driven by our proprietary geo-framing methodology — compared to the 1–3% conversion rate of standard contact forms and the 2–5% resolution of cookie-based tools. This match rate ensures your team has a continuous stream of warm wholesale buyer leads without relying solely on inbound form submissions.',
   },
   {
     question: "How does Cursive's direct mail work for ecommerce retargeting?",
@@ -32,7 +32,7 @@ const ecommerceFAQs = [
   },
   {
     question: 'What is the ROI of visitor identification for B2B ecommerce?',
-    answer: 'B2B ecommerce companies using Cursive typically see a strong return by converting previously invisible website traffic into wholesale accounts, with many customers recouping their $1,000/month investment from a single new bulk buyer. By identifying and engaging the 70% of visitors who never fill out a form, ecommerce brands unlock a major untapped revenue channel from their existing traffic.',
+    answer: 'B2B ecommerce companies using Cursive typically see a strong return by converting previously invisible website traffic into wholesale accounts, with many customers recouping their $1,000/month investment from a single new bulk buyer. By resolving the 40–60% of anonymous visitors who never fill out a form, ecommerce brands unlock a major untapped revenue channel from their existing traffic.',
   },
 ]
 

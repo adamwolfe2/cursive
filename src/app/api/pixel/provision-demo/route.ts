@@ -144,11 +144,16 @@ export async function POST(req: NextRequest) {
       websiteUrl: fullUrl,
     })
 
+    // Always trust AL's install_url — no hardcoded version fallback, so v4 flows
+    // through automatically whenever AL enables it on our account.
     const installUrl = result.install_url
-    const snippet =
-      result.script ||
-      (installUrl ? `<script src="${installUrl}" async></script>` :
-        `<script src="https://cdn.v3.identitypxl.app/pixels/${result.pixel_id}/p.js" async></script>`)
+    if (!installUrl && !result.script) {
+      return NextResponse.json(
+        { error: 'Pixel provisioning failed — upstream did not return an install URL.' },
+        { status: 502, headers: CORS }
+      )
+    }
+    const snippet = result.script || `<script src="${installUrl}" async></script>`
 
     // Store in DB with workspace_id = null so it can be claimed on signup
     const { error: insertError } = await adminSupabase

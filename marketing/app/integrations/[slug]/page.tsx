@@ -28,14 +28,14 @@ export async function generateMetadata({
 
   return {
     title: `${integration.name} Visitor Identification Integration — Push Identified Leads Directly | Cursive`,
-    description: `Identify 70% of anonymous visitors to your site and push them directly into ${integration.name}. ${integration.whyCursive}`,
+    description: `Resolve anonymous visitors with a 40–60% deterministic pixel match rate and push them directly into ${integration.name}. ${integration.whyCursive}`,
     keywords: integration.keywords,
     alternates: {
       canonical: `https://www.meetcursive.com/integrations/${integration.slug}`,
     },
     openGraph: {
       title: `${integration.name} Visitor Identification Integration | Cursive`,
-      description: `Identify 70% of anonymous visitors and push enriched lead records directly into ${integration.name}. Setup guide, workflows, and data mapping.`,
+      description: `Resolve anonymous visitors with a 40–60% deterministic pixel match rate and push enriched lead records directly into ${integration.name}. Setup guide, workflows, and data mapping.`,
       type: "article",
     },
   }
@@ -439,7 +439,7 @@ export default async function IntegrationPage({
                 Get Free Audit
               </Link>
               <Link
-                href="https://cal.com/gotdarrenhill/30min"
+                href="https://cal.com/cursiveteam/30min"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-8 py-3 text-base text-gray-700 transition-colors hover:bg-gray-50"

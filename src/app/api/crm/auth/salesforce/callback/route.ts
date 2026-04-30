@@ -6,8 +6,10 @@
  * in the crm_connections table for use by SalesforceService.
  */
 
+export const maxDuration = 15
+
 import { NextRequest, NextResponse } from 'next/server'
-import { safeError } from '@/lib/utils/log-sanitizer'
+import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
 import { cookies } from 'next/headers'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getCurrentUser } from '@/lib/auth/helpers'
@@ -113,20 +115,28 @@ export async function GET(req: NextRequest) {
     // Exchange code for tokens
     const redirectUri = `${process.env.NEXT_PUBLIC_APP_URL}/api/crm/auth/salesforce/callback`
 
-    const tokenResponse = await fetch(SF_TOKEN_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        Accept: 'application/json',
-      },
-      body: new URLSearchParams({
-        grant_type: 'authorization_code',
-        code,
-        client_id: clientId,
-        client_secret: clientSecret,
-        redirect_uri: redirectUri,
-      }),
-    })
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), 10000)
+    let tokenResponse: Response
+    try {
+      tokenResponse = await fetch(SF_TOKEN_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          Accept: 'application/json',
+        },
+        body: new URLSearchParams({
+          grant_type: 'authorization_code',
+          code,
+          client_id: clientId,
+          client_secret: clientSecret,
+          redirect_uri: redirectUri,
+        }),
+        signal: controller.signal,
+      })
+    } finally {
+      clearTimeout(timeout)
+    }
 
     if (!tokenResponse.ok) {
       const errorData = await tokenResponse.text()
@@ -205,6 +215,25 @@ export async function GET(req: NextRequest) {
       },
       severity: 'info',
     })
+
+    // Provision Cursive intent custom fields on Contact and Lead objects.
+    // Idempotent — safe on reconnect. Failures don't block OAuth; users can
+    // retry from Settings > Integrations.
+    try {
+      const { createSalesforceService } = await import('@/lib/services/salesforce.service')
+      const sfService = await createSalesforceService(context.workspace_id)
+      if (sfService) {
+        const provisionResult = await sfService.provisionIntentFields()
+        safeLog('[Salesforce OAuth] Intent fields provisioned', {
+          workspace_id: context.workspace_id,
+          created: provisionResult.created.length,
+          existed: provisionResult.existed.length,
+          failed: provisionResult.failed.length,
+        })
+      }
+    } catch (provisionErr) {
+      safeError('[Salesforce OAuth] Intent field provisioning failed (non-fatal):', provisionErr)
+    }
 
     // Redirect to success page
     return NextResponse.redirect(

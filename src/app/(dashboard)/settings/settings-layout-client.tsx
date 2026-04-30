@@ -12,6 +12,7 @@ const settingsTabs = [
   { label: 'Team', href: '/settings/team' },
   { label: 'Security', href: '/settings/security' },
   { label: 'Notifications', href: '/settings/notifications' },
+  { label: 'Email Accounts', href: '/settings/email-accounts' },
   { label: 'Integrations', href: '/settings/integrations' },
   { label: 'Pixel', href: '/settings/pixel' },
   { label: 'API Keys', href: '/settings/api-keys' },
@@ -37,15 +38,15 @@ export function SettingsLayoutClient({
       />
 
       {/* Navigation Tabs */}
-      <div className="mb-6 border-b border-border">
-        <nav className="-mb-px flex space-x-8">
+      <div className="mb-6 border-b border-border -mx-4 px-4 md:mx-0 md:px-0">
+        <nav className="-mb-px flex space-x-1 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           {settingsTabs.map((tab) => {
             const isActive = pathname === tab.href
             return (
               <Link
                 key={tab.href}
                 href={tab.href}
-                className={`whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium transition-colors ${
+                className={`whitespace-nowrap border-b-2 py-4 px-3 text-sm font-medium transition-colors ${
                   isActive
                     ? 'border-primary text-primary'
                     : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'

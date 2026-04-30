@@ -156,7 +156,7 @@ export function Header({ user, workspace, onMenuClick, className }: HeaderProps)
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
-                onClick={() => router.push('/auth/signout')}
+                onClick={() => { window.location.href = '/auth/signout' }}
                 destructive
               >
                 <LogOut className="mr-2 h-4 w-4" />

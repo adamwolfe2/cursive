@@ -86,7 +86,12 @@ export interface ALEnrichFilter {
   email?: string
   first_name?: string
   last_name?: string
+  /**
+   * @deprecated AL's /enrich endpoint rejects this field with "invalid filter field: COMPANY".
+   * Use `company_domain` instead. Left here for existing callers that will be migrated.
+   */
   company?: string
+  company_domain?: string
   phone?: string
   address?: string
   city?: string
@@ -97,6 +102,13 @@ export interface ALEnrichFilter {
 export interface ALEnrichRequest {
   filter: ALEnrichFilter
   fields?: string[]
+  /**
+   * How to combine multiple filter fields when more than one is supplied.
+   * `true` = match ANY field (OR), `false` = match ALL fields (AND).
+   * AL's /enrich endpoint requires this field even when only one filter is set.
+   * Defaults to `false` (AND) — more precise match with less noise.
+   */
+  is_or_match?: boolean
 }
 
 /** Enrich response: { timestamp, found, result: [...] } */
@@ -290,7 +302,8 @@ export interface ALAudienceCreateResponse {
 export interface ALAudiencePreviewRequest {
   days_back: number
   filters?: ALAudienceSegmentFilters
-  segment?: number
+  /** Segment ID from al_segment_catalog. Sent as string to AL API. */
+  segment?: number | string
   limit?: number  // 0–500 sample records to return
   score?: boolean
   include_dnc?: boolean
@@ -353,7 +366,38 @@ export interface ALBatchEnrichStatusResponse {
   total?: number
   processed?: number
   result?: ALEnrichedProfile[]
+  download_url?: string
   [key: string]: unknown
+}
+
+// --- Enrichment Job list types ---
+
+export interface ALEnrichmentJob {
+  jobId: string
+  status: 'pending' | 'processing' | 'completed' | 'failed'
+  total?: number
+  processed?: number
+  created_at?: string
+  updated_at?: string
+  download_url?: string
+  [key: string]: unknown
+}
+
+export interface ALEnrichmentJobListResponse {
+  data: ALEnrichmentJob[]
+  page: number
+  page_size: number
+  total: number
+  total_pages: number
+}
+
+// --- Custom Audience (intent-topic based) types ---
+
+export interface ALCustomAudienceRequest {
+  name: string
+  /** Intent topic keywords — AL matches contacts showing interest in these topics */
+  topics: string[]
+  description?: string
 }
 
 // ============================================================================
@@ -469,6 +513,13 @@ export async function listPixels(): Promise<ALPixel[]> {
   return response.data || []
 }
 
+/**
+ * Delete a pixel by ID.
+ */
+export async function deletePixel(pixelId: string): Promise<void> {
+  await alFetch<void>(`/pixels/${pixelId}`, { method: 'DELETE' })
+}
+
 // ============================================================================
 // AUDIENCE MANAGEMENT
 // ============================================================================
@@ -491,6 +542,13 @@ export async function listAudiences(params?: {
   return alFetch<ALAudienceListResponse>(endpoint, { method: 'GET' })
 }
 
+/**
+ * Delete an audience by ID.
+ */
+export async function deleteAudience(audienceId: string): Promise<void> {
+  await alFetch<void>(`/audiences/${audienceId}`, { method: 'DELETE' })
+}
+
 // ============================================================================
 // ENRICHMENT
 // ============================================================================
@@ -505,6 +563,9 @@ export async function enrich(params: ALEnrichRequest): Promise<ALEnrichResult> {
     method: 'POST',
     body: JSON.stringify({
       filter: params.filter,
+      // AL's /enrich endpoint requires is_or_match — default to AND-match (false)
+      // for more precise results. Callers can override per-request.
+      is_or_match: params.is_or_match ?? false,
       ...(params.fields && { fields: params.fields }),
     }),
   })
@@ -551,14 +612,24 @@ export async function getAudienceAttributes(
 export async function previewAudience(
   params: ALAudiencePreviewRequest
 ): Promise<ALAudiencePreviewResponse> {
+  // AL sub-account API only accepts: days_back, limit, segment (as string).
+  // Extra fields (score, include_dnc, filters) cause JSON parse errors on sub-accounts.
+  // When using segment-based queries, send ONLY the fields AL accepts.
   const body: Record<string, unknown> = {
     days_back: params.days_back,
   }
-  if (params.filters) body.filters = params.filters
-  if (params.segment !== undefined) body.segment = params.segment
+
   if (params.limit !== undefined) body.limit = params.limit
-  if (params.score !== undefined) body.score = params.score
-  if (params.include_dnc !== undefined) body.include_dnc = params.include_dnc
+
+  if (params.segment !== undefined) {
+    // AL API expects segment as an array of strings: ["106328"]
+    body.segment = [String(params.segment)]
+  } else {
+    // Filter-based preview — only add optional fields when NOT using segments
+    if (params.filters) body.filters = params.filters
+    if (params.score !== undefined) body.score = params.score
+    if (params.include_dnc !== undefined) body.include_dnc = params.include_dnc
+  }
 
   return alFetch<ALAudiencePreviewResponse>('/audiences/preview', {
     method: 'POST',
@@ -581,6 +652,23 @@ export async function createAudience(
     body: JSON.stringify({
       name: params.name,
       filters: params.filters,
+      ...(params.description && { description: params.description }),
+    }),
+  })
+}
+
+/**
+ * Create an intent-based custom audience from topic keywords.
+ * Returns { audienceId } for fetching paginated records via fetchAudienceRecords().
+ */
+export async function createCustomAudience(
+  params: ALCustomAudienceRequest
+): Promise<ALAudienceCreateResponse> {
+  return alFetch<ALAudienceCreateResponse>('/audiences/custom', {
+    method: 'POST',
+    body: JSON.stringify({
+      name: params.name,
+      topics: params.topics,
       ...(params.description && { description: params.description }),
     }),
   })
@@ -755,6 +843,23 @@ export async function getBatchEnrichmentStatus(
   return alFetch<ALBatchEnrichStatusResponse>(`/enrichments/${jobId}`, {
     method: 'GET',
   })
+}
+
+/**
+ * List all batch enrichment jobs, optionally paginated.
+ */
+export async function listEnrichmentJobs(params?: {
+  page?: number
+  page_size?: number
+}): Promise<ALEnrichmentJobListResponse> {
+  const searchParams = new URLSearchParams()
+  if (params?.page) searchParams.set('page', String(params.page))
+  if (params?.page_size) searchParams.set('page_size', String(params.page_size))
+
+  const query = searchParams.toString()
+  const endpoint = query ? `/enrichments?${query}` : '/enrichments'
+
+  return alFetch<ALEnrichmentJobListResponse>(endpoint, { method: 'GET' })
 }
 
 // ============================================================================

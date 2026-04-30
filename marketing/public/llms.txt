@@ -421,7 +421,7 @@ This site includes JSON-LD structured data on all key pages:
 ## Contact Information
 
 - **Website**: https://meetcursive.com
-- **Email**: hello@meetcursive.com
+- **Email**: hey@meetcursive.com
 - **Demo Booking**: https://cal.com/cursive/30min
 - **Free Audit**: https://meetcursive.com/free-audit
 - **LinkedIn**: https://linkedin.com/company/cursive

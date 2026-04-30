@@ -117,7 +117,7 @@ export function LeadMobileCard({ lead, selected, onSelect, onView }: LeadMobileC
 
       {/* Scores & Metadata */}
       <div className="grid grid-cols-2 gap-3 text-sm">
-        {lead.intent_score_calculated !== null && (
+        {typeof lead.intent_score_calculated === 'number' && (
           <div>
             <div className="text-muted-foreground text-xs">Intent Score</div>
             <div className="flex items-center gap-1 mt-0.5">

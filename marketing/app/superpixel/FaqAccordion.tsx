@@ -32,8 +32,8 @@ const FAQS = [
     a: 'Plans start at $299/month for up to 3,000 identified visitors. No setup fees, no contracts, cancel anytime. Most clients see ROI within the first week.',
   },
   {
-    q: "What about the 30% of visitors you can't identify?",
-    a: "No technology identifies 100% — anonymous browsers, VPNs, and privacy tools will always create a floor. The 70% we do identify are real, verified, reachable people. Compare this to your current form conversion rate of 1–3%: even partial identification is 23× more pipeline than the status quo.",
+    q: "What about the visitors you can't identify?",
+    a: "No technology identifies 100% — anonymous browsers, VPNs, and privacy tools will always create a floor. We deliberately publish our pixel match rate as 40\u201360% (deterministic, not modeled). Cookie sync sits at 2\u20135%, IP-only databases at 10\u201315%. The matches we do deliver are real, verified, reachable people. Compared to your current form conversion rate of 1\u20133%, even our floor is 15\u201320\u00d7 more pipeline than the status quo.",
   },
 ]
 

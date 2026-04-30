@@ -60,9 +60,19 @@ interface OnboardingFlowProps {
   isCallProspect?: boolean
   /** Pre-filled email from ?email= query param (call recap link) */
   prefilledEmail?: string
+  /** Pixel ID to claim deterministically after signup (from ?claim= param) */
+  claimPixelId?: string
+  /** Pre-filled domain from ?domain= query param — used to skip company-name friction */
+  prefilledDomain?: string
 }
 
-export function OnboardingFlow({ isMarketplace, isCallProspect = false, prefilledEmail: _prefilledEmail = '' }: OnboardingFlowProps) {
+export function OnboardingFlow({
+  isMarketplace,
+  isCallProspect = false,
+  prefilledEmail = '',
+  claimPixelId = '',
+  prefilledDomain = '',
+}: OnboardingFlowProps) {
   const router = useRouter()
   const {
     currentScreen,
@@ -91,6 +101,31 @@ export function OnboardingFlow({ isMarketplace, isCallProspect = false, prefille
     }
   }, [])
 
+  // ── Skip the quiz for call prospects ───────────────────────────────────
+  // Users arriving from Darren's post-call recap email have already been
+  // qualified on the call — there's no reason to put them through the VSL
+  // quiz. Jump straight to the business signup form.
+  const skippedQuizRef = useRef(false)
+  useEffect(() => {
+    if (isCallProspect && !skippedQuizRef.current) {
+      skippedQuizRef.current = true
+      selectUserType('business')
+      goToScreen('business-form')
+    }
+  }, [isCallProspect, selectUserType, goToScreen])
+
+  // Derive a company name from the domain ("acmecorp.com" → "Acmecorp") so
+  // the signup form can be pre-filled for call prospects. Not perfect but
+  // removes one more field of friction for a user who's already been sold.
+  const prefilledCompanyName = prefilledDomain
+    ? prefilledDomain
+        .replace(/^www\./, '')
+        .split('.')[0]
+        .split('-')
+        .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
+        .join(' ')
+    : ''
+
   const startOauthTimeout = useCallback(() => {
     if (oauthTimeoutRef.current) clearTimeout(oauthTimeoutRef.current)
     oauthTimeoutRef.current = setTimeout(() => {
@@ -106,11 +141,15 @@ export function OnboardingFlow({ isMarketplace, isCallProspect = false, prefille
     const supabase = createClient()
 
     if (authMethod === 'google') {
-      // Save form data to localStorage so it survives OAuth window close / browser back navigation
+      // Save form data to localStorage so it survives OAuth window close / browser back navigation.
+      // claim_pixel_id + pixel_domain are persisted alongside so AutoSubmitOnboarding can
+      // deterministically claim the prospect's pixel after workspace creation.
       localStorage.setItem('cursive_onboarding', JSON.stringify({
         role: 'business',
         ...data,
         isMarketplace,
+        claim_pixel_id: claimPixelId || undefined,
+        pixel_domain: prefilledDomain || undefined,
       }))
       // Use NEXT_PUBLIC_SITE_URL for consistent redirect (must match Supabase allowed redirects)
       const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || window.location.origin).replace(/\/+$/, '')
@@ -157,11 +196,14 @@ export function OnboardingFlow({ isMarketplace, isCallProspect = false, prefille
 
       if (!authData.session) {
         // Email confirmation required — store form data so AutoSubmitOnboarding
-        // can complete workspace creation after the user confirms their email
+        // can complete workspace creation after the user confirms their email.
+        // Persist claim_pixel_id + pixel_domain for deterministic pixel claim.
         localStorage.setItem('cursive_onboarding', JSON.stringify({
           role: 'business',
           ...data,
           isMarketplace,
+          claim_pixel_id: claimPixelId || undefined,
+          pixel_domain: prefilledDomain || undefined,
         }))
         setSubmittedEmail(data.email)
         setSubmittedIndustry(data.industry || '')
@@ -203,7 +245,7 @@ export function OnboardingFlow({ isMarketplace, isCallProspect = false, prefille
       setError(err instanceof Error ? err.message : 'Something went wrong')
       setIsSubmitting(false)
     }
-  }, [isMarketplace, goToScreen, router, startOauthTimeout])
+  }, [isMarketplace, goToScreen, router, startOauthTimeout, claimPixelId, prefilledDomain])
 
   const handlePartnerSubmit = useCallback(async (data: PartnerFormData, authMethod: 'email' | 'google', password?: string) => {
     setError(null)
@@ -375,6 +417,8 @@ export function OnboardingFlow({ isMarketplace, isCallProspect = false, prefille
             onClearError={() => setError(null)}
             isSubmitting={isSubmitting}
             oauthPending={oauthPending}
+            prefilledEmail={prefilledEmail}
+            prefilledCompanyName={prefilledCompanyName}
           />
         )
 

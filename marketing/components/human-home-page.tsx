@@ -8,12 +8,11 @@ import { IntegrationsShowcase } from "@/components/integrations-showcase"
 import { HowItWorksSection } from "@/components/homepage/how-it-works-section"
 import { CompetitiveAdvantagesSection } from "@/components/homepage/competitive-advantages-section"
 import { FAQSection } from "@/components/homepage/faq-section"
-import { CustomerLogos } from "@/components/homepage/customer-logos"
 import Link from "next/link"
 import { useState } from "react"
 import {
   Eye, Bot, TrendingUp, ShoppingCart, Briefcase,
-  Zap, Users, Database, Mail, Sparkles, ShieldCheck,
+  Users, Database, Mail, Sparkles, ShieldCheck,
   BarChart3, GitBranch, Building2, Search, Flame,
   type LucideIcon,
 } from "lucide-react"
@@ -93,19 +92,6 @@ export function HumanHomePage() {
       {/* ===== HERO SECTION ===== */}
       <section id="hero" className="pt-14 pb-6 bg-white min-h-[100svh] lg:min-h-[90vh] lg:flex lg:flex-col lg:justify-center">
         <Container className="max-w-[1440px] lg:px-12">
-          {/* Eyebrow Badge */}
-          <motion.div
-            initial={false}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-            className="text-center lg:text-left mb-4"
-          >
-            <span className="inline-flex items-center gap-2 px-3 py-1 bg-gray-50 border border-gray-200 rounded-full text-xs text-gray-600">
-              <Zap className="w-3 h-3 text-primary" />
-              AI Intent Systems That Never Sleep
-            </span>
-          </motion.div>
-
           {/* Split Layout: Copy Left, Demo Right */}
           <div className="lg:flex lg:gap-8 xl:gap-12 items-start">
             {/* Left Column: Copy */}
@@ -113,24 +99,28 @@ export function HumanHomePage() {
               initial={false}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-              className="lg:w-[40%] lg:flex-shrink-0 text-center lg:text-left mb-8 lg:mb-0"
+              className="lg:w-[46%] lg:flex-shrink-0 text-center lg:text-left mb-8 lg:mb-0"
             >
-              <h1 className="text-[2.15rem] sm:text-4xl lg:text-[2.5rem] xl:text-[2.75rem] font-light mb-4 leading-[1.15]">
-                <span className="text-gray-900">Turn Website Visitors</span>
+              {/* Locked to two lines: explicit <br> for the break, whitespace-nowrap
+                  on each line at lg+ so the long second line never wraps to a
+                  third row. Font sizes are tuned to fit the longer line inside
+                  the 46%-width column at every breakpoint we support. */}
+              <h1 className="text-[2.25rem] sm:text-[2.75rem] md:text-[3.25rem] lg:text-[1.875rem] xl:text-[2.375rem] 2xl:text-[2.75rem] font-light mb-4 leading-[1.08] tracking-tight">
+                <span className="text-gray-900 lg:whitespace-nowrap">The Data Identity Layer</span>
                 <br />
-                <span className="text-gray-400">Into Booked Meetings.</span>
+                <span className="text-gray-400 lg:whitespace-nowrap">for Outbound, Intent, and Enrichment</span>
               </h1>
 
               <p className="text-base text-gray-600 mb-4 leading-relaxed max-w-lg mx-auto lg:mx-0">
-                98% of visitors leave your site without converting. <span className="font-cursive text-gray-500 text-lg">Cursive</span> tracks leads with pixels, enriches leads against 280M verified contacts, and automates personalized outreach so you can make sales in your sleep.
+                280M verified consumers, a 15M-domain organic network, refreshed every 30 days. <span className="font-cursive text-gray-500 text-lg">Cursive</span> is the data infrastructure powering pixel identification, intent feeds, and audience enrichment for teams that need accuracy that compounds.
               </p>
 
               {/* Stats */}
               <div className="flex justify-center lg:justify-start gap-6 mb-4 py-3 border-y border-gray-100">
                 {[
-                  { value: "70%", label: "Visitor ID Rate" },
-                  { value: "280M", label: "Consumer Profiles" },
-                  { value: "140M+", label: "Business Profiles" },
+                  { value: "280M+", label: "Verified Consumers" },
+                  { value: "15M+", label: "Organic Domains" },
+                  { value: "30-day", label: "NCOA Refresh" },
                 ].map((stat) => (
                   <div key={stat.label}>
                     <div className="text-2xl lg:text-3xl text-gray-900 font-light">{stat.value}</div>
@@ -143,7 +133,7 @@ export function HumanHomePage() {
               <div className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-3 mb-1">
                 <Button
                   size="lg"
-                  href="https://cal.com/gotdarrenhill/30min"
+                  href="https://cal.com/cursiveteam/30min"
                   target="_blank"
                   className="bg-primary text-white hover:bg-primary-dark px-6 py-3"
                 >
@@ -242,8 +232,15 @@ export function HumanHomePage() {
         </Container>
       </section>
 
-      {/* Social Proof */}
-      <CustomerLogos />
+      {/* Integrations Showcase */}
+      <section id="integrations" className="py-20 bg-[#F7F9FB]">
+        <Container>
+          <IntegrationsShowcase
+            title="Works With Your Existing Stack"
+            subtitle="200+ native integrations—sync leads to your CRM, trigger campaigns, and automate workflows"
+          />
+        </Container>
+      </section>
 
       {/* Two Ways to Get Started */}
       <section id="pricing" className="py-20 bg-[#F7F9FB]">
@@ -419,16 +416,6 @@ export function HumanHomePage() {
       {/* How It Works */}
       <HowItWorksSection />
 
-      {/* Integrations Showcase */}
-      <section id="integrations" className="py-20 bg-[#F7F9FB]">
-        <Container>
-          <IntegrationsShowcase
-            title="Works With Your Existing Stack"
-            subtitle="200+ native integrations—sync leads to your CRM, trigger campaigns, and automate workflows"
-          />
-        </Container>
-      </section>
-
       {/* Proven Results */}
       <section id="case-studies" className="py-20 bg-white">
         <Container>
@@ -551,7 +538,7 @@ const benefitPillars: Array<{
   {
     icon: Eye,
     title: "Know Who's Interested",
-    description: '70% of your anonymous visitors identified with name, company, and email—before they fill out a form.',
+    description: '40–60% of anonymous visitors identified deterministically — name, company, and verified email — before they ever fill out a form.',
   },
   {
     icon: Bot,
@@ -569,13 +556,13 @@ const benefitPillars: Array<{
 const coreFeatures = [
   {
     title: "Visitor Identification",
-    description: "Know which companies are researching your product—before they fill out a form",
+    description: "Know which companies and individuals are researching your product — before they fill out a form",
     icon: "M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7",
     items: [
-      "Reveal 70% of anonymous visitors",
+      "40–60% pixel match rate (deterministic)",
       "Company + individual-level data",
       "See exactly which pages they viewed",
-      "Track returning visitors"
+      "Track returning visitors across sessions",
     ]
   },
   {

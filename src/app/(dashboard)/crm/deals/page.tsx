@@ -6,6 +6,7 @@ import { DealsPageClient } from './components/DealsPageClient'
 import { createClient } from '@/lib/supabase/server'
 import { DealRepository } from '@/lib/repositories/deal.repository'
 import { redirect } from 'next/navigation'
+import { safeError } from '@/lib/utils/log-sanitizer'
 
 export const metadata = {
   title: 'Deals - CRM',
@@ -25,13 +26,19 @@ export default async function CRMDealsPage() {
     .maybeSingle()
   if (!userData?.workspace_id) redirect('/welcome')
 
-  // Fetch initial deals data
+  // Fetch initial deals data — gracefully degrade on error so the page still renders
   const dealRepo = new DealRepository()
-  const initialData = await dealRepo.findByWorkspace(userData.workspace_id, undefined, undefined, 1, 100)
+  let initialDeals: Awaited<ReturnType<DealRepository['findByWorkspace']>>['data'] = []
+  try {
+    const result = await dealRepo.findByWorkspace(userData.workspace_id, undefined, undefined, 1, 100)
+    initialDeals = result.data
+  } catch (err) {
+    safeError('[CRMDeals] Failed to prefetch initial deals:', err)
+  }
 
   return (
     <QueryProvider>
-      <DealsPageClient initialData={initialData.data} />
+      <DealsPageClient initialData={initialDeals} />
     </QueryProvider>
   )
 }

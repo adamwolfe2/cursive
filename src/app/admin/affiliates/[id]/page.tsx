@@ -6,7 +6,7 @@
 
 import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { createClient } from '@/lib/supabase/client'
+import { useAdminAuth } from '@/hooks/use-admin-auth'
 import Link from 'next/link'
 import { ChevronLeft, CheckCircle2, XCircle, PauseCircle, AlertTriangle } from 'lucide-react'
 import { format } from 'date-fns'
@@ -54,30 +54,16 @@ const AUDIENCE_SIZE_LABELS: Record<string, string> = {
 }
 
 export default function AdminAffiliateDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const [authChecked, setAuthChecked] = useState(false)
-  const [isAdmin, setIsAdmin] = useState(false)
+  const { isAdmin, authChecked } = useAdminAuth()
   const [id, setId] = useState('')
   const [rejectNotes, setRejectNotes] = useState('')
   const [showRejectForm, setShowRejectForm] = useState(false)
-  const supabase = createClient()
   const queryClient = useQueryClient()
   const { toast } = useToast()
 
   useEffect(() => {
     params.then((p) => setId(p.id))
-    const check = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) { window.location.href = '/login'; return }
-      const { data: userData } = await supabase
-        .from('users').select('role').eq('auth_user_id', user.id).maybeSingle() as { data: { role: string } | null }
-      if (!userData || (userData.role !== 'admin' && userData.role !== 'owner')) {
-        window.location.href = '/dashboard'; return
-      }
-      setIsAdmin(true)
-      setAuthChecked(true)
-    }
-    check()
-  }, [supabase, params])
+  }, [params])
 
   const { data, isLoading } = useQuery<ApplicationDetail>({
     queryKey: ['admin', 'affiliates', id],

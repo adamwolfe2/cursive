@@ -117,7 +117,7 @@ When you combine clear goals, connected tools, behavioral data, and smart automa
 
 **You're not guessing who to reach or when.** You're responding to real signals from real buyers.
 
-Ready to build a targeting strategy that converts? **[Book a demo](https://cal.com/cursive/30min)** to see how Cursive identifies anonymous visitors, segments by intent, and automates multi-channel outreach.
+Ready to build a targeting strategy that converts? **[Book a demo](https://cal.com/cursiveteam/30min)** to see how Cursive identifies anonymous visitors, segments by intent, and automates multi-channel outreach.
 
 ---
 

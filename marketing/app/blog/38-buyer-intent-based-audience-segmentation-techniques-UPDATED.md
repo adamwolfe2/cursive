@@ -113,7 +113,7 @@ When you segment audiences based on real buyer intent, you're not guessing who m
 
 Intent-based segmentation transforms marketing from spray-and-pray to precision targeting.
 
-Ready to stop guessing and start converting? **[Book a demo](https://cal.com/cursive/30min)** to see how Cursive tracks 450B+ monthly intent signals, segments audiences automatically, and triggers campaigns based on real buying behavior.
+Ready to stop guessing and start converting? **[Book a demo](https://cal.com/cursiveteam/30min)** to see how Cursive tracks 450B+ monthly intent signals, segments audiences automatically, and triggers campaigns based on real buying behavior.
 
 ---
 

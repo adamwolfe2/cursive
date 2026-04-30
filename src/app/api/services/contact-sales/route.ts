@@ -1,3 +1,5 @@
+export const maxDuration = 30
+
 
 import { NextRequest, NextResponse } from 'next/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
@@ -140,7 +142,7 @@ ${validated.message}
           In the meantime, you can book a call directly if you'd like to get started sooner:
         </p>
 
-        <a href="https://cal.com/gotdarrenhill/30min" class="email-button">
+        <a href="https://cal.com/cursiveteam/30min" class="email-button">
           Book a Call
         </a>
 

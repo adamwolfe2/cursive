@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react'
 
-const CAL_LINK = 'https://cal.com/gotdarrenhill/30min'
+const CAL_LINK = 'https://cal.com/cursiveteam/30min'
 const SPOTS_REMAINING = 7 // static for now
 
 export function SuperPixelPopup() {

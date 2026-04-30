@@ -5,12 +5,12 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/design-system'
+import { ChevronDown } from 'lucide-react'
 
 interface SidebarItem {
   name: string
   href: string
   icon: React.ReactNode
-  subText?: string
   section?: string
   badge?: number
   children?: { name: string; href: string }[]
@@ -32,6 +32,37 @@ interface SidebarProps {
   className?: string
 }
 
+const ADVANCED_COLLAPSED_KEY = 'cursive_sidebar_advanced_collapsed'
+
+function useAdvancedCollapsed() {
+  const [collapsed, setCollapsed] = React.useState(true)
+
+  React.useEffect(() => {
+    try {
+      const stored = localStorage.getItem(ADVANCED_COLLAPSED_KEY)
+      if (stored !== null) {
+        setCollapsed(stored === 'true')
+      }
+    } catch {
+      // localStorage unavailable
+    }
+  }, [])
+
+  const toggle = React.useCallback(() => {
+    setCollapsed((prev) => {
+      const next = !prev
+      try {
+        localStorage.setItem(ADVANCED_COLLAPSED_KEY, String(next))
+      } catch {
+        // localStorage unavailable
+      }
+      return next
+    })
+  }, [])
+
+  return { collapsed, toggle }
+}
+
 function CursiveLogo() {
   return (
     <div className="relative h-6 w-6 overflow-hidden rounded-md">
@@ -46,22 +77,85 @@ function CursiveLogo() {
   )
 }
 
+function NavItem({ item, pathname }: { item: SidebarItem; pathname: string }) {
+  const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
+  const hasChildren = item.children && item.children.length > 0
+
+  return (
+    <li>
+      <Link
+        href={item.href}
+        className={cn(
+          'group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors touch-manipulation',
+          isActive
+            ? 'bg-primary/10 text-primary'
+            : 'text-muted-foreground hover:bg-muted hover:text-foreground active:bg-muted'
+        )}
+      >
+        <span
+          className={cn(
+            'flex h-5 w-5 items-center justify-center',
+            isActive ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground'
+          )}
+        >
+          {item.icon}
+        </span>
+        <span className="flex-1">{item.name}</span>
+        {item.badge && item.badge > 0 && (
+          <span className="ml-auto min-w-[1.25rem] rounded-full bg-primary px-1.5 py-0.5 text-center text-[10px] font-semibold leading-none text-white">
+            {item.badge > 99 ? '99+' : item.badge}
+          </span>
+        )}
+      </Link>
+
+      {hasChildren && isActive && (
+        <ul className="mt-1 ml-4 space-y-0.5 border-l border-border pl-4">
+          {item.children!.map((child) => {
+            const isChildActive = pathname === child.href
+            return (
+              <li key={child.href}>
+                <Link
+                  href={child.href}
+                  className={cn(
+                    'block rounded-lg px-3 py-1.5 text-sm transition-colors',
+                    isChildActive
+                      ? 'text-primary font-medium'
+                      : 'text-muted-foreground hover:text-foreground'
+                  )}
+                >
+                  {child.name}
+                </Link>
+              </li>
+            )
+          })}
+        </ul>
+      )}
+    </li>
+  )
+}
+
 export function Sidebar({ items, workspace, className }: SidebarProps) {
   const pathname = usePathname()
   const [logoError, setLogoError] = React.useState(false)
+  const { collapsed: advancedCollapsed, toggle: toggleAdvanced } = useAdvancedCollapsed()
 
-  // Show workspace logo if available
   const showWorkspaceLogo = workspace?.branding?.logo_url
-
-  // Extract domain from website URL for favicon fallback
   const workspaceDomain = workspace?.website_url
     ? workspace.website_url.replace(/^https?:\/\//, '').replace(/\/$/, '').split('/')[0]
     : null
-
-  // Google Favicon fallback URL
   const faviconFallback = workspaceDomain
     ? `https://www.google.com/s2/favicons?domain=${workspaceDomain}&sz=64`
     : null
+
+  const mainItems = items.filter((i) => i.section === 'main')
+  const advancedItems = items.filter((i) => i.section === 'advanced')
+  const adminItems = items.filter((i) => i.section === 'admin')
+
+  const hasAdvancedActive = advancedItems.some(
+    (i) => pathname === i.href || pathname.startsWith(i.href + '/')
+  )
+
+  const showAdvanced = !advancedCollapsed || hasAdvancedActive
 
   return (
     <aside
@@ -70,7 +164,6 @@ export function Sidebar({ items, workspace, className }: SidebarProps) {
         className
       )}
     >
-      {/* Logo */}
       <div className="flex h-16 items-center border-b border-border px-6">
         <Link href="/dashboard" className="flex items-center gap-2">
           <CursiveLogo />
@@ -78,7 +171,6 @@ export function Sidebar({ items, workspace, className }: SidebarProps) {
         </Link>
       </div>
 
-      {/* Business Info Section */}
       {workspace && (
         <div className="border-b border-border px-4 py-4">
           <div className="flex items-center gap-3">
@@ -144,107 +236,51 @@ export function Sidebar({ items, workspace, className }: SidebarProps) {
         </div>
       )}
 
-      {/* Navigation */}
       <nav className="flex-1 overflow-y-auto px-3 py-4">
-        {(() => {
-          // Group items by section, preserving order
-          const sectionOrder: string[] = []
-          const sections: Record<string, typeof items> = {}
-          for (const item of items) {
-            const sec = item.section || 'default'
-            if (!sections[sec]) {
-              sections[sec] = []
-              sectionOrder.push(sec)
-            }
-            sections[sec].push(item)
-          }
+        <ul className="space-y-1">
+          {mainItems.map((item) => (
+            <NavItem key={item.href} item={item} pathname={pathname} />
+          ))}
+        </ul>
 
-          const sectionLabels: Record<string, string> = {
-            leads: 'Your Leads',
-            actions: 'Take Action',
-            account: 'Account',
-            admin: 'Admin',
-          }
-
-          return sectionOrder.map((sec) => (
-            <div key={sec} className={sec !== sectionOrder[0] ? 'mt-5' : ''}>
-              {sectionLabels[sec] && (
-                <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
-                  {sectionLabels[sec]}
-                </p>
-              )}
-              <ul className="space-y-1">
-                {sections[sec].map((item) => {
-                  const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
-                  const hasChildren = item.children && item.children.length > 0
-
-                  return (
-                    <li key={item.href}>
-                      <Link
-                        href={item.href}
-                        className={cn(
-                          'group flex items-center gap-3 rounded-lg px-3 py-2.5 sm:py-2 text-sm font-medium transition-colors touch-manipulation',
-                          isActive
-                            ? 'bg-primary/10 text-primary'
-                            : 'text-muted-foreground hover:bg-muted hover:text-foreground active:bg-muted'
-                        )}
-                      >
-                        <span
-                          className={cn(
-                            'flex h-5 w-5 items-center justify-center',
-                            isActive ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground'
-                          )}
-                        >
-                          {item.icon}
-                        </span>
-                        <span className="flex-1">
-                          <span className="block">{item.name}</span>
-                          {item.subText && (
-                            <span className="block text-[11px] font-normal text-muted-foreground/70 leading-tight">
-                              {item.subText}
-                            </span>
-                          )}
-                        </span>
-                        {item.badge && item.badge > 0 && (
-                          <span className="ml-auto min-w-[1.25rem] rounded-full bg-primary px-1.5 py-0.5 text-center text-[10px] font-semibold leading-none text-white">
-                            {item.badge > 99 ? '99+' : item.badge}
-                          </span>
-                        )}
-                      </Link>
-
-                      {/* Children */}
-                      {hasChildren && isActive && (
-                        <ul className="mt-1 ml-4 space-y-1 border-l border-border pl-4">
-                          {item.children!.map((child) => {
-                            const isChildActive = pathname === child.href
-                            return (
-                              <li key={child.href}>
-                                <Link
-                                  href={child.href}
-                                  className={cn(
-                                    'block rounded-lg px-3 py-1.5 text-sm transition-colors',
-                                    isChildActive
-                                      ? 'text-primary font-medium'
-                                      : 'text-muted-foreground hover:text-foreground'
-                                  )}
-                                >
-                                  {child.name}
-                                </Link>
-                              </li>
-                            )
-                          })}
-                        </ul>
-                      )}
-                    </li>
-                  )
-                })}
+        {advancedItems.length > 0 && (
+          <div className="mt-6">
+            <button
+              onClick={toggleAdvanced}
+              className="flex w-full items-center gap-2 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/60 hover:text-muted-foreground transition-colors"
+            >
+              <span>Advanced</span>
+              <ChevronDown
+                className={cn(
+                  'h-3.5 w-3.5 transition-transform duration-200',
+                  showAdvanced ? 'rotate-0' : '-rotate-90'
+                )}
+              />
+            </button>
+            {showAdvanced && (
+              <ul className="mt-1 space-y-1">
+                {advancedItems.map((item) => (
+                  <NavItem key={item.href} item={item} pathname={pathname} />
+                ))}
               </ul>
-            </div>
-          ))
-        })()}
+            )}
+          </div>
+        )}
+
+        {adminItems.length > 0 && (
+          <div className="mt-6">
+            <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
+              Admin
+            </p>
+            <ul className="space-y-1">
+              {adminItems.map((item) => (
+                <NavItem key={item.href} item={item} pathname={pathname} />
+              ))}
+            </ul>
+          </div>
+        )}
       </nav>
 
-      {/* Footer */}
       <div className="border-t border-border p-4">
         <div className="rounded-lg bg-muted/50 p-3">
           <p className="text-xs font-medium text-muted-foreground">Need help?</p>
@@ -270,7 +306,6 @@ export function Sidebar({ items, workspace, className }: SidebarProps) {
   )
 }
 
-// Collapsible sidebar for mobile
 export function SidebarMobile({
   items,
   workspace,
@@ -288,10 +323,9 @@ export function SidebarMobile({
     if (isOpen) {
       onClose()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally only close sidebar on pathname change, not on isOpen change
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname, onClose])
 
-  // Prevent body scroll when sidebar is open
   React.useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden'
@@ -305,7 +339,6 @@ export function SidebarMobile({
 
   return (
     <>
-      {/* Backdrop */}
       <div
         className={cn(
           'fixed inset-0 z-40 bg-black/50 lg:hidden transition-opacity duration-300',
@@ -314,7 +347,6 @@ export function SidebarMobile({
         onClick={onClose}
         aria-hidden="true"
       />
-      {/* Sidebar */}
       <div
         className={cn(
           'fixed inset-y-0 left-0 z-50 w-64 lg:hidden transition-transform duration-300 ease-in-out',
@@ -322,7 +354,6 @@ export function SidebarMobile({
         )}
       >
         <Sidebar items={items} workspace={workspace} className="h-full shadow-xl" />
-        {/* Close button - larger touch target on mobile */}
         <button
           onClick={onClose}
           className="absolute top-3 right-3 p-3 rounded-lg bg-zinc-100 hover:bg-zinc-200 active:bg-zinc-300 text-zinc-600 lg:hidden touch-manipulation"

@@ -32,13 +32,31 @@ interface BusinessSignupFormProps {
   isSubmitting?: boolean
   /** True when we are waiting for a Google OAuth redirect */
   oauthPending?: boolean
+  /** Pre-fill the email field (from ?email= on post-call recap link) */
+  prefilledEmail?: string
+  /** Pre-fill the company name (derived from ?domain= on post-call recap link) */
+  prefilledCompanyName?: string
 }
 
-export function BusinessSignupForm({ vslAnswers, onSubmit, onBack, error, onClearError, isSubmitting: parentSubmitting, oauthPending }: BusinessSignupFormProps) {
+export function BusinessSignupForm({
+  vslAnswers,
+  onSubmit,
+  onBack,
+  error,
+  onClearError,
+  isSubmitting: parentSubmitting,
+  oauthPending,
+  prefilledEmail = '',
+  prefilledCompanyName = '',
+}: BusinessSignupFormProps) {
   const [localSubmitting, setLocalSubmitting] = useState(false)
   const isSubmitting = localSubmitting || !!parentSubmitting
   const [password, setPassword] = useState('')
   const [passwordError, setPasswordError] = useState<string | null>(null)
+  const [showWaitlist, setShowWaitlist] = useState(false)
+  const [waitlistSubmitting, setWaitlistSubmitting] = useState(false)
+  const [waitlistDone, setWaitlistDone] = useState(false)
+  const [waitlistError, setWaitlistError] = useState<string | null>(null)
 
   const {
     register,
@@ -49,6 +67,8 @@ export function BusinessSignupForm({ vslAnswers, onSubmit, onBack, error, onClea
     resolver: zodResolver(businessFormSchema),
     defaultValues: {
       monthlyLeadNeed: vslAnswers.q1 || '',
+      email: prefilledEmail || '',
+      companyName: prefilledCompanyName || '',
     },
   })
 
@@ -218,13 +238,122 @@ export function BusinessSignupForm({ vslAnswers, onSubmit, onBack, error, onClea
 
               <div>
                 <label htmlFor="industry" className="block text-sm font-medium text-foreground mb-1.5">Industry *</label>
-                <select {...register('industry')} id="industry" className="w-full h-10 px-3 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" aria-required="true" aria-invalid={!!errors.industry} aria-describedby={errors.industry ? 'industry-error' : undefined}>
+                <select
+                  {...register('industry')}
+                  id="industry"
+                  className="w-full h-10 px-3 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                  aria-required="true"
+                  aria-invalid={!!errors.industry}
+                  aria-describedby={errors.industry ? 'industry-error' : undefined}
+                  onChange={(e) => {
+                    // react-hook-form onChange must still fire
+                    register('industry').onChange(e)
+                    setShowWaitlist(e.target.value === 'Other (waitlist)')
+                  }}
+                >
                   <option value="">Select an industry</option>
                   {industryOptions.map((industry) => (
                     <option key={industry} value={industry}>{industry}</option>
                   ))}
                 </select>
                 {errors.industry && <p id="industry-error" className="text-xs text-destructive mt-1" role="alert">{errors.industry.message}</p>}
+                {/* When user picks "Other (waitlist)", show an inline waitlist form
+                    instead of creating an empty workspace with no leads. */}
+                {showWaitlist && !waitlistDone && (
+                  <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-4">
+                    <p className="text-sm font-semibold text-amber-900">
+                      We&apos;re not live in your industry yet
+                    </p>
+                    <p className="text-sm text-amber-700 mt-1">
+                      Our lead network covers home services, real estate, roofing, HVAC, plumbing, security, contractor, and logistics.
+                      We&apos;re expanding — enter your email and we&apos;ll notify you when your industry goes live.
+                    </p>
+                    <form
+                      className="mt-3 flex flex-col gap-2"
+                      onSubmit={async (e) => {
+                        e.preventDefault()
+                        const fd = new FormData(e.currentTarget)
+                        const wlEmail = String(fd.get('wl_email') || '').trim()
+                        const wlIndustry = String(fd.get('wl_industry') || '').trim()
+                        const formValues = getValues()
+                        if (!wlEmail) return
+                        setWaitlistSubmitting(true)
+                        setWaitlistError(null)
+                        try {
+                          const res = await fetch('/api/waitlist', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                              email: wlEmail,
+                              first_name: formValues.firstName || 'Unknown',
+                              last_name: formValues.lastName || 'User',
+                              industry: wlIndustry || 'Other',
+                              source: 'unsupported_industry',
+                            }),
+                          })
+                          if (!res.ok && res.status !== 409) {
+                            const body = await res.json().catch(() => ({}))
+                            throw new Error(body.error || 'Failed to join waitlist')
+                          }
+                          setWaitlistDone(true)
+                        } catch (err: unknown) {
+                          setWaitlistError(err instanceof Error ? err.message : 'Something went wrong')
+                        } finally {
+                          setWaitlistSubmitting(false)
+                        }
+                      }}
+                    >
+                      <input
+                        name="wl_email"
+                        type="email"
+                        required
+                        defaultValue={getValues('email') || prefilledEmail}
+                        placeholder="your@email.com"
+                        className="w-full h-10 px-3 text-sm border border-amber-300 bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                      />
+                      <input
+                        name="wl_industry"
+                        type="text"
+                        placeholder="Your industry (e.g. SaaS, E-commerce, Healthcare)"
+                        className="w-full h-10 px-3 text-sm border border-amber-300 bg-white rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                      />
+                      {waitlistError && (
+                        <p className="text-xs text-red-600">{waitlistError}</p>
+                      )}
+                      <div className="flex items-center gap-3">
+                        <button
+                          type="submit"
+                          disabled={waitlistSubmitting}
+                          className="inline-flex items-center gap-1.5 rounded-lg bg-amber-600 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-700 transition-colors disabled:opacity-50"
+                        >
+                          {waitlistSubmitting ? 'Joining...' : 'Notify me when live'}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setShowWaitlist(false)}
+                          className="text-sm text-amber-700 hover:underline"
+                        >
+                          Pick a supported industry
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                )}
+                {showWaitlist && waitlistDone && (
+                  <div className="mt-3 rounded-lg border border-green-200 bg-green-50 p-4">
+                    <p className="text-sm font-semibold text-green-900">You&apos;re on the waitlist!</p>
+                    <p className="text-sm text-green-700 mt-1">
+                      We&apos;ll email you the moment we launch for your industry.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setShowWaitlist(false)}
+                      className="mt-2 text-sm text-green-700 hover:underline"
+                    >
+                      Pick a supported industry to get leads now
+                    </button>
+                  </div>
+                )}
               </div>
 
               <div>

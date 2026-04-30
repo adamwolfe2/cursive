@@ -60,7 +60,7 @@ export function OnboardingSuccess({ userType, email, isMarketplace, targetIndust
   useEffect(() => {
     if (!needsConfirmation) {
       const timer = setTimeout(() => {
-        router.push(isMarketplace ? '/marketplace' : '/dashboard')
+        router.push(isMarketplace ? '/marketplace' : '/setup')
       }, 2000)
       return () => clearTimeout(timer)
     }
@@ -97,7 +97,7 @@ export function OnboardingSuccess({ userType, email, isMarketplace, targetIndust
         setConfirmed(true)
         clearInterval(interval)
         setTimeout(() => {
-          router.push(isMarketplace ? '/marketplace' : '/dashboard')
+          router.push(isMarketplace ? '/marketplace' : '/setup')
         }, 2000)
       }
     }, POLL_INTERVAL_MS)

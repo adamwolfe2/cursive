@@ -5,6 +5,8 @@ import { inngest } from '../client'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { emailComposerService } from '@/lib/services/composition/email-composer.service'
 import { assignVariant, getAssignedVariant } from '@/lib/services/campaign/ab-testing.service'
+import { generateSalesEmail } from '@/lib/services/ai/claude.service'
+import { findGmailAccountForWorkspace } from '@/lib/services/gmail/email-account.service'
 
 export const composeCampaignEmail = inngest.createFunction(
   {
@@ -117,7 +119,12 @@ export const composeCampaignEmail = inngest.createFunction(
     // If we have a variant, use its templates; otherwise fall back to regular templates
     const useVariantTemplates = variant !== null
 
-    if (!useVariantTemplates && availableTemplates.length === 0) {
+    // Outbound-agent campaigns intentionally have no templates — they generate
+    // each email fresh via Claude using the agent's icp/persona/product/tone.
+    // Detect that case and skip the "no templates" failure.
+    const isOutboundAgentCampaign = (campaign as { is_outbound_agent?: boolean })?.is_outbound_agent === true
+
+    if (!useVariantTemplates && availableTemplates.length === 0 && !isOutboundAgentCampaign) {
       logger.warn('No templates available for composition')
       return {
         success: false,
@@ -126,7 +133,35 @@ export const composeCampaignEmail = inngest.createFunction(
       }
     }
 
-    // Step 4: Select best template (or use variant template)
+    // Phase 2 safety: outbound-agent drafts must be pinned to a connected
+    // Gmail account at compose time. If none exists (e.g. user disconnected
+    // mid-run), pause the campaign_lead and exit cleanly — no draft created.
+    let outboundEmailAccountId: string | null = null
+    if (isOutboundAgentCampaign) {
+      outboundEmailAccountId = await step.run('lookup-gmail-account', async () => {
+        const gmailAcc = await findGmailAccountForWorkspace(workspace_id)
+        return gmailAcc?.id ?? null
+      })
+      if (!outboundEmailAccountId) {
+        await step.run('pause-lead-no-gmail', async () => {
+          const supabase = createAdminClient()
+          await supabase
+            .from('campaign_leads')
+            .update({ status: 'paused' })
+            .eq('id', campaign_lead_id)
+        })
+        logger.warn(
+          `[outbound] Skipped lead ${lead_id} for campaign ${campaign_id}: no Gmail account connected for workspace ${workspace_id}. Lead paused.`
+        )
+        return {
+          success: false,
+          error: 'no_gmail_account_connected',
+          campaign_lead_id,
+        }
+      }
+    }
+
+    // Step 4: Select best template (or generate via AI for outbound agent)
     const selectedTemplate = await step.run('select-template', async () => {
       // If using a variant, create a pseudo-template from the variant
       if (variant) {
@@ -137,6 +172,59 @@ export const composeCampaignEmail = inngest.createFunction(
           body_template: variant.bodyTemplate,
           is_variant: true,
         }
+      }
+
+      // Outbound-agent fallback: synthesize a one-off "template" by calling
+      // generateSalesEmail() with the agent's icp/persona/product/tone.
+      // The composer step below will then run its variable interpolation against it.
+      if (isOutboundAgentCampaign && availableTemplates.length === 0) {
+        const supabase = createAdminClient()
+        const { data: agent } = await supabase
+          .from('agents')
+          .select('id, name, tone, icp_text, persona_text, product_text')
+          .eq('id', campaign.agent_id)
+          .maybeSingle()
+
+        const tone = ((agent?.tone as string) || 'professional') as 'professional' | 'casual' | 'friendly' | 'urgent'
+        const personaText = (agent as any)?.persona_text || ''
+        const productText = (agent as any)?.product_text || campaign.description || 'our solution'
+
+        const senderName = (workspace?.sales_co_settings as any)?.default_sender_name || 'Sales Team'
+        const senderCompany = workspace?.name || 'Our Company'
+
+        const draft = await generateSalesEmail({
+          senderName,
+          senderCompany,
+          senderProduct: productText,
+          recipientName: (lead.full_name as string) || `${lead.first_name || ''} ${lead.last_name || ''}`.trim() || 'there',
+          recipientTitle: (lead.job_title as string) || 'Decision Maker',
+          recipientCompany: (lead.company_name as string) || 'your company',
+          recipientIndustry: (lead.company_industry as string) || undefined,
+          valueProposition: personaText
+            ? `${productText} — built for ${personaText}.`
+            : productText,
+          callToAction: 'Open to a quick 15-minute call next week to share more?',
+          tone,
+        })
+
+        // Provide a synthetic template shape for the composer.
+        // Subject/body are pre-rendered by Claude; composer will run variable
+        // interpolation on them but they shouldn't contain {{tokens}} so it's a no-op.
+        const bodyHtml = draft.body
+          .split('\n\n')
+          .map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`)
+          .join('\n')
+        return {
+          id: `outbound-agent-${campaign.id}`,
+          name: `Outbound Agent: ${agent?.name ?? 'Untitled'}`,
+          subject: draft.subject,
+          body_html: bodyHtml,
+          body_text: draft.body,
+          is_outbound_agent: true,
+          // Phase 2: pin the workspace's connected Gmail account into the
+          // email_sends row so sendApprovedEmail knows which inbox to use.
+          __pinnedEmailAccountId: outboundEmailAccountId,
+        } as any
       }
 
       // Otherwise use normal template selection
@@ -190,11 +278,31 @@ export const composeCampaignEmail = inngest.createFunction(
         return existing
       }
 
+      // For outbound-agent campaigns, pin the workspace's connected Gmail
+      // account so the send pipeline knows which inbox to send from.
+      //
+      // CRITICAL: read this from the OUTER `outboundEmailAccountId` scope
+      // (set in the gate check above) instead of from `selectedTemplate.
+      // __pinnedEmailAccountId`. The synthetic-template branch was the only
+      // one that stamped the property — when the workspace has any real
+      // templates in the DB, the normal selectTemplate() path returned a
+      // template WITHOUT the pinned account, and the email would fall
+      // through to the platform EmailBison sender (sending from the wrong
+      // domain). Reading from the outer scope guarantees every outbound
+      // draft on every code path gets pinned to the correct account.
+      const pinnedEmailAccountId: string | null = isOutboundAgentCampaign
+        ? outboundEmailAccountId
+        : ((selectedTemplate as any).__pinnedEmailAccountId ?? null)
+
       const insertData: Record<string, any> = {
         workspace_id,
         campaign_id,
-        template_id: (selectedTemplate as any).is_variant ? null : selectedTemplate.id,
+        template_id:
+          (selectedTemplate as any).is_variant || (selectedTemplate as any).is_outbound_agent
+            ? null
+            : selectedTemplate.id,
         lead_id,
+        ...(pinnedEmailAccountId && { email_account_id: pinnedEmailAccountId }),
         recipient_email: lead.email,
         recipient_name: lead.full_name || `${lead.first_name || ''} ${lead.last_name || ''}`.trim(),
         subject: composedEmail.subject,

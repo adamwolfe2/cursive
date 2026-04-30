@@ -92,8 +92,11 @@ export function BuyCreditsCard() {
                   {pkg.credits.toLocaleString()} credits
                 </p>
               </div>
+              <p className="text-lg font-bold text-foreground">
+                ${pkg.price.toLocaleString()}
+              </p>
               <p className="text-xs text-muted-foreground">
-                Contact us for pricing
+                ${pkg.pricePerCredit.toFixed(2)}/credit{pkg.savings > 0 ? ` · ${pkg.savings}% off` : ''}
               </p>
               <div className="mt-3 w-full text-center py-1.5 rounded-md bg-primary/10 text-primary text-xs font-medium group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
                 {purchasingPackage === pkg.id ? 'Redirecting...' : 'Buy Now'}

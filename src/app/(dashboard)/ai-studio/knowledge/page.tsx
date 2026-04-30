@@ -51,7 +51,6 @@ function KnowledgePageInner() {
 
   useEffect(() => {
     if (!workspaceId) {
-      router.push('/ai-studio')
       return
     }
     fetchWorkspace()
@@ -70,6 +69,22 @@ function KnowledgePageInner() {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  if (!workspaceId) {
+    return (
+      <PageContainer>
+        <EmptyState
+          icon={BookOpen}
+          title="Select a Brand Workspace"
+          description="Open a brand workspace from AI Studio home to view its knowledge base."
+          action={{
+            label: 'Go to AI Studio',
+            onClick: () => router.push('/ai-studio')
+          }}
+        />
+      </PageContainer>
+    )
   }
 
   if (isLoading) {

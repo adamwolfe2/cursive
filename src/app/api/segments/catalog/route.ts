@@ -3,12 +3,20 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
 import { sanitizeSearchTerm } from '@/lib/utils/sanitize-search'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { withRateLimit, getRequestIdentifier } from '@/lib/middleware/rate-limiter'
+
+const CACHE_HEADERS = {
+  'Cache-Control': 's-maxage=300, stale-while-revalidate=600',
+} as const
 
 export async function GET(req: NextRequest) {
   const supabase = await createClient()
   // SECURITY: Use getUser() for server-side JWT verification (not getSession which trusts local cache)
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const limited = await withRateLimit(req, 'search', getRequestIdentifier(req, user.id))
+  if (limited) return limited
 
   const { searchParams } = new URL(req.url)
   const q = searchParams.get('q')?.trim() ?? ''
@@ -52,7 +60,7 @@ export async function GET(req: NextRequest) {
           total_pages: 1,
           categories,
           search_type: 'semantic',
-        })
+        }, { headers: CACHE_HEADERS })
       }
 
       // If semantic search returned nothing, fall through to ilike
@@ -98,5 +106,5 @@ export async function GET(req: NextRequest) {
     total_pages: Math.ceil((count ?? 0) / perPage),
     categories,
     search_type: q ? 'keyword' : 'browse',
-  })
+  }, { headers: CACHE_HEADERS })
 }

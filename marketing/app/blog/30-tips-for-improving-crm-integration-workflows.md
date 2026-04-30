@@ -554,7 +554,7 @@ Effective CRM integration transforms scattered tools into a unified revenue engi
 
 Ready to see how unified CRM integration accelerates growth?
 
-[**Book a demo**](https://cal.com/cursive/30min) to discover how Cursive eliminates data silos and turns your CRM into your competitive advantage.
+[**Book a demo**](https://cal.com/cursiveteam/30min) to discover how Cursive eliminates data silos and turns your CRM into your competitive advantage.
 
 ---
 

@@ -110,7 +110,7 @@ Audience groups built from real activity give you faster paths to action. With e
 
 Each message carries more weight when it's based on a real signal. And when your platform makes it easy to act on those signals, your marketing becomes more effective without more effort.
 
-Ready to turn visitor behavior into qualified leads? **[Book a demo](https://cal.com/cursive/30min)** to see how Cursive segments audiences automatically, triggers personalized campaigns, and drives measurable growth.
+Ready to turn visitor behavior into qualified leads? **[Book a demo](https://cal.com/cursiveteam/30min)** to see how Cursive segments audiences automatically, triggers personalized campaigns, and drives measurable growth.
 
 ---
 

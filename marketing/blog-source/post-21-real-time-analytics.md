@@ -542,4 +542,4 @@ Yes. Companies implementing real-time marketing analytics typically see: 20-30% 
 
 ---
 
-**Ready to see what's happening on your website right now?** [Book a demo](https://cal.com/cursive/30min) to see how Cursive identifies visitors in real-time, tracks intent signals, and triggers automated actions based on live behavior.
+**Ready to see what's happening on your website right now?** [Book a demo](https://cal.com/cursiveteam/30min) to see how Cursive identifies visitors in real-time, tracks intent signals, and triggers automated actions based on live behavior.

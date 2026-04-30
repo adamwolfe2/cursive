@@ -46,7 +46,7 @@ export default function DemosPage() {
 
               <div className="flex items-center justify-center gap-4">
                 <Link
-                  href="https://cal.com/gotdarrenhill/30min"
+                  href="https://cal.com/cursiveteam/30min"
                   target="_blank"
                   className="px-6 py-3 bg-primary text-white rounded-lg font-medium hover:bg-primary-dark transition-colors"
                 >
@@ -153,7 +153,7 @@ export default function DemosPage() {
 
           <MachineSection title="Core Feature Demos">
             <MachineList items={[
-              { label: "Visitor Identification", href: "/visitor-identification", description: "See how Cursive identifies anonymous website visitors in real-time with 70% match rates, revealing company name, job title, email, and pages viewed" },
+              { label: "Visitor Identification", href: "/visitor-identification", description: "See how Cursive identifies anonymous website visitors in real-time with a 40\u201360% deterministic pixel match rate (vs 2\u20135% for cookies, 10\u201315% for IP databases), revealing company name, job title, email, and pages viewed" },
               { label: "Intent Signals Dashboard", href: "/platform", description: "Track buying signals across your website -- pricing page visits, feature comparisons, return visits, and content downloads scored by intent level" },
               { label: "Audience Builder", href: "/audience-builder", description: "Build custom audiences from identified visitors, filter by industry, company size, intent score, and behavior patterns for targeted campaigns" },
               { label: "Custom Audiences", href: "/custom-audiences", description: "Access pre-built intent segments and layer demographic parameters for precision ad targeting across platforms" },
@@ -188,7 +188,7 @@ export default function DemosPage() {
               Want to see these features with your actual data? Book a personalized 30-minute walkthrough with the Cursive team. We&apos;ll show you real visitors on your website and demonstrate the full platform workflow.
             </p>
             <MachineList items={[
-              { label: "Book a Live Demo", href: "https://cal.com/gotdarrenhill/30min", description: "30-minute personalized walkthrough with your data" },
+              { label: "Book a Live Demo", href: "https://cal.com/cursiveteam/30min", description: "30-minute personalized walkthrough with your data" },
               { label: "Platform Overview", href: "/platform", description: "Full platform capabilities and features" },
               { label: "Pricing", href: "/pricing", description: "Self-serve and done-for-you plans" },
               { label: "Case Studies", href: "/case-studies", description: "See results from real customers" },

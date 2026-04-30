@@ -1,13 +1,22 @@
 export const runtime = 'nodejs'
 
 /**
- * Admin Email Deliverability — Domain-Level Stats
+ * Admin Email Deliverability — Top Recipient Domains
  * Cursive Platform
  *
  * GET /api/admin/email-deliverability/domains
  *
- * Aggregates email open/bounce rates by recipient domain (gmail.com, yahoo.com, etc.)
- * from the email_sends table over the last 30 days. Returns top 20 domains.
+ * Groups email_sends by recipient domain (extracted from to_email) for the
+ * last 30 days and returns the top 20 domains by send volume with per-domain
+ * open rate and bounce rate.
+ *
+ * Response shape per domain:
+ *   domain       — e.g. "gmail.com"
+ *   sent_count   — total sends to this domain
+ *   open_count   — sends with opened_at set
+ *   bounce_count — sends with bounced_at set
+ *   open_rate    — percentage
+ *   bounce_rate  — percentage
  *
  * Auth: requireAdmin()
  */
@@ -19,24 +28,21 @@ import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
 
 // ---- Types ----
 
-interface DomainStat {
-  domain: string
+interface DomainStats {
   sent_count: number
   open_count: number
   bounce_count: number
-  open_rate: number
-  bounce_rate: number
 }
 
-// ---- Helper ----
+// ---- Helpers ----
 
 function extractDomain(email: string): string {
   try {
-    const atIndex = email.lastIndexOf('@')
-    if (atIndex === -1) return '(unknown)'
-    return email.slice(atIndex + 1).toLowerCase().trim() || '(unknown)'
+    const at = email.lastIndexOf('@')
+    if (at === -1) return 'unknown'
+    return email.slice(at + 1).toLowerCase().trim()
   } catch {
-    return '(unknown)'
+    return 'unknown'
   }
 }
 
@@ -51,59 +57,64 @@ export async function GET() {
 
     safeLog('[EmailDeliverability/Domains] Querying email_sends for last 30 days')
 
-    // Fetch all sends in the period with only the fields we need
-    const { data: rows, error } = await adminClient
+    const { data: sends, error: sendsError } = await adminClient
       .from('email_sends')
       .select('to_email, opened_at, bounced_at')
       .gte('created_at', since)
 
-    if (error) {
-      safeError('[EmailDeliverability/Domains] Query error:', error)
-      // Return empty data rather than a 500 so the dashboard still loads
+    if (sendsError) {
+      safeError('[EmailDeliverability/Domains] email_sends query error:', sendsError)
       return NextResponse.json({
         success: true,
         data: {
           domains: [],
           period_days: 30,
-          note: 'email_sends table query failed — data unavailable',
+          total_rows_scanned: 0,
+          note: 'email_sends table unavailable',
         },
       })
     }
 
-    // Aggregate by domain in-memory
-    const domainMap = new Map<string, { sent: number; opened: number; bounced: number }>()
+    const rows = sends ?? []
+    safeLog('[EmailDeliverability/Domains] Rows fetched:', rows.length)
 
-    for (const row of rows ?? []) {
-      if (!row.to_email) continue
-      const domain = extractDomain(row.to_email)
-      const existing = domainMap.get(domain) ?? { sent: 0, opened: 0, bounced: 0 }
-      existing.sent += 1
-      if (row.opened_at) existing.opened += 1
-      if (row.bounced_at) existing.bounced += 1
-      domainMap.set(domain, existing)
+    // Aggregate by recipient domain
+    const domainMap = new Map<string, DomainStats>()
+
+    for (const row of rows) {
+      const domain = extractDomain(row.to_email ?? '')
+      const entry = domainMap.get(domain) ?? { sent_count: 0, open_count: 0, bounce_count: 0 }
+      entry.sent_count += 1
+      if (row.opened_at != null) entry.open_count += 1
+      if (row.bounced_at != null) entry.bounce_count += 1
+      domainMap.set(domain, entry)
     }
 
-    // Build sorted result (top 20 by sent count)
-    const domains: DomainStat[] = Array.from(domainMap.entries())
+    // Sort by volume descending, take top 20
+    const sorted = Array.from(domainMap.entries())
+      .sort((a, b) => b[1].sent_count - a[1].sent_count)
+      .slice(0, 20)
       .map(([domain, stats]) => ({
         domain,
-        sent_count: stats.sent,
-        open_count: stats.opened,
-        bounce_count: stats.bounced,
-        open_rate: stats.sent > 0 ? Number(((stats.opened / stats.sent) * 100).toFixed(2)) : 0,
-        bounce_rate: stats.sent > 0 ? Number(((stats.bounced / stats.sent) * 100).toFixed(2)) : 0,
+        sent_count: stats.sent_count,
+        open_count: stats.open_count,
+        bounce_count: stats.bounce_count,
+        open_rate: Number(
+          (stats.sent_count > 0 ? (stats.open_count / stats.sent_count) * 100 : 0).toFixed(2)
+        ),
+        bounce_rate: Number(
+          (stats.sent_count > 0 ? (stats.bounce_count / stats.sent_count) * 100 : 0).toFixed(2)
+        ),
       }))
-      .sort((a, b) => b.sent_count - a.sent_count)
-      .slice(0, 20)
 
-    safeLog('[EmailDeliverability/Domains] Returning', domains.length, 'domains')
+    safeLog('[EmailDeliverability/Domains] Returning', sorted.length, 'domains')
 
     return NextResponse.json({
       success: true,
       data: {
-        domains,
+        domains: sorted,
         period_days: 30,
-        total_rows_scanned: (rows ?? []).length,
+        total_rows_scanned: rows.length,
       },
     })
   } catch (error: unknown) {
@@ -114,9 +125,6 @@ export async function GET() {
       return NextResponse.json({ error: 'Admin access required' }, { status: 403 })
     }
 
-    return NextResponse.json(
-      { error: 'Failed to fetch domain deliverability stats' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch domain stats' }, { status: 500 })
   }
 }

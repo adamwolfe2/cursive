@@ -47,9 +47,9 @@ export async function POST(request: NextRequest) {
     const csv = await leadRepo.exportToCSV(user.workspaceId, filters || {})
 
     // 4. Return CSV file response
-    // Count data rows (subtract 1 for header row) to detect truncation at 10k limit
+    // Count data rows (subtract 1 for header row) to detect truncation at 5k cap
     const rowCount = csv.split('\n').length - 1
-    const truncated = rowCount >= 10000
+    const truncated = rowCount >= 5000
 
     // Log the export to the audit trail (non-critical — fire and forget)
     createAuditLog({

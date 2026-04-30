@@ -87,7 +87,6 @@ function CreativesPageInner() {
 
   useEffect(() => {
     if (!workspaceId) {
-      router.push('/ai-studio')
       return
     }
     fetchData()
@@ -151,6 +150,22 @@ function CreativesPageInner() {
     } finally {
       setIsGenerating(false)
     }
+  }
+
+  if (!workspaceId) {
+    return (
+      <PageContainer>
+        <EmptyState
+          icon={ImageIcon}
+          title="Select a Brand Workspace"
+          description="Open a brand workspace from AI Studio home to generate creatives."
+          action={{
+            label: 'Go to AI Studio',
+            onClick: () => router.push('/ai-studio')
+          }}
+        />
+      </PageContainer>
+    )
   }
 
   if (isLoading) {

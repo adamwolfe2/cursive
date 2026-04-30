@@ -13,6 +13,7 @@ import { fastAuth } from '@/lib/auth/fast-auth'
 import { generateAdCreative } from '@/lib/ai-studio/image-generation'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
+import { withRateLimit, getRequestIdentifier } from '@/lib/middleware/rate-limiter'
 import { z } from 'zod'
 
 const generateSchema = z.object({
@@ -77,6 +78,9 @@ export async function POST(request: NextRequest) {
     if (!user) {
       return unauthorized()
     }
+
+    const limited = await withRateLimit(request, 'ai-generate-email', getRequestIdentifier(request, user.userId))
+    if (limited) return limited
 
     const body = await request.json()
     const { workspaceId, prompt, stylePreset, format, icpId, offerId } = generateSchema.parse(body)

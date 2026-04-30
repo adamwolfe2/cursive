@@ -197,7 +197,7 @@ export async function getJobsForRetry(limit: number = 50): Promise<FailedJob[]> 
       .select('*')
       .eq('status', 'pending_retry')
       .lte('next_retry_at', new Date().toISOString())
-      .lt('attempts', supabase.rpc('greatest', { a: 'max_attempts', b: 5 }) as any)
+      .lt('attempts', supabase.rpc('greatest', { a: 'max_attempts', b: 5 }) as unknown as number)
       .order('next_retry_at', { ascending: true })
       .limit(limit)
 

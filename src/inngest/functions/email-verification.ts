@@ -9,14 +9,14 @@ import {
   queueLeadsForVerification,
 } from '@/lib/services/email-verification.service'
 
-// Feature flag check
+// Feature flag check — uses AudienceLab for verification
 function isVerificationEnabled(): boolean {
   const killSwitch = process.env.EMAIL_VERIFICATION_KILL_SWITCH
   if (killSwitch === 'true' || killSwitch === '1') {
     return false
   }
 
-  const apiKey = process.env.MILLIONVERIFIER_API_KEY
+  const apiKey = process.env.AUDIENCELAB_ACCOUNT_API_KEY
   if (!apiKey) {
     return false
   }

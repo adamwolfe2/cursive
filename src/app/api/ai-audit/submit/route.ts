@@ -1,3 +1,5 @@
+export const maxDuration = 60
+
 // AI Audit Submission API Route
 // Public endpoint for AI Readiness Audit form submissions (no auth required)
 

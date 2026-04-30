@@ -116,7 +116,7 @@ export function BulkActionsToolbar({
           transition={{ type: 'spring', stiffness: 300, damping: 30 }}
           className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50"
         >
-          <div className="bg-background border rounded-lg shadow-lg px-4 py-3 flex items-center gap-4 min-w-[500px]">
+          <div className="bg-background border rounded-lg shadow-lg px-3 sm:px-4 py-3 flex flex-wrap items-center gap-2 sm:gap-4 w-[calc(100vw-2rem)] sm:w-auto sm:min-w-[500px]">
             {/* Selection info */}
             <div className="flex items-center gap-2">
               <CheckCircle2 className="h-5 w-5 text-primary" />

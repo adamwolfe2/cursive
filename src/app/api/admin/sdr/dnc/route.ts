@@ -2,7 +2,7 @@ export const runtime = 'nodejs'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { requireAdminRole as requireAdmin } from '@/lib/auth/admin'
+import { requirePlatformAdmin } from '@/lib/auth/admin'
 import { DncRepository } from '@/lib/repositories/dnc.repository'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
@@ -14,7 +14,7 @@ const addSchema = z.object({
 
 export async function GET(req: NextRequest) {
   try {
-    await requireAdmin()
+    await requirePlatformAdmin()
     const { searchParams } = new URL(req.url)
     const workspaceId = searchParams.get('workspace_id')
 
@@ -37,7 +37,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const admin = await requireAdmin()
+    const admin = await requirePlatformAdmin()
     const body = await req.json()
     const parsed = addSchema.safeParse(body)
     if (!parsed.success) {

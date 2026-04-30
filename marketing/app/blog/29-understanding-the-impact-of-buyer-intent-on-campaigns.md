@@ -122,7 +122,7 @@ By keeping your systems connected, your timing thoughtful, and your segments cle
 
 Ready to see which accounts are researching solutions like yours right now? [Cursive's intent audiences](/intent-audiences) track 450B+ monthly signals across 30,000+ categories, showing you exactly who's in-market and what they're researching.
 
-[Book a demo](https://cal.com/cursive/30min) and we'll show you the intent signals your competitors are missing.
+[Book a demo](https://cal.com/cursiveteam/30min) and we'll show you the intent signals your competitors are missing.
 
 ## Frequently Asked Questions
 

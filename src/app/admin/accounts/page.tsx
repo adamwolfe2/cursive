@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { useAdminAuth } from '@/hooks/use-admin-auth'
 import { sanitizeSearchTerm } from '@/lib/utils/sanitize-search'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import Image from 'next/image'
@@ -41,35 +42,11 @@ export default function AdminAccountsPage() {
   const [impersonateModalOpen, setImpersonateModalOpen] = useState(false)
   const [selectedWorkspace, setSelectedWorkspace] = useState<Workspace | null>(null)
   const [impersonateReason, setImpersonateReason] = useState('')
-  const [isAdmin, setIsAdmin] = useState(false)
-  const [authChecked, setAuthChecked] = useState(false)
+  const { isAdmin, authChecked } = useAdminAuth()
 
   const supabase = createClient()
   const router = useRouter()
   const { toast } = useToast()
-
-  // Admin role check - prevent non-admins from accessing
-  useEffect(() => {
-    const checkAdmin = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
-        window.location.href = '/login'
-        return
-      }
-      const { data: userData } = await supabase
-        .from('users')
-        .select('role')
-        .eq('auth_user_id', user.id)
-        .maybeSingle() as { data: { role: string } | null }
-      if (!userData || (userData.role !== 'admin' && userData.role !== 'owner')) {
-        window.location.href = '/dashboard'
-        return
-      }
-      setIsAdmin(true)
-      setAuthChecked(true)
-    }
-    checkAdmin()
-  }, [supabase])
 
   const { data: workspaces, isLoading, refetch } = useQuery({
     queryKey: ['admin', 'workspaces', search, industryFilter, statusFilter],

@@ -4,8 +4,8 @@ import { StructuredData } from '@/components/seo/structured-data'
 import { generateBreadcrumbSchema, generateFAQSchema } from '@/lib/seo/structured-data'
 
 export const metadata: Metadata = generateMetadata({
-  title: 'Website Visitor Identification - Identify Anonymous B2B Traffic',
-  description: 'Identify up to 70% of anonymous website visitors at the company and individual level. Get decision-maker contacts, pages viewed, and intent scores in real-time.',
+  title: 'Website Visitor Identification - Deterministic B2B Traffic Match',
+  description: 'Match 40\u201360% of anonymous website visitors deterministically against an offline-rooted identity graph of 280M+ verified consumer profiles, refreshed every 30 days against NCOA. Decision-maker contacts, pages viewed, and intent scores in real-time.',
   keywords: [
     'website visitor identification',
     'anonymous visitor tracking',
@@ -24,7 +24,7 @@ const productSchema = {
   "@type": "Product",
   "@id": "https://www.meetcursive.com/visitor-identification#product",
   "name": "Cursive Visitor Identification",
-  "description": "Identify up to 70% of anonymous website visitors in real-time. Turn unknown traffic into qualified leads with company and individual-level data.",
+  "description": "Match 40\u201360% of anonymous website visitors deterministically against an offline-rooted identity graph of 280M+ verified consumer profiles refreshed every 30 days against NCOA. Turn unknown traffic into qualified leads with company and individual-level data.",
   "brand": { "@type": "Brand", "name": "Cursive" },
   "offers": {
     "@type": "Offer",
@@ -36,7 +36,7 @@ const productSchema = {
 }
 
 const visitorIdFAQs = [
-  { question: 'How accurate is visitor identification?', answer: 'Cursive identifies up to 70% of B2B website traffic—significantly higher than the industry average of 20-30%. We use multiple data sources and real-time enrichment to maximize accuracy.' },
+  { question: 'How accurate is visitor identification?', answer: 'Cursive\u2019s pixel achieves a 40\u201360% match rate on US B2B traffic\u2014deterministic, not modeled. By way of comparison, cookie-sync providers average 2\u20135% and IP-only databases sit around 10\u201315%. Pixel-level accuracy on a matched record is 60\u201380%, driven by geo-framing methodology and an offline-rooted identity graph of 280M+ verified consumer profiles refreshed every 30 days against NCOA.' },
   { question: 'How quickly can you identify visitors?', answer: 'Visitors are identified in real-time within seconds of landing on your site. Unlike batch processing tools, Cursive enriches data instantly so you can act on hot leads immediately.' },
   { question: 'Is visitor identification GDPR compliant?', answer: 'Yes. Cursive is built with privacy compliance at its core. We honor all opt-outs, use hashed identifiers, and comply with GDPR, CCPA, and regional privacy regulations.' },
   { question: 'What data do you provide for each visitor?', answer: 'For B2B traffic, we provide company name, industry, size, location, revenue, technologies used, and contact information. For individuals, we include job title, seniority, department, and verified email addresses.' },

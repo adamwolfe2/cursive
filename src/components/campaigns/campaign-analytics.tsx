@@ -227,7 +227,7 @@ export function CampaignAnalytics({ campaignId }: CampaignAnalyticsProps) {
       />
 
       {/* Top-level KPIs */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
         <MetricCard
           title="Reply Rate"
           value={`${replyRate}%`}

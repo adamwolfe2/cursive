@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import { useAdminAuth } from '@/hooks/use-admin-auth'
 import {
   ArrowLeft,
   Package,
@@ -73,32 +74,8 @@ export default function AdminSubscriptionDetailPage() {
   const [deliveries, setDeliveries] = useState<Delivery[]>([])
   const [loading, setLoading] = useState(true)
   const [updating, setUpdating] = useState(false)
-  const [isAdmin, setIsAdmin] = useState(false)
-  const [authChecked, setAuthChecked] = useState(false)
+  const { isAdmin, authChecked } = useAdminAuth()
   const supabase = createClient()
-
-  // Admin role check - prevent non-admins from accessing
-  useEffect(() => {
-    const checkAdmin = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
-        window.location.href = '/login'
-        return
-      }
-      const { data: userData } = await supabase
-        .from('users')
-        .select('role')
-        .eq('auth_user_id', user.id)
-        .maybeSingle() as { data: { role: string } | null }
-      if (!userData || (userData.role !== 'admin' && userData.role !== 'owner')) {
-        window.location.href = '/dashboard'
-        return
-      }
-      setIsAdmin(true)
-      setAuthChecked(true)
-    }
-    checkAdmin()
-  }, [supabase])
 
   const fetchSubscriptionDetails = useCallback(async () => {
     try {

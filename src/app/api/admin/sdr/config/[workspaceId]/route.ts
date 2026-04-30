@@ -2,7 +2,7 @@ export const runtime = 'nodejs'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { requireAdminRole as requireAdmin } from '@/lib/auth/admin'
+import { requirePlatformAdmin } from '@/lib/auth/admin'
 import { SdrConfigRepository } from '@/lib/repositories/sdr-config.repository'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
@@ -36,7 +36,7 @@ export async function GET(
   { params }: { params: Promise<{ workspaceId: string }> }
 ) {
   try {
-    await requireAdmin()
+    await requirePlatformAdmin()
     const { workspaceId } = await params
     const repo = new SdrConfigRepository()
     const config = await repo.findByWorkspace(workspaceId)
@@ -56,7 +56,7 @@ export async function PUT(
   { params }: { params: Promise<{ workspaceId: string }> }
 ) {
   try {
-    await requireAdmin()
+    await requirePlatformAdmin()
     const { workspaceId } = await params
     const body = await req.json()
     const parsed = configSchema.safeParse(body)

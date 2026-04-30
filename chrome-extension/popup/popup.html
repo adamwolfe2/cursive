@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cursive AI</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div id="app">
+
+    <!-- ================================================================== -->
+    <!-- SCREEN 1: Welcome (no account) -->
+    <!-- ================================================================== -->
+    <div id="welcome-screen" class="screen active">
+      <div class="brand-header">
+        <div class="brand-logo">
+          <img src="../icons/cursive-logo.png" alt="Cursive" class="logo-img" />
+        </div>
+      </div>
+
+      <div class="welcome-content">
+        <h2 class="welcome-title">Find verified emails and enrich leads in real-time</h2>
+        <p class="welcome-desc">Look up anyone on LinkedIn, verify emails in Gmail, and save contacts to your CRM — powered by 280M+ identity profiles.</p>
+
+        <div class="feature-list">
+          <div class="feature-item">
+            <div class="feature-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            <span>LinkedIn profile enrichment</span>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </div>
+            <span>Email verification in Gmail</span>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </div>
+            <span>Company intelligence on any website</span>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            </div>
+            <span>Save leads to your workspace</span>
+          </div>
+        </div>
+
+        <a href="https://leads.meetcursive.com/login" target="_blank" class="btn-primary">Create Free Account</a>
+        <button id="show-connect-btn" class="btn-secondary-outline">I already have an account</button>
+      </div>
+
+      <div class="welcome-footer">
+        <a href="https://www.meetcursive.com" target="_blank">meetcursive.com</a>
+        <span class="separator">·</span>
+        <a href="https://www.meetcursive.com/pricing" target="_blank">Pricing</a>
+        <span class="separator">·</span>
+        <a href="https://www.meetcursive.com/privacy" target="_blank">Privacy</a>
+      </div>
+    </div>
+
+    <!-- ================================================================== -->
+    <!-- SCREEN 2: Connect API Key -->
+    <!-- ================================================================== -->
+    <div id="connect-screen" class="screen">
+      <div class="screen-header">
+        <button id="back-to-welcome" class="back-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <span class="screen-title">Connect Workspace</span>
+      </div>
+
+      <div class="connect-content">
+        <p class="connect-desc">Paste your API key from your Cursive dashboard to connect this extension to your workspace.</p>
+
+        <div class="input-group">
+          <label for="api-key-input">API Key</label>
+          <input type="text" id="api-key-input" placeholder="lm_..." spellcheck="false" autocomplete="off" />
+        </div>
+
+        <button id="connect-btn" class="btn-primary">Connect Workspace</button>
+        <div id="auth-error" class="error-msg hidden"></div>
+
+        <div class="help-box">
+          <p class="help-title">Where to find your API key:</p>
+          <ol class="help-steps">
+            <li>Log in at <a href="https://leads.meetcursive.com" target="_blank">leads.meetcursive.com</a></li>
+            <li>Go to <strong>Settings &gt; Integrations</strong></li>
+            <li>Click <strong>Generate API Key</strong></li>
+            <li>Copy and paste it here</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================================================================== -->
+    <!-- SCREEN 3: Main (connected) -->
+    <!-- ================================================================== -->
+    <div id="main-screen" class="screen">
+      <!-- Top bar -->
+      <div class="topbar">
+        <div class="topbar-left">
+          <img src="../icons/cursive-logo.png" alt="Cursive" class="topbar-logo" />
+        </div>
+        <div class="topbar-right">
+          <div class="credit-badge" id="credit-badge">
+            <span id="credit-count">--</span> credits
+          </div>
+        </div>
+      </div>
+
+      <!-- Search -->
+      <div class="search-card">
+        <div class="search-inputs">
+          <input type="text" id="search-name" placeholder="Full name" spellcheck="false" />
+          <input type="text" id="search-company" placeholder="Company or domain (optional)" spellcheck="false" />
+        </div>
+        <button id="search-btn" class="btn-primary btn-search">
+          <span id="search-text">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            Find Contact
+          </span>
+          <span id="search-loading" class="hidden">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="spinner"><circle cx="12" cy="12" r="10" opacity="0.25"/><path d="M12 2a10 10 0 0 1 10 10"/></svg>
+            Searching...
+          </span>
+        </button>
+      </div>
+
+      <!-- Results -->
+      <div id="results" class="hidden">
+        <div class="result-card">
+          <div class="result-header">
+            <div class="result-avatar" id="result-avatar">--</div>
+            <div class="result-identity">
+              <div class="result-name" id="result-name"></div>
+              <div class="result-title" id="result-title"></div>
+            </div>
+          </div>
+
+          <div class="result-fields">
+            <div class="result-field" id="result-email-row">
+              <div class="field-icon">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              </div>
+              <span class="field-value" id="result-email"></span>
+              <button class="copy-btn" id="copy-email" title="Copy email">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              </button>
+            </div>
+            <div class="result-field" id="result-phone-row">
+              <div class="field-icon">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              </div>
+              <span class="field-value" id="result-phone"></span>
+              <button class="copy-btn" id="copy-phone" title="Copy phone">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              </button>
+            </div>
+            <div class="result-field" id="result-company-row">
+              <div class="field-icon">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              </div>
+              <span class="field-value" id="result-company"></span>
+            </div>
+          </div>
+
+          <button id="save-btn" class="btn-save">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Save to Cursive
+          </button>
+        </div>
+      </div>
+
+      <!-- No credits warning -->
+      <div id="no-credits" class="hidden">
+        <div class="empty-state">
+          <div class="empty-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          </div>
+          <p class="empty-title">No credits remaining</p>
+          <p class="empty-desc">Purchase more credits to continue enriching leads.</p>
+          <a href="https://leads.meetcursive.com/marketplace" target="_blank" class="btn-primary btn-sm">Buy Credits</a>
+        </div>
+      </div>
+
+      <div id="search-error" class="error-msg hidden"></div>
+
+      <!-- Footer -->
+      <div class="main-footer">
+        <a href="https://leads.meetcursive.com/dashboard" target="_blank">Dashboard</a>
+        <span class="separator">·</span>
+        <a href="https://leads.meetcursive.com/marketplace" target="_blank">Buy Credits</a>
+        <span class="separator">·</span>
+        <a href="#" id="settings-link">Settings</a>
+        <span class="separator">·</span>
+        <a href="#" id="disconnect-btn">Disconnect</a>
+      </div>
+    </div>
+
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

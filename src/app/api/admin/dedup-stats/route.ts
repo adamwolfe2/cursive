@@ -6,6 +6,9 @@ export const runtime = 'nodejs'
  *
  * Returns last 30 days of dedup_log data aggregated by workspace, reason, source,
  * and daily trend. Admin-only endpoint.
+ *
+ * Returns graceful empty state if the dedup_log table does not yet exist in this
+ * environment (PostgreSQL error 42P01 — relation does not exist).
  */
 
 import { NextResponse } from 'next/server'
@@ -36,6 +39,29 @@ interface DailyRow {
   total: number
 }
 
+// PostgreSQL error code for "relation does not exist"
+const PG_UNDEFINED_TABLE = '42P01'
+
+const EMPTY_DATA = {
+  success: true,
+  data: {
+    total_rejections: 0,
+    period_days: 30,
+    by_workspace: [] as WorkspaceRejectionRow[],
+    by_reason: [] as ReasonRow[],
+    by_source: [] as SourceRow[],
+    daily_trend: [] as DailyRow[],
+  },
+}
+
+function isTableMissingError(err: unknown): boolean {
+  return (
+    typeof err === 'object' &&
+    err !== null &&
+    (err as { code?: string }).code === PG_UNDEFINED_TABLE
+  )
+}
+
 // ---- GET /api/admin/dedup-stats ----
 
 export async function GET() {
@@ -52,6 +78,10 @@ export async function GET() {
       .gte('created_at', since)
 
     if (workspaceErr) {
+      if (isTableMissingError(workspaceErr)) {
+        safeError('[AdminDedupStats] dedup_log table missing — returning empty state')
+        return NextResponse.json(EMPTY_DATA)
+      }
       safeError('[AdminDedupStats] workspace query error:', workspaceErr)
       throw workspaceErr
     }
@@ -80,6 +110,9 @@ export async function GET() {
       .gte('created_at', since)
 
     if (reasonErr) {
+      if (isTableMissingError(reasonErr)) {
+        return NextResponse.json(EMPTY_DATA)
+      }
       safeError('[AdminDedupStats] reason query error:', reasonErr)
       throw reasonErr
     }
@@ -99,6 +132,9 @@ export async function GET() {
       .gte('created_at', since)
 
     if (sourceErr) {
+      if (isTableMissingError(sourceErr)) {
+        return NextResponse.json(EMPTY_DATA)
+      }
       safeError('[AdminDedupStats] source query error:', sourceErr)
       throw sourceErr
     }
@@ -120,6 +156,9 @@ export async function GET() {
       .order('created_at', { ascending: true })
 
     if (dayErr) {
+      if (isTableMissingError(dayErr)) {
+        return NextResponse.json(EMPTY_DATA)
+      }
       safeError('[AdminDedupStats] daily trend query error:', dayErr)
       throw dayErr
     }

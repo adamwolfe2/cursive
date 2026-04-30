@@ -1,7 +1,7 @@
 export const runtime = 'nodejs'
 
 import { NextRequest, NextResponse } from 'next/server'
-import { requireAdminRole as requireAdmin } from '@/lib/auth/admin'
+import { requirePlatformAdmin } from '@/lib/auth/admin'
 import { SdrInboxRepository } from '@/lib/repositories/sdr-inbox.repository'
 import { SdrConfigRepository } from '@/lib/repositories/sdr-config.repository'
 import { sendEmail } from '@/lib/services/outreach/email-sender.service'
@@ -14,7 +14,7 @@ export async function POST(
   { params }: { params: Promise<{ replyId: string }> }
 ) {
   try {
-    const admin = await requireAdmin()
+    const admin = await requirePlatformAdmin()
     const { replyId } = await params
 
     const inboxRepo = new SdrInboxRepository()

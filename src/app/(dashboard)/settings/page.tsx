@@ -13,14 +13,14 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { FormField, FormActions } from '@/components/ui/form-field'
-import { Skeleton } from '@/components/ui/loading-states'
 import { useToast } from '@/lib/hooks/use-toast'
-import { PageContainer, PageHeader } from '@/components/layout/page-container'
+import { useDashboard } from '@/lib/contexts/dashboard-context'
 
 export default function ProfileSettingsPage() {
   const queryClient = useQueryClient()
   const router = useRouter()
   const toast = useToast()
+  const { userProfile: contextProfile } = useDashboard()
   const [successMessage, setSuccessMessage] = useState('')
   const [errorMessage, _setErrorMessage] = useState('')
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
@@ -30,17 +30,36 @@ export default function ProfileSettingsPage() {
   const messageTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const focusTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
-  // Fetch current user
-  const { data: userData, isLoading, isError, error } = useQuery({
+  // Fetch supplemental user fields not available in DashboardContext
+  // (referral_code, created_at). Core fields come from context for instant render.
+  const { data: userData } = useQuery({
     queryKey: ['user', 'me'],
     queryFn: async () => {
       const response = await fetch('/api/users/me')
-      if (!response.ok) throw new Error('Failed to fetch user data')
+      if (!response.ok) {
+        const json = await response.json().catch(() => ({}))
+        throw Object.assign(new Error(json.error || 'Failed to fetch user data'), { status: response.status })
+      }
       return response.json()
     },
+    // Don't block rendering — context has the critical fields already
+    staleTime: 5 * 60_000,
   })
 
-  const user = userData?.data
+  // Merge: context data is authoritative for plan/role/credits; API fills in extras
+  const user = {
+    id: contextProfile.id,
+    email: contextProfile.email,
+    full_name: contextProfile.fullName,
+    role: contextProfile.role,
+    plan: contextProfile.plan,
+    daily_credit_limit: contextProfile.dailyCreditLimit,
+    daily_credits_used: contextProfile.dailyCreditsUsed,
+    credits_remaining: Math.max(0, contextProfile.dailyCreditLimit - contextProfile.dailyCreditsUsed),
+    // Supplemental fields from API (may be undefined until loaded)
+    referral_code: userData?.data?.referral_code ?? null,
+    created_at: userData?.data?.created_at ?? null,
+  }
 
   // Profile form
   const {
@@ -65,15 +84,13 @@ export default function ProfileSettingsPage() {
     }
   }, [])
 
-  // Reset form when user data loads
+  // Populate form from context on mount (contextProfile is stable from SSR)
   useEffect(() => {
-    if (user) {
-      reset({
-        full_name: user.full_name || '',
-        email: user.email || '',
-      })
-    }
-  }, [user, reset])
+    reset({
+      full_name: contextProfile.fullName || '',
+      email: contextProfile.email || '',
+    })
+  }, [contextProfile.id, reset]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Update profile mutation
   const updateProfileMutation = useMutation({
@@ -103,6 +120,8 @@ export default function ProfileSettingsPage() {
     mutationFn: async () => {
       const response = await fetch('/api/users/me', {
         method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ confirm_email: user.email }),
       })
       if (!response.ok) {
         const error = await response.json()
@@ -135,41 +154,8 @@ export default function ProfileSettingsPage() {
     }, 3000)
   }
 
-  if (isLoading) {
-    return (
-      <PageContainer>
-        <div className="space-y-6">
-          <Skeleton className="h-10 w-48" />
-          <GradientCard variant="subtle">
-            <Skeleton className="h-32" />
-          </GradientCard>
-          <GradientCard variant="subtle">
-            <Skeleton className="h-32" />
-          </GradientCard>
-        </div>
-      </PageContainer>
-    )
-  }
-
-  if (isError) {
-    return (
-      <PageContainer>
-        <Alert variant="destructive">
-          <AlertDescription>
-            {error?.message || 'Failed to load user settings. Please refresh the page.'}
-          </AlertDescription>
-        </Alert>
-        <Button onClick={() => router.refresh()} className="mt-4">Retry</Button>
-      </PageContainer>
-    )
-  }
-
   return (
-    <PageContainer>
-      <PageHeader
-        title="Settings"
-        description="Manage your account and workspace preferences"
-      />
+    <div>
 
       {/* Success Message */}
       {successMessage && (
@@ -423,6 +409,6 @@ export default function ProfileSettingsPage() {
           )}
         </div>
       </div>
-    </PageContainer>
+    </div>
   )
 }

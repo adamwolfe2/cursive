@@ -320,6 +320,129 @@ export class HubSpotService {
 
     return this.apiRequest(`/crm/v3/objects/contacts?${params}`)
   }
+
+  /**
+   * Provision Cursive custom properties on the HubSpot Contact object.
+   *
+   * Idempotent: checks for existing properties before creating. Safe to
+   * re-run on every OAuth connect. Uses `cursive_` prefix to avoid
+   * collisions with HubSpot native or customer-defined properties.
+   *
+   * Properties created:
+   *   - cursive_intent_category: free-text behavioral intent label
+   *   - cursive_intent_score: numeric 0-100 freshness-weighted score
+   *   - cursive_sha256_email: SHA-256 hashed identity graph key
+   *   - cursive_last_intent_refresh: datetime of last AL intent update
+   *   - cursive_behavioral_signals: semicolon-delimited behavior list
+   *   - cursive_workspace_id: source Cursive workspace (audit trail)
+   *
+   * Returns which properties were newly created vs already present.
+   */
+  async provisionIntentProperties(): Promise<{
+    created: string[]
+    existed: string[]
+    failed: Array<{ name: string; error: string }>
+  }> {
+    const GROUP_NAME = 'cursive_intent_loop'
+    const GROUP_LABEL = 'Cursive Intent Loop'
+
+    const properties: Array<{
+      name: string
+      label: string
+      type: 'string' | 'number' | 'datetime'
+      fieldType: 'text' | 'number' | 'date'
+      description: string
+    }> = [
+      {
+        name: 'cursive_intent_category',
+        label: 'Intent Category',
+        type: 'string',
+        fieldType: 'text',
+        description: 'Behavioral intent category from Cursive AudienceLab pixel',
+      },
+      {
+        name: 'cursive_intent_score',
+        label: 'Intent Score',
+        type: 'number',
+        fieldType: 'number',
+        description: 'Numeric 0-100 intent freshness score from Cursive',
+      },
+      {
+        name: 'cursive_sha256_email',
+        label: 'SHA-256 Identity Hash',
+        type: 'string',
+        fieldType: 'text',
+        description: 'SHA-256 hashed email from AudienceLab identity graph',
+      },
+      {
+        name: 'cursive_last_intent_refresh',
+        label: 'Last Intent Refresh',
+        type: 'datetime',
+        fieldType: 'date',
+        description: 'Timestamp of the most recent intent signal refresh (every 6 hours)',
+      },
+      {
+        name: 'cursive_behavioral_signals',
+        label: 'Behavioral Signals',
+        type: 'string',
+        fieldType: 'text',
+        description: 'Semicolon-delimited list of recent behavioral signals',
+      },
+      {
+        name: 'cursive_workspace_id',
+        label: 'Cursive Workspace ID',
+        type: 'string',
+        fieldType: 'text',
+        description: 'Source Cursive workspace for audit trail',
+      },
+    ]
+
+    const result = {
+      created: [] as string[],
+      existed: [] as string[],
+      failed: [] as Array<{ name: string; error: string }>,
+    }
+
+    // Create the property group first (idempotent — HubSpot returns 409 if exists)
+    try {
+      await this.apiRequest('/crm/v3/properties/contacts/groups', 'POST', {
+        name: GROUP_NAME,
+        label: GROUP_LABEL,
+        displayOrder: -1,
+      })
+    } catch (err) {
+      // Silently ignore — likely already exists (409)
+      const msg = err instanceof Error ? err.message : String(err)
+      if (!msg.includes('already exists') && !msg.includes('409')) {
+        safeError('[HubSpotService] Property group creation:', msg)
+      }
+    }
+
+    // Create each property — HubSpot returns 409 if it already exists
+    for (const prop of properties) {
+      try {
+        await this.apiRequest('/crm/v3/properties/contacts', 'POST', {
+          name: prop.name,
+          label: prop.label,
+          type: prop.type,
+          fieldType: prop.fieldType,
+          groupName: GROUP_NAME,
+          description: prop.description,
+        })
+        result.created.push(prop.name)
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err)
+        if (msg.includes('already exists') || msg.includes('409') || msg.toLowerCase().includes('duplicate')) {
+          result.existed.push(prop.name)
+        } else {
+          result.failed.push({ name: prop.name, error: msg })
+          safeError(`[HubSpotService] Failed to create property ${prop.name}:`, msg)
+        }
+      }
+    }
+
+    return result
+  }
 }
 
 export async function createHubSpotService(workspaceId: string): Promise<HubSpotService | null> {

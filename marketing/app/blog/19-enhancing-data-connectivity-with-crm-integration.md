@@ -222,7 +222,7 @@ Cursive's **200+ native integrations** eliminate the data silos that slow your t
 
 Ready to see how unified data connectivity accelerates growth?
 
-[**Book a demo**](https://cal.com/cursive/30min) to discover how Cursive transforms CRM integration from a technical headache into your competitive advantage.
+[**Book a demo**](https://cal.com/cursiveteam/30min) to discover how Cursive transforms CRM integration from a technical headache into your competitive advantage.
 
 ---
 

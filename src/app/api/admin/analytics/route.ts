@@ -136,7 +136,7 @@ export async function GET(request: NextRequest) {
       industryMap[industry] = (industryMap[industry] || 0) + 1
 
       // By region
-      const location = lead.company_location as any
+      const location = lead.company_location as unknown as { state?: string } | null
       const state = location?.state || 'Unknown'
       regionMap[state] = (regionMap[state] || 0) + 1
     })

@@ -13,6 +13,7 @@ import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { runNaturalLanguageQuery } from '@/lib/services/intelligence/nl-query.service'
 import { trackCost } from '@/lib/services/intelligence/cost-tracker'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { withRateLimit, getRequestIdentifier } from '@/lib/middleware/rate-limiter'
 
 const schema = z.object({
   query: z.string().min(3).max(500),
@@ -22,6 +23,9 @@ export async function POST(request: NextRequest) {
   try {
     const user = await fastAuth(request)
     if (!user) return unauthorized()
+
+    const limited = await withRateLimit(request, 'ai-qualify', getRequestIdentifier(request, user.userId))
+    if (limited) return limited
 
     const body = await request.json()
     const { query } = schema.parse(body)

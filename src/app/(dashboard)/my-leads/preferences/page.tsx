@@ -136,8 +136,8 @@ export default async function TargetingPreferencesPage() {
       <div className="flex items-start justify-between">
         <div>
           <div className="flex items-center gap-2 text-sm text-zinc-500 mb-2">
-            <Link href="/my-leads" className="hover:text-zinc-700">
-              My Leads
+            <Link href="/leads?tab=assigned" className="hover:text-zinc-700">
+              Leads
             </Link>
             <svg
               className="h-4 w-4"

@@ -36,18 +36,18 @@ export default function VisitorIdentificationPage() {
               transition={{ duration: 0.5 }}
               className="text-center max-w-5xl mx-auto"
             >
-              <span className="text-sm text-primary mb-4 block font-medium tracking-wide">VISITOR IDENTIFICATION</span>
+              <span className="text-sm text-primary mb-4 block font-medium tracking-wide">IDENTITY &amp; INTENT INFRASTRUCTURE</span>
               <h1 className="text-5xl lg:text-7xl font-light text-gray-900 mb-6">
                 Stop Losing 98% of Your Website Visitors
               </h1>
               <p className="text-xl text-gray-600 mb-6 max-w-3xl mx-auto leading-relaxed">
-                Most B2B companies never know who visits their site. Cursive identifies up to 70% of your anonymous traffic—then helps you actually reach them through automated outreach, filtered audience building, and access to 420M+ verified contacts.
+                Most B2B companies never know who visits their site. Cursive&apos;s pixel matches 40&ndash;60% of your anonymous traffic deterministically&mdash;against 280M+ verified consumer profiles refreshed every 30 days&mdash;then activates them through automated outreach and a 15M-domain organic intent network.
               </p>
               <p className="text-lg text-gray-500 mb-8 max-w-2xl mx-auto">
                 See who visited your pricing page, automatically enrich their profiles, trigger personalized outreach, and build lookalike audiences from our database of hundreds of millions of verified B2B and B2C leads.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <Button size="lg" href="https://cal.com/gotdarrenhill/30min">
+                <Button size="lg" href="https://cal.com/cursiveteam/30min">
                   See Who's Visiting Your Site
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
@@ -62,7 +62,7 @@ export default function VisitorIdentificationPage() {
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="h-5 w-5 text-green-600" />
-                  <span>70% identification rate</span>
+                  <span>40&ndash;60% pixel match rate</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="h-5 w-5 text-green-600" />
@@ -155,8 +155,8 @@ export default function VisitorIdentificationPage() {
                 },
                 {
                   icon: Database,
-                  title: "70% Identification Rate",
-                  description: "Industry-leading accuracy. Most tools identify 20-30% of traffic. Cursive reveals up to 70% of your B2B visitors."
+                  title: "40\u201360% Deterministic Match Rate",
+                  description: "Pixel match driven by geo-framing and offline-rooted identity\u2014not modeled or probabilistic. For context: cookie sync averages 2\u20135%, IP-only databases 10\u201315%."
                 },
                 {
                   icon: Users,
@@ -374,7 +374,7 @@ export default function VisitorIdentificationPage() {
               {[
                 {
                   question: "How accurate is visitor identification?",
-                  answer: "Cursive identifies up to 70% of B2B website traffic—significantly higher than the industry average of 20-30%. We use multiple data sources and real-time enrichment to maximize accuracy."
+                  answer: "Cursive's pixel achieves a 40\u201360% match rate on US B2B traffic\u2014deterministic, not modeled. By way of comparison, cookie-sync providers average 2\u20135% and IP-only databases sit around 10\u201315%. Pixel-level accuracy on a matched record is 60\u201380%, driven by geo-framing methodology and an offline-rooted identity graph of 280M+ verified consumer profiles refreshed every 30 days against NCOA."
                 },
                 {
                   question: "How quickly can you identify visitors?",
@@ -495,7 +495,7 @@ export default function VisitorIdentificationPage() {
                   { title: "ZoomInfo vs Cursive", href: "/blog/zoominfo-vs-cursive-comparison", description: "Data enrichment and identification compared" },
                   { title: "Apollo vs Cursive", href: "/blog/apollo-vs-cursive-comparison", description: "Prospecting and outbound tools compared" },
                   { title: "6sense vs Cursive", href: "/blog/6sense-vs-cursive-comparison", description: "Intent data platforms side-by-side" },
-                  { title: "Cursive vs Warmly", href: "/blog/cursive-vs-warmly", description: "70% vs 40% ID rate, $1k vs $3.5k/mo compared" },
+                  { title: "Cursive vs Warmly", href: "/blog/cursive-vs-warmly", description: "40\u201360% deterministic match vs 8% modeled, $1k vs $3.5k/mo" },
                   { title: "Cursive vs 6sense", href: "/blog/cursive-vs-6sense", description: "$1k/mo all-in vs $50k-$200k/yr enterprise" },
                   { title: "How to Identify Anonymous Visitors", href: "/blog/how-to-identify-anonymous-website-visitors", description: "Complete guide with tool recommendations" },
                 ].map((comparison, i) => (
@@ -542,7 +542,7 @@ export default function VisitorIdentificationPage() {
               <div className="bg-white rounded-2xl p-8 border border-gray-200">
                 <div className="text-sm font-medium text-primary mb-2">OPTION 2</div>
                 <h3 className="text-2xl font-light text-gray-900 mb-3">Self-Serve Marketplace</h3>
-                <p className="text-gray-600 mb-4">Browse our database of 420M+ verified B2B and B2C leads. Filter by industry, title, intent, and more. Buy with credits.</p>
+                <p className="text-gray-600 mb-4">Browse our database of 280M+ verified consumer and 140M+ business profiles &mdash; offline-rooted, refreshed every 30 days against NCOA. Filter by industry, title, intent, and more. Buy with credits.</p>
                 <div className="text-2xl font-light text-primary mb-6">From $0.60/lead</div>
                 <Button className="w-full" href="/marketplace">
                   Browse Marketplace
@@ -574,7 +574,7 @@ export default function VisitorIdentificationPage() {
 
               <Button
                 size="lg"
-                href="https://cal.com/gotdarrenhill/30min"
+                href="https://cal.com/cursiveteam/30min"
                 target="_blank"
                 className="bg-primary text-white hover:bg-primary-dark text-lg px-10 py-5 mb-4"
               >
@@ -628,18 +628,20 @@ export default function VisitorIdentificationPage() {
         <div className="mb-12 pb-6 border-b border-gray-200">
           <h1 className="text-2xl text-gray-900 font-bold mb-4">VISITOR IDENTIFICATION</h1>
           <p className="text-gray-700 leading-relaxed">
-            Identify up to 70% of anonymous website visitors in real-time. Turn unknown traffic into qualified leads with company and individual-level data, page-level tracking, and instant CRM integration.
+            Identify 40&ndash;60% of anonymous website visitors deterministically against an offline-rooted identity graph of 280M+ verified consumer profiles refreshed every 30 days against NCOA. Turn unknown traffic into qualified leads with company and individual-level data, page-level tracking, and instant CRM integration.
           </p>
         </div>
 
         {/* Key Stats */}
         <MachineSection title="Key Metrics">
           <MachineList items={[
-            "70% - Average visitor identification rate for B2B traffic",
-            "95%+ - Data accuracy on matched records",
-            "Real-time - Instant identification, not batch processing",
-            "280M - Consumer profiles in database",
-            "140M+ - Business profiles in database"
+            "40\u201360% - Pixel match rate on US B2B traffic (deterministic, not modeled)",
+            "60\u201380% - Pixel-level accuracy on a matched record",
+            "2\u20135% - Industry cookie-sync match rate (for context)",
+            "10\u201315% - Industry IP-database match rate (for context)",
+            "280M+ - Verified consumer profiles, refreshed every 30 days against NCOA",
+            "140M+ - Business profiles in database",
+            "15M+ - Organic-network domains feeding the intent layer"
           ]} />
         </MachineSection>
 
@@ -750,7 +752,7 @@ export default function VisitorIdentificationPage() {
           <MachineList items={[
             {
               label: "Book a Demo",
-              href: "https://cal.com/gotdarrenhill/30min",
+              href: "https://cal.com/cursiveteam/30min",
               description: "See visitor identification in action with a personalized walkthrough"
             },
             {

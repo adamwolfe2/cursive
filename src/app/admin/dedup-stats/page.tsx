@@ -83,6 +83,7 @@ export default function DedupStatsPage() {
       return json.data as DedupStatsData
     },
     staleTime: 5 * 60 * 1000,
+    retry: 1,
   })
 
   const peakDay = useMemo(

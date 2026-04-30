@@ -268,7 +268,7 @@ export default function FAQPage() {
         <MachineList items={[
           {
             label: "Book a Call",
-            href: "https://cal.com/gotdarrenhill/30min",
+            href: "https://cal.com/cursiveteam/30min",
             description: "Schedule 15-minute call to ask questions"
           },
           {

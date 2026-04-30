@@ -580,7 +580,7 @@ export default function WhatIsVisitorDeanonymization() {
                   See Visitor Deanonymization in Action
                 </h2>
                 <p className="text-gray-700 mb-6 max-w-2xl mx-auto">
-                  Cursive identifies up to 20% of your anonymous website visitors at the individual level and up to 70% at the company level. Get a free audit to see how many of your visitors we can identify and what actionable data we can provide.
+                  Cursive resolves anonymous visitors against a deterministic identity graph of 280M+ verified consumer and 140M+ business profiles, with a 40&ndash;60% pixel match rate and 60&ndash;80% pixel-level accuracy &mdash; vs 2&ndash;5% for cookie-based tools and 10&ndash;15% for IP databases. Get a free audit to see exactly how many of your visitors we can identify.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Link
@@ -691,7 +691,7 @@ export default function WhatIsVisitorDeanonymization() {
               { label: "B2B Intent Data Guide", href: "/what-is-b2b-intent-data", description: "Intent signals from deanonymized visitor behavior" },
               { label: "Lead Enrichment Guide", href: "/what-is-lead-enrichment", description: "Enriching deanonymized visitor profiles" },
               { label: "Account-Based Marketing Guide", href: "/what-is-account-based-marketing", description: "Using deanonymized data for ABM targeting" },
-              { label: "Cursive Visitor Identification", href: "/visitor-identification", description: "Up to 70% identification rate for B2B traffic" },
+              { label: "Cursive Visitor Identification", href: "/visitor-identification", description: "40–60% deterministic pixel match rate for B2B traffic" },
               { label: "Cursive Platform", href: "/platform", description: "Integrated visitor ID, enrichment, and outreach" },
               { label: "Pricing", href: "/pricing", description: "Cursive pricing and plans" }
             ]} />
@@ -699,7 +699,7 @@ export default function WhatIsVisitorDeanonymization() {
 
           <MachineSection title="Get Started">
             <p className="text-gray-700 mb-3">
-              Cursive combines multiple deanonymization methods to achieve up to 70% identification rates for B2B website traffic, with integrated enrichment and multi-channel outreach activation.
+              Cursive resolves anonymous B2B traffic against a deterministic identity graph of 280M+ verified consumer and 140M+ business profiles, delivering a 40–60% pixel match rate (vs 2–5% for cookies, 10–15% for IP databases) with 60–80% pixel-level accuracy, integrated enrichment, and multi-channel outreach activation.
             </p>
             <MachineList items={[
               { label: "Get Your Free Audit", href: "/free-audit", description: "See how many visitors can be identified on your site" },

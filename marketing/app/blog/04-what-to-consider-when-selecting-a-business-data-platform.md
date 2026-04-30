@@ -100,7 +100,7 @@ When you can see which accounts are researching your product, understand their f
 
 [Cursive's B2B data platform](/audience-builder) combines visitor identification, behavioral tracking, and intent signals with 140M+ business profiles—giving you the complete picture you need to convert anonymous traffic into qualified pipeline.
 
-Ready to see how it works? [Book a demo](https://cal.com/cursive/30min) and we'll show you exactly which companies are visiting your site right now.
+Ready to see how it works? [Book a demo](https://cal.com/cursiveteam/30min) and we'll show you exactly which companies are visiting your site right now.
 
 ## Frequently Asked Questions
 

@@ -357,34 +357,49 @@ export function LeadDetailClient({ initialLead }: LeadDetailClientProps) {
 
             {/* Sidebar - Right 1/3 */}
             <div className="space-y-6">
-              {/* Lead Scores — only show if at least one score exists */}
-              {(lead.intent_score_calculated !== null || lead.freshness_score !== null) && (
-                <div className="bg-white rounded-lg border border-gray-200 p-6">
-                  <h3 className="text-sm font-medium text-gray-900 mb-4">Lead Scores</h3>
-                  <div className="space-y-4">
-                    {lead.intent_score_calculated !== null && (
+              {/* Lead Scores — show the panel always so users see the lead has
+                  a "score profile" even before enrichment. Each row renders
+                  either the actual score or a "Not yet scored" hint, never a
+                  bare "%" with no number. */}
+              {(() => {
+                const hasIntent = typeof lead.intent_score_calculated === 'number'
+                const hasFreshness = typeof lead.freshness_score === 'number'
+                return (
+                  <div className="bg-white rounded-lg border border-gray-200 p-6">
+                    <h3 className="text-sm font-medium text-gray-900 mb-4">Lead Scores</h3>
+                    <div className="space-y-4">
                       <div>
                         <div className="flex justify-between items-center mb-2">
                           <span className="text-sm text-gray-600">Intent Score</span>
-                          <span className="text-sm font-medium">
-                            {lead.intent_score_calculated}%
+                          <span className="text-sm font-medium text-gray-900">
+                            {hasIntent ? `${lead.intent_score_calculated}%` : '—'}
                           </span>
                         </div>
-                        <ScoreProgress score={lead.intent_score_calculated ?? null} />
+                        <ScoreProgress score={hasIntent ? (lead.intent_score_calculated ?? null) : null} />
+                        {!hasIntent && (
+                          <p className="mt-1.5 text-[11px] text-gray-500">
+                            Not yet scored — click <span className="font-medium">Enrich Lead</span> to compute
+                          </p>
+                        )}
                       </div>
-                    )}
-                    {lead.freshness_score !== null && (
                       <div>
                         <div className="flex justify-between items-center mb-2">
                           <span className="text-sm text-gray-600">Freshness Score</span>
-                          <span className="text-sm font-medium">{lead.freshness_score}%</span>
+                          <span className="text-sm font-medium text-gray-900">
+                            {hasFreshness ? `${lead.freshness_score}%` : '—'}
+                          </span>
                         </div>
-                        <ScoreProgress score={lead.freshness_score ?? null} />
+                        <ScoreProgress score={hasFreshness ? (lead.freshness_score ?? null) : null} />
+                        {!hasFreshness && (
+                          <p className="mt-1.5 text-[11px] text-gray-500">
+                            Updated automatically as lead data refreshes
+                          </p>
+                        )}
                       </div>
-                    )}
+                    </div>
                   </div>
-                </div>
-              )}
+                )
+              })()}
 
               {/* Assignment */}
               {lead.assigned_user && (

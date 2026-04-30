@@ -318,7 +318,7 @@ export async function startVoiceCampaign(
   }
 
   for (const lead of leads) {
-    const contactData = lead.contact_data as any
+    const contactData = lead.contact_data as unknown as { contacts?: Array<{ phone?: string }> } | null
     const phone = contactData?.contacts?.[0]?.phone
 
     if (!phone) {

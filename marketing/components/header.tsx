@@ -85,6 +85,12 @@ const navLinks: NavLink[] = [
     label: "Resources",
     dropdown: [
       {
+        href: "/data-partnerships",
+        label: "Data Partnerships",
+        description: "Identity & intent infrastructure for enterprise buyers",
+        icon: Database,
+      },
+      {
         href: "/case-studies",
         label: "Case Studies",
         description: "Real results from Cursive customers",
@@ -107,12 +113,6 @@ const navLinks: NavLink[] = [
         label: "About Cursive",
         description: "Our mission and team",
         icon: BookOpen,
-      },
-      {
-        href: "/faq",
-        label: "FAQ",
-        description: "Answers to common questions",
-        icon: FileText,
       },
       {
         href: "/demos",
@@ -221,7 +221,7 @@ export function Header() {
               <Button size="sm" variant="outline" href="/free-audit">
                 Get Free Audit
               </Button>
-              <Button size="sm" href="https://cal.com/gotdarrenhill/30min" target="_blank">
+              <Button size="sm" href="https://cal.com/cursiveteam/30min" target="_blank">
                 Book a Call
               </Button>
             </div>
@@ -326,7 +326,7 @@ export function Header() {
                 </Button>
                 <Button
                   className="w-full"
-                  href="https://cal.com/gotdarrenhill/30min"
+                  href="https://cal.com/cursiveteam/30min"
                   target="_blank"
                   onClick={() => setMobileMenuOpen(false)}
                 >

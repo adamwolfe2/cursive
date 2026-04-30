@@ -1,15 +1,22 @@
+// Source-of-truth Cursive stats. Pixel match is 40-60% deterministic.
+// We use the midpoint (0.50) for revenue calculations so projections are
+// neither best- nor worst-case but representative of typical performance.
 export const CURSIVE_STATS = {
-  idRate: 0.70,
+  idRate: 0.50,
   bounceRate: 0.0005,
   intentQualifiedPct: 0.45,
-  contacts: '420M+',
-  householdCoverage: '98%',
-  dailyIntentSignals: '60B+',
+  consumerProfiles: '280M+',
+  businessProfiles: '140M+',
+  pixelAccuracy: '60-80%',
+  emailValidation: '~20M/day',
   ncoaRefresh: '30 days',
 }
 
+// Competitor / industry baselines used in the comparison table.
+// Cookie-based tools resolve 2-5%, IP databases resolve 10-15%.
+// We use the upper end of IP databases as the "standard pixel" baseline.
 export const COMPETITOR_STATS = {
-  claimedMatchRate: 0.60,
+  claimedMatchRate: 0.15,
   actualUsableRate: 0.15,
   bounceRate: 0.20,
 }

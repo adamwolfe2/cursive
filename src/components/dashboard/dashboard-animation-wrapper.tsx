@@ -10,6 +10,7 @@ interface DashboardAnimationWrapperProps {
 export function DashboardAnimationWrapper({ children }: DashboardAnimationWrapperProps) {
   return (
     <motion.div
+      className="space-y-8"
       initial="initial"
       animate="animate"
       variants={{

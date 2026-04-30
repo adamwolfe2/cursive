@@ -187,7 +187,7 @@ function buildPrompt({
   // Target audience context (critical for relevance)
   if (icp) {
     prompt += `Target audience: ${icp.name} (${icp.title}). `
-    prompt += `Demographics: ${icp.demographics.age_range}, ${(icp.demographics as any).income_level ?? ''}, ${icp.demographics.location}. `
+    prompt += `Demographics: ${icp.demographics.age_range}, ${icp.demographics.income_range ?? ''}, ${icp.demographics.location}. `
     prompt += `Pain points: ${icp.pain_points.slice(0, 2).join(', ')}. `
     prompt += `Goals: ${icp.goals.slice(0, 2).join(', ')}. `
   } else if (knowledgeBase?.target_audience) {

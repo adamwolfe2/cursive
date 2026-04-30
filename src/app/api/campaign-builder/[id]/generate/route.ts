@@ -9,6 +9,7 @@ import { CampaignBuilderRepository } from '@/lib/repositories/campaign-builder.r
 import { generateEmailSequence } from '@/lib/services/campaign-builder/ai-generator'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
+import { withRateLimit, getRequestIdentifier } from '@/lib/middleware/rate-limiter'
 
 const generateSchema = z.object({
   custom_prompt: z.string().optional(),
@@ -27,6 +28,9 @@ export async function POST(
     const { id } = await params
     const user = await getCurrentUser()
     if (!user) return unauthorized()
+
+    const limited = await withRateLimit(req, 'ai-generate-email', getRequestIdentifier(req, user.id))
+    if (limited) return limited
 
     const body = await req.json()
     const validated = generateSchema.parse(body)

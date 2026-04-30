@@ -1,3 +1,4 @@
+/* eslint-disable no-console -- this IS the logger module; console methods are the implementation */
 /**
  * Developer Logger
  * Cursive Platform

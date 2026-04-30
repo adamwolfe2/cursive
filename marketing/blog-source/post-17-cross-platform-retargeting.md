@@ -565,4 +565,4 @@ Keep your core message consistent but adapt creative to each platform's format a
 
 ---
 
-**Ready to orchestrate retargeting across every platform?** [Explore Cursive's platform](https://meetcursive.com/platform) to see how visitor identification, audience building, and multi-channel activation work together—or [book a demo](https://cal.com/cursive/30min) to see it in action.
+**Ready to orchestrate retargeting across every platform?** [Explore Cursive's platform](https://meetcursive.com/platform) to see how visitor identification, audience building, and multi-channel activation work together—or [book a demo](https://cal.com/cursiveteam/30min) to see it in action.

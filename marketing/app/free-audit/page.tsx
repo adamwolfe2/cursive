@@ -273,8 +273,8 @@ export default function FreeAuditPage() {
                 <p className="text-gray-600 text-sm">Of website visitors leave without converting or filling out a form</p>
               </div>
               <div className="text-center bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-8 border border-blue-200">
-                <div className="text-4xl text-primary mb-2">70%</div>
-                <p className="text-gray-600 text-sm">Of anonymous visitors can be identified by our pixel technology</p>
+                <div className="text-4xl text-primary mb-2">40&ndash;60%</div>
+                <p className="text-gray-600 text-sm">Deterministic pixel match rate &mdash; vs 2&ndash;5% for cookies and 10&ndash;15% for IP databases</p>
               </div>
               <div className="text-center bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-8 border border-blue-200">
                 <div className="text-4xl text-primary mb-2">3-5x</div>

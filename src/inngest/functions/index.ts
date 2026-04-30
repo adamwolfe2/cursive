@@ -11,6 +11,7 @@ export { weeklyTrends } from './weekly-trends'
 // Marketplace functions
 export { processPartnerUpload, retryStalledUploads } from './partner-upload-processor'
 export { processEmailVerification } from './email-verification-processor'
+export { marketplaceLeadRefresh } from './marketplace-lead-refresh'
 
 // Marketplace jobs (scoring, freshness, bonuses)
 export {
@@ -189,6 +190,12 @@ export { ghlDeliverLeads } from './ghl-deliver-leads'
 // GHL Client Sync (sync leads to client's own GHL via OAuth)
 export { ghlSyncContact, ghlBulkSync } from './ghl-sync-contact'
 
+// GHL Marketplace App — visitor sync (6h cron, post-marketplace-install)
+export { marketplaceGhlSync } from './marketplace-ghl-sync'
+
+// Shopify Marketplace App — metafield writeback (6h cron)
+export { marketplaceShopifyMetafields } from './marketplace-shopify-metafields'
+
 // DFY Onboarding Sequence (post-onboarding form drip)
 export { dfyOnboardingSequence } from './dfy-onboarding-sequence'
 
@@ -240,6 +247,9 @@ export { sdrFollowupCron } from './sdr-followup'
 // Weekly Summary Email (Monday 9am CT — activity digest per workspace)
 export { weeklySummaryEmail } from './weekly-summary-email'
 
+// Monthly Summary Email (1st of each month 9am UTC — full month results per workspace)
+export { monthlySummaryEmail } from './monthly-summary-email'
+
 // Partner Stripe Connect Validation (daily 10am CT — reminds partners to complete Stripe onboarding)
 export { partnerStripeValidation } from './partner-stripe-validation'
 
@@ -275,3 +285,46 @@ export { cleanupAuditLogs } from './cleanup-audit-logs'
 
 // Failed operations cleanup (daily 4:30am UTC — deletes resolved entries older than 30 days)
 export { cleanupFailedOperations } from './cleanup-failed-operations'
+
+// Client Onboarding Pipeline
+export { onboardingIntakePipeline } from './onboarding-intake-pipeline'
+export { onboardingCopyRegeneration } from './onboarding-copy-regeneration'
+export { onboardingRetryEnrichment } from './onboarding-retry-enrichment'
+export { onboardingEmailBisonPush } from './onboarding-emailbison-push'
+
+// Autoresearch (Karpathy loop: generate -> wait -> evaluate -> repeat)
+export {
+  startAutoresearchProgram,
+  generateAutoresearchExperiment,
+  evaluateAutoresearchExperiment,
+} from './autoresearch-orchestrator'
+export { autoresearchReplySync } from './autoresearch-reply-sync'
+
+// AI SDR Inbox Sync (every 15 min — processes new replies through AI reply engine)
+export { sdrInboxSync } from './sdr-inbox-sync'
+
+// User lead cap resets (daily/weekly/monthly — prevents leads from permanently stopping)
+export {
+  resetUserDailyLeadCaps,
+  resetUserWeeklyLeadCaps,
+  resetUserMonthlyLeadCaps,
+} from './reset-user-lead-caps'
+
+// Outbound Agent (Rox-inspired AI revenue agent)
+export { outboundWorkflowRun } from './outbound-workflow-run'
+export {
+  outboundStatsRefresherCron,
+  outboundStatsRefresherEvent,
+} from './outbound-stats-refresher'
+
+// Gmail Reply Poller (Phase 2.5 — tracks replies for Gmail-sent emails)
+export {
+  gmailReplyPollerCron,
+  gmailReplyPollerPerAccount,
+} from './gmail-reply-poller'
+
+// AudienceLab DFY Fulfillment Automation
+// Weekly Monday refresh of DFY client audiences (net-new leads)
+export { alAudienceRefresh } from './al-audience-refresh'
+// Every-5-min poller for pending batch enrichment jobs
+export { alEnrichmentPoller } from './al-enrichment-poller'

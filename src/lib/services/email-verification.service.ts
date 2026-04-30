@@ -1,32 +1,19 @@
 // Email Verification Service
-// Integrates with email verification providers (MillionVerifier)
+// Uses AudienceLab's enrich API for deep email verification
 
 import { createAdminClient } from '@/lib/supabase/admin'
+import { enrich } from '@/lib/audiencelab/api-client'
 import type { VerificationStatus } from '@/types/database.types'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 // Configuration
 const VERIFICATION_CONFIG = {
-  // Provider (millionverifier, zerobounce, etc.)
-  PROVIDER: 'millionverifier',
-
-  // API settings
-  API_BASE_URL: 'https://api.millionverifier.com/api/v3',
+  PROVIDER: 'audiencelab',
 
   // Batch settings
   BATCH_SIZE: 100,
   MAX_RETRIES: 3,
   RETRY_DELAY_MS: 1000,
-
-  // Result mapping
-  RESULT_MAPPING: {
-    ok: 'valid',
-    catch_all: 'catch_all',
-    unknown: 'unknown',
-    invalid: 'invalid',
-    disposable: 'invalid',
-    role: 'risky',
-  } as Record<string, VerificationStatus>,
 }
 
 interface VerificationResult {
@@ -50,13 +37,15 @@ interface BatchVerificationResult {
 }
 
 /**
- * Verify a single email address
+ * Verify a single email address using AudienceLab enrichment.
+ * If the email appears in PERSONAL_VERIFIED_EMAILS or BUSINESS_VERIFIED_EMAILS,
+ * it's considered valid. Otherwise we check if AL found the record at all.
  */
 export async function verifyEmail(email: string): Promise<VerificationResult> {
-  const apiKey = process.env.MILLIONVERIFIER_API_KEY
+  const apiKey = process.env.AUDIENCELAB_ACCOUNT_API_KEY
 
   if (!apiKey) {
-    safeError('MillionVerifier API key not configured, returning unknown status')
+    safeError('AUDIENCELAB_ACCOUNT_API_KEY not configured, returning unknown status')
     return {
       email,
       status: 'unknown',
@@ -65,27 +54,71 @@ export async function verifyEmail(email: string): Promise<VerificationResult> {
   }
 
   try {
-    const url = `${VERIFICATION_CONFIG.API_BASE_URL}/?api=${apiKey}&email=${encodeURIComponent(email)}`
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 15000) // 15s timeout
+    const enrichResult = await enrich({ filter: { email } })
 
-    const response = await fetch(url, { signal: controller.signal })
-
-    clearTimeout(timeoutId)
-
-    if (!response.ok) {
-      throw new Error(`Verification API error: ${response.status}`)
+    if (!enrichResult.found || !enrichResult.result?.length) {
+      return {
+        email,
+        status: 'unknown',
+        rawResult: { result: 'not_found', resultcode: 0, found: 0 },
+      }
     }
 
-    const data = await response.json()
+    const profile = enrichResult.result[0]
+    const verifiedPersonal = profile.PERSONAL_VERIFIED_EMAILS || ''
+    const verifiedBusiness = profile.BUSINESS_VERIFIED_EMAILS || ''
+    const emailLower = email.toLowerCase()
 
-    // Map result to our status
-    const status = VERIFICATION_CONFIG.RESULT_MAPPING[data.result] || 'unknown'
+    // Check if the email appears in verified fields
+    const isVerified =
+      verifiedPersonal.toLowerCase().includes(emailLower) ||
+      verifiedBusiness.toLowerCase().includes(emailLower)
 
+    if (isVerified) {
+      return {
+        email,
+        status: 'valid',
+        rawResult: {
+          result: 'valid',
+          resultcode: 1,
+          provider: 'audiencelab',
+          verified_field: verifiedPersonal.toLowerCase().includes(emailLower)
+            ? 'PERSONAL_VERIFIED_EMAILS'
+            : 'BUSINESS_VERIFIED_EMAILS',
+        },
+      }
+    }
+
+    // Email found in AL but not in verified fields — treat as catch_all
+    const personalEmails = profile.PERSONAL_EMAILS || ''
+    const businessEmail = profile.BUSINESS_EMAIL || ''
+    const isKnown =
+      personalEmails.toLowerCase().includes(emailLower) ||
+      businessEmail.toLowerCase().includes(emailLower)
+
+    if (isKnown) {
+      return {
+        email,
+        status: 'catch_all',
+        rawResult: {
+          result: 'catch_all',
+          resultcode: 2,
+          provider: 'audiencelab',
+          note: 'Email found but not in verified fields',
+        },
+      }
+    }
+
+    // Profile found but email doesn't match — unknown
     return {
       email,
-      status,
-      rawResult: data,
+      status: 'unknown',
+      rawResult: {
+        result: 'unknown',
+        resultcode: 0,
+        provider: 'audiencelab',
+        note: 'Profile found but email not matched',
+      },
     }
   } catch (error) {
     safeError(`Email verification failed for ${email}:`, error)
@@ -114,7 +147,6 @@ export async function verifyEmailBatch(emails: string[]): Promise<BatchVerificat
   for (let i = 0; i < emails.length; i += VERIFICATION_CONFIG.BATCH_SIZE) {
     const batch = emails.slice(i, i + VERIFICATION_CONFIG.BATCH_SIZE)
 
-    // Process batch (for now, one by one - could use bulk API if available)
     for (const email of batch) {
       try {
         const result = await verifyEmail(email)
@@ -344,10 +376,6 @@ export async function queueStaleLeadsForReverification(daysOld: number = 60): Pr
   const cutoffDate = new Date()
   cutoffDate.setDate(cutoffDate.getDate() - daysOld)
 
-  // Find leads that are:
-  // - Listed in marketplace
-  // - Were verified more than X days ago
-  // - Haven't sold
   const { data: staleLeads, error } = await supabase
     .from('leads')
     .select('id')
@@ -372,13 +400,11 @@ export async function queueStaleLeadsForReverification(daysOld: number = 60): Pr
  * Check if email is likely valid (quick check without API call)
  */
 export function isEmailFormatValid(email: string): boolean {
-  // Basic email regex
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   if (!emailRegex.test(email)) {
     return false
   }
 
-  // Check for common invalid patterns
   const invalidPatterns = [
     /^test@/i,
     /^fake@/i,

@@ -1221,33 +1221,57 @@ export interface Database {
           user_id: string
           lead_id: string
           workspace_id: string
-          matching_criteria: Json
+          source: string | null
+          matched_industry: string | null
+          matched_sic_code: string | null
+          matched_geo: string | null
           status: string
-          created_at: string
+          assigned_at: string
+          updated_at: string
           viewed_at: string | null
           contacted_at: string | null
+          converted_at: string | null
+          user_notes: string | null
+          notification_sent: boolean
+          notification_sent_at: string | null
         }
         Insert: {
           id?: string
           user_id: string
           lead_id: string
           workspace_id: string
-          matching_criteria?: Json
+          source?: string | null
+          matched_industry?: string | null
+          matched_sic_code?: string | null
+          matched_geo?: string | null
           status?: string
-          created_at?: string
+          assigned_at?: string
+          updated_at?: string
           viewed_at?: string | null
           contacted_at?: string | null
+          converted_at?: string | null
+          user_notes?: string | null
+          notification_sent?: boolean
+          notification_sent_at?: string | null
         }
         Update: {
           id?: string
           user_id?: string
           lead_id?: string
           workspace_id?: string
-          matching_criteria?: Json
+          source?: string | null
+          matched_industry?: string | null
+          matched_sic_code?: string | null
+          matched_geo?: string | null
           status?: string
-          created_at?: string
+          assigned_at?: string
+          updated_at?: string
           viewed_at?: string | null
           contacted_at?: string | null
+          converted_at?: string | null
+          user_notes?: string | null
+          notification_sent?: boolean
+          notification_sent_at?: string | null
         }
       }
       lead_purchases: {

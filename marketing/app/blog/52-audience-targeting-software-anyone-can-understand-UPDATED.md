@@ -107,7 +107,7 @@ That feels especially helpful when your to-do lists are already full.
 
 Getting started now means you head into the new year with less guesswork. Each message, each check-in, each campaign feels more grounded, more relevant, and more connected to the people you're trying to reach.
 
-Ready for a smoother way to connect with the right people at the right moment? **[Book a demo](https://cal.com/cursive/30min)** to see how Cursive simplifies audience targeting, automates segmentation, and drives measurable results without complexity.
+Ready for a smoother way to connect with the right people at the right moment? **[Book a demo](https://cal.com/cursiveteam/30min)** to see how Cursive simplifies audience targeting, automates segmentation, and drives measurable results without complexity.
 
 ---
 

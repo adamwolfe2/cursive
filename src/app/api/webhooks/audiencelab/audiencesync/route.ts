@@ -192,6 +192,8 @@ export async function POST(request: NextRequest) {
     }
 
     const insertedIds: string[] = []
+    let failedCount = 0
+    let lastFailError = ''
 
     for (const row of rows) {
       // Validate with permissive schema
@@ -220,6 +222,17 @@ export async function POST(request: NextRequest) {
 
       if (insertError) {
         safeError(`${LOG_PREFIX} Failed to store row`, insertError)
+        failedCount++
+        lastFailError = insertError.message
+        // Write to DLQ so AL can retry or admin can triage
+        await supabase.from('webhook_dead_letter').insert({
+          source: 'audiencelab.audiencesync',
+          payload: row as unknown as Record<string, unknown>,
+          error: insertError.message,
+          workspace_id: workspaceId ?? null,
+        }).then(({ error: dlqError }) => {
+          if (dlqError) safeError(`${LOG_PREFIX} [DLQ] failed to store dead-letter row:`, dlqError)
+        })
         continue
       }
 
@@ -248,6 +261,7 @@ export async function POST(request: NextRequest) {
       stored: insertedIds.length,
       processed: processed.length,
       total: rows.length,
+      failed: failedCount,
     }
 
     // Record processed webhook event for idempotency
@@ -257,6 +271,14 @@ export async function POST(request: NextRequest) {
       event_type: 'audiencesync_batch',
       payload_summary: successResponse,
     })
+
+    // If any inserts failed, return 502 so AL retries the batch (belt + suspenders with DLQ)
+    if (failedCount > 0) {
+      return NextResponse.json(
+        { ...successResponse, error: `${failedCount} row(s) failed to store: ${lastFailError}` },
+        { status: 502 }
+      )
+    }
 
     return NextResponse.json(successResponse)
   } catch (error) {

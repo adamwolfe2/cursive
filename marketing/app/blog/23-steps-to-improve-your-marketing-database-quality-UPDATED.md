@@ -118,7 +118,7 @@ A well-managed list means:
 
 When you stay on top of small tasks, your database becomes more than just a list of names. It becomes a real tool for growing your business and connecting with people who actually want to hear from you.
 
-Ready to boost results by improving how your contact info is stored and used? **[Book a demo](https://cal.com/cursive/30min)** to see how Cursive keeps your marketing database current, eliminates duplicates, and powers more effective campaigns.
+Ready to boost results by improving how your contact info is stored and used? **[Book a demo](https://cal.com/cursiveteam/30min)** to see how Cursive keeps your marketing database current, eliminates duplicates, and powers more effective campaigns.
 
 ---
 

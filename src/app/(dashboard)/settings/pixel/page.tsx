@@ -190,10 +190,10 @@ export default function PixelSettingsPage() {
     const trialEndsAt = data.pixel.trial_ends_at ? new Date(data.pixel.trial_ends_at) : null
     const daysLeft = trialEndsAt ? Math.max(0, Math.ceil((trialEndsAt.getTime() - Date.now()) / 86_400_000)) : null
 
-    // Build the proper installation snippet:
-    // 1. If snippet already contains a <script tag, use it as-is
-    // 2. If install_url is available, wrap it in a script tag
-    // 3. Fallback: generate from pixel_id using the known V3 SuperPixel CDN format
+    // Build the proper installation snippet — always trust what AudienceLab returned.
+    // 1. If stored snippet already contains a <script tag, use it as-is
+    // 2. Otherwise wrap install_url in a script tag
+    // No hardcoded CDN fallback: if AL didn't give us a URL, we don't guess a version.
     const _installSnippet = (() => {
       if (data.pixel!.snippet && data.pixel!.snippet.includes('<script')) {
         return data.pixel!.snippet
@@ -201,11 +201,9 @@ export default function PixelSettingsPage() {
       if (data.pixel!.install_url) {
         return `<script src="${data.pixel!.install_url}" defer></script>`
       }
-      return data.pixel!.pixel_id
-        ? `<script src="https://cdn.v3.identitypxl.app/pixels/${data.pixel!.pixel_id}/p.js" defer></script>`
-        : ''
+      return ''
     })()
-    const hasSnippet = true // We can always generate a snippet from pixel_id
+    const hasSnippet = !!(data.pixel!.install_url || (data.pixel!.snippet && data.pixel!.snippet.includes('<script')))
 
     return (
       <div className="space-y-6">
@@ -231,7 +229,7 @@ export default function PixelSettingsPage() {
         )}
 
         {/* Trial Active Countdown */}
-        {isTrialActive && daysLeft !== null && (
+        {isTrialActive && daysLeft !== null && trialEndsAt && (
           <div className={`rounded-xl border p-6 ${
             daysLeft <= 3
               ? 'border-red-200 bg-red-50'
@@ -249,7 +247,7 @@ export default function PixelSettingsPage() {
                 <p className={`text-sm mt-1 ${
                   daysLeft <= 3 ? 'text-red-700' : daysLeft <= 7 ? 'text-amber-700' : 'text-blue-700'
                 }`}>
-                  After {trialEndsAt?.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}, your pixel stops identifying visitors unless you upgrade.
+                  After {trialEndsAt.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}, your pixel stops identifying visitors unless you upgrade.
                 </p>
               </div>
               <a
@@ -473,7 +471,7 @@ export default function PixelSettingsPage() {
           <div className="mt-4 flex items-start gap-2.5 rounded-lg bg-primary/5 border border-primary/20 p-3">
             <span className="text-primary shrink-0 mt-0.5">ℹ</span>
             <p className="text-xs text-zinc-600">
-              Data is pulled from AudienceLab&apos;s identity graph of 280M+ verified US consumers and enriched automatically every 2 hours via the v4 API.
+              Data is pulled from the Cursive identity graph of 280M+ verified US consumers and enriched automatically every 2 hours.
             </p>
           </div>
         </div>
@@ -521,7 +519,7 @@ export default function PixelSettingsPage() {
               <h3 className="text-sm font-semibold text-zinc-900 mb-3">What happens after you install?</h3>
               <ol className="space-y-3">
                 {[
-                  { step: '1', title: 'Pixel fires on your first visitor', desc: 'Usually within minutes of install. AudienceLab identifies the visitor by matching their browser fingerprint to our database.' },
+                  { step: '1', title: 'Pixel fires on your first visitor', desc: 'Usually within minutes of install. Cursive identifies the visitor by matching their browser fingerprint to our database.' },
                   { step: '2', title: 'Lead appears in your dashboard', desc: 'Identified visitors become leads automatically. Expect 5–25% identification rate depending on your traffic source.' },
                   { step: '3', title: 'Free auto-enrichment runs', desc: 'Every lead gets tech stack and email quality scored automatically — no credits needed.' },
                   { step: '4', title: 'Enrich for full contact details', desc: 'Use Intelligence Pack (2 credits) to unlock LinkedIn, phone, and social profiles. Deep Research (10 credits) for an AI-written outreach angle.' },
@@ -607,7 +605,7 @@ export default function PixelSettingsPage() {
             <input
               type="url"
               placeholder="https://yourcompany.com"
-              className="block w-full rounded-lg border-zinc-300 shadow-sm focus:border-primary focus:ring-primary"
+              className="block w-full rounded-lg border border-zinc-300 px-3 py-2 shadow-sm focus:border-primary focus:ring-primary"
               value={websiteUrl}
               onChange={(e) => setWebsiteUrl(e.target.value)}
             />
@@ -620,7 +618,7 @@ export default function PixelSettingsPage() {
             <input
               type="text"
               placeholder="My Company"
-              className="block w-full rounded-lg border-zinc-300 shadow-sm focus:border-primary focus:ring-primary"
+              className="block w-full rounded-lg border border-zinc-300 px-3 py-2 shadow-sm focus:border-primary focus:ring-primary"
               value={websiteName}
               onChange={(e) => setWebsiteName(e.target.value)}
             />
