@@ -11,7 +11,7 @@ import { handleApiError, unauthorized, badRequest } from '@/lib/utils/api-error-
 import { createClient } from '@/lib/supabase/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
-const SUPPORTED_PROVIDERS = ['salesforce', 'google_sheets', 'hubspot'] as const
+const SUPPORTED_PROVIDERS = ['salesforce', 'google_sheets', 'hubspot', 'gohighlevel', 'shopify'] as const
 type Provider = typeof SUPPORTED_PROVIDERS[number]
 
 interface ConnectionStatusResponse {
@@ -20,6 +20,10 @@ interface ConnectionStatusResponse {
   instance_url?: string
   connected_at?: string
   last_sync_at?: string
+  // Provider-specific identifiers extracted from metadata for UI display
+  portal_id?: string       // HubSpot
+  location_id?: string     // GoHighLevel
+  shop_domain?: string     // Shopify
 }
 
 export async function GET(
@@ -44,7 +48,7 @@ export async function GET(
 
     const { data: connection, error } = await supabase
       .from('crm_connections')
-      .select('id, provider, status, instance_url, last_sync_at, created_at, token_expires_at')
+      .select('id, provider, status, instance_url, last_sync_at, created_at, token_expires_at, metadata')
       .eq('workspace_id', user.workspace_id)
       .eq('provider', provider)
       .maybeSingle()
@@ -74,12 +78,17 @@ export async function GET(
       connection.token_expires_at && new Date(connection.token_expires_at) < new Date()
     const isActive = connection.status === 'active' || connection.status === 'connected'
 
+    const metadata = (connection.metadata || {}) as Record<string, unknown>
+
     const response: ConnectionStatusResponse = {
       connected: isActive && !isTokenExpired,
       status: isTokenExpired ? 'token_expired' : connection.status,
       instance_url: connection.instance_url || undefined,
       connected_at: connection.created_at || undefined,
       last_sync_at: connection.last_sync_at || undefined,
+      portal_id: typeof metadata.portal_id === 'string' ? metadata.portal_id : undefined,
+      location_id: typeof metadata.location_id === 'string' ? metadata.location_id : undefined,
+      shop_domain: typeof metadata.shop_domain === 'string' ? metadata.shop_domain : undefined,
     }
 
     return NextResponse.json({

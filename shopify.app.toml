@@ -1,0 +1,38 @@
+# Shopify App configuration for Cursive (https://leads.meetcursive.com)
+# Managed by Shopify CLI — push changes with: shopify app deploy
+#
+# NOTE: customers/* and orders/* webhook subscriptions require Shopify's
+# "Protected Customer Data" approval before they can be added back here.
+# Request access at: Partners dashboard → Apps → Cursive → API access
+# → Protected customer data access → Request access
+# Once approved, re-add the subscriptions below and run shopify app deploy.
+
+client_id = "ac82db01900d938f8cba18442d7c2911"
+name = "Cursive"
+handle = "meetcursive"
+application_url = "https://leads.meetcursive.com"
+embedded = false
+
+[access_scopes]
+scopes = "read_customers,read_orders,read_products,write_customers"
+
+[auth]
+redirect_urls = [
+  "https://leads.meetcursive.com/api/integrations/shopify/callback",
+]
+
+[webhooks]
+api_version = "2026-07"
+
+  # products/update does not contain protected customer data — allowed immediately
+  [[webhooks.subscriptions]]
+  uri = "https://leads.meetcursive.com/api/webhooks/shopify"
+  topics = [ "products/update" ]
+
+  # GDPR compliance webhooks — mandatory for all apps, no PCA approval needed
+  [[webhooks.subscriptions]]
+  uri = "https://leads.meetcursive.com/api/webhooks/shopify/compliance"
+  compliance_topics = [ "customers/data_request", "customers/redact", "shop/redact" ]
+
+[pos]
+embedded = false

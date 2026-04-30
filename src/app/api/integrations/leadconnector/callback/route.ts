@@ -127,7 +127,9 @@ export async function GET(req: NextRequest) {
           client_secret: clientSecret,
           grant_type: 'authorization_code',
           code,
-          redirect_uri: `${process.env.NEXT_PUBLIC_APP_URL}/api/integrations/ghl/callback`,
+          // Must match the redirect_uri used in /authorize exactly. Renamed from
+          // /ghl/ to /leadconnector/ to satisfy GHL's white-label substring filter.
+          redirect_uri: `${process.env.NEXT_PUBLIC_APP_URL}/api/integrations/leadconnector/callback`,
         }),
         signal: controller.signal,
       })

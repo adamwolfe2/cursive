@@ -3,9 +3,13 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { useSearchParams, useRouter, usePathname } from 'next/navigation'
 import { useToast } from '@/lib/hooks/use-toast'
 import { SlackIntegration } from '@/components/integrations/slack-integration'
 import { ZapierIntegration } from '@/components/integrations/zapier-integration'
+import { HubSpotIntegration } from '@/components/integrations/hubspot-integration'
+import { GoHighLevelIntegration } from '@/components/integrations/gohighlevel-integration'
+import { ShopifyIntegration } from '@/components/integrations/shopify-integration'
 import { IntegrationSyncHealth } from '@/components/integrations/IntegrationSyncHealth'
 import {
   Dialog,
@@ -333,12 +337,25 @@ export default function IntegrationsClient() {
         </div>
       </div>
 
+      {/* OAuth callback banner — surfaces ?success=... or ?error=... from /api/integrations/ghl/callback */}
+      <OAuthStatusBanner />
+
       {/* Notifications & Automation */}
       <div>
         <h2 className="text-lg font-semibold text-zinc-900 mb-4">Notifications & Automation</h2>
         <div className="grid gap-6 md:grid-cols-2">
           <SlackIntegration user={user} isPro={isPro} />
           <ZapierIntegration user={user} isPro={isPro} />
+        </div>
+      </div>
+
+      {/* CRM & Ecommerce Integrations — live OAuth connections */}
+      <div>
+        <h2 className="text-lg font-semibold text-zinc-900 mb-4">CRM & Ecommerce Integrations</h2>
+        <div className="grid gap-6 md:grid-cols-2">
+          <GoHighLevelIntegration workspaceId={user?.workspace_id ?? ''} isPro={isPro} />
+          <HubSpotIntegration workspaceId={user?.workspace_id ?? ''} isPro={isPro} />
+          <ShopifyIntegration workspaceId={user?.workspace_id ?? ''} isPro={isPro} />
         </div>
       </div>
 
@@ -825,12 +842,6 @@ export default function IntegrationsClient() {
               premium: true,
             },
             {
-              name: 'HubSpot',
-              key: 'hubspot',
-              description: 'Push leads into HubSpot contacts and deals',
-              premium: true,
-            },
-            {
               name: 'Google Sheets',
               key: 'google-sheets',
               description: 'Export leads automatically to Google Sheets',
@@ -887,8 +898,8 @@ export default function IntegrationsClient() {
         </div>
       )}
 
-      {/* Sync Health — shown only when HubSpot or Salesforce is connected */}
-      <IntegrationSyncHealth connectedIntegrations={['hubspot', 'salesforce']} />
+      {/* Sync Health — shown when any CRM/ecommerce integration is connected */}
+      <IntegrationSyncHealth connectedIntegrations={['gohighlevel', 'hubspot', 'shopify', 'salesforce']} />
 
       {/* Regenerate Webhook Secret Confirmation Dialog */}
       <Dialog open={confirmRegenerateSecret} onOpenChange={setConfirmRegenerateSecret}>
@@ -944,6 +955,110 @@ export default function IntegrationsClient() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// OAuth callback banner
+// ---------------------------------------------------------------------------
+// Surfaces success/error from /api/integrations/ghl/callback,
+// /api/crm/auth/hubspot/callback, /api/integrations/shopify/callback, etc.
+// Reads ?success=... and ?error=... from the URL, shows a one-shot banner,
+// then strips the params so a refresh doesn't replay the message.
+
+const OAUTH_MESSAGES: Record<string, { type: 'success' | 'error'; text: string }> = {
+  // GHL
+  ghl_connected: { type: 'success', text: 'GoHighLevel connected successfully.' },
+  ghl_not_configured: { type: 'error', text: 'GoHighLevel OAuth credentials are not configured. Contact support.' },
+  ghl_no_code: { type: 'error', text: 'GoHighLevel did not return an authorization code. Please try again.' },
+  ghl_invalid_state: { type: 'error', text: 'GoHighLevel session expired or invalid. Please reconnect.' },
+  ghl_session_expired: { type: 'error', text: 'GoHighLevel session expired. Please reconnect.' },
+  ghl_invalid_session: { type: 'error', text: 'GoHighLevel session validation failed. Please reconnect.' },
+  ghl_token_failed: { type: 'error', text: 'GoHighLevel token exchange failed. Please try again.' },
+  ghl_save_failed: { type: 'error', text: 'Failed to save GoHighLevel connection. Please try again.' },
+  ghl_callback_failed: { type: 'error', text: 'GoHighLevel callback failed. Please try again.' },
+  ghl_oauth_failed: { type: 'error', text: 'GoHighLevel OAuth failed. Please try again.' },
+  // Shopify
+  shopify_connected: { type: 'success', text: 'Shopify store connected successfully.' },
+  shopify_not_configured: { type: 'error', text: 'Shopify OAuth credentials are not configured. Contact support.' },
+  shopify_invalid_shop: { type: 'error', text: 'Invalid Shopify shop domain.' },
+  shopify_invalid_state: { type: 'error', text: 'Shopify session expired or invalid. Please reconnect.' },
+  shopify_token_failed: { type: 'error', text: 'Shopify token exchange failed. Please try again.' },
+  shopify_save_failed: { type: 'error', text: 'Failed to save Shopify connection. Please try again.' },
+  shopify_callback_failed: { type: 'error', text: 'Shopify callback failed. Please try again.' },
+}
+
+function OAuthStatusBanner() {
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const pathname = usePathname()
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+
+  useEffect(() => {
+    const successKey = searchParams.get('success')
+    const errorKey = searchParams.get('error')
+
+    // Resolve message — prefer success, fall back to error
+    let resolved: { type: 'success' | 'error'; text: string } | null = null
+    if (successKey && OAUTH_MESSAGES[successKey]) {
+      resolved = OAUTH_MESSAGES[successKey]
+    } else if (errorKey) {
+      resolved =
+        OAUTH_MESSAGES[errorKey] ??
+        { type: 'error', text: `Integration error: ${errorKey.replace(/_/g, ' ')}` }
+    }
+
+    if (!resolved) {
+      setMessage(null)
+      return
+    }
+
+    setMessage(resolved)
+
+    // Strip OAuth params from URL so refresh doesn't replay
+    const next = new URLSearchParams(searchParams.toString())
+    next.delete('success')
+    next.delete('error')
+    const qs = next.toString()
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false })
+  }, [searchParams, router, pathname])
+
+  if (!message) return null
+
+  const isSuccess = message.type === 'success'
+
+  return (
+    <div
+      role="status"
+      className={`rounded-xl border p-4 ${
+        isSuccess
+          ? 'border-green-200 bg-green-50 text-green-900'
+          : 'border-red-200 bg-red-50 text-red-900'
+      }`}
+    >
+      <div className="flex items-start gap-3">
+        <div className="flex-shrink-0 mt-0.5">
+          {isSuccess ? (
+            <svg className="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+            </svg>
+          ) : (
+            <svg className="h-5 w-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          )}
+        </div>
+        <p className="text-sm font-medium">{message.text}</p>
+        <button
+          type="button"
+          onClick={() => setMessage(null)}
+          className="ml-auto text-sm opacity-60 hover:opacity-100"
+          aria-label="Dismiss"
+        >
+          ×
+        </button>
+      </div>
     </div>
   )
 }

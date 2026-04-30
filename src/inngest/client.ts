@@ -183,6 +183,24 @@ export type Events = {
       stage_id?: string
     }
   }
+  // Inbound webhook from GoHighLevel (contact/opportunity/message events)
+  'ghl/webhook.received': {
+    data: {
+      workspaceId: string
+      eventType: string
+      locationId: string
+      payload: Record<string, unknown>
+    }
+  }
+  // Inbound webhook from Shopify (orders, customers, products)
+  'shopify/webhook.received': {
+    data: {
+      workspaceId: string
+      topic: string
+      shopDomain: string
+      payload: Record<string, unknown>
+    }
+  }
   'ghl/webhook.contact': {
     data: {
       event_type: string
