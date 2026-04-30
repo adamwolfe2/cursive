@@ -219,13 +219,20 @@ export async function POST(request: NextRequest) {
     }
 
     // 7. Create workspace
+    // Normalize "Other (waitlist)" to "Other" so workspace fields stay clean.
+    // This should only be reached if a user bypasses the inline waitlist UI.
+    // Only business signups have an industry field, so guard with the role check.
+    const normalizedIndustry =
+      validated.role === 'business'
+        ? validated.industry.replace(' (waitlist)', '')
+        : ''
     const workspaceInsert = validated.role === 'business'
       ? {
           name: validated.companyName,
           slug,
           subdomain: slug,
-          industry_vertical: validated.industry,
-          allowed_industries: [validated.industry],
+          industry_vertical: normalizedIndustry,
+          allowed_industries: [normalizedIndustry],
           allowed_regions: validated.targetLocations ? parseTargetLocations(validated.targetLocations) : ['US'],
           onboarding_status: 'completed',
         }
@@ -282,8 +289,9 @@ export async function POST(request: NextRequest) {
           daily_credit_limit: 3,
           daily_credits_used: 0,
           is_partner: false,
-          // Daily lead distribution segments
-          industry_segment: validated.industry?.toLowerCase().replace(/\s+/g, '_'),
+          // Daily lead distribution segments.
+          // normalizedIndustry already has "(waitlist)" stripped — see above.
+          industry_segment: normalizedIndustry.toLowerCase().replace(/\s+/g, '_'),
           location_segment: validated.targetLocations?.toLowerCase().replace(/\s+/g, '_').split(',')[0] || 'us',
           daily_lead_limit: 10, // Free tier gets 10 daily leads
           is_active: true,
@@ -399,7 +407,7 @@ export async function POST(request: NextRequest) {
           .insert({
             user_id: userProfile.id,
             workspace_id: workspace.id,
-            target_industries: [validated.industry],
+            target_industries: [normalizedIndustry],
             target_states: targetStatesForProvisioning,
             target_cities: [],
             target_zips: [],
@@ -454,7 +462,7 @@ export async function POST(request: NextRequest) {
             data: {
               workspace_id: workspace.id,
               user_id: userProfile.id,
-              industries: [validated.industry],
+              industries: [normalizedIndustry],
               states: targetStatesForProvisioning,
             },
           })

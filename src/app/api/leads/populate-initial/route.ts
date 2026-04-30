@@ -123,14 +123,29 @@ export async function POST(_req: NextRequest) {
           .maybeSingle()
 
         if (anySegment) {
-          segmentMapping = anySegment
+          // Do NOT use this fallback for lead delivery — it would serve cross-industry
+          // leads (e.g. roofing leads to a SaaS user) which are irrelevant and confusing.
+          // Instead, return a honest "pending" state so the user gets a clear message.
           matchType = 'fallback'
-          safeError('[PopulateInitialLeads] Using fallback segment (no industry match):', {
+          safeError('[PopulateInitialLeads] No industry match found, skipping cross-industry fallback:', {
             requested: { industry: userProfile.industry_segment, location: userProfile.location_segment },
-            matched: { segment: segmentMapping!.segment_name, matchType },
+            skipped_segment: anySegment.segment_name,
           })
         }
       }
+    }
+
+    // If the only option left was a cross-industry fallback (matchType === 'fallback'),
+    // don't serve irrelevant leads. Inform the user honestly instead.
+    if (matchType === 'fallback') {
+      const supportedList = 'Real Estate, Commercial Real Estate, Roofing, HVAC, Plumbing, Home Security, Home Services, Contractor, Logistics & Shipping, Security'
+      return NextResponse.json({
+        success: true,
+        count: 0,
+        filtered: 0,
+        pending_setup: true,
+        message: `We're configuring your lead pipeline for ${userProfile.industry_segment ?? 'your industry'}. Your first leads will arrive within 24 hours, or switch to a supported industry (${supportedList}) for instant leads.`,
+      })
     }
 
     if (!segmentMapping) {

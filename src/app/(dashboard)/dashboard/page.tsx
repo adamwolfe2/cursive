@@ -36,6 +36,8 @@ import { ProvisioningWidget } from '@/components/dashboard/ProvisioningWidget'
 import { FreePlanBanner } from '@/components/dashboard/FreePlanBanner'
 import { LiveLeadsFeed } from '@/components/leads/live-leads-feed'
 import { MarketplaceSetupBanner } from '@/components/marketplace/MarketplaceSetupBanner'
+import { UnsupportedIndustryBanner } from '@/components/dashboard/UnsupportedIndustryBanner'
+import { isSupportedIndustry } from '@/lib/utils/waitlist-validation'
 
 export const metadata: Metadata = {
   title: 'Dashboard | Cursive',
@@ -783,6 +785,17 @@ export default async function DashboardPage({
     ? (Date.now() - new Date(workspaceCreatedAt).getTime()) / 3_600_000
     : 9999
 
+  // Detect users whose industry_segment does not have a matching audience_lab_segments row.
+  // These users will receive 0 leads from the daily cron and populate-initial until fixed.
+  // A "broken targeting" user has:
+  //   - an industry that is not in our supported list (e.g. 'other', 'saas', 'insurance'), AND
+  //   - OR target_industries is ['Other'] / contains only unsupported values
+  const rawIndustry = userProfile.industry_segment ?? ''
+  const hasUnsupportedIndustry =
+    totalCount === 0 &&
+    rawIndustry !== '' &&
+    !isSupportedIndustry(rawIndustry)
+
   const checklistItems: ChecklistItem[] = [
     { id: 'account',          label: 'Create your account',             done: true,              href: null },
     { id: 'pixel',            label: 'Install tracking pixel',          done: hasPixel,          href: '/settings/pixel' },
@@ -900,13 +913,20 @@ export default async function DashboardPage({
           <TargetingMissingBanner />
         )}
 
+        {/* Unsupported industry — user picked an industry we have no segments for.
+            Daily cron and populate-initial will deliver 0 leads until they change.
+            Show this in place of the generic TargetingMissingBanner for these users. */}
+        {hasUnsupportedIndustry && onboarding !== 'complete' && (
+          <UnsupportedIndustryBanner industry={rawIndustry} />
+        )}
+
         {/* Zero leads — targeting missing warning (takes priority over pending banner) */}
-        {totalCount === 0 && onboarding !== 'complete' && !hasPreferences && workspaceAgeHours >= 48 && (
+        {totalCount === 0 && onboarding !== 'complete' && !hasPreferences && workspaceAgeHours >= 48 && !hasUnsupportedIndustry && (
           <TargetingMissingBanner />
         )}
 
         {/* Zero leads — new workspace pending banner (< 48h, or missing prefs on fresh account) */}
-        {totalCount === 0 && onboarding !== 'complete' && (hasPreferences || workspaceAgeHours < 48) && (
+        {totalCount === 0 && onboarding !== 'complete' && !hasUnsupportedIndustry && (hasPreferences || workspaceAgeHours < 48) && (
           <>
             {!hasPreferences && workspaceAgeHours < 48 && (
               <TargetingMissingBanner />

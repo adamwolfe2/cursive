@@ -39,18 +39,42 @@ export const partnerFormSchema = z.object({
 export type BusinessFormData = z.infer<typeof businessFormSchema>
 export type PartnerFormData = z.infer<typeof partnerFormSchema>
 
-// Industry options for business form
-export const industryOptions = [
-  'Solar',
-  'HVAC',
-  'Insurance',
-  'SaaS',
+/**
+ * Industries that have real segments in audience_lab_segments.
+ * DB values after toLowerCase().replace(/\s+/g, '_'):
+ *   real_estate, commercial_real_estate, roofing, hvac, plumbing,
+ *   home_security, home_services, contractor, logistics, security
+ */
+export const SUPPORTED_INDUSTRIES = [
   'Real Estate',
-  'Healthcare',
-  'Manufacturing',
-  'Construction',
-  'Financial Services',
-  'Other',
+  'Commercial Real Estate',
+  'Roofing',
+  'HVAC',
+  'Plumbing',
+  'Home Security',
+  'Home Services',
+  'Contractor',
+  'Logistics & Shipping',
+  'Security',
+] as const
+
+export type SupportedIndustry = (typeof SUPPORTED_INDUSTRIES)[number]
+
+/** Returns true if an industry string maps to a real audience_lab_segments row. */
+export function isSupportedIndustry(industry: string): boolean {
+  const slug = industry.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/(^_|_$)/g, '')
+  const supportedSlugs = SUPPORTED_INDUSTRIES.map((i) =>
+    i.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/(^_|_$)/g, '')
+  )
+  return supportedSlugs.includes(slug)
+}
+
+// Industry options for business form — only verticals with real segments.
+// "Other" is kept as a sentinel that routes the user to the waitlist flow
+// instead of creating a workspace with empty lead delivery.
+export const industryOptions = [
+  ...SUPPORTED_INDUSTRIES,
+  'Other (waitlist)',
 ] as const
 
 // Partner type options
