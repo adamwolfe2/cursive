@@ -1,0 +1,59 @@
+# Shopify App configuration for Cursive (https://leads.meetcursive.com)
+#
+# Managed by Shopify CLI. After editing, push with:
+#   shopify app deploy
+#
+# App: Cursive (App ID 352719437825, Client ID ac82db01900d938f8cba18442d7c2911)
+# Created: 2026-04-24, latest version: cursive-1 (released 2026-04-25)
+
+client_id = "ac82db01900d938f8cba18442d7c2911"
+name = "Cursive"
+handle = "cursive"
+application_url = "https://leads.meetcursive.com"
+embedded = false
+
+[build]
+include_config_on_deploy = true
+automatically_update_urls_on_dev = false
+
+[access_scopes]
+# Read-only by default. Add write_customers if/when we want Cursive to push
+# enriched customer data back into the store. Add read_orders for revenue
+# attribution on identified visitors.
+scopes = "read_customers,read_orders,read_products,write_customers"
+
+[auth]
+redirect_urls = [
+  "https://leads.meetcursive.com/api/integrations/shopify/callback",
+]
+
+[webhooks]
+api_version = "2025-01"
+
+  [[webhooks.subscriptions]]
+  topics = [ "customers/create", "customers/update" ]
+  uri = "https://leads.meetcursive.com/api/webhooks/shopify"
+
+  [[webhooks.subscriptions]]
+  topics = [ "orders/create", "orders/updated" ]
+  uri = "https://leads.meetcursive.com/api/webhooks/shopify"
+
+  [[webhooks.subscriptions]]
+  topics = [ "products/update" ]
+  uri = "https://leads.meetcursive.com/api/webhooks/shopify"
+
+  # Mandatory GDPR compliance webhooks — Shopify requires these for app review
+  [[webhooks.subscriptions]]
+  compliance_topics = [
+    "customers/data_request",
+    "customers/redact",
+    "shop/redact",
+  ]
+  uri = "https://leads.meetcursive.com/api/webhooks/shopify/compliance"
+
+[app_proxy]
+# No app proxy currently. Add here if we ever serve Cursive UI inside the
+# merchant's storefront under /apps/cursive/*.
+
+[pos]
+embedded = false

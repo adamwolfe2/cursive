@@ -49,9 +49,12 @@ export function GoHighLevelIntegration({ workspaceId, isPro }: GoHighLevelIntegr
   const isExpired = connection?.status === 'token_expired'
 
   // Disconnect mutation
+  // NOTE: routes live under /leadconnector/, not /ghl/, because GHL's
+  // marketplace policy rejects 'ghl' / 'highlevel' substrings in any URL
+  // registered against the app.
   const disconnectMutation = useMutation({
     mutationFn: async () => {
-      const response = await fetch('/api/integrations/ghl/disconnect', {
+      const response = await fetch('/api/integrations/leadconnector/disconnect', {
         method: 'POST',
       })
       if (!response.ok) {
@@ -76,7 +79,7 @@ export function GoHighLevelIntegration({ workspaceId, isPro }: GoHighLevelIntegr
       return
     }
     setConnecting(true)
-    window.location.href = '/api/integrations/ghl/authorize'
+    window.location.href = '/api/integrations/leadconnector/authorize'
   }
 
   const handleDisconnect = () => {

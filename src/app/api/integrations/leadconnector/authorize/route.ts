@@ -62,7 +62,15 @@ export async function GET(req: NextRequest) {
     )
 
     // Build OAuth URL
-    const redirectUri = `${process.env.NEXT_PUBLIC_APP_URL}/api/integrations/ghl/callback`
+    // Scope set must match what's enabled on the GHL Marketplace app, otherwise
+    // the consent screen errors. Conversations + calendar scopes are required
+    // for InboundMessage / OutboundMessage / CallStatusUpdate webhooks to fire.
+    //
+    // NOTE: route is /leadconnector/, not /ghl/. GHL Marketplace's white-label
+    // policy rejects any redirect URL containing 'ghl' or 'highlevel' as a
+    // substring (uses LeadConnector as their neutral brand on third-party
+    // installs). Same applies to the inbound webhook URL.
+    const redirectUri = `${process.env.NEXT_PUBLIC_APP_URL}/api/integrations/leadconnector/callback`
     const scopes = [
       'contacts.readonly',
       'contacts.write',
@@ -70,6 +78,11 @@ export async function GET(req: NextRequest) {
       'opportunities.write',
       'locations.readonly',
       'workflows.readonly',
+      'conversations.readonly',
+      'conversations.write',
+      'conversations/message.readonly',
+      'conversations/message.write',
+      'calendars/events.readonly',
     ].join(' ')
 
     const oauthUrl = new URL(GHL_OAUTH_URL)

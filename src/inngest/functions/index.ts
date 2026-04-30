@@ -198,7 +198,7 @@ export { universalFailureHandler } from './inngest-failure-handler'
 // GHL Pipeline Lifecycle (auto-moves contacts through pipeline)
 export { ghlPipelineLifecycle } from './ghl-pipeline-lifecycle'
 
-// GHL Inbound Webhook Router (consumes ghl/webhook.received from /api/webhooks/gohighlevel)
+// GHL Inbound Webhook Router (consumes ghl/webhook.received from /api/webhooks/leadconnector)
 export { ghlWebhookHandler } from './ghl-webhook-handler'
 
 // Customer Health Monitor (daily cron for stuck customers)

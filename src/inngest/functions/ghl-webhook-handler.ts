@@ -1,7 +1,7 @@
 /**
  * GHL Webhook Handler
  *
- * Consumes `ghl/webhook.received` events fired by /api/webhooks/gohighlevel
+ * Consumes `ghl/webhook.received` events fired by /api/webhooks/leadconnector
  * and routes them by event type. Designed to be safe to extend — unknown
  * event types are logged and acked, never thrown.
  *

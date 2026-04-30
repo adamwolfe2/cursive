@@ -11,9 +11,12 @@
  * signature against the RAW body before parsing JSON.
  *
  * Configure in GHL Marketplace App → Webhooks:
- *   Endpoint: https://leads.meetcursive.com/api/webhooks/gohighlevel
+ *   Endpoint: https://leads.meetcursive.com/api/webhooks/leadconnector
  *   Events: ContactCreate, ContactUpdate, OpportunityCreate, OpportunityStatusUpdate,
  *           InboundMessage, OutboundMessage, CallStatusUpdate
+ *
+ * NOTE: Path is /leadconnector/, not /gohighlevel/. GHL's white-label policy
+ * rejects any URL containing 'ghl' or 'highlevel' as a substring on the app.
  *
  * Returns 200 immediately after persisting the raw event — heavy processing
  * happens in Inngest.
