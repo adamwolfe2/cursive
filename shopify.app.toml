@@ -10,7 +10,7 @@
 client_id = "ac82db01900d938f8cba18442d7c2911"
 name = "Cursive"
 handle = "meetcursive"
-application_url = "https://leads.meetcursive.com"
+application_url = "https://leads.meetcursive.com/api/integrations/shopify/install"
 embedded = false
 
 [access_scopes]

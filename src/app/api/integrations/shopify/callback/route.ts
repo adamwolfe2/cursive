@@ -24,6 +24,18 @@ interface OAuthContext {
   shop: string
 }
 
+// Set by the /install route for Shopify-initiated installs (no Cursive session yet)
+interface InstallContext {
+  shop: string
+  install_mode: true
+}
+
+type AnyContext = OAuthContext | InstallContext
+
+function isInstallContext(ctx: AnyContext): ctx is InstallContext {
+  return 'install_mode' in ctx && ctx.install_mode === true
+}
+
 interface ShopifyTokenResponse {
   access_token: string
   scope: string
@@ -117,7 +129,7 @@ export async function GET(req: NextRequest) {
       )
     }
 
-    let context: OAuthContext
+    let context: AnyContext
     try {
       context = JSON.parse(contextCookie)
     } catch {
@@ -130,7 +142,35 @@ export async function GET(req: NextRequest) {
     cookieStore.delete('shopify_oauth_state')
     cookieStore.delete('shopify_oauth_context')
 
-    // 3. Validate session matches authenticated user (defense-in-depth)
+    // 3a. Install-mode: Shopify-initiated install, no Cursive session yet.
+    //     Exchange token (validates the grant is real), then send to login.
+    if (isInstallContext(context)) {
+      if (context.shop !== shop) {
+        safeError('[Shopify Install] Shop domain mismatch in install callback')
+        return NextResponse.redirect(
+          new URL('/settings/integrations?error=shopify_shop_mismatch', req.url)
+        )
+      }
+      // Still exchange the code so the grant isn't left dangling on Shopify's side
+      const apiKey = process.env.SHOPIFY_API_KEY
+      const apiSecret = process.env.SHOPIFY_API_SECRET
+      if (apiKey && apiSecret) {
+        await fetch(`https://${shop}/admin/oauth/access_token`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ client_id: apiKey, client_secret: apiSecret, code }),
+        }).catch(() => { /* best-effort — user will reconnect after login */ })
+      }
+      // Redirect to login; after login the user connects from Settings
+      return NextResponse.redirect(
+        new URL(
+          `/login?redirect=${encodeURIComponent('/settings/integrations')}&shop=${encodeURIComponent(shop)}`,
+          req.url
+        )
+      )
+    }
+
+    // 3b. Normal mode: validate session matches authenticated user (defense-in-depth)
     const sessionUser = await getCurrentUser()
     if (
       !sessionUser ||
