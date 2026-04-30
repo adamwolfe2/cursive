@@ -24,6 +24,7 @@ import {
 
 import { verifyHmacSignature, sha256Hex } from '@/lib/utils/crypto'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
+import { captureError } from '@/lib/monitoring/sentry'
 import { z } from 'zod'
 
 // Zod schemas for each event type's data payload
@@ -148,12 +149,28 @@ export async function POST(request: NextRequest) {
       // Request failed previously - allow retry (don't return early)
     } else {
       // Create new idempotency key record
-      await supabase.from('api_idempotency_keys').insert({
+      const { error: insertError } = await supabase.from('api_idempotency_keys').insert({
         idempotency_key: idempotencyKey,
         workspace_id: 'system',
         endpoint: '/api/webhooks/emailbison/campaigns',
         status: 'processing',
       })
+
+      if (insertError) {
+        // Postgres unique_violation (23505) means a concurrent request already inserted
+        // this key — treat as duplicate-in-flight and return 409.
+        if (insertError.code === '23505') {
+          return NextResponse.json(
+            { error: 'Webhook already being processed. Please retry later.' },
+            { status: 409 }
+          )
+        }
+        // Other insert failures are non-fatal: log and continue processing.
+        safeError('[Campaign Webhook] Failed to insert idempotency key:', insertError)
+        captureError(new Error(`Idempotency key insert failed: ${insertError.message}`), {
+          tags: { source: 'emailbison-webhook', key: idempotencyKey },
+        })
+      }
     }
 
     // Handle different event types
@@ -182,7 +199,7 @@ export async function POST(request: NextRequest) {
 
     // Update idempotency key with successful response
     if (idempotencyKey) {
-      await supabase
+      const { error: finalUpdateError } = await supabase
         .from('api_idempotency_keys')
         .update({
           status: 'completed',
@@ -191,6 +208,25 @@ export async function POST(request: NextRequest) {
         })
         .eq('idempotency_key', idempotencyKey)
         .eq('workspace_id', 'system')
+
+      if (finalUpdateError) {
+        // The event was processed but the completed-status write failed.
+        // Log to Sentry so we know the key is stuck in 'processing', and write a
+        // dead-letter row so the admin dashboard surfaces it for manual resolution.
+        safeError('[Campaign Webhook] Failed to mark idempotency key completed:', finalUpdateError)
+        captureError(new Error(`Idempotency key final update failed: ${finalUpdateError.message}`), {
+          tags: { source: 'emailbison-webhook', key: idempotencyKey },
+        })
+
+        // Best-effort dead-letter write — non-blocking
+        supabase.from('webhook_dead_letter').insert({
+          source: 'emailbison.campaigns.idempotency_update_failed',
+          payload: { idempotency_key: idempotencyKey, response },
+          error: finalUpdateError.message,
+        }).then(({ error: dlErr }) => {
+          if (dlErr) safeError('[Campaign Webhook] Dead-letter write failed:', dlErr)
+        })
+      }
     }
 
     return NextResponse.json(response)

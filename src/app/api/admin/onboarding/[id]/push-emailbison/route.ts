@@ -15,6 +15,7 @@ export const maxDuration = 120
 import { NextRequest, NextResponse } from 'next/server'
 import { OnboardingClientRepository } from '@/lib/repositories/onboarding-client.repository'
 import { pushCopyToEmailBison } from '@/lib/services/onboarding/emailbison-push'
+import { loadLeadsForClient, uploadLeadsToCampaigns } from '@/lib/services/onboarding/lead-upload'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
 import { getErrorMessage } from '@/lib/utils/error-helpers'
@@ -163,6 +164,84 @@ export async function POST(
       timestamp: new Date().toISOString(),
     })
 
+    // ---------------------------------------------------------------------------
+    // Lead upload — load the client's uploaded CSV and push leads to every
+    // campaign we just created. Non-fatal: a lead upload failure does NOT undo
+    // the campaigns.
+    // ---------------------------------------------------------------------------
+    let leadUploadResult: {
+      total_leads: number
+      per_campaign: Array<{ campaignId: string; added: number; skipped: number; error?: string }>
+    } | null = null
+
+    const leads = await loadLeadsForClient(clientId)
+
+    if (leads.length === 0) {
+      safeLog(`[push-emailbison] No existing_list leads for ${clientId} — skipping lead upload`)
+      await repo.appendAutomationLog(clientId, {
+        step: 'lead_upload',
+        status: 'skipped',
+        error: 'no existing_list file',
+        timestamp: new Date().toISOString(),
+      })
+    } else if (dryRun) {
+      safeLog(`[push-emailbison] DRY-RUN: would upload ${leads.length} leads to ${campaignIds.length} campaigns`)
+      leadUploadResult = {
+        total_leads: leads.length,
+        per_campaign: campaignIds.map((id) => ({ campaignId: id, added: leads.length, skipped: 0 })),
+      }
+      await repo.appendAutomationLog(clientId, {
+        step: 'lead_upload',
+        status: 'skipped',
+        error: `dry-run: ${leads.length} leads parsed, ${campaignIds.length} campaigns would receive them`,
+        timestamp: new Date().toISOString(),
+      })
+    } else {
+      try {
+        const perCampaign = await uploadLeadsToCampaigns(campaignIds, leads, client.eb_workspace_id)
+        const totalAdded = perCampaign.reduce((sum, r) => sum + r.added, 0)
+        const totalSkipped = perCampaign.reduce((sum, r) => sum + r.skipped, 0)
+
+        leadUploadResult = { total_leads: leads.length, per_campaign: perCampaign }
+
+        await repo.appendAutomationLog(clientId, {
+          step: 'lead_upload',
+          status: 'complete',
+          error: `${leads.length} leads parsed; added=${totalAdded} skipped=${totalSkipped} across ${campaignIds.length} campaign(s)`,
+          timestamp: new Date().toISOString(),
+        })
+
+        sendSlackAlert({
+          type: 'pipeline_update',
+          severity: 'info',
+          message: `Leads uploaded to EmailBison for ${client.company_name}: ${totalAdded} added, ${totalSkipped} skipped across ${campaignIds.length} campaigns`,
+          metadata: {
+            client_id: clientId,
+            company: client.company_name,
+            total_leads: leads.length.toString(),
+            total_added: totalAdded.toString(),
+            total_skipped: totalSkipped.toString(),
+            campaigns: campaignIds.length.toString(),
+          },
+        }).catch(() => {})
+      } catch (leadErr) {
+        const leadErrMsg = getErrorMessage(leadErr)
+        safeError(`[push-emailbison] lead upload failed for ${clientId}: ${leadErrMsg}`)
+        await repo.appendAutomationLog(clientId, {
+          step: 'lead_upload',
+          status: 'failed',
+          error: leadErrMsg,
+          timestamp: new Date().toISOString(),
+        })
+        sendSlackAlert({
+          type: 'inngest_failure',
+          severity: 'critical',
+          message: `Lead upload FAILED for ${client.company_name} — campaigns created but leads NOT uploaded. Manual CSV upload required.`,
+          metadata: { client_id: clientId, company: client.company_name, error: leadErrMsg },
+        }).catch(() => {})
+      }
+    }
+
     // Auto-promote status to 'active' if all gates pass — same logic the
     // Inngest handler had, kept here so we match the documented flow.
     const fresh = await repo.findById(clientId)
@@ -208,6 +287,7 @@ export async function POST(
       dryRun,
       campaigns: result.campaigns,
       campaign_ids: campaignIds,
+      lead_upload: leadUploadResult,
     })
   } catch (error: unknown) {
     const errorMessage = getErrorMessage(error)

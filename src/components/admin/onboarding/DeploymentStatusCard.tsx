@@ -30,6 +30,10 @@ interface PushResponse {
     variants: number
   }>
   campaign_ids?: string[]
+  lead_upload?: {
+    total_leads: number
+    per_campaign: Array<{ campaignId: string; added: number; skipped: number; error?: string }>
+  } | null
   error?: string
   hint?: string
 }
@@ -150,6 +154,21 @@ export default function DeploymentStatusCard({
                 </li>
               ))}
             </ul>
+          </div>
+        )}
+
+        {result?.lead_upload && (
+          <div className="rounded-md border border-blue-200 bg-blue-50 p-2 space-y-0.5">
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-blue-700">
+              Leads uploaded
+            </p>
+            <p className="text-xs text-blue-900">
+              {result.lead_upload.per_campaign.reduce((s, c) => s + c.added, 0)} added,{' '}
+              {result.lead_upload.per_campaign.reduce((s, c) => s + c.skipped, 0)} skipped
+              {' '}across {result.lead_upload.per_campaign.length} campaign
+              {result.lead_upload.per_campaign.length === 1 ? '' : 's'}{' '}
+              ({result.lead_upload.total_leads} total parsed)
+            </p>
           </div>
         )}
 

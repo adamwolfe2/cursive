@@ -314,8 +314,9 @@ export class LeadRepository {
     workspaceId: string,
     filters: LeadFilters = {}
   ): Promise<string> {
-    // Fetch all leads without pagination for export
-    const result = await this.findByWorkspace(workspaceId, filters, 1, 10000)
+    // Cap at 5000 rows to prevent OOM under concurrent exports.
+    // Rate limiting (10 exports/hour) is enforced by the calling route.
+    const result = await this.findByWorkspace(workspaceId, filters, 1, 5000)
 
     // CSV headers
     const headers = [

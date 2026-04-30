@@ -137,14 +137,38 @@ export class OnboardingClientRepository {
   }
 
   /**
-   * Append an entry to the automation_log JSONB array
+   * Append an entry to the automation log.
+   *
+   * Dual-write strategy (transition period):
+   * 1. Write a new row to onboarding_automation_log (normalized, no OOM risk).
+   * 2. Also append to the legacy JSONB array on onboarding_clients so code that
+   *    reads `client.automation_log` directly continues to work without changes.
+   *
+   * After all callers migrate to getAutomationLog(), step 2 can be removed.
    */
   async appendAutomationLog(id: string, entry: AutomationLogEntry): Promise<void> {
     const supabase = createAdminClient()
 
-    // Retry loop with optimistic locking — prevents lost entries when multiple
-    // Inngest steps append concurrently. `.select()` returns the updated rows
-    // so we can detect zero-row updates (lock conflict).
+    // 1. Write to the new normalized table — single INSERT, no read-modify-write.
+    const { error: insertError } = await supabase
+      .from('onboarding_automation_log')
+      .insert({
+        client_id: id,
+        step: entry.step,
+        status: entry.status,
+        error: entry.error ?? null,
+        metadata: null,
+        timestamp: entry.timestamp,
+      })
+
+    if (insertError) {
+      // Non-fatal — log and fall through to JSONB write so we don't lose data entirely.
+      // eslint-disable-next-line no-console
+      console.error('[OnboardingClientRepository] Failed to insert automation log row:', insertError)
+    }
+
+    // 2. Legacy JSONB dual-write: retry loop with optimistic locking to prevent
+    //    lost entries when multiple Inngest steps append concurrently.
     for (let attempt = 0; attempt < 5; attempt++) {
       const { data: current, error: readError } = await supabase
         .from('onboarding_clients')
@@ -174,9 +198,35 @@ export class OnboardingClientRepository {
       }
 
       // Zero rows updated = lock conflict, retry with fresh read
-      // Back off slightly to reduce contention
       await new Promise((resolve) => setTimeout(resolve, 10 * (attempt + 1)))
     }
+  }
+
+  /**
+   * Fetch automation log entries for a client from the normalized table.
+   * Returns the 200 most recent entries, newest first.
+   * Prefer this method over reading client.automation_log (JSONB) directly.
+   */
+  async getAutomationLog(clientId: string): Promise<AutomationLogEntry[]> {
+    const supabase = createAdminClient()
+
+    const { data, error } = await supabase
+      .from('onboarding_automation_log')
+      .select('step, status, error, timestamp')
+      .eq('client_id', clientId)
+      .order('timestamp', { ascending: false })
+      .limit(200)
+
+    if (error) {
+      throw new DatabaseError(error.message)
+    }
+
+    return (data ?? []).map((row) => ({
+      step: row.step,
+      status: row.status as AutomationLogEntry['status'],
+      error: row.error ?? undefined,
+      timestamp: row.timestamp,
+    }))
   }
 
   // ---------------------------------------------------------------------------
