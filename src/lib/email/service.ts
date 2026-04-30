@@ -120,17 +120,19 @@ export async function sendEmail(options: SendEmailOptions): Promise<EmailResult>
  */
 export async function sendWelcomeEmail(
   email: string,
-  userName: string
+  userName: string,
+  workspaceName?: string
 ): Promise<EmailResult> {
-  const loginUrl = `${process.env.NEXT_PUBLIC_APP_URL}/login`
+  const appUrl = (process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_SITE_URL || 'https://leads.meetcursive.com').replace(/\/+$/, '')
+  const setupUrl = `${appUrl}/setup`
 
   const html = await renderEmail(
-    WelcomeEmail({ userName, loginUrl })
+    WelcomeEmail({ userName, loginUrl: setupUrl, setupUrl, workspaceName })
   )
 
   return sendEmail({
     to: email,
-    subject: 'Welcome to Cursive!',
+    subject: 'Your Cursive workspace is ready — see your first leads',
     html,
     tags: [{ name: 'category', value: 'welcome' }],
   })

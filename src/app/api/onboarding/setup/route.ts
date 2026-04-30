@@ -656,7 +656,7 @@ export async function POST(request: NextRequest) {
     })
 
     // Non-blocking welcome email (fire-and-forget)
-    sendWelcomeEmail(validated.email, validated.firstName).catch((error) => {
+    sendWelcomeEmail(validated.email, validated.firstName, validated.companyName).catch((error) => {
       safeError('[Onboarding] Welcome email failed:', error)
     })
 

@@ -23,10 +23,13 @@ export const metadata: Metadata = {
 export default async function SetupPage({
   searchParams,
 }: {
-  searchParams: Promise<{ targeting_failed?: string }>
+  searchParams: Promise<{ targeting_failed?: string; returning?: string }>
 }) {
   const params = await searchParams
   const targetingFailed = params.targeting_failed === 'true'
+  // ?returning=true is set by AutoSubmitOnboarding when redirecting back to /setup
+  // after a previous incomplete visit. We also infer it from existing pixel/targeting state.
+  const explicitReturning = params.returning === 'true'
 
   const supabase = await createClient()
   const {
@@ -78,6 +81,11 @@ export default async function SetupPage({
     redirect('/dashboard')
   }
 
+  // User is returning if: they explicitly passed ?returning=true, or they already
+  // have either a pixel or targeting saved (i.e. they were here before and partially
+  // completed setup before closing the browser).
+  const isReturning = explicitReturning || hasPixel || hasTargeting
+
   // Pre-fill the URL input from the auto-provisioned pixel's domain (if any),
   // so the user only has to type something if they want to change it. Most
   // business signups already have a pixel auto-created from their email domain.
@@ -89,6 +97,7 @@ export default async function SetupPage({
         initialUrl={initialUrl}
         userName={userData.full_name ?? null}
         targetingFailed={targetingFailed}
+        isReturning={isReturning}
         existingPixel={
           existingPixel
             ? {

@@ -279,28 +279,29 @@ export function Callout({ children, variant = 'info' }: CalloutProps) {
 interface WelcomeEmailProps {
   userName: string
   loginUrl: string
+  /** URL for the setup wizard — defaults to loginUrl/setup if not provided */
+  setupUrl?: string
+  /** Workspace / company name shown in the email */
+  workspaceName?: string
 }
 
-export function WelcomeEmail({ userName, loginUrl }: WelcomeEmailProps) {
+export function WelcomeEmail({ userName, loginUrl, setupUrl, workspaceName }: WelcomeEmailProps) {
+  const ctaUrl = setupUrl || loginUrl
+  const displayName = workspaceName ? workspaceName : null
   return (
-    <EmailLayout preview="Welcome to Cursive - Your B2B Lead Intelligence Platform">
-      <Heading>Welcome to Cursive!</Heading>
+    <EmailLayout preview="Your Cursive workspace is ready — see your first leads">
+      <Heading>Your workspace is ready{displayName ? `, ${displayName}` : ''}!</Heading>
       <Text>Hi {userName},</Text>
       <Text>
-        Thank you for signing up for Cursive. We&apos;re excited to help you
-        discover companies actively researching topics relevant to your business.
+        Your Cursive account is set up and your first batch of enriched leads is being assembled right now.
+        One quick step and you&apos;ll see them: enter your website URL so we can match your audience.
       </Text>
-      <Text>Here&apos;s what you can do to get started:</Text>
-      <ul style={{ margin: '0 0 16px', paddingLeft: '20px', color: '#4b5563' }}>
-        <li>Create your first query to track a topic</li>
-        <li>Set up integrations with your CRM</li>
-        <li>Explore trending topics in your industry</li>
-      </ul>
       <div style={{ textAlign: 'center', margin: '24px 0' }}>
-        <Button href={loginUrl}>Get Started</Button>
+        <Button href={ctaUrl}>See My First Leads</Button>
       </div>
+      <Text>Takes about 30 seconds. We&apos;ll analyze your site, configure your audience, and pull real leads — no code required.</Text>
       <Text style={{ color: '#6b7280', fontSize: '12px' }}>
-        If you have any questions, just reply to this email. We&apos;re here to help!
+        Questions? Reply to this email and we&apos;ll help you out.
       </Text>
     </EmailLayout>
   )

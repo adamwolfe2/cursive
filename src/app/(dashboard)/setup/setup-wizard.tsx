@@ -89,6 +89,9 @@ interface SetupWizardProps {
   targetingFailed?: boolean
   existingPixel: ExistingPixel | null
   existingTargeting: ExistingTargeting | null
+  /** True when the user previously visited /setup but didn't complete it.
+   *  Triggers "welcome back" copy instead of first-time copy. */
+  isReturning?: boolean
 }
 
 // ─── Phase machine ────────────────────────────────────────────────────────────
@@ -118,6 +121,7 @@ export function SetupWizard({
   targetingFailed = false,
   existingPixel,
   existingTargeting: _existingTargeting,
+  isReturning = false,
 }: SetupWizardProps) {
   const router = useRouter()
   const toast = useToast()
@@ -324,11 +328,14 @@ export function SetupWizard({
       {/* Header */}
       <div className="mb-8 text-center sm:text-left">
         <h1 className="text-2xl font-bold text-foreground sm:text-3xl">
-          Let&apos;s find your first leads, {firstName}
+          {isReturning
+            ? `Welcome back, ${firstName} — let's finish where you left off`
+            : `Let's find your first leads, ${firstName}`}
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          One step. Enter your website and we&apos;ll set up your pixel,
-          analyze your site, and pull your first batch of enriched leads.
+          {isReturning
+            ? 'One more step. Enter your website and we\'ll pull your first batch of enriched leads.'
+            : 'One step. Enter your website and we\'ll set up your pixel, analyze your site, and pull your first batch of enriched leads.'}
         </p>
       </div>
 
