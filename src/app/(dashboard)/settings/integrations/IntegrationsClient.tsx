@@ -9,6 +9,7 @@ import { SlackIntegration } from '@/components/integrations/slack-integration'
 import { ZapierIntegration } from '@/components/integrations/zapier-integration'
 import { HubSpotIntegration } from '@/components/integrations/hubspot-integration'
 import { GoHighLevelIntegration } from '@/components/integrations/gohighlevel-integration'
+import { ShopifyIntegration } from '@/components/integrations/shopify-integration'
 import { IntegrationSyncHealth } from '@/components/integrations/IntegrationSyncHealth'
 import {
   Dialog,
@@ -348,12 +349,13 @@ export default function IntegrationsClient() {
         </div>
       </div>
 
-      {/* CRM Integrations — live OAuth connections */}
+      {/* CRM & Ecommerce Integrations — live OAuth connections */}
       <div>
-        <h2 className="text-lg font-semibold text-zinc-900 mb-4">CRM Integrations</h2>
+        <h2 className="text-lg font-semibold text-zinc-900 mb-4">CRM & Ecommerce Integrations</h2>
         <div className="grid gap-6 md:grid-cols-2">
           <GoHighLevelIntegration workspaceId={user?.workspace_id ?? ''} isPro={isPro} />
           <HubSpotIntegration workspaceId={user?.workspace_id ?? ''} isPro={isPro} />
+          <ShopifyIntegration workspaceId={user?.workspace_id ?? ''} isPro={isPro} />
         </div>
       </div>
 
@@ -896,8 +898,8 @@ export default function IntegrationsClient() {
         </div>
       )}
 
-      {/* Sync Health — shown only when GoHighLevel, HubSpot, or Salesforce is connected */}
-      <IntegrationSyncHealth connectedIntegrations={['gohighlevel', 'hubspot', 'salesforce']} />
+      {/* Sync Health — shown when any CRM/ecommerce integration is connected */}
+      <IntegrationSyncHealth connectedIntegrations={['gohighlevel', 'hubspot', 'shopify', 'salesforce']} />
 
       {/* Regenerate Webhook Secret Confirmation Dialog */}
       <Dialog open={confirmRegenerateSecret} onOpenChange={setConfirmRegenerateSecret}>
