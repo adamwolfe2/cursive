@@ -13,6 +13,7 @@ export const INTEGRATION_LOGOS: Record<string, { src: string; alt: string }> = {
   'google-sheets': { src: '/Google_Sheets_Logo_512px.png', alt: 'Google Sheets' },
   'microsoft-teams': { src: '/Microsoft_Teams.png', alt: 'Microsoft Teams' },
   discord: { src: '/concours-discord-cartes-voeux-fortnite-france-6.png', alt: 'Discord' },
+  // GHL + Shopify use FallbackIcon until logo files are added to /public
 }
 
 // Fallback icon component when logo is not available
@@ -24,6 +25,8 @@ export function FallbackIcon({ name }: { name: string }) {
     'google-sheets': 'bg-green-500',
     'microsoft-teams': 'bg-indigo-500',
     discord: 'bg-indigo-600',
+    gohighlevel: 'bg-sky-600',
+    shopify: 'bg-emerald-600',
   }
 
   const labels: Record<string, string> = {
@@ -33,6 +36,8 @@ export function FallbackIcon({ name }: { name: string }) {
     'google-sheets': 'GS',
     'microsoft-teams': 'MT',
     discord: 'DC',
+    gohighlevel: 'GHL',
+    shopify: 'SH',
   }
 
   return (
