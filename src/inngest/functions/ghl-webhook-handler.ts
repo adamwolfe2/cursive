@@ -9,7 +9,11 @@
  *   - ContactCreate / ContactUpdate         → audit + reverse-sync hook
  *   - OpportunityCreate / OpportunityStatusUpdate → fire pipeline lifecycle
  *   - InboundMessage / OutboundMessage      → log for engagement scoring
- *   - CallStatusUpdate                       → log for engagement scoring
+ *
+ * Call-event tracking is intentionally NOT subscribed: GHL Marketplace does
+ * not expose a generic 'CallStatusUpdate' event. The closest is
+ * 'VoiceAiCallEnd', which requires the voice-ai-dashboard scope. Add both
+ * the scope + that subscription if/when call attribution becomes a feature.
  *
  * For now we persist every event to audit_logs (already done in the webhook
  * route) and emit lifecycle events when relevant. Full bidirectional sync
@@ -52,7 +56,6 @@ export const ghlWebhookHandler = inngest.createFunction(
 
       case 'InboundMessage':
       case 'OutboundMessage':
-      case 'CallStatusUpdate':
         // Engagement signals — already persisted to audit_logs for later scoring.
         return { handled: true, routedTo: 'engagement_log' }
 

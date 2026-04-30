@@ -1,19 +1,26 @@
 /**
- * GoHighLevel Inbound Webhook Handler
+ * GoHighLevel Marketplace Inbound Webhook Handler
  * Cursive Platform
  *
- * Receives webhook events from GoHighLevel (contact updates, opportunity stage
- * changes, message events, call recordings, etc.) and routes them to the
+ * Receives webhook events from GHL Marketplace apps (contact updates,
+ * opportunity stage changes, conversation messages) and routes them to the
  * appropriate Inngest handler for async processing.
  *
- * GHL signs payloads with HMAC-SHA256 using the webhook secret configured in
- * the Marketplace app settings (header: x-wh-signature). We verify the
- * signature against the RAW body before parsing JSON.
+ * SIGNATURE VERIFICATION (RSA, not HMAC):
+ *   GHL Marketplace signs every webhook with their PRIVATE RSA key. There is
+ *   no per-app shared secret. We verify the `x-wh-signature` header (base64
+ *   RSA-SHA256 signature of the raw body) against GHL's PUBLIC RSA key,
+ *   stored in env as GHL_MARKETPLACE_PUBLIC_KEY (PEM, including the
+ *   `-----BEGIN PUBLIC KEY-----` / `-----END PUBLIC KEY-----` lines).
+ *
+ *   Get the current key from:
+ *     https://highlevel.stoplight.io/docs/integrations/  (Webhooks → Verify)
+ *   GHL rotates rarely; cache statically in env, redeploy on rotation.
  *
  * Configure in GHL Marketplace App → Webhooks:
  *   Endpoint: https://leads.meetcursive.com/api/webhooks/leadconnector
  *   Events: ContactCreate, ContactUpdate, OpportunityCreate, OpportunityStatusUpdate,
- *           InboundMessage, OutboundMessage, CallStatusUpdate
+ *           InboundMessage, OutboundMessage
  *
  * NOTE: Path is /leadconnector/, not /gohighlevel/. GHL's white-label policy
  * rejects any URL containing 'ghl' or 'highlevel' as a substring on the app.
@@ -30,63 +37,102 @@ import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
 const LOG_PREFIX = '[GHL Webhook]'
 const MAX_BODY_SIZE = 2 * 1024 * 1024 // 2MB
 
+// Cache the imported CryptoKey across requests to avoid re-parsing the PEM
+// on every webhook. Module-scope cache survives within the Edge isolate.
+let cachedPublicKey: CryptoKey | null = null
+
 /**
- * Constant-time string comparison.
+ * Decode base64 (standard or URL-safe) into a Uint8Array.
  */
-function safeEqual(a: string, b: string): boolean {
-  if (a.length !== b.length) return false
-  let result = 0
-  for (let i = 0; i < a.length; i++) {
-    result |= a.charCodeAt(i) ^ b.charCodeAt(i)
+function base64ToBytes(b64: string): Uint8Array {
+  // Normalize URL-safe base64 (+/_, no padding) to standard
+  const normalized = b64.replace(/-/g, '+').replace(/_/g, '/')
+  const padded = normalized + '='.repeat((4 - (normalized.length % 4)) % 4)
+  const binary = atob(padded)
+  const bytes = new Uint8Array(binary.length)
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i)
+  return bytes
+}
+
+/**
+ * Convert a PEM-encoded public key to an ArrayBuffer (SPKI DER).
+ */
+function pemToSpki(pem: string): ArrayBuffer {
+  const stripped = pem
+    .replace(/-----BEGIN [^-]+-----/g, '')
+    .replace(/-----END [^-]+-----/g, '')
+    .replace(/\s+/g, '')
+  // Slice into a real ArrayBuffer (not a SharedArrayBuffer view)
+  const bytes = base64ToBytes(stripped)
+  const buf = new ArrayBuffer(bytes.byteLength)
+  new Uint8Array(buf).set(bytes)
+  return buf
+}
+
+/**
+ * Lazy-load + cache the GHL marketplace public key as a CryptoKey.
+ */
+async function getGhlPublicKey(): Promise<CryptoKey | null> {
+  if (cachedPublicKey) return cachedPublicKey
+
+  const pem = process.env.GHL_MARKETPLACE_PUBLIC_KEY
+  if (!pem || !pem.includes('BEGIN PUBLIC KEY')) {
+    safeError(`${LOG_PREFIX} GHL_MARKETPLACE_PUBLIC_KEY missing or malformed`)
+    return null
   }
-  return result === 0
+
+  try {
+    const spki = pemToSpki(pem)
+    cachedPublicKey = await crypto.subtle.importKey(
+      'spki',
+      spki,
+      { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' },
+      false,
+      ['verify']
+    )
+    return cachedPublicKey
+  } catch (err) {
+    safeError(`${LOG_PREFIX} Failed to import GHL public key:`, err)
+    return null
+  }
 }
 
 /**
- * HMAC-SHA256 hex using Web Crypto API.
- */
-async function hmacSha256Hex(key: string, message: string): Promise<string> {
-  const enc = new TextEncoder()
-  const cryptoKey = await crypto.subtle.importKey(
-    'raw',
-    enc.encode(key),
-    { name: 'HMAC', hash: 'SHA-256' },
-    false,
-    ['sign']
-  )
-  const sig = await crypto.subtle.sign('HMAC', cryptoKey, enc.encode(message))
-  return Array.from(new Uint8Array(sig))
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('')
-}
-
-/**
- * Verify the inbound payload signature against GHL_WEBHOOK_SECRET.
+ * Verify the inbound payload signature against GHL's marketplace public key.
  *
- * GHL supports multiple signing schemes depending on app configuration. We
- * accept either:
- *   - Raw HMAC hex in `x-wh-signature` (legacy / shared-secret webhooks)
- *   - `sha256=<hex>` prefix in `x-wh-signature` (newer marketplace flow)
+ * GHL signs every marketplace webhook with their PRIVATE RSA key and sends
+ * the base64-encoded SHA-256 signature in the `x-wh-signature` header. We
+ * verify with their PUBLIC key — there is no shared secret to configure.
  */
 async function verifySignature(request: NextRequest, rawBody: string): Promise<boolean> {
-  const secret = process.env.GHL_WEBHOOK_SECRET
-  if (!secret) {
-    safeError(`${LOG_PREFIX} GHL_WEBHOOK_SECRET not configured`)
+  const key = await getGhlPublicKey()
+  if (!key) return false
+
+  const signatureB64 =
+    request.headers.get('x-wh-signature') || request.headers.get('x-ghl-signature')
+  if (!signatureB64) return false
+
+  try {
+    // Web Crypto wants a real ArrayBuffer (not a typed-array view) under
+    // strict TS lib settings — copy the bytes into a fresh ArrayBuffer.
+    const sigBytes = base64ToBytes(signatureB64.trim())
+    const sigBuf = new ArrayBuffer(sigBytes.byteLength)
+    new Uint8Array(sigBuf).set(sigBytes)
+
+    const dataBytes = new TextEncoder().encode(rawBody)
+    const dataBuf = new ArrayBuffer(dataBytes.byteLength)
+    new Uint8Array(dataBuf).set(dataBytes)
+
+    return await crypto.subtle.verify(
+      'RSASSA-PKCS1-v1_5',
+      key,
+      sigBuf,
+      dataBuf
+    )
+  } catch (err) {
+    safeError(`${LOG_PREFIX} Signature verify error:`, err)
     return false
   }
-
-  const signature =
-    request.headers.get('x-wh-signature') ||
-    request.headers.get('x-ghl-signature') ||
-    request.headers.get('x-webhook-signature')
-
-  if (!signature) {
-    return false
-  }
-
-  const expected = await hmacSha256Hex(secret, rawBody)
-  const provided = signature.replace(/^sha256=/, '').trim()
-  return safeEqual(provided.toLowerCase(), expected.toLowerCase())
 }
 
 /**
@@ -128,7 +174,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Payload too large' }, { status: 413 })
     }
 
-    // Verify signature
+    // Verify signature with GHL's public RSA key.
     const ok = await verifySignature(request, rawBody)
     if (!ok) {
       safeError(`${LOG_PREFIX} Signature verification failed`)
