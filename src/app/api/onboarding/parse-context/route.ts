@@ -10,7 +10,7 @@ import { parseIntakeContext } from '@/lib/services/onboarding/ai-intake-parser'
 import type { ContextFormat, TemplateData } from '@/types/onboarding-templates'
 
 const requestSchema = z.object({
-  raw_context: z.string().min(10, 'Context must be at least 10 characters').max(100000),
+  raw_context: z.string().min(10, 'Context must be at least 10 characters').max(250000),
   context_format: z.enum(['call_notes', 'email_thread', 'transcript', 'client_brief', 'mixed']).default('mixed'),
   template_data: z.record(z.unknown()).optional(),
 })
