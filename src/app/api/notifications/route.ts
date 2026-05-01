@@ -2,8 +2,6 @@
  * Notifications API
  * List and manage user notifications
  */
-export const runtime = 'edge'
-
 import { type NextRequest } from 'next/server'
 import { fastAuth } from '@/lib/auth/fast-auth'
 import { handleApiError, unauthorized, success, badRequest } from '@/lib/utils/api-error-handler'

@@ -2,8 +2,6 @@
  * Workspace Branding API
  * Get and update workspace branding (colors, logo)
  */
-export const runtime = 'edge'
-
 import { type NextRequest } from 'next/server'
 import { fastAuth } from '@/lib/auth/fast-auth'
 import { handleApiError, unauthorized, success, DatabaseError } from '@/lib/utils/api-error-handler'
