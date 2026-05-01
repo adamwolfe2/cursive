@@ -330,7 +330,7 @@ export default function InvoiceContractStep({
               <span className="ml-1 font-normal text-gray-400">— leave blank to send to client</span>
             </label>
             <input
-              type="email"
+              type="text"
               placeholder={clientEmail || 'your@email.com'}
               value={recipientOverride}
               onChange={(e) => setRecipientOverride(e.target.value)}
@@ -671,7 +671,7 @@ export default function InvoiceContractStep({
               <span className="ml-1 font-normal text-gray-400">— leave blank to send to client</span>
             </label>
             <input
-              type="email"
+              type="text"
               placeholder={clientEmail || 'your@email.com'}
               value={contractEmailOverride}
               onChange={(e) => setContractEmailOverride(e.target.value)}
