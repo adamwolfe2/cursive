@@ -260,5 +260,8 @@ export const { GET, POST, PUT } = serve({
     functions.resetUserDailyLeadCaps,
     functions.resetUserWeeklyLeadCaps,
     functions.resetUserMonthlyLeadCaps,
+
+    // ICP Audience Builder — Launch Video Campaign (one-shot manual trigger)
+    functions.icpAudienceBuilder,
   ],
 })
