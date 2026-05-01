@@ -666,6 +666,13 @@ export type Events = {
     data: Record<string, never>
   }
 
+  // ICP Audience Builder — Launch Video Campaign
+  'icp/audience-build': {
+    data: {
+      dry_run?: boolean
+    }
+  }
+
   // Autoresearch Events (Karpathy loop)
   'autoresearch/program.start': {
     data: {

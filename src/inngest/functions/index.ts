@@ -323,6 +323,9 @@ export {
   gmailReplyPollerPerAccount,
 } from './gmail-reply-poller'
 
+// ICP Audience Builder — Launch Video Campaign (one-shot manual trigger)
+export { icpAudienceBuilder } from './icp-audience-builder'
+
 // AudienceLab DFY Fulfillment Automation
 // Weekly Monday refresh of DFY client audiences (net-new leads)
 export { alAudienceRefresh } from './al-audience-refresh'
