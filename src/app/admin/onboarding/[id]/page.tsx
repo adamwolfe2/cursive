@@ -9,6 +9,7 @@ import type {
 import ClientDetailTabs from './ClientDetailTabs'
 import PortalLinkSection from './PortalLinkSection'
 import PipelineStatusBanner from '@/components/admin/onboarding/PipelineStatusBanner'
+import DeleteClientButton from '@/components/admin/onboarding/DeleteClientButton'
 import { generateStatusToken } from '@/lib/utils/status-token'
 import { ArrowLeft, ExternalLink } from 'lucide-react'
 
@@ -76,15 +77,18 @@ export default async function OnboardingClientDetailPage({ params }: PageProps) 
               </a>
             )}
           </div>
-          <a
-            href={statusUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-md border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50"
-          >
-            <ExternalLink className="h-3 w-3" />
-            Client Status Page
-          </a>
+          <div className="flex items-center gap-2">
+            <a
+              href={statusUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-md border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50"
+            >
+              <ExternalLink className="h-3 w-3" />
+              Client Status Page
+            </a>
+            <DeleteClientButton clientId={client.id} companyName={client.company_name} />
+          </div>
         </div>
       </div>
 

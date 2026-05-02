@@ -484,3 +484,29 @@ export async function deleteComment(commentId: string, clientId: string) {
 
   revalidatePath(`/admin/onboarding/${clientId}`)
 }
+
+// ---------------------------------------------------------------------------
+// Delete client
+// ---------------------------------------------------------------------------
+
+/**
+ * Permanently delete an onboarding client and all related data.
+ * Cascades: client_files, client_portal_approvals, client_portal_copy_comments,
+ *           client_portal_tokens, fulfillment_checklists, onboarding_automation_log.
+ * autoresearch_programs.client_id is SET NULL (non-destructive).
+ */
+export async function deleteClient(clientId: string): Promise<void> {
+  await requireAdmin()
+  const supabase = createAdminClient()
+
+  const { error } = await supabase
+    .from('onboarding_clients')
+    .delete()
+    .eq('id', clientId)
+
+  if (error) {
+    throw new Error(`Failed to delete client: ${error.message}`)
+  }
+
+  revalidatePath('/admin/onboarding')
+}
