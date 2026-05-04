@@ -1,8 +1,8 @@
-# Cursive — Cost of Goods Sold (COGS)
+# Cursive — Cost of Goods Sold (COGS) & Client Roster
 
 **Last updated:** 2026-05-04
 **Owner:** Adam
-**Purpose:** Single source of truth for what it costs to run Cursive each month and per client. Strict costs only.
+**Purpose:** Single source of truth for what it costs to run Cursive each month, who is currently paying, and what's in the pipeline. Strict facts only.
 
 ---
 
@@ -10,16 +10,78 @@
 
 | Bucket | Monthly |
 |---|---|
-| **Fixed platform overhead (normalized)** | **$3,077** |
-| **Fixed platform overhead (current bill)** | **$3,310** |
-| **Variable cost per client onboarded** | **~$0.20** |
-| **Variable cost per dollar collected** | **2.9% + $0.30** (Stripe) |
+| **Active MRR (paying clients)** | **$7,100** |
+| **Confirmed but paused/warming** | $1,500 |
+| **Performance-contingent ceiling** | up to $20,000+ |
+| **Fixed platform overhead (normalized)** | $3,077 |
+| **Fixed platform overhead (current bill)** | $3,310 |
+| **Variable cost per client onboarded** | ~$0.20 |
+| **Variable cost per dollar collected** | 2.9% + $0.30 (Stripe) |
 
 The current bill is higher than normalized because Vercel Fluid Provisioned Memory is misconfigured (running active vs. per-user). Fix in flight.
 
+**Net contribution today (Active MRR − Normalized overhead):** ~$4,023/mo before labor.
+
 ---
 
-## 1. Fixed Monthly Overhead
+## 1. Active Paying Clients (Current MRR: $7,100)
+
+These clients are currently paying Cursive and using Cursive infrastructure (data, outbound, or both).
+
+| Client | Service | Monthly | Setup / Notes |
+|---|---|---|---|
+| **DevSwarm** | Lead data + outbound (using Cursive data to fund campaign) | **$5,500/mo** | Paying down $24,000 in invoices at $5,500/mo |
+| **Olander** | Pixel + Audience + Outbound (custom) — using Cursive data for leads + outbound | **$1,500/mo** | $3,500 setup paid |
+| **JustSearched (Jason Smith)** | Outbound (friend rate, testing) | **$100/mo** | $200 down. Cursive runs the outbound. |
+| **Total** | | **$7,100/mo** | |
+
+---
+
+## 2. Confirmed but Paused / Warming (Pipeline-Adjacent)
+
+Committed terms, not yet recognizing revenue.
+
+| Client | Status | Confirmed Terms |
+|---|---|---|
+| **Pitch&Co (Rob Seacat)** | Domains + inboxes purchased and warming. Client requested temporary pause; we plan to push through. | $1,500/mo + 10–15% on closed deals ($30K–$50K each). Full outbound managed by Cursive. |
+
+---
+
+## 3. Performance-Contingent (No MRR Until Trigger)
+
+Revenue depends on milestone achievement. No guaranteed monthly until performance hits.
+
+| Client | Trigger | Potential |
+|---|---|---|
+| **Superpower Mentors** | $0 until 100 form completions delivered. After trigger: ongoing engagement. | Up to **$20,000/mo** |
+
+---
+
+## 4. Cross-Sell / Pixel Deployments (No Direct Cursive MRR)
+
+These accounts use Cursive infrastructure (typically the pixel) inside another AM Collective product. Revenue is recognized in the host project's P&L, not in Cursive MRR. Listed here for visibility because they consume Cursive overhead (Audience Lab pixel slots, GHL, Supabase).
+
+| Account | Host Project | Cursive Component |
+|---|---|---|
+| **Norman / Telegraph Commons** | Telegraph Commons | Pixel on site |
+| **LeaseStack onboarded users** | LeaseStack | Every new LeaseStack signup gets their own pixel (built-in cross-sell) |
+| **Brett Davis (print-on-demand / PPS)** | PPS | Pixel coming + potential outbound to identified visitors |
+
+---
+
+## 5. Pipeline / Opportunities (Not Closed)
+
+Active conversations. No commitment yet.
+
+| Lead | Source / Context |
+|---|---|
+| **Marshall Nebeker** — shipwithshore.com | Direct |
+| **Ajla Burina** — contactout.com | Darren's relationship |
+| **Brad Parnell** — genierocket.com | Has pixel on his site; opportunity to deploy across all GHL sub-accounts |
+
+---
+
+## 6. Fixed Monthly Overhead
 
 ### Sales / Distribution Stack
 
@@ -63,7 +125,7 @@ The current bill is higher than normalized because Vercel Fluid Provisioned Memo
 
 ---
 
-## 2. Variable Cost Per Client (Cursive-Borne)
+## 7. Variable Cost Per Client (Cursive-Borne)
 
 Sourced from `src/app/admin/api-costs/CostDashboard.tsx`. Anthropic Claude Sonnet 4 pricing: $3/1M input tokens, $15/1M output tokens.
 
@@ -83,7 +145,7 @@ Sourced from `src/app/admin/api-costs/CostDashboard.tsx`. Anthropic Claude Sonne
 
 ---
 
-## 3. Per-Transaction Cost
+## 8. Per-Transaction Cost
 
 | Item | Rate |
 |---|---|
@@ -91,7 +153,7 @@ Sourced from `src/app/admin/api-costs/CostDashboard.tsx`. Anthropic Claude Sonne
 
 ---
 
-## 4. Pass-Through Costs (Client-Paid)
+## 9. Pass-Through Costs (Client-Paid)
 
 Clients always cover their own infrastructure at-cost.
 
@@ -102,11 +164,24 @@ Clients always cover their own infrastructure at-cost.
 
 ---
 
-## 5. Not Currently a Cost
+## 10. Not Currently a Cost
 
-These are on free tiers or unused at meaningful volume. Listed for completeness — add to Section 1 if/when they cross into paid:
+These are on free tiers or unused at meaningful volume. Listed for completeness — add to Section 6 if/when they cross into paid:
 
 OpenAI, Gemini, Tavily, Perplexity, Serper, Firecrawl, BuiltWith, Clay, Fal.ai, Inngest, Sentry, PostHog.
+
+---
+
+## 11. Forward Revenue View
+
+| Scenario | Monthly |
+|---|---|
+| Today (Active only) | $7,100 |
+| + Pitch&Co resumes at confirmed terms | $8,600 |
+| + Superpower Mentors hits trigger (low end) | $13,600+ |
+| + Superpower Mentors hits trigger (high end) | $28,600+ |
+| + Pitch&Co performance bonus per closed deal ($30–50K × 10–15%) | +$3,000 to +$7,500 per deal |
+| + Pipeline conversions (Marshall / Ajla / Brad) | TBD on close |
 
 ---
 
@@ -114,6 +189,7 @@ OpenAI, Gemini, Tavily, Perplexity, Serper, Firecrawl, BuiltWith, Clay, Fal.ai, 
 
 | Number | Source |
 |---|---|
+| Active paying clients + amounts | Adam (verbal, 2026-05-04) |
 | Audience Lab $1,986/mo | Vendor invoice |
 | GoHighLevel $497/mo | Vendor invoice |
 | EmailBison $449.10/mo | Vendor invoice |
@@ -125,4 +201,4 @@ OpenAI, Gemini, Tavily, Perplexity, Serper, Firecrawl, BuiltWith, Clay, Fal.ai, 
 | Anthropic per-step token estimates | `src/app/admin/api-costs/CostDashboard.tsx` |
 | Sonnet 4 token pricing | Anthropic public pricing |
 | Stripe processing 2.9% + $0.30 | Stripe standard rate |
-| Inbox cost $3.50, retail $7–8 | Negotiated vendor rate |
+| Inbox cost $3.50 | Negotiated vendor rate |
