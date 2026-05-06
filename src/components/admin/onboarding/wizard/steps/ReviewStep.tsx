@@ -90,6 +90,12 @@ function initFromDeal(deal: DealState): ParsedIntakeData {
     fields_inferred: [],
     missing_critical_fields: missingCritical,
     additional_context: null,
+    // V3 copy generation fields — null/empty defaults; the AI intake parser
+    // populates these when context is available.
+    voice_profile: null,
+    spintax_enabled: null,
+    case_studies: [],
+    prospect_signal_template: null,
   }
 }
 

@@ -1,6 +1,18 @@
-// Claude Email Copy Generation Service, V2
-// Two-call pattern: Angle Selection -> Copy Writing with spintax
-// Generates high-converting outbound email sequences with deliverability optimization
+// Claude Email Copy Generation Service, V3 (precision doctrine)
+//
+// V3 differences from V2:
+//   1. Voice profiles replace the generic copy_tone field. Three options:
+//      founder_direct, agency_professional, consultant_authoritative.
+//   2. AOV-tier driven defaults. spintax_enabled, default angles, CTA ladder
+//      all derive from setup_fee + recurring_fee.
+//   3. Hard NO-FABRICATION rule. Social proof MUST come from <case_studies>.
+//   4. Per-position word caps: 75 (email 1), 60 (emails 2-3), 40 (breakup).
+//   5. CTA ladder enforced positionally: asset_offer -> soft_call_mention ->
+//      calendar_link -> breakup. No calendar in email 1.
+//   6. Expanded banned phrases (founder-to-founder, quick question, false
+//      scarcity, "Here's why" sentence starters, etc.).
+//
+// Two-call pattern unchanged: Angle Selection (Haiku) -> Copy Writing (Sonnet).
 
 import Anthropic from '@anthropic-ai/sdk'
 import type {
@@ -9,8 +21,18 @@ import type {
   DraftSequences,
   AngleSelection,
   QualityIssue,
+  VoiceProfile,
+  AovTier,
+  CaseStudy,
 } from '@/types/onboarding'
 import { checkSpendLimit, recordSpend } from '@/lib/services/api-spend-guard'
+import {
+  inferAovTier,
+  getAovTierSpec,
+  VOICE_PROFILES_KB,
+  CTA_LADDER_DOCTRINE,
+  ANGLE_LIBRARY,
+} from '@/lib/services/autoresearch/cold-email-knowledge'
 
 // Models, picked per call site:
 //   - Sonnet 4 for the creative/strategic core (writeCopy, regenerateSingleEmail, regenerateEmailSequences)
@@ -44,6 +66,145 @@ const INPUT_COST_PER_TOKEN = SONNET_INPUT_PER_TOKEN
 const OUTPUT_COST_PER_TOKEN = SONNET_OUTPUT_PER_TOKEN
 
 // ---------------------------------------------------------------------------
+// Per-position word caps (precision doctrine)
+// ---------------------------------------------------------------------------
+//
+// Hard limits enforced by both the prompt and the quality checker. The
+// previous V2 limit was a flat 95 words for every email, which produced
+// blog-post-length email 1s and bloated breakups. The new caps mirror what
+// real founders actually write at each position in the sequence.
+
+export const WORD_CAPS_BY_POSITION = {
+  email_1: 75, // The hook. Every word earned.
+  email_2_3: 60, // Proof / shift. Tight.
+  email_4_breakup: 40, // Two-line goodbye. No more.
+} as const
+
+/**
+ * Word cap for the email at the given step (1-indexed). Step 4 is the
+ * breakup. Steps 5+ (rare) reuse the breakup cap.
+ */
+export function wordCapForStep(step: number): number {
+  if (step <= 1) return WORD_CAPS_BY_POSITION.email_1
+  if (step <= 3) return WORD_CAPS_BY_POSITION.email_2_3
+  return WORD_CAPS_BY_POSITION.email_4_breakup
+}
+
+// ---------------------------------------------------------------------------
+// Derivations: voice profile, AOV tier, spintax flag
+// ---------------------------------------------------------------------------
+
+/**
+ * Derive the AOV tier for a client. If the client has fees set, use them; if
+ * not, default to "mid" (the safest assumption in the absence of data — high
+ * enough that we don't run aggressive volume tactics, low enough that we
+ * don't over-precision a SaaS lead-gen sequence).
+ */
+export function deriveAovTier(client: OnboardingClient): AovTier {
+  return inferAovTier({
+    setupFee: client.setup_fee,
+    recurringFee: client.recurring_fee,
+  })
+}
+
+/**
+ * Derive the voice profile.
+ *
+ * Order of precedence:
+ *  1. Explicit `voice_profile` set on the client record.
+ *  2. AOV tier default (high -> founder_direct, enterprise -> consultant,
+ *     low/mid -> agency_professional).
+ *  3. Legacy `copy_tone` heuristic — "Direct/Bold" or "Friendly/Casual" maps
+ *     to founder_direct; "Professional/Formal" maps to agency_professional.
+ *
+ * The function never returns null — it always picks a voice. The downstream
+ * prompt accepts only the three enum values.
+ */
+export function deriveVoiceProfile(client: OnboardingClient): VoiceProfile {
+  if (client.voice_profile) return client.voice_profile
+
+  const tierSpec = getAovTierSpec(deriveAovTier(client))
+  // Honor legacy copy_tone if it points at a different voice and the AOV tier
+  // hasn't picked something more specific.
+  if (client.copy_tone) {
+    const tone = client.copy_tone.toLowerCase()
+    if (tone.includes('direct') || tone.includes('bold') || tone.includes('friendly') || tone.includes('casual')) {
+      // Tone signals informal — but only override agency_professional. Don't
+      // downshift consultant_authoritative or founder_direct.
+      if (tierSpec.default_voice === 'agency_professional') return 'founder_direct'
+    }
+  }
+
+  return tierSpec.default_voice
+}
+
+/**
+ * Derive whether spintax should be enabled.
+ *
+ * Order of precedence:
+ *  1. Explicit `spintax_enabled` boolean on the client record.
+ *  2. AOV tier default (high/enterprise -> false, low/mid -> true).
+ *
+ * Rationale: spintax-everywhere makes sense for high-volume commodity
+ * outbound where you want to test 256 variants. For a founder writing 30
+ * emails a week to specific people, spintax masks the quality of the
+ * underlying copy and makes every line read like 3 mediocre versions of the
+ * same thought. OFF by default for high-AOV.
+ */
+export function deriveSpintaxEnabled(client: OnboardingClient): boolean {
+  if (typeof client.spintax_enabled === 'boolean') return client.spintax_enabled
+  return getAovTierSpec(deriveAovTier(client)).spintax_default
+}
+
+// ---------------------------------------------------------------------------
+// Voice profile spec lookup (for prompt construction)
+// ---------------------------------------------------------------------------
+
+function voiceProfileSpec(profile: VoiceProfile) {
+  const spec = VOICE_PROFILES_KB.find((v) => v.id === profile)
+  if (!spec) throw new Error(`Unknown voice profile: ${profile}`)
+  return spec
+}
+
+// ---------------------------------------------------------------------------
+// Case study formatting for prompt injection
+// ---------------------------------------------------------------------------
+
+/**
+ * Format the case_studies array into a deterministic <case_studies> block.
+ * Filters out unnamed studies (is_named = false) when formatting for cold
+ * email — un-named results are still usable as quantified proof but the
+ * client_name is replaced with "a similar [type] company".
+ */
+function formatCaseStudies(studies: ReadonlyArray<CaseStudy>): string {
+  if (!studies || studies.length === 0) {
+    return [
+      '<case_studies>',
+      '(none provided)',
+      'You may NOT reference any specific named clients, client counts, or quantified results in the copy. Use the in-group signal style instead — e.g., "I work with launch-stage AI founders on their first-impression video" — without a quantified claim.',
+      '</case_studies>',
+    ].join('\n')
+  }
+
+  const lines: string[] = ['<case_studies>']
+  lines.push('These are the ONLY case studies you may reference. Do not invent client counts, quantified results, or named customers beyond what appears here.')
+  lines.push('')
+  for (const study of studies) {
+    const name = study.is_named ? study.client_name : `a similar company (${study.engagement.split(' ').slice(0, 4).join(' ')})`
+    const result = study.results?.trim() || '(no quantified result on record)'
+    lines.push(`- ${name}: ${study.engagement}. Result: ${result}.`)
+    if (study.url) lines.push(`  Asset URL: ${study.url}`)
+  }
+  lines.push('')
+  lines.push('Rules:')
+  lines.push('- If you reference a named client, the name MUST appear above. No other names allowed.')
+  lines.push('- If you reference a quantified result, the number MUST appear above. No other numbers allowed.')
+  lines.push('- For unnamed entries, do not invent a name — use "a similar X company" or rephrase to remove the claim.')
+  lines.push('</case_studies>')
+  return lines.join('\n')
+}
+
+// ---------------------------------------------------------------------------
 // Lazy-initialized Anthropic client
 // ---------------------------------------------------------------------------
 
@@ -64,239 +225,372 @@ function getAnthropicClient(): Anthropic {
 // CALL 1: Angle Selection System Prompt
 // ---------------------------------------------------------------------------
 
-const ANGLE_SELECTION_PROMPT = `You are a cold email strategist. Your job is to analyze the research on a client and their target prospects, then select the 3 strongest messaging angles for cold outbound email sequences.
+const ANGLE_SELECTION_PROMPT = `You are a cold email strategist for B2B service businesses. Your job is to analyze the client's offer and target prospects, then select 3 strongest messaging angles given the AOV tier and the client's available case studies.
 
-Each angle must be fundamentally different — not just a different tone, but a different REASON the prospect should care. Think about it from the prospect's perspective: what would make ME stop and read this?
+═══ AOV-WEIGHTED ANGLE SELECTION ═══
 
-Consider these angle categories and select the 3 that are strongest for this specific ICP:
+The user message includes <aov_tier> (low / mid / high / enterprise) and <available_angles> (the angles permitted for this tier — you MUST pick from this list, not from outside it). The avoid_angles for the tier have already been filtered out before they reach you.
 
-- Pain agitation: Lead with the problem they're experiencing, make them feel it, then offer relief
-- Outcome/result: Lead with a specific result achieved for a similar company
-- Contrarian/pattern interrupt: Challenge something they believe, open a curiosity gap
-- Social proof/FOMO: Show them that peers/competitors are already doing this
-- Authority/expertise: Demonstrate deep understanding of their world before pitching
-- Question-led: Ask a question that's hard to ignore because it's so relevant
-- Compliment + pivot: Acknowledge something they're doing well, then show how to amplify it
-- Trigger event: Reference something happening in their market/company right now
-- Direct challenge: Be blunt about a gap in their strategy (works for sophisticated buyers)
-- Data/insight: Lead with a surprising stat or insight about their industry
+For HIGH and ENTERPRISE tier (precision doctrine):
+- DEFAULT picks: specific_signal_observation, quiet_proof, curiosity_soft_question
+- Why: high-trust offers ($15K+ AOV, often founder-led) cannot lead with friction or fabricated social proof. The first touch must EARN the reply.
+- AVOID: pain_agitation, social_proof_fomo, direct_challenge as email-1 angles. They burn the cold contact at this AOV.
 
-Do NOT always pick Pain, Social Proof, and Direct. Actually think about which 3 are BEST for this specific prospect profile.
+For LOW and MID tier (volume doctrine):
+- DEFAULT picks: pain_agitation, outcome_result, data_insight
+- Why: at high volume with smaller ACV, you need angles that work at scale and convert through friction.
 
-Output valid JSON only:
+═══ CASE STUDY DEPENDENCY ═══
+
+Some angles REQUIRE a case study to be selectable. The user message includes <case_studies>. If the case studies block is empty:
+- DO NOT pick: quiet_proof, outcome_result, social_proof_fomo, mutual_pattern_recognition
+- These angles cannot work without real proof; picking them forces the writer to fabricate, which is a hard ban.
+
+═══ ANGLE DIFFERENTIATION ═══
+
+Each of the 3 angles you pick must be fundamentally different — not just a different tone, but a different REASON the prospect should care. Think about it from the prospect's perspective.
+
+═══ OUTPUT (JSON only) ═══
+
 {
   "selected_angles": [
     {
-      "angle_name": "short label",
-      "angle_category": "one of the categories above",
+      "angle_name": "short human-readable label",
+      "angle_category": "id from <available_angles>",
       "core_insight": "the truth we are leveraging",
-      "emotional_driver": "fear/curiosity/ambition/frustration/FOMO/ego",
-      "proof_mechanism": "how we back it up — stat, case study, logic, social proof, authority",
+      "emotional_driver": "curiosity | aspiration | recognition | trust | urgency | FOMO | frustration | ego | reciprocity",
+      "proof_mechanism": "case study | logic | observed pattern | published data | in-group signal",
       "sequence_arc": {
-        "email_1_purpose": "what email 1 does in 1 sentence",
+        "email_1_purpose": "what email 1 does in 1 sentence (must respect CTA ladder for high-trust: asset offer only)",
         "email_2_purpose": "what email 2 does",
-        "email_3_purpose": "what email 3 does",
+        "email_3_purpose": "what email 3 does (calendar link first appears here for high-trust)",
         "email_4_purpose": "what the breakup email does"
       },
-      "why_this_works": "specific reasoning for this ICP"
+      "why_this_works": "specific reasoning for this ICP and AOV tier"
     }
   ],
   "angles_considered_but_rejected": [
-    {
-      "angle": "name",
-      "reason_rejected": "why it will not work for this audience"
-    }
+    { "angle": "id", "reason_rejected": "why it will not work for this audience or tier" }
   ]
-}`
+}
+
+Return only the JSON. No prose, no markdown fences.`
 
 // ---------------------------------------------------------------------------
 // CALL 2: Copy Writing System Prompt
 // ---------------------------------------------------------------------------
 
-const COPY_WRITING_PROMPT = `You are an elite B2B cold email copywriter. You have written tens of thousands of cold emails and you know exactly what gets replies and what gets deleted. You are not a template machine. You are a strategist who writes emails that feel like they came from a thoughtful human who did their research.
+const COPY_WRITING_PROMPT = `You are a cold email copywriter for high-trust, often founder-led B2B service businesses. The clients you write for sell premium services ($10K-$100K+ engagements) — creative production, consulting, fractional executive work, professional services. You are writing emails that REAL FOUNDERS will personally send. These must sound like a real human wrote them — one specific person writing to one specific person.
 
-YOUR RULES, VIOLATE NONE OF THESE:
+The user message will tell you the AOV tier, the voice profile, the case studies you may reference, and the spintax setting. Read those blocks carefully — they are the difference between copy that gets replies and copy that gets archived.
 
-THE OFFER (HIGHEST PRIORITY RULE):
-- The user message includes a <service_offering> block. That is exactly what this client sells. Every email in every sequence must reinforce THAT offer. Not a generic version. Not an agency-revenue narrative. THAT specific offering.
-- If <service_offering> says the client helps companies find intent-based audiences already searching for them, every sequence must be about THAT, not about partnership revenue, not about hourly billing replacement, not about generic growth.
-- If you are about to write a sentence that does not reinforce the specific offer above, delete it and write a different one.
+YOUR ABSOLUTE RULES (violate none of these):
 
-NO EM-DASHES, NO EN-DASHES (HARD DELIVERABILITY + HUMAN-FEEL RULE):
-- Never use the em-dash character (—) anywhere. Subject, body, preview text, anywhere.
-- Never use the en-dash character (–) anywhere.
-- Use a comma, a period, parentheses, or two short sentences instead. Em-dashes are a known AI-generation tell that destroys reply rates.
-- Hyphens inside compound words (state-of-the-art, B2B) are fine. Em-dash sentence breaks are not.
+═══ NO FABRICATED SOCIAL PROOF (HARDEST RULE) ═══
 
-SEQUENCE COHERENCE RULES (NO PHANTOM CALLBACKS):
-- You are writing a sequence of emails to ONE prospect. Each email must be coherent with the prior emails IN THE SAME SEQUENCE you are generating.
-- DO NOT reference content that does not exist in earlier emails of THIS sequence. No "that creative waste comment," no "as we discussed," no "Following up on the revenue model conversation," no "your team's response to my last note."
-- A follow-up may reference a topic raised in a prior step ONLY if that topic appears literally in the prior step's body. If you reference "creative waste," step 1 must actually mention creative waste.
-- Email 2 should add NEW value (proof, data, story) on the SAME thread as email 1, not pretend a prior conversation happened.
-- Email 3 may pivot to a different angle, but it cannot reference a "comment" or "reply" or "conversation" the prospect never made.
-- Email 4 (breakup) is the only one allowed to reference "no response" or similar, because that is honest.
+You may ONLY reference social proof that appears in the <case_studies> block of the user message. The empty case_studies block is a real signal — it means there is no social proof to reference.
 
-FORMAT RULES:
-- Every email body is under 95 words. Not 100. Not 120. Under 95. Count them.
-- Subject lines are 1-6 words. Never longer. Never include the company name in subject. Never use clickbait.
-- Subject lines should feel lowercase, casual, and personal (e.g. "quick question", "audience precision", "worth 2 min?"). Capitalized clickbait subject lines hurt reply rates.
-- Use {{firstName}} for personalization. Use {{companyName}} only when it reads naturally.
-- No greetings like "Hi {{firstName}}," as the first line. The first line IS the hook. Open cold. Put "{{firstName}}," on its own line only if the tone calls for it, or weave the name into the opening naturally.
-- No email signatures in the body. The sending platform handles that.
-- No "Best regards", "Cheers", "Thanks", or sign-off fluff. End on the CTA or a short closer.
-- One CTA per email. One. Not "book a call or reply or check out our site." Pick one.
-- Short paragraphs. 1-2 sentences max per paragraph. White space is your friend.
-- No bullet points in email 1. Ever. It looks like a template. Bullets are acceptable in email 2 or 3 for proof points only.
+NEVER write any of these unless backed by an explicit entry in <case_studies>:
+- "X companies use us" / "trusted by X founders" / "we have worked with Y clients"
+- Named clients (e.g., "we worked with Stripe", "Stripe is one of our clients")
+- Revenue figures, view counts, conversion rates, ROI numbers, or any quantified result
+- "leading [industry] brands choose us" / "top-tier [industry] partners"
+- Implied client counts ("a few of the top 20", "several Series A founders")
 
-DELIVERABILITY RULES:
+If you catch yourself about to write a number or a client name that did not appear in <case_studies>, delete the sentence and write a different one. Generic in-group statements ("I work with launch-stage AI founders on their first-impression video") are FINE without quantification — quantification is what requires proof.
+
+═══ THE OFFER (highest priority rule) ═══
+
+The user message includes a <service_offering> block. That is exactly what this client sells. Every email in every sequence must reinforce THAT offer. Not a generic version. Not an agency-revenue narrative. THAT specific offering.
+
+If you are about to write a sentence that does not reinforce <service_offering>, delete it and write a different one.
+
+═══ NO EM-DASHES, NO EN-DASHES (deliverability + AI-tell guard) ═══
+
+Never use the em-dash character (—) anywhere. Subject, body, preview text, anywhere.
+Never use the en-dash character (–) anywhere.
+Use a comma, a period, parentheses, or two short sentences instead.
+Hyphens inside compound words (state-of-the-art, B2B) are fine. Em-dash sentence breaks are not.
+
+═══ WORD COUNT HARD CAPS (per email position) ═══
+
+These are HARD limits, not suggestions. Count words after stripping merge tags ({{firstName}}, {{companyName}}, {{prospectSignal}}).
+
+- Email 1 (the hook): max 75 words
+- Emails 2-3 (proof / shift): max 60 words
+- Email 4 (breakup): max 40 words
+
+If a draft goes over, rewrite tighter. Do not use bullets to compress — bullets are not allowed in email 1 anyway.
+
+═══ CTA LADDER (positional, no skipping rungs) ═══
+
+The CTA type is dictated by email position. Set the email's "cta_type" field accordingly.
+
+- Email 1: cta_type = "asset_offer". ALLOWED: link to a case study, video, or relevant content piece. ALLOWED: "happy to send it over" with a reply ask. FORBIDDEN: any calendar link, any time suggestion ("Thursday at 2pm"), any phrase asking for a meeting ("worth a 15-min chat?"). Email 1 earns the reply, not the call.
+- Email 2: cta_type = "soft_call_mention". ALLOWED: continue the asset offer. ALLOWED: soft mention of a call ("happy to jump on a quick call if it would be useful"). FORBIDDEN: direct calendar link with specific times.
+- Email 3: cta_type = "calendar_link". ALLOWED: direct calendar link. ALLOWED: ONE specific time suggestion. This is the FIRST place a calendar link may appear.
+- Email 4: cta_type = "breakup". FORBIDDEN: any CTA. Acknowledge silence honestly, leave the door open, sign off.
+
+If the user message says aov_tier is "low" or "mid" (volume doctrine), the CTA ladder relaxes: cta_type = "reply_only" is allowed in email 1, and the calendar link may appear earlier (email 2). For "high" and "enterprise" tier, follow the strict ladder above.
+
+═══ VOICE PROFILE (sets pronoun, sentence rhythm, signoff) ═══
+
+The user message includes <voice_profile> with id ∈ {founder_direct, agency_professional, consultant_authoritative}. Read the spec carefully and obey it exactly.
+
+founder_direct:
+- First-person singular. "I", not "we".
+- Short sentences mixed with one slightly longer sentence per email.
+- Sign with first name only on its own line (e.g., "Rob"). No "Best,", no "Thanks,", no role line.
+- Allowed deliberate imperfections: a one-word sentence, a comma where a more formal writer would put a period, a casual phrasing.
+- AVOID: corporate "we", titles in signature, formal greeting ("Hi {{firstName}},") as the first line.
+
+agency_professional:
+- First-person plural where natural ("we", "the team").
+- Slightly longer sentences (10-18 words on average), still crisp.
+- Sign with full name + role on separate lines.
+- AVOID: corporate jargon, long paragraphs, formal templates.
+
+consultant_authoritative:
+- First-person singular, confident framing.
+- May reference frameworks, methodologies, or proprietary processes naturally — never as a sales pitch.
+- Sign with full name. Optional one-line credential under the name.
+- AVOID: hedging ("I think", "perhaps"), arrogance, jargon-as-credential.
+
+═══ SIGNAL-ANCHORED OPENERS (email 1) ═══
+
+The user message MAY include <prospect_signal_template> — a description of what real signals look like for this ICP (e.g., "recent funding round", "key hire", "published essay"). The actual per-prospect signal is enriched at send time.
+
+When writing email 1:
+- If <prospect_signal_template> is provided, structure the opener so a per-prospect detail can be inserted as the first observation. Use the merge tag {{prospectSignal}} where the per-prospect detail will go.
+- If no template is provided, write the strongest cold-read observation for this ICP (a statement that applies to 80%+ of the audience but reads like it was written just for them).
+- The opener must feel like it could only have been written for this specific person. Generic openers ("Hope you're well", "Just reaching out") are banned.
+
+═══ SPINTAX (controlled by spintax_enabled flag) ═══
+
+The user message includes <spintax_config> with spintax_enabled ∈ {true, false}.
+
+When spintax_enabled = false (DEFAULT for high-AOV / precision):
+- Write ONE strong version of every line. No {a|b|c} syntax anywhere.
+- Subject line: one version, lowercase, 1-6 words.
+- Body: plain text. Merge tags ({{firstName}}, {{companyName}}, {{prospectSignal}}) are still allowed, but no spintax pipes.
+- Rationale: for high-trust offers, ONE precisely-crafted opener beats 3 mediocre variants.
+
+When spintax_enabled = true (volume outbound, low/mid AOV):
+- Use SINGLE-BRACE format only: {option1|option2|option3}
+- DOUBLE-BRACE {{ }} is for merge tags ONLY. NEVER put a pipe inside double braces.
+- Every email MUST include spintax in at least 3 places: subject (3-5 variants), opening line (2-3), CTA (2-3).
+- Spintax options must all read naturally and be roughly equal length.
+- Keep spintax segments short (2-8 words each). Never spintax entire sentences.
+
+═══ FORMAT RULES ═══
+
+- No greetings as first line. The first line IS the hook. Do not write "Hi {{firstName}}," or "Hello {{firstName}},".
+- Use {{firstName}} and {{companyName}} merge tags only where they read naturally.
+- Subject lines: 1-6 words, lowercase, no clickbait, no exclamation marks, no company name in subject.
+- Plain text only. No HTML, no images.
+- Max one exclamation mark in the entire body, and only if it reads naturally.
+- No ALL CAPS except acronyms (CEO, SaaS, ROI, B2B, AI).
+- One CTA per email. One. Pick one.
+- Short paragraphs. 1-2 sentences each. White space.
+- No bullets in email 1. Acceptable in email 2-3 for proof points only.
+- Vary sentence length. No identical opening across emails in the same sequence.
+
+═══ DELIVERABILITY ═══
+
 - No spam trigger words: free, guarantee, act now, limited time, click here, buy now, discount, offer, deal, congratulations, winner, urgent, expire
-- No ALL CAPS words (except acronyms like CEO, SaaS, ROI)
-- No exclamation marks in subject lines. Maximum one in the entire email body, and only if it reads naturally.
-- No more than one link per email (the CTA link). Prefer no links in email 1, just ask for a reply.
-- No images, no HTML formatting. Plain text only.
-- Vary sentence length. Mix short punchy sentences with slightly longer ones.
-- No identical opening across emails in the same sequence. Each email must start differently.
+- No more than one link per email. Prefer no link in email 1 — ask for a reply instead.
 
-SPINTAX RULES:
-- Use SINGLE-BRACE spintax format only: {option1|option2|option3}
-- DOUBLE-BRACE {{ }} is reserved for merge tags ONLY (e.g. {{firstName}}, {{companyName}}). NEVER put a pipe inside double braces. {{quick q|hi}} is INVALID and WILL leak raw braces into the recipient's inbox.
-- If a string contains a pipe (|), use SINGLE braces. Always.
-- Every email MUST include spintax in at least 3 places:
-  1. The subject line (provide 3-5 subject line variants in spintax)
-  2. The opening line/hook (provide 2-3 opening variants)
-  3. The CTA phrasing (provide 2-3 CTA variants)
-- Additional spintax in the body for key phrases where natural variation exists
-- Spintax options must all be roughly the same length and quality. Do not make one option clearly better, you are testing, not sandbagging.
-- Spintax must read naturally for ALL combinations. Read each variant out loud. If any combination sounds awkward, fix it.
-- DO NOT use spintax for {{firstName}} or {{companyName}}, those are merge tags, not spintax.
-- Keep spintax segments short (2-8 words each). Do not spintax entire sentences.
+═══ NO PHANTOM CALLBACKS (sequence coherence) ═══
 
-COPY QUALITY RULES:
+You are writing a sequence to ONE prospect. Each email must be coherent with prior emails IN THE SAME SEQUENCE.
+- DO NOT reference content that does not exist in earlier emails. No "as we discussed", no "your team's response", no "following up on the X conversation."
+- A follow-up may reference a topic only if it appears literally in a prior step.
+- Email 4 (breakup) is the only one allowed to reference no response, because that is honest.
+
+═══ BANNED PHRASES (regenerate if any appear) ═══
+
+Coined founder-talk clichés:
+- "founder-to-founder", "operator-to-operator", "founder tax", "operator tax"
+
+Filler openers:
+- "I hope this email finds you well", "hoping to connect", "hoping you're"
+- "I'd love to", "I'd be happy to" (as openers)
+- "I came across your", "I noticed that you"
+- "just wanted to reach out", "reaching out because", "I'm reaching out"
+
+Followup clichés:
+- "looping back", "circling back", "touching base", "just checking in", "just bumping this", "wanted to bump"
+
+"Quick" filler:
+- "quick question" (banned as opener AND subject), "quick collab", "quick chat" (as opener)
+
+Signposting that signals templated copy:
+- "Here's why", "Here's the thing", "Here's what I'm thinking" (as sentence starts)
+
+Hyperbolic competitor language:
+- "absurd pricing", "absurd price", "ridiculous pricing", "ridiculously expensive"
+
+False scarcity (LETHAL for high-trust):
+- "2 spots left", "final slots", "last spot", "limited availability", "this week only", "closing tomorrow", "taking only 3", "only taking 5"
+
+═══ AI-TELL WORDS (banned anywhere in body or subject) ═══
+
+delve, leverage, elevate, unlock, harness, navigate, robust, seamless, cutting-edge, game-changer, synergize, streamline, holistic approach, innovative solutions, empower, passionate about, in today's fast-paced, take it to the next level, deep dive, circle back
+
+═══ COPY QUALITY RULES ═══
+
 - The opening line must pass the "delete test": if you read ONLY the first line in a notification preview, would you open this email? If not, rewrite it.
 - Never start with "I" as the first word. Start with the prospect, their world, or a provocative observation.
-- Never say "I wanted to reach out", "I came across your company", "I noticed that", "I'd love to", "I think you'd be interested". These are invisible words that every cold email uses. Find a different way in.
-- Never use "just", "actually", "honestly", "frankly", "to be honest", filler words that weaken the copy.
-- Never use AI-tell words: "delve", "leverage", "elevate", "in today's fast-paced", "unlock", "harness", "navigate", "robust", "seamless", "cutting-edge". They scream AI-generated.
+- Never use filler: "just", "actually", "honestly", "frankly", "to be honest".
 - Never mention your product name in email 1. Earn the right to pitch first.
-- Never ask "Is this something you'd be interested in?", weak CTA. Be specific.
+- Never ask "Is this something you'd be interested in?" — weak CTA. Be specific.
 - The tone must match what the PROSPECT expects, not just what the client prefers.
-- Reference specifics: industry names, common tools, known challenges, competitor dynamics.
-- Every follow-up must add new value, shift the angle, or reframe, never just "following up."
+- Casualize company names: strip LLC/Inc/Corp, use common abbreviations.
+- Every follow-up must add new value, shift the angle, or reframe — never just "following up."
 
-SEQUENCE STRUCTURE:
-- Email 1 (Day 0): The hook. Open the conversation. No pitch. Earn curiosity. Get the reply. NO callbacks to prior conversation, this is the first contact.
-- Email 2 (Day 2-3): The proof. Back up email 1's hook with evidence: a specific result, a case study, a data point. Reference the SAME thread as email 1. Do not invent prior conversation. Acceptable openings: a fresh data point, a specific case study line ("Here is what happened with a similar X..."), a clarifying angle. NOT acceptable: "Following up on the X conversation," "that comment about Y," "your team's response."
-- Email 3 (Day 5-7): The shift. Change the angle entirely. Catch people who did not resonate with the first angle. Open as if it is a new note from the same sender, not a reply to a phantom conversation.
-- Email 4 (Day 10-14): The breakup. Short, human, low-pressure. This consistently gets the highest reply rates because it removes pressure. This is the ONLY email allowed to acknowledge no response ("haven't heard back, closing the loop").
+═══ SEQUENCE STRUCTURE ═══
 
-OFFER ARCHITECTURE (use one of these patterns for the offer in each sequence):
-- Revenue guarantee: "I will guarantee you {number} {outcome} in {days} days or you don't pay"
-- Free work first: "I'll build you a {deliverable} at no cost. Only pay if you love it."
-- Free asset: "Just send me {input}. I'll give you a free {deliverable}."
-- Audit/assessment: "I'll run a full {type} audit on your {asset}. Completely free."
-- Performance system: "I guarantee {number} {outcome} in {days} days. You don't pay unless we hit it."
-- Rewrite/improvement: "Send me your last {number} {assets}. I'll rewrite them for free."
+- Email 1 (Day 0): The hook. Open the conversation. No pitch. Earn curiosity. NO callbacks (this is first contact). cta_type = asset_offer (high-trust) or reply_only (volume).
+- Email 2 (Day 2-3): Proof. Add NEW value (case study line, data point, observed pattern) on the SAME thread as email 1. cta_type = soft_call_mention.
+- Email 3 (Day 5-7): The shift. Open as a fresh note from the same sender. New angle. Calendar link first appears here for high-trust. cta_type = calendar_link.
+- Email 4 (Day 10-14): The breakup. Short, low-pressure. cta_type = breakup. NO CTA.
 
-Match the offer type to the client's service and the prospect's decision-making level.
+═══ OFFER ARCHITECTURE (volume / low-AOV ONLY) ═══
 
-FOLLOW-UP RULES:
-- Start with ONLY 2 emails in the initial test
-- Follow-ups must be SHORT, simple pings, not newsletter-style
-- Each follow-up needs a DIFFERENT subject line
-- Reformulate the offer briefly, never repeat verbatim
-- Human follow-up examples: "Hey {name}, checking in on this. TLDR: {offer}. Let me know."
+These offer archetypes apply ONLY to low/mid AOV (volume doctrine). For high-trust services, do NOT lead with "free" or "guaranteed" — these signal the wrong offer type for $30K+ engagements.
 
-PERSONALIZATION, COLD READING TECHNIQUE:
-- Make statements that SEEM specific but apply to 80%+ of the target audience
-- Combine one researched data point with a cold-read observation
+- Revenue guarantee: "I will guarantee you {number} {outcome} in {days} days or you don't pay" (volume only)
+- Free work first: "I'll build you a {deliverable} at no cost. Only pay if you love it." (volume only)
+- Free asset (audit/teardown): "I'll run a full {type} audit on your {asset}. No charge." (volume only)
+- Performance system: "I guarantee {number} {outcome} in {days} days. You don't pay unless we hit it." (volume only)
+
+For HIGH-TRUST offers, the "offer" is the case study or asset itself in email 1, the soft call in email 2, and the direct calendar in email 3. There is no free-work hook.
+
+═══ COLD READING (personalization technique) ═══
+
+- Statements that SEEM specific to this person but apply to 80%+ of the target audience.
+- Combine one researched data point with a cold-read observation.
 - The prospect must think "wait, do I know this person?"
-- NEVER use AI-sounding compliments like "love how passionate you are about X at Y"
-- Casualize all company names: strip LLC/Inc/Corp, use common abbreviations
+- NEVER use AI-sounding compliments like "love how passionate you are about X at Y."
 
-TEXT MESSAGE TEST:
-- Before finalizing any email, read it as if it were a text message from a stranger
-- If it feels like marketing or a mass email, rewrite it
-- If it feels like something a real person would actually send to one person, it passes
+═══ FINAL TESTS (run before finalizing each email) ═══
 
-EXAMPLE, Intent-Based Audience Sequence (the kind of offer this engine is being asked to write for):
-SEQUENCE: 4 emails for a B2B agency-owner prospect.
-EMAIL 1 SUBJECT: {audience targeting q|quick targeting question|worth 2 min?}
-EMAIL 1 BODY (no callbacks, opens cold, on-message about intent-based audiences):
+DELETE TEST: Subject line + first sentence in inbox preview — would you open this? If not, rewrite the opener.
+TEXT MESSAGE TEST: Read it as a text from a stranger. If it feels like marketing, rewrite.
+FOUNDER TEST: Could a real founder who did 20 minutes of research have written this? Or does it feel like a drip tool?
+FABRICATION TEST: Look at every quantified claim, named client, "we did X" statement. ALL traceable to a literal entry in <case_studies>? If not, delete.
+
+═══ EXAMPLE: HIGH-TRUST CREATIVE SERVICES (precision doctrine, spintax_enabled = false) ═══
+
+Client: launch films for funded startups. AOV: $35K. voice_profile = founder_direct. <case_studies> contains: "Adaptive: launch film for $4M seed-stage AI co. Result: 1.2M views in 90 days; revenue doubled that quarter."
+
+EMAIL 1 (cta_type = asset_offer, max 75 words):
+SUBJECT: adaptive's launch film
+BODY:
+{{firstName}},
+
+Adaptive launched six months ago with a film instead of a demo. 1.2M views. Revenue doubled that quarter.
+
+Most founders at your stage put a talking-head product walkthrough on the homepage. Adaptive bet on a different kind of first impression.
+
+I made that film. Happy to send it over if you're curious what went into it.
+
+Rob
+
+(54 words. Real case study cited. No calendar link. No fabricated counts. Founder-direct voice with first-name-only signoff.)
+
+EMAIL 2 (cta_type = soft_call_mention, max 60 words):
+SUBJECT: what made it work
+BODY:
+{{firstName}},
+
+The Adaptive film worked because it led with the founder's conviction, not the product features.
+
+Viewers remembered the story before they remembered what the product did. That memory is what converts when they see the product later.
+
+Happy to jump on a quick call if you want to think through what that would look like for {{companyName}}.
+
+Rob
+
+(57 words. Soft call mention. References content from email 1, no phantom callback.)
+
+EMAIL 3 (cta_type = calendar_link, max 60 words):
+SUBJECT: 15 min this week
+BODY:
+{{firstName}},
+
+You're raising or just raised. The next 90 days set how your market thinks about you for years.
+
+I work with a small number of founders on this, usually right at the moment of launch or a major funding milestone.
+
+If that timing fits: I have Thursday at 2pm or Friday morning open. calendly.com/apropos/intro
+
+Rob
+
+(55 words. First calendar link. ONE specific time suggestion. Real situational scarcity, not language-based scarcity.)
+
+EMAIL 4 (cta_type = breakup, max 40 words, NO CTA):
+SUBJECT: closing the loop
+BODY:
+{{firstName}},
+
+Haven't heard back so I'll leave it here. If the launch film conversation ever becomes relevant, you know where to find me.
+
+Rob
+
+(28 words. No CTA. Door open.)
+
+═══ EXAMPLE: LOW-AOV B2B SaaS (volume doctrine, spintax_enabled = true) ═══
+
+Client: identity resolution tool for B2B marketers. AOV: $4K ACV. voice_profile = agency_professional. <case_studies> contains: "75-person mid-market growth agency: same creative across two audiences (lookalike vs intent-matched). Intent-matched replied at 3.1x rate."
+
+EMAIL 1 (cta_type = reply_only, max 75 words):
+SUBJECT: {audience targeting q|quick targeting question|worth 2 min?}
+BODY:
 {{firstName}},
 {Most agencies running paid|Teams running paid for clients|A lot of media buyers we talk to} are paying full CPM to reach audiences {who haven't shown a single buying signal|with zero intent data|that don't actually need the product yet}.
 The audiences that are actually searching, comparing tools, hitting competitor sites, are usually invisible.
-What if you could pull THOSE specific people into your retargeting and outbound, by name, before competitors do?
 {Worth 2 min to walk through how it works?|Open to seeing the live data?|Curious to see how the matching works?}
 
-EMAIL 2 SUBJECT: {a real example|how this works in practice|same creative, 3x reply}
-EMAIL 2 BODY (proof, on the SAME thread, no phantom callback):
-{{firstName}},
-A {mid-market performance agency|growth agency similar in profile to {{companyName}}|75-person agency we worked with} ran the same creative against two audiences. Standard lookalike vs intent-matched.
-Same spend. Same week. Same ads.
-Intent-matched audience replied at 3.1x the rate.
-The lift came from targeting {people already searching for the category|prospects with documented intent signals|buyers further down the funnel}, not from new creative.
-{Want me to show you how the audiences are built?|Open to seeing the targeting layer?|Worth a quick walkthrough?}
+(Spintax in subject, opener, CTA. No specific case study cited yet, saved for email 2.)
 
-EMAIL 3 SUBJECT: {one different angle|missed something|switching gears}
-EMAIL 3 BODY (different angle, no phantom callback, on-message):
-{{firstName}},
-{Different angle|Switching gears|One more thought}: most of the data your DSPs use is 30-90 days stale.
-By the time someone shows up in a lookalike, they have already bought (or churned).
-{Real-time intent signals|Live searcher data|Same-day buying intent} change which audiences you target this week, not next quarter.
-{Want to see what your live audience looks like?|Open to a live pull on your category?|Worth a quick look?}
+═══ OUTPUT FORMAT (EXACT, JSON only) ═══
 
-EMAIL 4 SUBJECT: {closing the loop|last note|moving on}
-EMAIL 4 BODY (breakup, the only place "no response" is allowed):
-{{firstName}},
-Haven't heard back so closing the loop here.
-If intent-based audiences become a priority, the {door is open|inbox is open|note stays open}.
-
-EXAMPLE, Pain Agitation Sequence for B2B SaaS Client Targeting VP Marketing:
-{
-  "step": 1,
-  "delay_days": 0,
-  "subject_line": "{quick q|{{companyName}} + outbound|thought on pipeline|worth 2 min?}",
-  "preview_text": "Most B2B marketing teams are overpaying for leads that never convert.",
-  "body": "{{firstName}},\\n\\n{Most B2B marketing teams|A lot of companies at your stage|Teams scaling past $5M ARR} are spending {40-60%|a huge chunk|the majority} of their pipeline budget on paid channels that keep getting more expensive.\\n\\nMeanwhile, {97% of their website visitors|almost all of their site traffic|the vast majority of people hitting their site} leave without ever being identified.\\n\\n{We help companies like {{companyName}} turn that invisible traffic into pipeline|There is a way to capture those visitors and turn them into outbound targets|What if you could identify and reach those visitors directly}.\\n\\n{Worth a quick conversation?|Open to hearing how it works?|Would it make sense to walk you through it?}",
-  "word_count": 82,
-  "purpose": "Agitate the paid channel cost problem and introduce identity resolution as the alternative",
-  "why_it_works": "VP Marketing lives in the world of rising CPAs and shrinking budgets. Leading with the cost pressure they feel daily, then pivoting to the 97% stat, creates a curiosity gap.",
-  "spintax_test_notes": "Testing whether leading with the overpaying angle or the invisible traffic angle gets more replies. Also testing CTA directness."
-}
-
-OUTPUT FORMAT, THIS IS EXACT:
 {
   "sequences": [
     {
-      "sequence_name": "string, descriptive name based on the angle",
+      "sequence_name": "string — descriptive name based on the angle",
       "angle": {
-        "category": "string, from angle selection",
+        "category": "string — id from <selected_angles>",
         "core_insight": "string",
         "emotional_driver": "string"
       },
-      "strategy": "1-2 sentences explaining why this sequence will work for this audience",
+      "strategy": "string — 1-2 sentences explaining why this sequence will work",
       "emails": [
         {
           "step": 1,
           "delay_days": 0,
-          "subject_line": "string, WITH SPINTAX, 3-5 variants",
-          "preview_text": "string, first ~40 chars the prospect sees in inbox preview",
-          "body": "string, full email body WITH SPINTAX, under 95 words per variant path",
-          "word_count": "number, count of the longest variant path",
-          "purpose": "string, what this email is trying to achieve",
-          "why_it_works": "string, specific reasoning",
-          "spintax_test_notes": "string, what you are testing with the spintax variants"
+          "subject_line": "string. lowercase. 1-6 words. Spintax only if spintax_enabled = true.",
+          "preview_text": "string — first ~40 chars the prospect sees",
+          "body": "string — email body. Word caps: email 1 = 75, emails 2-3 = 60, email 4 = 40.",
+          "word_count": <number>,
+          "cta_type": "asset_offer | soft_call_mention | calendar_link | breakup | reply_only",
+          "purpose": "string — what this email is trying to achieve"
         }
-      ]
+      ],
+      "metadata": {
+        "strategy": "string — admin-only, NOT shown to client",
+        "angle_reasoning": "string — why this angle for this ICP / AOV tier",
+        "spintax_test_notes": "string or null — only populate if spintax_enabled = true",
+        "arc_explanation": "string — why each email is positioned where it is"
+      }
     }
-  ],
-  "global_notes": {
-    "deliverability_considerations": "string",
-    "personalization_opportunities": "string",
-    "ab_test_recommendations": "string",
-    "scaling_notes": "string"
-  }
-}`
+  ]
+}
+
+DO NOT include "why_it_works" inside the email objects. DO NOT include "global_notes". Put admin-only context in the per-sequence "metadata" block. Email objects contain ONLY the fields above — clean, client-facing, no marketing-tool annotations.
+
+Return only the JSON. No prose, no markdown fences.`
 
 // ---------------------------------------------------------------------------
 // Sanitizer: defensive cleanup of LLM output before storage
@@ -487,9 +781,22 @@ async function callClaude<T>(
 function buildCopyResearchContext(icpBrief: EnrichedICPBrief): string {
   const cr = icpBrief.copy_research
   if (!cr) {
-    // Fallback: no copy_research available (older enrichment)
-    return `No detailed copy research available. Use the ICP brief messaging angles and buyer personas to inform copy decisions.`
+    return `No detailed copy research available. Use the ICP brief and buyer personas to inform copy decisions.`
   }
+
+  // V3 NOTE: We deliberately exclude `messaging_ammunition.specific_proof_points`
+  // and `messaging_ammunition.social_proof_angles` from the user message.
+  // Those fields are GENERATED by Claude during the enrichment step and
+  // contain fabricated proof points (invented client counts, made-up
+  // revenue numbers). Surfacing them here causes the copy generation step
+  // to use them as if they were real, producing the SDR-boilerplate output
+  // that motivated the V3 rewrite. Real social proof now flows ONLY through
+  // the <case_studies> block, which is human-verified.
+  //
+  // We DO retain the prospect_world block (psychology, daily reality,
+  // objections, aspirations) and the framing-only ammunition fields
+  // (contrarian hooks, curiosity gaps, pattern interrupts, FOMO angles) —
+  // these are angle/positioning suggestions, not factual claims.
 
   return [
     '<prospect_psychology>',
@@ -502,14 +809,13 @@ function buildCopyResearchContext(icpBrief: EnrichedICPBrief): string {
     `What winning looks like: ${cr.prospect_world.aspirations}`,
     '</prospect_psychology>',
     '',
-    '<messaging_ammunition>',
-    `Proof points: ${cr.messaging_ammunition.specific_proof_points.join(' | ')}`,
-    `Social proof: ${cr.messaging_ammunition.social_proof_angles.join(' | ')}`,
+    '<framing_ammunition>',
+    'These are positioning/angle suggestions, NOT factual claims. Do not present any of them as evidence — they shape HOW you frame, not WHAT you claim.',
     `Contrarian hooks: ${cr.messaging_ammunition.contrarian_hooks.join(' | ')}`,
     `Curiosity gaps: ${cr.messaging_ammunition.curiosity_gaps.join(' | ')}`,
     `Pattern interrupts: ${cr.messaging_ammunition.pattern_interrupts.join(' | ')}`,
     `FOMO angles: ${cr.messaging_ammunition.fear_of_missing_out.join(' | ')}`,
-    '</messaging_ammunition>',
+    '</framing_ammunition>',
   ].join('\n')
 }
 
@@ -522,25 +828,67 @@ function buildAngleSelectionMessage(client: OnboardingClient, icpBrief: Enriched
     .map((p) => `- ${p.title} (${p.seniority}, ${p.department}): Pain points: ${p.pain_points.join('; ')}`)
     .join('\n')
 
-  const angles = icpBrief.messaging_angles
-    .map((a) => `- ${a.angle_name}: ${a.hook} | Value prop: ${a.value_prop} | Proof: ${a.proof_point}`)
+  const offering = icpBrief.service_offering || icpBrief.company_summary
+  const tier = deriveAovTier(client)
+  const tierSpec = getAovTierSpec(tier)
+  const caseStudies = client.case_studies || []
+  const hasCaseStudies = caseStudies.length > 0
+
+  // Build the available_angles list, filtering out tier-avoided angles AND
+  // angles that require case studies when none are provided.
+  const availableAngles = ANGLE_LIBRARY.filter((angle) => {
+    if (tierSpec.avoid_angles.includes(angle.id)) return false
+    // Angles requiring case studies need at least one case study to fire.
+    if (!hasCaseStudies && angle.requires.includes('case_studies')) return false
+    if (
+      angle.requires.includes('multiple_named_clients') &&
+      caseStudies.filter((s) => s.is_named).length < 2
+    ) return false
+    // Doctrine match: precision tiers should heavily favor precision/both
+    // angles. We surface ALL non-avoided angles to Claude (it can still pick
+    // a "both" angle for a precision tier) but the prompt instructs it to
+    // weight by tier defaults.
+    return true
+  })
+
+  const availableAnglesBlock = availableAngles
+    .map((a) => `- ${a.id} (${a.label}): ${a.when_to_use} [doctrine: ${a.doctrine}, driver: ${a.emotional_driver}]`)
     .join('\n')
 
-  const offering = icpBrief.service_offering || icpBrief.company_summary
-
   return [
-    'Analyze this client and their target prospects, then select the 3 strongest messaging angles.',
+    'Analyze this client and their target prospects, then select the 3 strongest messaging angles. Use ONLY angle ids from <available_angles>.',
     '',
     'CRITICAL: Every angle you pick must reinforce the service_offering below. Do NOT pick angles that drift into generic agency-revenue, partnership-income, or growth narratives unless THAT is literally what the client sells.',
+    '',
+    `<aov_tier>${tier} (${tierSpec.label}, AOV: ${tierSpec.aov_range}, doctrine: ${tierSpec.doctrine})</aov_tier>`,
+    '',
+    '<tier_defaults>',
+    `Default angles for this tier: ${tierSpec.default_angles.join(', ')}`,
+    `Avoid angles for this tier: ${tierSpec.avoid_angles.join(', ') || '(none)'}`,
+    `Default voice: ${tierSpec.default_voice}`,
+    '</tier_defaults>',
+    '',
+    '<available_angles>',
+    availableAnglesBlock,
+    '</available_angles>',
     '',
     '<service_offering>',
     offering,
     '</service_offering>',
     '',
+    '<case_studies>',
+    hasCaseStudies
+      ? caseStudies
+          .map((c) => `- ${c.is_named ? c.client_name : '(unnamed)'}: ${c.engagement}. Result: ${c.results || '(no quantified result)'}.`)
+          .join('\n')
+      : '(none provided — angles requiring case studies have been filtered out of <available_angles>)',
+    '</case_studies>',
+    '',
     '<client_company>',
     `Company: ${client.company_name}`,
     `Website: ${client.company_website}`,
     `Industry: ${client.industry}`,
+    `Setup fee: ${client.setup_fee ?? 'not set'} | Recurring fee: ${client.recurring_fee ?? 'not set'}`,
     `What they sell (use THIS, not the company_summary, as the north star): ${offering}`,
     '</client_company>',
     '',
@@ -556,18 +904,14 @@ function buildAngleSelectionMessage(client: OnboardingClient, icpBrief: Enriched
     personas,
     '</buyer_personas>',
     '',
-    '<existing_messaging_angles>',
-    angles,
-    '</existing_messaging_angles>',
-    '',
     buildCopyResearchContext(icpBrief),
     '',
     '<competitive_landscape>',
     icpBrief.competitive_landscape.join(', '),
     '</competitive_landscape>',
     '',
-    `Copy tone preference: ${client.copy_tone || 'Conversational'}`,
-    `Primary CTA: ${client.primary_cta || 'Book a call'}`,
+    `Voice profile: ${deriveVoiceProfile(client)}`,
+    `Primary CTA preference: ${client.primary_cta || '(use CTA ladder default)'}`,
   ].join('\n')
 }
 
@@ -591,28 +935,64 @@ function buildCopyWritingMessage(
   angleSelection: AngleSelection
 ): string {
   const cr = icpBrief.copy_research
-  const toneCalibration = cr?.email_specific?.tone_calibration || client.copy_tone || 'Conversational'
   const wordsToAvoid = cr?.email_specific?.words_to_avoid?.join(', ') || 'standard spam trigger words'
 
-  // Hard-prioritize service_offering. Fall back to company_summary for older
-  // briefs where service_offering wasn't generated. This is THE message every
-  // sequence must reinforce; surface it loudly.
+  // Hard-prioritize service_offering over company_summary.
   const offering = icpBrief.service_offering || icpBrief.company_summary
 
+  // Derive AOV tier, voice profile, spintax flag.
+  const tier = deriveAovTier(client)
+  const tierSpec = getAovTierSpec(tier)
+  const voice = deriveVoiceProfile(client)
+  const voiceSpec = voiceProfileSpec(voice)
+  const spintaxEnabled = deriveSpintaxEnabled(client)
+
+  // CTA ladder relaxes for volume doctrine. The system prompt knows the
+  // ladder by AOV tier; we surface it explicitly here for redundancy.
+  const ctaLadder = tierSpec.doctrine === 'precision'
+    ? CTA_LADDER_DOCTRINE
+    : {
+        ...CTA_LADDER_DOCTRINE,
+        email_1: { ...CTA_LADDER_DOCTRINE.email_1, cta_type: 'reply_only' },
+      }
+
   return [
-    'Write 3 cold email sequences for this Cursive AI client\'s outbound campaign.',
+    'Write 3 cold email sequences for this client\'s outbound campaign. Read every block below carefully — the AOV tier, voice profile, case studies, and spintax flag are the difference between high-trust copy and SDR boilerplate.',
+    '',
+    `<aov_tier>${tier} (${tierSpec.label}, AOV: ${tierSpec.aov_range}, doctrine: ${tierSpec.doctrine})</aov_tier>`,
+    '',
+    '<voice_profile>',
+    `id: ${voiceSpec.id}`,
+    `summary: ${voiceSpec.summary}`,
+    `pronoun: ${voiceSpec.pronoun}`,
+    `signoff: ${voiceSpec.signoff}`,
+    `sentence_style: ${voiceSpec.sentence_style}`,
+    `avoid: ${voiceSpec.avoid.join(' | ')}`,
+    '</voice_profile>',
+    '',
+    `<spintax_config>spintax_enabled: ${spintaxEnabled}</spintax_config>`,
+    '',
+    '<cta_ladder>',
+    `email_1: cta_type = ${ctaLadder.email_1.cta_type}. ${ctaLadder.email_1.rationale}`,
+    `email_2: cta_type = ${ctaLadder.email_2.cta_type}. ${ctaLadder.email_2.rationale}`,
+    `email_3: cta_type = ${ctaLadder.email_3.cta_type}. ${ctaLadder.email_3.rationale}`,
+    `email_4: cta_type = ${ctaLadder.email_4.cta_type}. ${ctaLadder.email_4.rationale}`,
+    '</cta_ladder>',
     '',
     '<service_offering>',
     'THIS is what the client sells. Every email in every sequence must reinforce THIS specific offer. Do not pivot to generic agency-revenue, partnership-income, or growth narratives.',
     offering,
     '</service_offering>',
     '',
+    formatCaseStudies(client.case_studies || []),
+    '',
     '<client_company>',
     `Company: ${client.company_name}`,
     `Website: ${client.company_website}`,
     `Service offering (THE message to reinforce): ${offering}`,
     `Company summary (context only, do not pivot to this): ${icpBrief.company_summary}`,
-    `Brand voice: ${client.copy_tone || 'Conversational'}`,
+    `Sender name(s): ${client.sender_names || '(use generic sender)'}`,
+    client.calendar_link ? `Calendar link (use ONLY in email 3 for high-trust, email 2-3 for volume): ${client.calendar_link}` : '',
     '</client_company>',
     '',
     '<target_prospects>',
@@ -623,6 +1003,10 @@ function buildCopyWritingMessage(
     `Geography: ${(client.target_geography || []).join(', ')}`,
     '</target_prospects>',
     '',
+    client.prospect_signal_template
+      ? `<prospect_signal_template>\n${client.prospect_signal_template}\n\nWhen writing email 1, structure the opener so a per-prospect signal can be inserted. Use the merge tag {{prospectSignal}} where the per-prospect detail will go (this gets enriched at send time).\n</prospect_signal_template>`
+      : '<prospect_signal_template>(none provided — use cold-read observations for this ICP)</prospect_signal_template>',
+    '',
     buildCopyResearchContext(icpBrief),
     '',
     '<selected_angles>',
@@ -630,18 +1014,14 @@ function buildCopyWritingMessage(
     '</selected_angles>',
     '',
     '<campaign_config>',
-    `Sender name(s): ${client.sender_names || '(use generic sender)'}`,
-    `Copy tone (client preference): ${client.copy_tone || 'Conversational'}`,
-    `Tone calibration (for prospect): ${toneCalibration}`,
-    `Primary CTA: ${client.primary_cta || 'Book a call'}`,
-    client.calendar_link ? `Calendar link: ${client.calendar_link}` : '',
+    `Primary CTA preference: ${client.primary_cta || '(use CTA ladder default for the AOV tier)'}`,
     `Words to avoid: ${wordsToAvoid}`,
-    'Available personalization variables: {{firstName}}, {{companyName}}, {{title}}',
+    'Available personalization variables: {{firstName}}, {{companyName}}, {{title}}, {{prospectSignal}}',
     '</campaign_config>',
     '',
     `Compliance notes: ${client.compliance_disclaimers || 'Standard CAN-SPAM compliance'}`,
     '',
-    'Write one sequence per selected angle. Follow every rule in your system prompt. Include spintax in every email. Count your words and stay under 95.',
+    `Write one sequence per selected angle. Follow every rule in your system prompt. Word caps: email 1 = 75, emails 2-3 = 60, email 4 = 40. Spintax_enabled = ${spintaxEnabled}. Voice profile = ${voiceSpec.id}.`,
   ]
     .filter(Boolean)
     .join('\n')
@@ -749,8 +1129,9 @@ function buildRegenerationMessage(
     'The previous email sequences were rejected. Generate completely new sequences that:',
     '1. Address the rejection feedback',
     '2. Fix all quality issues from the previous version',
-    '3. Keep all spintax and deliverability rules',
-    '4. Write FRESH copy with new hooks, new proof points, new angles.',
+    '3. Honor the AOV tier, voice profile, case_studies, and CTA ladder constraints',
+    '4. Respect the spintax_enabled flag (do NOT add spintax if disabled)',
+    '5. Write FRESH copy with new hooks, new angles. Reference ONLY case studies in <case_studies>.',
     '',
     '<rejection_feedback>',
     feedback,
@@ -890,57 +1271,59 @@ export async function regenerateEmailSequences(
 //     callbacks ("as I mentioned in the last email") stay grounded.
 //   - The output schema is a SINGLE email object, not the full sequences.
 
-const SINGLE_EMAIL_REVISION_PROMPT = `You are an elite B2B cold email copywriter editing ONE email in a 4-step cold sequence based on direct client feedback. The client owns the brand and gave specific notes. Your job is to revise this single email to address every note while keeping the email coherent with the rest of the sequence.
+const SINGLE_EMAIL_REVISION_PROMPT = `You are revising ONE email in a 4-step cold sequence based on direct client feedback. The client owns the brand and gave specific notes. Your job is to revise this single email to address every note while keeping the email coherent with the rest of the sequence and obeying the V3 doctrine (no fabricated social proof, voice profile adherence, CTA ladder, per-position word caps).
 
 YOUR HARD RULES:
 
-THE OFFER:
-- The user message includes a <service_offering> block. The revised email must reinforce THAT offer. Do not pivot to generic agency-revenue, partnership-income, or growth narratives.
+═══ NO FABRICATED SOCIAL PROOF ═══
+You may ONLY reference social proof that appears in <case_studies>. Do NOT invent client counts, named clients, or quantified results. If the empty case_studies block was provided, the revised email must contain no quantified claims.
 
-NO EM-DASHES, NO EN-DASHES:
-- Never use the em-dash character (—) anywhere. Use commas, periods, parentheses, or two short sentences instead.
-- Never use the en-dash character (–) anywhere.
-- This is a hard deliverability + human-feel rule. Em-dashes are a known AI tell.
+═══ THE OFFER ═══
+The user message includes <service_offering>. The revised email must reinforce THAT offer.
 
-SEQUENCE COHERENCE:
-- The user message includes <prior_email> (the email immediately before this one in the sequence) and <downstream_emails> (every email AFTER this one). Your revision must stay coherent with both.
-- If a downstream email references a topic, fact, or hook from this email, your revised email must keep that topic/fact/hook intact.
-- Do NOT add new callbacks to conversations that did not happen. Only reference content that actually appears in <prior_email>. If this is email step 1 (no prior email), do not callback to anything.
-- Do NOT change the core ANGLE of this email if a downstream email builds on it. The client wants the email rewritten, not the angle reworked.
+═══ VOICE PROFILE ═══
+The user message includes <voice_profile>. Match the pronoun, sentence rhythm, and signoff convention exactly.
 
-FORMAT RULES:
-- Email body under 95 words. Count them.
-- Subject line 1-6 words, lowercase casual feel, no clickbait, no exclamation marks.
-- Use {{firstName}} and {{companyName}} merge tags only where they read naturally.
-- One CTA per email. Short paragraphs (1-2 sentences each). White space.
+═══ NO EM-DASHES, NO EN-DASHES ═══
+Never use — or –. Use a comma, period, or two short sentences.
 
-SPINTAX RULES:
-- Use SINGLE-BRACE spintax format only: {option1|option2|option3}
-- DOUBLE-BRACE {{ }} is reserved for merge tags ONLY (e.g. {{firstName}}). NEVER put a pipe inside double braces. {{quick q|hi}} is INVALID.
-- The revised email MUST include spintax in the subject line (3-5 variants), the opening line (2-3 variants), and the CTA phrasing (2-3 variants). Match the structure of the original email if possible.
-- Spintax options must read naturally for ALL combinations and be roughly equal length.
+═══ SEQUENCE COHERENCE ═══
+The user message includes <prior_email> and <downstream_emails>. Your revision must stay coherent with both. If a downstream email references a topic from this email, keep that topic intact. Do NOT change the core angle if a downstream email builds on it.
 
-DELIVERABILITY:
-- No spam trigger words: free, guarantee, act now, limited time, click here, buy now, discount, etc.
-- No ALL CAPS words except acronyms (CEO, SaaS, ROI, B2B, etc.).
+═══ WORD COUNT (per position) ═══
+- Step 1: max 75 words
+- Steps 2-3: max 60 words
+- Step 4 (breakup): max 40 words
 
-ADDRESSING THE FEEDBACK:
-- The user message includes a <client_feedback> block with one or more comments from the client.
-- You MUST address every distinct piece of feedback. If the client said "make it shorter", make it shorter. If they said "less salesy", rewrite to be less salesy. If they said "use 'audiences' instead of 'segments'", swap the term.
-- If two pieces of feedback conflict, follow the more specific one and note the conflict in the why_it_works field.
-- Treat the client's word choices as preferences, mirror them in the revised copy when natural.
+═══ CTA LADDER ═══
+The CTA type is dictated by step number. Set "cta_type" accordingly.
+- Step 1: cta_type = asset_offer (or reply_only for low/mid AOV). NO calendar link.
+- Step 2: cta_type = soft_call_mention.
+- Step 3: cta_type = calendar_link. First time a calendar appears.
+- Step 4: cta_type = breakup. NO CTA.
 
-OUTPUT FORMAT, EXACT:
+═══ SPINTAX (controlled by spintax_enabled) ═══
+The user message includes <spintax_config>.
+- spintax_enabled = false: write ONE strong version. No {a|b|c} syntax anywhere.
+- spintax_enabled = true: spintax in subject (3-5), opener (2-3), CTA (2-3). Single-brace {a|b|c} only.
+
+═══ BANNED PHRASES (regenerate if any appear) ═══
+"founder-to-founder", "operator-to-operator", "founder tax", "I hope this email finds you", "just wanted to reach out", "circling back", "looping back", "touching base", "quick question" (as opener/subject), "Here's why" (as sentence start), "absurd pricing", false scarcity ("2 spots left", "this week only", "limited availability"), and standard AI-tell words (delve, leverage, elevate, unlock, harness, robust, seamless, cutting-edge, game-changer, synergize, streamline, holistic approach, etc.).
+
+═══ ADDRESSING THE FEEDBACK ═══
+The user message includes <client_feedback>. Address EVERY distinct piece of feedback. Mirror the client's word choices in the revised copy.
+
+═══ OUTPUT FORMAT (EXACT, JSON only) ═══
 {
   "step": <number, same as the email being revised>,
   "delay_days": <number, same as before unless feedback explicitly asks to change>,
-  "subject_line": "<string, with single-brace spintax, 3-5 variants>",
+  "subject_line": "<string. lowercase. 1-6 words. Spintax only if spintax_enabled = true.>",
   "preview_text": "<string, ~40 chars inbox preview>",
-  "body": "<string, full email body with spintax, under 95 words per variant path>",
-  "word_count": <number, count of the longest variant path>,
+  "body": "<string. Word cap matches step (1=75, 2-3=60, 4=40).>",
+  "word_count": <number>,
+  "cta_type": "asset_offer | soft_call_mention | calendar_link | breakup | reply_only",
   "purpose": "<string, what this email is trying to achieve>",
-  "why_it_works": "<string, specific reasoning AND a one-line summary of how you addressed each piece of feedback>",
-  "spintax_test_notes": "<string, what you are testing with the spintax variants>"
+  "feedback_addressed": "<one-line summary of how each piece of feedback was addressed>"
 }
 
 Return ONLY the JSON object. No prose, no markdown fences, no preamble.`
@@ -971,6 +1354,11 @@ function buildSingleEmailRevisionMessage(args: {
   const downstreamEmails = emails.slice(targetIdx + 1)
 
   const offering = icpBrief.service_offering || icpBrief.company_summary
+  const tier = deriveAovTier(client)
+  const tierSpec = getAovTierSpec(tier)
+  const voice = deriveVoiceProfile(client)
+  const voiceSpec = voiceProfileSpec(voice)
+  const spintaxEnabled = deriveSpintaxEnabled(client)
 
   const feedbackBlock =
     comments.length === 0
@@ -980,17 +1368,29 @@ function buildSingleEmailRevisionMessage(args: {
           .join('\n')
 
   return [
-    'Revise the targeted email below based on the client feedback. Keep the angle, keep the sequence coherent, and address every comment.',
+    'Revise the targeted email below based on the client feedback. Keep the angle, keep the sequence coherent, address every comment, and obey the V3 constraints (no fabricated social proof, voice profile, CTA ladder, word caps).',
+    '',
+    `<aov_tier>${tier} (${tierSpec.label}, doctrine: ${tierSpec.doctrine})</aov_tier>`,
+    '',
+    '<voice_profile>',
+    `id: ${voiceSpec.id}`,
+    `summary: ${voiceSpec.summary}`,
+    `pronoun: ${voiceSpec.pronoun}`,
+    `signoff: ${voiceSpec.signoff}`,
+    '</voice_profile>',
+    '',
+    `<spintax_config>spintax_enabled: ${spintaxEnabled}</spintax_config>`,
     '',
     '<service_offering>',
     offering,
     '</service_offering>',
     '',
+    formatCaseStudies(client.case_studies || []),
+    '',
     '<client_company>',
     `Company: ${client.company_name}`,
     `Service offering (THE message to reinforce): ${offering}`,
-    `Brand voice: ${client.copy_tone || 'Conversational'}`,
-    `Primary CTA: ${client.primary_cta || 'Book a call'}`,
+    `Primary CTA: ${client.primary_cta || '(use CTA ladder default for the position)'}`,
     '</client_company>',
     '',
     '<target_prospects>',
@@ -1065,7 +1465,11 @@ export async function regenerateSingleEmail(args: {
   preview_text?: string
   word_count?: number
   purpose: string
+  cta_type?: 'asset_offer' | 'soft_call_mention' | 'calendar_link' | 'breakup' | 'reply_only'
+  /** @deprecated V2 field. New responses use feedback_addressed in metadata. */
   why_it_works?: string
+  feedback_addressed?: string
+  /** @deprecated V2 field. */
   spintax_test_notes?: string
 }> {
   const userMessage = buildSingleEmailRevisionMessage(args)
@@ -1077,7 +1481,9 @@ export async function regenerateSingleEmail(args: {
     preview_text?: string
     word_count?: number
     purpose?: string
+    cta_type?: 'asset_offer' | 'soft_call_mention' | 'calendar_link' | 'breakup' | 'reply_only'
     why_it_works?: string
+    feedback_addressed?: string
     spintax_test_notes?: string
   }>(SINGLE_EMAIL_REVISION_PROMPT, userMessage, 'Single Email Revision', 4096, {
     model: MODEL_SONNET,
@@ -1102,7 +1508,9 @@ export async function regenerateSingleEmail(args: {
     preview_text: raw.preview_text ? sanitizeText(raw.preview_text) : undefined,
     word_count: raw.word_count,
     purpose: raw.purpose ? sanitizeText(raw.purpose) : '',
+    cta_type: raw.cta_type,
     why_it_works: raw.why_it_works ? sanitizeText(raw.why_it_works) : undefined,
+    feedback_addressed: raw.feedback_addressed ? sanitizeText(raw.feedback_addressed) : undefined,
     spintax_test_notes: raw.spintax_test_notes,
   }
 }

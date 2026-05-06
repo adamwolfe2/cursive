@@ -1,9 +1,19 @@
 import type {
+  CaseStudy,
+  CtaType,
   DraftSequences,
+  OnboardingClient,
   QualityCheckResult,
   QualityIssue,
 } from '@/types/onboarding'
-import { scoreCopy, CORPORATE_KILL_SIGNALS, LLM_ISM_RED_FLAGS } from '../autoresearch/cold-email-knowledge'
+import {
+  scoreCopy,
+  CORPORATE_KILL_SIGNALS,
+  HIGH_TRUST_BANNED_PHRASES,
+  HIGH_TRUST_BANNED_PATTERNS,
+  LLM_ISM_RED_FLAGS,
+  inferAovTier,
+} from '../autoresearch/cold-email-knowledge'
 
 // ---------------------------------------------------------------------------
 // Spam trigger words
@@ -190,23 +200,40 @@ export function expandSpintax(text: string): string[] {
 // Per-email checks
 // ---------------------------------------------------------------------------
 
+/**
+ * Per-position word caps:
+ *   step 1 (the hook): 75 words max
+ *   steps 2-3 (proof / shift): 60 words max
+ *   step 4+ (breakup): 40 words max
+ *
+ * The cap is enforced against EVERY spintax-expanded variant — if any single
+ * combination exceeds the cap, the email fails.
+ */
+function wordCapForStep(step: number): number {
+  if (step <= 1) return 75
+  if (step <= 3) return 60
+  return 40
+}
+
 function checkWordCount(
   body: string,
+  step: number,
   seqIdx: number,
   emailIdx: number,
 ): QualityIssue[] {
   const variants = expandSpintax(body)
+  const cap = wordCapForStep(step)
   const issues: QualityIssue[] = []
 
   for (const variant of variants) {
     const wc = countWords(variant)
-    if (wc > 100) {
+    if (wc > cap) {
       issues.push({
         sequence_index: seqIdx,
         email_index: emailIdx,
         severity: 'error',
         check: 'word_count',
-        detail: `Email body has ${wc} words in a spintax variant (max 100).`,
+        detail: `Email step ${step} body has ${wc} words in a variant (max ${cap} for this position).`,
       })
       break
     }
@@ -537,15 +564,22 @@ function checkPsychologicalPrinciples(
   subjectLine: string,
   seqIdx: number,
   emailIdx: number,
+  context: { highTrust?: boolean; knownCaseStudyClients?: ReadonlyArray<string> } = {},
 ): QualityIssue[] {
   const result = scoreCopy({
     subject: subjectLine,
     body,
+    // For volume doctrine, /\d+\s*(clients?|companies|businesses)/ counts as
+    // social proof — the assumption is the number is real. For precision
+    // doctrine (passed via context.highTrust), the scorer uses
+    // knownCaseStudyClients to verify proof is real, not pattern-matched.
     hasSocialProof: /\d+\s*(clients?|companies|businesses)/i.test(body),
     hasSpecificNumbers: /\$[\d,]+|\d+%|\d+x/i.test(body),
     hasOffer: /free|no cost|no charge|guarantee|at no/i.test(body),
     hasCta: /\?|reply|call|chat|ring|send/i.test(body),
     hasPersonalization: /\{\{firstName\}\}|\{\{companyName\}\}/i.test(body),
+    highTrust: context.highTrust,
+    knownCaseStudyClients: context.knownCaseStudyClients,
   })
 
   if (!result.passesMinimum) {
@@ -743,6 +777,259 @@ function checkBodyStartsWithI(
 }
 
 // ---------------------------------------------------------------------------
+// High-trust banned phrases (V3 doctrine)
+// ---------------------------------------------------------------------------
+//
+// HIGH_TRUST_BANNED_PHRASES are the second-wave clichés that signal templated
+// outbound (founder-to-founder, false scarcity, "Here's why" sentence
+// starters, etc.). They're banned for ALL clients now — they don't help
+// anyone — but the doctrine is strictest for high-trust offers.
+
+function checkHighTrustBannedPhrases(
+  body: string,
+  subjectLine: string,
+  seqIdx: number,
+  emailIdx: number,
+): QualityIssue[] {
+  const haystack = `${subjectLine}\n${body}`.toLowerCase()
+  const issues: QualityIssue[] = []
+  const seenPhrases = new Set<string>()
+
+  // Substring match (case-insensitive)
+  for (const phrase of HIGH_TRUST_BANNED_PHRASES) {
+    const lower = phrase.toLowerCase()
+    if (haystack.includes(lower) && !seenPhrases.has(lower)) {
+      seenPhrases.add(lower)
+      issues.push({
+        sequence_index: seqIdx,
+        email_index: emailIdx,
+        severity: 'error',
+        check: 'high_trust_banned_phrase',
+        detail: `Copy contains banned phrase: "${phrase}". This signals templated outbound and burns trust.`,
+      })
+    }
+  }
+
+  // Pattern match (regex, sentence-start anchored)
+  const fullText = `${subjectLine}\n${body}`
+  for (const pat of HIGH_TRUST_BANNED_PATTERNS) {
+    const m = pat.regex.exec(fullText)
+    if (m) {
+      issues.push({
+        sequence_index: seqIdx,
+        email_index: emailIdx,
+        severity: 'error',
+        check: 'high_trust_banned_pattern',
+        detail: `Copy matches banned pattern (${pat.name}): "${m[0].trim()}". Rephrase.`,
+      })
+    }
+  }
+
+  return issues
+}
+
+// ---------------------------------------------------------------------------
+// Fabricated claim detector (V3 doctrine — hardest rule)
+// ---------------------------------------------------------------------------
+//
+// Catches social proof claims that are NOT backed by entries in the client's
+// case_studies array. Fires on:
+//   - Client-count claims: "X companies", "X clients", "X founders", "X
+//     businesses" — unless X happens to appear in case_studies (very rare).
+//   - "trusted by" / "leading X choose us" / "top-tier X" claims.
+//   - Named clients NOT in case_studies (we look up names from the array
+//     and compare against entities mentioned in the body).
+//
+// IMPORTANT: This check requires the client's case_studies to be passed in.
+// If case_studies is undefined (older callers, regen flow with no client
+// context), we skip the check rather than false-positive.
+
+const CLIENT_COUNT_PATTERN =
+  /(\d+|a few|several|many|dozens of|hundreds of)\s*(yc\s*)?(companies|clients|customers|founders|businesses|brands|agencies|startups|teams)\b/i
+
+const TRUSTED_BY_PATTERN =
+  /(trusted by|leading\s+[a-z\s]+\s+(?:brands|companies|founders|startups|agencies)\s+choose|top[-\s]?tier\s+[a-z\s]+\s+(?:brands|companies|partners))/i
+
+const REVENUE_NUMBER_PATTERN =
+  /\$[\d,.]+\s*(m(?:illion)?|b(?:illion)?|k|\/mo|\/month|\/year|\/yr|in\s+revenue|in\s+pipeline|generated|saved)/i
+
+function checkFabricatedClaims(
+  body: string,
+  caseStudies: ReadonlyArray<CaseStudy> | undefined,
+  seqIdx: number,
+  emailIdx: number,
+): QualityIssue[] {
+  // No case_studies context = skip (caller did not pass client). The check
+  // would false-positive on legitimate situations where we lack ground truth.
+  if (caseStudies === undefined) return []
+
+  const issues: QualityIssue[] = []
+
+  // Client-count claims: catch "we work with 12 founders" / "trusted by 50
+  // companies" / "a few of the top 20 founders" patterns.
+  const countMatch = CLIENT_COUNT_PATTERN.exec(body)
+  if (countMatch) {
+    issues.push({
+      sequence_index: seqIdx,
+      email_index: emailIdx,
+      severity: 'error',
+      check: 'fabricated_client_count',
+      detail: `Body contains a client-count claim ("${countMatch[0]}") that is not supported by <case_studies>. Remove the count or replace with a generic in-group statement.`,
+    })
+  }
+
+  // Trusted-by / leading-X language.
+  const trustedMatch = TRUSTED_BY_PATTERN.exec(body)
+  if (trustedMatch) {
+    issues.push({
+      sequence_index: seqIdx,
+      email_index: emailIdx,
+      severity: 'error',
+      check: 'fabricated_trusted_by',
+      detail: `Body contains an unverified trust claim ("${trustedMatch[0]}"). Replace with a specific case study reference (if available) or remove.`,
+    })
+  }
+
+  // Revenue / quantified-result claims that are NOT in any case study.
+  const revenueMatch = REVENUE_NUMBER_PATTERN.exec(body)
+  if (revenueMatch) {
+    const inCaseStudies = caseStudies.some((c) =>
+      `${c.results} ${c.engagement}`.toLowerCase().includes(revenueMatch[0].toLowerCase().trim()),
+    )
+    if (!inCaseStudies) {
+      issues.push({
+        sequence_index: seqIdx,
+        email_index: emailIdx,
+        severity: 'error',
+        check: 'fabricated_quantified_result',
+        detail: `Body contains a quantified financial claim ("${revenueMatch[0]}") not present in <case_studies>. Remove or replace with a real case study figure.`,
+      })
+    }
+  }
+
+  // Named clients not in case_studies. We look for "we worked with X" or
+  // "X is one of our clients" patterns and compare X against case_studies.
+  const namedClientPattern = /(?:we (?:worked|partnered) with|client(?:s)? include[ds]?|customer(?:s)? include[ds]?)\s+([A-Z][a-zA-Z0-9.&'-]+(?:\s+(?:[A-Z][a-zA-Z0-9.&'-]+|and|&)\s*[A-Z]?[a-zA-Z0-9.&'-]*)*)/g
+  const namedClientsInBody: string[] = []
+  let nm: RegExpExecArray | null
+  while ((nm = namedClientPattern.exec(body)) !== null) {
+    namedClientsInBody.push(nm[1].trim())
+  }
+  if (namedClientsInBody.length > 0) {
+    const caseStudyNames = new Set(
+      caseStudies.filter((c) => c.is_named).map((c) => c.client_name.toLowerCase()),
+    )
+    for (const cited of namedClientsInBody) {
+      const inStudies = cited
+        .split(/[,&]|\sand\s/i)
+        .map((s) => s.trim().toLowerCase())
+        .every((piece) => piece.length === 0 || caseStudyNames.has(piece))
+      if (!inStudies) {
+        issues.push({
+          sequence_index: seqIdx,
+          email_index: emailIdx,
+          severity: 'error',
+          check: 'fabricated_named_client',
+          detail: `Body cites named client(s) ("${cited}") not present in <case_studies>. Remove or replace with a real case study reference.`,
+        })
+      }
+    }
+  }
+
+  return issues
+}
+
+// ---------------------------------------------------------------------------
+// CTA ladder violations (V3 doctrine)
+// ---------------------------------------------------------------------------
+//
+// Enforces:
+//   - Email 1 (step 1): no calendar link. The cta_type, if set, must be
+//     "asset_offer" or "reply_only".
+//   - Email 4 (step 4+): no CTA. The cta_type, if set, must be "breakup".
+//   - Calendar link (URL containing "calendly.com", "cal.com", "savvycal",
+//     "hubspot.com/meetings", "/booking", "/schedule") only allowed in
+//     emails 2-3 (per ladder; email 3 is the canonical position).
+//
+// We detect calendar links by URL pattern AND by phrases that ASK for time
+// ("Thursday at 2pm", "this week", "15 min") in email 1 — even without a
+// link those phrasings violate the ladder.
+
+// Matches calendar URLs both with and without protocol. Real cold emails
+// often paste bare URLs ("calendly.com/me/intro") and Outlook auto-links
+// them — we want to catch both forms.
+const CALENDAR_URL_PATTERN =
+  /(?:https?:\/\/)?(?:[a-z0-9-]+\.)*?(?:calendly\.com|cal\.com|savvycal\.com|hubspot\.com\/meetings|chilipiper\.com|book\.savvycal)\b/i
+
+const TIME_OFFER_PATTERN_EMAIL_1 =
+  /(?:available|free|works on my end|on my end|how about|are you free|got time)\s+(?:next\s+)?(?:monday|tuesday|wednesday|thursday|friday|tomorrow|today|this week|early next week)/i
+
+function checkCtaLadder(
+  body: string,
+  step: number,
+  ctaType: CtaType | undefined,
+  seqIdx: number,
+  emailIdx: number,
+): QualityIssue[] {
+  const issues: QualityIssue[] = []
+
+  // Email 1: NO calendar link, NO time offer.
+  if (step <= 1) {
+    if (CALENDAR_URL_PATTERN.test(body)) {
+      issues.push({
+        sequence_index: seqIdx,
+        email_index: emailIdx,
+        severity: 'error',
+        check: 'cta_ladder_email_1_calendar',
+        detail: 'Email 1 contains a calendar link. The CTA ladder requires asset_offer or reply_only at this position. Move the calendar link to email 3.',
+      })
+    }
+    if (TIME_OFFER_PATTERN_EMAIL_1.test(body)) {
+      issues.push({
+        sequence_index: seqIdx,
+        email_index: emailIdx,
+        severity: 'error',
+        check: 'cta_ladder_email_1_time_offer',
+        detail: 'Email 1 offers specific times ("Thursday at 2pm", "this week"). The CTA ladder reserves time-asks for email 3. Replace with an asset offer or reply ask.',
+      })
+    }
+    if (ctaType && ctaType !== 'asset_offer' && ctaType !== 'reply_only') {
+      issues.push({
+        sequence_index: seqIdx,
+        email_index: emailIdx,
+        severity: 'error',
+        check: 'cta_ladder_email_1_type',
+        detail: `Email 1 cta_type is "${ctaType}". Must be "asset_offer" (high-trust) or "reply_only" (volume).`,
+      })
+    }
+  }
+
+  // Email 4: NO CTA at all. Calendar links forbidden.
+  if (step >= 4) {
+    if (CALENDAR_URL_PATTERN.test(body)) {
+      issues.push({
+        sequence_index: seqIdx,
+        email_index: emailIdx,
+        severity: 'error',
+        check: 'cta_ladder_email_4_calendar',
+        detail: 'Email 4 (breakup) contains a calendar link. Breakup emails should have NO CTA — door open, no ask.',
+      })
+    }
+    if (ctaType && ctaType !== 'breakup') {
+      issues.push({
+        sequence_index: seqIdx,
+        email_index: emailIdx,
+        severity: 'error',
+        check: 'cta_ladder_email_4_type',
+        detail: `Email 4 cta_type is "${ctaType}". Breakup emails must use "breakup" with no CTA.`,
+      })
+    }
+  }
+
+  return issues
+}
+
+// ---------------------------------------------------------------------------
 // Per-sequence checks
 // ---------------------------------------------------------------------------
 
@@ -793,27 +1080,73 @@ function checkDuplicateOpenings(
 /**
  * Runs all quality checks on the provided email sequences and returns the
  * overall result with a list of issues found.
+ *
+ * V3 changes:
+ *   - Per-position word caps (75 / 60 / 40) — supersedes the old flat 100 cap.
+ *   - High-trust banned phrases (founder-to-founder, false scarcity, etc.).
+ *   - Fabrication detector — flags client counts, "trusted by", named clients,
+ *     and revenue figures not present in <case_studies>. Requires the
+ *     `client` argument to provide case_studies. If client is omitted, the
+ *     fabrication checks are skipped (preserves legacy behavior).
+ *   - CTA ladder check — email 1 must not contain calendar links or time
+ *     offers; email 4 must not contain any CTA.
+ *   - Spintax requirement is now CONDITIONAL on the client's spintax_enabled
+ *     setting (or the AOV tier default).
  */
-export function checkCopyQuality(sequences: DraftSequences): QualityCheckResult {
+export function checkCopyQuality(
+  sequences: DraftSequences,
+  client?: Pick<OnboardingClient, 'case_studies' | 'spintax_enabled' | 'setup_fee' | 'recurring_fee' | 'voice_profile'>,
+): QualityCheckResult {
   const issues: QualityIssue[] = []
+
+  // Determine whether spintax is expected for this client.
+  // Default = true if no client provided (preserves legacy behavior for old
+  // callers). When client is provided: explicit spintax_enabled wins, else
+  // derive from AOV tier (high/enterprise -> false, low/mid -> true).
+  let spintaxExpected = true
+  if (client) {
+    if (typeof client.spintax_enabled === 'boolean') {
+      spintaxExpected = client.spintax_enabled
+    } else {
+      const tier = inferAovTier({
+        setupFee: client.setup_fee,
+        recurringFee: client.recurring_fee,
+      })
+      spintaxExpected = tier === 'low' || tier === 'mid'
+    }
+  }
+
+  // Whether to score against the precision (high-trust) doctrine.
+  const isHighTrust = client
+    ? (() => {
+        const tier = inferAovTier({
+          setupFee: client.setup_fee,
+          recurringFee: client.recurring_fee,
+        })
+        return tier === 'high' || tier === 'enterprise'
+      })()
+    : false
+
+  const caseStudies = client?.case_studies
 
   for (let seqIdx = 0; seqIdx < sequences.sequences.length; seqIdx++) {
     const sequence = sequences.sequences[seqIdx]
 
     for (let emailIdx = 0; emailIdx < sequence.emails.length; emailIdx++) {
       const email = sequence.emails[emailIdx]
-      const { subject_line, body, preview_text } = email
+      const { subject_line, body, preview_text, step, cta_type } = email
+      const effectiveStep = typeof step === 'number' ? step : emailIdx + 1
+
+      // Per-position word cap (V3) — replaces the flat 100 cap.
+      issues.push(...checkWordCount(body, effectiveStep, seqIdx, emailIdx))
 
       issues.push(
-        ...checkWordCount(body, seqIdx, emailIdx),
         ...checkSubjectLength(subject_line, seqIdx, emailIdx),
         ...checkSpamWords(body, seqIdx, emailIdx),
         ...checkStartsWithI(body, seqIdx, emailIdx),
         ...checkWeakOpening(body, seqIdx, emailIdx),
         ...checkMultipleCTAs(body, seqIdx, emailIdx),
         ...checkMultipleLinks(body, seqIdx, emailIdx),
-        ...checkInsufficientSpintax(body, seqIdx, emailIdx),
-        ...checkNoSubjectSpintax(subject_line, seqIdx, emailIdx),
         ...checkSubjectExclamation(subject_line, seqIdx, emailIdx),
         ...checkExcessiveExclamations(body, seqIdx, emailIdx),
         ...checkAllCaps(body, seqIdx, emailIdx),
@@ -821,13 +1154,28 @@ export function checkCopyQuality(sequences: DraftSequences): QualityCheckResult 
         ...checkEmDashes(body, subject_line, preview_text, seqIdx, emailIdx),
         ...checkDoubleBraceSpintax(body, subject_line, preview_text, seqIdx, emailIdx),
         ...checkPhantomCallback(body, sequence.emails, seqIdx, emailIdx),
+        // V3 doctrine
+        ...checkHighTrustBannedPhrases(body, subject_line, seqIdx, emailIdx),
+        ...checkFabricatedClaims(body, caseStudies, seqIdx, emailIdx),
+        ...checkCtaLadder(body, effectiveStep, cta_type, seqIdx, emailIdx),
         // Masterclass checks
         ...checkCorporateKillSignals(body, seqIdx, emailIdx),
         ...checkLlmIsms(body, subject_line, seqIdx, emailIdx),
-        ...checkPsychologicalPrinciples(body, subject_line, seqIdx, emailIdx),
+        ...checkPsychologicalPrinciples(body, subject_line, seqIdx, emailIdx, {
+          highTrust: isHighTrust,
+          knownCaseStudyClients: caseStudies?.filter((c) => c.is_named).map((c) => c.client_name),
+        }),
         ...checkSubjectLowercase(subject_line, seqIdx, emailIdx),
         ...checkBodyStartsWithI(body, seqIdx, emailIdx),
       )
+
+      // Spintax checks ONLY if spintax is expected.
+      if (spintaxExpected) {
+        issues.push(
+          ...checkInsufficientSpintax(body, seqIdx, emailIdx),
+          ...checkNoSubjectSpintax(subject_line, seqIdx, emailIdx),
+        )
+      }
     }
 
     issues.push(...checkDuplicateOpenings(sequence.emails, seqIdx))

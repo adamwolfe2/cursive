@@ -106,12 +106,15 @@ export const onboardingCopyRegeneration = inngest.createFunction(
         copy_approval_status: 'regenerating',
       })
       try {
+        // V3: bind the client into the quality checker so case_studies and
+        // AOV-tier-derived spintax expectations are available to the checks.
+        const checker = (s: DraftSequences) => checkCopyQuality(s, client)
         const seqs = await regenerateEmailSequences(
           client,
           icpBrief,
           previousSequences,
           feedback || '',
-          checkCopyQuality
+          checker
         )
         await repo.update(client_id, {
           draft_sequences: seqs as any,

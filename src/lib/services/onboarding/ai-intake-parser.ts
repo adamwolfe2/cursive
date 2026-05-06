@@ -32,6 +32,22 @@ Valid primary_cta values: Book a call, Reply to learn more, Visit landing page, 
 
 Valid outbound_tier values: Base, Growth, Scale, Custom
 
+Valid voice_profile values: founder_direct, agency_professional, consultant_authoritative
+- founder_direct: solo founders, creative directors, consultants billing under their own name, agencies under 10 employees. First-person singular, signs with first name only.
+- agency_professional: agencies with 10+ employees, production studios, mid-market service firms. First-person plural, signs with full name and role.
+- consultant_authoritative: solo consultants, fractional executives, frameworks-driven advisory firms. Confident framing, references methodology.
+
+CASE STUDIES extraction:
+- Look for any specific named clients with quantified results in the context (e.g., "Adaptive: 1.2M views, doubled revenue", "client X grew their pipeline by Y").
+- Extract each as { client_name, engagement, results, is_named, url? }.
+- DO NOT invent case studies. If the context only describes vague successes ("we've worked with great clients"), return an empty case_studies array.
+- is_named = true when the client agreed to be named publicly (default false unless context indicates otherwise).
+
+PROSPECT SIGNAL TEMPLATE:
+- A 1-2 sentence pattern describing what kind of per-prospect signal would make a strong opener for this ICP.
+- Examples: "Recent funding round (seed-Series C) within the last 90 days." | "Recently posted an essay or thread on the company blog or founder's social." | "Hired a Head of Growth, Marketing, or Sales in the last 30 days."
+- Return null if no clear signal pattern is described.
+
 Output valid JSON only matching this exact schema:
 {
   "company_name": "string | null",
@@ -84,6 +100,12 @@ Output valid JSON only matching this exact schema:
   "primary_crm": "string | null",
   "data_format": "string | null",
   "audience_count": "string | null",
+  "voice_profile": "founder_direct | agency_professional | consultant_authoritative | null",
+  "spintax_enabled": "boolean | null — null means use AOV tier default",
+  "case_studies": [
+    { "client_name": "string", "engagement": "string", "results": "string", "is_named": false, "url": "string | null" }
+  ],
+  "prospect_signal_template": "string | null",
   "confidence_score": "number 0-100",
   "fields_inferred": ["list of field names where you made inferences beyond explicit statements"],
   "missing_critical_fields": ["fields critical for fulfillment but not determinable from context"],
@@ -221,6 +243,38 @@ export async function parseIntakeContext(
   const parsed = safeParseJSON<ParsedIntakeData>(content, 'Intake Parser')
 
   // Sanitize parsed data (immutable — create new object)
+  // V3 fields (voice_profile, spintax_enabled, case_studies, prospect_signal_template)
+  // are coerced to safe defaults if missing/malformed. Cast through `unknown`
+  // because ParsedIntakeData has no index signature.
+  const parsedAny = parsed as unknown as Record<string, unknown>
+
+  const validVoiceProfiles = ['founder_direct', 'agency_professional', 'consultant_authoritative']
+  const rawVoice = parsedAny.voice_profile
+  const voiceProfile =
+    typeof rawVoice === 'string' && validVoiceProfiles.includes(rawVoice)
+      ? (rawVoice as 'founder_direct' | 'agency_professional' | 'consultant_authoritative')
+      : null
+
+  const rawSpintax = parsedAny.spintax_enabled
+  const spintaxEnabled = typeof rawSpintax === 'boolean' ? rawSpintax : null
+
+  const rawCaseStudies = parsedAny.case_studies
+  const caseStudies = Array.isArray(rawCaseStudies)
+    ? rawCaseStudies
+        .filter((s: unknown): s is Record<string, unknown> => s !== null && typeof s === 'object')
+        .map((s) => ({
+          client_name: typeof s.client_name === 'string' ? s.client_name : '',
+          engagement: typeof s.engagement === 'string' ? s.engagement : '',
+          results: typeof s.results === 'string' ? s.results : '',
+          is_named: typeof s.is_named === 'boolean' ? s.is_named : false,
+          url: typeof s.url === 'string' ? s.url : null,
+        }))
+        .filter((s) => s.client_name.length > 0 || s.engagement.length > 0)
+    : []
+
+  const rawSignalTemplate = parsedAny.prospect_signal_template
+  const prospectSignalTemplate = typeof rawSignalTemplate === 'string' ? rawSignalTemplate : null
+
   const sanitized: ParsedIntakeData = {
     ...parsed,
     packages_selected: Array.isArray(parsed.packages_selected) ? parsed.packages_selected : [],
@@ -236,6 +290,10 @@ export async function parseIntakeContext(
     missing_critical_fields: Array.isArray(parsed.missing_critical_fields) ? parsed.missing_critical_fields : [],
     confidence_score: typeof parsed.confidence_score === 'number' ? parsed.confidence_score : 50,
     packages_reasoning: parsed.packages_reasoning || '',
+    voice_profile: voiceProfile,
+    spintax_enabled: spintaxEnabled,
+    case_studies: caseStudies,
+    prospect_signal_template: prospectSignalTemplate,
   }
 
   return sanitized

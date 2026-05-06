@@ -1,7 +1,7 @@
 // Onboarding Template Types
 // Types for the template system and AI intake parsing
 
-import type { PackageSlug } from './onboarding'
+import type { CaseStudy, PackageSlug, VoiceProfile } from './onboarding'
 
 // ---------------------------------------------------------------------------
 // Template record (matches DB schema)
@@ -113,6 +113,12 @@ export interface ParsedIntakeData {
   primary_cta: string | null
   calendar_link: string | null
   reply_routing_email: string | null
+
+  // Voice + copy strategy (extracted from intake when discoverable)
+  voice_profile: VoiceProfile | null
+  spintax_enabled: boolean | null
+  case_studies: CaseStudy[]
+  prospect_signal_template: string | null
 
   // Pixel setup
   pixel_urls: string | null

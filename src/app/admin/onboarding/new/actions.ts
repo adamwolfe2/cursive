@@ -102,6 +102,11 @@ export async function createClientFromIntake(
         primary_cta: data.primary_cta || null,
         calendar_link: data.calendar_link || null,
         reply_routing_email: data.reply_routing_email || null,
+        // V3: voice + copy strategy
+        voice_profile: data.voice_profile ?? null,
+        spintax_enabled: data.spintax_enabled ?? null,
+        case_studies: data.case_studies ?? [],
+        prospect_signal_template: data.prospect_signal_template ?? null,
         // Pixel setup
         pixel_urls: data.pixel_urls || null,
         uses_gtm: data.uses_gtm || null,

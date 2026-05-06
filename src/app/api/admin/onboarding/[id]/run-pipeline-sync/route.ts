@@ -25,7 +25,7 @@ import { sendNewClientSlackAlert, sendCopyReviewSlackAlert } from '@/lib/service
 import { syncClientToCRM } from '@/lib/services/onboarding/crm-sync'
 import { needsOutboundSetup } from '@/types/onboarding'
 import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
-import type { PackageSlug } from '@/types/onboarding'
+import type { DraftSequences, PackageSlug } from '@/types/onboarding'
 
 async function isAuthorized(request: NextRequest): Promise<boolean> {
   const secret = request.headers.get('x-automation-secret')
@@ -219,7 +219,10 @@ export async function POST(
         timestamp: new Date().toISOString(),
       })
       try {
-        const seqs = await generateEmailSequences(client, icpBrief, checkCopyQuality)
+        // V3: bind the client into the quality checker so fabrication +
+        // CTA ladder checks can read case_studies and AOV tier.
+        const checker = (s: DraftSequences) => checkCopyQuality(s, client)
+        const seqs = await generateEmailSequences(client, icpBrief, checker)
         await repo.update(clientId, {
           draft_sequences: seqs as any,
           copy_generation_status: 'complete',

@@ -125,7 +125,11 @@ export const onboardingIntakePipeline = inngest.createFunction(
         const repo = new OnboardingClientRepository()
         await repo.update(client_id, { copy_generation_status: 'processing' })
         try {
-          const seqs = await generateEmailSequences(client, icpBrief, checkCopyQuality)
+          // V3: bind the client into the quality checker so it has access to
+          // case_studies, voice_profile, and AOV tier when running fabrication
+          // and CTA-ladder checks.
+          const checker = (seqs: DraftSequences) => checkCopyQuality(seqs, client)
+          const seqs = await generateEmailSequences(client, icpBrief, checker)
           await repo.update(client_id, {
             draft_sequences: seqs as any,
             copy_generation_status: 'complete',

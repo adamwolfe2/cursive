@@ -2,6 +2,89 @@
 // Comprehensive types for the client onboarding intake system
 
 // ---------------------------------------------------------------------------
+// Voice profile (drives copy tone in generation)
+// ---------------------------------------------------------------------------
+//
+// A voice profile defines HOW a sender sounds, not just what tone to use. The
+// previous `copy_tone` field was a 4-option enum (Professional/Conversational/
+// Direct/Friendly) which was too generic to differentiate a founder writing to
+// other founders from an SDR running a templated campaign. Voice profiles
+// encode signature style, signoff convention, pronoun usage, and sentence
+// rhythm.
+
+export const VOICE_PROFILES = [
+  'founder_direct',
+  'agency_professional',
+  'consultant_authoritative',
+] as const
+
+export type VoiceProfile = (typeof VOICE_PROFILES)[number]
+
+export const VOICE_PROFILE_LABELS: Record<VoiceProfile, string> = {
+  founder_direct: 'Founder Direct',
+  agency_professional: 'Agency Professional',
+  consultant_authoritative: 'Consultant Authoritative',
+}
+
+// ---------------------------------------------------------------------------
+// AOV tier (drives generation defaults — spintax, CTA ladder, angle library)
+// ---------------------------------------------------------------------------
+//
+// We tier clients by average order value because the right copy strategy is
+// fundamentally different for a $5K SaaS tool sold to ops managers vs. a $50K
+// service sold to founders. Spintax-everywhere works at high volume; precision
+// openers work for high-trust deals.
+
+export const AOV_TIERS = ['low', 'mid', 'high', 'enterprise'] as const
+export type AovTier = (typeof AOV_TIERS)[number]
+
+// ---------------------------------------------------------------------------
+// Case studies (REAL social proof — only source the copy engine may reference)
+// ---------------------------------------------------------------------------
+//
+// The previous pipeline let Claude invent client counts and named customers
+// because the masterclass doctrine said "use SPECIFIC numbers, name actual
+// clients." When the AI had no real data, it fabricated plausible-sounding
+// numbers. The fix: every named client / quantified result the copy engine
+// emits MUST come from this array. If the array is empty, the engine cannot
+// reference any social proof.
+
+export interface CaseStudy {
+  /** Casualized client name (e.g., "Adaptive", not "Adaptive AI Inc."). */
+  client_name: string
+  /** What the engagement was — e.g., "launch film for $4M seed-stage AI co". */
+  engagement: string
+  /**
+   * Quantified results actually delivered. Use natural language with real
+   * numbers. Example: "1.2M views in 90 days; revenue doubled that quarter."
+   * Empty string if no quantified result is available.
+   */
+  results: string
+  /** Whether this client allows their name to appear in cold outreach. */
+  is_named: boolean
+  /** Optional URL to a public case study, video, or article. */
+  url?: string | null
+}
+
+// ---------------------------------------------------------------------------
+// CTA types (positional CTA ladder)
+// ---------------------------------------------------------------------------
+//
+// High-trust services need an escalating ladder, not a calendar link in email
+// 1. Each CTA type maps to a sequence position; the quality checker enforces
+// that mapping.
+
+export const CTA_TYPES = [
+  'asset_offer', // email 1 (high-trust): free content, case study link, video
+  'reply_only', // email 1 (volume): no link, just ask for a reply
+  'soft_call_mention', // email 2: "happy to jump on a quick call if useful"
+  'calendar_link', // email 3: direct booking with one suggested time
+  'breakup', // email 4: no CTA, close the loop
+] as const
+
+export type CtaType = (typeof CTA_TYPES)[number]
+
+// ---------------------------------------------------------------------------
 // Package definitions
 // ---------------------------------------------------------------------------
 
@@ -177,6 +260,17 @@ export interface OnboardingClient {
   backup_reply_email: string | null
   compliance_disclaimers: string | null
 
+  // Voice + copy strategy (drives generation pipeline)
+  // voice_profile encodes HOW the sender sounds. spintax_enabled toggles
+  // multi-variant generation OFF for high-trust copy. case_studies is the
+  // ONLY source of real social proof the copy engine may reference.
+  // prospect_signal_template is the default cold-read opener pattern when no
+  // per-prospect signal is enriched at send time.
+  voice_profile: VoiceProfile | null
+  spintax_enabled: boolean | null
+  case_studies: CaseStudy[]
+  prospect_signal_template: string | null
+
   // Section 6: Pixel setup
   pixel_urls: string | null
   uses_gtm: string | null
@@ -350,6 +444,12 @@ export interface OnboardingFormData {
   reply_routing_email: string
   backup_reply_email: string
   compliance_disclaimers: string
+
+  // Voice + copy strategy
+  voice_profile: VoiceProfile | ''
+  spintax_enabled: boolean | null
+  case_studies: CaseStudy[]
+  prospect_signal_template: string
 
   // Step 6: Pixel
   pixel_urls: string
@@ -525,6 +625,20 @@ export interface EmailSequence {
     emotional_driver: string
   }
   emails: SequenceEmail[]
+  /**
+   * Admin/system metadata, NOT shown to the client. Contains regeneration
+   * notes, angle reasoning, and spintax test plans. Stored separately from
+   * the email objects so the client-facing UI never accidentally renders it.
+   */
+  metadata?: SequenceMetadata
+}
+
+export interface SequenceMetadata {
+  strategy?: string
+  angle_reasoning?: string
+  spintax_test_notes?: string | null
+  /** Why each email is sequenced where it is. */
+  arc_explanation?: string
 }
 
 export interface SequenceEmail {
@@ -535,7 +649,17 @@ export interface SequenceEmail {
   purpose: string
   preview_text?: string
   word_count?: number
+  /**
+   * Positional CTA type. Email 1 must be `asset_offer`; email 2
+   * `soft_call_mention`; email 3 `calendar_link`; email 4 `breakup`. The
+   * quality checker enforces this ladder.
+   */
+  cta_type?: CtaType
+  /** @deprecated kept for backward-compat with sequences generated before the
+   * metadata block was introduced. New sequences put this in the metadata
+   * field. Prefer `metadata.angle_reasoning` for new code. */
   why_it_works?: string
+  /** @deprecated see `cta_type` and `metadata.spintax_test_notes`. */
   spintax_test_notes?: string
 }
 
