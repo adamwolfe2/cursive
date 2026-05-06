@@ -8,6 +8,7 @@ import { safeError } from '@/lib/utils/log-sanitizer'
 import { OnboardingClientRepository } from '@/lib/repositories/onboarding-client.repository'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { requireAdmin } from '@/lib/auth/admin'
+import { buildAutomationHeaders } from '@/lib/utils/automation-dispatch'
 import type { ClientStatus } from '@/types/onboarding'
 
 export async function updateClientStatus(clientId: string, status: ClientStatus, expectedUpdatedAt?: string) {
@@ -82,14 +83,15 @@ export async function approveSequences(clientId: string) {
     ? `https://${process.env.VERCEL_URL}`
     : 'http://localhost:3000')
 
+  // Snapshot auth headers BEFORE after(): inside after() the request scope
+  // is gone, so cookies() would throw. We capture them now.
+  const dispatchHeaders = await buildAutomationHeaders()
+
   after(async () => {
     try {
       await fetch(`${baseUrl}/api/admin/onboarding/${clientId}/push-emailbison`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-automation-secret': process.env.AUTOMATION_SECRET || '',
-        },
+        headers: dispatchHeaders,
       })
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err)
@@ -266,14 +268,14 @@ export async function regenerateCopy(clientId: string, _feedback?: string) {
     ? `https://${process.env.VERCEL_URL}`
     : 'http://localhost:3000')
 
+  // Snapshot auth headers BEFORE after(): cookies() needs request scope.
+  const dispatchHeaders = await buildAutomationHeaders()
+
   after(async () => {
     try {
       const res = await fetch(`${baseUrl}/api/admin/onboarding/${clientId}/run-pipeline-sync`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-automation-secret': process.env.AUTOMATION_SECRET || '',
-        },
+        headers: dispatchHeaders,
       })
       if (!res.ok) throw new Error(`Runner returned ${res.status}`)
     } catch (err) {
@@ -305,13 +307,13 @@ export async function retryAutomationStep(clientId: string, step: string) {
     ? `https://${process.env.VERCEL_URL}`
     : 'http://localhost:3000')
 
+  // retryAutomationStep is awaited (not fire-and-forget) so we still need
+  // the request scope. Build headers right here.
+  const headers = await buildAutomationHeaders()
   try {
     await fetch(`${baseUrl}/api/automations/retry`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-automation-secret': process.env.AUTOMATION_SECRET || '',
-      },
+      headers,
       body: JSON.stringify({ client_id: clientId, step }),
     })
   } catch {
@@ -350,14 +352,14 @@ export async function restartIntakePipeline(clientId: string) {
     ? `https://${process.env.VERCEL_URL}`
     : 'http://localhost:3000')
 
+  // Snapshot auth headers BEFORE after(): cookies() needs request scope.
+  const dispatchHeaders = await buildAutomationHeaders()
+
   after(async () => {
     try {
       await fetch(`${baseUrl}/api/admin/onboarding/${clientId}/run-pipeline-sync`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-automation-secret': process.env.AUTOMATION_SECRET || '',
-        },
+        headers: dispatchHeaders,
       })
     } catch {
       // Non-fatal: admin can hit Run Inline manually.

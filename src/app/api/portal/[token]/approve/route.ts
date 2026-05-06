@@ -6,6 +6,7 @@ import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/server'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { buildAutomationHeaders } from '@/lib/utils/automation-dispatch'
 import { getInngest } from '@/inngest/client'
 
 const requestSchema = z.object({
@@ -110,14 +111,16 @@ export async function POST(
           ? `https://${process.env.VERCEL_URL}`
           : 'http://localhost:3000')
 
+        // Portal token request — no admin session. Snapshot dispatch headers
+        // (which will include AUTOMATION_SECRET if set in env). If neither
+        // path is valid, the runner 401s and we log it (non-fatal).
+        const dispatchHeaders = await buildAutomationHeaders()
+
         after(async () => {
           try {
             await fetch(`${baseUrl}/api/admin/onboarding/${tokenRecord.client_id}/push-emailbison`, {
               method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'x-automation-secret': process.env.AUTOMATION_SECRET || '',
-              },
+              headers: dispatchHeaders,
             })
           } catch (err) {
             safeError('[Portal] Inline EB push dispatch failed:', err)

@@ -4,6 +4,7 @@ import { z } from 'zod'
 import { after } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { buildAutomationHeaders } from '@/lib/utils/automation-dispatch'
 import type { OnboardingFormData } from '@/types/onboarding'
 
 // --------------------------------------------------------------------------
@@ -402,14 +403,16 @@ export async function submitOnboardingForm(
       ? `https://${process.env.VERCEL_URL}`
       : 'http://localhost:3000')
 
+    // Public form submission — client has no admin session, so the auth path
+    // here is AUTOMATION_SECRET only. If the secret is unset in env, dispatch
+    // 401s (logged below, non-fatal — admin can hit "Run Inline" manually).
+    const dispatchHeaders = await buildAutomationHeaders()
+
     after(async () => {
       try {
         await fetch(`${baseUrl}/api/admin/onboarding/${clientId}/run-pipeline-sync`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-automation-secret': process.env.AUTOMATION_SECRET || '',
-          },
+          headers: dispatchHeaders,
         })
       } catch (e) {
         safeError('[Onboarding] Pipeline runner failed to dispatch:', e)

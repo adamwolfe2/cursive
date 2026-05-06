@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { after } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/server'
+import { buildAutomationHeaders } from '@/lib/utils/automation-dispatch'
 import type { ParsedIntakeData } from '@/types/onboarding-templates'
 import type { DealState } from '@/types/onboarding-wizard'
 
@@ -146,14 +147,14 @@ export async function createClientFromIntake(
         ? `https://${process.env.VERCEL_URL}`
         : 'http://localhost:3000')
 
+    // Snapshot auth headers BEFORE after(): cookies() needs request scope.
+    const dispatchHeaders = await buildAutomationHeaders()
+
     after(async () => {
       try {
         await fetch(`${baseUrl}/api/admin/onboarding/${clientId}/run-pipeline-sync`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-automation-secret': process.env.AUTOMATION_SECRET || '',
-          },
+          headers: dispatchHeaders,
         })
       } catch {
         // Non-fatal: client record saved. Admin can hit "Run Inline" manually.
