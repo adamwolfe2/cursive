@@ -46,6 +46,47 @@ body {
   text-decoration: underline;
 }
 
+/* Lists — typography plugin not installed, so style them explicitly */
+.prose ul {
+  list-style: disc;
+  padding-left: 1.5rem;
+  margin: 1rem 0;
+  color: #374151;
+}
+.prose ol {
+  list-style: decimal;
+  padding-left: 1.5rem;
+  margin: 1rem 0;
+  color: #374151;
+}
+.prose li {
+  margin: 0.375rem 0;
+  padding-left: 0.25rem;
+}
+.prose li > p {
+  margin: 0;
+  color: inherit;
+}
+.prose h2 {
+  font-size: 1.5rem;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  scroll-margin-top: 6rem;
+}
+.prose h3 {
+  font-size: 1.125rem;
+  margin-top: 1.75rem;
+  margin-bottom: 0.5rem;
+  scroll-margin-top: 6rem;
+}
+.prose code {
+  background: #f3f4f6;
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  font-size: 0.875em;
+  color: #111827;
+}
+
 /* Cursive font utility */
 .font-cursive {
   font-family: 'Dancing Script', cursive !important;
