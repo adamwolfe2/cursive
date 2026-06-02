@@ -38,9 +38,107 @@ const EMAILBISON_SUPER_ADMIN_API_KEY =
 const EMAILBISON_API_KEY = process.env.EMAILBISON_API_KEY || ''
 const EMAILBISON_TIMEOUT = 30000
 
-/** Returns the best available API key (super-admin first). */
+/** Returns the best available global API key (super-admin first). */
 function resolveApiKey(): string {
   return EMAILBISON_SUPER_ADMIN_API_KEY || EMAILBISON_API_KEY
+}
+
+// ----------------------------------------------------------------------------
+// WORKSPACE-SCOPED API KEYS
+// ----------------------------------------------------------------------------
+//
+// EmailBison's per-workspace data endpoints (campaigns, sender-emails, leads,
+// sequence-steps, scheduling, etc.) require a workspace-scoped API key — the
+// super-admin key alone returns:
+//   { "data": { "success": false, "message": "The request is not authenticated.
+//     Ensure you are using the correct URL, and a key that exists for the URL." } }
+// even with ?workspace_id=N appended.
+//
+// Only /api/workspaces (workspace CRUD) accepts the super-admin key.
+//
+// EMAILBISON_WORKSPACES is a JSON array of { name, base_url, api_key } that
+// names each EB child workspace + its scoped key. We map name → key from the
+// env var, then map workspace_id → key by joining with the workspaces list
+// (fetched once with the super-admin key) and cache the result in-process.
+
+let WORKSPACE_KEY_BY_NAME: Map<string, string> | null = null
+let WORKSPACE_KEY_BY_ID: Map<number, string> | null = null
+
+function parseWorkspaceKeysFromEnv(): Map<string, string> {
+  if (WORKSPACE_KEY_BY_NAME) return WORKSPACE_KEY_BY_NAME
+  const map = new Map<string, string>()
+  const raw = process.env.EMAILBISON_WORKSPACES
+  if (!raw) {
+    WORKSPACE_KEY_BY_NAME = map
+    return map
+  }
+  try {
+    const parsed = JSON.parse(raw) as Array<{
+      name?: unknown
+      api_key?: unknown
+    }>
+    if (Array.isArray(parsed)) {
+      for (const entry of parsed) {
+        if (
+          typeof entry?.name === 'string' &&
+          typeof entry?.api_key === 'string'
+        ) {
+          map.set(entry.name.trim(), entry.api_key.trim())
+        }
+      }
+    }
+  } catch (err) {
+    safeError(
+      '[EmailBison] Failed to parse EMAILBISON_WORKSPACES JSON; falling back to super-admin key',
+      err
+    )
+  }
+  WORKSPACE_KEY_BY_NAME = map
+  return map
+}
+
+/**
+ * Resolve a workspace-scoped API key for the given EB workspace_id.
+ * Returns null if no key is configured for that workspace — callers should
+ * fall back to the super-admin key (which works for /api/workspaces only).
+ *
+ * The id→key map is built lazily by joining EMAILBISON_WORKSPACES (name→key)
+ * against the live /api/workspaces list (id→name), then cached in-process.
+ */
+async function getWorkspaceKeyById(
+  workspaceId: number
+): Promise<string | null> {
+  if (WORKSPACE_KEY_BY_ID) {
+    return WORKSPACE_KEY_BY_ID.get(workspaceId) ?? null
+  }
+
+  const keysByName = parseWorkspaceKeysFromEnv()
+  if (keysByName.size === 0) {
+    WORKSPACE_KEY_BY_ID = new Map()
+    return null
+  }
+
+  let workspaces: EBWorkspace[] = []
+  try {
+    const result = await listEBWorkspaces()
+    workspaces = result.workspaces
+  } catch (err) {
+    safeError(
+      '[EmailBison] Failed to list workspaces during key resolution',
+      err
+    )
+    // Don't cache empty — try again on next call so a transient EB hiccup
+    // doesn't permanently break the per-workspace push for this process.
+    return null
+  }
+
+  const byId = new Map<number, string>()
+  for (const ws of workspaces) {
+    const key = keysByName.get(ws.name)
+    if (key) byId.set(ws.id, key)
+  }
+  WORKSPACE_KEY_BY_ID = byId
+  return byId.get(workspaceId) ?? null
 }
 
 // ============================================================================
@@ -142,22 +240,47 @@ async function bisonFetch<T = any>(
   endpoint: string,
   options: RequestInit & { timeout?: number; ebWorkspaceId?: number } = {}
 ): Promise<T> {
-  const apiKey = resolveApiKey()
-  if (!apiKey) {
-    throw new Error(
-      'No EmailBison API key configured (EMAILBISON_SUPER_ADMIN_API_KEY or EMAILBISON_API_KEY)'
-    )
-  }
-
   const {
     timeout = EMAILBISON_TIMEOUT,
     ebWorkspaceId,
     ...fetchOptions
   } = options
 
-  // Build the URL and append workspace_id query param when requested.
-  let rawEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`
+  // When the caller asks to scope to a specific EB workspace, prefer that
+  // workspace's own API key. EB's per-workspace endpoints reject the
+  // super-admin key (even with ?workspace_id=N) with "request is not
+  // authenticated", so falling back to super-admin is a known-failing path
+  // logged for visibility — only useful while EMAILBISON_WORKSPACES is
+  // unconfigured or stale.
+  let apiKey: string
+  let appendWorkspaceQuery = false
   if (ebWorkspaceId !== undefined) {
+    const wsKey = await getWorkspaceKeyById(ebWorkspaceId)
+    if (wsKey) {
+      apiKey = wsKey
+      // No workspace_id query needed — the scoped key already binds the
+      // request to its workspace.
+    } else {
+      apiKey = resolveApiKey()
+      appendWorkspaceQuery = true
+      safeError(
+        `[EmailBison] No workspace-scoped API key for EB workspace ${ebWorkspaceId}; falling back to super-admin with workspace_id query (likely to 401). Add this workspace's key to EMAILBISON_WORKSPACES.`
+      )
+    }
+  } else {
+    apiKey = resolveApiKey()
+  }
+
+  if (!apiKey) {
+    throw new Error(
+      'No EmailBison API key configured (EMAILBISON_SUPER_ADMIN_API_KEY, EMAILBISON_API_KEY, or EMAILBISON_WORKSPACES)'
+    )
+  }
+
+  // Build the URL and append workspace_id query only when we had to fall back
+  // to the super-admin key.
+  let rawEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`
+  if (appendWorkspaceQuery && ebWorkspaceId !== undefined) {
     const separator = rawEndpoint.includes('?') ? '&' : '?'
     rawEndpoint = `${rawEndpoint}${separator}workspace_id=${ebWorkspaceId}`
   }
@@ -197,17 +320,31 @@ async function bisonFetch<T = any>(
 // ============================================================================
 
 /**
- * Create a new campaign
+ * Create a new campaign.
+ *
+ * EB returns `{ data: { id, name, ... } }` (Laravel envelope). We unwrap and
+ * map `id` → `campaign_id` so the rest of the codebase keeps the documented
+ * shape. Throws if EB did not return a numeric id.
  */
 export async function createCampaign(
   name: string,
   ebWorkspaceId?: number
 ): Promise<{ campaign_id: string }> {
-  return bisonFetch('/api/campaigns', {
+  const raw = await bisonFetch<{
+    data?: Record<string, unknown>
+    id?: unknown
+    campaign_id?: unknown
+  }>('/api/campaigns', {
     method: 'POST',
     body: JSON.stringify({ name }),
     ebWorkspaceId,
   })
+  const payload = (raw?.data ?? raw) as Record<string, unknown>
+  const id = payload?.id ?? payload?.campaign_id
+  if (id === undefined || id === null) {
+    throw new Error('EmailBison did not return a campaign id')
+  }
+  return { campaign_id: String(id) }
 }
 
 /**
@@ -275,15 +412,22 @@ export async function pauseCampaign(
 // ============================================================================
 
 /**
- * Add a sequence step (email) to a campaign
- * Endpoint: POST /api/campaigns/sequence-steps (campaign_id in body)
+ * Add a sequence step (email) to a campaign.
+ *
+ * Endpoint: POST /api/campaigns/sequence-steps (campaign_id in body).
+ * EB wraps the created step in `{ data: { id, ... } }`; we unwrap to keep
+ * the documented `step_id` shape.
  */
 export async function addSequenceStep(
   campaignId: string,
   step: SequenceStep,
   ebWorkspaceId?: number
 ): Promise<{ step_id: string }> {
-  return bisonFetch('/api/campaigns/sequence-steps', {
+  const raw = await bisonFetch<{
+    data?: Record<string, unknown>
+    id?: unknown
+    step_id?: unknown
+  }>('/api/campaigns/sequence-steps', {
     method: 'POST',
     body: JSON.stringify({
       campaign_id: campaignId,
@@ -293,6 +437,9 @@ export async function addSequenceStep(
     }),
     ebWorkspaceId,
   })
+  const payload = (raw?.data ?? raw) as Record<string, unknown>
+  const id = payload?.id ?? payload?.step_id
+  return { step_id: id !== undefined && id !== null ? String(id) : '' }
 }
 
 /**
@@ -447,9 +594,46 @@ export async function listSenderEmails(
   if (params?.status) searchParams.set('status', params.status)
 
   const query = searchParams.toString()
-  return bisonFetch(`/api/sender-emails${query ? `?${query}` : ''}`, {
+  // EB returns `{ data: [...] }` with status capitalized (e.g. "Connected").
+  // Unwrap and normalize to our documented lowercase enum so attach-sender
+  // flows downstream don't break on the unexpected shape.
+  const raw = await bisonFetch<{
+    data?: unknown
+    sender_emails?: unknown
+  }>(`/api/sender-emails${query ? `?${query}` : ''}`, {
     ebWorkspaceId,
   })
+  const items = Array.isArray(raw?.data)
+    ? (raw.data as Array<Record<string, unknown>>)
+    : Array.isArray(raw?.sender_emails)
+      ? (raw.sender_emails as Array<Record<string, unknown>>)
+      : []
+  const normalizeStatus = (
+    s: unknown
+  ): EmailBisonSenderEmail['status'] | undefined => {
+    if (typeof s !== 'string') return undefined
+    const v = s.toLowerCase()
+    if (v === 'connected') return 'connected'
+    if (v === 'not_connected' || v === 'disconnected') return 'not_connected'
+    if (v === 'pending_move') return 'pending_move'
+    if (v === 'pending_deletion') return 'pending_deletion'
+    return undefined
+  }
+  const sender_emails: EmailBisonSenderEmail[] = items
+    .map((s) => {
+      const status = normalizeStatus(s.status) ?? 'not_connected'
+      return {
+        id: String(s.id ?? ''),
+        email: String(s.email ?? ''),
+        status,
+        warmup_enabled:
+          typeof s.warmup_enabled === 'boolean' ? s.warmup_enabled : undefined,
+      }
+    })
+    // If the caller filtered by status, EB sometimes ignores the filter and
+    // returns all senders; enforce client-side.
+    .filter((s) => !params?.status || s.status === params.status)
+  return { sender_emails }
 }
 
 /**
