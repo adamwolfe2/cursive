@@ -30,9 +30,11 @@ import { getErrorMessage } from '@/lib/utils/error-helpers'
 // CONFIGURATION
 // ============================================================================
 
-const EMAILBISON_API_URL = process.env.EMAILBISON_API_URL || 'https://send.meetcursive.com'
+const EMAILBISON_API_URL =
+  process.env.EMAILBISON_API_URL || 'https://send.meetcursive.com'
 // Prefer super-admin key (sees all workspaces); fall back to regular key.
-const EMAILBISON_SUPER_ADMIN_API_KEY = process.env.EMAILBISON_SUPER_ADMIN_API_KEY || ''
+const EMAILBISON_SUPER_ADMIN_API_KEY =
+  process.env.EMAILBISON_SUPER_ADMIN_API_KEY || ''
 const EMAILBISON_API_KEY = process.env.EMAILBISON_API_KEY || ''
 const EMAILBISON_TIMEOUT = 30000
 
@@ -142,10 +144,16 @@ async function bisonFetch<T = any>(
 ): Promise<T> {
   const apiKey = resolveApiKey()
   if (!apiKey) {
-    throw new Error('No EmailBison API key configured (EMAILBISON_SUPER_ADMIN_API_KEY or EMAILBISON_API_KEY)')
+    throw new Error(
+      'No EmailBison API key configured (EMAILBISON_SUPER_ADMIN_API_KEY or EMAILBISON_API_KEY)'
+    )
   }
 
-  const { timeout = EMAILBISON_TIMEOUT, ebWorkspaceId, ...fetchOptions } = options
+  const {
+    timeout = EMAILBISON_TIMEOUT,
+    ebWorkspaceId,
+    ...fetchOptions
+  } = options
 
   // Build the URL and append workspace_id query param when requested.
   let rawEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`
@@ -160,7 +168,7 @@ async function bisonFetch<T = any>(
     ...fetchOptions,
     timeout,
     headers: {
-      'Authorization': `Bearer ${apiKey}`,
+      Authorization: `Bearer ${apiKey}`,
       'Content-Type': 'application/json',
       ...fetchOptions.headers,
     },
@@ -169,8 +177,8 @@ async function bisonFetch<T = any>(
   if (!response.ok) {
     const errorBody = await response.json().catch(() => ({}))
     throw new EmailBisonApiError(
-      (errorBody as Record<string, unknown>).message as string ||
-      `EmailBison API error: ${response.status} ${response.statusText}`,
+      ((errorBody as Record<string, unknown>).message as string) ||
+        `EmailBison API error: ${response.status} ${response.statusText}`,
       response.status,
       errorBody
     )
@@ -219,7 +227,9 @@ export async function listCampaigns(
   if (params?.status) searchParams.set('status', params.status)
 
   const query = searchParams.toString()
-  return bisonFetch(`/api/campaigns${query ? `?${query}` : ''}`, { ebWorkspaceId })
+  return bisonFetch(`/api/campaigns${query ? `?${query}` : ''}`, {
+    ebWorkspaceId,
+  })
 }
 
 /**
@@ -294,18 +304,19 @@ export async function toggleSequenceVariant(
   variantId: string,
   active: boolean
 ): Promise<void> {
-  await bisonFetch(`/api/campaigns/${campaignId}/sequences/variants/${variantId}`, {
-    method: 'PATCH',
-    body: JSON.stringify({ active }),
-  })
+  await bisonFetch(
+    `/api/campaigns/${campaignId}/sequences/variants/${variantId}`,
+    {
+      method: 'PATCH',
+      body: JSON.stringify({ active }),
+    }
+  )
 }
 
 /**
  * Delete a sequence step
  */
-export async function deleteSequenceStep(
-  stepId: string
-): Promise<void> {
+export async function deleteSequenceStep(stepId: string): Promise<void> {
   await bisonFetch(`/api/campaigns/sequence-steps/${stepId}`, {
     method: 'DELETE',
   })
@@ -343,7 +354,9 @@ export async function listLeads(
   if (params?.search) searchParams.set('search', params.search)
   if (params?.page) searchParams.set('page', params.page.toString())
   if (params?.tag_ids) {
-    params.tag_ids.forEach((id, i) => searchParams.set(`filters[tag_ids][${i}]`, id))
+    params.tag_ids.forEach((id, i) =>
+      searchParams.set(`filters[tag_ids][${i}]`, id)
+    )
   }
 
   const query = searchParams.toString()
@@ -434,7 +447,9 @@ export async function listSenderEmails(
   if (params?.status) searchParams.set('status', params.status)
 
   const query = searchParams.toString()
-  return bisonFetch(`/api/sender-emails${query ? `?${query}` : ''}`, { ebWorkspaceId })
+  return bisonFetch(`/api/sender-emails${query ? `?${query}` : ''}`, {
+    ebWorkspaceId,
+  })
 }
 
 /**
@@ -477,9 +492,7 @@ export async function removeSenderEmailsFromCampaign(
  * Create a new tag
  * (Note: deprecated 'default' parameter removed in Feb 3 release)
  */
-export async function createTag(
-  name: string
-): Promise<{ tag: EmailBisonTag }> {
+export async function createTag(name: string): Promise<{ tag: EmailBisonTag }> {
   return bisonFetch('/api/tags', {
     method: 'POST',
     body: JSON.stringify({ name }),
@@ -543,7 +556,9 @@ export async function getScheduledEmails(params?: {
 /**
  * List schedule templates
  */
-export async function listScheduleTemplates(): Promise<{ templates: Array<{ id: string; name: string }> }> {
+export async function listScheduleTemplates(): Promise<{
+  templates: Array<{ id: string; name: string }>
+}> {
   return bisonFetch('/api/campaigns/schedule/templates')
 }
 
@@ -554,10 +569,13 @@ export async function applyScheduleTemplate(
   campaignId: string,
   scheduleId: string
 ): Promise<void> {
-  await bisonFetch(`/api/campaigns/${campaignId}/create-schedule-from-template`, {
-    method: 'POST',
-    body: JSON.stringify({ schedule_id: scheduleId }),
-  })
+  await bisonFetch(
+    `/api/campaigns/${campaignId}/create-schedule-from-template`,
+    {
+      method: 'POST',
+      body: JSON.stringify({ schedule_id: scheduleId }),
+    }
+  )
 }
 
 /**
@@ -588,14 +606,38 @@ export interface EBWorkspace {
 /**
  * List all EmailBison workspaces visible to the super-admin key.
  * Returns every workspace (parent + children); callers can filter as needed.
+ *
+ * EB API returns `{ data: EBWorkspace[] }` (Laravel-style envelope); we
+ * unwrap it so callers see the shape promised by this function's return type.
  */
-export async function listEBWorkspaces(): Promise<{ workspaces: EBWorkspace[] }> {
-  return bisonFetch('/api/workspaces')
+export async function listEBWorkspaces(): Promise<{
+  workspaces: EBWorkspace[]
+}> {
+  const raw = await bisonFetch<{ data?: unknown; workspaces?: unknown }>(
+    '/api/workspaces'
+  )
+  const items = Array.isArray(raw?.data)
+    ? (raw.data as Array<Record<string, unknown>>)
+    : Array.isArray(raw?.workspaces)
+      ? (raw.workspaces as Array<Record<string, unknown>>)
+      : []
+  const workspaces: EBWorkspace[] = items.map((w) => ({
+    id: Number(w.id),
+    name: String(w.name ?? ''),
+    parent_id:
+      w.parent_id === null || w.parent_id === undefined
+        ? null
+        : Number(w.parent_id),
+  }))
+  return { workspaces }
 }
 
 /**
  * Create a new EmailBison child workspace.
  * EmailBison automatically sets parent_id to the super-admin's root workspace.
+ *
+ * EB API returns `{ data: { id, name, ... } }`; we unwrap the envelope and
+ * narrow to the fields callers need.
  *
  * @param name - Workspace display name (2-100 chars, will be trimmed).
  */
@@ -604,12 +646,24 @@ export async function createEBWorkspace(
 ): Promise<{ id: number; name: string }> {
   const trimmed = name.trim()
   if (trimmed.length < 2 || trimmed.length > 100) {
-    throw new Error('EmailBison workspace name must be between 2 and 100 characters')
+    throw new Error(
+      'EmailBison workspace name must be between 2 and 100 characters'
+    )
   }
-  return bisonFetch('/api/workspaces', {
+  const raw = await bisonFetch<{
+    data?: Record<string, unknown>
+    id?: unknown
+    name?: unknown
+  }>('/api/workspaces', {
     method: 'POST',
     body: JSON.stringify({ name: trimmed }),
   })
+  const payload = (raw?.data ?? raw) as Record<string, unknown>
+  const id = Number(payload?.id)
+  if (!Number.isFinite(id)) {
+    throw new Error('EmailBison did not return a workspace id')
+  }
+  return { id, name: String(payload?.name ?? trimmed) }
 }
 
 // ============================================================================
@@ -628,10 +682,16 @@ export async function verifyWebhookSignature(
 
   const encoder = new TextEncoder()
   const key = await crypto.subtle.importKey(
-    'raw', encoder.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
+    'raw',
+    encoder.encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
   )
   const sig = await crypto.subtle.sign('HMAC', key, encoder.encode(payload))
-  const expected = Array.from(new Uint8Array(sig)).map(b => b.toString(16).padStart(2, '0')).join('')
+  const expected = Array.from(new Uint8Array(sig))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('')
 
   // Constant-time comparison
   if (signature.length !== expected.length) return false
@@ -666,9 +726,7 @@ export async function listReplies(): Promise<{ replies: EmailBisonReply[] }> {
 /**
  * Get a single reply
  */
-export async function getReply(
-  replyId: string
-): Promise<EmailBisonReply> {
+export async function getReply(replyId: string): Promise<EmailBisonReply> {
   return bisonFetch(`/api/replies/${replyId}`)
 }
 
@@ -688,9 +746,7 @@ export async function replyToReply(
 /**
  * Mark a reply as interested
  */
-export async function markReplyAsInterested(
-  replyId: string
-): Promise<void> {
+export async function markReplyAsInterested(replyId: string): Promise<void> {
   await bisonFetch(`/api/replies/${replyId}/mark-as-interested`, {
     method: 'PATCH',
   })
@@ -699,9 +755,7 @@ export async function markReplyAsInterested(
 /**
  * Push interested reply to a follow-up campaign
  */
-export async function pushToFollowupCampaign(
-  replyId: string
-): Promise<void> {
+export async function pushToFollowupCampaign(replyId: string): Promise<void> {
   await bisonFetch(`/api/replies/${replyId}/followup-campaign/push`, {
     method: 'POST',
   })
@@ -756,9 +810,10 @@ export async function exportCampaignToEmailBison(options: {
         step_number: email.step,
         subject: email.subject,
         body: email.body,
-        wait_days: email.day > 0
-          ? email.day - (sortedEmails[email.step - 2]?.day || 0)
-          : 1,
+        wait_days:
+          email.day > 0
+            ? email.day - (sortedEmails[email.step - 2]?.day || 0)
+            : 1,
       })
       stepsAdded++
 
@@ -783,7 +838,9 @@ export async function exportCampaignToEmailBison(options: {
     // 4. Auto-add connected sender emails
     if (options.autoAddSenderEmails !== false) {
       try {
-        const { sender_emails } = await listSenderEmails({ status: 'connected' })
+        const { sender_emails } = await listSenderEmails({
+          status: 'connected',
+        })
         if (sender_emails.length > 0) {
           await addSenderEmailsToCampaign(
             campaign_id,
