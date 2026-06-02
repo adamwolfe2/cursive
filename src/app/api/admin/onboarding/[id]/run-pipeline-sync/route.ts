@@ -266,6 +266,27 @@ export async function POST(
           copy_generation_status: 'complete',
           copy_approval_status: 'pending',
         })
+        // Sync the portal-side approval row back to pending so the client
+        // sees the revised copy instead of the stale "Changes requested"
+        // banner. Best-effort — admin can still approve regardless.
+        try {
+          const { createAdminClient: createAdminSb } =
+            await import('@/lib/supabase/server')
+          const sb = createAdminSb()
+          await sb
+            .from('client_portal_approvals')
+            .update({
+              status: 'pending',
+              updated_at: new Date().toISOString(),
+            })
+            .eq('client_id', clientId)
+            .eq('step_type', 'copy')
+        } catch (syncErr: any) {
+          safeError(
+            '[run-pipeline-sync] portal approval sync failed:',
+            syncErr?.message || syncErr
+          )
+        }
         await repo.appendAutomationLog(clientId, {
           step: 'copy_regeneration',
           status: 'complete',

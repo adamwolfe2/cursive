@@ -79,6 +79,16 @@ export async function approveSequences(clientId: string) {
     throw new Error(`Failed to approve sequences: ${error.message}`)
   }
 
+  // Mirror the approval to client_portal_approvals so the client's portal
+  // shows "Email copy approved" instead of the stale "Changes requested"
+  // banner. Silent-fail if no row exists (client hasn't touched the portal
+  // step yet) — the admin approval is still authoritative.
+  await supabase
+    .from('client_portal_approvals')
+    .update({ status: 'approved', updated_at: new Date().toISOString() })
+    .eq('client_id', clientId)
+    .eq('step_type', 'copy')
+
   const workspaceId = client.assigned_workspace_id || clientId
 
   // Fire-and-forget inline push. This is the authoritative path because the
