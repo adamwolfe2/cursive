@@ -4,7 +4,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { requirePlatformAdmin } from '@/lib/auth/admin'
+import { requireAdmin } from '@/lib/auth/admin'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getErrorMessage } from '@/lib/utils/error-helpers'
 
@@ -12,12 +12,17 @@ const bodySchema = z.object({
   eb_workspace_id: z.number().int().positive().nullable(),
 })
 
+// Auth note: aligned with sibling admin onboarding routes (push-emailbison,
+// assign-workspace, comments, approvals) which all use requireAdmin().
+// The /admin layout gates by users.role; platform_admins-only check broke
+// workspace owners who manage EB assignments via the admin console.
+
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    await requirePlatformAdmin()
+    await requireAdmin()
   } catch {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
@@ -34,7 +39,10 @@ export async function POST(
   const parsed = bodySchema.safeParse(body)
   if (!parsed.success) {
     return NextResponse.json(
-      { error: 'eb_workspace_id must be a positive integer or null', details: parsed.error.flatten() },
+      {
+        error: 'eb_workspace_id must be a positive integer or null',
+        details: parsed.error.flatten(),
+      },
       { status: 400 }
     )
   }

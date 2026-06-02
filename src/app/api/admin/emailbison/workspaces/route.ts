@@ -4,13 +4,22 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { requirePlatformAdmin } from '@/lib/auth/admin'
-import { listEBWorkspaces, createEBWorkspace } from '@/lib/integrations/emailbison'
+import { requireAdmin } from '@/lib/auth/admin'
+import {
+  listEBWorkspaces,
+  createEBWorkspace,
+} from '@/lib/integrations/emailbison'
 import { getErrorMessage } from '@/lib/utils/error-helpers'
+
+// Auth note: aligned with sibling admin onboarding routes (push-emailbison,
+// assign-workspace, comments, approvals) which all use requireAdmin().
+// The /admin layout already gates by users.role (owner|admin), so platform_admins
+// strict membership added no protection here while breaking workspace owners
+// who manage EB via the admin console.
 
 export async function GET() {
   try {
-    await requirePlatformAdmin()
+    await requireAdmin()
   } catch {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
@@ -34,7 +43,7 @@ const createSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    await requirePlatformAdmin()
+    await requireAdmin()
   } catch {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
@@ -49,7 +58,10 @@ export async function POST(request: NextRequest) {
   const parsed = createSchema.safeParse(body)
   if (!parsed.success) {
     return NextResponse.json(
-      { error: 'name must be 2-100 characters', details: parsed.error.flatten() },
+      {
+        error: 'name must be 2-100 characters',
+        details: parsed.error.flatten(),
+      },
       { status: 400 }
     )
   }
