@@ -11,7 +11,11 @@ import { requireAdmin } from '@/lib/auth/admin'
 import { buildAutomationHeaders } from '@/lib/utils/automation-dispatch'
 import type { ClientStatus } from '@/types/onboarding'
 
-export async function updateClientStatus(clientId: string, status: ClientStatus, expectedUpdatedAt?: string) {
+export async function updateClientStatus(
+  clientId: string,
+  status: ClientStatus,
+  expectedUpdatedAt?: string
+) {
   await requireAdmin()
   const supabase = createAdminClient()
 
@@ -58,7 +62,9 @@ export async function approveSequences(clientId: string) {
     .single()
 
   if (fetchError || !client) {
-    throw new Error(`Failed to load client for approval: ${fetchError?.message || 'not found'}`)
+    throw new Error(
+      `Failed to load client for approval: ${fetchError?.message || 'not found'}`
+    )
   }
 
   const { error } = await supabase
@@ -79,9 +85,11 @@ export async function approveSequences(clientId: string) {
   // prod Inngest project is unreachable (see project_inngest_orphaned memory).
   // We still call inngest.send() below as belt-and-suspenders if it ever
   // comes back online, but the inline call is what actually deploys campaigns.
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || (process.env.VERCEL_URL
-    ? `https://${process.env.VERCEL_URL}`
-    : 'http://localhost:3000')
+  const baseUrl =
+    process.env.NEXT_PUBLIC_APP_URL ||
+    (process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : 'http://localhost:3000')
 
   // Snapshot auth headers BEFORE after(): inside after() the request scope
   // is gone, so cookies() would throw. We capture them now.
@@ -89,13 +97,18 @@ export async function approveSequences(clientId: string) {
 
   after(async () => {
     try {
-      await fetch(`${baseUrl}/api/admin/onboarding/${clientId}/push-emailbison`, {
-        method: 'POST',
-        headers: dispatchHeaders,
-      })
+      await fetch(
+        `${baseUrl}/api/admin/onboarding/${clientId}/push-emailbison`,
+        {
+          method: 'POST',
+          headers: dispatchHeaders,
+        }
+      )
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err)
-      safeError(`[approveSequences] inline push dispatch failed for ${clientId}: ${msg}`)
+      safeError(
+        `[approveSequences] inline push dispatch failed for ${clientId}: ${msg}`
+      )
     }
   })
 
@@ -177,13 +190,15 @@ export async function updateChecklistItem(
     throw new Error(`Failed to fetch checklist: ${fetchError?.message}`)
   }
 
-  const items = (checklist.items as Array<{
-    id: string
-    label: string
-    completed: boolean
-    completed_at: string | null
-    category: string
-  }>).map((item) => {
+  const items = (
+    checklist.items as Array<{
+      id: string
+      label: string
+      completed: boolean
+      completed_at: string | null
+      category: string
+    }>
+  ).map((item) => {
     if (item.id === itemId) {
       return {
         ...item,
@@ -235,7 +250,10 @@ export async function updateDomainsApprovalUrl(clientId: string, url: string) {
 
   const { error } = await supabase
     .from('onboarding_clients')
-    .update({ domains_approval_url: value, updated_at: new Date().toISOString() })
+    .update({
+      domains_approval_url: value,
+      updated_at: new Date().toISOString(),
+    })
     .eq('id', clientId)
 
   if (error) {
@@ -245,42 +263,76 @@ export async function updateDomainsApprovalUrl(clientId: string, url: string) {
   revalidatePath(`/admin/onboarding/${clientId}`)
 }
 
-export async function regenerateCopy(clientId: string, _feedback?: string) {
+export async function regenerateCopy(
+  clientId: string,
+  feedbackOverride?: string
+) {
   await requireAdmin()
   const supabase = createAdminClient()
 
-  // Reset copy state so the inline runner re-generates it.
+  // Pull the latest client-side bulk note (the "request changes" form on the
+  // portal writes to client_portal_approvals.notes with step_type='copy' and
+  // status='changes_requested'). We feed it forward as the rejection feedback
+  // for the regeneration prompt — without this, the runner re-generates from
+  // scratch with no awareness of what the client asked us to change.
+  let feedback = feedbackOverride?.trim() || ''
+  if (!feedback) {
+    const { data: approval } = await supabase
+      .from('client_portal_approvals')
+      .select('notes, updated_at')
+      .eq('client_id', clientId)
+      .eq('step_type', 'copy')
+      .eq('status', 'changes_requested')
+      .order('updated_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+    feedback = (approval?.notes ?? '').trim()
+  }
+
+  // Mark as regenerating. Keep copy_generation_status='complete' so the runner
+  // can read draft_sequences and route through the feedback branch instead of
+  // a fresh generation. The runner flips status during regen and back to
+  // 'complete' when sequences are rewritten.
   const { error: updateError } = await supabase
     .from('onboarding_clients')
     .update({
-      copy_generation_status: 'pending',
       copy_approval_status: 'regenerating',
       updated_at: new Date().toISOString(),
     })
     .eq('id', clientId)
 
   if (updateError) {
-    throw new Error(`Failed to trigger copy regeneration: ${updateError.message}`)
+    throw new Error(
+      `Failed to trigger copy regeneration: ${updateError.message}`
+    )
   }
 
   // Fire the inline runner in the background. No Inngest involved.
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || (process.env.VERCEL_URL
-    ? `https://${process.env.VERCEL_URL}`
-    : 'http://localhost:3000')
+  const baseUrl =
+    process.env.NEXT_PUBLIC_APP_URL ||
+    (process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : 'http://localhost:3000')
 
   // Snapshot auth headers BEFORE after(): cookies() needs request scope.
   const dispatchHeaders = await buildAutomationHeaders()
 
   after(async () => {
     try {
-      const res = await fetch(`${baseUrl}/api/admin/onboarding/${clientId}/run-pipeline-sync`, {
-        method: 'POST',
-        headers: dispatchHeaders,
-      })
+      const res = await fetch(
+        `${baseUrl}/api/admin/onboarding/${clientId}/run-pipeline-sync`,
+        {
+          method: 'POST',
+          headers: dispatchHeaders,
+          body: feedback ? JSON.stringify({ feedback }) : undefined,
+        }
+      )
       if (!res.ok) throw new Error(`Runner returned ${res.status}`)
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err)
-      safeError(`[regenerateCopy] runner dispatch failed for ${clientId}: ${msg}`)
+      safeError(
+        `[regenerateCopy] runner dispatch failed for ${clientId}: ${msg}`
+      )
       try {
         const repo = new OnboardingClientRepository()
         await repo.appendAutomationLog(clientId, {
@@ -303,9 +355,11 @@ export async function regenerateCopy(clientId: string, _feedback?: string) {
 
 export async function retryAutomationStep(clientId: string, step: string) {
   await requireAdmin()
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || (process.env.VERCEL_URL
-    ? `https://${process.env.VERCEL_URL}`
-    : 'http://localhost:3000')
+  const baseUrl =
+    process.env.NEXT_PUBLIC_APP_URL ||
+    (process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : 'http://localhost:3000')
 
   // retryAutomationStep is awaited (not fire-and-forget) so we still need
   // the request scope. Build headers right here.
@@ -348,19 +402,24 @@ export async function restartIntakePipeline(clientId: string) {
     throw new Error(`Failed to reset pipeline state: ${resetError.message}`)
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || (process.env.VERCEL_URL
-    ? `https://${process.env.VERCEL_URL}`
-    : 'http://localhost:3000')
+  const baseUrl =
+    process.env.NEXT_PUBLIC_APP_URL ||
+    (process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : 'http://localhost:3000')
 
   // Snapshot auth headers BEFORE after(): cookies() needs request scope.
   const dispatchHeaders = await buildAutomationHeaders()
 
   after(async () => {
     try {
-      await fetch(`${baseUrl}/api/admin/onboarding/${clientId}/run-pipeline-sync`, {
-        method: 'POST',
-        headers: dispatchHeaders,
-      })
+      await fetch(
+        `${baseUrl}/api/admin/onboarding/${clientId}/run-pipeline-sync`,
+        {
+          method: 'POST',
+          headers: dispatchHeaders,
+        }
+      )
     } catch {
       // Non-fatal: admin can hit Run Inline manually.
     }
@@ -394,7 +453,14 @@ export async function addAdminComment(args: {
   authorName?: string | null
 }) {
   await requireAdmin()
-  const { clientId, sequenceIndex, emailStep, body, parentCommentId, authorName } = args
+  const {
+    clientId,
+    sequenceIndex,
+    emailStep,
+    body,
+    parentCommentId,
+    authorName,
+  } = args
 
   const trimmed = body.trim()
   if (trimmed.length === 0 || trimmed.length > 4000) {
@@ -441,7 +507,12 @@ export async function resolveComment(commentId: string, clientId: string) {
 
   const { error } = await supabase
     .from('client_portal_copy_comments')
-    .update({ status: 'resolved', resolved_by: 'admin', resolved_at: now, updated_at: now })
+    .update({
+      status: 'resolved',
+      resolved_by: 'admin',
+      resolved_at: now,
+      updated_at: now,
+    })
     .eq('id', commentId)
     .eq('client_id', clientId)
 
@@ -459,7 +530,12 @@ export async function reopenComment(commentId: string, clientId: string) {
 
   const { error } = await supabase
     .from('client_portal_copy_comments')
-    .update({ status: 'open', resolved_by: null, resolved_at: null, updated_at: now })
+    .update({
+      status: 'open',
+      resolved_by: null,
+      resolved_at: null,
+      updated_at: now,
+    })
     .eq('id', commentId)
     .eq('client_id', clientId)
 

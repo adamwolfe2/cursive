@@ -18,10 +18,17 @@ export const maxDuration = 300
 import { NextRequest, NextResponse } from 'next/server'
 import { OnboardingClientRepository } from '@/lib/repositories/onboarding-client.repository'
 import { enrichClientICP } from '@/lib/services/onboarding/claude-enrichment'
-import { generateEmailSequences, isCreditBalanceError } from '@/lib/services/onboarding/copy-generation'
+import {
+  generateEmailSequences,
+  regenerateEmailSequences,
+  isCreditBalanceError,
+} from '@/lib/services/onboarding/copy-generation'
 import { checkCopyQuality } from '@/lib/services/onboarding/copy-quality-check'
 import { sendOnboardingConfirmation } from '@/lib/services/onboarding/onboarding-email'
-import { sendNewClientSlackAlert, sendCopyReviewSlackAlert } from '@/lib/services/onboarding/onboarding-slack'
+import {
+  sendNewClientSlackAlert,
+  sendCopyReviewSlackAlert,
+} from '@/lib/services/onboarding/onboarding-slack'
 import { syncClientToCRM } from '@/lib/services/onboarding/crm-sync'
 import { needsOutboundSetup } from '@/types/onboarding'
 import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
@@ -59,6 +66,22 @@ export async function POST(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
     const { id: clientId } = await params
+
+    // Optional regeneration feedback — admins fire this path via
+    // regenerateCopy() in actions.ts after a client requests changes.
+    // When present we re-run only the copy step and route through
+    // regenerateEmailSequences so the rejection feedback shapes the prompt.
+    let regenerationFeedback = ''
+    try {
+      const body = (await request.json().catch(() => ({}))) as {
+        feedback?: unknown
+      }
+      if (typeof body.feedback === 'string') {
+        regenerationFeedback = body.feedback.trim()
+      }
+    } catch {
+      // No body or invalid JSON — treat as a vanilla pipeline run.
+    }
 
     const repo = new OnboardingClientRepository()
     const client = await repo.findById(clientId)
@@ -107,7 +130,10 @@ export async function POST(
           timestamp: new Date().toISOString(),
         })
       } catch (e: any) {
-        safeError('[run-pipeline-sync] confirmation email failed:', e?.message || e)
+        safeError(
+          '[run-pipeline-sync] confirmation email failed:',
+          e?.message || e
+        )
         await repo.appendAutomationLog(clientId, {
           step: 'confirmation_email',
           status: 'failed',
@@ -138,7 +164,10 @@ export async function POST(
     if (client.crm_sync_status !== 'synced') {
       try {
         const crmId = await syncClientToCRM(client)
-        await repo.update(clientId, { crm_record_id: crmId, crm_sync_status: 'synced' })
+        await repo.update(clientId, {
+          crm_record_id: crmId,
+          crm_sync_status: 'synced',
+        })
         await repo.appendAutomationLog(clientId, {
           step: 'crm_sync',
           status: 'complete',
@@ -185,7 +214,9 @@ export async function POST(
         await repo.appendAutomationLog(clientId, {
           step: 'enrichment',
           status: 'failed',
-          error: credits ? `BLOCKED: Anthropic credits exhausted, top up at console.anthropic.com/settings/billing then retry. (${msg})` : msg,
+          error: credits
+            ? `BLOCKED: Anthropic credits exhausted, top up at console.anthropic.com/settings/billing then retry. (${msg})`
+            : msg,
           timestamp: new Date().toISOString(),
         })
         if (credits) {
@@ -209,6 +240,72 @@ export async function POST(
         copy_approval_status: 'not_applicable',
       })
       result.copy = 'not_applicable'
+    } else if (regenerationFeedback && client.draft_sequences && icpBrief) {
+      // Regeneration branch: client rejected the previous draft and submitted
+      // a bulk note. Feed the previous sequences + rejection feedback to the
+      // V3 regeneration prompt so the rewrite actually addresses what the
+      // client asked for. Flip status during work, set 'complete' after.
+      await repo.update(clientId, { copy_generation_status: 'processing' })
+      await repo.appendAutomationLog(clientId, {
+        step: 'copy_regeneration_started',
+        status: 'complete',
+        timestamp: new Date().toISOString(),
+      })
+      try {
+        const checker = (s: DraftSequences) => checkCopyQuality(s, client)
+        const previous = client.draft_sequences as DraftSequences
+        const seqs = await regenerateEmailSequences(
+          client,
+          icpBrief,
+          previous,
+          regenerationFeedback,
+          checker
+        )
+        await repo.update(clientId, {
+          draft_sequences: seqs as any,
+          copy_generation_status: 'complete',
+          copy_approval_status: 'pending',
+        })
+        await repo.appendAutomationLog(clientId, {
+          step: 'copy_regeneration',
+          status: 'complete',
+          timestamp: new Date().toISOString(),
+        })
+        try {
+          const fresh = await repo.findById(clientId)
+          if (fresh) await sendCopyReviewSlackAlert(fresh, seqs)
+        } catch (slackErr: any) {
+          safeError(
+            '[run-pipeline-sync] copy review slack failed:',
+            slackErr?.message || slackErr
+          )
+        }
+        safeLog(
+          `[run-pipeline-sync] copy regeneration complete for ${clientId}`
+        )
+        result.copy = 'regenerated'
+      } catch (e: any) {
+        const msg = e?.message || 'Unknown copy regeneration error'
+        const credits = isCreditBalanceError(e)
+        await repo.update(clientId, {
+          copy_generation_status: 'complete', // keep previous draft visible
+          copy_approval_status: 'needs_edits',
+        })
+        await repo.appendAutomationLog(clientId, {
+          step: 'copy_regeneration',
+          status: 'failed',
+          error: credits
+            ? `BLOCKED: Anthropic credits exhausted, top up at console.anthropic.com/settings/billing then retry. (${msg})`
+            : msg,
+          timestamp: new Date().toISOString(),
+        })
+        if (credits) {
+          await fireCreditAlert(clientId, 'copy_generation').catch(() => {})
+        }
+        result.copy = 'failed'
+        result.errors.push(`copy_regeneration: ${msg}`)
+        return NextResponse.json(result, { status: credits ? 402 : 500 })
+      }
     } else if (client.copy_generation_status !== 'complete') {
       await repo.update(clientId, { copy_generation_status: 'processing' })
       // Marker entry so we can tell from the timeline whether copy gen
@@ -237,7 +334,10 @@ export async function POST(
           const fresh = await repo.findById(clientId)
           if (fresh) await sendCopyReviewSlackAlert(fresh, seqs)
         } catch (slackErr: any) {
-          safeError('[run-pipeline-sync] copy review slack failed:', slackErr?.message || slackErr)
+          safeError(
+            '[run-pipeline-sync] copy review slack failed:',
+            slackErr?.message || slackErr
+          )
         }
         safeLog(`[run-pipeline-sync] copy generation complete for ${clientId}`)
         result.copy = 'complete'
@@ -248,7 +348,9 @@ export async function POST(
         await repo.appendAutomationLog(clientId, {
           step: 'copy_generation',
           status: 'failed',
-          error: credits ? `BLOCKED: Anthropic credits exhausted, top up at console.anthropic.com/settings/billing then retry. (${msg})` : msg,
+          error: credits
+            ? `BLOCKED: Anthropic credits exhausted, top up at console.anthropic.com/settings/billing then retry. (${msg})`
+            : msg,
           timestamp: new Date().toISOString(),
         })
         if (credits) {
@@ -273,7 +375,10 @@ export async function POST(
 // Critical Slack alert when Anthropic credits are exhausted. Prevents
 // silent platform-wide failure where new client intakes pile up with no
 // admin notification.
-async function fireCreditAlert(clientId: string, step: 'enrichment' | 'copy_generation'): Promise<void> {
+async function fireCreditAlert(
+  clientId: string,
+  step: 'enrichment' | 'copy_generation'
+): Promise<void> {
   try {
     const { sendSlackAlert } = await import('@/lib/monitoring/alerts')
     await sendSlackAlert({
