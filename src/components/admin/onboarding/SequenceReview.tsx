@@ -3,7 +3,9 @@
 import { useCallback, useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
 
-const EmailBisonDeployModal = dynamic(() => import('./EmailBisonDeployModal'), { ssr: false })
+const EmailBisonDeployModal = dynamic(() => import('./EmailBisonDeployModal'), {
+  ssr: false,
+})
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -14,13 +16,21 @@ import {
   requestSequenceEdits,
   regenerateCopy,
 } from '@/app/admin/onboarding/actions'
-import type { OnboardingClient, EmailSequence, QualityCheckResult, QualityIssue } from '@/types/onboarding'
+import type {
+  OnboardingClient,
+  EmailSequence,
+  QualityCheckResult,
+  QualityIssue,
+} from '@/types/onboarding'
 import type { CopyComment } from '@/types/copy-comments'
 import { commentKey, groupCommentsByEmail } from '@/types/copy-comments'
 import SpintaxRenderer from './SpintaxRenderer'
 import AdminCommentThread from './AdminCommentThread'
 import WorkspaceAssignmentPicker from './WorkspaceAssignmentPicker'
 import DeploymentStatusCard from './DeploymentStatusCard'
+import InlineEmailEditor, {
+  type LockReason,
+} from '@/components/inline-edit/InlineEmailEditor'
 import {
   ChevronDown,
   ChevronRight,
@@ -53,9 +63,21 @@ export default function SequenceReview({ client }: SequenceReviewProps) {
     updated_at: string
   } | null>(null)
 
+  // The client's updated_at as last seen by the editor. Bumped by each
+  // inline-edit save so subsequent edits use the fresh optimistic-concurrency
+  // token. Initialized from props; resyncs whenever the parent reloads.
+  const [editableUpdatedAt, setEditableUpdatedAt] = useState<string>(
+    client.updated_at
+  )
+  useEffect(() => {
+    setEditableUpdatedAt(client.updated_at)
+  }, [client.updated_at])
+
   const fetchComments = useCallback(async () => {
     try {
-      const res = await fetch(`/api/admin/onboarding/${client.id}/comments`, { cache: 'no-store' })
+      const res = await fetch(`/api/admin/onboarding/${client.id}/comments`, {
+        cache: 'no-store',
+      })
       if (!res.ok) return
       const json = (await res.json()) as { comments?: CopyComment[] }
       setComments(json.comments ?? [])
@@ -66,10 +88,17 @@ export default function SequenceReview({ client }: SequenceReviewProps) {
 
   const fetchApprovals = useCallback(async () => {
     try {
-      const res = await fetch(`/api/admin/onboarding/${client.id}/approvals`, { cache: 'no-store' })
+      const res = await fetch(`/api/admin/onboarding/${client.id}/approvals`, {
+        cache: 'no-store',
+      })
       if (!res.ok) return
       const json = (await res.json()) as {
-        approvals?: Array<{ step_type: string; status: string; notes: string | null; updated_at: string }>
+        approvals?: Array<{
+          step_type: string
+          status: string
+          notes: string | null
+          updated_at: string
+        }>
       }
       const copy = (json.approvals ?? []).find((a) => a.step_type === 'copy')
       setCopyApproval(copy ?? null)
@@ -105,26 +134,32 @@ export default function SequenceReview({ client }: SequenceReviewProps) {
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-400">
             <Mail className="h-5 w-5" />
           </div>
-          <p className="text-sm font-medium text-foreground">No email sequences needed</p>
+          <p className="text-sm font-medium text-foreground">
+            No email sequences needed
+          </p>
           <p className="max-w-md text-xs text-muted-foreground">
-            This client didn&apos;t select an outbound package, so no sequences were generated.
+            This client didn&apos;t select an outbound package, so no sequences
+            were generated.
           </p>
         </CardContent>
       </Card>
     )
   }
 
-  if (client.copy_generation_status === 'pending' || client.copy_generation_status === 'processing') {
+  if (
+    client.copy_generation_status === 'pending' ||
+    client.copy_generation_status === 'processing'
+  ) {
     return (
       <Card padding="default">
         <CardContent className="space-y-5 py-6">
           <div className="flex flex-col items-center justify-center gap-3 py-4">
             <RefreshCw className="h-6 w-6 animate-spin text-primary" />
-            <p className="text-sm font-medium text-foreground inline-flex items-center">
+            <p className="inline-flex items-center text-sm font-medium text-foreground">
               {client.copy_generation_status === 'pending'
                 ? 'Copy generation pending'
                 : 'Claude is writing your sequences'}
-              <span aria-hidden="true" className="inline-flex ml-0.5">
+              <span aria-hidden="true" className="ml-0.5 inline-flex">
                 <span className="animate-[bounce_1s_infinite_0ms]">.</span>
                 <span className="animate-[bounce_1s_infinite_150ms]">.</span>
                 <span className="animate-[bounce_1s_infinite_300ms]">.</span>
@@ -134,7 +169,7 @@ export default function SequenceReview({ client }: SequenceReviewProps) {
               This may take a minute. The page will update automatically.
             </p>
           </div>
-          <div className="space-y-3 animate-pulse">
+          <div className="animate-pulse space-y-3">
             <Skeleton className="h-14 w-full rounded-lg" />
             <Skeleton className="h-14 w-full rounded-lg" />
             <Skeleton className="h-14 w-3/4 rounded-lg" />
@@ -146,16 +181,22 @@ export default function SequenceReview({ client }: SequenceReviewProps) {
 
   if (client.copy_generation_status === 'failed') {
     return (
-      <Card padding="default" className="border-destructive/50 bg-destructive/5">
+      <Card
+        padding="default"
+        className="border-destructive/50 bg-destructive/5"
+      >
         <CardContent className="space-y-4 py-5">
           <div className="flex items-start gap-3">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-destructive/10 text-destructive">
               <AlertTriangle className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-destructive">Copy Generation Failed</p>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                The email sequence generation encountered an error. Optionally provide feedback and retry.
+              <p className="text-sm font-semibold text-destructive">
+                Copy Generation Failed
+              </p>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                The email sequence generation encountered an error. Optionally
+                provide feedback and retry.
               </p>
             </div>
           </div>
@@ -188,7 +229,9 @@ export default function SequenceReview({ client }: SequenceReviewProps) {
 
   // complete state
   const sequences = client.draft_sequences?.sequences ?? []
-  const qualityCheck = client.draft_sequences?.quality_check as QualityCheckResult | undefined
+  const qualityCheck = client.draft_sequences?.quality_check as
+    | QualityCheckResult
+    | undefined
 
   const approvalVariant =
     client.copy_approval_status === 'approved'
@@ -224,7 +267,7 @@ export default function SequenceReview({ client }: SequenceReviewProps) {
 
       {/* Approval Status Bar */}
       <Card padding="sm">
-        <CardContent className="flex items-center justify-between flex-wrap gap-3">
+        <CardContent className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <span className="text-sm font-medium">Approval Status:</span>
             <Badge variant={approvalVariant} size="lg" dot>
@@ -251,7 +294,11 @@ export default function SequenceReview({ client }: SequenceReviewProps) {
                   await approveSequences(client.id)
                   setActionInfo('Approved. EmailBison push triggered.')
                 } catch (err) {
-                  setActionError(err instanceof Error ? err.message : 'Approval failed. Please try again.')
+                  setActionError(
+                    err instanceof Error
+                      ? err.message
+                      : 'Approval failed. Please try again.'
+                  )
                 } finally {
                   setApproving(false)
                 }
@@ -272,7 +319,11 @@ export default function SequenceReview({ client }: SequenceReviewProps) {
                   await requestSequenceEdits(client.id)
                   setActionInfo('Marked as needing edits.')
                 } catch (err) {
-                  setActionError(err instanceof Error ? err.message : 'Could not save. Please try again.')
+                  setActionError(
+                    err instanceof Error
+                      ? err.message
+                      : 'Could not save. Please try again.'
+                  )
                 } finally {
                   setRequesting(false)
                 }
@@ -281,24 +332,29 @@ export default function SequenceReview({ client }: SequenceReviewProps) {
             >
               Needs Edits
             </Button>
-            {client.copy_approval_status === 'approved' && client.draft_sequences && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowDeploy(true)}
-                leftIcon={<Mail className="h-3.5 w-3.5" />}
-              >
-                Deploy to EmailBison
-              </Button>
-            )}
+            {client.copy_approval_status === 'approved' &&
+              client.draft_sequences && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowDeploy(true)}
+                  leftIcon={<Mail className="h-3.5 w-3.5" />}
+                >
+                  Deploy to EmailBison
+                </Button>
+              )}
           </div>
           {(actionError || actionInfo) && (
             <div className="col-span-full mt-2 w-full">
               {actionError && (
-                <p className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-md px-3 py-2">{actionError}</p>
+                <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+                  {actionError}
+                </p>
               )}
               {actionInfo && !actionError && (
-                <p className="text-sm text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-md px-3 py-2">{actionInfo}</p>
+                <p className="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700">
+                  {actionInfo}
+                </p>
               )}
             </div>
           )}
@@ -309,12 +365,12 @@ export default function SequenceReview({ client }: SequenceReviewProps) {
       {copyApproval?.status === 'changes_requested' && copyApproval.notes && (
         <Card padding="default" className="border-amber-200 bg-amber-50">
           <CardContent className="flex items-start gap-3 py-3">
-            <AlertTriangle className="h-4 w-4 flex-shrink-0 text-amber-600 mt-0.5" />
+            <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-amber-600" />
             <div className="flex-1">
-              <p className="text-xs font-semibold text-amber-900 uppercase tracking-wide mb-1">
+              <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-amber-900">
                 Client requested changes (bulk note)
               </p>
-              <p className="text-sm text-amber-900 whitespace-pre-wrap leading-relaxed">
+              <p className="whitespace-pre-wrap text-sm leading-relaxed text-amber-900">
                 {copyApproval.notes}
               </p>
             </div>
@@ -329,14 +385,26 @@ export default function SequenceReview({ client }: SequenceReviewProps) {
             {qualityCheck.passed ? (
               <>
                 <ShieldCheck className="h-5 w-5 text-green-600" />
-                <span className="text-sm text-green-700 font-medium">All quality checks passed</span>
+                <span className="text-sm font-medium text-green-700">
+                  All quality checks passed
+                </span>
               </>
             ) : (
               <>
                 <ShieldAlert className="h-5 w-5 text-amber-600" />
-                <span className="text-sm text-amber-700 font-medium">
-                  {qualityCheck.issues.filter((i: QualityIssue) => i.severity === 'error').length} errors,{' '}
-                  {qualityCheck.issues.filter((i: QualityIssue) => i.severity === 'warning').length} warnings
+                <span className="text-sm font-medium text-amber-700">
+                  {
+                    qualityCheck.issues.filter(
+                      (i: QualityIssue) => i.severity === 'error'
+                    ).length
+                  }{' '}
+                  errors,{' '}
+                  {
+                    qualityCheck.issues.filter(
+                      (i: QualityIssue) => i.severity === 'warning'
+                    ).length
+                  }{' '}
+                  warnings
                 </span>
               </>
             )}
@@ -349,9 +417,12 @@ export default function SequenceReview({ client }: SequenceReviewProps) {
         <Card padding="default" className="border-amber-200 bg-amber-50/40">
           <CardContent className="flex flex-col items-center justify-center gap-2 py-8 text-center">
             <AlertTriangle className="h-5 w-5 text-amber-600" />
-            <p className="text-sm font-medium text-foreground">No sequences generated</p>
+            <p className="text-sm font-medium text-foreground">
+              No sequences generated
+            </p>
             <p className="max-w-md text-xs text-muted-foreground">
-              Claude returned zero sequences. Click &apos;Regenerate&apos; below to try again.
+              Claude returned zero sequences. Click &apos;Regenerate&apos; below
+              to try again.
             </p>
           </CardContent>
         </Card>
@@ -361,9 +432,17 @@ export default function SequenceReview({ client }: SequenceReviewProps) {
             key={idx}
             sequence={seq}
             index={idx}
-            issues={qualityCheck?.issues?.filter((i: QualityIssue) => i.sequence_index === idx) ?? []}
+            issues={
+              qualityCheck?.issues?.filter(
+                (i: QualityIssue) => i.sequence_index === idx
+              ) ?? []
+            }
             clientId={client.id}
             clientName={client.primary_contact_name ?? client.company_name}
+            clientUpdatedAt={editableUpdatedAt}
+            onUpdatedAt={setEditableUpdatedAt}
+            campaignDeployed={client.campaign_deployed ?? false}
+            copyGenerationStatus={client.copy_generation_status ?? null}
             commentsByEmail={commentsByEmail}
             onCommentsChange={fetchComments}
           />
@@ -375,7 +454,7 @@ export default function SequenceReview({ client }: SequenceReviewProps) {
         <CardHeader>
           <CardTitle className="text-base">Regenerate Sequences</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3 mt-2">
+        <CardContent className="mt-2 space-y-3">
           <Textarea
             value={feedback}
             onChange={(e) => setFeedback(e.target.value)}
@@ -427,6 +506,10 @@ function SequenceAccordion({
   issues,
   clientId,
   clientName,
+  clientUpdatedAt,
+  onUpdatedAt,
+  campaignDeployed,
+  copyGenerationStatus,
   commentsByEmail,
   onCommentsChange,
 }: {
@@ -435,6 +518,10 @@ function SequenceAccordion({
   issues: QualityIssue[]
   clientId: string
   clientName: string
+  clientUpdatedAt: string
+  onUpdatedAt: (next: string) => void
+  campaignDeployed: boolean
+  copyGenerationStatus: string | null
   commentsByEmail: Map<string, CopyComment[]>
   onCommentsChange: () => void
 }) {
@@ -444,30 +531,36 @@ function SequenceAccordion({
   const warningCount = issues.filter((i) => i.severity === 'warning').length
   const openCommentsForSequence = sequence.emails.reduce((n, email) => {
     const k = commentKey(index, email.step)
-    return n + (commentsByEmail.get(k)?.filter((c) => c.status === 'open').length ?? 0)
+    return (
+      n +
+      (commentsByEmail.get(k)?.filter((c) => c.status === 'open').length ?? 0)
+    )
   }, 0)
 
   return (
     <Card padding="none">
       <button
         type="button"
-        className="w-full flex items-center justify-between p-4 hover:bg-muted/30 transition-colors text-left"
+        className="flex w-full items-center justify-between p-4 text-left transition-colors hover:bg-muted/30"
         onClick={() => setExpanded(!expanded)}
       >
         <div className="flex items-center gap-3">
           {expanded ? (
-            <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0" />
+            <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
           ) : (
-            <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
+            <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
           )}
           <div>
             <span className="text-sm font-semibold">
               Sequence {index + 1}: {sequence.sequence_name}
             </span>
-            <p className="text-xs text-muted-foreground mt-0.5">{sequence.strategy}</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              {sequence.strategy}
+            </p>
             {sequence.angle && (
-              <p className="text-[10px] text-blue-600 mt-0.5">
-                Angle: {sequence.angle.category} — {sequence.angle.emotional_driver}
+              <p className="mt-0.5 text-[10px] text-blue-600">
+                Angle: {sequence.angle.category} —{' '}
+                {sequence.angle.emotional_driver}
               </p>
             )}
           </div>
@@ -475,7 +568,8 @@ function SequenceAccordion({
         <div className="flex items-center gap-2">
           {openCommentsForSequence > 0 && (
             <Badge variant="warning" size="sm">
-              {openCommentsForSequence} open comment{openCommentsForSequence === 1 ? '' : 's'}
+              {openCommentsForSequence} open comment
+              {openCommentsForSequence === 1 ? '' : 's'}
             </Badge>
           )}
           {errorCount > 0 && (
@@ -500,12 +594,12 @@ function SequenceAccordion({
       </button>
 
       {expanded && (
-        <div className="border-t border-border divide-y divide-border/50">
+        <div className="divide-y divide-border/50 border-t border-border">
           {sequence.emails.map((email, emailIdx) => {
             const emailIssues = issues.filter((i) => i.email_index === emailIdx)
             return (
-              <div key={email.step} className="p-4 space-y-3">
-                <div className="flex items-center gap-3 flex-wrap">
+              <div key={email.step} className="space-y-3 p-4">
+                <div className="flex flex-wrap items-center gap-3">
                   <Badge variant="outline" size="sm">
                     Step {email.step}
                   </Badge>
@@ -523,11 +617,31 @@ function SequenceAccordion({
                   )}
                 </div>
 
-                {/* SpintaxRenderer for subject + body */}
+                {/* SpintaxRenderer for subject + body — the rendered preview */}
                 <SpintaxRenderer
                   subjectLine={email.subject_line}
                   body={email.body}
                   previewText={email.preview_text}
+                />
+
+                {/* Inline editor — autosave, raw text mode. Lock states:
+                    deployed campaigns redirect to EmailBison UI; in-flight
+                    regen pauses to avoid clobbering. */}
+                <InlineEmailEditor
+                  endpoint={`/api/admin/onboarding/${clientId}/sequences`}
+                  sequenceIndex={index}
+                  emailStep={email.step}
+                  initialSubject={email.subject_line}
+                  initialBody={email.body}
+                  expectedUpdatedAt={clientUpdatedAt}
+                  onUpdatedAt={onUpdatedAt}
+                  lockReason={
+                    campaignDeployed
+                      ? ({ kind: 'deployed' } as LockReason)
+                      : copyGenerationStatus === 'processing'
+                        ? ({ kind: 'regenerating' } as LockReason)
+                        : ({ kind: 'none' } as LockReason)
+                  }
                 />
 
                 {/* Why it works + spintax test notes */}
@@ -535,12 +649,14 @@ function SequenceAccordion({
                   <div className="space-y-1 border-t border-border/50 pt-2">
                     {email.why_it_works && (
                       <p className="text-[11px] text-muted-foreground">
-                        <span className="font-semibold">Why it works:</span> {email.why_it_works}
+                        <span className="font-semibold">Why it works:</span>{' '}
+                        {email.why_it_works}
                       </p>
                     )}
                     {email.spintax_test_notes && (
                       <p className="text-[11px] text-muted-foreground">
-                        <span className="font-semibold">Testing:</span> {email.spintax_test_notes}
+                        <span className="font-semibold">Testing:</span>{' '}
+                        {email.spintax_test_notes}
                       </p>
                     )}
                   </div>
@@ -548,12 +664,14 @@ function SequenceAccordion({
 
                 {/* Quality issues for this email */}
                 {emailIssues.length > 0 && (
-                  <div className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 space-y-1">
+                  <div className="space-y-1 rounded-md border border-amber-200 bg-amber-50 px-3 py-2">
                     {emailIssues.map((issue, i) => (
                       <p
                         key={i}
                         className={`text-[11px] ${
-                          issue.severity === 'error' ? 'text-red-700' : 'text-amber-700'
+                          issue.severity === 'error'
+                            ? 'text-red-700'
+                            : 'text-amber-700'
                         }`}
                       >
                         <span className="font-semibold">
@@ -571,7 +689,9 @@ function SequenceAccordion({
                   clientName={clientName}
                   sequenceIndex={index}
                   emailStep={email.step}
-                  comments={commentsByEmail.get(commentKey(index, email.step)) ?? []}
+                  comments={
+                    commentsByEmail.get(commentKey(index, email.step)) ?? []
+                  }
                   onChange={onCommentsChange}
                 />
               </div>

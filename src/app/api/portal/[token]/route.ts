@@ -27,7 +27,11 @@ async function refreshStaleStatuses(
       const folder = await getFolderStatus(folderId)
       const allSigned = folder.signers.every((s) => s.status === 'SIGNED')
       const anyViewed = folder.signers.some((s) => s.status === 'NOTIFIED')
-      const newStatus = allSigned ? 'signed' : anyViewed ? 'sent' : contractStatus
+      const newStatus = allSigned
+        ? 'signed'
+        : anyViewed
+          ? 'sent'
+          : contractStatus
       if (newStatus && newStatus !== contractStatus) {
         updates.rabbitsign_status = newStatus
       }
@@ -42,9 +46,11 @@ async function refreshStaleStatuses(
       const invoice = await getInvoiceStatus(stripeInvoiceId)
       // Stripe statuses: draft / open / paid / uncollectible / void
       const newStatus =
-        invoice.status === 'paid' ? 'paid' :
-        invoice.status === 'open' ? 'open' :
-        invoiceStatus
+        invoice.status === 'paid'
+          ? 'paid'
+          : invoice.status === 'open'
+            ? 'open'
+            : invoiceStatus
       if (newStatus && newStatus !== invoiceStatus) {
         updates.stripe_invoice_status = newStatus
       }
@@ -80,15 +86,24 @@ export async function GET(
       .maybeSingle()
 
     if (tokenError || !tokenRecord) {
-      return NextResponse.json({ error: 'Invalid portal link' }, { status: 404 })
+      return NextResponse.json(
+        { error: 'Invalid portal link' },
+        { status: 404 }
+      )
     }
 
     if (tokenRecord.revoked) {
-      return NextResponse.json({ error: 'This portal link has been revoked' }, { status: 403 })
+      return NextResponse.json(
+        { error: 'This portal link has been revoked' },
+        { status: 403 }
+      )
     }
 
     if (new Date(tokenRecord.expires_at) < new Date()) {
-      return NextResponse.json({ error: 'This portal link has expired' }, { status: 403 })
+      return NextResponse.json(
+        { error: 'This portal link has expired' },
+        { status: 403 }
+      )
     }
 
     const now = new Date().toISOString()
@@ -124,6 +139,12 @@ export async function GET(
           'draft_sequences',
           'copy_generation_status',
           'copy_approval_status',
+          // Required by the inline editor on the portal:
+          //   updated_at      → optimistic-concurrency token for autosave
+          //   campaign_deployed → switches the editor to the "locked" state
+          //                       once EmailBison has the campaign
+          'updated_at',
+          'campaign_deployed',
           'stripe_invoice_id',
           'stripe_invoice_url',
           'stripe_invoice_status',
@@ -144,7 +165,10 @@ export async function GET(
 
     // Lazy-refresh stale contract / invoice status from upstream APIs.
     // Catches signing & payment events that webhooks may not have delivered.
-    const client = await refreshStaleStatuses(supabase, clientRow as unknown as Record<string, unknown>)
+    const client = await refreshStaleStatuses(
+      supabase,
+      clientRow as unknown as Record<string, unknown>
+    )
 
     // Fetch approvals
     const { data: approvalRows } = await supabase
@@ -152,7 +176,10 @@ export async function GET(
       .select('step_type, status, notes, updated_at')
       .eq('client_id', tokenRecord.client_id)
 
-    const approvals: Record<string, { status: string; notes: string | null; updated_at: string } | null> = {
+    const approvals: Record<
+      string,
+      { status: string; notes: string | null; updated_at: string } | null
+    > = {
       contract: null,
       invoice: null,
       domains: null,
@@ -174,6 +201,9 @@ export async function GET(
     })
   } catch (error) {
     safeError('[Portal] GET error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
   }
 }

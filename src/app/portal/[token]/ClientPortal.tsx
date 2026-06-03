@@ -14,6 +14,7 @@ import { PACKAGES } from '@/types/onboarding'
 import type { CopyComment } from '@/types/copy-comments'
 import { commentKey, groupCommentsByEmail } from '@/types/copy-comments'
 import CopyCommentThread from './CopyCommentThread'
+import InlineEmailEditor from '@/components/inline-edit/InlineEmailEditor'
 
 // ---------------------------------------------------------------------------
 // Portal email viewer — client-friendly spintax rendering (Preview / Variants)
@@ -179,14 +180,17 @@ function highlightSpintax(text: string): ReactNode {
   return parts
 }
 
-type EmailViewMode = 'preview' | 'variants'
+type EmailViewMode = 'preview' | 'variants' | 'edit'
 
 function PortalEmailViewer({
   subjectLine,
   body,
+  editor,
 }: {
   subjectLine: string
   body: string
+  /** Optional inline editor element; when present, an "Edit" tab appears. */
+  editor?: ReactNode
 }) {
   const [mode, setMode] = useState<EmailViewMode>('preview')
   const [seed, setSeed] = useState(0)
@@ -204,10 +208,16 @@ function PortalEmailViewer({
     [subjectLine]
   )
 
+  // Tab order shows Preview first (what the prospect sees), then Edit
+  // (raw text autosave) when available, then the Variants explorer.
+  const tabs: EmailViewMode[] = editor
+    ? ['preview', 'edit', 'variants']
+    : ['preview', 'variants']
+
   return (
     <div className="mt-2 overflow-hidden rounded-lg border border-gray-200">
       <div className="flex border-b border-gray-200 bg-gray-50">
-        {(['preview', 'variants'] as EmailViewMode[]).map((tab) => (
+        {tabs.map((tab) => (
           <button
             key={tab}
             type="button"
@@ -220,7 +230,9 @@ function PortalEmailViewer({
           >
             {tab === 'preview'
               ? 'Preview'
-              : `All Variants (${variants.length})`}
+              : tab === 'edit'
+                ? 'Edit'
+                : `All Variants (${variants.length})`}
           </button>
         ))}
       </div>
@@ -268,6 +280,8 @@ function PortalEmailViewer({
             </div>
           </>
         )}
+
+        {mode === 'edit' && editor && <div>{editor}</div>}
 
         {mode === 'variants' && (
           <>
@@ -992,6 +1006,17 @@ function CopyStep({
     Record<string, number>
   >({})
 
+  // The client's updated_at the editor last saw — bumped by inline-edit
+  // autosaves so subsequent edits use the freshest optimistic-concurrency
+  // token. Resyncs when the parent reloads the portal data.
+  const [editableUpdatedAt, setEditableUpdatedAt] = useState<string>(
+    (client as PortalClient & { updated_at?: string }).updated_at ?? ''
+  )
+  useEffect(() => {
+    const next = (client as PortalClient & { updated_at?: string }).updated_at
+    if (next) setEditableUpdatedAt(next)
+  }, [client])
+
   async function handleApplyFeedback(sequenceIndex: number, emailStep: number) {
     const key = `${sequenceIndex}:${emailStep}`
     setRegeneratingKey(key)
@@ -1327,6 +1352,38 @@ function CopyStep({
                             <PortalEmailViewer
                               subjectLine={email.subject_line}
                               body={email.body}
+                              editor={
+                                editableUpdatedAt ? (
+                                  <InlineEmailEditor
+                                    endpoint={`/api/portal/${token}/sequences`}
+                                    sequenceIndex={seqIdx}
+                                    emailStep={email.step}
+                                    initialSubject={email.subject_line}
+                                    initialBody={email.body}
+                                    expectedUpdatedAt={editableUpdatedAt}
+                                    onUpdatedAt={setEditableUpdatedAt}
+                                    lockReason={
+                                      (
+                                        client as PortalClient & {
+                                          campaign_deployed?: boolean | null
+                                          copy_generation_status?: string | null
+                                        }
+                                      ).campaign_deployed
+                                        ? { kind: 'deployed' }
+                                        : (
+                                              client as PortalClient & {
+                                                copy_generation_status?:
+                                                  | string
+                                                  | null
+                                              }
+                                            ).copy_generation_status ===
+                                            'processing'
+                                          ? { kind: 'regenerating' }
+                                          : { kind: 'none' }
+                                    }
+                                  />
+                                ) : undefined
+                              }
                             />
                           </div>
                           {regenError && (
