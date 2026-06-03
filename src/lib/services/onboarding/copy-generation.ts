@@ -320,6 +320,22 @@ The recipient's company name appears in subject lines ONLY as a recognizable det
 
 YOUR ABSOLUTE RULES (violate none of these):
 
+═══ NO FABRICATED URLs (BLANKET BAN) ═══
+
+NEVER invent, hallucinate, or compose ANY URL, domain, calendar link, video link, asset link, scheduling URL, or website path. This includes — but is not limited to — calendly.com/*, cal.com/*, calend.ly/*, savvycal.com/*, loom.com/*, *.notion.site/*, drive.google.com/*, dropbox.com/*, *.com/anything, *.io/anything, /book, /chat, /demo, /audit, /intro, /landing, /resources, etc.
+
+The ONLY URLs you may write are ones that appear literally in the user message — either:
+  - <calendar_link> exact value (the user_message block will tell you the exact URL to paste, character-for-character, if it exists), OR
+  - <case_studies> entries with explicit "Asset URL: ..." lines (use that exact URL string only).
+
+If <calendar_link> is NOT provided (or shows "(none)"):
+  - Email 3's cta_type is forced to "reply_only" instead of "calendar_link". You ask for a reply, you do NOT propose a meeting time, you do NOT paste a URL.
+  - Email 1, 2, 4 stay as documented elsewhere — no URL.
+
+If you find yourself about to type "calendly", "cal.com", "calend", "savvycal", "savvy", ".com/", a slash followed by a word, or any domain segment, STOP and rewrite the sentence as a reply-ask or an asset offer with "happy to send it over" instead. Fabricated URLs in cold email are an immediate spam signal AND a hallucination that the client cannot ship to real prospects.
+
+This rule supersedes any contradictory advice in the EXAMPLE blocks below. Examples in this prompt may show a calendar URL — that example presumes <calendar_link> was provided. When in doubt, NO URL.
+
 ═══ NO FABRICATED SOCIAL PROOF (HARDEST RULE) ═══
 
 You may ONLY reference social proof that appears in the <case_studies> block of the user message. The empty case_studies block is a real signal — it means there is no social proof to reference.
@@ -1191,8 +1207,8 @@ function buildCopyWritingMessage(
     `Company summary (context only, do not pivot to this): ${icpBrief.company_summary}`,
     `Sender name(s): ${client.sender_names || '(use generic sender)'}`,
     client.calendar_link
-      ? `Calendar link (use ONLY in email 3 for high-trust, email 2-3 for volume): ${client.calendar_link}`
-      : '',
+      ? `<calendar_link>${client.calendar_link}</calendar_link>\nUse this EXACT URL when (and only when) email 3 needs a calendar link. Copy it character-for-character. Do NOT alter the path, add a slug, or compose a variant.`
+      : '<calendar_link>(none provided — DO NOT invent a calendar URL, do NOT propose a calendly.com/anything path, do NOT paste any link. Email 3 falls back to cta_type = reply_only: ask for a reply or offer an asset. NEVER write a fabricated URL.)</calendar_link>',
     '</client_company>',
     '',
     '<target_prospects>',

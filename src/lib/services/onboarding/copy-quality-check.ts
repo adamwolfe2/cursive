@@ -412,6 +412,60 @@ function checkMultipleLinks(
   return issues
 }
 
+// Match any URL-shaped substring in the body. Catches both fully-qualified
+// (https://x.com) and shorthand (calendly.com/path, savvycal.com/x). Used
+// to detect LLM-fabricated URLs that aren't sourced from the client record.
+//
+// Whitelist sources (only these may produce URLs):
+//   - allowedUrls passed by the caller (client.calendar_link + case_study.url)
+// Anything else is a fabrication and gets flagged as an error.
+const URL_LIKE_RE =
+  /\b(?:https?:\/\/)?(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+(?:com|io|ly|app|co|net|org|ai|dev|so|me|page|site|link|to|club)\b[\w./?#&=%-]*\/?/gi
+
+function checkFabricatedUrls(
+  body: string,
+  allowedUrls: ReadonlyArray<string>,
+  seqIdx: number,
+  emailIdx: number
+): QualityIssue[] {
+  const matches = body.match(URL_LIKE_RE)
+  if (!matches || matches.length === 0) return []
+
+  // Normalize once so case + protocol + trailing slash don't cause false flags.
+  const normalize = (u: string): string =>
+    u
+      .toLowerCase()
+      .replace(/^https?:\/\//, '')
+      .replace(/\/$/, '')
+  const allowedSet = new Set(allowedUrls.map(normalize))
+
+  const issues: QualityIssue[] = []
+  for (const raw of matches) {
+    const norm = normalize(raw)
+    // Exact match OR prefix match (allowed path can be a parent of the
+    // referenced URL, e.g. calendar root + /intro suffix from the LLM).
+    let allowed = allowedSet.has(norm)
+    if (!allowed) {
+      for (const a of allowedSet) {
+        if (norm.startsWith(a + '/') || norm === a) {
+          allowed = true
+          break
+        }
+      }
+    }
+    if (!allowed) {
+      issues.push({
+        sequence_index: seqIdx,
+        email_index: emailIdx,
+        severity: 'error',
+        check: 'fabricated_url',
+        detail: `Body contains a URL not from the client record: "${raw}". Only client.calendar_link and case-study asset URLs may appear in copy. Strip it or replace with a reply-ask.`,
+      })
+    }
+  }
+  return issues
+}
+
 function checkInsufficientSpintax(
   body: string,
   seqIdx: number,
@@ -1182,6 +1236,25 @@ export function checkCopyQuality(
 
   const caseStudies = client?.case_studies
 
+  // Only URLs from the client record are allowed in copy. Everything else
+  // is presumed fabricated by the LLM and gets flagged as an error. The
+  // calendar link (when set) plus any case-study asset URLs are the
+  // whitelist for the entire sequence.
+  const allowedUrls: string[] = []
+  const calendarLink = (
+    client as
+      | (Partial<OnboardingClient> & { calendar_link?: string | null })
+      | undefined
+  )?.calendar_link
+  if (typeof calendarLink === 'string' && calendarLink.trim()) {
+    allowedUrls.push(calendarLink.trim())
+  }
+  for (const cs of caseStudies ?? []) {
+    if (typeof cs?.url === 'string' && cs.url.trim()) {
+      allowedUrls.push(cs.url.trim())
+    }
+  }
+
   for (let seqIdx = 0; seqIdx < sequences.sequences.length; seqIdx++) {
     const sequence = sequences.sequences[seqIdx]
 
@@ -1200,6 +1273,7 @@ export function checkCopyQuality(
         ...checkWeakOpening(body, seqIdx, emailIdx),
         ...checkMultipleCTAs(body, seqIdx, emailIdx),
         ...checkMultipleLinks(body, seqIdx, emailIdx),
+        ...checkFabricatedUrls(body, allowedUrls, seqIdx, emailIdx),
         ...checkSubjectExclamation(subject_line, seqIdx, emailIdx),
         ...checkExcessiveExclamations(body, seqIdx, emailIdx),
         ...checkAllCaps(body, seqIdx, emailIdx),

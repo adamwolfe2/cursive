@@ -306,6 +306,11 @@ describe('CTA ladder', () => {
   it('passes the canonical clean 4-email high-trust sequence', () => {
     const client = makeClient({
       setup_fee: 35000,
+      // CLEAN_EMAIL_3 embeds calendly.com/apropos/intro; declare it on the
+      // client so the fabricated-url check whitelists it. In production this
+      // mirrors the actual rule: a calendar URL in copy MUST come from
+      // client.calendar_link.
+      calendar_link: 'calendly.com/apropos/intro',
       case_studies: [
         {
           client_name: 'Adaptive',
