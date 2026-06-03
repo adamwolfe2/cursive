@@ -53,10 +53,13 @@ const MERGE_TAG_PLACEHOLDERS: Record<string, string> = {
 // pipe. resolveSpintax/expandSubjectVariants already no-op on pipe-less blocks
 // so {FIRST_NAME} is naturally skipped by the spintax pass.
 const EB_MERGE_TAG_RE = /\{([A-Z][A-Z_]*)\}/g
-// Allow legacy merge tags (`{{firstName}}`) to appear INSIDE spintax options
-// without breaking the parser. (EB-native {FIRST_NAME} also passes through
-// since it has no pipe; the spintax pass is a no-op for pipe-less blocks.)
-const SPINTAX_RE = /\{((?:[^{}]|\{\{\w+\}\})+)\}/g
+// Allow BOTH legacy double-brace merge tags ({{firstName}}) AND EB-native
+// single-brace UPPER_SNAKE tags ({COMPANY}) to appear INSIDE spintax options.
+// Without the {[A-Z][A-Z_]*} branch, a block like
+//   {Seeing this pattern at {COMPANY}|Sound familiar at {COMPANY}|...}
+// would fail to match because the [^{}] character class rejects the inner
+// `{` of {COMPANY} — leaving the raw spintax visible in the preview.
+const SPINTAX_RE = /\{((?:[^{}]|\{\{\w+\}\}|\{[A-Z][A-Z_]*\})+)\}/g
 const LEGACY_MERGE_TAG_RE = /\{\{(\w+)\}\}/g
 // Older drafts contain double-brace spintax {{a|b|c}} from before we tightened
 // the LLM prompt. Treat as single-brace at render time so nothing leaks.
@@ -83,7 +86,7 @@ function expandSubjectVariants(rawSubject: string): string[] {
   let lastIndex = 0
   // Same merge-tag-aware pattern as SPINTAX_RE so subjects with embedded
   // {{companyName}} expand into resolvable variants instead of unmatched raw braces.
-  const re = /\{((?:[^{}]|\{\{\w+\}\})+)\}/g
+  const re = /\{((?:[^{}]|\{\{\w+\}\}|\{[A-Z][A-Z_]*\})+)\}/g
   let m = re.exec(subject)
   while (m !== null) {
     const inner = m[1]

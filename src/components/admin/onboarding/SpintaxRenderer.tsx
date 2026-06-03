@@ -12,6 +12,16 @@ interface SpintaxRendererProps {
 type ViewMode = 'spintax' | 'preview' | 'variants'
 
 const MERGE_TAG_PLACEHOLDERS: Record<string, string> = {
+  // EmailBison native single-brace UPPER_SNAKE_CASE
+  '{FIRST_NAME}': 'Sarah',
+  '{LAST_NAME}': 'Chen',
+  '{EMAIL}': 'sarah@acmetech.com',
+  '{TITLE}': 'VP Marketing',
+  '{COMPANY}': 'AcmeTech',
+  '{SENDER_FIRST_NAME}': 'Jason',
+  '{SENDER_LAST_NAME}': 'Smith',
+  '{SENDER_COMPANY}': 'YourCompany',
+  // Legacy double-brace camelCase (pre-fix drafts)
   '{{firstName}}': 'Sarah',
   '{{lastName}}': 'Chen',
   '{{companyName}}': 'AcmeTech',
@@ -23,11 +33,14 @@ const MERGE_TAG_PLACEHOLDERS: Record<string, string> = {
   '{{industry}}': 'SaaS',
   '{{website}}': 'acmetech.com',
 }
+// Single-brace UPPER_SNAKE_CASE merge tag (EB-native). Matches outside
+// spintax blocks so the preview can substitute them into the rendered text.
+const EB_MERGE_TAG_PATTERN = /\{([A-Z][A-Z_]*)\}/g
 
 // Spintax pattern that allows merge tags ({{firstName}}) inside options.
 // The older `[^{}]+` regex rejected any block with nested braces, which meant
 // a block like `{A|B {{companyName}} C|D}` never resolved and shipped raw.
-const SPINTAX_PATTERN = /\{((?:[^{}]|\{\{\w+\}\})+)\}/g
+const SPINTAX_PATTERN = /\{((?:[^{}]|\{\{\w+\}\}|\{[A-Z][A-Z_]*\})+)\}/g
 const MERGE_TAG_PATTERN = /\{\{(\w+)\}\}/g
 // Catches double-brace spintax like {{a|b|c}} that older copy may have. The
 // generation pipeline now prevents this at write time (see sanitizeText in
@@ -60,7 +73,7 @@ function expandAllSpintax(rawText: string): string[] {
   let lastIndex = 0
 
   // Same merge-tag-aware pattern as SPINTAX_PATTERN.
-  const regex = /\{((?:[^{}]|\{\{\w+\}\})+)\}/g
+  const regex = /\{((?:[^{}]|\{\{\w+\}\}|\{[A-Z][A-Z_]*\})+)\}/g
   let execResult = regex.exec(text)
 
   while (execResult !== null) {
@@ -119,7 +132,8 @@ function highlightSpintax(rawText: string): ReactNode {
   // Match merge tag OR spintax-with-possibly-nested-merge-tags. Spintax
   // alternative is second so the merge-tag alternative wins when both could
   // match (a bare {{firstName}} should highlight as merge tag, not spintax).
-  const combined = /(\{\{(\w+)\}\}|\{((?:[^{}]|\{\{\w+\}\})+)\})/g
+  const combined =
+    /(\{\{(\w+)\}\}|\{((?:[^{}]|\{\{\w+\}\}|\{[A-Z][A-Z_]*\})+)\})/g
   let match = combined.exec(text)
 
   while (match !== null) {
@@ -131,7 +145,7 @@ function highlightSpintax(rawText: string): ReactNode {
       parts.push(
         <span
           key={key}
-          className="inline-flex items-center bg-green-100 text-green-700 rounded px-1 mx-0.5 text-sm font-medium"
+          className="mx-0.5 inline-flex items-center rounded bg-green-100 px-1 text-sm font-medium text-green-700"
         >
           {match[0]}
         </span>
@@ -141,7 +155,7 @@ function highlightSpintax(rawText: string): ReactNode {
       parts.push(
         <span
           key={key}
-          className="inline-flex items-center bg-blue-100 text-blue-800 rounded px-1 mx-0.5 text-sm font-medium"
+          className="mx-0.5 inline-flex items-center rounded bg-blue-100 px-1 text-sm font-medium text-blue-800"
         >
           {options.join(' | ')}
         </span>
@@ -163,14 +177,21 @@ function highlightSpintax(rawText: string): ReactNode {
 }
 
 function replaceMergeTags(text: string): string {
-  return text.replace(MERGE_TAG_PATTERN, (fullMatch) => {
-    return MERGE_TAG_PLACEHOLDERS[fullMatch] ?? fullMatch
-  })
+  // Substitute both legacy {{camelCase}} and EB-native {UPPER_SNAKE} tags
+  // with their sample preview values. EB handles the real substitution at
+  // send time; the admin preview just shows what the recipient would see.
+  return text
+    .replace(MERGE_TAG_PATTERN, (full) => MERGE_TAG_PLACEHOLDERS[full] ?? full)
+    .replace(
+      EB_MERGE_TAG_PATTERN,
+      (full) => MERGE_TAG_PLACEHOLDERS[full] ?? full
+    )
 }
 
 function countWords(text: string): number {
   const cleaned = text
     .replace(MERGE_TAG_PATTERN, '')
+    .replace(EB_MERGE_TAG_PATTERN, '')
     .replace(SPINTAX_PATTERN, (_, inner: string) => {
       if (inner.includes('|')) {
         return inner.split('|')[0]
@@ -222,7 +243,7 @@ export default function SpintaxRenderer({
   )
 
   return (
-    <div className="rounded-lg border border-border bg-card overflow-hidden">
+    <div className="overflow-hidden rounded-lg border border-border bg-card">
       {/* Tab Bar */}
       <div className="flex border-b border-border bg-muted/30">
         {TAB_CONFIG.map(({ mode: tabMode, label, icon: Icon }) => (
@@ -230,14 +251,11 @@ export default function SpintaxRenderer({
             key={tabMode}
             type="button"
             onClick={() => setMode(tabMode)}
-            className={`
-              flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium transition-colors
-              ${
-                mode === tabMode
-                  ? 'text-foreground border-b-2 border-primary bg-card'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-              }
-            `}
+            className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium transition-colors ${
+              mode === tabMode
+                ? 'border-b-2 border-primary bg-card text-foreground'
+                : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+            } `}
           >
             <Icon className="h-3.5 w-3.5" />
             {label}
@@ -246,7 +264,7 @@ export default function SpintaxRenderer({
       </div>
 
       {/* Content */}
-      <div className="p-4 space-y-4">
+      <div className="space-y-4 p-4">
         {mode === 'spintax' && (
           <SpintaxView
             subjectLine={subjectLine}
@@ -260,7 +278,11 @@ export default function SpintaxRenderer({
           <PreviewView
             resolvedSubject={resolvedSubject}
             resolvedBody={resolvedBody}
-            previewText={previewText ? replaceMergeTags(resolveSpintax(previewText, seed)) : undefined}
+            previewText={
+              previewText
+                ? replaceMergeTags(resolveSpintax(previewText, seed))
+                : undefined
+            }
             wordCount={previewWordCount}
             onShuffle={() => setSeed((s) => s + 1)}
           />
@@ -294,7 +316,7 @@ function SpintaxView({
     <>
       {previewText && (
         <div>
-          <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider mb-1">
+          <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             Preview Text
           </p>
           <div className="text-sm leading-relaxed">
@@ -304,7 +326,7 @@ function SpintaxView({
       )}
 
       <div>
-        <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider mb-1">
+        <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           Subject Line
         </p>
         <div className="text-sm font-medium leading-relaxed">
@@ -313,18 +335,16 @@ function SpintaxView({
       </div>
 
       <div>
-        <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider mb-1">
+        <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           Body
         </p>
-        <div className="text-sm text-foreground whitespace-pre-wrap bg-muted/30 rounded-md p-3 leading-relaxed">
+        <div className="whitespace-pre-wrap rounded-md bg-muted/30 p-3 text-sm leading-relaxed text-foreground">
           {highlightSpintax(body)}
         </div>
       </div>
 
       <div className="flex justify-end">
-        <span className="text-xs text-muted-foreground">
-          {wordCount} words
-        </span>
+        <span className="text-xs text-muted-foreground">{wordCount} words</span>
       </div>
     </>
   )
@@ -346,13 +366,13 @@ function PreviewView({
   return (
     <>
       <div className="flex items-center justify-between">
-        <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">
+        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           Email Preview
         </p>
         <button
           type="button"
           onClick={onShuffle}
-          className="inline-flex items-center gap-1.5 rounded-md bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary hover:bg-primary/20 transition-colors"
+          className="inline-flex items-center gap-1.5 rounded-md bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary transition-colors hover:bg-primary/20"
         >
           <Shuffle className="h-3 w-3" />
           Shuffle
@@ -361,29 +381,29 @@ function PreviewView({
 
       {previewText && (
         <div className="rounded-md border border-border/50 bg-muted/20 px-3 py-2">
-          <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider mb-0.5">
+          <p className="mb-0.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
             Preview Text
           </p>
-          <p className="text-sm text-muted-foreground italic">{previewText}</p>
+          <p className="text-sm italic text-muted-foreground">{previewText}</p>
         </div>
       )}
 
       <div className="rounded-md border border-border bg-background shadow-sm">
         <div className="border-b border-border px-4 py-3">
-          <p className="text-xs text-muted-foreground mb-0.5">Subject</p>
-          <p className="text-sm font-semibold text-foreground">{resolvedSubject}</p>
+          <p className="mb-0.5 text-xs text-muted-foreground">Subject</p>
+          <p className="text-sm font-semibold text-foreground">
+            {resolvedSubject}
+          </p>
         </div>
         <div className="px-4 py-3">
-          <p className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
+          <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground">
             {resolvedBody}
           </p>
         </div>
       </div>
 
       <div className="flex justify-end">
-        <span className="text-xs text-muted-foreground">
-          {wordCount} words
-        </span>
+        <span className="text-xs text-muted-foreground">{wordCount} words</span>
       </div>
     </>
   )
@@ -417,8 +437,8 @@ function VariantsView({
   return (
     <>
       <div>
-        <div className="flex items-center justify-between mb-2">
-          <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">
+        <div className="mb-2 flex items-center justify-between">
+          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             Subject Line Variants
           </p>
           <span className="text-xs text-muted-foreground">
@@ -430,13 +450,13 @@ function VariantsView({
           </span>
         </div>
 
-        <div className="rounded-md border border-border divide-y divide-border/50 max-h-64 overflow-y-auto">
+        <div className="max-h-64 divide-y divide-border/50 overflow-y-auto rounded-md border border-border">
           {subjectVariants.map((variant, idx) => (
             <div
               key={idx}
               className="flex items-start gap-2.5 px-3 py-2 text-sm"
             >
-              <span className="text-xs text-muted-foreground font-mono shrink-0 pt-0.5 w-6 text-right">
+              <span className="w-6 shrink-0 pt-0.5 text-right font-mono text-xs text-muted-foreground">
                 {idx + 1}.
               </span>
               <span className="text-foreground">{variant}</span>
@@ -446,17 +466,17 @@ function VariantsView({
       </div>
 
       <div>
-        <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider mb-1">
+        <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           Body
         </p>
-        <div className="text-sm text-foreground whitespace-pre-wrap bg-muted/30 rounded-md p-3 leading-relaxed">
+        <div className="whitespace-pre-wrap rounded-md bg-muted/30 p-3 text-sm leading-relaxed text-foreground">
           {highlightSpintax(body)}
         </div>
       </div>
 
       {previewText && (
         <div>
-          <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider mb-1">
+          <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             Preview Text
           </p>
           <div className="text-sm leading-relaxed">

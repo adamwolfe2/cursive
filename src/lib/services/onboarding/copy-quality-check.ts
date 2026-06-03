@@ -160,7 +160,7 @@ function findNextSpintaxBlock(
   from: number
 ): { start: number; end: number; options: string[] } | null {
   // Pattern with global flag so we can iterate via lastIndex.
-  const re = /\{((?:[^{}]|\{\{\w+\}\})+)\}/g
+  const re = /\{((?:[^{}]|\{\{\w+\}\}|\{[A-Z][A-Z_]*\})+)\}/g
   re.lastIndex = from
   let m: RegExpExecArray | null
   while ((m = re.exec(text)) !== null) {

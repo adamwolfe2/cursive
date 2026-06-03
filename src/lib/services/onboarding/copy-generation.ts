@@ -520,7 +520,11 @@ Email 1 follows this exact 6-7 line skeleton. Every line earns its place. No ski
     GOOD: "Worth a quick look with whoever owns paid social at {COMPANY}?" "Is {FIRST_NAME} the right person, or should I be talking to the partner who owns new business?"
 
   Line 6 — Signoff:
-    Per voice profile. founder_direct: first name only on its own line (no role, no company line). agency_professional / consultant_authoritative: "{SENDER_FIRST_NAME}\\n{title at SENDER_COMPANY}".
+    Always {SENDER_FIRST_NAME} on its own line. NOTHING ELSE.
+    Do NOT add a role line ("Founder, X" / "VP at Y"). Do NOT bake in a name.
+    Do NOT use {TITLE} (that's the recipient's title, not the sender's).
+    Do NOT invent {SENDER_TITLE} or {SENDER_ROLE} — those aren't EB variables.
+    EB rotates senders per send; one variable is the only safe pattern.
 
   Line 7 — Optional PS (EMAIL 1 ONLY):
     PS is voice-gated:
@@ -704,7 +708,6 @@ We white-label custom intent-audience profiles + the deck slides that pitch them
 Worth a look with whoever owns new business at {COMPANY}?
 
 {SENDER_FIRST_NAME}
-{title} at {SENDER_COMPANY}
 
 (Spintax in opener + CTA. Risk reversal: free first audience + slides. Agency_professional voice, NO PS. Specific process (final-round bidding) + named pain. Soft CTA routes by role. Real case study used.)
 
