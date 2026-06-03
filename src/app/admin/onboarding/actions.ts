@@ -280,11 +280,21 @@ export async function regenerateCopy(
   await requireAdmin()
   const supabase = createAdminClient()
 
-  // Pull the latest client-side bulk note (the "request changes" form on the
-  // portal writes to client_portal_approvals.notes with step_type='copy' and
-  // status='changes_requested'). We feed it forward as the rejection feedback
-  // for the regeneration prompt — without this, the runner re-generates from
-  // scratch with no awareness of what the client asked us to change.
+  // Pull the latest client-side bulk note for copy. The portal "request
+  // changes" form writes the note text to client_portal_approvals.notes
+  // (step_type='copy') with status='changes_requested'. After a successful
+  // regen, the post-regen portal-sync flips that row's status to 'pending'
+  // (so the client can re-review). That means a SECOND regen click (admin
+  // iterating without a fresh client note) would miss the note if we
+  // filtered by status='changes_requested' only — the note is still the
+  // most relevant guidance, but the status field has moved on.
+  //
+  // Fix: drop the status filter and just grab the most recent non-null
+  // note. The note content is what matters; the status is a workflow
+  // indicator that legitimately changes during the regen cycle. If the
+  // admin wants a regen WITHOUT any historical feedback (e.g. they're
+  // experimenting), the feedbackOverride argument lets them pass a fresh
+  // string OR an explicit empty string to skip note injection.
   let feedback = feedbackOverride?.trim() || ''
   if (!feedback) {
     const { data: approval } = await supabase
@@ -292,7 +302,7 @@ export async function regenerateCopy(
       .select('notes, updated_at')
       .eq('client_id', clientId)
       .eq('step_type', 'copy')
-      .eq('status', 'changes_requested')
+      .not('notes', 'is', null)
       .order('updated_at', { ascending: false })
       .limit(1)
       .maybeSingle()
