@@ -20,21 +20,45 @@ import CopyCommentThread from './CopyCommentThread'
 // Spintax: {a|b|c} picks one option. Merge tags: {{firstName}} get sample values.
 // ---------------------------------------------------------------------------
 
+// Sample values shown in the portal preview so the client can read a
+// readable inbox-shape preview of the rendered email. Real substitution
+// happens in EmailBison at send time.
+//
+// Two merge-tag formats are recognized:
+//   1. EB-native single-brace UPPER_SNAKE_CASE: {FIRST_NAME}, {COMPANY}, etc.
+//      This is what gets shipped to EB and what the LLM is now instructed
+//      to produce. EB substitutes these from the lead record at send time.
+//   2. Legacy double-brace camelCase: {{firstName}}, {{companyName}}, etc.
+//      Pre-merge-tag-fix drafts and historical sequences. Still rendered
+//      so older clients' portals don't show raw tag text.
 const MERGE_TAG_PLACEHOLDERS: Record<string, string> = {
+  // EmailBison native
+  '{FIRST_NAME}': 'Sarah',
+  '{LAST_NAME}': 'Chen',
+  '{EMAIL}': 'sarah@acmetech.com',
+  '{TITLE}': 'VP Marketing',
+  '{COMPANY}': 'AcmeTech',
+  '{SENDER_FIRST_NAME}': 'Jason',
+  '{SENDER_LAST_NAME}': 'Smith',
+  '{SENDER_COMPANY}': 'JustSearched',
+  '{PROSPECT_SIGNAL}': 'your Series A announcement last week',
+  // Legacy double-brace camelCase (pre-fix drafts)
   '{{firstName}}': 'Sarah',
   '{{lastName}}': 'Chen',
   '{{companyName}}': 'AcmeTech',
   '{{title}}': 'VP Marketing',
+  '{{prospectSignal}}': 'your Series A announcement last week',
 }
 
-// Allow merge tags (`{{firstName}}`) to appear INSIDE spintax options. The
-// older `[^{}]+` regex rejected any block whose content had nested braces,
-// which meant a spintax block like `{A|B {{companyName}} C|D}` never resolved
-// and shipped raw to the inbox. The alternation here matches non-brace chars
-// OR a literal merge tag, so nested merge tags pass through cleanly and are
-// substituted by replaceMergeTags afterward.
+// EB merge tags are UPPER_SNAKE_CASE inside single braces and never contain a
+// pipe. resolveSpintax/expandSubjectVariants already no-op on pipe-less blocks
+// so {FIRST_NAME} is naturally skipped by the spintax pass.
+const EB_MERGE_TAG_RE = /\{([A-Z][A-Z_]*)\}/g
+// Allow legacy merge tags (`{{firstName}}`) to appear INSIDE spintax options
+// without breaking the parser. (EB-native {FIRST_NAME} also passes through
+// since it has no pipe; the spintax pass is a no-op for pipe-less blocks.)
 const SPINTAX_RE = /\{((?:[^{}]|\{\{\w+\}\})+)\}/g
-const MERGE_TAG_RE = /\{\{(\w+)\}\}/g
+const LEGACY_MERGE_TAG_RE = /\{\{(\w+)\}\}/g
 // Older drafts contain double-brace spintax {{a|b|c}} from before we tightened
 // the LLM prompt. Treat as single-brace at render time so nothing leaks.
 const DOUBLE_BRACE_SPINTAX_RE = /\{\{([^{}]*\|[^{}]*)\}\}/g
@@ -94,21 +118,30 @@ function expandSubjectVariants(rawSubject: string): string[] {
 }
 
 function replaceMergeTags(text: string): string {
-  return text.replace(
-    MERGE_TAG_RE,
-    (full) => MERGE_TAG_PLACEHOLDERS[full] ?? full
-  )
+  // Substitute both legacy {{camelCase}} and EB-native {UPPER_SNAKE_CASE}
+  // tags with their sample preview values. EB does the real substitution at
+  // send time; the portal preview just shows what the recipient would see.
+  return text
+    .replace(
+      LEGACY_MERGE_TAG_RE,
+      (full) => MERGE_TAG_PLACEHOLDERS[full] ?? full
+    )
+    .replace(EB_MERGE_TAG_RE, (full) => MERGE_TAG_PLACEHOLDERS[full] ?? full)
 }
 
 function highlightSpintax(text: string): ReactNode {
   const parts: ReactNode[] = []
   let lastIndex = 0
   let key = 0
-  const re = /(\{\{(\w+)\}\}|\{([^{}]+)\})/g
+  // Order matters: try double-brace legacy first, then EB-native upper, then
+  // single-brace blocks (which are spintax IF they contain a pipe, otherwise
+  // unknown placeholders we render as plain text).
+  const re = /(\{\{(\w+)\}\}|\{([A-Z][A-Z_]*)\}|\{([^{}]+)\})/g
   let match = re.exec(text)
   while (match !== null) {
     if (match.index > lastIndex) parts.push(text.slice(lastIndex, match.index))
     if (match[2]) {
+      // Legacy {{camelCase}} merge tag
       parts.push(
         <span
           key={key}
@@ -117,13 +150,24 @@ function highlightSpintax(text: string): ReactNode {
           {match[0]}
         </span>
       )
-    } else if (match[3]?.includes('|')) {
+    } else if (match[3]) {
+      // EB-native {UPPER_SNAKE} merge tag
+      parts.push(
+        <span
+          key={key}
+          className="mx-0.5 inline-flex items-center rounded bg-emerald-100 px-1 text-sm font-medium text-emerald-700"
+        >
+          {match[0]}
+        </span>
+      )
+    } else if (match[4]?.includes('|')) {
+      // Spintax: single-brace block with a pipe
       parts.push(
         <span
           key={key}
           className="mx-0.5 inline-flex items-center rounded bg-blue-100 px-1 text-sm font-medium text-blue-700"
         >
-          {match[3].split('|').join(' | ')}
+          {match[4].split('|').join(' | ')}
         </span>
       )
     } else {

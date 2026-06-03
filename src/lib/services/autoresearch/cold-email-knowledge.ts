@@ -26,62 +26,98 @@ export const PSYCHOLOGICAL_PRINCIPLES = [
   {
     id: 'give_first',
     name: 'Give First (Reciprocity)',
-    description: 'Provide something of perceived value BEFORE asking for anything. Creates obligation that lowers resistance.',
-    examples: ['free audit', 'insight about their business', 'custom asset', 'data point they didn\'t know'],
+    description:
+      'Provide something of perceived value BEFORE asking for anything. Creates obligation that lowers resistance.',
+    examples: [
+      'free audit',
+      'insight about their business',
+      'custom asset',
+      "data point they didn't know",
+    ],
     weight: 'high' as const,
     checkQuestion: 'Does the email offer something of value before asking?',
   },
   {
     id: 'micro_commitments',
     name: 'Micro Commitments (Escalation Ladder)',
-    description: 'Never ask for the big thing first. Start tiny, escalate naturally. reply yes -> watch asset -> take call -> close.',
-    examples: ['reply yes to receive', 'quick 15-min chat', 'just say yes and I\'ll get started'],
+    description:
+      'Never ask for the big thing first. Start tiny, escalate naturally. reply yes -> watch asset -> take call -> close.',
+    examples: [
+      'reply yes to receive',
+      'quick 15-min chat',
+      "just say yes and I'll get started",
+    ],
     weight: 'medium' as const,
     checkQuestion: 'Is the ask small and natural? Does it escalate?',
   },
   {
     id: 'social_proof',
     name: 'Social Proof (Herd Consensus)',
-    description: 'Use SPECIFIC numbers, name actual clients, MATCH reference group to prospect ICP.',
-    examples: ['112 clients', '$4,892 last week', 'a few of the top 20 right now'],
+    description:
+      'Use SPECIFIC numbers, name actual clients, MATCH reference group to prospect ICP.',
+    examples: [
+      '112 clients',
+      '$4,892 last week',
+      'a few of the top 20 right now',
+    ],
     weight: 'high' as const,
     checkQuestion: 'Are there specific numbers, names, or results?',
   },
   {
     id: 'authority',
     name: 'Authority (Credibility Signaling)',
-    description: 'Demonstrate hyper-relevant expertise. Match authority type to ICP. Signal confidence, no hedging.',
-    examples: ['Google Partner badge for SMBs', 'work with [recognizable name]', 'built systems generating $X'],
+    description:
+      'Demonstrate hyper-relevant expertise. Match authority type to ICP. Signal confidence, no hedging.',
+    examples: [
+      'Google Partner badge for SMBs',
+      'work with [recognizable name]',
+      'built systems generating $X',
+    ],
     weight: 'medium' as const,
     checkQuestion: 'Is there credible expertise demonstrated?',
   },
   {
     id: 'rapport',
     name: 'Rapport (Shared Context)',
-    description: 'Find shared context: cultural, career, geographic, interest-based. Mirror communication style.',
-    examples: ['Fellow Portland founder', 'I saw you went to UCLA', 'tone matching their formality level'],
+    description:
+      'Find shared context: cultural, career, geographic, interest-based. Mirror communication style.',
+    examples: [
+      'Fellow Portland founder',
+      'I saw you went to UCLA',
+      'tone matching their formality level',
+    ],
     weight: 'high' as const,
     checkQuestion: 'Is there shared context or casual tone?',
   },
   {
     id: 'scarcity',
     name: 'Scarcity (Urgency Creation)',
-    description: 'Limit availability or create time pressure. Must be REAL constraints. Loss framing > gain framing.',
-    examples: ['only taking 3 more clients this quarter', 'offer expires Friday', 'you\'re losing $X/month'],
+    description:
+      'Limit availability or create time pressure. Must be REAL constraints. Loss framing > gain framing.',
+    examples: [
+      'only taking 3 more clients this quarter',
+      'offer expires Friday',
+      "you're losing $X/month",
+    ],
     weight: 'medium' as const,
     checkQuestion: 'Is there legitimate urgency or loss framing?',
   },
   {
     id: 'shared_identity',
     name: 'Shared Identity (In-Group Signaling)',
-    description: 'Use in-group language, industry jargon, platform-specific terms. Signal "I\'m one of you."',
-    examples: ['CTR, subs, thumbs for YouTubers', 'same industry challenges', 'same stack/tools'],
+    description:
+      'Use in-group language, industry jargon, platform-specific terms. Signal "I\'m one of you."',
+    examples: [
+      'CTR, subs, thumbs for YouTubers',
+      'same industry challenges',
+      'same stack/tools',
+    ],
     weight: 'high' as const,
     checkQuestion: 'Does it signal in-group membership?',
   },
 ] as const
 
-export type PrincipleId = typeof PSYCHOLOGICAL_PRINCIPLES[number]['id']
+export type PrincipleId = (typeof PSYCHOLOGICAL_PRINCIPLES)[number]['id']
 
 // ---------------------------------------------------------------------------
 // THE 4-STEP COPYWRITING FRAMEWORK
@@ -91,15 +127,18 @@ export type PrincipleId = typeof PSYCHOLOGICAL_PRINCIPLES[number]['id']
 export const FOUR_STEP_FRAMEWORK = {
   step1_personalization: {
     name: 'Personalization (Hook)',
-    purpose: 'Get past the "is this spam?" filter. Buy 30 seconds of attention.',
+    purpose:
+      'Get past the "is this spam?" filter. Buy 30 seconds of attention.',
     rules: [
       '1-2 sentences MAX. One sentence is ideal.',
       'Must NOT signal you are selling something.',
       'The reader must think: "Wait, do I know this person?"',
       'Must feel like something a real person would actually write.',
     ],
-    coldReadingTechnique: 'Make statements that SEEM specific but apply to 80%+ of the target audience. Combine with ONE AI-scraped data point.',
-    aiRole: 'AI handles ONLY small variable insertion (school, location, company name casualization). NEVER the full personalization sentence.',
+    coldReadingTechnique:
+      'Make statements that SEEM specific but apply to 80%+ of the target audience. Combine with ONE AI-scraped data point.',
+    aiRole:
+      'AI handles ONLY small variable insertion (school, location, company name casualization). NEVER the full personalization sentence.',
     antiPatterns: [
       'Long over-researched openers that feel stalkerish',
       'Formatted variables with quotes or bold around scraped data',
@@ -132,7 +171,8 @@ export const FOUR_STEP_FRAMEWORK = {
     components: {
       result: 'QUANTIFIED, CLEAR, TIME-BOUND: "20 booked meetings in 60 days"',
       riskMitigation: '"I will do [X] in [Y time] or [Z risk reversal]"',
-      frictionMinimization: '"Just 15 minutes of your time" / "I\'ll handle everything"',
+      frictionMinimization:
+        '"Just 15 minutes of your time" / "I\'ll handle everything"',
     },
     rules: [
       'Never put pricing in cold emails for services.',
@@ -155,7 +195,7 @@ export const FOUR_STEP_FRAMEWORK = {
     ],
     templates: [
       'How does 3:30pm today sound? I can give you a ring.',
-      'Can I shoot this over? Just say yes and I\'ll have it in your inbox within 48 hours.',
+      "Can I shoot this over? Just say yes and I'll have it in your inbox within 48 hours.",
       'Worth a 15-minute chat? Can ring you 10am today or Thursday.',
     ],
   },
@@ -169,37 +209,43 @@ export const OFFER_ARCHETYPES = [
   {
     id: 'revenue_guarantee',
     name: 'Revenue Guarantee',
-    template: 'I will guarantee you {number} {outcome} in the next {days} days or you don\'t pay. No strings. Just say yes and I\'ll get started.',
+    template:
+      "I will guarantee you {number} {outcome} in the next {days} days or you don't pay. No strings. Just say yes and I'll get started.",
     bestFor: ['agencies', 'B2B services', 'lead gen'],
   },
   {
     id: 'free_work_first',
     name: 'Free Work First',
-    template: 'I\'ll build you a {deliverable} at no cost. I\'ll pay for it all myself, do all the work upfront, and only if you like it will I ask you to work with me.',
+    template:
+      "I'll build you a {deliverable} at no cost. I'll pay for it all myself, do all the work upfront, and only if you like it will I ask you to work with me.",
     bestFor: ['software', 'creative services', 'consulting'],
   },
   {
     id: 'free_asset',
     name: 'Free Asset',
-    template: 'Just send me {simple_input}. I\'ll give you a completely free {deliverable}. No strings attached.',
+    template:
+      "Just send me {simple_input}. I'll give you a completely free {deliverable}. No strings attached.",
     bestFor: ['content', 'creative', 'coaching'],
   },
   {
     id: 'audit_assessment',
     name: 'Audit/Assessment',
-    template: 'I\'ll run a full {type} audit on your {asset}. Show you exactly {pain_point}. Completely free. Just say yes.',
+    template:
+      "I'll run a full {type} audit on your {asset}. Show you exactly {pain_point}. Completely free. Just say yes.",
     bestFor: ['marketing agencies', 'SEO', 'tech consulting'],
   },
   {
     id: 'performance_system',
     name: 'Performance System',
-    template: 'I\'ll build you a {system} that I guarantee will generate {number} {outcome} in {days} days. You don\'t pay a cent unless we hit it.',
+    template:
+      "I'll build you a {system} that I guarantee will generate {number} {outcome} in {days} days. You don't pay a cent unless we hit it.",
     bestFor: ['lead gen', 'sales', 'performance marketing'],
   },
   {
     id: 'rewrite_improvement',
     name: 'Rewrite/Improvement',
-    template: 'Send me your last {number} {assets}. I will rewrite them for free. Plus, I\'ll show you exactly why the new versions will convert better.',
+    template:
+      "Send me your last {number} {assets}. I will rewrite them for free. Plus, I'll show you exactly why the new versions will convert better.",
     bestFor: ['copywriting', 'design', 'content'],
   },
 ] as const
@@ -209,9 +255,15 @@ export const OFFER_ARCHETYPES = [
 // ---------------------------------------------------------------------------
 
 export const SUBJECT_LINE_PATTERNS = [
-  { pattern: '{first_name}, you\'re wasting ${amount}/month', type: 'loss_frame' },
-  { pattern: 'your {recent_content} and a formatting thought', type: 'curiosity' },
-  { pattern: '{first_name}\'s blind spot', type: 'curiosity' },
+  {
+    pattern: "{first_name}, you're wasting ${amount}/month",
+    type: 'loss_frame',
+  },
+  {
+    pattern: 'your {recent_content} and a formatting thought',
+    type: 'curiosity',
+  },
+  { pattern: "{first_name}'s blind spot", type: 'curiosity' },
   { pattern: 'been with you from the start', type: 'rapport' },
   { pattern: '{first_name} Q', type: 'curiosity' },
   { pattern: 'are you hiring?', type: 'pattern_interrupt' },
@@ -239,13 +291,13 @@ export const FOLLOW_UP_RULES = {
   addThirdAfterReplyRate: 0.04, // Only add 3rd email after 4%+ reply rate
   templates: [
     'Hey {name}, checking in on this. TLDR: {one_sentence_offer}. Let me know.',
-    'Hey {name}, just want to make sure this didn\'t get lost. Still happy to {offer}. No pressure.',
-    'Hey {name}, quick ping on this. Still available to {action} if you\'re interested.',
+    "Hey {name}, just want to make sure this didn't get lost. Still happy to {offer}. No pressure.",
+    "Hey {name}, quick ping on this. Still available to {action} if you're interested.",
   ],
   rules: [
     'Keep them SHORT. Simple pings, not newsletter-style.',
     'Different subject line for each follow-up.',
-    'Reformulate the core offer briefly, don\'t repeat verbatim.',
+    "Reformulate the core offer briefly, don't repeat verbatim.",
   ],
 } as const
 
@@ -255,20 +307,22 @@ export const FOLLOW_UP_RULES = {
 
 export const ITERATION_FRAMEWORK = {
   elementRotation: [
-    'subject',        // Highest leverage, test first
-    'opening_line',   // Personalization/hook
-    'who_am_i',       // Social proof statement
-    'offer',          // Guarantee structure, outcome, timeframe
-    'cta',            // Specific time vs open-ended
-    'length',         // Short punchy vs detailed
-    'tone',           // Casual vs professional vs bold
+    'subject', // Highest leverage, test first
+    'opening_line', // Personalization/hook
+    'who_am_i', // Social proof statement
+    'offer', // Guarantee structure, outcome, timeframe
+    'cta', // Specific time vs open-ended
+    'length', // Short punchy vs detailed
+    'tone', // Casual vs professional vs bold
   ] as const,
   minimumSendsPerVariant: 500,
   statisticallyMeaninglessSends: 100,
   bigChangesEarlySmallChangesLate: {
     week1_2: 'Test FUNDAMENTALLY different approaches (3x different)',
-    week3_4: 'Narrow to winning direction, test moderate variations (2x different)',
-    week5_plus: 'Fine-tune: swap single lines, adjust subject, tweak personalization (0.5x different)',
+    week3_4:
+      'Narrow to winning direction, test moderate variations (2x different)',
+    week5_plus:
+      'Fine-tune: swap single lines, adjust subject, tweak personalization (0.5x different)',
   },
   tamMinimum: 10000, // Minimum total addressable market for valid testing
 } as const
@@ -381,7 +435,7 @@ export const CORPORATE_KILL_SIGNALS = [
   'I hope this email finds you',
   'I wanted to reach out',
   'I came across your profile',
-  'I\'d love to connect',
+  "I'd love to connect",
   'I noticed that you',
   'As a fellow',
   'Best regards',
@@ -389,7 +443,7 @@ export const CORPORATE_KILL_SIGNALS = [
   'Warm regards',
   'Sincerely',
   'Looking forward to hearing from you',
-  'Please don\'t hesitate to reach out',
+  "Please don't hesitate to reach out",
   'At your earliest convenience',
   'Per our conversation',
   'Touching base',
@@ -418,9 +472,9 @@ export const HIGH_TRUST_BANNED_PHRASES = [
   'just wanted to reach out',
   'reaching out because',
   'reaching out to',
-  'I\'d love to',
-  'I\'d be happy to',
-  'I\'m reaching out',
+  "I'd love to",
+  "I'd be happy to",
+  "I'm reaching out",
   // Followup clichés
   'looping back',
   'circling back',
@@ -434,9 +488,9 @@ export const HIGH_TRUST_BANNED_PHRASES = [
   'quick collab',
   'quick chat',
   // Signposting that signals templated copy
-  'Here\'s why',
-  'Here\'s the thing',
-  'Here\'s what I\'m thinking',
+  "Here's why",
+  "Here's the thing",
+  "Here's what I'm thinking",
   // Hyperbolic competitor-pricing language (sounds like a hard-pitch SDR)
   'absurd pricing',
   'absurd price',
@@ -463,16 +517,25 @@ export const HIGH_TRUST_BANNED_PHRASES = [
   'just checking in',
   // "Hope" openers
   'hoping to connect',
-  'hoping you\'re',
+  "hoping you're",
 ] as const
 
 // Sentence-pattern bans (regex-based, applied separately from the substring
 // match above). Each entry MUST be a regex that matches at sentence start
 // only — otherwise legitimate prose triggers false positives.
-export const HIGH_TRUST_BANNED_PATTERNS: ReadonlyArray<{ name: string; regex: RegExp }> = [
+export const HIGH_TRUST_BANNED_PATTERNS: ReadonlyArray<{
+  name: string
+  regex: RegExp
+}> = [
   { name: 'starts_with_heres_why', regex: /(^|\n|\.\s+)here'?s why\b/i },
-  { name: 'starts_with_heres_the_thing', regex: /(^|\n|\.\s+)here'?s the thing\b/i },
-  { name: 'starts_with_quick_question_opener', regex: /(^|\n)quick question[,.]/i },
+  {
+    name: 'starts_with_heres_the_thing',
+    regex: /(^|\n|\.\s+)here'?s the thing\b/i,
+  },
+  {
+    name: 'starts_with_quick_question_opener',
+    regex: /(^|\n)quick question[,.]/i,
+  },
 ] as const
 
 // ---------------------------------------------------------------------------
@@ -487,7 +550,10 @@ export const HIGH_TRUST_BANNED_PATTERNS: ReadonlyArray<{ name: string; regex: Re
 // signals) and overrides the legacy `copy_tone` enum where present.
 
 export interface VoiceProfileSpec {
-  readonly id: 'founder_direct' | 'agency_professional' | 'consultant_authoritative'
+  readonly id:
+    | 'founder_direct'
+    | 'agency_professional'
+    | 'consultant_authoritative'
   readonly label: string
   readonly summary: string
   readonly pronoun: 'I' | 'we' | 'I (mostly)'
@@ -504,14 +570,20 @@ export const VOICE_PROFILES_KB: ReadonlyArray<VoiceProfileSpec> = [
     summary:
       'First-person singular. Short sentences. Casual but not bro-y. Signs with first name only — no role, no title. Writes like someone who does not need to prove anything because their work speaks for itself. Allows a small natural imperfection (a lowercase first letter after a line break, an em-clause replaced with a comma, a one-word sentence) to signal that a real human typed this.',
     pronoun: 'I',
-    signoff: 'First name only on its own line. No "Best,", no "Thanks,", no role line.',
+    signoff:
+      'First name only on its own line. No "Best,", no "Thanks,", no role line.',
     sentence_style:
       'Mix of short fragments (3-7 words) and one slightly longer sentence per email (10-15 words). Avoid uniform mid-length sentences — that is the SDR rhythm.',
-    default_for: ['solo founders', 'creative directors', 'consultants billing under their own name', 'agency owners under 10 employees'],
+    default_for: [
+      'solo founders',
+      'creative directors',
+      'consultants billing under their own name',
+      'agency owners under 10 employees',
+    ],
     avoid: [
       'corporate "we" unless genuinely a team',
       'titles in signature',
-      'formal greeting ("Hi {{firstName}},") — the first line IS the hook',
+      'over-formal salutation phrasing ("Dear Mr.", "To Whom It May Concern")',
       'sign-off phrases',
     ],
   },
@@ -521,11 +593,20 @@ export const VOICE_PROFILES_KB: ReadonlyArray<VoiceProfileSpec> = [
     summary:
       'First-person plural where appropriate (the agency, the team). Polished, structured, but still warm. Signs with full name and role. One step above casual — closer to a thoughtful business correspondence than a text message. Used for established agencies with team capacity that want to signal scale and reliability.',
     pronoun: 'we',
-    signoff: 'Full name + role on separate lines (e.g., "Sarah Chen\\nFounder, Apex Studios").',
+    signoff:
+      'Full name + role on separate lines (e.g., "Sarah Chen\\nFounder, Apex Studios").',
     sentence_style:
       'Slightly longer sentences than founder_direct (10-18 words on average). Maintain crispness; do not lapse into corporate prose.',
-    default_for: ['agencies with 10+ employees', 'production studios', 'mid-market service firms'],
-    avoid: ['lapsing into formal/corporate phrasing', 'jargon', 'long paragraphs (still 1-2 sentences max)'],
+    default_for: [
+      'agencies with 10+ employees',
+      'production studios',
+      'mid-market service firms',
+    ],
+    avoid: [
+      'lapsing into formal/corporate phrasing',
+      'jargon',
+      'long paragraphs (still 1-2 sentences max)',
+    ],
   },
   {
     id: 'consultant_authoritative',
@@ -533,11 +614,20 @@ export const VOICE_PROFILES_KB: ReadonlyArray<VoiceProfileSpec> = [
     summary:
       'First-person singular with confident framing. References frameworks, processes, or proprietary methodology naturally — never as a sales pitch. Signs with full name. Slightly more formal than founder_direct. Conveys "I have done this enough times to know how it ends."',
     pronoun: 'I (mostly)',
-    signoff: 'Full name. Optionally a one-line credential under the name (no role-as-job-title — credential as proof).',
+    signoff:
+      'Full name. Optionally a one-line credential under the name (no role-as-job-title — credential as proof).',
     sentence_style:
       'Confident assertions. Light technical vocabulary where it earns trust. No hedging. No "I think" / "perhaps" / "might."',
-    default_for: ['solo consultants', 'fractional executives', 'frameworks-driven advisory firms'],
-    avoid: ['corporate jargon disguised as expertise', 'overclaiming', 'arrogance — confidence comes from specificity, not volume'],
+    default_for: [
+      'solo consultants',
+      'fractional executives',
+      'frameworks-driven advisory firms',
+    ],
+    avoid: [
+      'corporate jargon disguised as expertise',
+      'overclaiming',
+      'arrogance — confidence comes from specificity, not volume',
+    ],
   },
 ] as const
 
@@ -555,7 +645,10 @@ export interface AovTierSpec {
   readonly aov_range: string
   readonly doctrine: 'volume' | 'precision'
   readonly spintax_default: boolean
-  readonly default_voice: 'founder_direct' | 'agency_professional' | 'consultant_authoritative'
+  readonly default_voice:
+    | 'founder_direct'
+    | 'agency_professional'
+    | 'consultant_authoritative'
   readonly default_angles: readonly string[]
   readonly avoid_angles: readonly string[]
   readonly cta_email_1: 'asset_offer' | 'reply_only' | 'calendar'
@@ -580,7 +673,11 @@ export const AOV_TIERS_KB: ReadonlyArray<AovTierSpec> = [
     doctrine: 'volume',
     spintax_default: true,
     default_voice: 'agency_professional',
-    default_angles: ['outcome_result', 'pain_agitation', 'specific_signal_observation'],
+    default_angles: [
+      'outcome_result',
+      'pain_agitation',
+      'specific_signal_observation',
+    ],
     avoid_angles: [],
     cta_email_1: 'reply_only',
   },
@@ -591,7 +688,11 @@ export const AOV_TIERS_KB: ReadonlyArray<AovTierSpec> = [
     doctrine: 'precision',
     spintax_default: false,
     default_voice: 'founder_direct',
-    default_angles: ['specific_signal_observation', 'quiet_proof', 'curiosity_soft_question'],
+    default_angles: [
+      'specific_signal_observation',
+      'quiet_proof',
+      'curiosity_soft_question',
+    ],
     avoid_angles: ['direct_challenge', 'pain_agitation', 'social_proof_fomo'],
     cta_email_1: 'asset_offer',
   },
@@ -602,8 +703,17 @@ export const AOV_TIERS_KB: ReadonlyArray<AovTierSpec> = [
     doctrine: 'precision',
     spintax_default: false,
     default_voice: 'consultant_authoritative',
-    default_angles: ['specific_signal_observation', 'quiet_proof', 'mutual_pattern_recognition'],
-    avoid_angles: ['direct_challenge', 'pain_agitation', 'social_proof_fomo', 'free_value_drop'],
+    default_angles: [
+      'specific_signal_observation',
+      'quiet_proof',
+      'mutual_pattern_recognition',
+    ],
+    avoid_angles: [
+      'direct_challenge',
+      'pain_agitation',
+      'social_proof_fomo',
+      'free_value_drop',
+    ],
     cta_email_1: 'asset_offer',
   },
 ] as const
@@ -613,7 +723,10 @@ export const AOV_TIERS_KB: ReadonlyArray<AovTierSpec> = [
  * use the LARGER of the two (a one-time $50K project counts as high-AOV even
  * if recurring is $0).
  */
-export function inferAovTier(params: { setupFee?: number | null; recurringFee?: number | null }): 'low' | 'mid' | 'high' | 'enterprise' {
+export function inferAovTier(params: {
+  setupFee?: number | null
+  recurringFee?: number | null
+}): 'low' | 'mid' | 'high' | 'enterprise' {
   const setup = params.setupFee ?? 0
   const recurring = params.recurringFee ?? 0
   // Treat recurring as 6 months of value to avoid undervaluing subscription
@@ -632,7 +745,9 @@ export function inferAovTier(params: { setupFee?: number | null; recurringFee?: 
  * Look up the rule set for a given AOV tier. Returns the spec object including
  * spintax default, default voice, default angles, etc.
  */
-export function getAovTierSpec(tier: 'low' | 'mid' | 'high' | 'enterprise'): AovTierSpec {
+export function getAovTierSpec(
+  tier: 'low' | 'mid' | 'high' | 'enterprise'
+): AovTierSpec {
   const spec = AOV_TIERS_KB.find((t) => t.id === tier)
   if (!spec) throw new Error(`Unknown AOV tier: ${tier}`)
   return spec
@@ -747,7 +862,8 @@ export const ANGLE_LIBRARY: ReadonlyArray<AngleSpec> = [
     emotional_driver: 'recognition + curiosity',
     when_to_use:
       'When a verifiable signal exists for this prospect (recent funding, stealth exit, key hire, public essay, product launch). Default for high-AOV email 1.',
-    example_opener: '{{firstName}}, congratulations on the round. The next 90 days are the window where your market narrative either crystallizes into something powerful or gets defined by whoever talks loudest.',
+    example_opener:
+      '{FIRST_NAME}, congratulations on the round. The next 90 days are the window where your market narrative either crystallizes into something powerful or gets defined by whoever talks loudest.',
     requires: ['prospect_signal'],
   },
   {
@@ -757,7 +873,8 @@ export const ANGLE_LIBRARY: ReadonlyArray<AngleSpec> = [
     emotional_driver: 'aspiration + curiosity',
     when_to_use:
       'When a strong case study is available. Lead with the result without framing it as a pitch. Best for high-AOV / creative services.',
-    example_opener: 'Adaptive launched six months ago with a film instead of a demo. 1.2M views. Revenue doubled that quarter. I made that film.',
+    example_opener:
+      'Adaptive launched six months ago with a film instead of a demo. 1.2M views. Revenue doubled that quarter. I made that film.',
     requires: ['case_studies'],
   },
   {
@@ -767,7 +884,8 @@ export const ANGLE_LIBRARY: ReadonlyArray<AngleSpec> = [
     emotional_driver: 'curiosity',
     when_to_use:
       'When you have a specific, sharp question that the prospect would want to know the answer to. Not "quick question" — a real, narrow, relevant question.',
-    example_opener: '{{firstName}}, why is {{companyName}}\'s docs site outranking the homepage on Google?',
+    example_opener:
+      "{FIRST_NAME}, why is {COMPANY}'s docs site outranking the homepage on Google?",
     requires: [],
   },
   {
@@ -777,7 +895,8 @@ export const ANGLE_LIBRARY: ReadonlyArray<AngleSpec> = [
     emotional_driver: 'in-group + curiosity',
     when_to_use:
       'When a real pattern across similar companies is observable and the prospect would recognize it. NOT invented patterns.',
-    example_opener: 'Most Series A founders I work with say the same thing six months after launch: they wish they\'d put more intention into the moment.',
+    example_opener:
+      "Most Series A founders I work with say the same thing six months after launch: they wish they'd put more intention into the moment.",
     requires: ['case_studies'],
   },
   {
@@ -787,7 +906,8 @@ export const ANGLE_LIBRARY: ReadonlyArray<AngleSpec> = [
     emotional_driver: 'reciprocity',
     when_to_use:
       'Lead with a useful insight or short piece of research about their space. No pitch. Reciprocity creates the obligation.',
-    example_opener: '{{firstName}}, I pulled the launch films of every Series A AI co that raised in Q1. Three of them all hired the same studio. The other 14 used in-house decks. Wanted to share what I noticed.',
+    example_opener:
+      '{FIRST_NAME}, I pulled the launch films of every Series A AI co that raised in Q1. Three of them all hired the same studio. The other 14 used in-house decks. Wanted to share what I noticed.',
     requires: [],
   },
   {
@@ -797,7 +917,8 @@ export const ANGLE_LIBRARY: ReadonlyArray<AngleSpec> = [
     emotional_driver: 'recognition + curiosity',
     when_to_use:
       'When you can name a specific real thing the prospect did well, then show how to amplify it. Must be a real, specific compliment — not generic praise.',
-    example_opener: 'Your seed announcement post got 2.3K likes — I noticed you wrote it yourself. Few founders do that anymore.',
+    example_opener:
+      'Your seed announcement post got 2.3K likes — I noticed you wrote it yourself. Few founders do that anymore.',
     requires: [],
   },
   // Volume / commodity angles (still in the library, weighted DOWN for high-trust)
@@ -808,7 +929,8 @@ export const ANGLE_LIBRARY: ReadonlyArray<AngleSpec> = [
     emotional_driver: 'frustration',
     when_to_use:
       'For low-mid AOV. Lead with the problem they feel daily, agitate it, then offer relief. Burns trust at high-AOV.',
-    example_opener: 'Most B2B marketing teams are spending 40-60% of pipeline budget on paid channels that get more expensive every quarter.',
+    example_opener:
+      'Most B2B marketing teams are spending 40-60% of pipeline budget on paid channels that get more expensive every quarter.',
     requires: [],
   },
   {
@@ -818,7 +940,8 @@ export const ANGLE_LIBRARY: ReadonlyArray<AngleSpec> = [
     emotional_driver: 'ambition',
     when_to_use:
       'Lead with a specific result for a similar company. REQUIRES a real case study — the precision doctrine forbids fabricated outcomes.',
-    example_opener: 'Adaptive went from 0 to 1.2M views in 90 days with one launch film.',
+    example_opener:
+      'Adaptive went from 0 to 1.2M views in 90 days with one launch film.',
     requires: ['case_studies'],
   },
   {
@@ -828,7 +951,8 @@ export const ANGLE_LIBRARY: ReadonlyArray<AngleSpec> = [
     emotional_driver: 'curiosity',
     when_to_use:
       'Challenge something the prospect believes. Works for sophisticated buyers who have heard every pitch.',
-    example_opener: 'Most founders launch with a demo video. The demo is the worst possible first impression.',
+    example_opener:
+      'Most founders launch with a demo video. The demo is the worst possible first impression.',
     requires: [],
   },
   {
@@ -838,7 +962,8 @@ export const ANGLE_LIBRARY: ReadonlyArray<AngleSpec> = [
     emotional_driver: 'FOMO',
     when_to_use:
       'For volume outbound. AVOID for high-trust — fabricated social proof is the most common failure mode here.',
-    example_opener: 'Three of the YC W26 companies in your batch are already running this.',
+    example_opener:
+      'Three of the YC W26 companies in your batch are already running this.',
     requires: ['case_studies', 'multiple_named_clients'],
   },
   {
@@ -846,8 +971,10 @@ export const ANGLE_LIBRARY: ReadonlyArray<AngleSpec> = [
     label: 'Authority / Expertise',
     doctrine: 'both',
     emotional_driver: 'trust',
-    when_to_use: 'Demonstrate deep understanding of their world before pitching. Earned through specifics, not volume.',
-    example_opener: 'I\'ve spent the last 4 years making launch films for $4M-$15M-raised AI companies. Here\'s the pattern I keep seeing.',
+    when_to_use:
+      'Demonstrate deep understanding of their world before pitching. Earned through specifics, not volume.',
+    example_opener:
+      "I've spent the last 4 years making launch films for $4M-$15M-raised AI companies. Here's the pattern I keep seeing.",
     requires: [],
   },
   {
@@ -857,7 +984,8 @@ export const ANGLE_LIBRARY: ReadonlyArray<AngleSpec> = [
     emotional_driver: 'urgency',
     when_to_use:
       'Reference something happening in their company or market right now. Subset of specific_signal_observation when the signal is time-sensitive.',
-    example_opener: 'Saw the OpenAI Codex announcement this morning. The competitive window for AI coding tools just compressed by 6 months.',
+    example_opener:
+      'Saw the OpenAI Codex announcement this morning. The competitive window for AI coding tools just compressed by 6 months.',
     requires: [],
   },
   {
@@ -867,7 +995,8 @@ export const ANGLE_LIBRARY: ReadonlyArray<AngleSpec> = [
     emotional_driver: 'curiosity',
     when_to_use:
       'Lead with a surprising stat or insight about their industry. Stats must be REAL — fabricated industry numbers are catchable and lethal to trust.',
-    example_opener: 'AI companies that launch with a film convert at 2.3x the rate of companies that launch with a demo (n=47, public data).',
+    example_opener:
+      'AI companies that launch with a film convert at 2.3x the rate of companies that launch with a demo (n=47, public data).',
     requires: [],
   },
   {
@@ -877,7 +1006,8 @@ export const ANGLE_LIBRARY: ReadonlyArray<AngleSpec> = [
     emotional_driver: 'ego',
     when_to_use:
       'Be blunt about a gap. Only for highly sophisticated buyers and only after email 2+. AVOID at email 1 for high-trust offers — too aggressive.',
-    example_opener: 'Your homepage hero is doing the opposite of what your seed deck promises.',
+    example_opener:
+      'Your homepage hero is doing the opposite of what your seed deck promises.',
     requires: [],
   },
 ] as const
@@ -904,7 +1034,17 @@ export function scoreCopy(params: {
   /** Provided when highTrust = true to verify named clients are real. */
   readonly knownCaseStudyClients?: ReadonlyArray<string>
 }): CopyScore {
-  const { subject, body, hasSocialProof, hasSpecificNumbers, hasOffer, hasCta, hasPersonalization, highTrust, knownCaseStudyClients } = params
+  const {
+    subject,
+    body,
+    hasSocialProof,
+    hasSpecificNumbers,
+    hasOffer,
+    hasCta,
+    hasPersonalization,
+    highTrust,
+    knownCaseStudyClients,
+  } = params
   const fullText = `${subject} ${body}`.toLowerCase()
 
   const principlesPresent: PrincipleId[] = []
@@ -921,12 +1061,22 @@ export function scoreCopy(params: {
       /case study|video|asset/i.test(body)
     if (opensWithGive || hasOffer) principlesPresent.push('give_first')
   } else {
-    if (hasOffer || fullText.includes('free') || fullText.includes('no cost') || fullText.includes('no charge')) {
+    if (
+      hasOffer ||
+      fullText.includes('free') ||
+      fullText.includes('no cost') ||
+      fullText.includes('no charge')
+    ) {
       principlesPresent.push('give_first')
     }
   }
 
-  if (hasCta && (fullText.includes('just say yes') || fullText.includes('just reply') || fullText.includes('15 min'))) {
+  if (
+    hasCta &&
+    (fullText.includes('just say yes') ||
+      fullText.includes('just reply') ||
+      fullText.includes('15 min'))
+  ) {
     principlesPresent.push('micro_commitments')
   }
 
@@ -941,19 +1091,32 @@ export function scoreCopy(params: {
   if (highTrust) {
     if (knownCaseStudyClients && knownCaseStudyClients.length > 0) {
       const lowered = body.toLowerCase()
-      const cited = knownCaseStudyClients.some((name) => name && lowered.includes(name.toLowerCase()))
+      const cited = knownCaseStudyClients.some(
+        (name) => name && lowered.includes(name.toLowerCase())
+      )
       if (cited) principlesPresent.push('social_proof')
     }
     // If no case studies provided, social_proof is NOT scored — the absence
     // of a number is the right behavior, not a missing principle.
   } else {
-    if (hasSocialProof && hasSpecificNumbers) principlesPresent.push('social_proof')
+    if (hasSocialProof && hasSpecificNumbers)
+      principlesPresent.push('social_proof')
   }
 
-  if (fullText.includes('i work with') || fullText.includes('i help') || fullText.includes('i built') || fullText.includes('my team')) {
+  if (
+    fullText.includes('i work with') ||
+    fullText.includes('i help') ||
+    fullText.includes('i built') ||
+    fullText.includes('my team')
+  ) {
     principlesPresent.push('authority')
   }
-  if (hasPersonalization || fullText.includes('fellow') || fullText.includes('i saw') || fullText.includes('noticed')) {
+  if (
+    hasPersonalization ||
+    fullText.includes('fellow') ||
+    fullText.includes('i saw') ||
+    fullText.includes('noticed')
+  ) {
     principlesPresent.push('rapport')
   }
   // scarcity: in volume mode, words like "only/last/losing/wasting" pass.
@@ -963,11 +1126,20 @@ export function scoreCopy(params: {
   // launch moment) carry scarcity implicitly through the situation, not the
   // language.
   if (!highTrust) {
-    if (fullText.includes('only') || fullText.includes('last') || fullText.includes('losing') || fullText.includes('wasting')) {
+    if (
+      fullText.includes('only') ||
+      fullText.includes('last') ||
+      fullText.includes('losing') ||
+      fullText.includes('wasting')
+    ) {
       principlesPresent.push('scarcity')
     }
   }
-  if (fullText.includes('like you') || fullText.includes('your space') || fullText.includes('in your industry')) {
+  if (
+    fullText.includes('like you') ||
+    fullText.includes('your space') ||
+    fullText.includes('in your industry')
+  ) {
     principlesPresent.push('shared_identity')
   }
 
@@ -981,14 +1153,14 @@ export function scoreCopy(params: {
   })
 
   // Corporate signals
-  const hasCorporateSignal = CORPORATE_KILL_SIGNALS.some(
-    (signal) => fullText.includes(signal.toLowerCase())
+  const hasCorporateSignal = CORPORATE_KILL_SIGNALS.some((signal) =>
+    fullText.includes(signal.toLowerCase())
   )
   checks.push({ check: 'No corporate signals', passed: !hasCorporateSignal })
 
   // LLM-isms
-  const hasLlmIsm = LLM_ISM_RED_FLAGS.some(
-    (flag) => fullText.includes(flag.toLowerCase())
+  const hasLlmIsm = LLM_ISM_RED_FLAGS.some((flag) =>
+    fullText.includes(flag.toLowerCase())
   )
   checks.push({ check: 'No LLM-isms', passed: !hasLlmIsm })
 
@@ -1010,7 +1182,10 @@ export function scoreCopy(params: {
   // No links
   checks.push({
     check: 'No links in body',
-    passed: !body.includes('http') && !body.includes('www.') && !body.includes('.com/'),
+    passed:
+      !body.includes('http') &&
+      !body.includes('www.') &&
+      !body.includes('.com/'),
   })
 
   const score = principlesPresent.length

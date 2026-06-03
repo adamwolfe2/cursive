@@ -112,10 +112,15 @@ const ALLOWED_ACRONYMS = new Set([
 // ---------------------------------------------------------------------------
 
 /**
- * Strips merge tags like `{{firstName}}` from text.
+ * Strips merge tags from text. Handles BOTH formats:
+ *   1. EB-native single-brace UPPER_SNAKE_CASE: `{FIRST_NAME}`, `{COMPANY}`
+ *   2. Legacy double-brace camelCase: `{{firstName}}`, `{{companyName}}`
+ * Used for word counting so tags don't inflate counts past the per-position
+ * word caps. Single-brace spintax blocks (`{a|b|c}`) are NOT touched here —
+ * those are handled by expandSpintax.
  */
 export function stripMergeTags(text: string): string {
-  return text.replace(/\{\{[^}]*\}\}/g, '')
+  return text.replace(/\{\{[^}]*\}\}/g, '').replace(/\{[A-Z][A-Z_]*\}/g, '')
 }
 
 /**
@@ -150,14 +155,21 @@ const MAX_ITERATIONS = 50_000
 // Find the next spintax-with-pipe block at or after `from`. Skips no-pipe
 // blocks (which look like {{merge tags}} or {plain word}). Returns the
 // absolute start/end indices and split options, or null if none remain.
-function findNextSpintaxBlock(text: string, from: number): { start: number; end: number; options: string[] } | null {
+function findNextSpintaxBlock(
+  text: string,
+  from: number
+): { start: number; end: number; options: string[] } | null {
   // Pattern with global flag so we can iterate via lastIndex.
   const re = /\{((?:[^{}]|\{\{\w+\}\})+)\}/g
   re.lastIndex = from
   let m: RegExpExecArray | null
   while ((m = re.exec(text)) !== null) {
     if (m[1].includes('|')) {
-      return { start: m.index, end: m.index + m[0].length, options: m[1].split('|') }
+      return {
+        start: m.index,
+        end: m.index + m[0].length,
+        options: m[1].split('|'),
+      }
     }
     // No pipe: advance by 1 char minimum if the engine didn't (it does for
     // non-zero-width matches, but be defensive).
@@ -219,7 +231,7 @@ function checkWordCount(
   body: string,
   step: number,
   seqIdx: number,
-  emailIdx: number,
+  emailIdx: number
 ): QualityIssue[] {
   const variants = expandSpintax(body)
   const cap = wordCapForStep(step)
@@ -245,20 +257,23 @@ function checkWordCount(
 function checkSubjectLength(
   subjectLine: string,
   seqIdx: number,
-  emailIdx: number,
+  emailIdx: number
 ): QualityIssue[] {
   const variants = expandSpintax(subjectLine)
   const issues: QualityIssue[] = []
 
   for (const variant of variants) {
     const wc = countWords(variant)
-    if (wc > 6) {
+    // Updated 2026-06: cap raised from 6 -> 7 to give the new Finn-style
+    // subject doctrine ("anchor on a specific tool/role/process/observable")
+    // enough room (e.g., "the meta ads situation at acmetech" is 6 words).
+    if (wc > 7) {
       issues.push({
         sequence_index: seqIdx,
         email_index: emailIdx,
         severity: 'error',
         check: 'subject_length',
-        detail: `Subject line has ${wc} words in a spintax variant (max 6).`,
+        detail: `Subject line has ${wc} words in a spintax variant (max 7).`,
       })
       break
     }
@@ -270,7 +285,7 @@ function checkSubjectLength(
 function checkSpamWords(
   body: string,
   seqIdx: number,
-  emailIdx: number,
+  emailIdx: number
 ): QualityIssue[] {
   const lower = body.toLowerCase()
   const issues: QualityIssue[] = []
@@ -293,7 +308,7 @@ function checkSpamWords(
 function checkStartsWithI(
   body: string,
   seqIdx: number,
-  emailIdx: number,
+  emailIdx: number
 ): QualityIssue[] {
   const trimmed = body.trimStart()
   const firstWord = trimmed.split(/\s/)[0] ?? ''
@@ -316,7 +331,7 @@ function checkStartsWithI(
 function checkWeakOpening(
   body: string,
   seqIdx: number,
-  emailIdx: number,
+  emailIdx: number
 ): QualityIssue[] {
   const lower = body.toLowerCase()
   const issues: QualityIssue[] = []
@@ -339,7 +354,7 @@ function checkWeakOpening(
 function checkMultipleCTAs(
   body: string,
   seqIdx: number,
-  emailIdx: number,
+  emailIdx: number
 ): QualityIssue[] {
   const lower = body.toLowerCase()
   let ctaCount = 0
@@ -368,7 +383,7 @@ function checkMultipleCTAs(
 function checkMultipleLinks(
   body: string,
   seqIdx: number,
-  emailIdx: number,
+  emailIdx: number
 ): QualityIssue[] {
   const linkMatches = body.match(/https?:\/\//g)
   const linkCount = linkMatches?.length ?? 0
@@ -400,7 +415,7 @@ function checkMultipleLinks(
 function checkInsufficientSpintax(
   body: string,
   seqIdx: number,
-  emailIdx: number,
+  emailIdx: number
 ): QualityIssue[] {
   const spintaxBlocks = body.match(/\{([^{}]+\|[^{}]+)\}/g)
   const blockCount = spintaxBlocks?.length ?? 0
@@ -423,7 +438,7 @@ function checkInsufficientSpintax(
 function checkNoSubjectSpintax(
   subjectLine: string,
   seqIdx: number,
-  emailIdx: number,
+  emailIdx: number
 ): QualityIssue[] {
   const hasSpintax = /\{([^{}]+\|[^{}]+)\}/.test(subjectLine)
 
@@ -445,7 +460,7 @@ function checkNoSubjectSpintax(
 function checkSubjectExclamation(
   subjectLine: string,
   seqIdx: number,
-  emailIdx: number,
+  emailIdx: number
 ): QualityIssue[] {
   if (subjectLine.includes('!')) {
     return [
@@ -454,7 +469,8 @@ function checkSubjectExclamation(
         email_index: emailIdx,
         severity: 'error',
         check: 'subject_exclamation',
-        detail: 'Subject line contains an exclamation mark — remove it for deliverability.',
+        detail:
+          'Subject line contains an exclamation mark — remove it for deliverability.',
       },
     ]
   }
@@ -465,7 +481,7 @@ function checkSubjectExclamation(
 function checkExcessiveExclamations(
   body: string,
   seqIdx: number,
-  emailIdx: number,
+  emailIdx: number
 ): QualityIssue[] {
   const exclamationCount = (body.match(/!/g) ?? []).length
 
@@ -487,7 +503,7 @@ function checkExcessiveExclamations(
 function checkAllCaps(
   body: string,
   seqIdx: number,
-  emailIdx: number,
+  emailIdx: number
 ): QualityIssue[] {
   const allCapsWords = body.match(/\b[A-Z]{2,}\b/g) ?? []
   const disallowed = allCapsWords.filter((w) => !ALLOWED_ACRONYMS.has(w))
@@ -515,7 +531,7 @@ function checkAllCaps(
 function checkCorporateKillSignals(
   body: string,
   seqIdx: number,
-  emailIdx: number,
+  emailIdx: number
 ): QualityIssue[] {
   const lower = body.toLowerCase()
   const issues: QualityIssue[] = []
@@ -539,7 +555,7 @@ function checkLlmIsms(
   body: string,
   subjectLine: string,
   seqIdx: number,
-  emailIdx: number,
+  emailIdx: number
 ): QualityIssue[] {
   const fullText = `${subjectLine} ${body}`.toLowerCase()
   const issues: QualityIssue[] = []
@@ -564,7 +580,10 @@ function checkPsychologicalPrinciples(
   subjectLine: string,
   seqIdx: number,
   emailIdx: number,
-  context: { highTrust?: boolean; knownCaseStudyClients?: ReadonlyArray<string> } = {},
+  context: {
+    highTrust?: boolean
+    knownCaseStudyClients?: ReadonlyArray<string>
+  } = {}
 ): QualityIssue[] {
   const result = scoreCopy({
     subject: subjectLine,
@@ -577,7 +596,14 @@ function checkPsychologicalPrinciples(
     hasSpecificNumbers: /\$[\d,]+|\d+%|\d+x/i.test(body),
     hasOffer: /free|no cost|no charge|guarantee|at no/i.test(body),
     hasCta: /\?|reply|call|chat|ring|send/i.test(body),
-    hasPersonalization: /\{\{firstName\}\}|\{\{companyName\}\}/i.test(body),
+    // Accept either EB-native ({FIRST_NAME}, {COMPANY}, {TITLE}, {PROSPECT_SIGNAL})
+    // or legacy double-brace ({{firstName}}, {{companyName}}) as evidence of
+    // personalization. The LLM is now instructed to use EB-native; legacy is
+    // kept for historical drafts that haven't been regenerated.
+    hasPersonalization:
+      /\{(FIRST_NAME|LAST_NAME|EMAIL|TITLE|COMPANY|PROSPECT_SIGNAL)\}/.test(
+        body
+      ) || /\{\{firstName\}\}|\{\{companyName\}\}/i.test(body),
     highTrust: context.highTrust,
     knownCaseStudyClients: context.knownCaseStudyClients,
   })
@@ -600,7 +626,7 @@ function checkPsychologicalPrinciples(
 function checkSubjectLowercase(
   subjectLine: string,
   seqIdx: number,
-  emailIdx: number,
+  emailIdx: number
 ): QualityIssue[] {
   // Expand spintax to check each variant
   const variants = expandSpintax(subjectLine)
@@ -631,7 +657,7 @@ function checkEmDashes(
   subjectLine: string,
   previewText: string | undefined,
   seqIdx: number,
-  emailIdx: number,
+  emailIdx: number
 ): QualityIssue[] {
   // Em-dashes (—) and en-dashes (–) are forbidden. They are a known AI tell
   // and tank reply rates. The post-generation sanitizer in copy-generation.ts
@@ -645,7 +671,8 @@ function checkEmDashes(
         email_index: emailIdx,
         severity: 'error',
         check: 'em_dash',
-        detail: 'Email contains an em-dash (—) or en-dash (–). Replace with a comma, period, or rephrasing. Em-dashes are an AI-generation tell.',
+        detail:
+          'Email contains an em-dash (—) or en-dash (–). Replace with a comma, period, or rephrasing. Em-dashes are an AI-generation tell.',
       },
     ]
   }
@@ -657,7 +684,7 @@ function checkDoubleBraceSpintax(
   subjectLine: string,
   previewText: string | undefined,
   seqIdx: number,
-  emailIdx: number,
+  emailIdx: number
 ): QualityIssue[] {
   // Catches {{a|b|c}} spintax-with-double-braces, which the renderer treats
   // as a merge tag and won't expand, so it leaks raw braces into the inbox.
@@ -683,7 +710,7 @@ function checkPhantomCallback(
   body: string,
   emails: ReadonlyArray<{ body: string; subject_line: string }>,
   seqIdx: number,
-  emailIdx: number,
+  emailIdx: number
 ): QualityIssue[] {
   // Email 1 cannot have a phantom callback (no prior email exists).
   // Emails 2+ may reference prior content only if it actually appears in an
@@ -724,7 +751,8 @@ function checkPhantomCallback(
 
   // For emails 2 and 3: search for callback patterns that reference content
   // not present in earlier emails.
-  const calloutPattern = /(that\s+(\w+(?:\s+\w+)?)\s+(?:comment|comment\.|comment,|conversation|note|point|line))|((?:following up|circling back) on (?:the|that|our)\s+(\w+(?:\s+\w+)?))/i
+  const calloutPattern =
+    /(that\s+(\w+(?:\s+\w+)?)\s+(?:comment|comment\.|comment,|conversation|note|point|line))|((?:following up|circling back) on (?:the|that|our)\s+(\w+(?:\s+\w+)?))/i
   const match = calloutPattern.exec(body)
   if (!match) return []
 
@@ -755,13 +783,19 @@ function checkPhantomCallback(
 function checkBodyStartsWithI(
   body: string,
   seqIdx: number,
-  emailIdx: number,
+  emailIdx: number
 ): QualityIssue[] {
   // Strip merge tags, then check if the very first word is "I"
   const stripped = stripMergeTags(body).trimStart()
   const firstWord = stripped.split(/[\s,]/)[0] ?? ''
 
-  if (firstWord === 'I' || firstWord === "I'm" || firstWord === "I've" || firstWord === "I'd" || firstWord === "I'll") {
+  if (
+    firstWord === 'I' ||
+    firstWord === "I'm" ||
+    firstWord === "I've" ||
+    firstWord === "I'd" ||
+    firstWord === "I'll"
+  ) {
     return [
       {
         sequence_index: seqIdx,
@@ -789,7 +823,7 @@ function checkHighTrustBannedPhrases(
   body: string,
   subjectLine: string,
   seqIdx: number,
-  emailIdx: number,
+  emailIdx: number
 ): QualityIssue[] {
   const haystack = `${subjectLine}\n${body}`.toLowerCase()
   const issues: QualityIssue[] = []
@@ -857,7 +891,7 @@ function checkFabricatedClaims(
   body: string,
   caseStudies: ReadonlyArray<CaseStudy> | undefined,
   seqIdx: number,
-  emailIdx: number,
+  emailIdx: number
 ): QualityIssue[] {
   // No case_studies context = skip (caller did not pass client). The check
   // would false-positive on legitimate situations where we lack ground truth.
@@ -894,7 +928,9 @@ function checkFabricatedClaims(
   const revenueMatch = REVENUE_NUMBER_PATTERN.exec(body)
   if (revenueMatch) {
     const inCaseStudies = caseStudies.some((c) =>
-      `${c.results} ${c.engagement}`.toLowerCase().includes(revenueMatch[0].toLowerCase().trim()),
+      `${c.results} ${c.engagement}`
+        .toLowerCase()
+        .includes(revenueMatch[0].toLowerCase().trim())
     )
     if (!inCaseStudies) {
       issues.push({
@@ -909,7 +945,8 @@ function checkFabricatedClaims(
 
   // Named clients not in case_studies. We look for "we worked with X" or
   // "X is one of our clients" patterns and compare X against case_studies.
-  const namedClientPattern = /(?:we (?:worked|partnered) with|client(?:s)? include[ds]?|customer(?:s)? include[ds]?)\s+([A-Z][a-zA-Z0-9.&'-]+(?:\s+(?:[A-Z][a-zA-Z0-9.&'-]+|and|&)\s*[A-Z]?[a-zA-Z0-9.&'-]*)*)/g
+  const namedClientPattern =
+    /(?:we (?:worked|partnered) with|client(?:s)? include[ds]?|customer(?:s)? include[ds]?)\s+([A-Z][a-zA-Z0-9.&'-]+(?:\s+(?:[A-Z][a-zA-Z0-9.&'-]+|and|&)\s*[A-Z]?[a-zA-Z0-9.&'-]*)*)/g
   const namedClientsInBody: string[] = []
   let nm: RegExpExecArray | null
   while ((nm = namedClientPattern.exec(body)) !== null) {
@@ -917,7 +954,9 @@ function checkFabricatedClaims(
   }
   if (namedClientsInBody.length > 0) {
     const caseStudyNames = new Set(
-      caseStudies.filter((c) => c.is_named).map((c) => c.client_name.toLowerCase()),
+      caseStudies
+        .filter((c) => c.is_named)
+        .map((c) => c.client_name.toLowerCase())
     )
     for (const cited of namedClientsInBody) {
       const inStudies = cited
@@ -969,7 +1008,7 @@ function checkCtaLadder(
   step: number,
   ctaType: CtaType | undefined,
   seqIdx: number,
-  emailIdx: number,
+  emailIdx: number
 ): QualityIssue[] {
   const issues: QualityIssue[] = []
 
@@ -981,7 +1020,8 @@ function checkCtaLadder(
         email_index: emailIdx,
         severity: 'error',
         check: 'cta_ladder_email_1_calendar',
-        detail: 'Email 1 contains a calendar link. The CTA ladder requires asset_offer or reply_only at this position. Move the calendar link to email 3.',
+        detail:
+          'Email 1 contains a calendar link. The CTA ladder requires asset_offer or reply_only at this position. Move the calendar link to email 3.',
       })
     }
     if (TIME_OFFER_PATTERN_EMAIL_1.test(body)) {
@@ -990,7 +1030,8 @@ function checkCtaLadder(
         email_index: emailIdx,
         severity: 'error',
         check: 'cta_ladder_email_1_time_offer',
-        detail: 'Email 1 offers specific times ("Thursday at 2pm", "this week"). The CTA ladder reserves time-asks for email 3. Replace with an asset offer or reply ask.',
+        detail:
+          'Email 1 offers specific times ("Thursday at 2pm", "this week"). The CTA ladder reserves time-asks for email 3. Replace with an asset offer or reply ask.',
       })
     }
     if (ctaType && ctaType !== 'asset_offer' && ctaType !== 'reply_only') {
@@ -1012,7 +1053,8 @@ function checkCtaLadder(
         email_index: emailIdx,
         severity: 'error',
         check: 'cta_ladder_email_4_calendar',
-        detail: 'Email 4 (breakup) contains a calendar link. Breakup emails should have NO CTA — door open, no ask.',
+        detail:
+          'Email 4 (breakup) contains a calendar link. Breakup emails should have NO CTA — door open, no ask.',
       })
     }
     if (ctaType && ctaType !== 'breakup') {
@@ -1035,7 +1077,7 @@ function checkCtaLadder(
 
 function checkDuplicateOpenings(
   emails: ReadonlyArray<{ body: string }>,
-  seqIdx: number,
+  seqIdx: number
 ): QualityIssue[] {
   const openings = emails.map((email) => {
     const firstLine = email.body.trimStart().split('\n')[0] ?? ''
@@ -1065,7 +1107,10 @@ function checkDuplicateOpenings(
         email_index: -1,
         severity: 'warning',
         check: 'duplicate_openings',
-        detail: `Emails ${duplicateIndices.sort((a, b) => a - b).map((i) => i + 1).join(', ')} share similar opening lines — vary them for engagement.`,
+        detail: `Emails ${duplicateIndices
+          .sort((a, b) => a - b)
+          .map((i) => i + 1)
+          .join(', ')} share similar opening lines — vary them for engagement.`,
       },
     ]
   }
@@ -1095,7 +1140,14 @@ function checkDuplicateOpenings(
  */
 export function checkCopyQuality(
   sequences: DraftSequences,
-  client?: Pick<OnboardingClient, 'case_studies' | 'spintax_enabled' | 'setup_fee' | 'recurring_fee' | 'voice_profile'>,
+  client?: Pick<
+    OnboardingClient,
+    | 'case_studies'
+    | 'spintax_enabled'
+    | 'setup_fee'
+    | 'recurring_fee'
+    | 'voice_profile'
+  >
 ): QualityCheckResult {
   const issues: QualityIssue[] = []
 
@@ -1152,7 +1204,13 @@ export function checkCopyQuality(
         ...checkAllCaps(body, seqIdx, emailIdx),
         // Hard rules
         ...checkEmDashes(body, subject_line, preview_text, seqIdx, emailIdx),
-        ...checkDoubleBraceSpintax(body, subject_line, preview_text, seqIdx, emailIdx),
+        ...checkDoubleBraceSpintax(
+          body,
+          subject_line,
+          preview_text,
+          seqIdx,
+          emailIdx
+        ),
         ...checkPhantomCallback(body, sequence.emails, seqIdx, emailIdx),
         // V3 doctrine
         ...checkHighTrustBannedPhrases(body, subject_line, seqIdx, emailIdx),
@@ -1163,17 +1221,19 @@ export function checkCopyQuality(
         ...checkLlmIsms(body, subject_line, seqIdx, emailIdx),
         ...checkPsychologicalPrinciples(body, subject_line, seqIdx, emailIdx, {
           highTrust: isHighTrust,
-          knownCaseStudyClients: caseStudies?.filter((c) => c.is_named).map((c) => c.client_name),
+          knownCaseStudyClients: caseStudies
+            ?.filter((c) => c.is_named)
+            .map((c) => c.client_name),
         }),
         ...checkSubjectLowercase(subject_line, seqIdx, emailIdx),
-        ...checkBodyStartsWithI(body, seqIdx, emailIdx),
+        ...checkBodyStartsWithI(body, seqIdx, emailIdx)
       )
 
       // Spintax checks ONLY if spintax is expected.
       if (spintaxExpected) {
         issues.push(
           ...checkInsufficientSpintax(body, seqIdx, emailIdx),
-          ...checkNoSubjectSpintax(subject_line, seqIdx, emailIdx),
+          ...checkNoSubjectSpintax(subject_line, seqIdx, emailIdx)
         )
       }
     }

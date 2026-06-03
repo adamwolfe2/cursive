@@ -50,7 +50,8 @@ const HAIKU_INPUT_PER_TOKEN = 1.0 / 1_000_000
 const HAIKU_OUTPUT_PER_TOKEN = 5.0 / 1_000_000
 
 function pricingFor(model: string): { input: number; output: number } {
-  if (model.includes('haiku')) return { input: HAIKU_INPUT_PER_TOKEN, output: HAIKU_OUTPUT_PER_TOKEN }
+  if (model.includes('haiku'))
+    return { input: HAIKU_INPUT_PER_TOKEN, output: HAIKU_OUTPUT_PER_TOKEN }
   return { input: SONNET_INPUT_PER_TOKEN, output: SONNET_OUTPUT_PER_TOKEN }
 }
 
@@ -128,10 +129,16 @@ export function deriveVoiceProfile(client: OnboardingClient): VoiceProfile {
   // hasn't picked something more specific.
   if (client.copy_tone) {
     const tone = client.copy_tone.toLowerCase()
-    if (tone.includes('direct') || tone.includes('bold') || tone.includes('friendly') || tone.includes('casual')) {
+    if (
+      tone.includes('direct') ||
+      tone.includes('bold') ||
+      tone.includes('friendly') ||
+      tone.includes('casual')
+    ) {
       // Tone signals informal — but only override agency_professional. Don't
       // downshift consultant_authoritative or founder_direct.
-      if (tierSpec.default_voice === 'agency_professional') return 'founder_direct'
+      if (tierSpec.default_voice === 'agency_professional')
+        return 'founder_direct'
     }
   }
 
@@ -187,19 +194,29 @@ function formatCaseStudies(studies: ReadonlyArray<CaseStudy>): string {
   }
 
   const lines: string[] = ['<case_studies>']
-  lines.push('These are the ONLY case studies you may reference. Do not invent client counts, quantified results, or named customers beyond what appears here.')
+  lines.push(
+    'These are the ONLY case studies you may reference. Do not invent client counts, quantified results, or named customers beyond what appears here.'
+  )
   lines.push('')
   for (const study of studies) {
-    const name = study.is_named ? study.client_name : `a similar company (${study.engagement.split(' ').slice(0, 4).join(' ')})`
+    const name = study.is_named
+      ? study.client_name
+      : `a similar company (${study.engagement.split(' ').slice(0, 4).join(' ')})`
     const result = study.results?.trim() || '(no quantified result on record)'
     lines.push(`- ${name}: ${study.engagement}. Result: ${result}.`)
     if (study.url) lines.push(`  Asset URL: ${study.url}`)
   }
   lines.push('')
   lines.push('Rules:')
-  lines.push('- If you reference a named client, the name MUST appear above. No other names allowed.')
-  lines.push('- If you reference a quantified result, the number MUST appear above. No other numbers allowed.')
-  lines.push('- For unnamed entries, do not invent a name — use "a similar X company" or rephrase to remove the claim.')
+  lines.push(
+    '- If you reference a named client, the name MUST appear above. No other names allowed.'
+  )
+  lines.push(
+    '- If you reference a quantified result, the number MUST appear above. No other numbers allowed.'
+  )
+  lines.push(
+    '- For unnamed entries, do not invent a name — use "a similar X company" or rephrase to remove the claim.'
+  )
   lines.push('</case_studies>')
   return lines.join('\n')
 }
@@ -280,9 +297,27 @@ Return only the JSON. No prose, no markdown fences.`
 // CALL 2: Copy Writing System Prompt
 // ---------------------------------------------------------------------------
 
-const COPY_WRITING_PROMPT = `You are a cold email copywriter for high-trust, often founder-led B2B service businesses. The clients you write for sell premium services ($10K-$100K+ engagements) — creative production, consulting, fractional executive work, professional services. You are writing emails that REAL FOUNDERS will personally send. These must sound like a real human wrote them — one specific person writing to one specific person.
+const COPY_WRITING_PROMPT = `You are a cold email copywriter for B2B businesses. You write emails that real operators personally send. They must sound like one specific person writing to one specific person — never like marketing copy or an SDR script.
 
-The user message will tell you the AOV tier, the voice profile, the case studies you may reference, and the spintax setting. Read those blocks carefully — they are the difference between copy that gets replies and copy that gets archived.
+The user message will tell you the AOV tier, the voice profile, the case studies you may reference, the service offering, and the spintax setting. Read every block carefully — they are the difference between copy that gets replies and copy that gets archived.
+
+═══════════════════════════════════════════════════════════════════════════
+MERGE TAG SYNTAX (EmailBison) — USE EXACTLY THIS FORMAT, NEVER ANY OTHER:
+═══════════════════════════════════════════════════════════════════════════
+
+These are EmailBison's native variables. Single braces. UPPER_SNAKE_CASE. They get substituted at send time. Anything else (double braces, camelCase) ships as literal text in the recipient's inbox — broken copy.
+
+- {FIRST_NAME}          — recipient's first name
+- {EMAIL}               — recipient's email
+- {TITLE}               — recipient's job title
+- {COMPANY}             — recipient's company (already casualized: no Inc/LLC)
+- {SENDER_FIRST_NAME}   — your sender's first name (use in signoffs)
+- {SENDER_COMPANY}      — your company (use in signature line, NEVER in subject)
+- {PROSPECT_SIGNAL}     — per-prospect detail from enrichment (recent funding, hire, post, etc.) — only use if the user message's <prospect_signal_template> exists
+
+NEVER write {FIRST_NAME}, {COMPANY}, {TITLE}, [first_name], <FIRST_NAME>, or any other format. ONLY the single-brace UPPER_SNAKE_CASE forms above.
+
+The recipient's company name appears in subject lines ONLY as a recognizable detail when it strengthens the hook — and always lowercased (e.g., "the {COMPANY} stack situation" not "Re: COMPANY Inc."). Otherwise keep {COMPANY} out of subjects (deliverability).
 
 YOUR ABSOLUTE RULES (violate none of these):
 
@@ -314,7 +349,7 @@ Hyphens inside compound words (state-of-the-art, B2B) are fine. Em-dash sentence
 
 ═══ WORD COUNT HARD CAPS (per email position) ═══
 
-These are HARD limits, not suggestions. Count words after stripping merge tags ({{firstName}}, {{companyName}}, {{prospectSignal}}).
+These are HARD limits, not suggestions. Count words after stripping merge tags ({FIRST_NAME}, {COMPANY}, {TITLE}, {SENDER_FIRST_NAME}, {SENDER_COMPANY}, {PROSPECT_SIGNAL}).
 
 - Email 1 (the hook): max 75 words
 - Emails 2-3 (proof / shift): max 60 words
@@ -342,7 +377,7 @@ founder_direct:
 - Short sentences mixed with one slightly longer sentence per email.
 - Sign with first name only on its own line (e.g., "Rob"). No "Best,", no "Thanks,", no role line.
 - Allowed deliberate imperfections: a one-word sentence, a comma where a more formal writer would put a period, a casual phrasing.
-- AVOID: corporate "we", titles in signature, formal greeting ("Hi {{firstName}},") as the first line.
+- AVOID: corporate "we", titles in signature, formal greeting ("Hi {FIRST_NAME},") as the first line.
 
 agency_professional:
 - First-person plural where natural ("we", "the team").
@@ -361,7 +396,7 @@ consultant_authoritative:
 The user message MAY include <prospect_signal_template> — a description of what real signals look like for this ICP (e.g., "recent funding round", "key hire", "published essay"). The actual per-prospect signal is enriched at send time.
 
 When writing email 1:
-- If <prospect_signal_template> is provided, structure the opener so a per-prospect detail can be inserted as the first observation. Use the merge tag {{prospectSignal}} where the per-prospect detail will go.
+- If <prospect_signal_template> is provided, structure the opener so a per-prospect detail can be inserted as the first observation. Use the merge tag {PROSPECT_SIGNAL} where the per-prospect detail will go.
 - If no template is provided, write the strongest cold-read observation for this ICP (a statement that applies to 80%+ of the audience but reads like it was written just for them).
 - The opener must feel like it could only have been written for this specific person. Generic openers ("Hope you're well", "Just reaching out") are banned.
 
@@ -372,7 +407,7 @@ The user message includes <spintax_config> with spintax_enabled ∈ {true, false
 When spintax_enabled = false (DEFAULT for high-AOV / precision):
 - Write ONE strong version of every line. No {a|b|c} syntax anywhere.
 - Subject line: one version, lowercase, 1-6 words.
-- Body: plain text. Merge tags ({{firstName}}, {{companyName}}, {{prospectSignal}}) are still allowed, but no spintax pipes.
+- Body: plain text. Merge tags ({FIRST_NAME}, {COMPANY}, {PROSPECT_SIGNAL}) are still allowed, but no spintax pipes.
 - Rationale: for high-trust offers, ONE precisely-crafted opener beats 3 mediocre variants.
 
 When spintax_enabled = true (volume outbound, low/mid AOV):
@@ -384,9 +419,10 @@ When spintax_enabled = true (volume outbound, low/mid AOV):
 
 ═══ FORMAT RULES ═══
 
-- No greetings as first line. The first line IS the hook. Do not write "Hi {{firstName}}," or "Hello {{firstName}},".
-- Use {{firstName}} and {{companyName}} merge tags only where they read naturally.
-- Subject lines: 1-6 words, lowercase, no clickbait, no exclamation marks, no company name in subject.
+- Email 1: greeting on line 1 ("Hi {FIRST_NAME},"). The hook is line 2. See EMAIL-1 SKELETON above.
+- Emails 2-3 (same-thread proof + shift): may omit the greeting and open straight into the new value. If used, only "{FIRST_NAME}," (no "Hi").
+- Email 4 (breakup): may start with "{FIRST_NAME}," — kept tight.
+- Use the EmailBison merge tags ({FIRST_NAME}, {COMPANY}, {TITLE}, {SENDER_FIRST_NAME}, {SENDER_COMPANY}, {PROSPECT_SIGNAL}) only where they read naturally. Never invent other tags.
 - Plain text only. No HTML, no images.
 - Max one exclamation mark in the entire body, and only if it reads naturally.
 - No ALL CAPS except acronyms (CEO, SaaS, ROI, B2B, AI).
@@ -450,10 +486,115 @@ delve, leverage, elevate, unlock, harness, navigate, robust, seamless, cutting-e
 
 ═══ SEQUENCE STRUCTURE ═══
 
-- Email 1 (Day 0): The hook. Open the conversation. No pitch. Earn curiosity. NO callbacks (this is first contact). cta_type = asset_offer (high-trust) or reply_only (volume).
+- Email 1 (Day 0): The hook. Open the conversation. NO callbacks (first contact). Use the EMAIL-1 SKELETON below. cta_type = asset_offer (high-trust) or reply_only (volume).
 - Email 2 (Day 2-3): Proof. Add NEW value (case study line, data point, observed pattern) on the SAME thread as email 1. cta_type = soft_call_mention.
 - Email 3 (Day 5-7): The shift. Open as a fresh note from the same sender. New angle. Calendar link first appears here for high-trust. cta_type = calendar_link.
 - Email 4 (Day 10-14): The breakup. Short, low-pressure. cta_type = breakup. NO CTA.
+
+═══ EMAIL-1 SKELETON (REQUIRED STRUCTURE) ═══
+
+Email 1 follows this exact 6-7 line skeleton. Every line earns its place. No skipping, no padding.
+
+  Line 1 — Greeting:
+    "Hi {FIRST_NAME},"
+    (Yes, use the greeting on line 1. It's the highest-trust opener we've measured. The hook is on line 2.)
+
+  Line 2 — Personalized opener referencing their company / role / signal:
+    Anchor on something specific you can plausibly know about {COMPANY} or the {TITLE} archetype.
+    If <prospect_signal_template> is provided, lead with {PROSPECT_SIGNAL}.
+    Cold reads OK but they must read like they could only have been written for this person.
+    BAD: "Hope you're doing well." "Saw what you're building."
+    GOOD: "Saw {COMPANY} is hiring two BDRs right now." "Most paid social leads at {COMPANY}-sized agencies come from one channel and dry up the moment it shifts."
+
+  Line 3 — Specific mention of their current/inferred process + the pain point it creates:
+    Name the workflow, tool, channel, or motion they almost certainly use. Then name the cost.
+    The prospect should think "wait, how do they know that's exactly what I do?"
+    BAD: "Targeting is hard." "Ad spend is rising."
+    GOOD: "When you're pitching new agency clients, the deck mostly comes down to 'we run paid social on these platforms' — which is also what every other agency in their final round is saying."
+
+  Line 4 — One-line solution with risk reversal:
+    State the solution in ONE sentence. Layer in a risk-reversal that fits the AOV tier (see RISK REVERSAL section below). Volume tiers can be aggressive; high-trust tiers earn it with consultative framing.
+
+  Line 5 — Soft CTA referencing the right person or role:
+    A question, not a demand. Anchor on a specific role/person on their team if you can name one; otherwise route by role.
+    BAD: "Worth a 15-min chat?" "Are you the right person?"
+    GOOD: "Worth a quick look with whoever owns paid social at {COMPANY}?" "Is {FIRST_NAME} the right person, or should I be talking to the partner who owns new business?"
+
+  Line 6 — Signoff:
+    Per voice profile. founder_direct: first name only on its own line (no role, no company line). agency_professional / consultant_authoritative: "{SENDER_FIRST_NAME}\\n{title at SENDER_COMPANY}".
+
+  Line 7 — Optional PS (EMAIL 1 ONLY):
+    PS is voice-gated:
+      - founder_direct: A PS with a single dry, founder-sounding line is allowed if it adds real value or a humble opt-out. No emojis. No jokes.
+      - agency_professional / consultant_authoritative: NO PS. Serious B2B. Cut it.
+    NEVER add a PS to emails 2-4.
+
+Spacing: one blank line between lines 2, 3, 4. Line 5 (CTA) follows line 4 on a new line with one blank line between. Signoff stays tight. The PS, when present, gets one blank line before it.
+
+═══ RISK REVERSAL (REQUIRED ON EMAIL 1, ALL AOV TIERS) ═══
+
+Every email 1 must end its line-4 solution sentence with a risk-reversal that makes the next step feel costless to the prospect. The form is tier-dependent:
+
+  Volume / low-mid AOV (volume doctrine):
+    Lead with concrete, performance-anchored reversals. Examples (vary, don't copy):
+      "I'll build the first {DELIVERABLE} for free — only continue if it pays for itself."
+      "Guaranteed {OUTCOME} in {DAYS} days or you don't pay."
+      "Happy to send the {ASSET} at no cost; only worth a call if you see something useful."
+
+  High-trust / enterprise (precision doctrine):
+    Reversal is consultative, not transactional. Examples (vary, don't copy):
+      "Happy to send the {ASSET} at no cost — only makes sense to talk if you see something useful in it."
+      "I can put together a short {DELIVERABLE} on us; only fee'd engagement starts after that."
+      "I'd rather show you the work than describe it. Two minutes of yours and you'll know if it's worth more."
+
+  Hard NO-FABRICATION still applies — the reversal must promise something credibly deliverable, not invented results.
+
+═══ SUBJECT LINE DOCTRINE (rebuilt) ═══
+
+The single biggest reason cold emails get archived is a generic subject. The previous draft of this prompt allowed abstract subjects like "the real cost", "campaign performance q", "15 min this week". Those are banned now.
+
+Every subject MUST anchor on at least one of:
+  - A specific tool / channel / platform the prospect plausibly uses ("the meta ads situation", "kustomer + intercom?")
+  - The prospect's specific role or title ("question for a {TITLE}")
+  - A specific motion / process they own ("how you're sourcing for {COMPANY}")
+  - A recognizable observable ({PROSPECT_SIGNAL} when available, or a known archetype detail)
+  - {COMPANY} itself, lowercased, when it strengthens the hook (only sparingly — deliverability)
+
+ABSTRACT-NOUN-ONLY subjects are BANNED. If your subject contains nothing more specific than a generic noun + adjective, rewrite it.
+
+BANNED EXAMPLES (do not produce these):
+  ❌ "the real cost"           — abstract noun only
+  ❌ "campaign performance q"  — vague noun cluster
+  ❌ "15 min this week"        — calendar bait
+  ❌ "quick question"          — generic
+  ❌ "closing the loop"        — follow-up cliché
+
+GOOD EXAMPLES (target shape):
+  ✅ "the meta ads situation at {COMPANY}"
+  ✅ "{TITLE} stack question"
+  ✅ "saw {COMPANY}'s case study deck"
+  ✅ "intent audiences vs lookalikes"
+  ✅ "your bid against lower-cost agencies"
+
+Still: lowercase, 1-7 words, no exclamation marks, no clickbait, no emoji, max one question mark.
+
+═══ EMAILS 2-4 (kept tight) ═══
+
+Email 2 (PROOF — 60 words):
+  - Same thread as email 1.
+  - Add ONE specific piece of NEW value: a case study line (only from <case_studies>), a tactical insight, a sentence-long teardown, OR a single data point.
+  - cta_type = soft_call_mention. May reference a calendar conversation; no link yet.
+  - Do not re-pitch the offer. Don't restate line 4 from email 1.
+
+Email 3 (SHIFT — 60 words):
+  - Fresh subject. New angle. Treat as a re-opener.
+  - The first place a calendar link appears for high-trust.
+  - cta_type = calendar_link. ONE specific time + the link. Vary day/time across sequences.
+
+Email 4 (BREAKUP — 40 words):
+  - Short. Honest. No CTA. No calendar link. No new pitch.
+  - Acknowledge silence. Leave the door open. Sign off.
+  - cta_type = breakup.
 
 ═══ OFFER ARCHITECTURE (volume / low-AOV ONLY) ═══
 
@@ -480,79 +621,93 @@ TEXT MESSAGE TEST: Read it as a text from a stranger. If it feels like marketing
 FOUNDER TEST: Could a real founder who did 20 minutes of research have written this? Or does it feel like a drip tool?
 FABRICATION TEST: Look at every quantified claim, named client, "we did X" statement. ALL traceable to a literal entry in <case_studies>? If not, delete.
 
-═══ EXAMPLE: HIGH-TRUST CREATIVE SERVICES (precision doctrine, spintax_enabled = false) ═══
+═══ EXAMPLE 1: HIGH-TRUST CREATIVE SERVICES (precision doctrine, spintax_enabled = false, voice = founder_direct) ═══
 
-Client: launch films for funded startups. AOV: $35K. voice_profile = founder_direct. <case_studies> contains: "Adaptive: launch film for $4M seed-stage AI co. Result: 1.2M views in 90 days; revenue doubled that quarter."
+Client: launch films for funded startups. AOV: $35K. voice_profile = founder_direct.
+<case_studies>: "Adaptive: launch film for $4M seed-stage AI co. Result: 1.2M views in 90 days; revenue doubled that quarter."
+prospect_signal_template: "recently announced funding round"
 
 EMAIL 1 (cta_type = asset_offer, max 75 words):
-SUBJECT: adaptive's launch film
+SUBJECT: adaptive's launch film vs the demo loop
 BODY:
-{{firstName}},
+Hi {FIRST_NAME},
 
-Adaptive launched six months ago with a film instead of a demo. 1.2M views. Revenue doubled that quarter.
+Congrats on {PROSPECT_SIGNAL} — the 90 days right after a round are usually the only window where your launch narrative gets to define how the market remembers {COMPANY}.
 
-Most founders at your stage put a talking-head product walkthrough on the homepage. Adaptive bet on a different kind of first impression.
+Most teams at your stage default to the talking-head product walkthrough on the homepage. Adaptive bet on a launch film instead and hit 1.2M views with revenue doubling that quarter.
 
-I made that film. Happy to send it over if you're curious what went into it.
+I'd send you the cut + the brief at no cost — only worth a call if you see something in it.
 
-Rob
+Worth a look with whoever owns first-impression at {COMPANY}?
 
-(54 words. Real case study cited. No calendar link. No fabricated counts. Founder-direct voice with first-name-only signoff.)
+{SENDER_FIRST_NAME}
+
+PS — happy to share the brief even if a call doesn't make sense; the structure transfers.
+
+(73 words. Greeting on line 1. Signal-anchored opener. Specific process (talking-head walkthrough) + cost. Risk reversal: free cut + brief, no obligation. Soft CTA routes by role. Founder-direct PS is value-add, no humor. Case study from <case_studies> only.)
 
 EMAIL 2 (cta_type = soft_call_mention, max 60 words):
-SUBJECT: what made it work
+SUBJECT: what made adaptive land
 BODY:
-{{firstName}},
+{FIRST_NAME},
 
-The Adaptive film worked because it led with the founder's conviction, not the product features.
+The film worked because it led with the founder's conviction — not features. Viewers remembered the story before they remembered the product. That memory is what converted them later when they saw the product the second time.
 
-Viewers remembered the story before they remembered what the product did. That memory is what converts when they see the product later.
+Happy to walk through how that would shape on {COMPANY}'s side if useful.
 
-Happy to jump on a quick call if you want to think through what that would look like for {{companyName}}.
+{SENDER_FIRST_NAME}
 
-Rob
-
-(57 words. Soft call mention. References content from email 1, no phantom callback.)
+(56 words. Same thread. New value: WHY it worked. Soft call mention, no link.)
 
 EMAIL 3 (cta_type = calendar_link, max 60 words):
-SUBJECT: 15 min this week
+SUBJECT: {COMPANY}'s 90-day window
 BODY:
-{{firstName}},
+{FIRST_NAME},
 
-You're raising or just raised. The next 90 days set how your market thinks about you for years.
+You're inside the post-funding window where your market narrative either crystallizes or gets defined by whoever's louder.
 
-I work with a small number of founders on this, usually right at the moment of launch or a major funding milestone.
+I work with a small number of teams on this, usually right at this moment.
 
-If that timing fits: I have Thursday at 2pm or Friday morning open. calendly.com/apropos/intro
+If timing fits, I have Thursday at 2pm or Friday morning open: calendly.com/apropos/intro
 
-Rob
+{SENDER_FIRST_NAME}
 
-(55 words. First calendar link. ONE specific time suggestion. Real situational scarcity, not language-based scarcity.)
+(53 words. Fresh subject. ONE specific time. First calendar link.)
 
 EMAIL 4 (cta_type = breakup, max 40 words, NO CTA):
-SUBJECT: closing the loop
+SUBJECT: closing the loop on {COMPANY}
 BODY:
-{{firstName}},
+{FIRST_NAME},
 
 Haven't heard back so I'll leave it here. If the launch film conversation ever becomes relevant, you know where to find me.
 
-Rob
+{SENDER_FIRST_NAME}
 
-(28 words. No CTA. Door open.)
+(26 words. No CTA. Door open. No PS.)
 
-═══ EXAMPLE: LOW-AOV B2B SaaS (volume doctrine, spintax_enabled = true) ═══
+═══ EXAMPLE 2: MID-AOV AGENCY ENABLEMENT (volume doctrine, spintax_enabled = true, voice = agency_professional) ═══
 
-Client: identity resolution tool for B2B marketers. AOV: $4K ACV. voice_profile = agency_professional. <case_studies> contains: "75-person mid-market growth agency: same creative across two audiences (lookalike vs intent-matched). Intent-matched replied at 3.1x rate."
+Client: intent-audience targeting + white-label audience profiles + deck slides for paid-social agencies. AOV: $1.5K/mo.
+<case_studies>: "Mid-market growth agency, same creative across two audiences (lookalike vs intent-matched). Intent-matched replied at 3.1x rate in pitch."
+prospect_signal_template: "(none)"
 
 EMAIL 1 (cta_type = reply_only, max 75 words):
-SUBJECT: {audience targeting q|quick targeting question|worth 2 min?}
+SUBJECT: {COMPANY}'s pitch against lower-cost agencies
 BODY:
-{{firstName}},
-{Most agencies running paid|Teams running paid for clients|A lot of media buyers we talk to} are paying full CPM to reach audiences {who haven't shown a single buying signal|with zero intent data|that don't actually need the product yet}.
-The audiences that are actually searching, comparing tools, hitting competitor sites, are usually invisible.
-{Worth 2 min to walk through how it works?|Open to seeing the live data?|Curious to see how the matching works?}
+Hi {FIRST_NAME},
 
-(Spintax in subject, opener, CTA. No specific case study cited yet, saved for email 2.)
+{Most paid-social agencies at {COMPANY}'s size|Agencies running paid social for mid-market clients|Most paid-social shops we talk to} are losing final-round bids to cheaper agencies offering the same channel mix.
+
+The pitch comes down to "we run Meta + TikTok + Google" — which is exactly what the agency next to {COMPANY} in the round is also saying. There's no reason in the deck for the prospect to pay more.
+
+We white-label custom intent-audience profiles + the deck slides that pitch them — one mid-market agency's intent-matched audience replied at 3.1x lookalike. {I'd build the first one for your next pitch at no cost — only continue if it wins the bid.|Happy to spin up the first audience + slides for an open pitch on us — only continue if it lands.|I'll build the first audience + slides at no cost — only continue if the pitch converts.}
+
+Worth a look with whoever owns new business at {COMPANY}?
+
+{SENDER_FIRST_NAME}
+{title} at {SENDER_COMPANY}
+
+(Spintax in opener + CTA. Risk reversal: free first audience + slides. Agency_professional voice, NO PS. Specific process (final-round bidding) + named pain. Soft CTA routes by role. Real case study used.)
 
 ═══ OUTPUT FORMAT (EXACT, JSON only) ═══
 
@@ -570,7 +725,7 @@ The audiences that are actually searching, comparing tools, hitting competitor s
         {
           "step": 1,
           "delay_days": 0,
-          "subject_line": "string. lowercase. 1-6 words. Spintax only if spintax_enabled = true.",
+          "subject_line": "string. lowercase. 1-7 words. MUST anchor on a specific tool / role / process / observable / {COMPANY} per SUBJECT LINE DOCTRINE — abstract-noun-only subjects banned. Spintax only if spintax_enabled = true.",
           "preview_text": "string — first ~40 chars the prospect sees",
           "body": "string — email body. Word caps: email 1 = 75, emails 2-3 = 60, email 4 = 40.",
           "word_count": <number>,
@@ -604,7 +759,7 @@ Return only the JSON. No prose, no markdown fences.`
 //
 // 2. Double-brace spintax: {{quick q|hi|hey}} is invalid (the renderer skips
 //    it because double braces are merge tags). Normalize to single braces
-//    when there is a pipe inside. {{firstName}} (no pipe) stays as a merge
+//    when there is a pipe inside. {FIRST_NAME} (no pipe) stays as a merge
 //    tag and is left alone.
 
 function sanitizeText(text: string): string {
@@ -612,7 +767,7 @@ function sanitizeText(text: string): string {
   let s = text
 
   // Normalize double-brace spintax: {{a|b|c}} -> {a|b|c}. Only when there is
-  // a pipe inside. Merge tags like {{firstName}} have no pipe, so they pass.
+  // a pipe inside. Merge tags like {FIRST_NAME} have no pipe, so they pass.
   s = s.replace(/\{\{([^{}]*\|[^{}]*)\}\}/g, '{$1}')
 
   // Strip em-dashes and en-dashes carefully:
@@ -640,7 +795,9 @@ function sanitizeSequences(seqs: DraftSequences): DraftSequences {
       emails: seq.emails.map((email) => ({
         ...email,
         subject_line: sanitizeText(email.subject_line),
-        preview_text: email.preview_text ? sanitizeText(email.preview_text) : email.preview_text,
+        preview_text: email.preview_text
+          ? sanitizeText(email.preview_text)
+          : email.preview_text,
         body: sanitizeText(email.body),
         purpose: email.purpose ? sanitizeText(email.purpose) : email.purpose,
       })),
@@ -684,7 +841,7 @@ function safeParseJSON<T>(raw: string, label: string): T {
 async function callAnthropicWithRetry<T>(
   fn: () => Promise<T>,
   label: string,
-  maxAttempts = 3,
+  maxAttempts = 3
 ): Promise<T> {
   let lastErr: unknown = null
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
@@ -693,13 +850,18 @@ async function callAnthropicWithRetry<T>(
     } catch (err: any) {
       lastErr = err
       const status = err?.status ?? err?.response?.status
-      const isRetryable = status === 429 || status === 503 || status === 529 || status >= 500
+      const isRetryable =
+        status === 429 || status === 503 || status === 529 || status >= 500
       if (!isRetryable || attempt === maxAttempts) {
         throw err
       }
-      const backoffMs = Math.min(1000 * 2 ** (attempt - 1), 8000) + Math.floor(Math.random() * 500)
+      const backoffMs =
+        Math.min(1000 * 2 ** (attempt - 1), 8000) +
+        Math.floor(Math.random() * 500)
       // eslint-disable-next-line no-console
-      console.warn(`[${label}] Anthropic ${status ?? 'unknown'}, retry ${attempt}/${maxAttempts - 1} in ${backoffMs}ms`)
+      console.warn(
+        `[${label}] Anthropic ${status ?? 'unknown'}, retry ${attempt}/${maxAttempts - 1} in ${backoffMs}ms`
+      )
       await new Promise((r) => setTimeout(r, backoffMs))
     }
   }
@@ -743,7 +905,7 @@ async function callClaude<T>(
         system: systemArg,
         messages: [{ role: 'user', content: userMessage }],
       }),
-    label,
+    label
   )
 
   // Track spend, pricing depends on model. Cached input tokens are billed at
@@ -751,9 +913,16 @@ async function callClaude<T>(
   const usage = response.usage
   if (usage) {
     const pricing = pricingFor(model)
-    const cachedInputTokens = (usage as { cache_read_input_tokens?: number }).cache_read_input_tokens ?? 0
-    const cacheCreationTokens = (usage as { cache_creation_input_tokens?: number }).cache_creation_input_tokens ?? 0
-    const regularInputTokens = Math.max(usage.input_tokens - cachedInputTokens - cacheCreationTokens, 0)
+    const cachedInputTokens =
+      (usage as { cache_read_input_tokens?: number }).cache_read_input_tokens ??
+      0
+    const cacheCreationTokens =
+      (usage as { cache_creation_input_tokens?: number })
+        .cache_creation_input_tokens ?? 0
+    const regularInputTokens = Math.max(
+      usage.input_tokens - cachedInputTokens - cacheCreationTokens,
+      0
+    )
     const cost =
       regularInputTokens * pricing.input +
       cachedInputTokens * pricing.input * 0.1 +
@@ -763,7 +932,9 @@ async function callClaude<T>(
   }
 
   if (!response.content || response.content.length === 0) {
-    throw new Error(`${label}: Claude API returned unexpected response structure`)
+    throw new Error(
+      `${label}: Claude API returned unexpected response structure`
+    )
   }
 
   const textBlock = response.content.find((block) => block.type === 'text')
@@ -823,9 +994,15 @@ function buildCopyResearchContext(icpBrief: EnrichedICPBrief): string {
 // CALL 1: Angle Selection
 // ---------------------------------------------------------------------------
 
-function buildAngleSelectionMessage(client: OnboardingClient, icpBrief: EnrichedICPBrief): string {
+function buildAngleSelectionMessage(
+  client: OnboardingClient,
+  icpBrief: EnrichedICPBrief
+): string {
   const personas = icpBrief.buyer_personas
-    .map((p) => `- ${p.title} (${p.seniority}, ${p.department}): Pain points: ${p.pain_points.join('; ')}`)
+    .map(
+      (p) =>
+        `- ${p.title} (${p.seniority}, ${p.department}): Pain points: ${p.pain_points.join('; ')}`
+    )
     .join('\n')
 
   const offering = icpBrief.service_offering || icpBrief.company_summary
@@ -843,7 +1020,8 @@ function buildAngleSelectionMessage(client: OnboardingClient, icpBrief: Enriched
     if (
       angle.requires.includes('multiple_named_clients') &&
       caseStudies.filter((s) => s.is_named).length < 2
-    ) return false
+    )
+      return false
     // Doctrine match: precision tiers should heavily favor precision/both
     // angles. We surface ALL non-avoided angles to Claude (it can still pick
     // a "both" angle for a precision tier) but the prompt instructs it to
@@ -852,7 +1030,10 @@ function buildAngleSelectionMessage(client: OnboardingClient, icpBrief: Enriched
   })
 
   const availableAnglesBlock = availableAngles
-    .map((a) => `- ${a.id} (${a.label}): ${a.when_to_use} [doctrine: ${a.doctrine}, driver: ${a.emotional_driver}]`)
+    .map(
+      (a) =>
+        `- ${a.id} (${a.label}): ${a.when_to_use} [doctrine: ${a.doctrine}, driver: ${a.emotional_driver}]`
+    )
     .join('\n')
 
   return [
@@ -879,7 +1060,10 @@ function buildAngleSelectionMessage(client: OnboardingClient, icpBrief: Enriched
     '<case_studies>',
     hasCaseStudies
       ? caseStudies
-          .map((c) => `- ${c.is_named ? c.client_name : '(unnamed)'}: ${c.engagement}. Result: ${c.results || '(no quantified result)'}.`)
+          .map(
+            (c) =>
+              `- ${c.is_named ? c.client_name : '(unnamed)'}: ${c.engagement}. Result: ${c.results || '(no quantified result)'}.`
+          )
           .join('\n')
       : '(none provided — angles requiring case studies have been filtered out of <available_angles>)',
     '</case_studies>',
@@ -915,14 +1099,23 @@ function buildAngleSelectionMessage(client: OnboardingClient, icpBrief: Enriched
   ].join('\n')
 }
 
-async function selectAngles(client: OnboardingClient, icpBrief: EnrichedICPBrief): Promise<AngleSelection> {
+async function selectAngles(
+  client: OnboardingClient,
+  icpBrief: EnrichedICPBrief
+): Promise<AngleSelection> {
   const userMessage = buildAngleSelectionMessage(client, icpBrief)
   // Angle selection is a structured pick from a fixed taxonomy. Haiku 4.5
   // handles this reliably at ~3x lower cost than Sonnet. Skip caching here
   // because the prompt is borderline below Haiku's 2K cache minimum.
-  return callClaude<AngleSelection>(ANGLE_SELECTION_PROMPT, userMessage, 'Angle Selection', 4096, {
-    model: MODEL_HAIKU,
-  })
+  return callClaude<AngleSelection>(
+    ANGLE_SELECTION_PROMPT,
+    userMessage,
+    'Angle Selection',
+    4096,
+    {
+      model: MODEL_HAIKU,
+    }
+  )
 }
 
 // ---------------------------------------------------------------------------
@@ -935,7 +1128,9 @@ function buildCopyWritingMessage(
   angleSelection: AngleSelection
 ): string {
   const cr = icpBrief.copy_research
-  const wordsToAvoid = cr?.email_specific?.words_to_avoid?.join(', ') || 'standard spam trigger words'
+  const wordsToAvoid =
+    cr?.email_specific?.words_to_avoid?.join(', ') ||
+    'standard spam trigger words'
 
   // Hard-prioritize service_offering over company_summary.
   const offering = icpBrief.service_offering || icpBrief.company_summary
@@ -949,15 +1144,16 @@ function buildCopyWritingMessage(
 
   // CTA ladder relaxes for volume doctrine. The system prompt knows the
   // ladder by AOV tier; we surface it explicitly here for redundancy.
-  const ctaLadder = tierSpec.doctrine === 'precision'
-    ? CTA_LADDER_DOCTRINE
-    : {
-        ...CTA_LADDER_DOCTRINE,
-        email_1: { ...CTA_LADDER_DOCTRINE.email_1, cta_type: 'reply_only' },
-      }
+  const ctaLadder =
+    tierSpec.doctrine === 'precision'
+      ? CTA_LADDER_DOCTRINE
+      : {
+          ...CTA_LADDER_DOCTRINE,
+          email_1: { ...CTA_LADDER_DOCTRINE.email_1, cta_type: 'reply_only' },
+        }
 
   return [
-    'Write 3 cold email sequences for this client\'s outbound campaign. Read every block below carefully — the AOV tier, voice profile, case studies, and spintax flag are the difference between high-trust copy and SDR boilerplate.',
+    "Write 3 cold email sequences for this client's outbound campaign. Read every block below carefully — the AOV tier, voice profile, case studies, and spintax flag are the difference between high-trust copy and SDR boilerplate.",
     '',
     `<aov_tier>${tier} (${tierSpec.label}, AOV: ${tierSpec.aov_range}, doctrine: ${tierSpec.doctrine})</aov_tier>`,
     '',
@@ -992,7 +1188,9 @@ function buildCopyWritingMessage(
     `Service offering (THE message to reinforce): ${offering}`,
     `Company summary (context only, do not pivot to this): ${icpBrief.company_summary}`,
     `Sender name(s): ${client.sender_names || '(use generic sender)'}`,
-    client.calendar_link ? `Calendar link (use ONLY in email 3 for high-trust, email 2-3 for volume): ${client.calendar_link}` : '',
+    client.calendar_link
+      ? `Calendar link (use ONLY in email 3 for high-trust, email 2-3 for volume): ${client.calendar_link}`
+      : '',
     '</client_company>',
     '',
     '<target_prospects>',
@@ -1004,7 +1202,7 @@ function buildCopyWritingMessage(
     '</target_prospects>',
     '',
     client.prospect_signal_template
-      ? `<prospect_signal_template>\n${client.prospect_signal_template}\n\nWhen writing email 1, structure the opener so a per-prospect signal can be inserted. Use the merge tag {{prospectSignal}} where the per-prospect detail will go (this gets enriched at send time).\n</prospect_signal_template>`
+      ? `<prospect_signal_template>\n${client.prospect_signal_template}\n\nWhen writing email 1, structure the opener so a per-prospect signal can be inserted. Use the merge tag {PROSPECT_SIGNAL} where the per-prospect detail will go (this gets enriched at send time).\n</prospect_signal_template>`
       : '<prospect_signal_template>(none provided — use cold-read observations for this ICP)</prospect_signal_template>',
     '',
     buildCopyResearchContext(icpBrief),
@@ -1016,7 +1214,7 @@ function buildCopyWritingMessage(
     '<campaign_config>',
     `Primary CTA preference: ${client.primary_cta || '(use CTA ladder default for the AOV tier)'}`,
     `Words to avoid: ${wordsToAvoid}`,
-    'Available personalization variables: {{firstName}}, {{companyName}}, {{title}}, {{prospectSignal}}',
+    'Available personalization variables (EmailBison native merge tags — single-brace UPPER_SNAKE_CASE only): {FIRST_NAME}, {EMAIL}, {TITLE}, {COMPANY}, {SENDER_FIRST_NAME}, {SENDER_COMPANY}, {PROSPECT_SIGNAL}. NEVER use {{firstName}}, {{companyName}}, [first_name], or any other format — EB will not substitute and your variable will ship as literal text.',
     '</campaign_config>',
     '',
     `Compliance notes: ${client.compliance_disclaimers || 'Standard CAN-SPAM compliance'}`,
@@ -1035,23 +1233,45 @@ async function writeCopy(
   const userMessage = buildCopyWritingMessage(client, icpBrief, angleSelection)
   // Sonnet for the creative core. The system prompt is ~5K tokens of static
   // rules so prompt caching saves ~$0.03/call after the first.
-  const raw = await callClaude<DraftSequences>(COPY_WRITING_PROMPT, userMessage, 'Copy Writing', 12000, {
-    model: MODEL_SONNET,
-    cacheSystemPrompt: true,
-  })
+  const raw = await callClaude<DraftSequences>(
+    COPY_WRITING_PROMPT,
+    userMessage,
+    'Copy Writing',
+    12000,
+    {
+      model: MODEL_SONNET,
+      cacheSystemPrompt: true,
+    }
+  )
 
   // Validate structure
-  if (!raw.sequences || !Array.isArray(raw.sequences) || raw.sequences.length === 0) {
+  if (
+    !raw.sequences ||
+    !Array.isArray(raw.sequences) ||
+    raw.sequences.length === 0
+  ) {
     throw new Error('Claude returned no email sequences')
   }
 
   for (const seq of raw.sequences) {
-    if (!seq.sequence_name || !Array.isArray(seq.emails) || seq.emails.length === 0) {
-      throw new Error(`Invalid sequence structure: ${seq.sequence_name || 'unnamed'}`)
+    if (
+      !seq.sequence_name ||
+      !Array.isArray(seq.emails) ||
+      seq.emails.length === 0
+    ) {
+      throw new Error(
+        `Invalid sequence structure: ${seq.sequence_name || 'unnamed'}`
+      )
     }
     for (const email of seq.emails) {
-      if (typeof email.step !== 'number' || !email.subject_line || !email.body) {
-        throw new Error(`Invalid email in sequence "${seq.sequence_name}": missing step, subject_line, or body`)
+      if (
+        typeof email.step !== 'number' ||
+        !email.subject_line ||
+        !email.body
+      ) {
+        throw new Error(
+          `Invalid email in sequence "${seq.sequence_name}": missing step, subject_line, or body`
+        )
       }
     }
   }
@@ -1074,10 +1294,18 @@ const FIX_PROMPT = `You are a cold email copy editor. The following cold email s
 
 async function autoFixSequences(
   sequences: DraftSequences,
-  issues: Array<{ sequence_index: number; email_index: number; check: string; detail: string }>
+  issues: Array<{
+    sequence_index: number
+    email_index: number
+    check: string
+    detail: string
+  }>
 ): Promise<DraftSequences> {
   const issueList = issues
-    .map((i) => `Sequence ${i.sequence_index + 1}, Email ${i.email_index + 1}: ${i.check} — ${i.detail}`)
+    .map(
+      (i) =>
+        `Sequence ${i.sequence_index + 1}, Email ${i.email_index + 1}: ${i.check} — ${i.detail}`
+    )
     .join('\n')
 
   const userMessage = [
@@ -1093,9 +1321,15 @@ async function autoFixSequences(
   // Auto-fix is a bounded edit: take existing sequences and patch the listed
   // quality issues. Haiku 4.5 handles this reliably at ~3x lower cost. The
   // FIX_PROMPT itself is small (~200 tokens) so caching is irrelevant.
-  const fixedRaw = await callClaude<DraftSequences>(FIX_PROMPT, userMessage, 'Copy Fix', 12000, {
-    model: MODEL_HAIKU,
-  })
+  const fixedRaw = await callClaude<DraftSequences>(
+    FIX_PROMPT,
+    userMessage,
+    'Copy Fix',
+    12000,
+    {
+      model: MODEL_HAIKU,
+    }
+  )
   const fixed = sanitizeSequences(fixedRaw)
 
   // Preserve metadata from original
@@ -1117,13 +1351,14 @@ function buildRegenerationMessage(
   feedback: string
 ): string {
   const qualityIssues = previousSequences.quality_check?.issues || []
-  const qualitySection = qualityIssues.length > 0
-    ? [
-        '<quality_issues_from_previous_version>',
-        qualityIssues.map((i) => `${i.check}: ${i.detail}`).join('\n'),
-        '</quality_issues_from_previous_version>',
-      ].join('\n')
-    : ''
+  const qualitySection =
+    qualityIssues.length > 0
+      ? [
+          '<quality_issues_from_previous_version>',
+          qualityIssues.map((i) => `${i.check}: ${i.detail}`).join('\n'),
+          '</quality_issues_from_previous_version>',
+        ].join('\n')
+      : ''
 
   return [
     'The previous email sequences were rejected. Generate completely new sequences that:',
@@ -1143,7 +1378,11 @@ function buildRegenerationMessage(
     JSON.stringify(previousSequences.sequences, null, 2),
     '</previous_sequences>',
     '',
-    buildCopyWritingMessage(client, icpBrief, previousSequences.angle_selection || { selected_angles: [] }),
+    buildCopyWritingMessage(
+      client,
+      icpBrief,
+      previousSequences.angle_selection || { selected_angles: [] }
+    ),
   ]
     .filter(Boolean)
     .join('\n')
@@ -1163,7 +1402,16 @@ function buildRegenerationMessage(
 export async function generateEmailSequences(
   client: OnboardingClient,
   icpBrief: EnrichedICPBrief,
-  qualityChecker?: (sequences: DraftSequences) => { passed: boolean; issues: Array<{ sequence_index: number; email_index: number; severity: string; check: string; detail: string }> }
+  qualityChecker?: (sequences: DraftSequences) => {
+    passed: boolean
+    issues: Array<{
+      sequence_index: number
+      email_index: number
+      severity: string
+      check: string
+      detail: string
+    }>
+  }
 ): Promise<DraftSequences> {
   // Call 1: Angle Selection
   const angleSelection = await selectAngles(client, icpBrief)
@@ -1176,11 +1424,16 @@ export async function generateEmailSequences(
     const firstCheck = qualityChecker(sequences)
     sequences = {
       ...sequences,
-      quality_check: { passed: firstCheck.passed, issues: firstCheck.issues as QualityIssue[] },
+      quality_check: {
+        passed: firstCheck.passed,
+        issues: firstCheck.issues as QualityIssue[],
+      },
     }
 
     if (!firstCheck.passed) {
-      const errorIssues = firstCheck.issues.filter((i) => i.severity === 'error')
+      const errorIssues = firstCheck.issues.filter(
+        (i) => i.severity === 'error'
+      )
       if (errorIssues.length > 0) {
         // Attempt auto-fix
         try {
@@ -1188,7 +1441,10 @@ export async function generateEmailSequences(
           const recheck = qualityChecker(fixed)
           sequences = {
             ...fixed,
-            quality_check: { passed: recheck.passed, issues: recheck.issues as QualityIssue[] },
+            quality_check: {
+              passed: recheck.passed,
+              issues: recheck.issues as QualityIssue[],
+            },
           }
         } catch {
           // Auto-fix failed — keep original with quality issues noted
@@ -1208,13 +1464,33 @@ export async function regenerateEmailSequences(
   icpBrief: EnrichedICPBrief,
   previousSequences: DraftSequences,
   feedback: string,
-  qualityChecker?: (sequences: DraftSequences) => { passed: boolean; issues: Array<{ sequence_index: number; email_index: number; severity: string; check: string; detail: string }> }
+  qualityChecker?: (sequences: DraftSequences) => {
+    passed: boolean
+    issues: Array<{
+      sequence_index: number
+      email_index: number
+      severity: string
+      check: string
+      detail: string
+    }>
+  }
 ): Promise<DraftSequences> {
-  const userMessage = buildRegenerationMessage(client, icpBrief, previousSequences, feedback)
-  const rawSequences = await callClaude<DraftSequences>(COPY_WRITING_PROMPT, userMessage, 'Copy Regeneration', 12000, {
-    model: MODEL_SONNET,
-    cacheSystemPrompt: true,
-  })
+  const userMessage = buildRegenerationMessage(
+    client,
+    icpBrief,
+    previousSequences,
+    feedback
+  )
+  const rawSequences = await callClaude<DraftSequences>(
+    COPY_WRITING_PROMPT,
+    userMessage,
+    'Copy Regeneration',
+    12000,
+    {
+      model: MODEL_SONNET,
+      cacheSystemPrompt: true,
+    }
+  )
 
   // Sanitize: strip em-dashes, normalize double-brace spintax, before storage.
   const cleanSequences = sanitizeSequences(rawSequences)
@@ -1230,7 +1506,10 @@ export async function regenerateEmailSequences(
     const check = qualityChecker(sequences)
     sequences = {
       ...sequences,
-      quality_check: { passed: check.passed, issues: check.issues as QualityIssue[] },
+      quality_check: {
+        passed: check.passed,
+        issues: check.issues as QualityIssue[],
+      },
     }
 
     if (!check.passed) {
@@ -1241,7 +1520,10 @@ export async function regenerateEmailSequences(
           const recheck = qualityChecker(fixed)
           sequences = {
             ...fixed,
-            quality_check: { passed: recheck.passed, issues: recheck.issues as QualityIssue[] },
+            quality_check: {
+              passed: recheck.passed,
+              issues: recheck.issues as QualityIssue[],
+            },
           }
         } catch {
           // Keep original with issues
@@ -1271,7 +1553,28 @@ export async function regenerateEmailSequences(
 //     callbacks ("as I mentioned in the last email") stay grounded.
 //   - The output schema is a SINGLE email object, not the full sequences.
 
-const SINGLE_EMAIL_REVISION_PROMPT = `You are revising ONE email in a 4-step cold sequence based on direct client feedback. The client owns the brand and gave specific notes. Your job is to revise this single email to address every note while keeping the email coherent with the rest of the sequence and obeying the V3 doctrine (no fabricated social proof, voice profile adherence, CTA ladder, per-position word caps).
+const SINGLE_EMAIL_REVISION_PROMPT = `You are revising ONE email in a 4-step cold sequence based on direct client feedback. The client owns the brand and gave specific notes. Your job is to revise this single email to address every note while keeping the email coherent with the rest of the sequence and obeying the V3 doctrine (no fabricated social proof, voice profile adherence, CTA ladder, per-position word caps, EmailBison merge tag syntax).
+
+═══ MERGE TAGS (EmailBison) ═══
+
+Use these EXACT formats — single-brace UPPER_SNAKE_CASE. EB substitutes them at send time; anything else ships as literal text.
+{FIRST_NAME}, {EMAIL}, {TITLE}, {COMPANY}, {SENDER_FIRST_NAME}, {SENDER_COMPANY}, {PROSPECT_SIGNAL}.
+NEVER write {{firstName}}, {{companyName}}, [first_name], or any other variant.
+
+═══ EMAIL-1 SKELETON (apply when revising step 1) ═══
+
+If revising step 1, the structure is:
+  Line 1: "Hi {FIRST_NAME},"
+  Line 2: Personalized opener referencing {COMPANY} / {TITLE} / {PROSPECT_SIGNAL}.
+  Line 3: Specific mention of their process + pain point it creates.
+  Line 4: One-line solution with a risk reversal (free first deliverable / no-fee asset / guaranteed outcome).
+  Line 5: Soft CTA routed by role or referencing a specific person on their team.
+  Signoff per voice profile.
+  Optional PS — ONLY if voice = founder_direct AND the PS adds real value. NO PS for agency_professional or consultant_authoritative.
+
+═══ SUBJECT LINE ═══
+
+Lowercase, 1-7 words. MUST anchor on a specific tool / role / process / observable / {COMPANY}. Abstract-noun-only subjects ("the real cost", "campaign performance q", "15 min this week") are banned — rewrite if the existing subject is abstract.
 
 YOUR HARD RULES:
 
@@ -1317,7 +1620,7 @@ The user message includes <client_feedback>. Address EVERY distinct piece of fee
 {
   "step": <number, same as the email being revised>,
   "delay_days": <number, same as before unless feedback explicitly asks to change>,
-  "subject_line": "<string. lowercase. 1-6 words. Spintax only if spintax_enabled = true.>",
+  "subject_line": "<string. lowercase. 1-7 words. MUST anchor on a specific tool / role / process / observable / {COMPANY}. Abstract-noun-only subjects banned. Spintax only if spintax_enabled = true.>",
   "preview_text": "<string, ~40 chars inbox preview>",
   "body": "<string. Word cap matches step (1=75, 2-3=60, 4=40).>",
   "word_count": <number>,
@@ -1343,12 +1646,16 @@ function buildSingleEmailRevisionMessage(args: {
   emailStep: number
   comments: OpenComment[]
 }): string {
-  const { client, icpBrief, sequences, sequenceIndex, emailStep, comments } = args
+  const { client, icpBrief, sequences, sequenceIndex, emailStep, comments } =
+    args
   const sequence = sequences.sequences[sequenceIndex]
   if (!sequence) throw new Error(`Sequence index ${sequenceIndex} out of range`)
   const emails = [...sequence.emails].sort((a, b) => a.step - b.step)
   const targetIdx = emails.findIndex((e) => e.step === emailStep)
-  if (targetIdx === -1) throw new Error(`Email step ${emailStep} not found in sequence ${sequenceIndex}`)
+  if (targetIdx === -1)
+    throw new Error(
+      `Email step ${emailStep} not found in sequence ${sequenceIndex}`
+    )
   const target = emails[targetIdx]
   const priorEmail = targetIdx > 0 ? emails[targetIdx - 1] : null
   const downstreamEmails = emails.slice(targetIdx + 1)
@@ -1364,7 +1671,10 @@ function buildSingleEmailRevisionMessage(args: {
     comments.length === 0
       ? '(No comments provided. Improve the email overall while preserving its purpose and angle.)'
       : comments
-          .map((c, i) => `${i + 1}. [${c.author_type}${c.author_name ? `: ${c.author_name}` : ''}] ${c.body}`)
+          .map(
+            (c, i) =>
+              `${i + 1}. [${c.author_type}${c.author_name ? `: ${c.author_name}` : ''}] ${c.body}`
+          )
           .join('\n')
 
   return [
@@ -1427,7 +1737,10 @@ function buildSingleEmailRevisionMessage(args: {
       ? [
           '<downstream_emails>',
           'These come AFTER the email you are revising. Stay coherent with them, do not break callbacks they make to the email you are revising.',
-          ...downstreamEmails.map((e) => `--- Step ${e.step} ---\nSubject: ${e.subject_line}\nBody:\n${e.body}`),
+          ...downstreamEmails.map(
+            (e) =>
+              `--- Step ${e.step} ---\nSubject: ${e.subject_line}\nBody:\n${e.body}`
+          ),
           '</downstream_emails>',
         ].join('\n')
       : '<downstream_emails>(none)</downstream_emails>',
@@ -1465,7 +1778,12 @@ export async function regenerateSingleEmail(args: {
   preview_text?: string
   word_count?: number
   purpose: string
-  cta_type?: 'asset_offer' | 'soft_call_mention' | 'calendar_link' | 'breakup' | 'reply_only'
+  cta_type?:
+    | 'asset_offer'
+    | 'soft_call_mention'
+    | 'calendar_link'
+    | 'breakup'
+    | 'reply_only'
   /** @deprecated V2 field. New responses use feedback_addressed in metadata. */
   why_it_works?: string
   feedback_addressed?: string
@@ -1481,7 +1799,12 @@ export async function regenerateSingleEmail(args: {
     preview_text?: string
     word_count?: number
     purpose?: string
-    cta_type?: 'asset_offer' | 'soft_call_mention' | 'calendar_link' | 'breakup' | 'reply_only'
+    cta_type?:
+      | 'asset_offer'
+      | 'soft_call_mention'
+      | 'calendar_link'
+      | 'breakup'
+      | 'reply_only'
     why_it_works?: string
     feedback_addressed?: string
     spintax_test_notes?: string
@@ -1492,7 +1815,9 @@ export async function regenerateSingleEmail(args: {
 
   // Validate
   if (typeof raw.step !== 'number' || !raw.subject_line || !raw.body) {
-    throw new Error('Single email revision response missing step, subject_line, or body')
+    throw new Error(
+      'Single email revision response missing step, subject_line, or body'
+    )
   }
   if (raw.step !== args.emailStep) {
     // Defensive, Claude must keep the same step number
@@ -1510,7 +1835,9 @@ export async function regenerateSingleEmail(args: {
     purpose: raw.purpose ? sanitizeText(raw.purpose) : '',
     cta_type: raw.cta_type,
     why_it_works: raw.why_it_works ? sanitizeText(raw.why_it_works) : undefined,
-    feedback_addressed: raw.feedback_addressed ? sanitizeText(raw.feedback_addressed) : undefined,
+    feedback_addressed: raw.feedback_addressed
+      ? sanitizeText(raw.feedback_addressed)
+      : undefined,
     spintax_test_notes: raw.spintax_test_notes,
   }
 }
