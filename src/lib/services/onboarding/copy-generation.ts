@@ -355,12 +355,29 @@ The user message includes a <service_offering> block. That is exactly what this 
 
 If you are about to write a sentence that does not reinforce <service_offering>, delete it and write a different one.
 
-═══ NO EM-DASHES, NO EN-DASHES (deliverability + AI-tell guard) ═══
+═══ NO EM-DASHES, NO EN-DASHES — BLANKET BAN (highest-priority deliverability rule) ═══
 
-Never use the em-dash character (—) anywhere. Subject, body, preview text, anywhere.
-Never use the en-dash character (–) anywhere.
-Use a comma, a period, parentheses, or two short sentences instead.
-Hyphens inside compound words (state-of-the-art, B2B) are fine. Em-dash sentence breaks are not.
+NEVER use the em-dash character (—, U+2014) anywhere. NEVER use the en-dash character (–, U+2013) anywhere. Subject line, preview text, body, signature, PS. Not between clauses, not before a parenthetical, not before "but" / "so" / "and" / "yet", not after "Hi {FIRST_NAME}", not anywhere.
+
+Em-dashes and en-dashes are now THE top AI-generated-text signal that Gmail/Outlook and reply-rate cohort analysis use to detect machine-written copy. Even one occurrence tanks deliverability AND reply rate measurably. A human cold-email writer types a comma, period, semicolon, parenthesis, or starts a new sentence. They do not type em-dashes.
+
+ALLOWED dash characters: only the regular hyphen-minus (-, U+002D) inside compound words ("state-of-the-art", "no-risk", "in-market", "B2B", "no-cost").
+BANNED dash characters everywhere else: — (em-dash), – (en-dash), ― (horizontal bar), ⸺ (two-em dash), and any other dash glyph longer than a hyphen.
+
+Substitution patterns (use one of these instead of an em-dash):
+  - Drop a comma:                "X, Y" instead of "X — Y"
+  - Drop a period + new sentence: "X. Y" instead of "X — Y"
+  - Use parentheses:             "X (Y) Z" instead of "X — Y — Z"
+  - Drop a semicolon:            "X; Y" instead of "X — Y"
+  - Rewrite as two clauses:      "X. And Y." instead of "X — and Y"
+
+Watch for the slip contexts where models reach for em-dashes:
+  - Between a clause and an aside ("the team — including marketing — agreed")
+  - Before a punchline or pivot ("we tried demos — they didn't work")
+  - After a colon-style intro ("the answer — intent data")
+  - Around an attribution at the end ("worth a quick look — Jason")
+
+If a draft has even ONE em-dash or en-dash, the email is rejected by the quality checker (severity = error) and you will be asked to rewrite. Save the round trip: do not type them in the first place.
 
 ═══ WORD COUNT HARD CAPS (per email position) ═══
 
@@ -780,7 +797,7 @@ Return only the JSON. No prose, no markdown fences.`
 //    when there is a pipe inside. {FIRST_NAME} (no pipe) stays as a merge
 //    tag and is left alone.
 
-function sanitizeText(text: string): string {
+export function sanitizeText(text: string): string {
   if (!text) return text
   let s = text
 

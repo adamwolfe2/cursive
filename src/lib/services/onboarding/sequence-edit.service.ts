@@ -26,6 +26,7 @@
 
 import { createAdminClient } from '@/lib/supabase/server'
 import { checkCopyQuality } from '@/lib/services/onboarding/copy-quality-check'
+import { sanitizeText } from '@/lib/services/onboarding/copy-generation'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import type {
   OnboardingClient,
@@ -118,6 +119,14 @@ export async function saveSequenceEdit(
     }
   }
 
+  // Sanitize before save. The autosave path (admin SequenceReview, client
+  // portal Edit tab) is the only write that bypasses the LLM's normal
+  // sanitizer pass, so any em-dash or en-dash auto-corrected by a word
+  // processor on paste would otherwise persist. sanitizeText also
+  // normalizes double-brace spintax {{a|b|c}} -> {a|b|c} and collapses
+  // stray whitespace/comma runs created by the dash replacements.
+  const cleanValue = sanitizeText(value)
+
   const supabase = createAdminClient()
 
   // Load the client. We fetch only what we need to make the lock + merge
@@ -207,8 +216,8 @@ export async function saveSequenceEdit(
   const targetEmail = sequence.emails[emailIdx]
   const prevValue = (targetEmail[field] ?? '') as string
 
-  // No-op short-circuit: identical value, skip the DB roundtrip + audit row.
-  if (prevValue === value) {
+  // No-op short-circuit: identical value (post-sanitize), skip DB + audit.
+  if (prevValue === cleanValue) {
     return {
       ok: true,
       draft_sequences: current,
@@ -217,7 +226,9 @@ export async function saveSequenceEdit(
     }
   }
 
-  // Deep-merge immutably (never mutate the loaded object).
+  // Deep-merge immutably (never mutate the loaded object). Use cleanValue
+  // so the persisted JSON is em-dash/en-dash free and double-brace spintax
+  // is normalized to single-brace.
   const nextSequences: DraftSequences = {
     ...current,
     sequences: current.sequences.map((seq, sIdx) => {
@@ -226,7 +237,7 @@ export async function saveSequenceEdit(
         ...seq,
         emails: seq.emails.map((email, eIdx) => {
           if (eIdx !== emailIdx) return email
-          return { ...email, [field]: value }
+          return { ...email, [field]: cleanValue }
         }),
       }
     }),
@@ -302,7 +313,7 @@ export async function saveSequenceEdit(
       email_step: emailStep,
       field,
       prev_value: prevValue,
-      next_value: value,
+      next_value: cleanValue,
     })
   } catch (auditErr) {
     safeError('[sequence-edit] audit insert failed (non-fatal)', auditErr)
