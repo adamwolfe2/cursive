@@ -299,12 +299,27 @@ async function bisonFetch<T = any>(
 
   if (!response.ok) {
     const errorBody = await response.json().catch(() => ({}))
-    throw new EmailBisonApiError(
-      ((errorBody as Record<string, unknown>).message as string) ||
-        `EmailBison API error: ${response.status} ${response.statusText}`,
-      response.status,
-      errorBody
-    )
+    // EB wraps validation failures inside the Laravel envelope:
+    //   { data: { success: false, message: "field X is required", errors: {...} } }
+    // Look in BOTH the top-level message and the envelope's message so the
+    // admin UI shows "field foo must be at least 1" instead of the generic
+    // "EmailBison API error: 422 Unprocessable Content".
+    const top = errorBody as Record<string, unknown>
+    const envelope = (top?.data ?? {}) as Record<string, unknown>
+    const validationErrors = envelope?.errors as
+      | Record<string, string[]>
+      | undefined
+    const fieldDetail = validationErrors
+      ? Object.entries(validationErrors)
+          .map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join('; ') : v}`)
+          .join(' | ')
+      : ''
+    const message =
+      (top?.message as string | undefined) ||
+      (envelope?.message as string | undefined) ||
+      `EmailBison API error: ${response.status} ${response.statusText}`
+    const fullMessage = fieldDetail ? `${message} (${fieldDetail})` : message
+    throw new EmailBisonApiError(fullMessage, response.status, errorBody)
   }
 
   // Handle 204 No Content
@@ -464,7 +479,17 @@ export async function addSequenceStep(
           // EB stores body as HTML — preserve paragraph breaks by mapping \n -> <br>.
           // Existing <br> in the source (e.g. already-HTML drafts) pass through.
           email_body: step.body.replace(/\r?\n/g, '<br>'),
-          wait_in_days: step.wait_days ?? 1,
+          // EB validation: wait_in_days must be >= 1, including for step 1.
+          // Our V3 doctrine uses delay_days=0 for step 1 ("send on day 0 of
+          // the campaign"); EB interprets wait_in_days as "days to wait
+          // before sending this step" with a 1-day minimum. Clamp upward to
+          // 1 so step 1's "Day 0" semantically becomes "next business day"
+          // in EB. Steps 2-4 (delay_days >= 2) are unaffected.
+          //
+          // Live-probed: passing 0 returns 422 "The sequence_steps.0
+          // .wait_in_days field must be at least 1." — that was the push
+          // failure on JustSearched.
+          wait_in_days: Math.max(1, step.wait_days ?? 1),
         },
       ],
     }),
