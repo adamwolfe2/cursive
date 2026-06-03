@@ -596,14 +596,15 @@ function checkPsychologicalPrinciples(
     hasSpecificNumbers: /\$[\d,]+|\d+%|\d+x/i.test(body),
     hasOffer: /free|no cost|no charge|guarantee|at no/i.test(body),
     hasCta: /\?|reply|call|chat|ring|send/i.test(body),
-    // Accept either EB-native ({FIRST_NAME}, {COMPANY}, {TITLE}, {PROSPECT_SIGNAL})
-    // or legacy double-brace ({{firstName}}, {{companyName}}) as evidence of
+    // Accept EB-native ({FIRST_NAME}, {COMPANY}, {TITLE}, {EMAIL}) or legacy
+    // double-brace ({{firstName}}, {{companyName}}) as evidence of
     // personalization. The LLM is now instructed to use EB-native; legacy is
-    // kept for historical drafts that haven't been regenerated.
+    // kept for historical drafts. {PROSPECT_SIGNAL} / other invented tags
+    // are NOT a personalization signal — they ship as literal text since the
+    // lead-upload pipeline doesn't populate them.
     hasPersonalization:
-      /\{(FIRST_NAME|LAST_NAME|EMAIL|TITLE|COMPANY|PROSPECT_SIGNAL)\}/.test(
-        body
-      ) || /\{\{firstName\}\}|\{\{companyName\}\}/i.test(body),
+      /\{(FIRST_NAME|LAST_NAME|EMAIL|TITLE|COMPANY)\}/.test(body) ||
+      /\{\{firstName\}\}|\{\{companyName\}\}/i.test(body),
     highTrust: context.highTrust,
     knownCaseStudyClients: context.knownCaseStudyClients,
   })

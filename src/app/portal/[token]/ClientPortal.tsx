@@ -40,14 +40,12 @@ const MERGE_TAG_PLACEHOLDERS: Record<string, string> = {
   '{COMPANY}': 'AcmeTech',
   '{SENDER_FIRST_NAME}': 'Jason',
   '{SENDER_LAST_NAME}': 'Smith',
-  '{SENDER_COMPANY}': 'JustSearched',
-  '{PROSPECT_SIGNAL}': 'your Series A announcement last week',
+  '{SENDER_COMPANY}': 'YourCompany',
   // Legacy double-brace camelCase (pre-fix drafts)
   '{{firstName}}': 'Sarah',
   '{{lastName}}': 'Chen',
   '{{companyName}}': 'AcmeTech',
   '{{title}}': 'VP Marketing',
-  '{{prospectSignal}}': 'your Series A announcement last week',
 }
 
 // EB merge tags are UPPER_SNAKE_CASE inside single braces and never contain a

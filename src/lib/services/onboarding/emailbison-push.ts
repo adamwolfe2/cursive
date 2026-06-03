@@ -5,7 +5,6 @@
 import {
   createCampaign,
   addSequenceStep,
-  updateCampaignSettings,
   listSenderEmails,
   addSenderEmailsToCampaign,
   createCampaignSchedule,
@@ -56,10 +55,22 @@ export interface CampaignResult {
  *
  * Returns campaign IDs for storage on the client record.
  */
-export async function pushCopyToEmailBison(params: PushParams): Promise<PushResult> {
-  const { clientName, sequences, workspaceId, ebWorkspaceId, dryRun = false } = params
+export async function pushCopyToEmailBison(
+  params: PushParams
+): Promise<PushResult> {
+  const {
+    clientName,
+    sequences,
+    workspaceId,
+    ebWorkspaceId,
+    dryRun = false,
+  } = params
 
-  if (!sequences || !Array.isArray(sequences.sequences) || sequences.sequences.length === 0) {
+  if (
+    !sequences ||
+    !Array.isArray(sequences.sequences) ||
+    sequences.sequences.length === 0
+  ) {
     throw new Error('Invalid draft_sequences: missing or empty sequences array')
   }
 
@@ -101,7 +112,9 @@ export async function pushCopyToEmailBison(params: PushParams): Promise<PushResu
     try {
       await params.onCampaignCreated?.(result)
     } catch (cbErr) {
-      safeError(`[EmailBison Push] onCampaignCreated callback failed (continuing): ${getErrorMessage(cbErr)}`)
+      safeError(
+        `[EmailBison Push] onCampaignCreated callback failed (continuing): ${getErrorMessage(cbErr)}`
+      )
     }
 
     // Rate limit between campaign creations
@@ -125,7 +138,9 @@ async function pushSingleSequence(params: {
   const { clientName, sequence, dateStr, workspaceId, ebWorkspaceId } = params
 
   if (!Array.isArray(sequence.emails) || sequence.emails.length === 0) {
-    throw new Error(`Invalid sequence "${sequence.sequence_name}": missing or empty emails array`)
+    throw new Error(
+      `Invalid sequence "${sequence.sequence_name}": missing or empty emails array`
+    )
   }
 
   // Prefix with workspace ID so all campaigns can be attributed back to their
@@ -135,44 +150,54 @@ async function pushSingleSequence(params: {
   // 1. Create campaign in the target EB workspace
   const { campaign_id } = await createCampaign(campaignName, ebWorkspaceId)
 
-  // 2. Add sequence steps with spintax variants
+  // 2. Add sequence steps (one EB sequence-step per email position).
+  //    Subject A/B variants are NOT shipped today — EB's variant primitive
+  //    is a separate API surface that creates sibling sequence-steps under
+  //    a primary, which we haven't fully modelled yet. Only the primary
+  //    (first expanded) subject ships per email position. Spintax in the
+  //    body still ships inline; EB's renderer expands it at send time.
+  //    TODO: full variant support — see emailbison.ts addSequenceStep notes.
   let totalSteps = 0
   let totalVariants = 0
 
   const sortedEmails = [...sequence.emails].sort((a, b) => a.step - b.step)
 
   for (const email of sortedEmails) {
-    const { steps, variants } = await addEmailWithVariants(campaign_id, email, ebWorkspaceId)
+    const { steps, variants } = await addEmailWithVariants(
+      campaign_id,
+      email,
+      ebWorkspaceId
+    )
     totalSteps += steps
     totalVariants += variants
     await delay(200)
   }
 
-  // 3. Configure sensible defaults for cold email
-  await updateCampaignSettings(campaign_id, {
-    max_emails_per_day: 100,
-    max_new_leads_per_day: 50,
-    plain_text: true,
-    open_tracking: false,
-    reputation_building: true,
-  }, ebWorkspaceId)
+  // 3. Campaign settings update is currently a no-op — see
+  //    updateCampaignSettings JSDoc. EB has no working endpoint to update
+  //    send caps / plain_text / open_tracking on existing campaigns; defaults
+  //    apply (max_emails_per_day: 1000). Tune in EB UI per campaign for now.
 
   // 4. Attach connected sender emails scoped to the EB workspace (non-fatal)
   await attachSenderEmails(campaign_id, ebWorkspaceId)
 
   // 5. Apply weekday business-hours schedule
-  await createCampaignSchedule(campaign_id, {
-    monday: true,
-    tuesday: true,
-    wednesday: true,
-    thursday: true,
-    friday: true,
-    saturday: false,
-    sunday: false,
-    start_hour: 8,
-    end_hour: 17,
-    timezone: 'America/New_York',
-  }, ebWorkspaceId)
+  await createCampaignSchedule(
+    campaign_id,
+    {
+      monday: true,
+      tuesday: true,
+      wednesday: true,
+      thursday: true,
+      friday: true,
+      saturday: false,
+      sunday: false,
+      start_hour: 8,
+      end_hour: 17,
+      timezone: 'America/New_York',
+    },
+    ebWorkspaceId
+  )
 
   return {
     campaignId: campaign_id,
@@ -197,34 +222,38 @@ async function pushSingleSequence(params: {
  */
 async function addEmailWithVariants(
   campaignId: string,
-  email: { step: number; delay_days: number; subject_line: string; body: string },
+  email: {
+    step: number
+    delay_days: number
+    subject_line: string
+    body: string
+  },
   ebWorkspaceId?: number
 ): Promise<{ steps: number; variants: number }> {
+  // Pick the primary subject (first deterministic expansion of spintax).
+  // EB's variant API is a separate primitive we don't fully model yet, so
+  // we ship one subject per email position for today's launch. Body spintax
+  // still ships inline; EB's renderer expands it per-send.
+  // TODO: when EB variant support lands, expand to all uniqueSubjects up
+  // to MAX_VARIANTS and POST each as a variant of the primary step id.
   const subjectVariants = expandSpintax(email.subject_line)
+  const primarySubject = subjectVariants[0] ?? email.subject_line
+  const uniqueSubjectCount = new Set(subjectVariants).size
 
-  // Deduplicate in case spintax expansion produces identical subjects
-  const uniqueSubjects = [...new Set(subjectVariants)]
-
-  // Cap variants to avoid API overload
-  const MAX_VARIANTS = 5
-  const subjectsToUse = uniqueSubjects.slice(0, MAX_VARIANTS)
-
-  let stepsAdded = 0
-
-  for (const subject of subjectsToUse) {
-    await addSequenceStep(campaignId, {
+  await addSequenceStep(
+    campaignId,
+    {
       step_number: email.step,
-      subject,
+      subject: primarySubject,
       body: email.body,
       wait_days: email.delay_days,
-    }, ebWorkspaceId)
-    stepsAdded++
-    await delay(200)
-  }
+    },
+    ebWorkspaceId
+  )
 
   return {
-    steps: stepsAdded,
-    variants: subjectsToUse.length,
+    steps: 1,
+    variants: uniqueSubjectCount,
   }
 }
 
@@ -243,24 +272,36 @@ async function addEmailWithVariants(
  * safe fallback because attaching all senders would leak other clients' sending
  * identities.
  */
-async function attachSenderEmails(campaignId: string, ebWorkspaceId?: number): Promise<void> {
+async function attachSenderEmails(
+  campaignId: string,
+  ebWorkspaceId?: number
+): Promise<void> {
   if (!ebWorkspaceId) {
-    safeError('[EmailBison Push] No eb_workspace_id set; skipping sender attachment. Admin must attach senders manually in EmailBison.')
+    safeError(
+      '[EmailBison Push] No eb_workspace_id set; skipping sender attachment. Admin must attach senders manually in EmailBison.'
+    )
     return
   }
 
   try {
-    const { sender_emails } = await listSenderEmails({ status: 'connected' }, ebWorkspaceId)
+    const { sender_emails } = await listSenderEmails(
+      { status: 'connected' },
+      ebWorkspaceId
+    )
 
     if (!sender_emails || sender_emails.length === 0) {
-      safeError(`[EmailBison Push] No connected senders in EB workspace ${ebWorkspaceId}; campaign will have zero senders. Go to EmailBison UI to connect sender accounts.`)
+      safeError(
+        `[EmailBison Push] No connected senders in EB workspace ${ebWorkspaceId}; campaign will have zero senders. Go to EmailBison UI to connect sender accounts.`
+      )
       return
     }
 
     const senderIds = sender_emails.map((s) => s.id)
     await addSenderEmailsToCampaign(campaignId, senderIds, ebWorkspaceId)
   } catch (error: unknown) {
-    safeError(`[EmailBison Push] Could not attach sender emails for EB workspace ${ebWorkspaceId}: ${getErrorMessage(error)}`)
+    safeError(
+      `[EmailBison Push] Could not attach sender emails for EB workspace ${ebWorkspaceId}: ${getErrorMessage(error)}`
+    )
   }
 }
 

@@ -380,18 +380,31 @@ export async function getCampaign(
 }
 
 /**
- * Update campaign settings
+ * Update campaign settings.
+ *
+ * STATUS (2026-06): no EmailBison endpoint accepts post-create updates to
+ * max_emails_per_day, plain_text, open_tracking, etc. on outbound campaigns.
+ * Live-probed:
+ *   - PATCH /api/campaigns/{id}              → 405 Method Not Allowed
+ *   - PUT   /api/campaigns/{id}              → 405 Method Not Allowed
+ *   - POST  /api/campaigns/{id}              → 405 Method Not Allowed
+ *   - POST  /api/campaigns/{id}/settings     → route not found
+ *   - POST  /api/campaigns/{id}/update       → 405 Method Not Allowed
+ * EB also ignores these fields on POST /api/campaigns (create) — created
+ * campaigns come back with defaults (max_emails_per_day: 1000) regardless
+ * of what the caller sends.
+ *
+ * Until EB exposes the right endpoint, this function is a no-op and the
+ * caller's defaults (typically max_emails_per_day: 100) cannot be applied.
+ * Adjust send caps directly in the EmailBison UI per campaign for now.
  */
 export async function updateCampaignSettings(
-  campaignId: string,
-  settings: CampaignSettings,
-  ebWorkspaceId?: number
+  _campaignId: string,
+  _settings: CampaignSettings,
+  _ebWorkspaceId?: number
 ): Promise<void> {
-  await bisonFetch(`/api/campaigns/${campaignId}`, {
-    method: 'PATCH',
-    body: JSON.stringify(settings),
-    ebWorkspaceId,
-  })
+  // Intentionally a no-op. See JSDoc.
+  return
 }
 
 /**
@@ -414,9 +427,22 @@ export async function pauseCampaign(
 /**
  * Add a sequence step (email) to a campaign.
  *
- * Endpoint: POST /api/campaigns/sequence-steps (campaign_id in body).
- * EB wraps the created step in `{ data: { id, ... } }`; we unwrap to keep
- * the documented `step_id` shape.
+ * Endpoint: POST /api/campaigns/{campaign_id}/sequence-steps.
+ * Body schema (live-verified 2026-06):
+ *   {
+ *     title: string,                  // step container title, e.g. "Step 1"
+ *     sequence_steps: [{
+ *       email_subject: string,
+ *       email_body: string,           // EB stores body as HTML; convert \n -> <br>
+ *       wait_in_days: number,
+ *     }]
+ *   }
+ * Response wraps the created sequence in `{ data: { id, sequence_steps:[...] } }`.
+ *
+ * NOTE: a previous version of this client posted to /api/campaigns/sequence-steps
+ * (no campaign_id in path) with a flat {campaign_id, subject, body, wait_days}
+ * body. That endpoint returned 405 Method Not Allowed; every push silently
+ * failed at this call. Live-probed correct endpoint + schema and fixed here.
  */
 export async function addSequenceStep(
   campaignId: string,
@@ -424,22 +450,36 @@ export async function addSequenceStep(
   ebWorkspaceId?: number
 ): Promise<{ step_id: string }> {
   const raw = await bisonFetch<{
-    data?: Record<string, unknown>
-    id?: unknown
-    step_id?: unknown
-  }>('/api/campaigns/sequence-steps', {
+    data?: {
+      id?: unknown
+      sequence_steps?: Array<Record<string, unknown>>
+    }
+  }>(`/api/campaigns/${campaignId}/sequence-steps`, {
     method: 'POST',
     body: JSON.stringify({
-      campaign_id: campaignId,
-      subject: step.subject,
-      body: step.body,
-      wait_days: step.wait_days || 1,
+      title: `Step ${step.step_number}`,
+      sequence_steps: [
+        {
+          email_subject: step.subject,
+          // EB stores body as HTML — preserve paragraph breaks by mapping \n -> <br>.
+          // Existing <br> in the source (e.g. already-HTML drafts) pass through.
+          email_body: step.body.replace(/\r?\n/g, '<br>'),
+          wait_in_days: step.wait_days ?? 1,
+        },
+      ],
     }),
     ebWorkspaceId,
   })
-  const payload = (raw?.data ?? raw) as Record<string, unknown>
-  const id = payload?.id ?? payload?.step_id
-  return { step_id: id !== undefined && id !== null ? String(id) : '' }
+  // EB returns the sequence container with id, plus the inner step id.
+  // Use the inner step id since that's what addressable for variants later.
+  const steps = raw?.data?.sequence_steps ?? []
+  const firstStepId = steps[0]?.id ?? raw?.data?.id
+  return {
+    step_id:
+      firstStepId !== undefined && firstStepId !== null
+        ? String(firstStepId)
+        : '',
+  }
 }
 
 /**
@@ -763,16 +803,40 @@ export async function applyScheduleTemplate(
 }
 
 /**
- * Create a custom schedule for a campaign
+ * Create a custom schedule for a campaign.
+ *
+ * Live-verified 2026-06: EB requires the day flags (monday..sunday) plus
+ * `start_time` / `end_time` as HH:MM strings (NOT `start_hour` / `end_hour`
+ * integers) and a `save_as_template` boolean. The legacy hour-integer
+ * schema returned 200 with `success: false` and an error map — looked
+ * like a successful POST but the schedule was never created.
+ *
+ * The CampaignSchedule TS interface still uses start_hour/end_hour for
+ * back-compat with internal callers; we translate to EB's wire format here.
  */
 export async function createCampaignSchedule(
   campaignId: string,
   schedule: CampaignSchedule,
   ebWorkspaceId?: number
 ): Promise<void> {
+  const pad = (n: number) =>
+    String(Math.max(0, Math.min(23, Math.floor(n)))).padStart(2, '0')
+  const wirePayload = {
+    monday: schedule.monday,
+    tuesday: schedule.tuesday,
+    wednesday: schedule.wednesday,
+    thursday: schedule.thursday,
+    friday: schedule.friday,
+    saturday: schedule.saturday,
+    sunday: schedule.sunday,
+    start_time: `${pad(schedule.start_hour)}:00`,
+    end_time: `${pad(schedule.end_hour)}:00`,
+    timezone: schedule.timezone,
+    save_as_template: false,
+  }
   await bisonFetch(`/api/campaigns/${campaignId}/schedule`, {
     method: 'POST',
-    body: JSON.stringify(schedule),
+    body: JSON.stringify(wirePayload),
     ebWorkspaceId,
   })
 }

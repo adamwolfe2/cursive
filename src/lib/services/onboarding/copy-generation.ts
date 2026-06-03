@@ -313,9 +313,8 @@ These are EmailBison's native variables. Single braces. UPPER_SNAKE_CASE. They g
 - {COMPANY}             — recipient's company (already casualized: no Inc/LLC)
 - {SENDER_FIRST_NAME}   — your sender's first name (use in signoffs)
 - {SENDER_COMPANY}      — your company (use in signature line, NEVER in subject)
-- {PROSPECT_SIGNAL}     — per-prospect detail from enrichment (recent funding, hire, post, etc.) — only use if the user message's <prospect_signal_template> exists
 
-NEVER write {FIRST_NAME}, {COMPANY}, {TITLE}, [first_name], <FIRST_NAME>, or any other format. ONLY the single-brace UPPER_SNAKE_CASE forms above.
+That's the full list of substitutable variables. NEVER write {{firstName}}, {{companyName}}, {{title}}, [first_name], <FIRST_NAME>, or any other format. NEVER invent custom merge tags ({PROSPECT_SIGNAL}, {TEAMMATE_NAME}, {RECENT_FUNDING}, {INDUSTRY}, etc.) — if a variable is not in the list above, the lead-upload pipeline does NOT populate it and it will ship as literal text in the recipient's inbox. When you need a per-prospect detail beyond the six variables above, write it as plain prose (an archetype observation that reads natural for the ICP) — DO NOT invent a merge tag for it.
 
 The recipient's company name appears in subject lines ONLY as a recognizable detail when it strengthens the hook — and always lowercased (e.g., "the {COMPANY} stack situation" not "Re: COMPANY Inc."). Otherwise keep {COMPANY} out of subjects (deliverability).
 
@@ -349,7 +348,7 @@ Hyphens inside compound words (state-of-the-art, B2B) are fine. Em-dash sentence
 
 ═══ WORD COUNT HARD CAPS (per email position) ═══
 
-These are HARD limits, not suggestions. Count words after stripping merge tags ({FIRST_NAME}, {COMPANY}, {TITLE}, {SENDER_FIRST_NAME}, {SENDER_COMPANY}, {PROSPECT_SIGNAL}).
+These are HARD limits, not suggestions. Count words after stripping merge tags ({FIRST_NAME}, {COMPANY}, {TITLE}, {SENDER_FIRST_NAME}, {SENDER_COMPANY}).
 
 - Email 1 (the hook): max 75 words
 - Emails 2-3 (proof / shift): max 60 words
@@ -393,10 +392,10 @@ consultant_authoritative:
 
 ═══ SIGNAL-ANCHORED OPENERS (email 1) ═══
 
-The user message MAY include <prospect_signal_template> — a description of what real signals look like for this ICP (e.g., "recent funding round", "key hire", "published essay"). The actual per-prospect signal is enriched at send time.
+The user message MAY include <prospect_signal_template> — a description of what real signals look like for this ICP (e.g., "recent funding round", "key hire", "published essay"). This is INFORMATIONAL ONLY: it tells you what archetype of detail to write toward, but there is NO {PROSPECT_SIGNAL} merge tag — the lead-upload pipeline doesn't populate one. Write the archetype observation in plain prose.
 
 When writing email 1:
-- If <prospect_signal_template> is provided, structure the opener so a per-prospect detail can be inserted as the first observation. Use the merge tag {PROSPECT_SIGNAL} where the per-prospect detail will go.
+- If <prospect_signal_template> is provided, write the opener as if it could plausibly apply to a real per-prospect signal in that archetype. Use cold-read language that reads natural for the archetype, NOT a merge tag.
 - If no template is provided, write the strongest cold-read observation for this ICP (a statement that applies to 80%+ of the audience but reads like it was written just for them).
 - The opener must feel like it could only have been written for this specific person. Generic openers ("Hope you're well", "Just reaching out") are banned.
 
@@ -407,7 +406,7 @@ The user message includes <spintax_config> with spintax_enabled ∈ {true, false
 When spintax_enabled = false (DEFAULT for high-AOV / precision):
 - Write ONE strong version of every line. No {a|b|c} syntax anywhere.
 - Subject line: one version, lowercase, 1-6 words.
-- Body: plain text. Merge tags ({FIRST_NAME}, {COMPANY}, {PROSPECT_SIGNAL}) are still allowed, but no spintax pipes.
+- Body: plain text. Merge tags ({FIRST_NAME}, {COMPANY}, {TITLE}, {SENDER_FIRST_NAME}, {SENDER_COMPANY}) are still allowed, but no spintax pipes.
 - Rationale: for high-trust offers, ONE precisely-crafted opener beats 3 mediocre variants.
 
 When spintax_enabled = true (volume outbound, low/mid AOV):
@@ -422,7 +421,7 @@ When spintax_enabled = true (volume outbound, low/mid AOV):
 - Email 1: greeting on line 1 ("Hi {FIRST_NAME},"). The hook is line 2. See EMAIL-1 SKELETON above.
 - Emails 2-3 (same-thread proof + shift): may omit the greeting and open straight into the new value. If used, only "{FIRST_NAME}," (no "Hi").
 - Email 4 (breakup): may start with "{FIRST_NAME}," — kept tight.
-- Use the EmailBison merge tags ({FIRST_NAME}, {COMPANY}, {TITLE}, {SENDER_FIRST_NAME}, {SENDER_COMPANY}, {PROSPECT_SIGNAL}) only where they read naturally. Never invent other tags.
+- Use the EmailBison merge tags ({FIRST_NAME}, {EMAIL}, {TITLE}, {COMPANY}, {SENDER_FIRST_NAME}, {SENDER_COMPANY}) only where they read naturally. Never invent other tags — anything else ships as literal text.
 - Plain text only. No HTML, no images.
 - Max one exclamation mark in the entire body, and only if it reads naturally.
 - No ALL CAPS except acronyms (CEO, SaaS, ROI, B2B, AI).
@@ -499,9 +498,9 @@ Email 1 follows this exact 6-7 line skeleton. Every line earns its place. No ski
     "Hi {FIRST_NAME},"
     (Yes, use the greeting on line 1. It's the highest-trust opener we've measured. The hook is on line 2.)
 
-  Line 2 — Personalized opener referencing their company / role / signal:
+  Line 2 — Personalized opener referencing their company / role / archetype:
     Anchor on something specific you can plausibly know about {COMPANY} or the {TITLE} archetype.
-    If <prospect_signal_template> is provided, lead with {PROSPECT_SIGNAL}.
+    If <prospect_signal_template> is provided, write a plain-prose observation in that archetype (e.g., for "recent funding round": "Saw {COMPANY} just closed a round"). Do NOT use a merge tag for the signal — no such variable is populated.
     Cold reads OK but they must read like they could only have been written for this person.
     BAD: "Hope you're doing well." "Saw what you're building."
     GOOD: "Saw {COMPANY} is hiring two BDRs right now." "Most paid social leads at {COMPANY}-sized agencies come from one channel and dry up the moment it shifts."
@@ -557,7 +556,7 @@ Every subject MUST anchor on at least one of:
   - A specific tool / channel / platform the prospect plausibly uses ("the meta ads situation", "kustomer + intercom?")
   - The prospect's specific role or title ("question for a {TITLE}")
   - A specific motion / process they own ("how you're sourcing for {COMPANY}")
-  - A recognizable observable ({PROSPECT_SIGNAL} when available, or a known archetype detail)
+  - A recognizable observable from the ICP archetype (written as plain prose, no merge tag)
   - {COMPANY} itself, lowercased, when it strengthens the hook (only sparingly — deliverability)
 
 ABSTRACT-NOUN-ONLY subjects are BANNED. If your subject contains nothing more specific than a generic noun + adjective, rewrite it.
@@ -632,7 +631,7 @@ SUBJECT: adaptive's launch film vs the demo loop
 BODY:
 Hi {FIRST_NAME},
 
-Congrats on {PROSPECT_SIGNAL} — the 90 days right after a round are usually the only window where your launch narrative gets to define how the market remembers {COMPANY}.
+Saw {COMPANY} announced funding recently. The 90 days right after a round are usually the only window where your launch narrative gets to define how the market remembers {COMPANY}.
 
 Most teams at your stage default to the talking-head product walkthrough on the homepage. Adaptive bet on a launch film instead and hit 1.2M views with revenue doubling that quarter.
 
@@ -644,7 +643,7 @@ Worth a look with whoever owns first-impression at {COMPANY}?
 
 PS — happy to share the brief even if a call doesn't make sense; the structure transfers.
 
-(73 words. Greeting on line 1. Signal-anchored opener. Specific process (talking-head walkthrough) + cost. Risk reversal: free cut + brief, no obligation. Soft CTA routes by role. Founder-direct PS is value-add, no humor. Case study from <case_studies> only.)
+(73 words. Greeting on line 1. Plain-prose signal opener (no merge tag for the funding signal — we use the archetype as prose). Specific process (talking-head walkthrough) + cost. Risk reversal: free cut + brief, no obligation. Soft CTA routes by role. Founder-direct PS is value-add, no humor. Case study from <case_studies> only.)
 
 EMAIL 2 (cta_type = soft_call_mention, max 60 words):
 SUBJECT: what made adaptive land
@@ -1202,8 +1201,8 @@ function buildCopyWritingMessage(
     '</target_prospects>',
     '',
     client.prospect_signal_template
-      ? `<prospect_signal_template>\n${client.prospect_signal_template}\n\nWhen writing email 1, structure the opener so a per-prospect signal can be inserted. Use the merge tag {PROSPECT_SIGNAL} where the per-prospect detail will go (this gets enriched at send time).\n</prospect_signal_template>`
-      : '<prospect_signal_template>(none provided — use cold-read observations for this ICP)</prospect_signal_template>',
+      ? `<prospect_signal_template>\n${client.prospect_signal_template}\n\nWrite the email-1 opener as plain prose in this archetype (e.g. "Saw {COMPANY} closed a round" or "Saw your hiring spike on Linkedin"). DO NOT use a merge tag for the signal — the lead-upload pipeline does not populate one. The archetype tells you the SHAPE of the observation, not a tag to insert.\n</prospect_signal_template>`
+      : '<prospect_signal_template>(none provided — use cold-read observations for this ICP, written as plain prose)</prospect_signal_template>',
     '',
     buildCopyResearchContext(icpBrief),
     '',
@@ -1214,7 +1213,7 @@ function buildCopyWritingMessage(
     '<campaign_config>',
     `Primary CTA preference: ${client.primary_cta || '(use CTA ladder default for the AOV tier)'}`,
     `Words to avoid: ${wordsToAvoid}`,
-    'Available personalization variables (EmailBison native merge tags — single-brace UPPER_SNAKE_CASE only): {FIRST_NAME}, {EMAIL}, {TITLE}, {COMPANY}, {SENDER_FIRST_NAME}, {SENDER_COMPANY}, {PROSPECT_SIGNAL}. NEVER use {{firstName}}, {{companyName}}, [first_name], or any other format — EB will not substitute and your variable will ship as literal text.',
+    'Available personalization variables (EmailBison native merge tags — single-brace UPPER_SNAKE_CASE only): {FIRST_NAME}, {EMAIL}, {TITLE}, {COMPANY}, {SENDER_FIRST_NAME}, {SENDER_COMPANY}. That is the FULL list. NEVER invent additional tags ({PROSPECT_SIGNAL}, {TEAMMATE_NAME}, {INDUSTRY}, {FUNDING}, etc.) — the lead-upload pipeline does not populate them and they ship as literal text. Anything beyond the six tags above must be written as plain prose.',
     '</campaign_config>',
     '',
     `Compliance notes: ${client.compliance_disclaimers || 'Standard CAN-SPAM compliance'}`,
@@ -1558,14 +1557,14 @@ const SINGLE_EMAIL_REVISION_PROMPT = `You are revising ONE email in a 4-step col
 ═══ MERGE TAGS (EmailBison) ═══
 
 Use these EXACT formats — single-brace UPPER_SNAKE_CASE. EB substitutes them at send time; anything else ships as literal text.
-{FIRST_NAME}, {EMAIL}, {TITLE}, {COMPANY}, {SENDER_FIRST_NAME}, {SENDER_COMPANY}, {PROSPECT_SIGNAL}.
-NEVER write {{firstName}}, {{companyName}}, [first_name], or any other variant.
+{FIRST_NAME}, {EMAIL}, {TITLE}, {COMPANY}, {SENDER_FIRST_NAME}, {SENDER_COMPANY}.
+NEVER write {{firstName}}, {{companyName}}, [first_name], or any other variant. NEVER invent custom tags ({PROSPECT_SIGNAL}, {TEAMMATE_NAME}, etc.) — they're not populated.
 
 ═══ EMAIL-1 SKELETON (apply when revising step 1) ═══
 
 If revising step 1, the structure is:
   Line 1: "Hi {FIRST_NAME},"
-  Line 2: Personalized opener referencing {COMPANY} / {TITLE} / {PROSPECT_SIGNAL}.
+  Line 2: Personalized opener referencing {COMPANY} / {TITLE} / archetype observation as plain prose.
   Line 3: Specific mention of their process + pain point it creates.
   Line 4: One-line solution with a risk reversal (free first deliverable / no-fee asset / guaranteed outcome).
   Line 5: Soft CTA routed by role or referencing a specific person on their team.
