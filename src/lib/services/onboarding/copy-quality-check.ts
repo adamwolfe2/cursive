@@ -559,7 +559,13 @@ function checkAllCaps(
   seqIdx: number,
   emailIdx: number
 ): QualityIssue[] {
-  const allCapsWords = body.match(/\b[A-Z]{2,}\b/g) ?? []
+  // Strip merge tags first so {COMPANY}, {FIRST_NAME}, {SENDER_COMPANY},
+  // etc. don't fire the all-caps warning. They are NEVER shipped as visible
+  // all-caps text — EB substitutes them at send time with the recipient's
+  // real (mixed-case) value. Flagging them as "all-caps" was a false
+  // positive that surfaced on every email with a {COMPANY} reference.
+  const stripped = stripMergeTags(body)
+  const allCapsWords = stripped.match(/\b[A-Z]{2,}\b/g) ?? []
   const disallowed = allCapsWords.filter((w) => !ALLOWED_ACRONYMS.has(w))
 
   if (disallowed.length > 0) {

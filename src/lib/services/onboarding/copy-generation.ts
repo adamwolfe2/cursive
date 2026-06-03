@@ -463,9 +463,40 @@ When spintax_enabled = true (volume outbound, low/mid AOV):
 - No bullets in email 1. Acceptable in email 2-3 for proof points only.
 - Vary sentence length. No identical opening across emails in the same sequence.
 
-═══ DELIVERABILITY ═══
+═══ DELIVERABILITY (HARD WORD BANS) ═══
 
-- No spam trigger words: free, guarantee, act now, limited time, click here, buy now, discount, offer, deal, congratulations, winner, urgent, expire
+The quality checker rejects emails containing any of these — auto-fix will be asked to rewrite. Just don't use them in the first place:
+
+  free, guarantee, no obligation, risk-free, act now, limited time, click here, buy now, discount, offer ends, congratulations, winner, urgent, expire, special promotion
+
+When you want to express "no cost / no commitment" for a no-risk audience build CTA (very common for ICP-builder, intent-data, audit-style offers), use one of these instead:
+
+  - "no-cost" (hyphenated — does NOT trigger the spam list)
+  - "at no cost"
+  - "complimentary"
+  - "on us"
+  - "no commitment" (NOT "no obligation")
+  - "no strings"
+  - "no pressure"
+  - "no-risk" (hyphenated, OK)
+
+═══ BANNED OPENING / CTA PHRASES (templated-outbound tells) ═══
+
+Hard substring bans — the quality checker rejects any of these:
+
+  "I'd love to" (REWRITE to "Want me to" / "Happy to" / "Worth me building")
+  "I'd be happy to"
+  "I'm reaching out"
+  "just wanted to reach out"
+  "reaching out because"
+  "looping back", "circling back", "touching base", "just bumping this"
+  "quick question" (as opener OR subject)
+  "Here's why" (as sentence start)
+  "Here's the thing"
+  "founder-to-founder", "operator-to-operator"
+
+═══ LINK POLICY ═══
+
 - No more than one link per email. Prefer no link in email 1 — ask for a reply instead.
 
 ═══ NO PHANTOM CALLBACKS (sequence coherence) ═══
@@ -1454,41 +1485,87 @@ export async function generateEmailSequences(
   // Call 2: Copy Writing
   let sequences = await writeCopy(client, icpBrief, angleSelection)
 
-  // Quality check + auto-fix (if checker provided)
+  // Iterative auto-fix: loop up to MAX_AUTOFIX_PASSES asking the LLM to
+  // fix the remaining errors. Each pass re-runs the quality checker so
+  // newly-introduced errors get a shot at being caught + fixed. We keep
+  // the version with the fewest errors so a degenerate "fix" that adds
+  // new errors doesn't ship a worse draft than what we started with.
   if (qualityChecker) {
-    const firstCheck = qualityChecker(sequences)
-    sequences = {
-      ...sequences,
-      quality_check: {
-        passed: firstCheck.passed,
-        issues: firstCheck.issues as QualityIssue[],
-      },
-    }
-
-    if (!firstCheck.passed) {
-      const errorIssues = firstCheck.issues.filter(
-        (i) => i.severity === 'error'
-      )
-      if (errorIssues.length > 0) {
-        // Attempt auto-fix
-        try {
-          const fixed = await autoFixSequences(sequences, errorIssues)
-          const recheck = qualityChecker(fixed)
-          sequences = {
-            ...fixed,
-            quality_check: {
-              passed: recheck.passed,
-              issues: recheck.issues as QualityIssue[],
-            },
-          }
-        } catch {
-          // Auto-fix failed — keep original with quality issues noted
-        }
-      }
-    }
+    sequences = await autoFixUntilClean(sequences, qualityChecker)
   }
 
   return sequences
+}
+
+// Auto-fix iteration cap. 3 passes balances cost (each pass is one Claude
+// call) against the law of diminishing returns — most fixable errors clear
+// in 1-2 passes; passes 3+ rarely improve the result. Bumped from the
+// previous single-pass behaviour after JustSearched shipped with 34 errors
+// the single pass didn't catch (spam words layered with banned phrases
+// stacked with word-count overflows from spintax variants).
+const MAX_AUTOFIX_PASSES = 3
+
+async function autoFixUntilClean(
+  initial: DraftSequences,
+  qualityChecker: (s: DraftSequences) => {
+    passed: boolean
+    issues: Array<{
+      sequence_index: number
+      email_index: number
+      severity: string
+      check: string
+      detail: string
+    }>
+  }
+): Promise<DraftSequences> {
+  let current: DraftSequences = initial
+  let bestErrorCount = Infinity
+  let best: DraftSequences = initial
+
+  for (let pass = 0; pass < MAX_AUTOFIX_PASSES; pass++) {
+    const check = qualityChecker(current)
+    const tagged: DraftSequences = {
+      ...current,
+      quality_check: {
+        passed: check.passed,
+        issues: check.issues as QualityIssue[],
+      },
+    }
+
+    const errors = check.issues.filter((i) => i.severity === 'error')
+    if (errors.length === 0) {
+      return tagged
+    }
+
+    if (errors.length < bestErrorCount) {
+      bestErrorCount = errors.length
+      best = tagged
+    }
+
+    try {
+      current = await autoFixSequences(current, errors)
+    } catch {
+      // The fix call itself failed (network, parse, rate limit) — bail
+      // with the best version we've seen so far rather than losing work.
+      return best
+    }
+  }
+
+  // Final pass after the last fix: keep whichever version had the fewest
+  // errors. Avoids shipping a "fixed" version that introduced MORE issues
+  // than the original (rare, but real on edge-case generations).
+  const finalCheck = qualityChecker(current)
+  const finalErrors = finalCheck.issues.filter((i) => i.severity === 'error')
+  if (finalErrors.length < bestErrorCount) {
+    return {
+      ...current,
+      quality_check: {
+        passed: finalCheck.passed,
+        issues: finalCheck.issues as QualityIssue[],
+      },
+    }
+  }
+  return best
 }
 
 /**
@@ -1536,35 +1613,9 @@ export async function regenerateEmailSequences(
     angle_selection: previousSequences.angle_selection,
   }
 
-  // Quality check + auto-fix
+  // Iterative auto-fix (same MAX_AUTOFIX_PASSES as initial generation).
   if (qualityChecker) {
-    const check = qualityChecker(sequences)
-    sequences = {
-      ...sequences,
-      quality_check: {
-        passed: check.passed,
-        issues: check.issues as QualityIssue[],
-      },
-    }
-
-    if (!check.passed) {
-      const errorIssues = check.issues.filter((i) => i.severity === 'error')
-      if (errorIssues.length > 0) {
-        try {
-          const fixed = await autoFixSequences(sequences, errorIssues)
-          const recheck = qualityChecker(fixed)
-          sequences = {
-            ...fixed,
-            quality_check: {
-              passed: recheck.passed,
-              issues: recheck.issues as QualityIssue[],
-            },
-          }
-        } catch {
-          // Keep original with issues
-        }
-      }
-    }
+    sequences = await autoFixUntilClean(sequences, qualityChecker)
   }
 
   return sequences
