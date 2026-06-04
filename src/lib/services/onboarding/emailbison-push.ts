@@ -91,7 +91,10 @@ export async function pushCopyToEmailBison(
       }, 0)
       campaigns.push({
         campaignId: `dryrun_${workspaceId.slice(0, 8)}_${campaigns.length + 1}`,
-        campaignName: `[DRY-RUN ws:${workspaceId}] ${clientName} - ${sequence.sequence_name} - ${dateStr}`,
+        // Dry-run name mirrors the real format below (without the workspace
+        // UUID prefix) but adds a [DRY-RUN] tag so test-client previews can't
+        // be mistaken for live campaigns in the admin UI.
+        campaignName: `[DRY-RUN] ${clientName} · ${sequence.sequence_name} · ${dateStr}`,
         sequenceSteps: subjectVariantsTotal,
         variants: subjectVariantsTotal,
       })
@@ -143,9 +146,26 @@ async function pushSingleSequence(params: {
     )
   }
 
-  // Prefix with workspace ID so all campaigns can be attributed back to their
-  // workspace even though EmailBison has no native multi-tenant scoping.
-  const campaignName = `[ws:${workspaceId}] ${clientName} - ${sequence.sequence_name} - ${dateStr}`
+  // Campaign name shown in EB UI. Format:
+  //   "{ClientName} · {SequenceName} · {YYYY-MM-DD}"
+  //   e.g. "JustSearched · Campaign Performance Reality Check · 2026-06-03"
+  //
+  // Previously prefixed with [ws:{workspaceUuid}] for cross-tenant
+  // attribution back when all campaigns lived in one EB workspace
+  // ("Adam's Team"). With per-client EB workspaces + scoped API keys,
+  // each EB workspace IS the tenant boundary — the UUID prefix was
+  // pure noise to the operator scanning the EB UI. Dropped.
+  //
+  // The sequence name already encodes the angle (e.g. "Campaign
+  // Performance Reality Check", "Margin Recovery Through Data
+  // Partnerships") so a single glance tells the operator both which
+  // client and what the campaign's pitch is. Date suffix
+  // disambiguates re-pushes without forcing a delete first.
+  //
+  // _workspaceId is kept on the signature for callers, but no longer
+  // surfaces in the name; intentionally unused here.
+  void workspaceId
+  const campaignName = `${clientName} · ${sequence.sequence_name} · ${dateStr}`
 
   // 1. Create campaign in the target EB workspace
   const { campaign_id } = await createCampaign(campaignName, ebWorkspaceId)
