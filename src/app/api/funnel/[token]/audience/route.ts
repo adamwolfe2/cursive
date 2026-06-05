@@ -12,6 +12,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { getOrderByToken, recordAudienceSubmitted } from '@/lib/funnel/order.service'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
+import { sendFunnelAdminNotificationEmail } from '@/lib/email/templates/funnel-admin-notification'
 import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
 
 const bodySchema = z.object({
@@ -88,6 +89,9 @@ export async function POST(
       titles_count: parsed.data.titles.length,
     })
 
+    // Notify admin via Slack (existing channel) + email (new). Both are
+    // fire-and-forget — buyer's submit must succeed regardless of admin
+    // notification infrastructure.
     sendSlackAlert({
       type: 'pipeline_update',
       severity: 'info',
@@ -99,6 +103,10 @@ export async function POST(
         titles: parsed.data.titles.join(', ').slice(0, 200),
       },
     }).catch((err) => safeError('[funnel/audience] slack alert failed:', err))
+
+    sendFunnelAdminNotificationEmail(updated).catch((err) =>
+      safeError('[funnel/audience] admin email failed:', err)
+    )
 
     return NextResponse.json({ order: updated })
   } catch (err) {

@@ -294,6 +294,7 @@ function AudienceStep({
 
   if (submitted) {
     const delivered = !!order.audience_delivered_at
+    const includesPixel = order.offer_slug !== 'audience_197'
     return (
       <StepShell
         number={3}
@@ -308,6 +309,13 @@ function AudienceStep({
           You&apos;ll get an email from Adam with your Google Sheet link within
           12-24 hours.
         </p>
+
+        {includesPixel && order.pixel_snippet && (
+          <NextStepInstallPixel
+            snippet={order.pixel_snippet}
+            domain={order.pixel_domain}
+          />
+        )}
       </StepShell>
     )
   }
@@ -457,6 +465,100 @@ function Field({
         {label} {required && <span className="text-red-500">*</span>}
       </label>
       {children}
+    </div>
+  )
+}
+
+// ─── Next-step callout: confirm pixel install ─────────────────────────────
+//
+// Shown inside the audience step once ICP is submitted (bundle orders only —
+// audience-only orders have no pixel, pixel-only orders skip the audience
+// step entirely). The pixel itself was already provisioned earlier; this
+// callout reminds the buyer to actually paste it on their site, plus shows
+// the snippet again with quick install methods.
+
+function NextStepInstallPixel({
+  snippet,
+  domain,
+}: {
+  snippet: string
+  domain: string | null
+}) {
+  const [copied, setCopied] = useState(false)
+
+  return (
+    <div className="mt-5 rounded-xl border border-blue-200 bg-blue-50 p-5">
+      <div className="mb-3 flex items-start gap-3">
+        <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white">
+          !
+        </div>
+        <div>
+          <p className="text-sm font-semibold text-gray-900">
+            Next: confirm your pixel is live on {domain ?? 'your site'}
+          </p>
+          <p className="mt-0.5 text-xs text-gray-600">
+            Paste the snippet below into the global header of your site (above
+            <code className="mx-1 rounded bg-white px-1 py-0.5 text-[11px]">&lt;/head&gt;</code>)
+            so we can identify visitors the moment your audience is delivered.
+          </p>
+        </div>
+      </div>
+
+      {/* Snippet box */}
+      <div className="overflow-hidden rounded-lg border border-blue-100 bg-gray-900 p-3">
+        <div className="mb-1.5 flex items-center justify-between">
+          <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">
+            Your pixel snippet
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              navigator.clipboard.writeText(snippet)
+              setCopied(true)
+              setTimeout(() => setCopied(false), 1500)
+            }}
+            className="rounded bg-gray-800 px-2 py-0.5 text-[11px] font-medium text-gray-200 hover:bg-gray-700"
+          >
+            {copied ? 'Copied!' : 'Copy'}
+          </button>
+        </div>
+        <code className="block whitespace-pre-wrap break-all font-mono text-[11px] leading-relaxed text-emerald-300">
+          {snippet}
+        </code>
+      </div>
+
+      {/* Three install methods */}
+      <ul className="mt-4 space-y-2 text-xs text-gray-700">
+        <li className="flex items-start gap-2">
+          <span className="mt-0.5 inline-flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-blue-600 text-[10px] font-bold text-white">
+            1
+          </span>
+          <span>
+            <span className="font-semibold">Direct HTML:</span> paste before
+            the closing <code className="rounded bg-white px-1 text-[10px]">&lt;/head&gt;</code>{' '}
+            on every page of your site.
+          </span>
+        </li>
+        <li className="flex items-start gap-2">
+          <span className="mt-0.5 inline-flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-blue-600 text-[10px] font-bold text-white">
+            2
+          </span>
+          <span>
+            <span className="font-semibold">Google Tag Manager:</span> create a
+            new Custom HTML tag, paste the snippet, and fire on All Pages.
+          </span>
+        </li>
+        <li className="flex items-start gap-2">
+          <span className="mt-0.5 inline-flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-blue-600 text-[10px] font-bold text-white">
+            3
+          </span>
+          <span>
+            <span className="font-semibold">Verify:</span> load any page of
+            your site and you&apos;ll start seeing identified visitors flow in
+            within minutes.
+          </span>
+        </li>
+      </ul>
     </div>
   )
 }
