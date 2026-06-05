@@ -56,6 +56,18 @@ export function CheckoutButtons({ offers }: { offers: FunnelOfferConfig[] }) {
   async function handleCheckout(slug: string) {
     setLoadingSlug(slug)
     setError(null)
+
+    // CRITICAL: open the new tab IMMEDIATELY in the click handler so popup
+    // blockers allow it. If we wait until after the fetch resolves, the
+    // browser treats it as a non-user-gesture popup and blocks it. We
+    // point the empty tab at the Stripe URL once we have it.
+    const newTab = window.open('', '_blank', 'noopener,noreferrer')
+    if (!newTab) {
+      setError('Please allow popups for this site to start checkout.')
+      setLoadingSlug(null)
+      return
+    }
+
     try {
       const res = await fetch('/api/funnel/checkout', {
         method: 'POST',
@@ -67,10 +79,16 @@ export function CheckoutButtons({ offers }: { offers: FunnelOfferConfig[] }) {
         error?: string
       }
       if (!res.ok || !json.url) {
+        newTab.close()
         throw new Error(json.error || `Checkout failed (HTTP ${res.status})`)
       }
-      window.location.assign(json.url)
+      newTab.location.href = json.url
+      // Buyer is now on Stripe in a new tab — re-enable the buttons here
+      // so the video keeps playing and they can pick a different plan if
+      // they cancel out.
+      setLoadingSlug(null)
     } catch (err) {
+      newTab.close()
       setError(err instanceof Error ? err.message : 'Could not start checkout.')
       setLoadingSlug(null)
     }

@@ -125,10 +125,12 @@ function withVslAutoplay(rawUrl: string): string {
       u.searchParams.set('title', '0')
     } else if (u.hostname === 'player.mux.com') {
       // Mux Player iframe params — minimal native-feeling chrome.
-      // autoplay=muted satisfies browser autoplay policy without a click.
-      // accent-color matches the funnel brand blue used elsewhere on the page.
+      // autoplay=muted satisfies the browser autoplay policy: video starts
+      // playing automatically WITH AUDIO MUTED, and the buyer can click
+      // the unmute button to hear it. Critically, we do NOT also set
+      // muted=true here — that would force the player to stay muted
+      // even after the buyer clicks unmute, undoing their action.
       u.searchParams.set('autoplay', 'muted')
-      u.searchParams.set('muted', 'true')
       u.searchParams.set('playsinline', 'true')
       u.searchParams.set('accent-color', '#2563eb')
       // Don't loop — VSL pacing matters, let it end naturally so the
