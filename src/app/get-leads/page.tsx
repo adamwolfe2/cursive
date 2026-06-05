@@ -1,4 +1,8 @@
-import { FUNNEL_OFFERS, FUNNEL_VSL_URL } from '@/lib/stripe/funnel-products'
+import {
+  FUNNEL_OFFERS,
+  FUNNEL_VSL_URL,
+  isSelfHostedVideoUrl,
+} from '@/lib/stripe/funnel-products'
 import { CheckoutButtons } from './CheckoutButtons'
 import { PricingGate } from './PricingGate'
 
@@ -39,6 +43,22 @@ export default function GetLeadsPage() {
             <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 text-sm text-gray-400">
               Video coming soon — set FUNNEL_VSL_URL env var
             </div>
+          ) : isSelfHostedVideoUrl(FUNNEL_VSL_URL) ? (
+            // Self-hosted MP4/WebM — zero watermark, no black bars, no
+            // third-party player JS. Autoplay-friendly: muted + playsInline
+            // satisfies browser autoplay policy. preload="metadata" gets the
+            // first frame on the wire fast without pulling the whole file.
+            <video
+              src={FUNNEL_VSL_URL}
+              className="h-full w-full bg-black"
+              autoPlay
+              muted
+              loop
+              playsInline
+              controls
+              preload="metadata"
+              controlsList="nodownload"
+            />
           ) : (
             <iframe
               src={FUNNEL_VSL_URL}

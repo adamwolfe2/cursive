@@ -97,14 +97,14 @@ export const FUNNEL_PORTAL_BASE_URL =
   'https://leads.meetcursive.com'
 
 /**
- * VSL embed URL. Defaults to the Vimeo embed Adam recorded 2026-06-05
- * (https://vimeo.com/1198842133). Override with FUNNEL_VSL_URL env (must
- * already be a player.vimeo.com OR loom.com/embed URL).
+ * VSL source. Three accepted shapes:
+ *   - Self-hosted MP4/WebM/MOV — rendered as <video autoplay muted playsinline>
+ *     (preferred — zero watermark, no black bars, native HTML5 controls)
+ *   - Vimeo player URL — rendered as iframe with branding stripped
+ *   - Loom embed URL — rendered as iframe with branding stripped
  *
- * autoplay=1 + muted=1 are required together — browsers block unmuted
- * autoplay without a prior user gesture. Per-host params (badge, autopause,
- * hide_owner, etc) strip the source-platform chrome so the embed feels like
- * our own player.
+ * Set FUNNEL_VSL_URL to whichever URL you want — detection happens at render.
+ * Defaults to the Vimeo placeholder until Adam uploads a clean MP4.
  */
 function withVslAutoplay(rawUrl: string): string {
   try {
@@ -134,3 +134,17 @@ export const FUNNEL_VSL_URL = withVslAutoplay(
   process.env.FUNNEL_VSL_URL ??
     'https://player.vimeo.com/video/1198842133?badge=0&autopause=0&player_id=0&app_id=58479'
 )
+
+/**
+ * Detect if the VSL URL points at a self-hosted video file vs an iframe-style
+ * embed. Used by the landing page to choose <video> vs <iframe>. Checks the
+ * pathname (not the full URL) so query strings don't trip the check.
+ */
+export function isSelfHostedVideoUrl(url: string): boolean {
+  try {
+    const pathname = new URL(url).pathname.toLowerCase()
+    return /\.(mp4|webm|mov|m4v)$/.test(pathname)
+  } catch {
+    return false
+  }
+}
