@@ -17,30 +17,28 @@ import {
 import { provisionCustomerPixel } from '@/lib/audiencelab/api-client'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
+import { isPixelV3, isPixelV4, normalizeWebsiteUrl } from '@/lib/funnel/website-url'
 
+// Accept whatever the buyer types — `yoursite.com`, `www.yoursite.com`,
+// `https://yoursite.com/path` — and normalize to https://… server-side.
+// Most buyers don't know to type https:// and shouldn't have to.
 const bodySchema = z.object({
   website_url: z
     .string()
-    .url()
-    .refine((url) => {
-      try {
-        const parsed = new URL(url)
-        const host = parsed.hostname.toLowerCase()
-        // Localhost variants
-        if (host === 'localhost') return false
-        // Raw IPv4
-        if (/^\d{1,3}(\.\d{1,3}){3}$/.test(host)) return false
-        // IPv6 literals (Node URL keeps brackets)
-        if (host.startsWith('[')) return false
-        // No-dot single-label hosts (e.g. "myhost")
-        if (!host.includes('.')) return false
-        // Cloud metadata + link-local + .internal / .local TLDs
-        if (host.endsWith('.internal') || host.endsWith('.local')) return false
-        return true
-      } catch {
-        return false
+    .trim()
+    .min(1, 'Please enter a website URL.')
+    .transform((raw, ctx) => {
+      const normalized = normalizeWebsiteUrl(raw)
+      if (!normalized) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message:
+            'Please enter a valid public website URL (e.g. yourcompany.com).',
+        })
+        return z.NEVER
       }
-    }, 'Please enter a valid public website URL'),
+      return normalized
+    }),
 })
 
 export async function POST(
@@ -111,6 +109,28 @@ export async function POST(
       )
     }
     const snippet = result.script || `<script src="${installUrl}" defer></script>`
+
+    // V4 regression guard. AL provisions v4 (cdn.idpixel.app) by default for
+    // our account. If they ever revert us to v3 (cdn.v3.identitypxl.app),
+    // fire a critical alert so we know — funnel buyers paid for the v4
+    // resolution data and we should not silently downgrade them.
+    if (isPixelV3(installUrl)) {
+      sendSlackAlert({
+        type: 'pipeline_update',
+        severity: 'critical',
+        message: `Funnel pixel provisioned as V3 (expected V4) — AL account regression`,
+        metadata: {
+          order_id: order.id,
+          domain,
+          pixel_id: result.pixel_id,
+          install_url: installUrl ?? '',
+        },
+      }).catch((err) => safeError('[funnel/pixel] v3 alert failed:', err))
+    } else if (!isPixelV4(installUrl)) {
+      safeLog('[funnel/pixel] install_url has unrecognized version pattern', {
+        install_url: installUrl,
+      })
+    }
 
     // Single atomic surface: writes audiencelab_pixels + funnel_orders together
     // with a forward-only state guard. Returns null if order moved past

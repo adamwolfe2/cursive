@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import type { FunnelOrder } from '@/lib/funnel/order.service'
 import { buildAudienceBuilderPrompt } from '@/lib/funnel/al-taxonomy'
+import { isPixelV3, isPixelV4 } from '@/lib/funnel/website-url'
 
 interface Props {
   orders: FunnelOrder[]
@@ -67,7 +68,10 @@ function OrderRow({ order }: { order: FunnelOrder }) {
           </p>
           <p className="text-xs text-gray-500">{order.customer_email}</p>
         </td>
-        <td className="px-4 py-3 text-xs text-gray-700">{order.offer_slug}</td>
+        <td className="px-4 py-3 text-xs text-gray-700">
+          <p>{order.offer_slug}</p>
+          {order.pixel_install_url && <PixelVersionBadge installUrl={order.pixel_install_url} />}
+        </td>
         <td className="px-4 py-3">
           <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${status.tone}`}>
             {status.label}
@@ -294,5 +298,30 @@ function CopyButton({
     >
       {copied ? confirmedLabel : label}
     </button>
+  )
+}
+
+function PixelVersionBadge({ installUrl }: { installUrl: string }) {
+  if (isPixelV4(installUrl)) {
+    return (
+      <span className="mt-1 inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">
+        V4
+      </span>
+    )
+  }
+  if (isPixelV3(installUrl)) {
+    return (
+      <span
+        className="mt-1 inline-flex items-center rounded-full bg-red-50 px-2 py-0.5 text-[10px] font-semibold text-red-700"
+        title="Pixel was provisioned as V3 — AL may have regressed our account. Check Slack for the critical alert."
+      >
+        V3 (regression!)
+      </span>
+    )
+  }
+  return (
+    <span className="mt-1 inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-600">
+      pixel
+    </span>
   )
 }

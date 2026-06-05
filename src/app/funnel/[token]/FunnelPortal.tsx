@@ -153,10 +153,11 @@ function PixelStep({
 
   if (provisioned) {
     return (
-      <StepShell number={2} title="Install Your Pixel" state="complete" locked={false}>
+      <StepShell number={2} title="Set up your pixel" state="complete" locked={false}>
         <p className="mb-3 text-sm font-medium text-emerald-700">
-          Pixel created for {order.pixel_domain} — paste the snippet below into
-          your site&apos;s <code className="rounded bg-gray-100 px-1 py-0.5 text-xs">&lt;/head&gt;</code>.
+          Pixel created for {order.pixel_domain}. Paste the snippet below into
+          your site&apos;s <code className="rounded bg-gray-100 px-1 py-0.5 text-xs">&lt;/head&gt;</code>{' '}
+          (or add it via Google Tag Manager) and you&apos;re live.
         </p>
         <div className="overflow-hidden rounded-lg border border-gray-200 bg-gray-900 p-4">
           <div className="mb-2 flex items-center justify-between">
@@ -190,29 +191,53 @@ function PixelStep({
   }
 
   return (
-    <StepShell number={2} title="Install Your Pixel" state="active" locked={false}>
+    <StepShell number={2} title="Set up your pixel" state="active" locked={false}>
       <p className="mb-3 text-sm text-gray-500">
-        Drop in your website URL — we&apos;ll generate your pixel and embed code
+        Type your website — we&apos;ll handle the rest. Pixel is created
         instantly.
       </p>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-3 sm:flex-row">
-        <input
-          type="url"
-          required
-          placeholder="https://yourcompany.com"
-          value={websiteUrl}
-          onChange={(e) => setWebsiteUrl(e.target.value)}
-          disabled={submitting}
-          className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
-        />
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col gap-3 sm:flex-row sm:items-stretch"
+      >
+        <div className="flex flex-1 items-stretch overflow-hidden rounded-lg border border-gray-300 focus-within:border-transparent focus-within:ring-2 focus-within:ring-blue-500">
+          <span className="flex select-none items-center bg-gray-50 px-3 text-xs font-medium text-gray-500">
+            https://
+          </span>
+          <input
+            type="text"
+            required
+            autoComplete="url"
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck={false}
+            inputMode="url"
+            placeholder="yourcompany.com"
+            value={websiteUrl}
+            onChange={(e) =>
+              setWebsiteUrl(
+                e.target.value
+                  // Strip a scheme the buyer might paste in — we add it on submit
+                  .replace(/^https?:\/\//i, '')
+                  // Strip leading whitespace as they type
+                  .replace(/^\s+/, '')
+              )
+            }
+            disabled={submitting}
+            className="flex-1 border-0 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-0 disabled:opacity-50"
+          />
+        </div>
         <button
           type="submit"
           disabled={submitting || !websiteUrl}
           className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
         >
-          {submitting ? 'Generating…' : 'Generate pixel'}
+          {submitting ? 'Generating…' : 'Create pixel'}
         </button>
       </form>
+      <p className="mt-2 text-xs text-gray-400">
+        Don&apos;t worry about https:// — we add it automatically.
+      </p>
       {error && (
         <p className="mt-2 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">
           {error}
