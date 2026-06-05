@@ -5,6 +5,7 @@ import {
   handleAffiliateInvoicePayment,
   handleAffiliateChurn,
 } from '@/lib/affiliate/commission'
+import { handleFunnelSubscriptionEvent } from '@/lib/funnel/subscription-handlers'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 /**
@@ -23,6 +24,12 @@ export const SERVICE_SUBSCRIPTION_EVENTS = [
  * Delegates to the service webhook handler and hooks in affiliate commission/churn logic
  */
 export async function handleServiceSubscriptionEvent(event: Stripe.Event): Promise<void> {
+  // Branch FIRST for funnel subscriptions. Funnel orders have no workspace
+  // and the service handler assumes one — so we route them entirely through
+  // the funnel handler. Returns true if the event was funnel-owned.
+  const funnelHandled = await handleFunnelSubscriptionEvent(event)
+  if (funnelHandled) return
+
   await handleServiceWebhookEvent(event)
 
   // Affiliate commission: hook into successful invoice payments

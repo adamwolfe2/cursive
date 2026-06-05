@@ -97,14 +97,14 @@ export const FUNNEL_PORTAL_BASE_URL =
   'https://leads.meetcursive.com'
 
 /**
- * VSL embed URL. Defaults to a Loom placeholder Adam shared 2026-06-04
- * (https://www.loom.com/share/83bf2650385a441f8ea46a5e911b5fb1) — converted
- * to the /embed/ form so it renders inside an iframe. Override with
- * FUNNEL_VSL_URL env (must already be a valid embed URL).
+ * VSL embed URL. Defaults to the Vimeo embed Adam recorded 2026-06-05
+ * (https://vimeo.com/1198842133). Override with FUNNEL_VSL_URL env (must
+ * already be a player.vimeo.com OR loom.com/embed URL).
  *
  * autoplay=1 + muted=1 are required together — browsers block unmuted
- * autoplay without a prior user gesture. hide_owner / hide_share / hide_title
- * strip the Loom-branded top chrome so the embed feels like our own player.
+ * autoplay without a prior user gesture. Per-host params (badge, autopause,
+ * hide_owner, etc) strip the source-platform chrome so the embed feels like
+ * our own player.
  */
 function withVslAutoplay(rawUrl: string): string {
   try {
@@ -115,6 +115,14 @@ function withVslAutoplay(rawUrl: string): string {
       u.searchParams.set('hide_owner', 'true')
       u.searchParams.set('hide_share', 'true')
       u.searchParams.set('hide_title', 'true')
+    } else if (u.hostname.endsWith('vimeo.com')) {
+      // player.vimeo.com supports these query params directly
+      u.searchParams.set('autoplay', '1')
+      u.searchParams.set('muted', '1')
+      u.searchParams.set('autopause', '0')
+      u.searchParams.set('badge', '0')
+      u.searchParams.set('byline', '0')
+      u.searchParams.set('title', '0')
     }
     return u.toString()
   } catch {
@@ -124,5 +132,5 @@ function withVslAutoplay(rawUrl: string): string {
 
 export const FUNNEL_VSL_URL = withVslAutoplay(
   process.env.FUNNEL_VSL_URL ??
-    'https://www.loom.com/embed/83bf2650385a441f8ea46a5e911b5fb1'
+    'https://player.vimeo.com/video/1198842133?badge=0&autopause=0&player_id=0&app_id=58479'
 )

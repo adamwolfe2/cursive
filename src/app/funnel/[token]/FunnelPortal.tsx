@@ -4,6 +4,171 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import type { FunnelOrder } from '@/lib/funnel/order.service'
 
+// ─── "Test my install" button ─────────────────────────────────────────────
+
+type TestInstallState =
+  | { kind: 'idle' }
+  | { kind: 'checking' }
+  | { kind: 'installed'; message: string }
+  | { kind: 'missing'; message: string }
+  | { kind: 'unreachable'; message: string }
+  | { kind: 'error'; message: string }
+
+function TestInstallButton({ token }: { token: string }) {
+  const [state, setState] = useState<TestInstallState>({ kind: 'idle' })
+
+  async function runCheck() {
+    setState({ kind: 'checking' })
+    try {
+      const res = await fetch(`/api/funnel/${token}/test-pixel`, {
+        method: 'POST',
+      })
+      const json = (await res.json().catch(() => ({}))) as {
+        state?: string
+        message?: string
+        error?: string
+      }
+      if (!res.ok) {
+        setState({ kind: 'error', message: json.error || 'Check failed.' })
+        return
+      }
+      if (json.state === 'installed') {
+        setState({ kind: 'installed', message: json.message ?? '' })
+      } else if (json.state === 'missing') {
+        setState({ kind: 'missing', message: json.message ?? '' })
+      } else {
+        setState({ kind: 'unreachable', message: json.message ?? '' })
+      }
+    } catch (err) {
+      setState({
+        kind: 'error',
+        message: err instanceof Error ? err.message : 'Check failed.',
+      })
+    }
+  }
+
+  return (
+    <div className="mt-4">
+      <button
+        type="button"
+        onClick={runCheck}
+        disabled={state.kind === 'checking'}
+        className="inline-flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-3.5 py-2 text-xs font-medium text-blue-700 transition-colors hover:bg-blue-100 disabled:opacity-50"
+      >
+        {state.kind === 'checking' ? (
+          <>
+            <span className="h-3 w-3 animate-spin rounded-full border-2 border-blue-300 border-t-transparent" />
+            Checking your site…
+          </>
+        ) : (
+          <>
+            <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Test my install
+          </>
+        )}
+      </button>
+
+      {state.kind === 'installed' && (
+        <p className="mt-2 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-800">
+          ✓ {state.message}
+        </p>
+      )}
+      {state.kind === 'missing' && (
+        <p className="mt-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+          {state.message}
+        </p>
+      )}
+      {state.kind === 'unreachable' && (
+        <p className="mt-2 rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-700">
+          {state.message}
+        </p>
+      )}
+      {state.kind === 'error' && (
+        <p className="mt-2 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
+          {state.message}
+        </p>
+      )}
+    </div>
+  )
+}
+
+// ─── Subscription state banners ───────────────────────────────────────────
+
+function SubscriptionBanner({
+  state,
+  onManageBilling,
+}: {
+  state: 'past_due' | 'paused' | 'incomplete'
+  onManageBilling: () => void
+}) {
+  if (state === 'past_due') {
+    return (
+      <div className="mb-6 flex flex-col gap-3 rounded-xl border border-red-200 bg-red-50 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p className="text-sm font-semibold text-red-900">
+            Your last payment didn&apos;t go through.
+          </p>
+          <p className="mt-0.5 text-xs text-red-800">
+            Your visitor feed + audience refreshes are paused. Update your card
+            and everything resumes automatically.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={onManageBilling}
+          className="inline-flex shrink-0 items-center justify-center rounded-md bg-red-600 px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-red-700"
+        >
+          Update card →
+        </button>
+      </div>
+    )
+  }
+  if (state === 'paused' || state === 'incomplete') {
+    return (
+      <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 px-5 py-4">
+        <p className="text-sm font-semibold text-amber-900">
+          Your subscription is {state === 'paused' ? 'paused' : 'incomplete'}.
+        </p>
+        <p className="mt-0.5 text-xs text-amber-800">
+          {state === 'paused'
+            ? 'No charges happening — and no new visitor data being processed. Resume in billing whenever you’re ready.'
+            : 'Finish the setup in Stripe to activate everything.'}
+        </p>
+      </div>
+    )
+  }
+  return null
+}
+
+function CancelledScreen({ customerEmail }: { customerEmail: string }) {
+  return (
+    <div className="mx-auto max-w-xl rounded-xl border border-gray-200 bg-white p-10 text-center shadow-sm">
+      <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100">
+        <svg className="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+        </svg>
+      </div>
+      <h1 className="mb-2 text-xl font-semibold text-gray-900">
+        This subscription has been cancelled
+      </h1>
+      <p className="mb-6 text-sm text-gray-500">
+        Your account ({customerEmail}) is no longer active. We sent a
+        cancellation confirmation to that address. You can come back any time —
+        just re-purchase below and we&apos;ll set you up with a fresh pixel and
+        audience.
+      </p>
+      <a
+        href="/get-leads"
+        className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+      >
+        Re-subscribe
+      </a>
+    </div>
+  )
+}
+
 // ─── Visual primitives — mirror the existing /portal/[token] StepShell ─────
 
 type StepState = 'complete' | 'active' | 'pending' | 'locked'
@@ -186,6 +351,7 @@ function PixelStep({
           Pixel ID: {order.pixel_audiencelab_id} · Identified visitors start
           flowing within a few minutes of traffic.
         </p>
+        <TestInstallButton token={token} />
       </StepShell>
     )
   }
@@ -811,13 +977,32 @@ function formatRelative(iso: string | null | undefined): string {
 
 // ─── Sidebar ───────────────────────────────────────────────────────────────
 
-function PackageSidebar({ order, offerLabel }: { order: FunnelOrder; offerLabel: string }) {
+function PackageSidebar({
+  order,
+  offerLabel,
+  onManageBilling,
+  billingLoading,
+}: {
+  order: FunnelOrder
+  offerLabel: string
+  onManageBilling: () => void
+  billingLoading: boolean
+}) {
+  const stateLabel: Record<string, { label: string; tone: string }> = {
+    active: { label: 'Active subscription', tone: 'text-gray-400' },
+    past_due: { label: 'Past due', tone: 'text-red-600 font-medium' },
+    paused: { label: 'Paused', tone: 'text-amber-700 font-medium' },
+    incomplete: { label: 'Incomplete', tone: 'text-amber-700 font-medium' },
+    cancelled: { label: 'Cancelled', tone: 'text-gray-500' },
+  }
+  const stateInfo = stateLabel[order.subscription_state] ?? stateLabel.active
+
   return (
     <div className="sticky top-6 rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
       <h2 className="mb-4 text-sm font-semibold text-gray-900">Your Plan</h2>
       <div className="mb-4">
         <p className="text-base font-medium text-gray-900">{offerLabel}</p>
-        <p className="mt-1 text-xs text-gray-400">Active subscription</p>
+        <p className={`mt-1 text-xs ${stateInfo.tone}`}>{stateInfo.label}</p>
       </div>
       <div className="border-t border-gray-100 pt-4">
         <div className="flex items-center justify-between">
@@ -830,6 +1015,30 @@ function PackageSidebar({ order, offerLabel }: { order: FunnelOrder; offerLabel:
           </p>
         </div>
       </div>
+      <button
+        type="button"
+        onClick={onManageBilling}
+        disabled={billingLoading || !order.stripe_customer_id}
+        className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 text-xs font-medium text-gray-900 transition-colors hover:bg-gray-50 disabled:opacity-50"
+      >
+        {billingLoading ? 'Opening…' : 'Manage billing'}
+        <svg
+          className="h-3 w-3"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={2}
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
+          />
+        </svg>
+      </button>
+      <p className="mt-2 text-[10px] leading-relaxed text-gray-400">
+        Update card, view invoices, or cancel — handled by Stripe.
+      </p>
     </div>
   )
 }
@@ -847,6 +1056,7 @@ export function FunnelPortal({
 }) {
   const router = useRouter()
   const [order, setOrder] = useState<FunnelOrder>(initialOrder)
+  const [billingLoading, setBillingLoading] = useState(false)
 
   const includesPixel = useMemo(
     () => order.offer_slug !== 'audience_197',
@@ -858,6 +1068,26 @@ export function FunnelPortal({
   )
 
   const pixelLocked = includesPixel && !order.pixel_provisioned_at
+
+  async function handleManageBilling() {
+    setBillingLoading(true)
+    try {
+      const res = await fetch(`/api/funnel/${token}/billing-portal`, {
+        method: 'POST',
+      })
+      const json = (await res.json().catch(() => ({}))) as {
+        url?: string
+        error?: string
+      }
+      if (!res.ok || !json.url) {
+        throw new Error(json.error || 'Could not open billing portal.')
+      }
+      window.location.assign(json.url)
+    } catch (err) {
+      setBillingLoading(false)
+      alert(err instanceof Error ? err.message : 'Could not open billing portal.')
+    }
+  }
 
   async function refreshOrder() {
     try {
@@ -873,8 +1103,26 @@ export function FunnelPortal({
 
   const firstName = (order.customer_name ?? '').trim().split(/\s+/)[0] || 'there'
 
+  // Hard-stop on cancel — show a static cancellation screen instead of the
+  // full portal so buyers can't keep using a product they no longer pay for.
+  if (order.subscription_state === 'cancelled') {
+    return <CancelledScreen customerEmail={order.customer_email} />
+  }
+
+  const showSubBanner =
+    order.subscription_state === 'past_due' ||
+    order.subscription_state === 'paused' ||
+    order.subscription_state === 'incomplete'
+
   return (
     <div className="space-y-6">
+      {showSubBanner && (
+        <SubscriptionBanner
+          state={order.subscription_state as 'past_due' | 'paused' | 'incomplete'}
+          onManageBilling={handleManageBilling}
+        />
+      )}
+
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Welcome to Cursive</h1>
         <p className="mt-1 text-sm text-gray-500">
@@ -930,7 +1178,12 @@ export function FunnelPortal({
         </div>
 
         <div className="flex-shrink-0 lg:w-72">
-          <PackageSidebar order={order} offerLabel={offerLabel} />
+          <PackageSidebar
+            order={order}
+            offerLabel={offerLabel}
+            onManageBilling={handleManageBilling}
+            billingLoading={billingLoading}
+          />
         </div>
       </div>
     </div>

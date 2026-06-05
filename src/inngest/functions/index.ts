@@ -331,3 +331,7 @@ export { icpAudienceBuilder } from './icp-audience-builder'
 export { alAudienceRefresh } from './al-audience-refresh'
 // Every-5-min poller for pending batch enrichment jobs
 export { alEnrichmentPoller } from './al-enrichment-poller'
+
+// Funnel — buyer lifecycle automations
+export { funnelPixelInstallReminder } from './funnel-pixel-install-reminder'
+export { funnelVisitorDigest } from './funnel-visitor-digest'

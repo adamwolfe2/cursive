@@ -673,6 +673,14 @@ export type Events = {
     }
   }
 
+  // Funnel — buyer lifecycle automations
+  'funnel/pixel-install-reminder.run': {
+    data: Record<string, never>
+  }
+  'funnel/visitor-digest.run': {
+    data: Record<string, never>
+  }
+
   // Autoresearch Events (Karpathy loop)
   'autoresearch/program.start': {
     data: {

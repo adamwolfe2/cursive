@@ -35,6 +35,13 @@ export type FunnelOrderStatus =
   | 'delivered'
   | 'cancelled'
 
+export type SubscriptionState =
+  | 'active'
+  | 'past_due'
+  | 'paused'
+  | 'cancelled'
+  | 'incomplete'
+
 export interface FunnelOrder {
   id: string
   stripe_session_id: string
@@ -46,12 +53,19 @@ export interface FunnelOrder {
   monthly_price_cents: number
   status: FunnelOrderStatus
 
+  // Stripe billing state (separate dimension from workflow status)
+  subscription_state: SubscriptionState
+  subscription_cancelled_at: string | null
+  subscription_past_due_at: string | null
+
   pixel_website_url: string | null
   pixel_domain: string | null
   pixel_audiencelab_id: string | null
   pixel_snippet: string | null
   pixel_install_url: string | null
   pixel_provisioned_at: string | null
+  pixel_last_event_at: string | null
+  pixel_install_reminded_at: string | null
 
   audience_solution: string | null
   audience_icp_description: string | null
@@ -64,6 +78,8 @@ export interface FunnelOrder {
   audience_sheet_url: string | null
   audience_delivered_at: string | null
   fulfilled_by: string | null
+
+  last_visitor_digest_at: string | null
 
   created_at: string
   updated_at: string
@@ -338,6 +354,213 @@ export async function getOrderVisitors(
     recent,
     last_seen_at: rows[0]?.received_at ?? null,
   }
+}
+
+// ─── Subscription lifecycle ────────────────────────────────────────────
+
+/**
+ * Find a funnel order by its Stripe subscription id. Returns null if the
+ * subscription isn't owned by a funnel order (e.g. it's a service tier).
+ */
+export async function findOrderByStripeSubscriptionId(
+  stripeSubscriptionId: string
+): Promise<FunnelOrder | null> {
+  const supabase = createAdminClient()
+  const { data } = await supabase
+    .from('funnel_orders')
+    .select('*')
+    .eq('stripe_subscription_id', stripeSubscriptionId)
+    .maybeSingle()
+  return (data as FunnelOrder | null) ?? null
+}
+
+export async function findOrderByStripeCustomerId(
+  stripeCustomerId: string
+): Promise<FunnelOrder | null> {
+  const supabase = createAdminClient()
+  const { data } = await supabase
+    .from('funnel_orders')
+    .select('*')
+    .eq('stripe_customer_id', stripeCustomerId)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+  return (data as FunnelOrder | null) ?? null
+}
+
+/**
+ * Idempotent subscription state setter. Use this from every Stripe webhook
+ * branch so writes are always shape-checked against the same allowed set.
+ */
+export async function setSubscriptionState(
+  orderId: string,
+  state: SubscriptionState
+): Promise<FunnelOrder | null> {
+  const supabase = createAdminClient()
+
+  const patch: Record<string, unknown> = { subscription_state: state }
+  if (state === 'past_due') {
+    patch.subscription_past_due_at = new Date().toISOString()
+  }
+  if (state === 'cancelled') {
+    patch.subscription_cancelled_at = new Date().toISOString()
+  }
+  if (state === 'active') {
+    // Clear past_due timestamp so the portal banner goes away
+    patch.subscription_past_due_at = null
+  }
+
+  const { data, error } = await supabase
+    .from('funnel_orders')
+    .update(patch)
+    .eq('id', orderId)
+    .select('*')
+    .maybeSingle()
+
+  if (error) {
+    safeError('[funnel/order] setSubscriptionState failed:', error)
+    return null
+  }
+  return (data as FunnelOrder | null) ?? null
+}
+
+/**
+ * Hard stop on cancel: deactivate the AL pixel (events stop being processed
+ * for this workspace_id=null pixel), revoke ALL portal tokens for the order,
+ * and flip subscription_state to cancelled.
+ *
+ * The pixel snippet still loads on the buyer's site — we don't have control
+ * over that — but downstream events drop on the floor because the pixel
+ * row is is_active=false. If they ever resubscribe we create a fresh pixel
+ * + fresh token; we don't try to revive the old one.
+ */
+export async function cancelAndDisableOrder(orderId: string): Promise<FunnelOrder | null> {
+  const supabase = createAdminClient()
+
+  // 1. Flip subscription_state
+  const updated = await setSubscriptionState(orderId, 'cancelled')
+  if (!updated) return null
+
+  // 2. Deactivate the AL pixel so we stop processing events for it
+  if (updated.pixel_audiencelab_id) {
+    const { error: pixelErr } = await supabase
+      .from('audiencelab_pixels')
+      .update({ is_active: false })
+      .eq('pixel_id', updated.pixel_audiencelab_id)
+    if (pixelErr) {
+      safeError('[funnel/order] pixel deactivate failed (non-fatal):', pixelErr)
+    }
+  }
+
+  // 3. Revoke ALL portal tokens for this order so any open tab loses access
+  const { error: tokenErr } = await supabase
+    .from('funnel_portal_tokens')
+    .update({ revoked: true })
+    .eq('order_id', orderId)
+  if (tokenErr) {
+    safeError('[funnel/order] token revoke failed (non-fatal):', tokenErr)
+  }
+
+  safeLog('[funnel/order] cancelled + disabled', { order_id: orderId })
+  return updated
+}
+
+// ─── Pixel firing status ───────────────────────────────────────────────
+
+/**
+ * Updates pixel_last_event_at on the order from the latest audiencelab_events
+ * row. Cheap to call on every visitor-feed request — bounded query, indexed.
+ */
+export async function refreshPixelLastEventTimestamp(
+  orderId: string,
+  pixelAudienceLabId: string
+): Promise<string | null> {
+  const supabase = createAdminClient()
+  const { data } = await supabase
+    .from('audiencelab_events')
+    .select('received_at')
+    .eq('pixel_id', pixelAudienceLabId)
+    .order('received_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  const lastSeen = (data as { received_at?: string } | null)?.received_at ?? null
+  if (!lastSeen) return null
+
+  await supabase
+    .from('funnel_orders')
+    .update({ pixel_last_event_at: lastSeen })
+    .eq('id', orderId)
+  return lastSeen
+}
+
+// ─── Reminder bookkeeping ──────────────────────────────────────────────
+
+export async function markPixelInstallReminded(orderId: string): Promise<void> {
+  const supabase = createAdminClient()
+  await supabase
+    .from('funnel_orders')
+    .update({ pixel_install_reminded_at: new Date().toISOString() })
+    .eq('id', orderId)
+}
+
+export async function markVisitorDigestSent(orderId: string): Promise<void> {
+  const supabase = createAdminClient()
+  await supabase
+    .from('funnel_orders')
+    .update({ last_visitor_digest_at: new Date().toISOString() })
+    .eq('id', orderId)
+}
+
+// ─── Cron candidates (used by Inngest functions) ───────────────────────
+
+/**
+ * Orders that:
+ *   - have a pixel provisioned >24h ago
+ *   - have NEVER seen a pixel event
+ *   - have not been reminded yet
+ *   - subscription is still active
+ */
+export async function findPixelInstallReminderCandidates(
+  limit = 50
+): Promise<FunnelOrder[]> {
+  const supabase = createAdminClient()
+  const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+
+  const { data } = await supabase
+    .from('funnel_orders')
+    .select('*')
+    .eq('subscription_state', 'active')
+    .not('pixel_provisioned_at', 'is', null)
+    .lt('pixel_provisioned_at', cutoff)
+    .is('pixel_last_event_at', null)
+    .is('pixel_install_reminded_at', null)
+    .limit(limit)
+
+  return (data as FunnelOrder[] | null) ?? []
+}
+
+/**
+ * Orders eligible for a weekly visitor digest:
+ *   - delivered (audience delivered, ongoing relationship)
+ *   - subscription active
+ *   - either never sent a digest OR last digest >6 days ago
+ */
+export async function findVisitorDigestCandidates(
+  limit = 200
+): Promise<FunnelOrder[]> {
+  const supabase = createAdminClient()
+  const cutoff = new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString()
+
+  const { data } = await supabase
+    .from('funnel_orders')
+    .select('*')
+    .eq('subscription_state', 'active')
+    .not('pixel_audiencelab_id', 'is', null)
+    .or(`last_visitor_digest_at.is.null,last_visitor_digest_at.lt.${cutoff}`)
+    .limit(limit)
+
+  return (data as FunnelOrder[] | null) ?? []
 }
 
 export async function listOrders(opts?: {
