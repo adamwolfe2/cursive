@@ -4,7 +4,18 @@
 **Owner:** Adam
 **Tier:** 1 (workspaces + auth + state transitions)
 **Skill:** safe-feature-slice
-**Status:** Phase 1 SHIPPED 2026-06-05 (migration applied, 13 tests green, 0 TS errors). Phases 2-4 PENDING.
+**Status:** Phases 1-4 BUILT 2026-06-05 (migrations applied, 22 tests green, 0 TS errors, build green). Pending live end-to-end test with Adam.
+
+**Phases 2-4 build (2026-06-05):**
+- **Migration** `20260605..._funnel_order_workspace_link`: `funnel_orders.workspace_id` (FK→workspaces, on delete set null) + `audience_pushed_at`.
+- **Phase 2** `src/lib/funnel/workspace-provision.ts` — `provisionFunnelWorkspace(order)`: creates Supabase auth user + workspace (visible_features=funnel preset, has_pixel_access, onboarding_status=completed) + public.users row (role=owner, plan=pro) + links funnel_orders.workspace_id (race-safe). Idempotent (reuses existing user/workspace by email). Wired into `handleFunnelOrderCompleted` (checkout webhook), non-fatal.
+- **Phase 2 login** `src/app/api/funnel/[token]/dashboard-login/route.ts` — portal token → mints+consumes a Supabase magic link server-side via `verifyOtp(hashed_token)`, sets session, redirects to /dashboard. No emailed token (avoids pre-burn). Email gets a second "Open My Dashboard" button (`funnel-confirmation.ts`).
+- **Phase 3** `provisionFunnelPixel` now sets pixel `workspace_id = order.workspace_id` → AL superpixel webhook routes identified visitors → leads in the buyer's workspace/dashboard automatically.
+- **Phase 4** `pushFunnelAudienceToWorkspace(order)` — on admin "mark delivered", emits existing `audiencelab/provision-workspace-audience` Inngest job with order ICP (industries/locations) → leads into workspace. Idempotent via `audience_pushed_at`.
+
+**BACKFILL NEEDED for the 2 existing test orders** (created before this code, workspace_id=null, pixels orphaned): after deploy, click each order's dashboard-login (auto-provisions workspace) then `update audiencelab_pixels set workspace_id=<ws> where pixel_id=<order.pixel_audiencelab_id>`. Or run a one-off backfill script.
+
+**Known launch gate (unchanged):** AL→portal visitor pipeline never fired live (0 events on both test pixels). Must verify AL is registered to POST to the superpixel webhook + a real identified visit lands.
 
 **Phase 1 decision:** funnel nav = `['dashboard','leads','settings']`. `visible_features` allowlist takes PRECEDENCE over role/plan/adminOnly (funnel buyers are `role='owner'` → would otherwise see full admin nav). Files: `src/lib/workspaces/feature-flags.ts`, `app-shell.tsx` (HREF_TO_FEATURE map + filter), `(dashboard)/layout.tsx`, admin toggle on `/admin/accounts/[id]` + `PATCH /api/admin/workspaces/[id]/features`.
 

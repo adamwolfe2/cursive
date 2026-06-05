@@ -14,6 +14,8 @@ interface FunnelConfirmationEmailData {
   to: string
   customerName: string | null
   portalUrl: string
+  /** Optional one-click dashboard login (Phase 2). Omitted if not provisioned. */
+  dashboardUrl?: string
   offerSlug: FunnelOfferSlug
 }
 
@@ -42,11 +44,27 @@ function offerSummary(slug: FunnelOfferSlug): string {
 export async function sendFunnelConfirmationEmail(
   data: FunnelConfirmationEmailData
 ) {
-  const { to, customerName, portalUrl, offerSlug } = data
+  const { to, customerName, portalUrl, dashboardUrl, offerSlug } = data
   const firstName = (customerName ?? '').trim().split(/\s+/)[0] || 'there'
 
   const headline = offerHeadline(offerSlug)
   const summary = offerSummary(offerSlug)
+
+  // Secondary CTA — one-click into the dashboard (no password). Only rendered
+  // when a workspace was provisioned for this buyer.
+  const dashboardButton = dashboardUrl
+    ? `
+    <table cellpadding="0" cellspacing="0" role="presentation" style="margin:0 0 24px;">
+      <tr>
+        <td style="border:1px solid #007AFF;border-radius:8px;">
+          <a href="${dashboardUrl}" target="_blank" rel="noopener noreferrer"
+             style="display:inline-block;padding:13px 32px;font-size:15px;font-weight:600;color:#007AFF;text-decoration:none;border-radius:8px;">
+            Open My Dashboard →
+          </a>
+        </td>
+      </tr>
+    </table>`
+    : ''
 
   const content = `
     <p class="email-text" style="font-size:16px;color:#111827;">
@@ -57,8 +75,8 @@ export async function sendFunnelConfirmationEmail(
       ${escapeForEmail(summary)}
     </p>
 
-    <!-- CTA -->
-    <table cellpadding="0" cellspacing="0" role="presentation" style="margin:24px 0;">
+    <!-- Primary CTA: setup portal -->
+    <table cellpadding="0" cellspacing="0" role="presentation" style="margin:24px 0 12px;">
       <tr>
         <td style="background-color:#007AFF;border-radius:8px;">
           <a href="${portalUrl}" target="_blank" rel="noopener noreferrer"
@@ -68,6 +86,7 @@ export async function sendFunnelConfirmationEmail(
         </td>
       </tr>
     </table>
+    ${dashboardButton}
 
     <p class="email-text" style="font-size:13px;color:#6b7280;">
       Bookmark this link — it's your private portal. Every step lives there.
@@ -101,6 +120,7 @@ export async function sendFunnelConfirmationEmail(
         summary,
         '',
         `Open your setup portal: ${portalUrl}`,
+        ...(dashboardUrl ? ['', `Open your dashboard (no password): ${dashboardUrl}`] : []),
         '',
         `Bookmark this link — it's your private portal. Reply to this email if you ever lose it.`,
         '',

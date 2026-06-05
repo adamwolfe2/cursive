@@ -15,7 +15,9 @@ import {
   leadPurchaseMetadataSchema,
 } from './types'
 import { createOrderFromCheckoutSession } from '@/lib/funnel/order.service'
+import { provisionFunnelWorkspace } from '@/lib/funnel/workspace-provision'
 import { sendFunnelConfirmationEmail } from '@/lib/email/templates/funnel-confirmation'
+import { APP_URL } from '@/lib/config/urls'
 
 /**
  * Handle checkout.session.completed events
@@ -312,12 +314,30 @@ async function handleFunnelOrderCompleted(session: Stripe.Checkout.Session): Pro
 
   const { order, portalUrl } = result
 
+  // Phase 2: auto-provision a dashboard workspace + login so the buyer can use
+  // the full dashboard, not just the token portal. Non-fatal — the portal
+  // delivers fulfillment regardless, so a provisioning hiccup never blocks a
+  // paid order. dashboardUrl is only included in the email if this succeeds.
+  let dashboardUrl: string | undefined
+  try {
+    const provisioned = await provisionFunnelWorkspace(order)
+    if (provisioned) {
+      const token = portalUrl.split('/funnel/')[1] ?? ''
+      if (token) {
+        dashboardUrl = `${APP_URL}/api/funnel/${token}/dashboard-login`
+      }
+    }
+  } catch (provisionErr) {
+    safeError('[Stripe Webhook] funnel workspace provision failed (non-fatal)', provisionErr)
+  }
+
   // Confirmation email — non-fatal if it fails (Stripe is the source of truth)
   try {
     await sendFunnelConfirmationEmail({
       to: order.customer_email,
       customerName: order.customer_name,
       portalUrl,
+      dashboardUrl,
       offerSlug: order.offer_slug,
     })
   } catch (emailErr) {

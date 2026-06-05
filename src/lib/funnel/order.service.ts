@@ -77,9 +77,13 @@ export interface FunnelOrder {
 
   audience_sheet_url: string | null
   audience_delivered_at: string | null
+  audience_pushed_at: string | null
   fulfilled_by: string | null
 
   last_visitor_digest_at: string | null
+
+  // Auto-provisioned dashboard workspace (Phase 2). Null until provisioned.
+  workspace_id: string | null
 
   created_at: string
   updated_at: string
@@ -656,7 +660,7 @@ export async function provisionFunnelPixel(
   // bundle → awaiting_audience). We never trust the caller for offer_slug.
   const { data: existing } = await supabase
     .from('funnel_orders')
-    .select('offer_slug, status')
+    .select('offer_slug, status, workspace_id')
     .eq('id', orderId)
     .maybeSingle()
 
@@ -669,6 +673,13 @@ export async function provisionFunnelPixel(
 
   const offerSlug = (existing as { offer_slug: FunnelOfferSlug }).offer_slug
   const nextStatus = nextStatusAfterPixel(offerSlug)
+  // Phase 3: bind the pixel to the buyer's auto-provisioned workspace so the AL
+  // superpixel webhook routes identified visitors → leads in their dashboard
+  // (the webhook resolves workspace_id from audiencelab_pixels). Null-safe: if
+  // provisioning hasn't run yet, the pixel stays orphaned but the token portal
+  // feed (scoped by pixel_id) still works.
+  const orderWorkspaceId =
+    (existing as { workspace_id: string | null }).workspace_id ?? null
 
   // Insert the audiencelab_pixels row. CRITICAL — without this, the
   // AL webhook handler can't route incoming visitor events to the
@@ -681,7 +692,7 @@ export async function provisionFunnelPixel(
     .from('audiencelab_pixels')
     .insert({
       pixel_id: data.audiencelab_id,
-      workspace_id: null,
+      workspace_id: orderWorkspaceId,
       domain: data.domain,
       label: `${data.domain} (funnel order ${orderId.slice(0, 8)})`,
       is_active: true,
@@ -800,6 +811,28 @@ export async function markOrderDelivered(
     return null
   }
   return (updated as FunnelOrder | null) ?? null
+}
+
+/**
+ * Phase 4: mark that the AL audience has been pushed into the workspace leads
+ * table. Idempotent — only sets the timestamp if still null, so a double
+ * delivery never double-pushes.
+ */
+export async function markAudiencePushed(orderId: string): Promise<boolean> {
+  const supabase = createAdminClient()
+  const { data, error } = await supabase
+    .from('funnel_orders')
+    .update({ audience_pushed_at: new Date().toISOString() })
+    .eq('id', orderId)
+    .is('audience_pushed_at', null)
+    .select('id')
+    .maybeSingle()
+
+  if (error) {
+    safeError('[funnel/order] markAudiencePushed failed:', error)
+    return false
+  }
+  return !!data
 }
 
 // ─── Helpers ────────────────────────────────────────────────────────────

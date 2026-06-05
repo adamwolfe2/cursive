@@ -14,6 +14,7 @@ import {
   markOrderDelivered,
   portalUrlForToken,
 } from '@/lib/funnel/order.service'
+import { pushFunnelAudienceToWorkspace } from '@/lib/funnel/workspace-provision'
 import { sendFunnelAudienceDeliveredEmail } from '@/lib/email/templates/funnel-audience-delivered'
 import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
 
@@ -81,6 +82,15 @@ export async function POST(
       })
     } catch (emailErr) {
       safeError('[funnel/deliver] email failed (non-fatal)', emailErr)
+    }
+
+    // Phase 4: push the AL audience into the buyer's workspace as leads so they
+    // surface in the dashboard. Non-fatal — the Sheet is the canonical
+    // deliverable; a failed push never blocks delivery.
+    try {
+      await pushFunnelAudienceToWorkspace(updated)
+    } catch (pushErr) {
+      safeError('[funnel/deliver] audience push failed (non-fatal)', pushErr)
     }
 
     // Audit log — admin_audit_logs row for the money-touching action.
