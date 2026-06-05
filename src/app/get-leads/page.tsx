@@ -26,14 +26,23 @@ export default function GetLeadsPage() {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 sm:py-16">
-      {/* Hero */}
-      <div className="mb-10 text-center">
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-          See the people searching for your product right now.
+      {/* Hero — two-tone headline matches the meetcursive.com brand
+          treatment ("The Data Identity Layer / for Outbound, Intent, and
+          Enrichment"). Concrete numbers in the body build credibility
+          before the buyer hits the VSL. */}
+      <div className="mb-10 text-left sm:text-center">
+        <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl lg:text-5xl">
+          <span className="block">
+            See the people searching for your product.
+          </span>
+          <span className="block font-normal text-gray-400">
+            And every visitor landing on your site.
+          </span>
         </h1>
-        <p className="mx-auto mt-4 max-w-2xl text-base text-gray-500 sm:text-lg">
-          Watch the 60-second video to see exactly how it works. Then pick the
-          option that fits.
+        <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-gray-500 sm:text-lg">
+          280M verified consumers, a 15M-domain organic network, refreshed
+          every 30 days. Pixel installs in 60 seconds. Audience delivered
+          within 24 hours.
         </p>
       </div>
 
