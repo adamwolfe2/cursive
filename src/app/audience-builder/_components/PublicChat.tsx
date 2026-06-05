@@ -98,6 +98,13 @@ interface PublicChatProps {
     leadInfo: { firstName?: string | null; company?: string | null }
   ) => void
   onSessionExpired: () => void
+  /**
+   * Optional pre-filled prompt seeded into the hero input on first mount.
+   * Used by admin surfaces (e.g. /admin/funnel-orders) to deep-link a
+   * buyer's ICP straight into the copilot — admin can review/edit then
+   * send. Only applied when the chat is empty (no prior messages).
+   */
+  initialPrompt?: string | null
 }
 
 interface DonePayload {
@@ -150,11 +157,16 @@ export function PublicChat({
   authState,
   onAuth,
   onSessionExpired,
+  initialPrompt,
 }: PublicChatProps) {
   const { token } = authState
 
   const [messages, setMessages] = useState<Message[]>([])
-  const [input, setInput] = useState('')
+  const [input, setInput] = useState(initialPrompt ?? '')
+  // Track whether we've already applied the initialPrompt — prevents the
+  // seed from re-firing on prop updates or rerenders. Once Adam edits the
+  // input it stays as he typed it.
+  const initialPromptAppliedRef = useRef(!!initialPrompt)
   const [isSending, setIsSending] = useState(false)
   const [turnsUsed, setTurnsUsed] = useState(0)
   const [turnsToday, setTurnsToday] = useState(0)
@@ -221,6 +233,20 @@ export function PublicChat({
     el.style.height = 'auto'
     el.style.height = Math.min(el.scrollHeight, 240) + 'px'
   }, [input])
+
+  // Focus the hero textarea once the seeded prompt is in place so admin
+  // can immediately edit + send without an extra click.
+  useEffect(() => {
+    if (!initialPromptAppliedRef.current) return
+    if (messages.length > 0) return
+    heroTextareaRef.current?.focus()
+    // Move cursor to end so the existing text is visible and editable.
+    const el = heroTextareaRef.current
+    if (el) {
+      const len = el.value.length
+      el.setSelectionRange(len, len)
+    }
+  }, [messages.length])
 
   // Load session counters whenever we have a token
   useEffect(() => {

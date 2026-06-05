@@ -1,25 +1,24 @@
 /**
  * Funnel Admin Notification Email
  *
- * Sent to Adam when a buyer submits their ICP form. Contains the full ICP
- * + a "Ready to paste into Audience Labs" section that maps the buyer's
- * freeform input to AL canonical taxonomies (industries, seniority, state
- * codes, employee count). Triggered from /api/funnel/[token]/audience.
+ * Sent to Adam when a buyer submits their ICP form. Contains the raw ICP
+ * and a one-click CTA into /audience-builder pre-loaded with the buyer's
+ * ICP as a natural-language prompt — so the live copilot returns TRUE
+ * verified AL data (segments, taxonomies, titles, intent topics).
  */
 
 import { sendEmail, createEmailTemplate } from '../resend-client'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import type { FunnelOrder } from '@/lib/funnel/order.service'
-import { buildALSuggestion } from '@/lib/funnel/al-taxonomy'
+import { buildAudienceBuilderPrompt } from '@/lib/funnel/al-taxonomy'
 
 const ADMIN_NOTIFICATION_EMAIL =
   process.env.FUNNEL_ADMIN_EMAIL ?? 'adam@meetcursive.com'
 
-const ADMIN_ORDERS_URL = `${
+const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? 'https://leads.meetcursive.com'
-}/admin/funnel-orders`
 
-const AUDIENCELAB_URL = 'https://audiencelab.io'
+const ADMIN_ORDERS_URL = `${SITE_URL}/admin/funnel-orders`
 
 export async function sendFunnelAdminNotificationEmail(order: FunnelOrder) {
   const titlesArr = order.audience_titles ?? []
@@ -31,18 +30,17 @@ export async function sendFunnelAdminNotificationEmail(order: FunnelOrder) {
   const industries = industriesArr.join(', ') || '—'
   const locations = locationsArr.join(', ') || '—'
 
-  // AL-ready suggestion derived from the buyer's freeform input
-  const al = buildALSuggestion({
+  // Natural-language prompt pre-loaded into /audience-builder via query
+  // param. Lets Adam jump from email → copilot in one click.
+  const prompt = buildAudienceBuilderPrompt({
     solution: order.audience_solution,
+    icp_description: order.audience_icp_description,
     titles: titlesArr,
     industries: industriesArr,
     employee_range: order.audience_employee_range,
     locations: locationsArr,
   })
-
-  const employeeRangeFormatted = al.employeeRange
-    ? `min ${al.employeeRange.min ?? '—'} · max ${al.employeeRange.max ?? '—'}`
-    : '—'
+  const audienceBuilderUrl = `${SITE_URL}/audience-builder?prompt=${encodeURIComponent(prompt)}`
 
   const content = `
     <p class="email-text" style="font-size:15px;color:#111827;">
@@ -52,40 +50,25 @@ export async function sendFunnelAdminNotificationEmail(order: FunnelOrder) {
       <strong>${escapeForEmail(order.offer_slug)}</strong> plan.
     </p>
 
-    <!-- AL-ready paste section -->
+    <!-- Primary CTA -->
     <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:18px 20px;margin:0 0 20px;">
-      <p style="margin:0 0 14px;font-size:12px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:#1e40af;">
-        Ready to paste into Audience Labs
+      <p style="margin:0 0 6px;font-size:14px;font-weight:600;color:#111827;">
+        Build this audience with the live copilot
       </p>
-      <table cellpadding="0" cellspacing="0" style="width:100%;font-size:13px;color:#111827;">
+      <p style="margin:0 0 14px;font-size:13px;color:#374151;">
+        Opens the audience builder with the buyer&rsquo;s ICP pre-filled.
+        The copilot returns verified AL segments, taxonomies, and job
+        titles &mdash; not regex guesses.
+      </p>
+      <table cellpadding="0" cellspacing="0" role="presentation" style="margin:0;">
         <tr>
-          <td style="padding:5px 0;width:140px;color:#6b7280;vertical-align:top;">AL Industry filter</td>
-          <td style="padding:5px 0;"><code style="background:#fff;border:1px solid #dbeafe;padding:3px 6px;border-radius:4px;font-size:12px;">${escapeForEmail(al.industries.join(', ') || '— (unmatched)')}</code></td>
+          <td style="background-color:#007AFF;border-radius:8px;">
+            <a href="${audienceBuilderUrl}" target="_blank" rel="noopener noreferrer"
+               style="display:inline-block;padding:12px 24px;font-size:14px;font-weight:600;color:#ffffff;text-decoration:none;border-radius:8px;">
+              Build in Audience Builder &rarr;
+            </a>
+          </td>
         </tr>
-        <tr>
-          <td style="padding:5px 0;color:#6b7280;vertical-align:top;">AL Seniority filter</td>
-          <td style="padding:5px 0;"><code style="background:#fff;border:1px solid #dbeafe;padding:3px 6px;border-radius:4px;font-size:12px;">${escapeForEmail(al.seniority.join(', ') || '— (no rule matched)')}</code></td>
-        </tr>
-        <tr>
-          <td style="padding:5px 0;color:#6b7280;vertical-align:top;">AL Employee Count</td>
-          <td style="padding:5px 0;"><code style="background:#fff;border:1px solid #dbeafe;padding:3px 6px;border-radius:4px;font-size:12px;">${escapeForEmail(employeeRangeFormatted)}</code></td>
-        </tr>
-        <tr>
-          <td style="padding:5px 0;color:#6b7280;vertical-align:top;">AL State (2-letter)</td>
-          <td style="padding:5px 0;"><code style="background:#fff;border:1px solid #dbeafe;padding:3px 6px;border-radius:4px;font-size:12px;">${escapeForEmail(al.stateCodes.join(', ') || '— (not US-state)')}</code></td>
-        </tr>
-        <tr>
-          <td style="padding:5px 0;color:#6b7280;vertical-align:top;">Custom Audience topics</td>
-          <td style="padding:5px 0;"><code style="background:#fff;border:1px solid #dbeafe;padding:3px 6px;border-radius:4px;font-size:12px;">${escapeForEmail(al.topicSeeds.join(' · ') || '— (no seeds)')}</code></td>
-        </tr>
-        ${
-          al.unmatchedIndustries.length > 0
-            ? `<tr>
-                <td style="padding:5px 0;color:#b45309;vertical-align:top;">Search manually in AL</td>
-                <td style="padding:5px 0;color:#b45309;font-size:12px;">${escapeForEmail(al.unmatchedIndustries.join(', '))}</td>
-              </tr>`
-            : ''
-        }
       </table>
     </div>
 
@@ -107,26 +90,15 @@ export async function sendFunnelAdminNotificationEmail(order: FunnelOrder) {
     <div style="background:#fef3c7;border:1px solid #fde68a;border-radius:8px;padding:14px 18px;margin:0 0 20px;">
       <p style="margin:0;font-size:13px;color:#78350f;">
         <strong>Workflow:</strong>
-        Open Audience Labs → paste the values from the blue box above into
-        the audience builder → export to Google Sheet → paste the Sheet URL
-        in the admin page below to fire the delivery email automatically.
+        Build in copilot &rarr; copilot returns verified segments &rarr;
+        export to Google Sheet &rarr; paste the Sheet URL into the admin
+        page below to fire the delivery email automatically.
       </p>
     </div>
 
-    <table cellpadding="0" cellspacing="0" role="presentation" style="margin:0 0 12px;">
-      <tr>
-        <td style="background-color:#007AFF;border-radius:8px;">
-          <a href="${ADMIN_ORDERS_URL}" target="_blank" rel="noopener noreferrer"
-             style="display:inline-block;padding:12px 24px;font-size:14px;font-weight:600;color:#ffffff;text-decoration:none;border-radius:8px;">
-            Manage in Admin →
-          </a>
-        </td>
-      </tr>
-    </table>
-
     <p style="font-size:13px;color:#374151;margin:0 0 8px;">
-      <a href="${AUDIENCELAB_URL}" target="_blank" rel="noopener noreferrer" style="color:#007AFF;">
-        Open Audience Labs →
+      <a href="${ADMIN_ORDERS_URL}" target="_blank" rel="noopener noreferrer" style="color:#007AFF;">
+        Open admin orders page &rarr;
       </a>
     </p>
 
@@ -145,7 +117,7 @@ export async function sendFunnelAdminNotificationEmail(order: FunnelOrder) {
       from: 'Cursive Funnel <notifications@meetcursive.com>',
       subject: `[Funnel] New audience to build — ${order.customer_name ?? order.customer_email} (${order.offer_slug})`,
       html: createEmailTemplate({
-        preheader: `Ready-to-paste AL values + raw buyer input.`,
+        preheader: `Build with the live Cursive copilot — ICP pre-filled.`,
         title: 'New funnel order needs audience fulfillment',
         content,
       }),
@@ -156,15 +128,8 @@ export async function sendFunnelAdminNotificationEmail(order: FunnelOrder) {
         `Plan: ${order.offer_slug}`,
         `Order ID: ${order.id}`,
         ``,
-        `=== READY TO PASTE INTO AUDIENCE LABS ===`,
-        `AL Industry filter:    ${al.industries.join(', ') || '— (unmatched)'}`,
-        `AL Seniority filter:   ${al.seniority.join(', ') || '— (no rule matched)'}`,
-        `AL Employee Count:     ${employeeRangeFormatted}`,
-        `AL State (2-letter):   ${al.stateCodes.join(', ') || '— (not US-state)'}`,
-        `Custom Audience seeds: ${al.topicSeeds.join(' · ') || '— (no seeds)'}`,
-        al.unmatchedIndustries.length > 0
-          ? `Search manually in AL: ${al.unmatchedIndustries.join(', ')}`
-          : '',
+        `=== BUILD WITH THE LIVE COPILOT ===`,
+        `${audienceBuilderUrl}`,
         ``,
         `=== RAW BUYER INPUT ===`,
         `What they sell: ${order.audience_solution ?? '—'}`,
@@ -175,15 +140,12 @@ export async function sendFunnelAdminNotificationEmail(order: FunnelOrder) {
         `Locations: ${locations}`,
         ``,
         `Workflow:`,
-        `1. Open Audience Labs: ${AUDIENCELAB_URL}`,
-        `2. Paste the blue-box values into the audience builder`,
-        `3. Export to Google Sheet`,
-        `4. Paste Sheet URL: ${ADMIN_ORDERS_URL}`,
+        `1. Build in copilot (link above)`,
+        `2. Export verified segments to Google Sheet`,
+        `3. Paste Sheet URL: ${ADMIN_ORDERS_URL}`,
         ``,
         `Stripe session: ${order.stripe_session_id}`,
-      ]
-        .filter(Boolean)
-        .join('\n'),
+      ].join('\n'),
     })
   } catch (err) {
     safeError('[funnel-admin-notification] send failed:', err)

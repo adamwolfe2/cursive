@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { PublicChat } from './_components/PublicChat'
 
 const TOKEN_KEY = 'audience_builder_token'
@@ -29,6 +30,12 @@ const EMPTY_AUTH: AuthState = {
 export default function AudienceBuilderPage() {
   const [authState, setAuthState] = useState<AuthState>(EMPTY_AUTH)
   const [hydrated, setHydrated] = useState(false)
+
+  // ?prompt= lets admin surfaces (e.g. /admin/funnel-orders) deep-link a
+  // pre-filled query into the copilot. The PublicChat seeds its hero input
+  // from this so the admin can review/edit/send rather than retype the ICP.
+  const searchParams = useSearchParams()
+  const initialPrompt = searchParams.get('prompt') ?? null
 
   // Hydrate from sessionStorage so refresh doesn't kick user out.
   useEffect(() => {
@@ -112,6 +119,7 @@ export default function AudienceBuilderPage() {
       authState={authState}
       onAuth={handleAuth}
       onSessionExpired={handleSessionExpired}
+      initialPrompt={initialPrompt}
     />
   )
 }

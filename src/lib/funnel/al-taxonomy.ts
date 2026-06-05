@@ -242,6 +242,80 @@ export interface ALAudienceSuggestion {
   topicSeeds: string[]
 }
 
+/**
+ * Builds a natural-language prompt for the /audience-builder copilot
+ * from a funnel order's ICP fields. The copilot turns this into real
+ * AL segments + verified taxonomies + suggested job titles, so the
+ * admin walks away with TRUE data rather than regex guesses.
+ *
+ * Skips empty fields — short prompts get short answers, long prompts
+ * get rich ones. Caps at ~600 chars to stay copilot-friendly.
+ */
+export function buildAudienceBuilderPrompt(input: {
+  solution?: string | null
+  icp_description?: string | null
+  titles?: readonly string[] | null
+  industries?: readonly string[] | null
+  employee_range?: string | null
+  locations?: readonly string[] | null
+}): string {
+  const parts: string[] = []
+
+  const titles = (input.titles ?? []).filter(Boolean)
+  const industries = (input.industries ?? []).filter(Boolean)
+  const locations = (input.locations ?? []).filter(Boolean)
+
+  // Lead: who do we want to find?
+  if (titles.length > 0) {
+    parts.push(`Help me build an audience of ${joinList(titles)}`)
+  } else {
+    parts.push('Help me build an audience of decision-makers')
+  }
+
+  // Where they work
+  if (industries.length > 0) {
+    parts.push(`at ${joinList(industries)} companies`)
+  }
+
+  // Company size
+  if (input.employee_range && input.employee_range !== 'Any size') {
+    parts.push(`(${input.employee_range} employees)`)
+  }
+
+  // Geography
+  if (locations.length > 0) {
+    parts.push(`in ${joinList(locations)}`)
+  }
+
+  parts.push('.')
+
+  // What they need
+  if (input.solution) {
+    parts.push(` They're looking for ${input.solution.trim()}.`)
+  }
+
+  // Buyer's own framing of their ICP
+  if (input.icp_description) {
+    parts.push(` ICP context: ${input.icp_description.trim()}.`)
+  }
+
+  // What we want back from the copilot
+  parts.push(
+    ' Suggest the exact AL industries, seniority levels, job titles, and intent topics to use. Verify each against the live AL taxonomy.'
+  )
+
+  const prompt = parts.join('').replace(/\s+\./g, '.').trim()
+  return prompt.length > 600 ? prompt.slice(0, 597) + '…' : prompt
+}
+
+function joinList(items: readonly string[]): string {
+  const arr = items.map((s) => s.trim()).filter(Boolean)
+  if (arr.length === 0) return ''
+  if (arr.length === 1) return arr[0]
+  if (arr.length === 2) return `${arr[0]} and ${arr[1]}`
+  return `${arr.slice(0, -1).join(', ')}, and ${arr[arr.length - 1]}`
+}
+
 export function buildALSuggestion(input: {
   solution?: string | null
   titles?: readonly string[] | null

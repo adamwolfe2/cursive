@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import type { FunnelOrder } from '@/lib/funnel/order.service'
-import { buildALSuggestion } from '@/lib/funnel/al-taxonomy'
+import { buildAudienceBuilderPrompt } from '@/lib/funnel/al-taxonomy'
 
 interface Props {
   orders: FunnelOrder[]
@@ -187,97 +187,71 @@ function DeliverActionInline({ orderId }: { orderId: string }) {
   )
 }
 
-// ─── ICP detail panel — raw input + AL-ready paste values + copy chips ─────
-
-function CopyChip({ label, value }: { label: string; value: string }) {
-  const [copied, setCopied] = useState(false)
-  const disabled = !value || value.startsWith('—')
-
-  return (
-    <div className="flex items-start gap-2">
-      <p className="w-36 shrink-0 text-[11px] uppercase tracking-wide text-gray-500">
-        {label}
-      </p>
-      <div className="flex flex-1 items-start gap-2">
-        <code
-          className={`flex-1 rounded border px-2 py-1 text-[11px] leading-relaxed ${
-            disabled
-              ? 'border-gray-200 bg-gray-50 text-gray-400'
-              : 'border-blue-200 bg-white text-gray-900'
-          }`}
-        >
-          {value}
-        </code>
-        {!disabled && (
-          <button
-            type="button"
-            onClick={() => {
-              navigator.clipboard.writeText(value)
-              setCopied(true)
-              setTimeout(() => setCopied(false), 1200)
-            }}
-            className="shrink-0 rounded border border-gray-300 bg-white px-2 py-1 text-[10px] font-medium text-gray-700 hover:bg-gray-50"
-          >
-            {copied ? '✓' : 'Copy'}
-          </button>
-        )}
-      </div>
-    </div>
-  )
-}
+// ─── ICP detail panel — raw input + audience-builder CTA ──────────────────
 
 function ICPDetailPanel({ order }: { order: FunnelOrder }) {
-  const al = buildALSuggestion({
+  const prompt = buildAudienceBuilderPrompt({
     solution: order.audience_solution,
+    icp_description: order.audience_icp_description,
     titles: order.audience_titles,
     industries: order.audience_industries,
     employee_range: order.audience_employee_range,
     locations: order.audience_locations,
   })
 
-  const employeeFormatted = al.employeeRange
-    ? `min ${al.employeeRange.min ?? '—'} · max ${al.employeeRange.max ?? '—'}`
-    : '—'
+  const audienceBuilderUrl = `/audience-builder?prompt=${encodeURIComponent(prompt)}`
 
   return (
     <div className="mt-3 space-y-4">
-      {/* AL-ready paste values */}
-      <div className="rounded-lg border border-blue-200 bg-blue-50 p-3">
-        <p className="mb-2 text-[10px] font-bold uppercase tracking-wide text-blue-700">
-          Ready to paste into Audience Labs
+      {/* Primary action: open the live audience-builder copilot pre-loaded
+          with the buyer's ICP. The copilot returns TRUE verified data
+          against the live AL taxonomy — segments, industries, seniority,
+          job titles, intent topics — instead of regex guesses. */}
+      <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
+        <p className="mb-1 text-sm font-semibold text-gray-900">
+          Build this audience with the live Cursive copilot
         </p>
-        <div className="space-y-1.5">
-          <CopyChip
-            label="AL Industry"
-            value={al.industries.join(', ') || '— (unmatched — see raw input below)'}
-          />
-          <CopyChip
-            label="AL Seniority"
-            value={al.seniority.join(', ') || '— (no rule matched)'}
-          />
-          <CopyChip label="AL Employee Count" value={employeeFormatted} />
-          <CopyChip
-            label="AL State"
-            value={al.stateCodes.join(', ') || '— (not US-state)'}
-          />
-          <CopyChip
-            label="Custom Audience seeds"
-            value={al.topicSeeds.join(' · ') || '— (no seeds)'}
-          />
-          {al.unmatchedIndustries.length > 0 && (
-            <CopyChip
-              label="Search manually"
-              value={al.unmatchedIndustries.join(', ')}
+        <p className="mb-3 text-xs text-gray-600">
+          Opens the audience builder with the buyer&apos;s ICP pre-filled.
+          The copilot returns verified AL segments, taxonomies, and job
+          titles — no guessing.
+        </p>
+        <a
+          href={audienceBuilderUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+        >
+          Build in Audience Builder
+          <svg
+            className="h-3.5 w-3.5"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={2}
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
             />
-          )}
-        </div>
+          </svg>
+        </a>
       </div>
 
-      {/* Raw input from buyer */}
+      {/* Raw input from buyer — kept visible for reference + as a fallback
+          if the copilot needs context that didn't fit in the prompt. */}
       <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
-        <p className="mb-2 text-[10px] font-bold uppercase tracking-wide text-gray-600">
-          Raw buyer input
-        </p>
+        <div className="mb-2 flex items-center justify-between">
+          <p className="text-[10px] font-bold uppercase tracking-wide text-gray-600">
+            Raw buyer input
+          </p>
+          <CopyButton
+            value={prompt}
+            label="Copy prompt"
+            confirmedLabel="Prompt copied"
+          />
+        </div>
         <div className="space-y-1 text-[11px] leading-relaxed text-gray-800">
           <p><span className="font-semibold">Sells:</span> {order.audience_solution}</p>
           <p><span className="font-semibold">ICP:</span> {order.audience_icp_description}</p>
@@ -289,19 +263,36 @@ function ICPDetailPanel({ order }: { order: FunnelOrder }) {
       </div>
 
       <p className="text-[11px] text-gray-500">
-        Tip: open{' '}
-        <a
-          href="https://audiencelab.io"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-blue-600 hover:underline"
-        >
-          audiencelab.io
-        </a>
-        , paste the blue values into the audience builder, export to a Google
-        Sheet, then drop the Sheet URL into the &quot;Mark delivered&quot;
-        field on the right.
+        Workflow: click <span className="font-medium">Build in Audience Builder</span> →
+        copilot returns verified segments → export to a Google Sheet →
+        drop the Sheet URL into the &quot;Mark delivered&quot; field on
+        the right.
       </p>
     </div>
+  )
+}
+
+function CopyButton({
+  value,
+  label,
+  confirmedLabel,
+}: {
+  value: string
+  label: string
+  confirmedLabel: string
+}) {
+  const [copied, setCopied] = useState(false)
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        navigator.clipboard.writeText(value)
+        setCopied(true)
+        setTimeout(() => setCopied(false), 1500)
+      }}
+      className="rounded border border-gray-300 bg-white px-2 py-0.5 text-[10px] font-medium text-gray-700 hover:bg-gray-50"
+    >
+      {copied ? confirmedLabel : label}
+    </button>
   )
 }
