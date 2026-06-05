@@ -123,6 +123,37 @@ async function resolveWorkspace(
   return data?.workspace_id || null
 }
 
+/**
+ * Reachability probe handler.
+ *
+ * AudienceLab's "Test" button (and similar webhook UIs in their dashboard)
+ * issues a GET or HEAD against the configured URL to verify it resolves
+ * before saving. Without this handler, Next returns 405 → AL surfaces
+ * "Failed to reach webhook URL" even though POST event delivery would
+ * work fine.
+ *
+ * Returns 200 with a tiny JSON body. No auth — the only thing exposed is
+ * "this endpoint exists." Actual event ingestion still requires POST +
+ * the shared-secret header verified by the POST handler below.
+ */
+export async function GET() {
+  return NextResponse.json(
+    { ok: true, endpoint: 'audiencelab/superpixel', accepts: 'POST' },
+    {
+      status: 200,
+      headers: { 'Cache-Control': 'no-store' },
+    }
+  )
+}
+
+/** Same as GET — HEAD is identical to GET minus the body in Next. */
+export async function HEAD() {
+  return new NextResponse(null, {
+    status: 200,
+    headers: { 'Cache-Control': 'no-store' },
+  })
+}
+
 export async function POST(request: NextRequest) {
   try {
     // Enforce Content-Type
