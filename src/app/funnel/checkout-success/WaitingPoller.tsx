@@ -2,7 +2,10 @@
 
 import { useEffect, useState } from 'react'
 
-const MAX_ATTEMPTS = 30 // ~60 seconds at 2s interval
+// Stripe webhooks normally land within 1-3s, but cold lambdas + retries
+// can occasionally push it to 30-90s. Generous window so we never fall
+// through to the "check your email" state on a legitimate purchase.
+const MAX_ATTEMPTS = 150 // 5 minutes at 2s interval
 const INTERVAL_MS = 2000
 
 export function WaitingPoller({ sessionId }: { sessionId: string }) {
