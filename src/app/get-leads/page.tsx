@@ -5,6 +5,7 @@ import {
   isSelfHostedVideoUrl,
 } from '@/lib/stripe/funnel-products'
 import { CheckoutButtons } from './CheckoutButtons'
+import { FunnelTelemetry } from './FunnelTelemetry'
 import { PricingGate } from './PricingGate'
 
 export const dynamic = 'force-dynamic'
@@ -26,6 +27,11 @@ export default function GetLeadsPage() {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 sm:py-16">
+      <FunnelTelemetry
+        offerSlugs={offers.map((o) => o.slug)}
+        vslUrl={FUNNEL_VSL_URL}
+      />
+
       {/* Hero — two-tone headline matches the meetcursive.com brand
           treatment ("The Data Identity Layer / for Outbound, Intent, and
           Enrichment"). Concrete numbers in the body build credibility

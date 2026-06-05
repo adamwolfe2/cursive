@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { FUNNEL_EVENTS, trackFunnel } from '@/lib/funnel/tracking'
 
 const UNLOCK_AFTER_SECONDS = 60
 
@@ -25,6 +26,17 @@ export function PricingGate({ children }: { children: React.ReactNode }) {
       setSecondsLeft((s) => Math.max(0, s - 1))
     }, 1000)
     return () => clearInterval(interval)
+  }, [unlocked])
+
+  // Fire pricing_unlocked exactly once when the gate elapses. Drives the
+  // funnel-conversion calculation: % of landing_viewed → pricing_unlocked
+  // = % that made it past the VSL gate.
+  useEffect(() => {
+    if (unlocked) {
+      trackFunnel(FUNNEL_EVENTS.PRICING_UNLOCKED, {
+        unlocked_after_seconds: UNLOCK_AFTER_SECONDS,
+      })
+    }
   }, [unlocked])
 
   return (

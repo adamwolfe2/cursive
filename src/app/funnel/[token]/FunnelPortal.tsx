@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import type { FunnelOrder } from '@/lib/funnel/order.service'
+import { FUNNEL_EVENTS, trackFunnel } from '@/lib/funnel/tracking'
 
 // ─── "Test my install" button ─────────────────────────────────────────────
 
@@ -19,6 +20,7 @@ function TestInstallButton({ token }: { token: string }) {
 
   async function runCheck() {
     setState({ kind: 'checking' })
+    trackFunnel(FUNNEL_EVENTS.PIXEL_TEST_CLICKED, {})
     try {
       const res = await fetch(`/api/funnel/${token}/test-pixel`, {
         method: 'POST',
@@ -29,9 +31,13 @@ function TestInstallButton({ token }: { token: string }) {
         error?: string
       }
       if (!res.ok) {
+        trackFunnel(FUNNEL_EVENTS.PIXEL_TEST_RESULT, { result: 'error' })
         setState({ kind: 'error', message: json.error || 'Check failed.' })
         return
       }
+      trackFunnel(FUNNEL_EVENTS.PIXEL_TEST_RESULT, {
+        result: json.state ?? 'unknown',
+      })
       if (json.state === 'installed') {
         setState({ kind: 'installed', message: json.message ?? '' })
       } else if (json.state === 'missing') {
@@ -40,6 +46,7 @@ function TestInstallButton({ token }: { token: string }) {
         setState({ kind: 'unreachable', message: json.message ?? '' })
       }
     } catch (err) {
+      trackFunnel(FUNNEL_EVENTS.PIXEL_TEST_RESULT, { result: 'network_error' })
       setState({
         kind: 'error',
         message: err instanceof Error ? err.message : 'Check failed.',
@@ -298,6 +305,7 @@ function PixelStep({
     e.preventDefault()
     setSubmitting(true)
     setError(null)
+    trackFunnel(FUNNEL_EVENTS.PIXEL_REQUESTED, { order_id: order.id })
     try {
       const res = await fetch(`/api/funnel/${token}/pixel`, {
         method: 'POST',
@@ -308,6 +316,7 @@ function PixelStep({
       if (!res.ok) {
         throw new Error(json.error || `Pixel setup failed (HTTP ${res.status})`)
       }
+      trackFunnel(FUNNEL_EVENTS.PIXEL_PROVISIONED, { order_id: order.id })
       onProvisioned()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Could not set up pixel.')
@@ -536,6 +545,13 @@ function AudienceStep({
       if (!res.ok) {
         throw new Error(json.error || `Submit failed (HTTP ${res.status})`)
       }
+      trackFunnel(FUNNEL_EVENTS.AUDIENCE_SUBMITTED, {
+        order_id: order.id,
+        titles_count: titlesArr.length,
+        industries_count: industriesArr.length,
+        locations_count: locationsArr.length,
+        has_employee_range: !!form.employee_range,
+      })
       onSubmitted()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Could not submit.')
@@ -1071,6 +1087,7 @@ export function FunnelPortal({
 
   async function handleManageBilling() {
     setBillingLoading(true)
+    trackFunnel(FUNNEL_EVENTS.BILLING_PORTAL_OPENED, { order_id: order.id })
     try {
       const res = await fetch(`/api/funnel/${token}/billing-portal`, {
         method: 'POST',
@@ -1102,6 +1119,26 @@ export function FunnelPortal({
   }
 
   const firstName = (order.customer_name ?? '').trim().split(/\s+/)[0] || 'there'
+
+  // Fire portal_viewed once per mount + branch-specific banner events.
+  // Identity hint goes in as $set so PostHog connects this token to a
+  // person profile (matches the email captured by checkout earlier).
+  useEffect(() => {
+    trackFunnel(FUNNEL_EVENTS.PORTAL_VIEWED, {
+      order_id: order.id,
+      offer_slug: order.offer_slug,
+      subscription_state: order.subscription_state,
+      status: order.status,
+    })
+    if (order.subscription_state === 'cancelled') {
+      trackFunnel(FUNNEL_EVENTS.CANCELLED_SCREEN_VIEWED, { order_id: order.id })
+    }
+    if (order.subscription_state === 'past_due') {
+      trackFunnel(FUNNEL_EVENTS.PAST_DUE_BANNER_VIEWED, { order_id: order.id })
+    }
+    // Once per order, not per render — order.id is stable.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [order.id])
 
   // Hard-stop on cancel — show a static cancellation screen instead of the
   // full portal so buyers can't keep using a product they no longer pay for.

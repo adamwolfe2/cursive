@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import type { FunnelOfferConfig } from '@/lib/stripe/funnel-products'
+import { FUNNEL_EVENTS, trackFunnel } from '@/lib/funnel/tracking'
 
 function formatPrice(cents: number): string {
   return `$${(cents / 100).toLocaleString('en-US')}`
@@ -84,9 +85,17 @@ function PlanCard({ card }: { card: PlanCardConfig }) {
       setShowFallback(false)
       return
     }
-    const t = setTimeout(() => setShowFallback(true), 2000)
+    const t = setTimeout(() => {
+      setShowFallback(true)
+      // Track the fallback path separately so the funnel dashboard can
+      // surface popup-block rate as a distinct metric.
+      trackFunnel(FUNNEL_EVENTS.CHECKOUT_FALLBACK_SHOWN, {
+        offer_slug: offer.slug,
+        offer_price_cents: offer.monthlyPriceCents,
+      })
+    }, 2000)
     return () => clearTimeout(t)
-  }, [submitting])
+  }, [submitting, offer.slug, offer.monthlyPriceCents])
 
   return (
     <div
@@ -142,7 +151,18 @@ function PlanCard({ card }: { card: PlanCardConfig }) {
         method="POST"
         target="_blank"
         rel="noopener"
-        onSubmit={() => setSubmitting(true)}
+        onSubmit={() => {
+          setSubmitting(true)
+          trackFunnel(FUNNEL_EVENTS.PLAN_SELECTED, {
+            offer_slug: offer.slug,
+            offer_price_cents: offer.monthlyPriceCents,
+            offer_highlight: !!highlight,
+          })
+          trackFunnel(FUNNEL_EVENTS.CHECKOUT_INITIATED, {
+            offer_slug: offer.slug,
+            offer_price_cents: offer.monthlyPriceCents,
+          })
+        }}
         className="w-full"
       >
         <input type="hidden" name="offer" value={offer.slug} />
