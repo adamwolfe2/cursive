@@ -670,9 +670,13 @@ export async function provisionFunnelPixel(
   const offerSlug = (existing as { offer_slug: FunnelOfferSlug }).offer_slug
   const nextStatus = nextStatusAfterPixel(offerSlug)
 
-  // Insert the audiencelab_pixels row first. Non-fatal if it fails — the
-  // snippet is also stored on the order, so the buyer still gets working
-  // code. We log + alert so ops can backfill if needed.
+  // Insert the audiencelab_pixels row. CRITICAL — without this, the
+  // AL webhook handler can't route incoming visitor events to the
+  // correct funnel order (events get orphaned).
+  // trial_status must match the table check constraint:
+  //   trial | expired | active | cancelled | demo
+  // Funnel buyers are paid so we use 'active'. We previously had 'paid'
+  // which silently failed every insert because it's outside the enum.
   const { error: pixelInsertError } = await supabase
     .from('audiencelab_pixels')
     .insert({
@@ -683,12 +687,14 @@ export async function provisionFunnelPixel(
       is_active: true,
       install_url: data.install_url,
       snippet: data.snippet,
-      trial_status: 'paid',
+      trial_status: 'active',
       trial_ends_at: null,
     })
   if (pixelInsertError) {
+    // Now that we use a valid trial_status this should not fire on
+    // a fresh pixel — but log critically if it does so ops can investigate.
     safeError(
-      '[funnel/order] audiencelab_pixels insert failed (non-fatal):',
+      '[funnel/order] audiencelab_pixels insert failed (CRITICAL — visitor events will orphan):',
       pixelInsertError
     )
   }
