@@ -14,6 +14,8 @@ import {
   creditPurchaseMetadataSchema,
   leadPurchaseMetadataSchema,
 } from './types'
+import { createOrderFromCheckoutSession } from '@/lib/funnel/order.service'
+import { sendFunnelConfirmationEmail } from '@/lib/email/templates/funnel-confirmation'
 
 /**
  * Handle checkout.session.completed events
@@ -43,6 +45,9 @@ export async function handleCheckoutSessionCompleted(event: Stripe.Event): Promi
       // Subscription lifecycle is handled via customer.subscription.created event.
       // checkout.session.completed just provides confirmation; no extra action needed here.
       safeLog('[Stripe Webhook] Service subscription checkout completed, subscription events will handle provisioning')
+      break
+    case 'funnel_order':
+      await handleFunnelOrderCompleted(session)
       break
     default:
       safeLog(`[Stripe Webhook] Unknown checkout metadata type: ${metadataType}`)
@@ -289,4 +294,38 @@ async function handleLeadPurchaseCompleted(session: Stripe.Checkout.Session): Pr
   } catch (emailError) {
     safeError('[Stripe Webhook] Failed to send lead purchase confirmation email', emailError)
   }
+}
+
+/**
+ * Handle completed funnel order (VSL self-serve checkout for pixel + audience).
+ * Creates the funnel_orders row, issues a portal token, and emails the buyer
+ * the portal link. Idempotent — re-deliveries return the existing order.
+ */
+async function handleFunnelOrderCompleted(session: Stripe.Checkout.Session): Promise<void> {
+  const result = await createOrderFromCheckoutSession(session)
+
+  if (!result) {
+    // Hard fail — the webhook handler will report 500 to Stripe and retry,
+    // surfacing the failure in Sentry. We never want to silently drop a paid order.
+    throw new Error(`Funnel order creation failed for session ${session.id}`)
+  }
+
+  const { order, portalUrl } = result
+
+  // Confirmation email — non-fatal if it fails (Stripe is the source of truth)
+  try {
+    await sendFunnelConfirmationEmail({
+      to: order.customer_email,
+      customerName: order.customer_name,
+      portalUrl,
+      offerSlug: order.offer_slug,
+    })
+  } catch (emailErr) {
+    safeError('[Stripe Webhook] funnel-confirmation email failed (non-fatal)', emailErr)
+  }
+
+  safeLog('[Stripe Webhook] Funnel order processed', {
+    order_id: order.id,
+    offer: order.offer_slug,
+  })
 }

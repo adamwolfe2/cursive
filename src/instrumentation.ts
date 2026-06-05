@@ -65,6 +65,17 @@ export async function register() {
       ) {
         return
       }
+      // Suppress Next.js dev-server vendor-chunk race: Sentry / OTel worker
+      // threads sometimes try to load a chunk before the dev server has
+      // finished writing it. The next request retries automatically. Only
+      // suppress in dev — production builds have all chunks emitted ahead.
+      if (
+        process.env.NODE_ENV !== 'production' &&
+        message.includes('.next/server') &&
+        message.includes('Cannot find module')
+      ) {
+        return
+      }
       // Re-throw unexpected uncaught exceptions to preserve original behavior
       throw err
     })

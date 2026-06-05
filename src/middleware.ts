@@ -189,6 +189,11 @@ export async function middleware(req: NextRequest) {
       // Client portal — token-based auth, no user session required
       pathname.startsWith('/portal/') ||
       pathname.startsWith('/api/portal/') ||
+      // VSL funnel — public landing + token-gated post-pay portal + checkout API
+      pathname === '/get-leads' ||
+      pathname.startsWith('/get-leads/') ||
+      pathname.startsWith('/funnel/') ||
+      pathname.startsWith('/api/funnel/') ||
       pathname === '/' ||
       pathname.startsWith('/_next') ||
       pathname.startsWith('/api/webhooks') ||

@@ -1,0 +1,637 @@
+'use client'
+
+import { useMemo, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import type { FunnelOrder } from '@/lib/funnel/order.service'
+
+// ─── Visual primitives — mirror the existing /portal/[token] StepShell ─────
+
+type StepState = 'complete' | 'active' | 'pending' | 'locked'
+
+function StepIcon({ state }: { state: StepState }) {
+  if (state === 'complete') {
+    return (
+      <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-emerald-500">
+        <svg className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+        </svg>
+      </div>
+    )
+  }
+  if (state === 'active') {
+    return (
+      <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border-2 border-blue-600 bg-blue-50">
+        <div className="h-3 w-3 animate-pulse rounded-full bg-blue-600" />
+      </div>
+    )
+  }
+  if (state === 'locked') {
+    return (
+      <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border-2 border-gray-200 bg-gray-50">
+        <svg className="h-4 w-4 text-gray-300" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+        </svg>
+      </div>
+    )
+  }
+  return (
+    <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border-2 border-gray-200 bg-white">
+      <div className="h-2.5 w-2.5 rounded-full bg-gray-300" />
+    </div>
+  )
+}
+
+function StepShell({
+  number,
+  title,
+  state,
+  locked,
+  children,
+}: {
+  number: number
+  title: string
+  state: StepState
+  locked: boolean
+  children: React.ReactNode
+}) {
+  return (
+    <div className={`flex gap-4 ${locked ? 'opacity-60' : ''}`}>
+      <StepIcon state={state} />
+      <div className="flex-1 pb-8">
+        <div className="mb-1.5 flex items-center gap-2">
+          <span className="text-xs font-semibold uppercase tracking-wide text-gray-400">
+            Step {number}
+          </span>
+          {state === 'complete' && (
+            <span className="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700">
+              Complete
+            </span>
+          )}
+          {state === 'active' && (
+            <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700">
+              Action needed
+            </span>
+          )}
+        </div>
+        <h3 className={`mb-3 text-base font-semibold ${locked ? 'text-gray-400' : 'text-gray-900'}`}>
+          {title}
+        </h3>
+        {children}
+      </div>
+    </div>
+  )
+}
+
+// ─── Step 1: Payment (always complete on the portal) ───────────────────────
+
+function PaymentStep({ order }: { order: FunnelOrder }) {
+  return (
+    <StepShell number={1} title="Payment" state="complete" locked={false}>
+      <p className="text-sm font-medium text-emerald-700">
+        Payment received — thank you!
+      </p>
+      <p className="mt-1 text-xs text-gray-500">
+        Charged ${(order.monthly_price_cents / 100).toLocaleString()} /
+        month. Manage billing any time via the link in your receipt email.
+      </p>
+    </StepShell>
+  )
+}
+
+// ─── Step 2: Install Pixel ─────────────────────────────────────────────────
+
+function PixelStep({
+  token,
+  order,
+  includesPixel,
+  onProvisioned,
+}: {
+  token: string
+  order: FunnelOrder
+  includesPixel: boolean
+  onProvisioned: () => void
+}) {
+  const [websiteUrl, setWebsiteUrl] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [copied, setCopied] = useState(false)
+
+  const provisioned = !!order.pixel_snippet
+
+  if (!includesPixel) {
+    return (
+      <StepShell number={2} title="Pixel (not included)" state="complete" locked={false}>
+        <p className="text-sm text-gray-500">
+          Your plan doesn&apos;t include the pixel. If you change your mind,
+          email us and we&apos;ll upgrade you in one click.
+        </p>
+      </StepShell>
+    )
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setSubmitting(true)
+    setError(null)
+    try {
+      const res = await fetch(`/api/funnel/${token}/pixel`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ website_url: websiteUrl }),
+      })
+      const json = (await res.json().catch(() => ({}))) as { error?: string }
+      if (!res.ok) {
+        throw new Error(json.error || `Pixel setup failed (HTTP ${res.status})`)
+      }
+      onProvisioned()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not set up pixel.')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  if (provisioned) {
+    return (
+      <StepShell number={2} title="Install Your Pixel" state="complete" locked={false}>
+        <p className="mb-3 text-sm font-medium text-emerald-700">
+          Pixel created for {order.pixel_domain} — paste the snippet below into
+          your site&apos;s <code className="rounded bg-gray-100 px-1 py-0.5 text-xs">&lt;/head&gt;</code>.
+        </p>
+        <div className="overflow-hidden rounded-lg border border-gray-200 bg-gray-900 p-4">
+          <div className="mb-2 flex items-center justify-between">
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">
+              Your pixel snippet
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                if (order.pixel_snippet) {
+                  navigator.clipboard.writeText(order.pixel_snippet)
+                  setCopied(true)
+                  setTimeout(() => setCopied(false), 1500)
+                }
+              }}
+              className="rounded bg-gray-800 px-2 py-1 text-[11px] font-medium text-gray-200 hover:bg-gray-700"
+            >
+              {copied ? 'Copied!' : 'Copy'}
+            </button>
+          </div>
+          <code className="block whitespace-pre-wrap break-all font-mono text-[12px] leading-relaxed text-emerald-300">
+            {order.pixel_snippet}
+          </code>
+        </div>
+        <p className="mt-3 text-xs text-gray-500">
+          Pixel ID: {order.pixel_audiencelab_id} · Identified visitors start
+          flowing within a few minutes of traffic.
+        </p>
+      </StepShell>
+    )
+  }
+
+  return (
+    <StepShell number={2} title="Install Your Pixel" state="active" locked={false}>
+      <p className="mb-3 text-sm text-gray-500">
+        Drop in your website URL — we&apos;ll generate your pixel and embed code
+        instantly.
+      </p>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-3 sm:flex-row">
+        <input
+          type="url"
+          required
+          placeholder="https://yourcompany.com"
+          value={websiteUrl}
+          onChange={(e) => setWebsiteUrl(e.target.value)}
+          disabled={submitting}
+          className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+        />
+        <button
+          type="submit"
+          disabled={submitting || !websiteUrl}
+          className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
+        >
+          {submitting ? 'Generating…' : 'Generate pixel'}
+        </button>
+      </form>
+      {error && (
+        <p className="mt-2 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">
+          {error}
+        </p>
+      )}
+    </StepShell>
+  )
+}
+
+// ─── Step 3: Audience builder ──────────────────────────────────────────────
+
+interface AudienceFormState {
+  solution: string
+  icp_description: string
+  titles: string
+  industries: string
+  employee_range: string
+  locations: string
+}
+
+const EMPTY_AUDIENCE: AudienceFormState = {
+  solution: '',
+  icp_description: '',
+  titles: '',
+  industries: '',
+  employee_range: '',
+  locations: '',
+}
+
+const EMPLOYEE_RANGES = [
+  '1-10',
+  '11-50',
+  '51-200',
+  '201-500',
+  '501-1000',
+  '1000+',
+]
+
+function AudienceStep({
+  token,
+  order,
+  includesAudience,
+  pixelLocked,
+  onSubmitted,
+}: {
+  token: string
+  order: FunnelOrder
+  includesAudience: boolean
+  pixelLocked: boolean
+  onSubmitted: () => void
+}) {
+  const [form, setForm] = useState<AudienceFormState>(EMPTY_AUDIENCE)
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const submitted = !!order.audience_submitted_at
+
+  if (!includesAudience) {
+    return (
+      <StepShell number={3} title="Audience (not included)" state="complete" locked={false}>
+        <p className="text-sm text-gray-500">
+          Your plan doesn&apos;t include a managed audience. Pixel only —
+          identified visitors flow as people land on your site.
+        </p>
+      </StepShell>
+    )
+  }
+
+  if (pixelLocked) {
+    return (
+      <StepShell number={3} title="Tell Us Who To Find" state="locked" locked={true}>
+        <p className="text-sm text-gray-400">
+          Install your pixel above first, then we&apos;ll collect your audience
+          targeting.
+        </p>
+      </StepShell>
+    )
+  }
+
+  if (submitted) {
+    const delivered = !!order.audience_delivered_at
+    return (
+      <StepShell
+        number={3}
+        title="Tell Us Who To Find"
+        state={delivered ? 'complete' : 'active'}
+        locked={false}
+      >
+        <p className="text-sm font-medium text-emerald-700">
+          ICP submitted — thanks!
+        </p>
+        <p className="mt-1 text-xs text-gray-500">
+          You&apos;ll get an email from Adam with your Google Sheet link within
+          12-24 hours.
+        </p>
+      </StepShell>
+    )
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setSubmitting(true)
+    setError(null)
+    try {
+      const titlesArr = form.titles.split(/[\n,]+/).map((s) => s.trim()).filter(Boolean)
+      const industriesArr = form.industries.split(/[\n,]+/).map((s) => s.trim()).filter(Boolean)
+      const locationsArr = form.locations.split(/[\n,]+/).map((s) => s.trim()).filter(Boolean)
+
+      const res = await fetch(`/api/funnel/${token}/audience`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          solution: form.solution,
+          icp_description: form.icp_description,
+          titles: titlesArr,
+          industries: industriesArr,
+          employee_range: form.employee_range,
+          locations: locationsArr,
+        }),
+      })
+      const json = (await res.json().catch(() => ({}))) as { error?: string }
+      if (!res.ok) {
+        throw new Error(json.error || `Submit failed (HTTP ${res.status})`)
+      }
+      onSubmitted()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not submit.')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  return (
+    <StepShell number={3} title="Tell Us Who To Find" state="active" locked={false}>
+      <p className="mb-4 text-sm text-gray-500">
+        Three quick questions. Takes less than a minute. We&apos;ll build your
+        first audience within 24 hours.
+      </p>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <Field label="What do you sell?" required>
+          <input
+            type="text"
+            required
+            placeholder="e.g. AI-powered paid social audits for ecom agencies"
+            value={form.solution}
+            onChange={(e) => setForm({ ...form, solution: e.target.value })}
+            className={inputClass}
+          />
+        </Field>
+
+        <Field label="Who's your ideal customer?" required>
+          <textarea
+            required
+            rows={2}
+            placeholder="e.g. Founders or CMOs at DTC brands doing $5M-$50M revenue"
+            value={form.icp_description}
+            onChange={(e) => setForm({ ...form, icp_description: e.target.value })}
+            className={inputClass}
+          />
+        </Field>
+
+        <Field label="Job titles to target (one per line, or comma-separated)" required>
+          <textarea
+            required
+            rows={2}
+            placeholder="CEO&#10;CMO&#10;VP Marketing&#10;Head of Growth"
+            value={form.titles}
+            onChange={(e) => setForm({ ...form, titles: e.target.value })}
+            className={inputClass}
+          />
+        </Field>
+
+        <Field label="Industries (optional)">
+          <textarea
+            rows={2}
+            placeholder="Technology, SaaS, eCommerce"
+            value={form.industries}
+            onChange={(e) => setForm({ ...form, industries: e.target.value })}
+            className={inputClass}
+          />
+        </Field>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field label="Company size">
+            <select
+              value={form.employee_range}
+              onChange={(e) => setForm({ ...form, employee_range: e.target.value })}
+              className={inputClass}
+            >
+              <option value="">Any size</option>
+              {EMPLOYEE_RANGES.map((r) => (
+                <option key={r} value={r}>
+                  {r} employees
+                </option>
+              ))}
+            </select>
+          </Field>
+
+          <Field label="Locations (optional)">
+            <input
+              type="text"
+              placeholder="US, CA, UK"
+              value={form.locations}
+              onChange={(e) => setForm({ ...form, locations: e.target.value })}
+              className={inputClass}
+            />
+          </Field>
+        </div>
+
+        <button
+          type="submit"
+          disabled={submitting}
+          className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
+        >
+          {submitting ? 'Submitting…' : 'Build my audience'}
+        </button>
+        {error && (
+          <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">
+            {error}
+          </p>
+        )}
+      </form>
+    </StepShell>
+  )
+}
+
+const inputClass =
+  'w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500'
+
+function Field({
+  label,
+  required,
+  children,
+}: {
+  label: string
+  required?: boolean
+  children: React.ReactNode
+}) {
+  return (
+    <div>
+      <label className="mb-1.5 block text-sm font-medium text-gray-700">
+        {label} {required && <span className="text-red-500">*</span>}
+      </label>
+      {children}
+    </div>
+  )
+}
+
+// ─── Step 4: Audience delivered ────────────────────────────────────────────
+
+function DeliveryStep({
+  order,
+  includesAudience,
+}: {
+  order: FunnelOrder
+  includesAudience: boolean
+}) {
+  if (!includesAudience) return null
+
+  const delivered = !!order.audience_sheet_url
+  const submitted = !!order.audience_submitted_at
+
+  const state: StepState = delivered ? 'complete' : submitted ? 'active' : 'locked'
+  const locked = !submitted
+
+  return (
+    <StepShell number={4} title="Your Audience Delivered" state={state} locked={locked}>
+      {delivered && order.audience_sheet_url ? (
+        <div className="space-y-2">
+          <p className="text-sm font-medium text-emerald-700">
+            Your audience is live and refreshing weekly.
+          </p>
+          <a
+            href={order.audience_sheet_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-4 py-2.5 text-sm font-medium text-blue-700 transition-colors hover:bg-blue-100"
+          >
+            Open Audience Sheet
+            <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+            </svg>
+          </a>
+        </div>
+      ) : submitted ? (
+        <div className="flex items-start gap-3">
+          <div className="mt-0.5 h-4 w-4 flex-shrink-0 animate-spin rounded-full border-2 border-blue-400 border-t-transparent" />
+          <p className="text-sm text-gray-500">
+            We&apos;re building your first audience — expect your Google Sheet
+            link via email within 12-24 hours.
+          </p>
+        </div>
+      ) : (
+        <p className="text-sm text-gray-400">
+          Complete the audience step above to unlock.
+        </p>
+      )}
+    </StepShell>
+  )
+}
+
+// ─── Sidebar ───────────────────────────────────────────────────────────────
+
+function PackageSidebar({ order, offerLabel }: { order: FunnelOrder; offerLabel: string }) {
+  return (
+    <div className="sticky top-6 rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+      <h2 className="mb-4 text-sm font-semibold text-gray-900">Your Plan</h2>
+      <div className="mb-4">
+        <p className="text-base font-medium text-gray-900">{offerLabel}</p>
+        <p className="mt-1 text-xs text-gray-400">Active subscription</p>
+      </div>
+      <div className="border-t border-gray-100 pt-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-xs font-medium text-gray-600">Monthly</p>
+            <p className="text-xs text-gray-400">Recurring</p>
+          </div>
+          <p className="text-base font-bold text-gray-900">
+            ${(order.monthly_price_cents / 100).toLocaleString()}
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ─── Main ──────────────────────────────────────────────────────────────────
+
+export function FunnelPortal({
+  token,
+  order: initialOrder,
+  offerLabel,
+}: {
+  token: string
+  order: FunnelOrder
+  offerLabel: string
+}) {
+  const router = useRouter()
+  const [order, setOrder] = useState<FunnelOrder>(initialOrder)
+
+  const includesPixel = useMemo(
+    () => order.offer_slug !== 'audience_197',
+    [order.offer_slug]
+  )
+  const includesAudience = useMemo(
+    () => order.offer_slug !== 'pixel_97',
+    [order.offer_slug]
+  )
+
+  const pixelLocked = includesPixel && !order.pixel_provisioned_at
+
+  async function refreshOrder() {
+    try {
+      const res = await fetch(`/api/funnel/${token}`, { cache: 'no-store' })
+      if (!res.ok) return
+      const json = (await res.json()) as { order?: FunnelOrder }
+      if (json.order) setOrder(json.order)
+      router.refresh()
+    } catch {
+      // silent — caller will re-trigger on next interaction
+    }
+  }
+
+  const firstName = (order.customer_name ?? '').trim().split(/\s+/)[0] || 'there'
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900">Welcome to Cursive</h1>
+        <p className="mt-1 text-sm text-gray-500">
+          Hi {firstName} — finish the steps below to go live.
+        </p>
+      </div>
+
+      <div className="flex flex-col gap-8 lg:flex-row">
+        <div className="min-w-0 flex-1">
+          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+            <div className="relative">
+              <div
+                className="absolute bottom-0 left-[17px] top-9 z-0 w-0.5 bg-gray-100"
+                aria-hidden="true"
+              />
+              <div className="relative z-10">
+                <PaymentStep order={order} />
+                <PixelStep
+                  token={token}
+                  order={order}
+                  includesPixel={includesPixel}
+                  onProvisioned={refreshOrder}
+                />
+                <AudienceStep
+                  token={token}
+                  order={order}
+                  includesAudience={includesAudience}
+                  pixelLocked={pixelLocked}
+                  onSubmitted={refreshOrder}
+                />
+                <DeliveryStep order={order} includesAudience={includesAudience} />
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-6 rounded-xl border border-gray-200 bg-gray-50 p-5 text-center">
+            <p className="text-sm text-gray-500">
+              Questions?{' '}
+              <a
+                href="mailto:support@meetcursive.com"
+                className="font-medium text-blue-600 transition-colors hover:text-blue-700"
+              >
+                support@meetcursive.com
+              </a>
+            </p>
+          </div>
+        </div>
+
+        <div className="flex-shrink-0 lg:w-72">
+          <PackageSidebar order={order} offerLabel={offerLabel} />
+        </div>
+      </div>
+    </div>
+  )
+}
