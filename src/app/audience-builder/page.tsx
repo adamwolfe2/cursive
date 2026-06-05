@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { Suspense, useCallback, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { PublicChat } from './_components/PublicChat'
 
@@ -27,7 +27,26 @@ const EMPTY_AUTH: AuthState = {
   company: null,
 }
 
+// useSearchParams must be wrapped in <Suspense> per Next.js 15 — otherwise
+// it forces a CSR bailout that breaks the prerender. We split that read
+// into its own component below and wrap the export in Suspense.
 export default function AudienceBuilderPage() {
+  return (
+    <Suspense fallback={<HydratingFallback />}>
+      <AudienceBuilderClient />
+    </Suspense>
+  )
+}
+
+function HydratingFallback() {
+  return (
+    <div className="flex min-h-[calc(100vh-3.5rem)] items-center justify-center">
+      <div className="h-6 w-6 animate-spin rounded-full border-2 border-slate-200 border-t-blue-600" />
+    </div>
+  )
+}
+
+function AudienceBuilderClient() {
   const [authState, setAuthState] = useState<AuthState>(EMPTY_AUTH)
   const [hydrated, setHydrated] = useState(false)
 
@@ -107,11 +126,7 @@ export default function AudienceBuilderPage() {
   }, [])
 
   if (!hydrated) {
-    return (
-      <div className="flex min-h-[calc(100vh-3.5rem)] items-center justify-center">
-        <div className="h-6 w-6 animate-spin rounded-full border-2 border-slate-200 border-t-blue-600" />
-      </div>
-    )
+    return <HydratingFallback />
   }
 
   return (
