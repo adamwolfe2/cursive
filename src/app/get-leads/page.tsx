@@ -39,8 +39,10 @@ export default function GetLeadsPage() {
 
       {/* VSL — container aspect matches the source video (set via
           FUNNEL_VSL_ASPECT env, defaults to 16/9). Matching the aspect
-          eliminates pillarbox/letterbox bars regardless of player. */}
-      <div className="mx-auto mb-16 max-w-3xl overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+          eliminates pillarbox/letterbox bars regardless of player.
+          Sized to fill the page container (max-w-5xl) so the VSL gets
+          maximum real estate without breaking the responsive layout. */}
+      <div className="mx-auto mb-16 w-full overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
         <div
           className="w-full"
           style={{ aspectRatio: FUNNEL_VSL_ASPECT_RATIO }}
