@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import type { FunnelOrder } from '@/lib/funnel/order.service'
+import { buildALSuggestion } from '@/lib/funnel/al-taxonomy'
 
 interface Props {
   orders: FunnelOrder[]
@@ -72,20 +73,13 @@ function OrderRow({ order }: { order: FunnelOrder }) {
             {status.label}
           </span>
         </td>
-        <td className="max-w-xs px-4 py-3 text-xs text-gray-700">
+        <td className="max-w-xl px-4 py-3 text-xs text-gray-700">
           {order.audience_submitted_at ? (
             <details>
               <summary className="cursor-pointer text-blue-600 hover:underline">
-                View ICP
+                View ICP + AL builder values
               </summary>
-              <div className="mt-2 space-y-1 rounded bg-gray-50 p-2 text-[11px] leading-relaxed">
-                <p><span className="font-semibold">Sells:</span> {order.audience_solution}</p>
-                <p><span className="font-semibold">ICP:</span> {order.audience_icp_description}</p>
-                <p><span className="font-semibold">Titles:</span> {(order.audience_titles ?? []).join(', ')}</p>
-                <p><span className="font-semibold">Industries:</span> {(order.audience_industries ?? []).join(', ') || '—'}</p>
-                <p><span className="font-semibold">Size:</span> {order.audience_employee_range || '—'}</p>
-                <p><span className="font-semibold">Locations:</span> {(order.audience_locations ?? []).join(', ') || '—'}</p>
-              </div>
+              <ICPDetailPanel order={order} />
             </details>
           ) : (
             <span className="text-gray-400">—</span>
@@ -189,6 +183,125 @@ function DeliverActionInline({ orderId }: { orderId: string }) {
           {error}
         </p>
       )}
+    </div>
+  )
+}
+
+// ─── ICP detail panel — raw input + AL-ready paste values + copy chips ─────
+
+function CopyChip({ label, value }: { label: string; value: string }) {
+  const [copied, setCopied] = useState(false)
+  const disabled = !value || value.startsWith('—')
+
+  return (
+    <div className="flex items-start gap-2">
+      <p className="w-36 shrink-0 text-[11px] uppercase tracking-wide text-gray-500">
+        {label}
+      </p>
+      <div className="flex flex-1 items-start gap-2">
+        <code
+          className={`flex-1 rounded border px-2 py-1 text-[11px] leading-relaxed ${
+            disabled
+              ? 'border-gray-200 bg-gray-50 text-gray-400'
+              : 'border-blue-200 bg-white text-gray-900'
+          }`}
+        >
+          {value}
+        </code>
+        {!disabled && (
+          <button
+            type="button"
+            onClick={() => {
+              navigator.clipboard.writeText(value)
+              setCopied(true)
+              setTimeout(() => setCopied(false), 1200)
+            }}
+            className="shrink-0 rounded border border-gray-300 bg-white px-2 py-1 text-[10px] font-medium text-gray-700 hover:bg-gray-50"
+          >
+            {copied ? '✓' : 'Copy'}
+          </button>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function ICPDetailPanel({ order }: { order: FunnelOrder }) {
+  const al = buildALSuggestion({
+    solution: order.audience_solution,
+    titles: order.audience_titles,
+    industries: order.audience_industries,
+    employee_range: order.audience_employee_range,
+    locations: order.audience_locations,
+  })
+
+  const employeeFormatted = al.employeeRange
+    ? `min ${al.employeeRange.min ?? '—'} · max ${al.employeeRange.max ?? '—'}`
+    : '—'
+
+  return (
+    <div className="mt-3 space-y-4">
+      {/* AL-ready paste values */}
+      <div className="rounded-lg border border-blue-200 bg-blue-50 p-3">
+        <p className="mb-2 text-[10px] font-bold uppercase tracking-wide text-blue-700">
+          Ready to paste into Audience Labs
+        </p>
+        <div className="space-y-1.5">
+          <CopyChip
+            label="AL Industry"
+            value={al.industries.join(', ') || '— (unmatched — see raw input below)'}
+          />
+          <CopyChip
+            label="AL Seniority"
+            value={al.seniority.join(', ') || '— (no rule matched)'}
+          />
+          <CopyChip label="AL Employee Count" value={employeeFormatted} />
+          <CopyChip
+            label="AL State"
+            value={al.stateCodes.join(', ') || '— (not US-state)'}
+          />
+          <CopyChip
+            label="Custom Audience seeds"
+            value={al.topicSeeds.join(' · ') || '— (no seeds)'}
+          />
+          {al.unmatchedIndustries.length > 0 && (
+            <CopyChip
+              label="Search manually"
+              value={al.unmatchedIndustries.join(', ')}
+            />
+          )}
+        </div>
+      </div>
+
+      {/* Raw input from buyer */}
+      <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
+        <p className="mb-2 text-[10px] font-bold uppercase tracking-wide text-gray-600">
+          Raw buyer input
+        </p>
+        <div className="space-y-1 text-[11px] leading-relaxed text-gray-800">
+          <p><span className="font-semibold">Sells:</span> {order.audience_solution}</p>
+          <p><span className="font-semibold">ICP:</span> {order.audience_icp_description}</p>
+          <p><span className="font-semibold">Titles:</span> {(order.audience_titles ?? []).join(', ')}</p>
+          <p><span className="font-semibold">Industries:</span> {(order.audience_industries ?? []).join(', ') || '—'}</p>
+          <p><span className="font-semibold">Size:</span> {order.audience_employee_range || '—'}</p>
+          <p><span className="font-semibold">Locations:</span> {(order.audience_locations ?? []).join(', ') || '—'}</p>
+        </div>
+      </div>
+
+      <p className="text-[11px] text-gray-500">
+        Tip: open{' '}
+        <a
+          href="https://audiencelab.io"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-600 hover:underline"
+        >
+          audiencelab.io
+        </a>
+        , paste the blue values into the audience builder, export to a Google
+        Sheet, then drop the Sheet URL into the &quot;Mark delivered&quot;
+        field on the right.
+      </p>
     </div>
   )
 }
