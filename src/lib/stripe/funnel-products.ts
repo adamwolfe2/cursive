@@ -101,7 +101,28 @@ export const FUNNEL_PORTAL_BASE_URL =
  * (https://www.loom.com/share/83bf2650385a441f8ea46a5e911b5fb1) — converted
  * to the /embed/ form so it renders inside an iframe. Override with
  * FUNNEL_VSL_URL env (must already be a valid embed URL).
+ *
+ * autoplay=1 + muted=1 are required together — browsers block unmuted
+ * autoplay without a prior user gesture. hide_owner / hide_share / hide_title
+ * strip the Loom-branded top chrome so the embed feels like our own player.
  */
-export const FUNNEL_VSL_URL =
+function withVslAutoplay(rawUrl: string): string {
+  try {
+    const u = new URL(rawUrl)
+    if (u.hostname.endsWith('loom.com')) {
+      u.searchParams.set('autoplay', '1')
+      u.searchParams.set('muted', '1')
+      u.searchParams.set('hide_owner', 'true')
+      u.searchParams.set('hide_share', 'true')
+      u.searchParams.set('hide_title', 'true')
+    }
+    return u.toString()
+  } catch {
+    return rawUrl
+  }
+}
+
+export const FUNNEL_VSL_URL = withVslAutoplay(
   process.env.FUNNEL_VSL_URL ??
-  'https://www.loom.com/embed/83bf2650385a441f8ea46a5e911b5fb1'
+    'https://www.loom.com/embed/83bf2650385a441f8ea46a5e911b5fb1'
+)

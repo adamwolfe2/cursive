@@ -1,5 +1,6 @@
 import { FUNNEL_OFFERS, FUNNEL_VSL_URL } from '@/lib/stripe/funnel-products'
 import { CheckoutButtons } from './CheckoutButtons'
+import { PricingGate } from './PricingGate'
 
 export const dynamic = 'force-dynamic'
 
@@ -62,8 +63,13 @@ export default function GetLeadsPage() {
         </p>
       </div>
 
-      {/* Cards */}
-      <CheckoutButtons offers={offers} />
+      {/* Cards — gated until 20s of video has played. Extra top padding
+          so the bundle card's negative translate doesn't get clipped. */}
+      <div className="pt-6">
+        <PricingGate>
+          <CheckoutButtons offers={offers} />
+        </PricingGate>
+      </div>
 
       {/* Trust strip */}
       <p className="mt-12 text-center text-xs text-gray-400">

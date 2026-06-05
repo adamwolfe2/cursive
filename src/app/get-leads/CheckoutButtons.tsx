@@ -123,17 +123,17 @@ function PlanCard({
 
   return (
     <div
-      className={`flex flex-col rounded-2xl border p-6 transition-shadow ${
+      className={`flex flex-col rounded-2xl border bg-white p-6 transition-shadow ${
         highlight
-          ? 'border-blue-600 bg-white shadow-md ring-1 ring-blue-600/20'
-          : 'border-gray-200 bg-white hover:shadow-sm'
+          ? 'relative border-blue-600 ring-1 ring-blue-600/30 shadow-[0_0_50px_-12px_rgba(37,99,235,0.45),0_0_25px_-8px_rgba(37,99,235,0.25)] md:-translate-y-4'
+          : 'border-gray-200 hover:shadow-sm'
       }`}
     >
       {/* Header */}
-      <div className="mb-1 flex items-center gap-2">
+      <div className="mb-1 flex items-start justify-between gap-3">
         <h3 className="text-lg font-semibold text-gray-900">{offer.label}</h3>
         {highlight && (
-          <span className="inline-flex items-center rounded-full bg-blue-600 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white">
+          <span className="inline-flex shrink-0 items-center whitespace-nowrap rounded-full bg-blue-600 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white">
             Best value
           </span>
         )}
