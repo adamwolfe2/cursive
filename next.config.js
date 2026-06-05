@@ -145,8 +145,15 @@ const nextConfig = {
               "font-src 'self' https://fonts.gstatic.com data:",
               "img-src 'self' data: blob: https: http:",
               // wss://client.crisp.chat — Crisp uses a WebSocket relay for real-time chat.
-              "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.stripe.com https://*.sentry.io https://sentry.io https://client.crisp.chat wss://client.crisp.chat",
-              "frame-src 'self' https://js.stripe.com https://hooks.stripe.com",
+              // Video player connect-srcs: Mux (player + analytics + manifest),
+              //   Vimeo (player API), and Loom (embed analytics). Required so
+              //   Safari (which enforces CSP strictly) lets the players boot.
+              "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.stripe.com https://*.sentry.io https://sentry.io https://client.crisp.chat wss://client.crisp.chat https://*.mux.com https://*.litix.io https://stats.mux.com https://player.vimeo.com https://*.vimeocdn.com https://www.loom.com",
+              // frame-src: hosted players for the VSL. Safari blocks
+              //   silently (blank iframe) if these are missing; Chrome was
+              //   permissive about it because of an older CSP cache.
+              "frame-src 'self' https://js.stripe.com https://hooks.stripe.com https://player.mux.com https://player.vimeo.com https://www.loom.com https://www.youtube.com https://www.youtube-nocookie.com",
+              "media-src 'self' blob: https://*.mux.com https://stream.mux.com https://*.vimeocdn.com https://cdn.idpixel.app",
               "object-src 'none'",
               "base-uri 'self'",
               "form-action 'self' https://*.supabase.co https://accounts.google.com",
