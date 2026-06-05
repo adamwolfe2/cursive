@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 
-const UNLOCK_AFTER_SECONDS = 20
+const UNLOCK_AFTER_SECONDS = 60
 
 /**
  * Blurs the pricing section until the visitor has spent UNLOCK_AFTER_SECONDS

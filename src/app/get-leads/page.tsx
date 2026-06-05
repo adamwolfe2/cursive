@@ -36,8 +36,10 @@ export default function GetLeadsPage() {
         </p>
       </div>
 
-      {/* VSL */}
-      <div className="mx-auto mb-16 max-w-3xl overflow-hidden rounded-xl border border-gray-200 bg-black shadow-sm">
+      {/* VSL — bg-white container blends any letterbox with the page
+          instead of showing as black bars. Native <video> uses object-cover
+          to fill the frame edge-to-edge for the MP4 path. */}
+      <div className="mx-auto mb-16 max-w-3xl overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
         <div className="aspect-video w-full">
           {FUNNEL_VSL_URL === 'about:blank' ? (
             <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 text-sm text-gray-400">
@@ -45,12 +47,11 @@ export default function GetLeadsPage() {
             </div>
           ) : isSelfHostedVideoUrl(FUNNEL_VSL_URL) ? (
             // Self-hosted MP4/WebM — zero watermark, no black bars, no
-            // third-party player JS. Autoplay-friendly: muted + playsInline
-            // satisfies browser autoplay policy. preload="metadata" gets the
-            // first frame on the wire fast without pulling the whole file.
+            // third-party player JS. object-cover fills the container by
+            // cropping rather than letterboxing.
             <video
               src={FUNNEL_VSL_URL}
-              className="h-full w-full bg-black"
+              className="h-full w-full object-cover"
               autoPlay
               muted
               loop
