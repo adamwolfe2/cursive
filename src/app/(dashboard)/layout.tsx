@@ -97,7 +97,7 @@ export default async function DashboardLayout({
       const admin = createAdminClient()
       const { data } = await admin
         .from('users')
-        .select('id, auth_user_id, full_name, email, plan, role, workspace_id, daily_credit_limit, daily_credits_used, is_partner, workspaces(id, name, subdomain, website_url, branding)')
+        .select('id, auth_user_id, full_name, email, plan, role, workspace_id, daily_credit_limit, daily_credits_used, is_partner, workspaces(id, name, subdomain, website_url, branding, visible_features)')
         .eq('auth_user_id', authUserId)
         .maybeSingle()
       return data
@@ -192,6 +192,7 @@ export default async function DashboardLayout({
       name: string
       subdomain?: string
       website_url?: string | null
+      visible_features?: string[] | null
       branding?: {
         logo_url?: string | null
         favicon_url?: string | null
@@ -224,6 +225,7 @@ export default async function DashboardLayout({
     name: string
     subdomain?: string
     website_url?: string | null
+    visible_features?: string[] | null
     branding?: {
       logo_url?: string | null
       favicon_url?: string | null
@@ -258,6 +260,7 @@ export default async function DashboardLayout({
           }
           todayLeadCount={todayLeadCount}
           hotLeadCount={hotLeadCount > 0 ? hotLeadCount : undefined}
+          visibleFeatures={workspace?.visible_features ?? null}
         >
           <DashboardProvider
             value={{

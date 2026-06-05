@@ -7,6 +7,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
 import { useAdminAuth } from '@/hooks/use-admin-auth'
+import { FEATURE_KEYS, FEATURE_LABELS, FUNNEL_TIER_FEATURES } from '@/lib/workspaces/feature-flags'
 
 interface ProductTier {
   id: string
@@ -45,6 +46,7 @@ interface Workspace {
   company_size: string | null
   annual_revenue: string | null
   ops_stage: string | null
+  visible_features: string[] | null
   users: { id: string; email: string; full_name: string | null; role: string; plan: string; created_at: string }[]
   workspace_tiers: WorkspaceTier | null
 }
@@ -237,6 +239,25 @@ export default function AdminWorkspaceDetailPage() {
         body: JSON.stringify({ ops_stage: stage }),
       })
       if (!res.ok) throw new Error('Failed to update ops stage')
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'workspace', id] })
+    },
+  })
+
+  // Nav feature allowlist mutation. null/[] = show all; populated = strict allowlist.
+  const featuresMutation = useMutation({
+    mutationFn: async (features: string[] | null) => {
+      const res = await fetch(`/api/admin/workspaces/${id}/features`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ features }),
+      })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        throw new Error(data.error || 'Failed to update features')
+      }
+      return res.json()
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'workspace', id] })
@@ -446,6 +467,68 @@ export default function AdminWorkspaceDetailPage() {
               </div>
             </div>
           </div>
+
+          {/* Nav Visibility — controls which sidebar items this workspace sees.
+              Empty/all-checked = show everything (default). A custom allowlist
+              takes precedence over role/plan gating (how funnel buyers get a
+              clean 3-item nav). */}
+          {(() => {
+            const current = workspace.visible_features
+            const showingAll = !current || current.length === 0
+            const isChecked = (key: string) => (showingAll ? true : current!.includes(key))
+            const onToggle = (key: string) => {
+              const base = showingAll ? [...FEATURE_KEYS] : [...current!]
+              const next = base.includes(key) ? base.filter((k) => k !== key) : [...base, key]
+              const value = next.length === FEATURE_KEYS.length ? null : next
+              featuresMutation.mutate(value)
+            }
+            return (
+              <div className="lg:col-span-3 bg-white border border-zinc-200 rounded-lg p-6">
+                <div className="flex items-center justify-between mb-1">
+                  <h2 className="text-sm font-semibold text-zinc-900">Nav Visibility</h2>
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => featuresMutation.mutate(FUNNEL_TIER_FEATURES)}
+                      disabled={featuresMutation.isPending}
+                      className="text-sm text-primary hover:text-primary/80 font-medium disabled:opacity-50"
+                    >
+                      Funnel preset
+                    </button>
+                    <span className="text-zinc-300">·</span>
+                    <button
+                      onClick={() => featuresMutation.mutate(null)}
+                      disabled={featuresMutation.isPending || showingAll}
+                      className="text-sm text-zinc-500 hover:text-zinc-700 font-medium disabled:opacity-40"
+                    >
+                      Reset to all
+                    </button>
+                  </div>
+                </div>
+                <p className="text-xs text-zinc-500 mb-4">
+                  {showingAll
+                    ? 'Showing all features (default). Uncheck items to create a custom allowlist.'
+                    : `Custom allowlist — ${current!.length} feature${current!.length === 1 ? '' : 's'} visible. Hidden items are removed from this workspace's sidebar.`}
+                </p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+                  {FEATURE_KEYS.map((key) => (
+                    <label
+                      key={key}
+                      className="flex items-center gap-2 rounded-md border border-zinc-200 px-3 py-2 text-sm text-zinc-700 cursor-pointer hover:bg-zinc-50"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isChecked(key)}
+                        onChange={() => onToggle(key)}
+                        disabled={featuresMutation.isPending}
+                        className="h-4 w-4 rounded border-zinc-300 text-primary focus:ring-primary"
+                      />
+                      {FEATURE_LABELS[key]}
+                    </label>
+                  ))}
+                </div>
+              </div>
+            )
+          })()}
         </div>
       )}
 

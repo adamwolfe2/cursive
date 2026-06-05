@@ -4,7 +4,9 @@
 **Owner:** Adam
 **Tier:** 1 (workspaces + auth + state transitions)
 **Skill:** safe-feature-slice
-**Status:** PENDING — Phase 1 ready to ship pending Adam's "go"
+**Status:** Phase 1 SHIPPED 2026-06-05 (migration applied, 13 tests green, 0 TS errors). Phases 2-4 PENDING.
+
+**Phase 1 decision:** funnel nav = `['dashboard','leads','settings']`. `visible_features` allowlist takes PRECEDENCE over role/plan/adminOnly (funnel buyers are `role='owner'` → would otherwise see full admin nav). Files: `src/lib/workspaces/feature-flags.ts`, `app-shell.tsx` (HREF_TO_FEATURE map + filter), `(dashboard)/layout.tsx`, admin toggle on `/admin/accounts/[id]` + `PATCH /api/admin/workspaces/[id]/features`.
 
 ---
 

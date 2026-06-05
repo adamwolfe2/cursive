@@ -8,6 +8,7 @@ import { cn } from '@/lib/design-system'
 import { Sidebar, SidebarMobile } from './sidebar'
 import { Header } from './header'
 import { useDismissible } from '@/lib/hooks/use-dismissible'
+import { isFeatureVisible, type FeatureKey } from '@/lib/workspaces/feature-flags'
 import {
   LayoutDashboard,
   Users,
@@ -214,8 +215,33 @@ const navigationItems: NavItemConfig[] = [
   },
 ]
 
+// Maps each nav item's href to its stable feature key. Used to apply a
+// workspace's `visible_features` allowlist (funnel buyers see a clean 3-item
+// nav). Keep in sync with FEATURE_KEYS in lib/workspaces/feature-flags.ts.
+const HREF_TO_FEATURE: Record<string, FeatureKey> = {
+  '/dashboard': 'dashboard',
+  '/leads': 'leads',
+  '/outreach': 'outreach',
+  '/settings': 'settings',
+  '/outbound': 'outbound',
+  '/find-leads': 'find-leads',
+  '/crm/leads': 'crm',
+  '/analytics': 'analytics',
+  '/referrals': 'referrals',
+  '/affiliate': 'partner-hub',
+  '/queries': 'queries',
+  '/ai-studio': 'ai-studio',
+  '/data': 'lead-data',
+  '/agents': 'ai-agents',
+  '/campaigns': 'campaigns',
+  '/templates': 'templates',
+}
+
 interface AppShellProps {
   children: React.ReactNode
+  // Workspace nav allowlist. NULL/empty = show all (existing behavior).
+  // Populated = strict allowlist, precedence over role/plan/adminOnly gating.
+  visibleFeatures?: string[] | null
   user?: {
     name?: string | null
     email: string
@@ -236,7 +262,7 @@ interface AppShellProps {
 
 const CREDITS_BANNER_PATHS = ['/leads', '/find-leads', '/lead-database', '/people-search', '/website-visitors']
 
-export function AppShell({ children, user, workspace, todayLeadCount, hotLeadCount }: AppShellProps) {
+export function AppShell({ children, user, workspace, todayLeadCount, hotLeadCount, visibleFeatures }: AppShellProps) {
   const [sidebarOpen, setSidebarOpen] = React.useState(false)
   const { dismissed: creditsBannerDismissed, dismiss: dismissCreditsBanner } = useDismissible('cursive_credits_banner_dismissed', 24)
   const pathname = usePathname()
@@ -247,6 +273,14 @@ export function AppShell({ children, user, workspace, todayLeadCount, hotLeadCou
 
   const filteredNavItems = navigationItems
     .filter((item) => {
+      // Strict allowlist takes PRECEDENCE: when a workspace has visible_features
+      // set, only those nav items render — regardless of role/plan/adminOnly.
+      // This is how funnel buyers (role='owner') get a clean 3-item nav instead
+      // of the full admin surface.
+      const feature = HREF_TO_FEATURE[item.href]
+      if (visibleFeatures && visibleFeatures.length > 0) {
+        return feature ? isFeatureVisible(visibleFeatures, feature) : false
+      }
       if (item.adminOnly) {
         return isAdmin
       }
