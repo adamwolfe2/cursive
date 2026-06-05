@@ -66,13 +66,18 @@ export async function POST(
     const token = await getPortalTokenForOrder(updated.id)
     const portalUrl = token ? portalUrlForToken(token.token) : ''
 
-    // Send delivery email — non-fatal if it fails
+    // Send delivery email — non-fatal if it fails. Includes pixel snippet
+    // + domain + id so the buyer can verify the install and reload from
+    // the email if they need to.
     try {
       await sendFunnelAudienceDeliveredEmail({
         to: updated.customer_email,
         customerName: updated.customer_name,
         sheetUrl: parsed.data.sheet_url,
         portalUrl,
+        pixelSnippet: updated.pixel_snippet,
+        pixelDomain: updated.pixel_domain,
+        pixelId: updated.pixel_audiencelab_id,
       })
     } catch (emailErr) {
       safeError('[funnel/deliver] email failed (non-fatal)', emailErr)

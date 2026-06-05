@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import type { FunnelOrder } from '@/lib/funnel/order.service'
 
@@ -616,6 +616,174 @@ function DeliveryStep({
   )
 }
 
+// ─── Live visitor feed ────────────────────────────────────────────────────
+
+interface VisitorRow {
+  id: string
+  received_at: string
+  full_name: string | null
+  email: string | null
+  company_name: string | null
+  company_domain: string | null
+  job_title: string | null
+  city: string | null
+  state: string | null
+  country: string | null
+  linkedin_url: string | null
+}
+
+interface VisitorFeed {
+  total: number
+  recent: VisitorRow[]
+  last_seen_at: string | null
+  has_pixel: boolean
+}
+
+function VisitorsCard({ token }: { token: string }) {
+  const [feed, setFeed] = useState<VisitorFeed | null>(null)
+  const [loaded, setLoaded] = useState(false)
+  const [expanded, setExpanded] = useState(false)
+
+  const fetchFeed = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/funnel/${token}/visitors`, {
+        cache: 'no-store',
+      })
+      if (!res.ok) {
+        setLoaded(true)
+        return
+      }
+      const json = (await res.json()) as VisitorFeed
+      setFeed(json)
+      setLoaded(true)
+    } catch {
+      setLoaded(true)
+    }
+  }, [token])
+
+  useEffect(() => {
+    fetchFeed()
+    const id = setInterval(fetchFeed, 30_000)
+    return () => clearInterval(id)
+  }, [fetchFeed])
+
+  const hasVisitors = (feed?.total ?? 0) > 0
+  const rowsToShow = expanded
+    ? feed?.recent ?? []
+    : (feed?.recent ?? []).slice(0, 5)
+
+  return (
+    <div className="mt-6 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 bg-gray-50 px-5 py-4">
+        <div>
+          <p className="text-sm font-semibold text-gray-900">
+            Identified Visitors
+          </p>
+          <p className="mt-0.5 text-xs text-gray-500">
+            {loaded
+              ? hasVisitors
+                ? `${feed?.total ?? 0} identified · last seen ${formatRelative(feed?.last_seen_at)}`
+                : feed?.has_pixel === false
+                  ? 'Pixel not part of this plan.'
+                  : 'No visitors identified yet. Live as soon as someone lands on your site.'
+              : 'Loading…'}
+          </p>
+        </div>
+        {hasVisitors && (
+          <a
+            href={`/api/funnel/${token}/visitors?format=csv&limit=200`}
+            className="inline-flex items-center gap-1.5 rounded-md border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50"
+          >
+            Download CSV
+          </a>
+        )}
+      </div>
+
+      {hasVisitors ? (
+        <>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-gray-100 bg-white text-left text-[10px] font-semibold uppercase tracking-wide text-gray-500">
+                  <th className="px-5 py-2.5">Visitor</th>
+                  <th className="px-5 py-2.5">Company</th>
+                  <th className="px-5 py-2.5">Title</th>
+                  <th className="px-5 py-2.5">Location</th>
+                  <th className="whitespace-nowrap px-5 py-2.5">Seen</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {rowsToShow.map((v) => (
+                  <tr key={v.id}>
+                    <td className="px-5 py-2.5">
+                      <p className="font-medium text-gray-900">
+                        {v.full_name ?? <span className="italic text-gray-400">Anonymous</span>}
+                      </p>
+                      {v.email && (
+                        <p className="text-[11px] text-gray-500">{v.email}</p>
+                      )}
+                    </td>
+                    <td className="px-5 py-2.5 text-xs text-gray-700">
+                      {v.company_name ?? v.company_domain ?? '—'}
+                    </td>
+                    <td className="px-5 py-2.5 text-xs text-gray-700">
+                      {v.job_title ?? '—'}
+                    </td>
+                    <td className="px-5 py-2.5 text-xs text-gray-700">
+                      {[v.city, v.state, v.country].filter(Boolean).join(', ') || '—'}
+                    </td>
+                    <td className="whitespace-nowrap px-5 py-2.5 text-xs text-gray-500">
+                      {formatRelative(v.received_at)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {(feed?.recent.length ?? 0) > 5 && (
+            <button
+              type="button"
+              onClick={() => setExpanded((s) => !s)}
+              className="w-full border-t border-gray-100 bg-gray-50 px-5 py-2.5 text-xs font-medium text-blue-600 hover:bg-gray-100"
+            >
+              {expanded
+                ? 'Show fewer'
+                : `Show all ${feed?.recent.length ?? 0} recent visitors`}
+            </button>
+          )}
+        </>
+      ) : (
+        <div className="px-5 py-10 text-center">
+          <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-gray-100">
+            <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.6} stroke="currentColor">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+              />
+            </svg>
+          </div>
+          <p className="text-sm text-gray-500">
+            Visitors will show up here the moment your pixel sees them.
+          </p>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function formatRelative(iso: string | null | undefined): string {
+  if (!iso) return 'never'
+  const t = new Date(iso).getTime()
+  if (Number.isNaN(t)) return 'never'
+  const delta = Date.now() - t
+  if (delta < 60_000) return 'just now'
+  if (delta < 3_600_000) return `${Math.floor(delta / 60_000)}m ago`
+  if (delta < 86_400_000) return `${Math.floor(delta / 3_600_000)}h ago`
+  if (delta < 7 * 86_400_000) return `${Math.floor(delta / 86_400_000)}d ago`
+  return new Date(iso).toLocaleDateString()
+}
+
 // ─── Sidebar ───────────────────────────────────────────────────────────────
 
 function PackageSidebar({ order, offerLabel }: { order: FunnelOrder; offerLabel: string }) {
@@ -716,6 +884,12 @@ export function FunnelPortal({
               </div>
             </div>
           </div>
+
+          {/* Live visitor feed — appears once the pixel is provisioned.
+              Polls /api/funnel/[token]/visitors every 30s. */}
+          {includesPixel && order.pixel_audiencelab_id && (
+            <VisitorsCard token={token} />
+          )}
 
           <div className="mt-6 rounded-xl border border-gray-200 bg-gray-50 p-5 text-center">
             <p className="text-sm text-gray-500">

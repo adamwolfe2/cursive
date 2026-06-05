@@ -234,6 +234,112 @@ export async function getPortalTokenForOrder(
   return (data as FunnelPortalTokenRecord | null) ?? null
 }
 
+// ─── Visitor feed (token-gated, scoped to the order's pixel_id) ────────
+
+export interface FunnelVisitor {
+  id: string
+  received_at: string
+  first_name: string | null
+  last_name: string | null
+  full_name: string | null
+  email: string | null
+  company_name: string | null
+  company_domain: string | null
+  job_title: string | null
+  city: string | null
+  state: string | null
+  country: string | null
+  linkedin_url: string | null
+}
+
+export interface FunnelVisitorFeed {
+  /** Count of distinct visitors in window. */
+  total: number
+  /** Most recent identified visitors, capped at `limit`. */
+  recent: FunnelVisitor[]
+  /** ISO timestamp of the most recent event — null if no events yet. */
+  last_seen_at: string | null
+}
+
+/**
+ * Reads identified-visitor events for a funnel order's pixel. Scoped to
+ * the order's pixel_audiencelab_id so one order's token can never see
+ * another order's visitors. Dedupes by hem_sha256 (one row per identified
+ * person, even if they hit the site multiple times).
+ */
+export async function getOrderVisitors(
+  pixelAudienceLabId: string,
+  opts?: { limit?: number; sinceDays?: number }
+): Promise<FunnelVisitorFeed> {
+  const supabase = createAdminClient()
+  const limit = opts?.limit ?? 50
+  const sinceDays = opts?.sinceDays ?? 90
+  const sinceIso = new Date(Date.now() - sinceDays * 24 * 60 * 60 * 1000).toISOString()
+
+  const { data, error } = await supabase
+    .from('audiencelab_events')
+    .select('id, received_at, raw, hem_sha256')
+    .eq('pixel_id', pixelAudienceLabId)
+    .gte('received_at', sinceIso)
+    .order('received_at', { ascending: false })
+    .limit(limit * 4) // headroom for dedupe pass
+
+  if (error) {
+    safeError('[funnel/order] getOrderVisitors fetch failed:', error)
+    return { total: 0, recent: [], last_seen_at: null }
+  }
+
+  type EventRow = {
+    id: string
+    received_at: string
+    raw: Record<string, unknown> | null
+    hem_sha256: string | null
+  }
+
+  const rows = (data as EventRow[] | null) ?? []
+  const seen = new Set<string>()
+  const recent: FunnelVisitor[] = []
+
+  for (const row of rows) {
+    const dedupKey = row.hem_sha256 || row.id
+    if (seen.has(dedupKey)) continue
+    seen.add(dedupKey)
+
+    const raw = (row.raw ?? {}) as Record<string, unknown>
+    const get = (k: string): string | null => {
+      const v = raw[k]
+      return typeof v === 'string' && v.length > 0 ? v : null
+    }
+
+    recent.push({
+      id: row.id,
+      received_at: row.received_at,
+      first_name: get('FIRST_NAME'),
+      last_name: get('LAST_NAME'),
+      full_name:
+        get('FULL_NAME') ??
+        ([get('FIRST_NAME'), get('LAST_NAME')].filter(Boolean).join(' ') ||
+          null),
+      email: get('BUSINESS_EMAIL') ?? get('PERSONAL_EMAIL') ?? null,
+      company_name: get('COMPANY_NAME'),
+      company_domain: get('COMPANY_DOMAIN'),
+      job_title: get('JOB_TITLE'),
+      city: get('PERSONAL_CITY') ?? get('COMPANY_CITY') ?? null,
+      state: get('PERSONAL_STATE') ?? get('COMPANY_STATE') ?? null,
+      country: get('PERSONAL_COUNTRY') ?? get('COMPANY_COUNTRY') ?? null,
+      linkedin_url: get('INDIVIDUAL_LINKEDIN_URL') ?? null,
+    })
+
+    if (recent.length >= limit) break
+  }
+
+  return {
+    total: seen.size,
+    recent,
+    last_seen_at: rows[0]?.received_at ?? null,
+  }
+}
+
 export async function listOrders(opts?: {
   limit?: number
 }): Promise<FunnelOrder[]> {
