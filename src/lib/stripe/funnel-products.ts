@@ -146,6 +146,21 @@ export const FUNNEL_VSL_URL = withVslAutoplay(
 )
 
 /**
+ * Aspect ratio for the VSL container. Match this to your actual source video
+ * (Mux displays it next to the embed code, e.g. "437/270"). Default 16/9 is
+ * fine for most modern recordings; non-16:9 sources (typical MacBook screen
+ * grabs land near 437/270 ≈ 1.62:1) need this set to kill pillarbox bars.
+ */
+export const FUNNEL_VSL_ASPECT_RATIO = (() => {
+  const raw = process.env.FUNNEL_VSL_ASPECT?.trim()
+  // Accept "16/9" or "16:9" — normalize to CSS aspect-ratio shape
+  if (!raw) return '16 / 9'
+  const match = raw.match(/^(\d+)\s*[/:]\s*(\d+)$/)
+  if (!match) return '16 / 9'
+  return `${match[1]} / ${match[2]}`
+})()
+
+/**
  * Detect if the VSL URL points at a self-hosted video file vs an iframe-style
  * embed. Used by the landing page to choose <video> vs <iframe>. Checks the
  * pathname (not the full URL) so query strings don't trip the check.

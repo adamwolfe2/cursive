@@ -1,5 +1,6 @@
 import {
   FUNNEL_OFFERS,
+  FUNNEL_VSL_ASPECT_RATIO,
   FUNNEL_VSL_URL,
   isSelfHostedVideoUrl,
 } from '@/lib/stripe/funnel-products'
@@ -36,11 +37,14 @@ export default function GetLeadsPage() {
         </p>
       </div>
 
-      {/* VSL — bg-white container blends any letterbox with the page
-          instead of showing as black bars. Native <video> uses object-cover
-          to fill the frame edge-to-edge for the MP4 path. */}
+      {/* VSL — container aspect matches the source video (set via
+          FUNNEL_VSL_ASPECT env, defaults to 16/9). Matching the aspect
+          eliminates pillarbox/letterbox bars regardless of player. */}
       <div className="mx-auto mb-16 max-w-3xl overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-        <div className="aspect-video w-full">
+        <div
+          className="w-full"
+          style={{ aspectRatio: FUNNEL_VSL_ASPECT_RATIO }}
+        >
           {FUNNEL_VSL_URL === 'about:blank' ? (
             <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 text-sm text-gray-400">
               Video coming soon — set FUNNEL_VSL_URL env var
