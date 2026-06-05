@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { FunnelOfferConfig } from '@/lib/stripe/funnel-products'
 
 function formatPrice(cents: number): string {
@@ -50,50 +50,6 @@ const PLAN_FEATURES: Record<string, Omit<PlanCardConfig, 'offer'>> = {
 }
 
 export function CheckoutButtons({ offers }: { offers: FunnelOfferConfig[] }) {
-  const [loadingSlug, setLoadingSlug] = useState<string | null>(null)
-  const [error, setError] = useState<string | null>(null)
-
-  async function handleCheckout(slug: string) {
-    setLoadingSlug(slug)
-    setError(null)
-
-    // CRITICAL: open the new tab IMMEDIATELY in the click handler so popup
-    // blockers allow it. If we wait until after the fetch resolves, the
-    // browser treats it as a non-user-gesture popup and blocks it. We
-    // point the empty tab at the Stripe URL once we have it.
-    const newTab = window.open('', '_blank', 'noopener,noreferrer')
-    if (!newTab) {
-      setError('Please allow popups for this site to start checkout.')
-      setLoadingSlug(null)
-      return
-    }
-
-    try {
-      const res = await fetch('/api/funnel/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ offer: slug }),
-      })
-      const json = (await res.json().catch(() => ({}))) as {
-        url?: string
-        error?: string
-      }
-      if (!res.ok || !json.url) {
-        newTab.close()
-        throw new Error(json.error || `Checkout failed (HTTP ${res.status})`)
-      }
-      newTab.location.href = json.url
-      // Buyer is now on Stripe in a new tab — re-enable the buttons here
-      // so the video keeps playing and they can pick a different plan if
-      // they cancel out.
-      setLoadingSlug(null)
-    } catch (err) {
-      newTab.close()
-      setError(err instanceof Error ? err.message : 'Could not start checkout.')
-      setLoadingSlug(null)
-    }
-  }
-
   const cards: PlanCardConfig[] = offers.map((offer) => ({
     offer,
     ...PLAN_FEATURES[offer.slug],
@@ -103,21 +59,9 @@ export function CheckoutButtons({ offers }: { offers: FunnelOfferConfig[] }) {
     <div className="space-y-6">
       <div className="grid gap-4 md:grid-cols-3">
         {cards.map((card) => (
-          <PlanCard
-            key={card.offer.slug}
-            card={card}
-            loading={loadingSlug === card.offer.slug}
-            anyLoading={loadingSlug !== null}
-            onClick={() => handleCheckout(card.offer.slug)}
-          />
+          <PlanCard key={card.offer.slug} card={card} />
         ))}
       </div>
-
-      {error && (
-        <p className="rounded-md border border-red-200 bg-red-50 px-4 py-2.5 text-center text-sm text-red-600">
-          {error}
-        </p>
-      )}
 
       <p className="text-center text-xs text-gray-400">
         Have a discount code? Apply it on the Stripe checkout page.
@@ -126,18 +70,23 @@ export function CheckoutButtons({ offers }: { offers: FunnelOfferConfig[] }) {
   )
 }
 
-function PlanCard({
-  card,
-  loading,
-  anyLoading,
-  onClick,
-}: {
-  card: PlanCardConfig
-  loading: boolean
-  anyLoading: boolean
-  onClick: () => void
-}) {
+function PlanCard({ card }: { card: PlanCardConfig }) {
   const { offer, tagline, audience, features, highlight } = card
+  const [submitting, setSubmitting] = useState(false)
+  const [showFallback, setShowFallback] = useState(false)
+
+  // If the buyer clicked but stays on the page longer than ~2s, assume the
+  // new tab got blocked by a hardened browser/extension/corporate policy.
+  // Show a fallback link that opens Stripe in THIS tab — a regular <a>
+  // click is the one navigation no popup blocker can interfere with.
+  useEffect(() => {
+    if (!submitting) {
+      setShowFallback(false)
+      return
+    }
+    const t = setTimeout(() => setShowFallback(true), 2000)
+    return () => clearTimeout(t)
+  }, [submitting])
 
   return (
     <div
@@ -147,7 +96,6 @@ function PlanCard({
           : 'border-gray-200 hover:shadow-sm'
       }`}
     >
-      {/* Header */}
       <div className="mb-1 flex items-start justify-between gap-3">
         <h3 className="text-lg font-semibold text-gray-900">{offer.label}</h3>
         {highlight && (
@@ -157,7 +105,6 @@ function PlanCard({
         )}
       </div>
 
-      {/* Price */}
       <div className="mt-4 flex items-baseline gap-1">
         <span className="text-5xl font-bold tracking-tight text-gray-900">
           {formatPrice(offer.monthlyPriceCents)}
@@ -165,36 +112,69 @@ function PlanCard({
       </div>
       <p className="mt-1 text-xs text-gray-500">Per month, billed monthly</p>
 
-      {/* Tagline + audience */}
       <p className="mt-6 text-sm font-semibold text-gray-900">{tagline}</p>
-      <p className="mt-1.5 text-sm leading-relaxed text-gray-500">
-        {audience}
-      </p>
+      <p className="mt-1.5 text-sm leading-relaxed text-gray-500">{audience}</p>
 
-      {/* Features */}
       <ul className="mt-5 space-y-2.5">
         {features.map((feature) => (
-          <li key={feature} className="flex items-start gap-2.5 text-sm text-gray-700">
+          <li
+            key={feature}
+            className="flex items-start gap-2.5 text-sm text-gray-700"
+          >
             <CheckIcon />
             <span className="leading-snug">{feature}</span>
           </li>
         ))}
       </ul>
 
-      {/* CTA pinned to bottom */}
       <div className="mt-8 flex-1" />
-      <button
-        type="button"
-        onClick={onClick}
-        disabled={anyLoading}
-        className={`inline-flex w-full items-center justify-center gap-2 truncate whitespace-nowrap rounded-lg px-4 py-2.5 text-sm font-medium transition-colors disabled:opacity-50 ${
-          highlight
-            ? 'bg-blue-600 text-white hover:bg-blue-700'
-            : 'border border-gray-300 bg-white text-gray-900 hover:bg-gray-50'
-        }`}
+
+      {/*
+        Form submission with target="_blank" is the only bulletproof way to
+        open a new tab without triggering popup blockers — the browser
+        treats the form submit as a primary user gesture by definition.
+        POSTs to /api/funnel/checkout-redirect, which creates the Stripe
+        session and returns a 303 redirect straight to the Stripe URL.
+        The original /get-leads tab stays put so the VSL keeps playing.
+      */}
+      <form
+        action="/api/funnel/checkout-redirect"
+        method="POST"
+        target="_blank"
+        rel="noopener"
+        onSubmit={() => setSubmitting(true)}
+        className="w-full"
       >
-        {loading ? 'Loading…' : 'Get started'}
-      </button>
+        <input type="hidden" name="offer" value={offer.slug} />
+        <button
+          type="submit"
+          disabled={submitting}
+          className={`inline-flex w-full items-center justify-center gap-2 truncate whitespace-nowrap rounded-lg px-4 py-2.5 text-sm font-medium transition-colors disabled:opacity-70 ${
+            highlight
+              ? 'bg-blue-600 text-white hover:bg-blue-700'
+              : 'border border-gray-300 bg-white text-gray-900 hover:bg-gray-50'
+          }`}
+        >
+          {submitting ? 'Opening checkout…' : 'Get started'}
+        </button>
+      </form>
+
+      {/* Same-tab fallback — appears 2s after the click if the buyer is
+          still on the page (meaning the new tab probably got blocked by a
+          hardened browser or extension). Regular <a> clicks bypass every
+          popup blocker. The VSL stops because we leave the page, but
+          checkout actually completing > preserving the video. */}
+      {showFallback && (
+        <p className="mt-2 text-center text-xs text-gray-500">
+          Didn&apos;t open?{' '}
+          <a
+            href={`/api/funnel/checkout-redirect?offer=${offer.slug}`}
+            className="font-medium text-blue-600 underline hover:text-blue-700"
+          >
+            Continue in this tab
+          </a>
+        </p>
+      )}
     </div>
   )
 }
@@ -208,7 +188,11 @@ function CheckIcon() {
       strokeWidth={2.5}
       stroke="currentColor"
     >
-      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M4.5 12.75l6 6 9-13.5"
+      />
     </svg>
   )
 }
