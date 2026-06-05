@@ -1,17 +1,21 @@
 import { redirect } from 'next/navigation'
-import { requirePlatformAdmin } from '@/lib/auth/admin'
+import { requireAdmin } from '@/lib/auth/admin'
 import { listOrders } from '@/lib/funnel/order.service'
 import { FunnelOrdersTable } from './FunnelOrdersTable'
 
 export const dynamic = 'force-dynamic'
 
 export default async function FunnelOrdersAdminPage() {
-  // Auth via canonical platform_admins table (DB is source of truth,
-  // shared with rest of the admin surface area). Throws if not allowed.
+  // Auth via canonical requireAdmin (matches the middleware's role check):
+  // accepts platform_admins.is_active=true OR users.role IN ('owner','admin').
+  // On failure we redirect to /dashboard, NOT /login — otherwise a signed-in
+  // non-admin user gets bounced from the page to /login, where they're
+  // already authenticated so /login redirects back to this page, and so on
+  // forever. /dashboard is always a safe terminal destination.
   try {
-    await requirePlatformAdmin()
+    await requireAdmin()
   } catch {
-    redirect('/login?redirect=/admin/funnel-orders')
+    redirect('/dashboard')
   }
 
   const orders = await listOrders({ limit: 200 })

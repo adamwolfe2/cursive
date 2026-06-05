@@ -8,7 +8,7 @@ export const runtime = 'nodejs'
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { requirePlatformAdmin, logAdminAction } from '@/lib/auth/admin'
+import { requireAdmin, logAdminAction } from '@/lib/auth/admin'
 import {
   getPortalTokenForOrder,
   markOrderDelivered,
@@ -29,11 +29,12 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Canonical platform-admin guard. Throws if not authorized → caught below
-    // and converted to a 401.
+    // Canonical admin guard — accepts platform_admins OR users.role in
+    // (owner, admin). Matches /admin/onboarding's gate so admin-side
+    // surfaces are consistent. Throws if not authorized → 401.
     let admin: { id: string; email: string }
     try {
-      admin = await requirePlatformAdmin()
+      admin = await requireAdmin()
     } catch {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
