@@ -154,6 +154,26 @@ export async function HEAD() {
   })
 }
 
+/**
+ * Returns true if the request body looks like a webhook discovery probe
+ * (empty, empty object, or an explicit { test: true } / { ping: true }
+ * payload). Real event POSTs always contain a wrapped events array.
+ */
+function isProbeBody(rawBody: string): boolean {
+  const trimmed = rawBody.trim()
+  if (trimmed === '' || trimmed === '{}') return true
+  try {
+    const parsed = JSON.parse(trimmed) as Record<string, unknown>
+    if (parsed?.test === true || parsed?.ping === true) return true
+    // No events / data / records — almost certainly a probe.
+    const realEventKeys = ['events', 'event', 'data', 'records', 'pixel_id', 'hem_sha256']
+    if (!realEventKeys.some((k) => k in parsed)) return true
+  } catch {
+    // Non-JSON body — not a probe, let the auth path reject it
+  }
+  return false
+}
+
 export async function POST(request: NextRequest) {
   try {
     // Enforce Content-Type
@@ -173,6 +193,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Payload too large' },
         { status: 413 }
+      )
+    }
+
+    // Reachability probe — AL's "Test webhook" button (and similar dashboard
+    // UIs) sends an unsigned POST with an empty body or an explicit { test: true }
+    // payload. Return 200 OK so the test succeeds without exposing event
+    // ingestion. There's no data to authenticate here — the only thing we're
+    // confirming is that the URL resolves.
+    if (isProbeBody(rawBody)) {
+      return NextResponse.json(
+        { ok: true, probe: true, message: 'reachable, send POST with x-audiencelab-secret for events' },
+        { status: 200 }
       )
     }
 
