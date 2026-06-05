@@ -171,7 +171,7 @@ function PlanCard({
         disabled={anyLoading}
         className={`inline-flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors disabled:opacity-50 ${
           highlight
-            ? 'bg-gray-900 text-white hover:bg-gray-800'
+            ? 'bg-blue-600 text-white hover:bg-blue-700'
             : 'border border-gray-300 bg-white text-gray-900 hover:bg-gray-50'
         }`}
       >
