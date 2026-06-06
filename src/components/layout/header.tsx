@@ -31,11 +31,13 @@ interface HeaderProps {
     name: string
     logoUrl?: string | null
   }
+  /** Hide the enrichment-credits chip — funnel/managed buyers don't use credits. */
+  hideCredits?: boolean
   onMenuClick?: () => void
   className?: string
 }
 
-export function Header({ user, workspace, onMenuClick, className }: HeaderProps) {
+export function Header({ user, workspace, onMenuClick, className, hideCredits }: HeaderProps) {
   const router = useRouter()
 
   return (
@@ -88,8 +90,8 @@ export function Header({ user, workspace, onMenuClick, className }: HeaderProps)
 
       {/* Right side */}
       <div className="flex items-center gap-4">
-        {/* Credits display — visible on all screen sizes */}
-        {user && (
+        {/* Credits display — hidden for managed/funnel buyers (no credit model) */}
+        {user && !hideCredits && (
           <div className="flex items-center gap-2">
             <span className="hidden text-sm text-muted-foreground sm:inline">Credits:</span>
             <span className={cn(

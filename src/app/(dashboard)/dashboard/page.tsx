@@ -767,6 +767,12 @@ export default async function DashboardPage({
   const hasVerifiedPixel = hasPixel && pixelEventCount > 0
   const isOnTrial       = pixel?.trial_status === 'trial'
   const trialEndsAtStr  = pixel?.trial_ends_at ?? null
+  // Single source of truth for "trial ended" — mirrors TrialBanner (status
+  // 'expired' OR trial_ends_at in the past). Prevents the dashboard claiming
+  // "live (trial)" while the banner simultaneously says "trial expired / stopped".
+  const isPixelExpired  = pixel?.trial_status === 'expired' ||
+    (!!trialEndsAtStr && new Date(trialEndsAtStr).getTime() < Date.now())
+  const isActiveTrial   = isOnTrial && !isPixelExpired
   const visitorCountTotal = pixel?.visitor_count_total ?? null
 
   const creditsRemaining = creditsData?.remaining ?? 0
@@ -825,11 +831,13 @@ export default async function DashboardPage({
                 {userProfile.workspaces?.name && (
                   <span className="font-medium text-foreground">{userProfile.workspaces.name} · </span>
                 )}
-                {hasVerifiedPixel
-                  ? `Your pixel is live${pixel?.trial_status === 'trial' ? ' (trial)' : ''}. Here's who visited your site recently.`
-                  : hasPixel
-                    ? 'Your pixel is installed — waiting for the first visitor. Leads will appear here automatically.'
-                    : 'Install your pixel to start identifying anonymous website visitors in real time.'}
+                {isPixelExpired
+                  ? 'Your pixel trial has ended — reactivate to resume identifying visitors.'
+                  : hasVerifiedPixel
+                    ? `Your pixel is live${isActiveTrial ? ' (trial)' : ''}. Here's who visited your site recently.`
+                    : hasPixel
+                      ? 'Your pixel is installed — waiting for the first visitor. Leads will appear here automatically.'
+                      : 'Install your pixel to start identifying anonymous website visitors in real time.'}
               </p>
             </div>
             <div className="flex items-center gap-2">

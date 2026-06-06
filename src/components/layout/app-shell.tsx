@@ -323,6 +323,7 @@ export function AppShell({ children, user, workspace, todayLeadCount, hotLeadCou
         <Header
           user={user}
           workspace={workspace}
+          hideCredits={!!(visibleFeatures && visibleFeatures.length > 0)}
           onMenuClick={() => setSidebarOpen(!sidebarOpen)}
         />
         {user && typeof user.creditsRemaining === 'number' && user.creditsRemaining <= 3 && !creditsBannerDismissed && CREDITS_BANNER_PATHS.some(p => pathname.startsWith(p)) && (
