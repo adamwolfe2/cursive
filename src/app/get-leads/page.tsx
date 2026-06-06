@@ -1,5 +1,6 @@
 import {
   FUNNEL_OFFERS,
+  FUNNEL_GATE_SECONDS,
   FUNNEL_VSL_ASPECT_RATIO,
   FUNNEL_VSL_URL,
   isSelfHostedVideoUrl,
@@ -124,7 +125,7 @@ export default function GetLeadsPage() {
       {/* Cards — gated until 20s of video has played. Extra top padding
           so the bundle card's negative translate doesn't get clipped. */}
       <div className="pt-6">
-        <PricingGate>
+        <PricingGate unlockAfterSeconds={FUNNEL_GATE_SECONDS}>
           <CheckoutButtons offers={offers} />
         </PricingGate>
       </div>

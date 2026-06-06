@@ -3,21 +3,32 @@
 import { useEffect, useState } from 'react'
 import { FUNNEL_EVENTS, trackFunnel } from '@/lib/funnel/tracking'
 
-const UNLOCK_AFTER_SECONDS = 60
+const DEFAULT_UNLOCK_SECONDS = 30
 
 /**
- * Blurs the pricing section until the visitor has spent UNLOCK_AFTER_SECONDS
- * on the page (proxy for "watched ~20s of the autoplaying VSL"). A countdown
- * overlay sits on top of the blurred cards so the gate feels intentional —
- * not broken.
+ * Blurs the pricing section until the visitor has spent `unlockAfterSeconds`
+ * on the page (proxy for "watched the VSL"). A countdown overlay sits on top
+ * of the blurred cards so the gate feels intentional — not broken — and a
+ * "show me pricing now" skip lets motivated buyers through immediately
+ * (forced waiting bounces high-intent traffic).
  *
- * Why not key off real Loom playback events? Loom's iframe postMessage API
- * is not officially stable, and autoplay/mute heuristics mean playback
- * usually starts within ~200ms of page load anyway. A wall-clock timer is
- * accurate enough and never gets stuck if Loom changes their event shape.
+ * Duration is configurable via FUNNEL_GATE_SECONDS (passed from the server
+ * page) so it can be A/B-tested without a redeploy. Set it to 0 to disable the
+ * gate entirely.
+ *
+ * Why a wall-clock timer, not real video events? Loom/Mux iframe postMessage
+ * APIs aren't officially stable, and autoplay starts within ~200ms anyway. A
+ * timer is accurate enough and never gets stuck if a player changes its API.
  */
-export function PricingGate({ children }: { children: React.ReactNode }) {
-  const [secondsLeft, setSecondsLeft] = useState(UNLOCK_AFTER_SECONDS)
+export function PricingGate({
+  children,
+  unlockAfterSeconds = DEFAULT_UNLOCK_SECONDS,
+}: {
+  children: React.ReactNode
+  unlockAfterSeconds?: number
+}) {
+  const [secondsLeft, setSecondsLeft] = useState(unlockAfterSeconds)
+  const [method, setMethod] = useState<'timer' | 'skip'>('timer')
   const unlocked = secondsLeft <= 0
 
   useEffect(() => {
@@ -28,16 +39,17 @@ export function PricingGate({ children }: { children: React.ReactNode }) {
     return () => clearInterval(interval)
   }, [unlocked])
 
-  // Fire pricing_unlocked exactly once when the gate elapses. Drives the
-  // funnel-conversion calculation: % of landing_viewed → pricing_unlocked
-  // = % that made it past the VSL gate.
+  // Fire pricing_unlocked exactly once. Drives the funnel-conversion calc
+  // (% of landing_viewed → pricing_unlocked) and lets us compare skip vs
+  // timer unlock rates when A/B-testing the gate duration.
   useEffect(() => {
     if (unlocked) {
       trackFunnel(FUNNEL_EVENTS.PRICING_UNLOCKED, {
-        unlocked_after_seconds: UNLOCK_AFTER_SECONDS,
+        unlocked_after_seconds: unlockAfterSeconds,
+        method,
       })
     }
-  }, [unlocked])
+  }, [unlocked, unlockAfterSeconds, method])
 
   return (
     <div className="relative">
@@ -76,6 +88,16 @@ export function PricingGate({ children }: { children: React.ReactNode }) {
             <p className="text-xs text-gray-500">
               Keep watching — we&apos;ll show you the plans in a moment.
             </p>
+            <button
+              type="button"
+              onClick={() => {
+                setMethod('skip')
+                setSecondsLeft(0)
+              }}
+              className="mt-3 text-xs font-medium text-blue-600 hover:text-blue-700 hover:underline"
+            >
+              Show me pricing now →
+            </button>
           </div>
         </div>
       )}
