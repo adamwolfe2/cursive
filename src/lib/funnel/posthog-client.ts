@@ -70,7 +70,7 @@ export interface FunnelStepCount {
 const STEP_LABELS: Record<FunnelEventName, string> = {
   [FUNNEL_EVENTS.LANDING_VIEWED]: 'Landed on /get-leads',
   [FUNNEL_EVENTS.VSL_LOADED]: 'VSL loaded',
-  [FUNNEL_EVENTS.PRICING_UNLOCKED]: 'Watched 60s + pricing unlocked',
+  [FUNNEL_EVENTS.PRICING_UNLOCKED]: 'Pricing unlocked (gate passed)',
   [FUNNEL_EVENTS.PLAN_SELECTED]: 'Selected a plan',
   [FUNNEL_EVENTS.CHECKOUT_INITIATED]: 'Initiated checkout (Stripe)',
   [FUNNEL_EVENTS.CHECKOUT_FALLBACK_SHOWN]: 'Saw popup-blocked fallback',
@@ -83,6 +83,9 @@ const STEP_LABELS: Record<FunnelEventName, string> = {
   [FUNNEL_EVENTS.AUDIENCE_STARTED]: 'Started ICP form',
   [FUNNEL_EVENTS.AUDIENCE_SUBMITTED]: 'Submitted ICP form',
   [FUNNEL_EVENTS.BILLING_PORTAL_OPENED]: 'Opened Manage billing',
+  [FUNNEL_EVENTS.BILLING_SAVE_FLOW_VIEWED]: 'Saw cancel save-flow',
+  [FUNNEL_EVENTS.BILLING_SAVE_FLOW_PROCEEDED]: 'Proceeded to billing anyway',
+  [FUNNEL_EVENTS.BILLING_SAVE_FLOW_DISMISSED]: 'Stayed (save-flow worked)',
   [FUNNEL_EVENTS.CANCELLED_SCREEN_VIEWED]: 'Saw cancelled-screen',
   [FUNNEL_EVENTS.PAST_DUE_BANNER_VIEWED]: 'Saw past-due banner',
 }

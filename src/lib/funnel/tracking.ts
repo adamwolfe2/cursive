@@ -45,6 +45,12 @@ export const FUNNEL_EVENTS = {
 
   /** "Manage billing" button clicked. */
   BILLING_PORTAL_OPENED: 'funnel.billing_portal_opened',
+  /** Save-flow interstitial shown before the buyer reaches Stripe billing. */
+  BILLING_SAVE_FLOW_VIEWED: 'funnel.billing_save_flow_viewed',
+  /** Buyer chose to proceed to Stripe billing despite the save-flow. */
+  BILLING_SAVE_FLOW_PROCEEDED: 'funnel.billing_save_flow_proceeded',
+  /** Buyer backed out of the save-flow (stayed). */
+  BILLING_SAVE_FLOW_DISMISSED: 'funnel.billing_save_flow_dismissed',
   /** Cancelled-screen rendered (subscription is over). */
   CANCELLED_SCREEN_VIEWED: 'funnel.cancelled_screen_viewed',
   /** Past-due banner rendered. */
@@ -52,6 +58,29 @@ export const FUNNEL_EVENTS = {
 } as const
 
 export type FunnelEventName = (typeof FUNNEL_EVENTS)[keyof typeof FUNNEL_EVENTS]
+
+/**
+ * Canonical conversion funnel — the ordered steps from cold landing to
+ * activation, as a single source of truth for the admin analytics view and
+ * any PostHog funnel definition. `serverSide: true` steps (e.g. payment) are
+ * recorded by the Stripe webhook, not a client event, so they're noted but
+ * have no client event name.
+ */
+export const FUNNEL_STEPS: ReadonlyArray<{
+  label: string
+  event?: FunnelEventName
+  serverSide?: boolean
+}> = [
+  { label: 'Landing viewed', event: FUNNEL_EVENTS.LANDING_VIEWED },
+  { label: 'VSL loaded', event: FUNNEL_EVENTS.VSL_LOADED },
+  { label: 'Pricing unlocked', event: FUNNEL_EVENTS.PRICING_UNLOCKED },
+  { label: 'Plan selected', event: FUNNEL_EVENTS.PLAN_SELECTED },
+  { label: 'Checkout initiated', event: FUNNEL_EVENTS.CHECKOUT_INITIATED },
+  { label: 'Paid', serverSide: true },
+  { label: 'Portal viewed', event: FUNNEL_EVENTS.PORTAL_VIEWED },
+  { label: 'Pixel provisioned', event: FUNNEL_EVENTS.PIXEL_PROVISIONED },
+  { label: 'Audience submitted', event: FUNNEL_EVENTS.AUDIENCE_SUBMITTED },
+] as const
 
 /**
  * Safe capture wrapper. PostHog may not be loaded yet (SSR or before

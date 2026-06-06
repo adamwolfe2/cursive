@@ -1073,6 +1073,7 @@ export function FunnelPortal({
   const router = useRouter()
   const [order, setOrder] = useState<FunnelOrder>(initialOrder)
   const [billingLoading, setBillingLoading] = useState(false)
+  const [saveFlowOpen, setSaveFlowOpen] = useState(false)
 
   const includesPixel = useMemo(
     () => order.offer_slug !== 'audience_197',
@@ -1104,6 +1105,26 @@ export function FunnelPortal({
       setBillingLoading(false)
       alert(err instanceof Error ? err.message : 'Could not open billing portal.')
     }
+  }
+
+  // Cancel save-flow (#10): the voluntary "Manage billing" entry (where cancel
+  // lives) opens a retention interstitial first, giving us a chance to save the
+  // account before they reach Stripe. The past-due banner still goes direct —
+  // there the intent is to fix payment, which we want to make frictionless.
+  function openBillingSaveFlow() {
+    trackFunnel(FUNNEL_EVENTS.BILLING_SAVE_FLOW_VIEWED, { order_id: order.id })
+    setSaveFlowOpen(true)
+  }
+
+  function proceedToBilling() {
+    trackFunnel(FUNNEL_EVENTS.BILLING_SAVE_FLOW_PROCEEDED, { order_id: order.id })
+    setSaveFlowOpen(false)
+    void handleManageBilling()
+  }
+
+  function dismissSaveFlow() {
+    trackFunnel(FUNNEL_EVENTS.BILLING_SAVE_FLOW_DISMISSED, { order_id: order.id })
+    setSaveFlowOpen(false)
   }
 
   async function refreshOrder() {
@@ -1232,9 +1253,77 @@ export function FunnelPortal({
           <PackageSidebar
             order={order}
             offerLabel={offerLabel}
-            onManageBilling={handleManageBilling}
+            onManageBilling={openBillingSaveFlow}
             billingLoading={billingLoading}
           />
+        </div>
+      </div>
+
+      {saveFlowOpen && (
+        <BillingSaveFlow
+          onProceed={proceedToBilling}
+          onDismiss={dismissSaveFlow}
+          loading={billingLoading}
+        />
+      )}
+    </div>
+  )
+}
+
+/**
+ * Retention interstitial shown before the buyer reaches Stripe's billing
+ * portal (where cancellation lives). Offers a human touchpoint + a beat to
+ * reconsider, without blocking anyone who genuinely wants to manage billing.
+ */
+function BillingSaveFlow({
+  onProceed,
+  onDismiss,
+  loading,
+}: {
+  onProceed: () => void
+  onDismiss: () => void
+  loading: boolean
+}) {
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+      onClick={onDismiss}
+    >
+      <div
+        className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h3 className="text-lg font-semibold text-gray-900">
+          Before you go — can we help?
+        </h3>
+        <p className="mt-2 text-sm text-gray-600">
+          If something isn&apos;t working or the value isn&apos;t landing yet,
+          reply and we&apos;ll fix it fast — most issues are a quick pixel or
+          targeting tweak. You can also pause instead of cancelling.
+        </p>
+
+        <div className="mt-5 flex flex-col gap-2">
+          <a
+            href="mailto:support@meetcursive.com?subject=Help%20with%20my%20Cursive%20account"
+            className="inline-flex w-full items-center justify-center rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
+          >
+            Email us — we&apos;ll make it right
+          </a>
+          <button
+            type="button"
+            onClick={onProceed}
+            disabled={loading}
+            className="inline-flex w-full items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:opacity-60"
+          >
+            {loading ? 'Opening…' : 'Continue to billing'}
+          </button>
+          <button
+            type="button"
+            onClick={onDismiss}
+            className="mt-1 text-center text-xs font-medium text-gray-400 hover:text-gray-600"
+          >
+            Never mind, I&apos;ll stay
+          </button>
         </div>
       </div>
     </div>
