@@ -7,6 +7,7 @@ import {
 import { CheckoutButtons } from './CheckoutButtons'
 import { FunnelTelemetry } from './FunnelTelemetry'
 import { PricingGate } from './PricingGate'
+import { Testimonials } from './Testimonials'
 
 export const dynamic = 'force-dynamic'
 
@@ -93,8 +94,11 @@ export default function GetLeadsPage() {
         </div>
       </div>
 
+      {/* Social proof wall — warms cold traffic before the pricing reveal. */}
+      <Testimonials />
+
       {/* Pricing header — Attio-style */}
-      <div className="mb-10 text-center">
+      <div className="mb-8 text-center">
         <h2 className="text-3xl font-semibold tracking-tight text-gray-900 sm:text-4xl">
           <span className="text-gray-400">Start today</span>{' '}
           <span className="text-gray-900">for real buyers.</span>
@@ -103,6 +107,18 @@ export default function GetLeadsPage() {
           Pixel is live in 60 seconds. Audience delivered within 24 hours.
           Cancel any time.
         </p>
+        {/* Risk reversal — lowers the cost of saying yes. */}
+        <div className="mx-auto mt-6 flex max-w-2xl flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-gray-600">
+          <span className="inline-flex items-center gap-1.5">
+            <GuaranteeIcon /> First audience in 24h or it&apos;s free
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <GuaranteeIcon /> Cancel anytime, no contract
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <GuaranteeIcon /> Live in 60 seconds
+          </span>
+        </div>
       </div>
 
       {/* Cards — gated until 20s of video has played. Extra top padding
@@ -118,5 +134,24 @@ export default function GetLeadsPage() {
         Secure checkout by Stripe · No long-term contract · Cancel any time
       </p>
     </div>
+  )
+}
+
+function GuaranteeIcon() {
+  return (
+    <svg
+      className="h-4 w-4 shrink-0 text-emerald-500"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={2}
+      stroke="currentColor"
+      aria-hidden="true"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+      />
+    </svg>
   )
 }
