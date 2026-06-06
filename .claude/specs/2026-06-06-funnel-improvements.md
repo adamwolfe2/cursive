@@ -17,7 +17,7 @@
 | 7 | Fix trust signals (contradictory trial banner, Credits:0 for funnel buyers) | FIX | ✅ DONE (811937a7) — unified trial-expiry logic + hideCredits chip |
 | 8 | First-run guide + pixel-install assurance | FIX/BUILD (priority) | ✅ DONE (58c66792) — checklist already existed; added PixelTroubleshoot panel for installed-but-not-firing. |
 | 9 | Weekly value recap email | HOLD | ⏸ skipped per Adam |
-| 10 | Funnel instrumentation (PostHog funnel view) + cancel save-flow | BUILD | ☐ pending |
+| 10 | Funnel instrumentation (PostHog funnel view) + cancel save-flow | BUILD | ✅ DONE (e4fef3da) — FUNNEL_STEPS canonical funnel + cancel save-flow interstitial + 3 save-flow events. |
 
 Plus: QA tests + audits throughout.
 
@@ -49,4 +49,10 @@ Plus: QA tests + audits throughout.
 - **Iter 4 (2026-06-06):** **#3 SHIPPED** (77a3d211) — first-visitor "aha" email cron (every 15m) + template + visitorHeadline (5 tests) + migration. Note: depends on real events flowing (#1 blocker) to actually fire.
 - **Iter 5 (2026-06-06):** **#8 SHIPPED** (58c66792) — PixelTroubleshoot assurance panel on dashboard (installed-but-not-firing → actionable steps + re-check). First-run checklist already existed.
 - **Iter 6 (2026-06-06):** **#4 SHIPPED** (2b6a1d15) — pricing gate cut 60s→30s, FUNNEL_GATE_SECONDS env (A/B-able), "show pricing now" skip, method tracking.
-- **Iter 7 (2026-06-06):** **#5 SHIPPED** (ac472952) — audience auto-builds on ICP submit (reuses idempotent Phase 4 push). Last build item: #10 (funnel instrumentation + cancel save-flow), then final QA sweep + STOP.
+- **Iter 7 (2026-06-06):** **#5 SHIPPED** (ac472952) — audience auto-builds on ICP submit (reuses idempotent Phase 4 push).
+- **Iter 8 (2026-06-06):** **#10 SHIPPED** (e4fef3da) — FUNNEL_STEPS canonical funnel + cancel save-flow interstitial. **FINAL QA SWEEP:** full suite 1447 passed / 2 pre-existing failures (ai-studio brand-extract + superpixel-webhook, both unrelated, fail on clean tree); my 35 new assertions all pass; final `pnpm build` green; all 5 funnel crons registered; all 3 new routes present; all 5 migrations applied. **LOOP COMPLETE — no further wakeup.**
+
+## ✅ COMPLETE — all 8 build items shipped (skipped #9 per Adam)
+#6 testimonials+risk-reversal (2c51c1f1) · #7 trust fixes (811937a7) · #1 silent-pixel monitor (d58d151e) · #3 first-visitor aha (77a3d211) · #8 pixel-install assurance (58c66792) · #4 smarter gate (2b6a1d15) · #5 auto-audience (ac472952) · #10 funnel steps + cancel save-flow (e4fef3da).
+
+**Remaining blocker for Adam:** #1/#3/#5 all depend on real visitor events flowing — AudienceLab must be configured to POST to the superpixel webhook with the matching `x-audiencelab-secret`, then real traffic. The silent-pixel monitor now alerts in Slack if events don't arrive.
