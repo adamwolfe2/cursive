@@ -9,7 +9,7 @@
 
 | # | Item | Decision | Status |
 |---|---|---|---|
-| 1 | Prove + harden visitor pipeline (QA, instrumentation, alerting, healthcheck) | BUILD | ☐ pending |
+| 1 | Prove + harden visitor pipeline (QA, instrumentation, alerting, healthcheck) | BUILD | ✅ DONE (d58d151e) — silent-pixel classifier (8 tests) + 2h Slack alert cron + fixed 2 unregistered funnel crons. Live PROOF still needs Adam (AL secret + traffic). |
 | 3 | First-visitor "aha" moment (email + in-app on first identified visitor) | BUILD | ☐ pending |
 | 4 | Smarter pricing-gate unlock (shorter / engagement-based) | BUILD | ☐ pending |
 | 5 | Automate audience delivery as primary path (Phase 4 → default) | BUILD | ☐ pending |
@@ -43,4 +43,6 @@ Plus: QA tests + audits throughout.
 
 ## Iteration log
 - **Iter 1 (2026-06-06):** spec created; **#6 SHIPPED** (2c51c1f1) — 28 fictitious 5★ testimonials, masonry component, risk-reversal row.
-- **Iter 2 (2026-06-06):** **#7 SHIPPED** (811937a7) — unified trial-expiry source of truth (no more "live (trial)" vs "expired" contradiction); credits chip hidden for funnel/managed buyers. Next: #1 (visitor-pipeline instrumentation + healthcheck + alerting + QA).
+- **Iter 2 (2026-06-06):** **#7 SHIPPED** (811937a7) — unified trial-expiry source of truth; credits chip hidden for funnel/managed buyers.
+- **Iter 3 (2026-06-06):** **#1 SHIPPED** (d58d151e) — pixel-health classifier (8 tests) + every-2h silent-pixel Slack alert cron + migration. BONUS: found & fixed latent bug — funnelPixelInstallReminder + funnelVisitorDigest were exported but never in the Inngest serve array (never ran); now registered. Next: #3 (first-visitor aha).
+  - **Blocker for Adam:** live event proof still needs AudienceLab posting with the matching x-audiencelab-secret + real traffic. The monitor now makes silence LOUD (Slack) instead of invisible.
