@@ -835,6 +835,36 @@ export async function markAudiencePushed(orderId: string): Promise<boolean> {
   return !!data
 }
 
+/**
+ * Admin: delete a funnel order and its directly-owned data. Removes the
+ * order's audiencelab_pixels row (by pixel_id) and the order itself
+ * (funnel_portal_tokens cascade automatically). Workspace teardown is handled
+ * separately by purgeFunnelWorkspace so real (non-funnel) workspaces are never
+ * touched. Returns the deleted order (for audit) or null if not found.
+ */
+export async function deleteFunnelOrder(orderId: string): Promise<FunnelOrder | null> {
+  const supabase = createAdminClient()
+
+  const { data: order } = await supabase
+    .from('funnel_orders')
+    .select('*')
+    .eq('id', orderId)
+    .maybeSingle()
+  if (!order) return null
+
+  const o = order as FunnelOrder
+  if (o.pixel_audiencelab_id) {
+    await supabase.from('audiencelab_pixels').delete().eq('pixel_id', o.pixel_audiencelab_id)
+  }
+
+  const { error } = await supabase.from('funnel_orders').delete().eq('id', orderId)
+  if (error) {
+    safeError('[funnel/order] deleteFunnelOrder failed:', error)
+    return null
+  }
+  return o
+}
+
 // ─── Helpers ────────────────────────────────────────────────────────────
 
 export function offerForOrder(order: FunnelOrder) {

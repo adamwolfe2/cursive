@@ -310,6 +310,64 @@ export async function pushFunnelAudienceToWorkspace(
 }
 
 /**
+ * Admin: tear down a workspace that was auto-created by the funnel
+ * (settings.source === 'funnel_order'). SAFETY: refuses to delete any
+ * workspace not stamped as funnel-sourced — so real/admin workspaces (e.g.
+ * Cursive HQ) are never removed even if a funnel order happens to be linked.
+ *
+ * Clears the NO-ACTION FK dependents that would otherwise block the delete
+ * (audiencelab_*), then deletes the workspace (the many ON DELETE CASCADE
+ * children — users, leads, crm_*, etc. — go automatically). Auth users are
+ * intentionally left intact: a funnel buyer's email may also be a real
+ * platform identity, so we never delete from auth.users here.
+ *
+ * Returns true if a funnel workspace was deleted, false if skipped/protected.
+ */
+export async function purgeFunnelWorkspace(workspaceId: string): Promise<boolean> {
+  const admin = createAdminClient()
+
+  const { data: ws } = await admin
+    .from('workspaces')
+    .select('id, settings')
+    .eq('id', workspaceId)
+    .maybeSingle()
+  if (!ws) return false
+
+  const source = (ws.settings as { source?: string } | null)?.source
+  if (source !== 'funnel_order') {
+    safeLog('[funnel/provision] purge skipped — workspace not funnel-sourced', {
+      workspace_id: workspaceId,
+    })
+    return false
+  }
+
+  // Clear NO-ACTION FK dependents (these block a workspace delete if present).
+  for (const table of [
+    'audiencelab_events',
+    'audiencelab_identities',
+    'audiencelab_pixels',
+    'audiencelab_import_jobs',
+    'agents',
+    'brand_workspaces',
+    'ghl_app_installs',
+  ]) {
+    const { error } = await admin.from(table).delete().eq('workspace_id', workspaceId)
+    if (error) {
+      safeError(`[funnel/provision] purge dependent ${table} failed:`, error)
+    }
+  }
+
+  const { error: wsErr } = await admin.from('workspaces').delete().eq('id', workspaceId)
+  if (wsErr) {
+    safeError('[funnel/provision] purge workspace delete failed:', wsErr)
+    return false
+  }
+
+  safeLog('[funnel/provision] funnel workspace purged', { workspace_id: workspaceId })
+  return true
+}
+
+/**
  * Set funnel_orders.workspace_id only if currently null (forward-only,
  * race-safe). Returns the winning workspace_id (ours, or the concurrent
  * winner's if we lost the race).
