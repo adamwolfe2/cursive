@@ -165,8 +165,11 @@ function isProbeBody(rawBody: string): boolean {
   try {
     const parsed = JSON.parse(trimmed) as Record<string, unknown>
     if (parsed?.test === true || parsed?.ping === true) return true
-    // No events / data / records — almost certainly a probe.
-    const realEventKeys = ['events', 'event', 'data', 'records', 'pixel_id', 'hem_sha256']
+    // No real event keys — almost certainly a probe. NOTE: 'result' must be
+    // here — AudienceLab can wrap events as { result: [...] } (see
+    // unwrapWebhookPayload), and without it a real wrapped batch is
+    // misclassified as a probe and silently dropped.
+    const realEventKeys = ['events', 'event', 'data', 'records', 'result', 'pixel_id', 'hem_sha256']
     if (!realEventKeys.some((k) => k in parsed)) return true
   } catch {
     // Non-JSON body — not a probe, let the auth path reject it

@@ -455,7 +455,9 @@ describe('POST /api/ai-studio/brand/extract', () => {
         expect.objectContaining({
           user_id: 'auth-user-123',
           workspace_id: 'workspace-123',
-          url: 'https://example.com',
+          // normalizeUrl() canonicalizes the root path to a trailing slash
+          // (used for dedup) — assert the normalized value the route stores.
+          url: 'https://example.com/',
           extraction_status: 'processing',
         })
       )
