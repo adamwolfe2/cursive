@@ -237,8 +237,12 @@ export const { GET, POST, PUT } = serve({
     // Cal.com No-Show Recovery (2-email recovery sequence when prospect misses call)
     functions.calNoShowRecovery,
 
-    // Pixel V4 Sync (every 2h — enriches leads with DNC flags, intent scores, department)
-    functions.pixelV4Sync,
+    // Pixel V4 Sync — every 4h cron fans out per-pixel events; worker has
+    // per-pixel concurrency=1 and BOTH inserts new leads for unmatched
+    // identified visitors AND enriches existing leads with v4 fields
+    // (DNC flags, intent scores, department).
+    functions.pixelV4SyncCron,
+    functions.pixelV4SyncWorker,
 
     // DFY Upsell Trigger (daily 10am UTC — emails workspaces with 50+ leads and no managed spend)
     functions.dfyUpsellTrigger,

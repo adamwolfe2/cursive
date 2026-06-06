@@ -1,23 +1,37 @@
 /**
  * Provision Workspace Audience
  *
- * Triggered immediately when a new business user completes onboarding.
- * Pulls a targeted batch of leads from AudienceLab's Audience Segment API
- * based on the user's declared industry + target locations.
+ * Triggered immediately when a new business user completes onboarding,
+ * or when a funnel buyer submits ICP. Pulls a targeted batch of leads
+ * from AudienceLab's Audience Segment API based on the user's declared
+ * industry + target locations.
  *
- * This gives new workspaces their first leads within minutes of signing up
- * instead of waiting up to 6 hours for the cron-based segment puller.
+ * This gives new workspaces their first leads within minutes of signing
+ * up instead of waiting up to 6 hours for the cron-based segment puller.
  *
  * Flow:
- * 1. Read workspace targeting preferences from user_targeting
- * 2. Build audience segment filters (industry + geo)
- * 3. Preview to confirm records exist
- * 4. Create audience and fetch up to 200 records
- * 5. Insert leads into workspace with proper routing
- * 6. Log result via Slack
+ *  1. Read workspace targeting from the event payload.
+ *  2. Preview to confirm records exist.
+ *  3. createAudience — AL returns an `audienceId` synchronously but
+ *     records materialize asynchronously.
+ *  4. Poll `fetchAudienceRecords` with backoff until the audience is
+ *     materialized (or we give up gracefully).
+ *  5. Page through records, applying a workspace-side ICP post-filter,
+ *     then insert via the SHARED `insertLeadFromALRecord` (no more
+ *     duplicate inline insert path).
+ *  6. Mark the funnel order's `audience_delivered_at` so the
+ *     "audience building" dashboard banner clears the moment leads
+ *     actually land (forward-only, race-safe).
+ *  7. Affiliate activation + first-leads event + ops_stage advance
+ *     + Slack notify — all unchanged.
  *
  * Event: audiencelab/provision-workspace-audience
  * Payload: { workspace_id, user_id, industries, states }
+ *
+ * Idempotency: deduplication by (workspace_id, email) lives in the
+ * shared inserter — re-runs don't double-insert. The funnel order
+ * delivery flip uses a forward-only `.is(..., null)` predicate so
+ * concurrent provisions can't fight each other.
  */
 
 import { inngest } from '@/inngest/client'
@@ -29,62 +43,31 @@ import {
   buildWorkspaceAudienceFilters,
   AudienceLabUnfilteredError,
   UNFILTERED_PREVIEW_THRESHOLD,
+  UNFILTERED_RECORDS_THRESHOLD,
   type ALEnrichedProfile,
 } from '@/lib/audiencelab/api-client'
+import { insertLeadFromALRecord } from '@/lib/audiencelab/lead-inserter'
+import {
+  AUDIENCE_POLL_DELAYS_SECONDS,
+  classifyPollResult,
+  matchesWorkspaceICP,
+} from '@/lib/audiencelab/provision-helpers'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 
 const LOG_PREFIX = '[AL Provision Workspace]'
-const MAX_INITIAL_LEADS = 200  // First-time pull cap — generous for new users
-const MIN_QUALITY_SCORE = 20
-
-/**
- * Score an ALEnrichedProfile's completeness (0–100).
- * Leads below MIN_QUALITY_SCORE are too sparse to be useful.
- */
-function scoreALProfile(record: ALEnrichedProfile): number {
-  let score = 0
-
-  const bve = record.BUSINESS_VERIFIED_EMAILS
-  const pve = record.PERSONAL_VERIFIED_EMAILS
-  if ((typeof bve === 'string' && bve.length > 0) || (Array.isArray(bve) && bve.length > 0)) score += 30
-  else if ((typeof pve === 'string' && pve.length > 0) || (Array.isArray(pve) && pve.length > 0)) score += 25
-  else if (record.BUSINESS_EMAIL) score += 12
-  else if (record.PERSONAL_EMAILS) score += 8
-
-  if (record.FIRST_NAME && record.LAST_NAME) score += 15
-  else if (record.FIRST_NAME || record.LAST_NAME) score += 5
-
-  if (record.MOBILE_PHONE) score += 12
-  else if (record.DIRECT_NUMBER) score += 10
-  else if (record.PERSONAL_PHONE) score += 8
-  else if (record.COMPANY_PHONE) score += 4
-
-  if (record.COMPANY_NAME) score += 8
-  if (record.JOB_TITLE) score += 7
-  if (record.COMPANY_LINKEDIN_URL) score += 8
-
-  if ((record.COMPANY_CITY || record.PERSONAL_CITY) && (record.COMPANY_STATE || record.PERSONAL_STATE)) score += 5
-  else if (record.COMPANY_STATE || record.PERSONAL_STATE) score += 2
-
-  if (record.COMPANY_DOMAIN) score += 5
-  if (record.COMPANY_EMPLOYEE_COUNT) score += 3
-  if (record.COMPANY_REVENUE) score += 3
-
-  return score
-}
-
-function parseCSV(val: unknown): string[] {
-  if (!val || typeof val !== 'string') return []
-  return val.split(',').map(s => s.trim()).filter(Boolean)
-}
+const MAX_INITIAL_LEADS = 200 // First-time pull cap — generous for new users
 
 export const provisionWorkspaceAudience = inngest.createFunction(
   {
     id: 'provision-workspace-audience',
     name: 'Provision Workspace Audience (First-Time Pull)',
     retries: 2,
-    timeouts: { finish: '8m' },
+    // Polling consumes step.sleep wall-clock that does NOT count against
+    // the step's execution budget, but the overall finish budget still
+    // needs to span the polling window + page-fetch loop + downstream
+    // notify/affiliate/email steps. 12m is comfortable headroom.
+    timeouts: { finish: '12m' },
   },
   { event: 'audiencelab/provision-workspace-audience' },
   async ({ event, step }) => {
@@ -100,33 +83,39 @@ export const provisionWorkspaceAudience = inngest.createFunction(
       return { skipped: true, reason: 'Missing required fields' }
     }
 
-    // Step 1: Verify AL API key is configured
+    // Defensive normalization: caller might send null/undefined arrays.
+    const industriesIn = Array.isArray(industries) ? industries.filter(Boolean) : []
+    const statesIn = Array.isArray(states) ? states.filter(Boolean) : []
+
+    // ─── Step 1: API key gate ────────────────────────────────────────
     const apiKeyOk = await step.run('check-api-key', async () => {
       return !!process.env.AUDIENCELAB_ACCOUNT_API_KEY
     })
 
     if (!apiKeyOk) {
-      // Send alert so ops knows this workspace got no leads
+      // Non-fatal — Slack alert so ops knows this workspace got no leads.
       sendSlackAlert({
         type: 'system_event',
         severity: 'warning',
         message: `Workspace ${workspace_id} provision SKIPPED — AUDIENCELAB_ACCOUNT_API_KEY not configured`,
         metadata: { workspace_id, user_id },
-      }).catch((err) => safeError(`${LOG_PREFIX} Slack alert failed:`, err)) // non-fatal
+      }).catch((err) => safeError(`${LOG_PREFIX} Slack alert failed:`, err))
       safeLog(`${LOG_PREFIX} AUDIENCELAB_ACCOUNT_API_KEY not configured, skipping`)
       return { skipped: true, reason: 'No API key' }
     }
 
-    // Step 2: Build the audience segment filters
+    // ─── Step 2: Preview + create audience ───────────────────────────
     const audienceResult = await step.run('preview-and-create-audience', async () => {
       const segmentFilters = buildWorkspaceAudienceFilters({
-        industries: industries?.length > 0 ? industries : undefined,
-        states: states?.length > 0 ? states : undefined,
+        industries: industriesIn.length > 0 ? industriesIn : undefined,
+        states: statesIn.length > 0 ? statesIn : undefined,
       })
 
-      safeLog(`${LOG_PREFIX} Workspace ${workspace_id}: industries=${industries?.join(',') || 'all'} states=${states?.join(',') || 'all'}`)
+      safeLog(
+        `${LOG_PREFIX} Workspace ${workspace_id}: industries=${industriesIn.join(',') || 'all'} states=${statesIn.join(',') || 'all'}`
+      )
 
-      // Preview count to validate the segment exists
+      // Preview count to validate the segment is sane before we commit.
       let previewCount = 0
       try {
         const preview = await previewAudience({
@@ -139,21 +128,27 @@ export const provisionWorkspaceAudience = inngest.createFunction(
         previewCount = preview.count || 0
         safeLog(`${LOG_PREFIX} Preview count: ${previewCount}`)
 
-        // Guard: if preview count is suspiciously high the AL API ignored our filters.
-        // Returning global (500k) records would pollute the workspace with garbage leads.
+        // Guard: if preview is suspiciously high the AL API ignored our
+        // filters; abort so we don't pollute the workspace with garbage.
         if (previewCount >= UNFILTERED_PREVIEW_THRESHOLD) {
           sendSlackAlert({
             type: 'webhook_failure',
             severity: 'warning',
             message: `AL provision skipped for workspace ${workspace_id} — preview count ${previewCount.toLocaleString()} exceeds threshold (${UNFILTERED_PREVIEW_THRESHOLD.toLocaleString()}). Filters likely ignored by API.`,
-            metadata: { workspace_id, user_id, industries: industries?.join(','), states: states?.join(','), previewCount },
+            metadata: {
+              workspace_id,
+              user_id,
+              industries: industriesIn.join(','),
+              states: statesIn.join(','),
+              previewCount,
+            },
           }).catch((err) => safeError(`${LOG_PREFIX} Slack alert failed:`, err))
           return { audienceId: null as string | null, segmentFilters }
         }
 
+        // Broaden window if first attempt was empty.
         if (previewCount === 0) {
-          safeLog(`${LOG_PREFIX} No records found for this targeting, trying last 30 days`)
-          // Broaden to 30 days if 7-day window is empty
+          safeLog(`${LOG_PREFIX} No records found for this targeting, trying last 10 days`)
           const widerPreview = await previewAudience({
             days_back: 10,
             filters: segmentFilters,
@@ -166,19 +161,23 @@ export const provisionWorkspaceAudience = inngest.createFunction(
           }
         }
       } catch (err) {
-        safeLog(`${LOG_PREFIX} Preview failed, attempting direct create: ${err instanceof Error ? err.message : err}`)
+        safeLog(
+          `${LOG_PREFIX} Preview failed, attempting direct create: ${err instanceof Error ? err.message : err}`
+        )
       }
 
-      // Create the named audience
-      const audienceName = `cursive-signup-${workspace_id.substring(0, 8)}-${industries?.[0] || 'general'}-${Date.now()}`
+      const audienceName = `cursive-signup-${workspace_id.substring(0, 8)}-${industriesIn[0] || 'general'}-${Date.now()}`
       const audience = await createAudience({
         name: audienceName,
         filters: segmentFilters,
-        description: `Auto-provisioned for workspace ${workspace_id} at signup. Industries: ${industries?.join(', ') || 'all'}. States: ${states?.join(', ') || 'all'}.`,
+        description: `Auto-provisioned for workspace ${workspace_id} at signup. Industries: ${industriesIn.join(', ') || 'all'}. States: ${statesIn.join(', ') || 'all'}.`,
       })
 
       safeLog(`${LOG_PREFIX} Audience created: ${audience.audienceId}`)
-      return { audienceId: audience.audienceId || null as string | null, segmentFilters }
+      return {
+        audienceId: audience.audienceId || (null as string | null),
+        segmentFilters,
+      }
     })
 
     if (!audienceResult.audienceId) {
@@ -186,7 +185,82 @@ export const provisionWorkspaceAudience = inngest.createFunction(
       return { skipped: true, reason: 'Empty segment or audience creation failed' }
     }
 
-    // Step 3: Fetch and insert leads
+    // ─── Step 2b: Poll until audience is materialized ────────────────
+    //
+    // AL's `createAudience` returns an id synchronously but record
+    // materialization runs async on their side. The pre-2026-06-06 code
+    // immediately called fetchAudienceRecords, which returned 0 records
+    // for any audience still building → silent empty provision. We now
+    // sleep-and-recheck up to 6 times with exponential backoff so a
+    // typical 1–3 min build completes before we move on.
+    //
+    // Each attempt is its OWN durable step so Inngest retries don't
+    // re-run the prior attempts. step.sleep is free wait time — does
+    // not consume the function's wall-clock budget.
+
+    let audienceTotalRecords = 0
+    let aborted: 'unfiltered' | null = null
+
+    for (let i = 0; i < AUDIENCE_POLL_DELAYS_SECONDS.length; i++) {
+      const delaySec = AUDIENCE_POLL_DELAYS_SECONDS[i]
+      if (delaySec > 0) {
+        await step.sleep(`audience-wait-${i}`, `${delaySec}s`)
+      }
+
+      const pollResult = await step.run(`audience-poll-${i}`, async () => {
+        try {
+          // page=1, pageSize=1 — we only need total_records here.
+          const res = await fetchAudienceRecords(audienceResult.audienceId!, 1, 1)
+          return classifyPollResult(res.total_records, UNFILTERED_RECORDS_THRESHOLD)
+        } catch (err) {
+          if (err instanceof AudienceLabUnfilteredError) {
+            return {
+              state: 'unfiltered' as const,
+              totalRecords: err.totalRecords,
+            }
+          }
+          // Let Inngest's retry handle transient errors; throw and bail.
+          throw err
+        }
+      })
+
+      if (pollResult.state === 'unfiltered') {
+        aborted = 'unfiltered'
+        sendSlackAlert({
+          type: 'webhook_failure',
+          severity: 'warning',
+          message: `AL provision aborted — unfiltered audience (${pollResult.totalRecords.toLocaleString()} records) for workspace ${workspace_id}`,
+          metadata: {
+            workspace_id,
+            user_id,
+            totalRecords: pollResult.totalRecords,
+          },
+        }).catch((err) => safeError(`${LOG_PREFIX} Slack alert failed:`, err))
+        break
+      }
+
+      if (pollResult.state === 'ready') {
+        audienceTotalRecords = pollResult.totalRecords
+        safeLog(
+          `${LOG_PREFIX} Audience ${audienceResult.audienceId} ready on attempt ${i + 1}: ${audienceTotalRecords} records`
+        )
+        break
+      }
+      // state === 'building' → next loop iteration
+    }
+
+    if (aborted) {
+      return { skipped: true, reason: 'unfiltered_response' }
+    }
+
+    if (audienceTotalRecords === 0) {
+      safeLog(
+        `${LOG_PREFIX} Audience ${audienceResult.audienceId} never materialized (still 0 records after ${AUDIENCE_POLL_DELAYS_SECONDS.length} polls) — accepting empty segment`
+      )
+      return { skipped: true, reason: 'empty_segment_after_poll' }
+    }
+
+    // ─── Step 3: Fetch + insert leads (unified via shared inserter) ──
     const insertResult = await step.run('fetch-and-insert-leads', async () => {
       const supabase = createAdminClient()
       let inserted = 0
@@ -200,18 +274,24 @@ export const provisionWorkspaceAudience = inngest.createFunction(
 
         let records: ALEnrichedProfile[] = []
         try {
-          const recordsResponse = await fetchAudienceRecords(audienceResult.audienceId!, page, pageSize)
+          const recordsResponse = await fetchAudienceRecords(
+            audienceResult.audienceId!,
+            page,
+            pageSize
+          )
           records = recordsResponse.data || []
           if (records.length === 0) break
         } catch (err) {
           if (err instanceof AudienceLabUnfilteredError) {
-            safeLog(`${LOG_PREFIX} Unfiltered response detected (${err.totalRecords.toLocaleString()} records), aborting fetch`)
+            safeLog(
+              `${LOG_PREFIX} Unfiltered response on page ${page} (${err.totalRecords.toLocaleString()} records), aborting fetch`
+            )
             sendSlackAlert({
               type: 'webhook_failure',
               severity: 'warning',
-              message: `AL provision aborted — unfiltered response (${err.totalRecords.toLocaleString()} records) for workspace ${workspace_id}`,
+              message: `AL provision aborted mid-fetch — unfiltered response (${err.totalRecords.toLocaleString()} records) for workspace ${workspace_id}`,
               metadata: { workspace_id, user_id, totalRecords: err.totalRecords },
-            }).catch((fetchAlertErr) => safeError(`${LOG_PREFIX} Slack alert failed:`, fetchAlertErr))
+            }).catch((alertErr) => safeError(`${LOG_PREFIX} Slack alert failed:`, alertErr))
             break
           }
           safeError(`${LOG_PREFIX} Failed to fetch page ${page}`, err)
@@ -221,165 +301,52 @@ export const provisionWorkspaceAudience = inngest.createFunction(
         for (const record of records) {
           if (inserted >= MAX_INITIAL_LEADS) break
 
-          const qualityScore = scoreALProfile(record)
-          if (qualityScore < MIN_QUALITY_SCORE) {
+          // Workspace-side ICP post-filter — defense in depth even when
+          // AL respected the segment filters server-side.
+          if (!matchesWorkspaceICP(record, industriesIn, statesIn)) {
             skipped++
             continue
           }
 
-          // Post-fetch targeting filter: even if AL ignored our segment filters,
-          // we enforce industry and state matching using the record's own fields.
-          if (industries?.length > 0) {
-            const recIndustry = (record.COMPANY_INDUSTRY || '').toLowerCase()
-            const hasIndustryMatch = industries.some(i =>
-              recIndustry.includes(i.toLowerCase()) || i.toLowerCase().includes(recIndustry)
-            )
-            if (!hasIndustryMatch) {
-              skipped++
-              continue
+          // Hand off to the shared inserter — single source of truth for
+          // quality scoring, dedupe, and the lead row shape.
+          const result = await insertLeadFromALRecord(record, {
+            workspaceId: workspace_id,
+            assignedUserId: user_id,
+            sourceTag: 'audiencelab_pull',
+            extraTags: ['signup-provision'],
+            industries: industriesIn,
+          })
+
+          if (result.outcome !== 'inserted') {
+            skipped++
+            continue
+          }
+
+          // Sample first 3 for the "first leads arrived" email.
+          if (sampleLeads.length < 3) {
+            const firstName = record.FIRST_NAME || ''
+            const lastName = record.LAST_NAME || ''
+            const fullName = [firstName, lastName].filter(Boolean).join(' ')
+            if (fullName) {
+              sampleLeads.push({
+                name: fullName,
+                company: record.COMPANY_NAME || '',
+                title: record.JOB_TITLE || '',
+              })
             }
           }
-          if (states?.length > 0) {
-            const recState = record.PERSONAL_STATE || record.COMPANY_STATE
-            if (recState && !states.includes(recState)) {
-              skipped++
-              continue
-            }
-          }
 
-          const email =
-            record.BUSINESS_VERIFIED_EMAILS?.[0] ||
-            record.PERSONAL_VERIFIED_EMAILS?.[0] ||
-            parseCSV(record.PERSONAL_EMAILS)[0] ||
-            record.BUSINESS_EMAIL ||
-            null
-
-          if (!email) {
-            skipped++
-            continue
-          }
-
-          // Dedupe: skip if this email already exists in workspace
-          const { data: existing } = await supabase
-            .from('leads')
-            .select('id')
-            .eq('workspace_id', workspace_id)
-            .eq('email', email.toLowerCase())
-            .limit(1)
-            .maybeSingle()
-
-          if (existing) {
-            skipped++
-            continue
-          }
-
-          const firstName = record.FIRST_NAME || ''
-          const lastName = record.LAST_NAME || ''
-          const fullName = [firstName, lastName].filter(Boolean).join(' ')
-          const phones = parseCSV(record.PERSONAL_PHONE || record.MOBILE_PHONE || record.DIRECT_NUMBER)
-
-          const { error: insertErr } = await supabase
-            .from('leads')
-            .insert({
-              workspace_id,
-              source: 'audiencelab_pull',
-              enrichment_status: 'enriched',
-              status: 'new',
-              first_name: firstName || null,
-              last_name: lastName || null,
-              full_name: fullName || null,
-              email: email.toLowerCase(),
-              phone: phones[0] || null,
-              company_name: record.COMPANY_NAME || null,
-              company_industry: record.COMPANY_INDUSTRY || industries?.[0] || null,
-              company_domain: record.COMPANY_DOMAIN || null,
-              city: record.PERSONAL_CITY || record.COMPANY_CITY || null,
-              state: record.PERSONAL_STATE || record.COMPANY_STATE || null,
-              state_code: record.PERSONAL_STATE || record.COMPANY_STATE || null,
-              country: 'US',
-              country_code: 'US',
-              postal_code: record.PERSONAL_ZIP || record.COMPANY_ZIP || null,
-              job_title: record.JOB_TITLE || null,
-              // Demographics (AL V4 fields)
-              age_range: record.AGE_RANGE || null,
-              gender: record.GENDER || null,
-              homeowner: record.HOMEOWNER ? ['Y','y','true','TRUE','Yes','yes'].includes(String(record.HOMEOWNER)) : null,
-              married: record.MARRIED ? ['Y','y','true','TRUE','Yes','yes'].includes(String(record.MARRIED)) : null,
-              // Professional
-              headline: record.HEADLINE || null,
-              // Company extended
-              company_address: record.COMPANY_ADDRESS || null,
-              company_city: record.COMPANY_CITY || null,
-              company_state: record.COMPANY_STATE || null,
-              company_zip: record.COMPANY_ZIP || null,
-              company_phone: record.COMPANY_PHONE || null,
-              company_sic: record.COMPANY_SIC || null,
-              company_naics: record.COMPANY_NAICS || null,
-              // Social
-              individual_twitter_url: record.INDIVIDUAL_TWITTER_URL || null,
-              individual_facebook_url: record.INDIVIDUAL_FACEBOOK_URL || null,
-              // Phone lists
-              all_mobiles: record.ALL_MOBILES ? String(record.ALL_MOBILES).split(',').map((s: string) => s.trim()).filter(Boolean) : undefined,
-              all_landlines: record.ALL_LANDLINES ? String(record.ALL_LANDLINES).split(',').map((s: string) => s.trim()).filter(Boolean) : undefined,
-              // Profile attributes
-              skills: record.SKILLS ? String(record.SKILLS).split(',').map((s: string) => s.trim()).filter(Boolean) : undefined,
-              interests: record.INTERESTS ? String(record.INTERESTS).split(',').map((s: string) => s.trim()).filter(Boolean) : undefined,
-              lead_score: Math.min(qualityScore, 100),
-              intent_score_calculated: Math.round(qualityScore * 0.8),
-              freshness_score: 100,
-              has_email: true,
-              has_phone: phones.length > 0,
-              validated: false,
-              assigned_user_id: user_id,
-              enrichment_method: 'audiencelab_pull',
-              tags: ['audiencelab', 'signup-provision', ...(industries?.map(i => i.toLowerCase()) || [])],
-              company_data: {
-                name: record.COMPANY_NAME || null,
-                industry: record.COMPANY_INDUSTRY || industries?.[0] || null,
-                domain: record.COMPANY_DOMAIN || null,
-              },
-              company_location: {
-                city: record.PERSONAL_CITY || record.COMPANY_CITY || null,
-                state: record.PERSONAL_STATE || record.COMPANY_STATE || null,
-                country: 'US',
-              },
-            })
-
-          if (insertErr) {
-            if (insertErr.code !== '23505') {
-              safeError(`${LOG_PREFIX} Insert failed for ${email}`, insertErr)
-            }
-            skipped++
-            continue
-          }
-
-          // Collect sample leads for activation email (first 3 only)
-          if (sampleLeads.length < 3 && fullName) {
-            sampleLeads.push({
-              name: fullName,
-              company: record.COMPANY_NAME || '',
-              title: record.JOB_TITLE || '',
-            })
-          }
-
-          // Create user_lead_assignment so the lead appears in "My Leads"
-          const { data: newLead } = await supabase
-            .from('leads')
-            .select('id')
-            .eq('workspace_id', workspace_id)
-            .eq('email', email.toLowerCase())
-            .limit(1)
-            .maybeSingle()
-
-          if (newLead?.id) {
+          // Per-user assignment so the lead shows up in "My Leads".
+          if (result.leadId) {
             await supabase
               .from('user_lead_assignments')
               .insert({
                 workspace_id,
-                lead_id: newLead.id,
+                lead_id: result.leadId,
                 user_id,
-                matched_industry: record.COMPANY_INDUSTRY || industries?.[0] || null,
-                matched_geo: record.PERSONAL_STATE || record.COMPANY_STATE || states?.[0] || null,
+                matched_industry: record.COMPANY_INDUSTRY || industriesIn[0] || null,
+                matched_geo: record.PERSONAL_STATE || record.COMPANY_STATE || statesIn[0] || null,
                 source: 'audiencelab_pull',
                 status: 'new',
               })
@@ -396,9 +363,11 @@ export const provisionWorkspaceAudience = inngest.createFunction(
       return { inserted, skipped, sampleLeads }
     })
 
-    safeLog(`${LOG_PREFIX} Workspace ${workspace_id}: ${insertResult.inserted} leads inserted, ${insertResult.skipped} skipped`)
+    safeLog(
+      `${LOG_PREFIX} Workspace ${workspace_id}: ${insertResult.inserted} leads inserted, ${insertResult.skipped} skipped`
+    )
 
-    // Step 3b: Process affiliate activation (idempotent, non-fatal)
+    // ─── Step 3b: Affiliate activation (idempotent, non-fatal) ───────
     if (insertResult.inserted > 0) {
       await step.run('affiliate-activation', async () => {
         try {
@@ -419,8 +388,8 @@ export const provisionWorkspaceAudience = inngest.createFunction(
       })
     }
 
-    // Step 4: Emit "first leads arrived" event — handled by first-leads-arrived.ts
-    // which uses a shared email template and prevents duplicate sends via Inngest dedup.
+    // ─── Step 4: Emit "first leads arrived" event ────────────────────
+    // Handled by first-leads-arrived.ts via Inngest dedup.
     if (insertResult.inserted > 0) {
       await step.run('emit-first-leads-event', async () => {
         try {
@@ -441,8 +410,8 @@ export const provisionWorkspaceAudience = inngest.createFunction(
               userEmail: userRow.email,
               userName: userRow.full_name || userRow.email.split('@')[0],
               leadCount: insertResult.inserted,
-              industry: industries?.[0] || null,
-              location: states?.[0] || null,
+              industry: industriesIn[0] || null,
+              location: statesIn[0] || null,
             },
           })
 
@@ -453,7 +422,45 @@ export const provisionWorkspaceAudience = inngest.createFunction(
       })
     }
 
-    // Step 5: Auto-advance ops_stage to 'trial' if a cal_booking email matches the owner
+    // ─── Step 4b: Clear funnel audience-building banner ──────────────
+    // If this provision was triggered by a funnel order (Phase 4 push)
+    // and we landed at least one lead, stamp the order's
+    // audience_delivered_at so the dashboard banner clears itself.
+    // Forward-only — never overwrites an existing delivery timestamp.
+    if (insertResult.inserted > 0) {
+      await step.run('mark-funnel-audience-delivered', async () => {
+        try {
+          const supabase = createAdminClient()
+          const { data: updated, error } = await supabase
+            .from('funnel_orders')
+            .update({ audience_delivered_at: new Date().toISOString() })
+            .eq('workspace_id', workspace_id)
+            .is('audience_delivered_at', null)
+            .select('id')
+
+          if (error) {
+            safeError(
+              `${LOG_PREFIX} funnel audience-delivered flip failed (non-fatal)`,
+              error
+            )
+            return
+          }
+
+          if (updated && updated.length > 0) {
+            safeLog(
+              `${LOG_PREFIX} Cleared audience-building banner for ${updated.length} funnel order(s) on workspace ${workspace_id}`
+            )
+          }
+        } catch (err) {
+          safeError(
+            `${LOG_PREFIX} funnel audience-delivered flip threw (non-fatal)`,
+            err
+          )
+        }
+      })
+    }
+
+    // ─── Step 5: Auto-advance ops_stage to 'trial' on cal booking ────
     await step.run('auto-advance-ops-stage', async () => {
       try {
         const supabase = createAdminClient()
@@ -476,9 +483,9 @@ export const provisionWorkspaceAudience = inngest.createFunction(
             .from('workspaces')
             .update({ ops_stage: 'trial' })
             .eq('id', workspace_id)
-            .eq('ops_stage', 'new') // only advance if still at default stage
+            .eq('ops_stage', 'new') // only advance if still at default
 
-          // Also back-link the booking to this workspace
+          // Back-link the booking to this workspace.
           await supabase
             .from('cal_bookings')
             .update({ workspace_id })
@@ -492,7 +499,7 @@ export const provisionWorkspaceAudience = inngest.createFunction(
       }
     })
 
-    // Step 6: Notify if meaningful results
+    // ─── Step 6: Notify on meaningful results ────────────────────────
     if (insertResult.inserted > 0) {
       await step.run('notify', async () => {
         sendSlackAlert({
@@ -502,10 +509,11 @@ export const provisionWorkspaceAudience = inngest.createFunction(
           metadata: {
             workspace_id,
             user_id,
-            industries: industries?.join(', ') || 'all',
-            states: states?.join(', ') || 'all',
+            industries: industriesIn.join(', ') || 'all',
+            states: statesIn.join(', ') || 'all',
             inserted: insertResult.inserted,
             skipped: insertResult.skipped,
+            audience_total_records: audienceTotalRecords,
           },
         }).catch((err) => safeError(`${LOG_PREFIX} Slack alert failed`, err))
       })
@@ -514,6 +522,7 @@ export const provisionWorkspaceAudience = inngest.createFunction(
     return {
       workspace_id,
       audience_id: audienceResult.audienceId,
+      audience_total_records: audienceTotalRecords,
       inserted: insertResult.inserted,
       skipped: insertResult.skipped,
     }
