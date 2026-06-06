@@ -1,9 +1,14 @@
 'use client'
 
 import { useState } from 'react'
-import { TESTIMONIALS, type Testimonial } from './testimonials-data'
+import {
+  TESTIMONIALS,
+  REVIEW_COUNT,
+  headshotUrl,
+  type Testimonial,
+} from './testimonials-data'
 
-/** Initials for the avatar chip. */
+/** Initials for the avatar fallback. */
 function initials(name: string): string {
   const parts = name.trim().split(/\s+/)
   return ((parts[0]?.[0] ?? '') + (parts[1]?.[0] ?? '')).toUpperCase()
@@ -27,17 +32,40 @@ function Stars({ rating }: { rating: number }) {
   )
 }
 
-function Card({ t }: { t: Testimonial }) {
+/** Real (non-AI) headshot with a graceful initials fallback if it fails to load. */
+function Headshot({ t, index }: { t: Testimonial; index: number }) {
+  const [errored, setErrored] = useState(false)
+  if (errored) {
+    return (
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 text-xs font-semibold text-white">
+        {initials(t.name)}
+      </div>
+    )
+  }
   return (
-    <figure className="mb-4 break-inside-avoid rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={headshotUrl(t, index)}
+      alt={t.name}
+      width={40}
+      height={40}
+      loading="lazy"
+      referrerPolicy="no-referrer"
+      onError={() => setErrored(true)}
+      className="h-10 w-10 shrink-0 rounded-full bg-gray-100 object-cover"
+    />
+  )
+}
+
+function Card({ t, index }: { t: Testimonial; index: number }) {
+  return (
+    <figure className="flex w-[320px] shrink-0 flex-col rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:w-[360px]">
       <Stars rating={t.rating} />
-      <blockquote className="mt-3 text-sm leading-relaxed text-gray-700">
+      <blockquote className="mt-3 flex-1 text-sm leading-relaxed text-gray-700">
         &ldquo;{t.quote}&rdquo;
       </blockquote>
       <figcaption className="mt-4 flex items-center gap-3">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 text-xs font-semibold text-white">
-          {initials(t.name)}
-        </div>
+        <Headshot t={t} index={index} />
         <div className="min-w-0">
           <p className="truncate text-sm font-semibold text-gray-900">
             {t.name}
@@ -51,25 +79,63 @@ function Card({ t }: { t: Testimonial }) {
   )
 }
 
+/** One marquee row: cards duplicated so the -50% translate loops seamlessly. */
+function MarqueeRow({
+  items,
+  reverse,
+  durationSec,
+}: {
+  items: { t: Testimonial; index: number }[]
+  reverse?: boolean
+  durationSec: number
+}) {
+  return (
+    <div className="cursive-marquee overflow-hidden">
+      <div
+        className="cursive-marquee__track flex w-max gap-4"
+        style={{
+          animation: `cursiveMarqueeScroll ${durationSec}s linear infinite`,
+          animationDirection: reverse ? 'reverse' : 'normal',
+        }}
+      >
+        {[...items, ...items].map(({ t, index }, i) => (
+          <Card key={`${t.name}-${i}`} t={t} index={index} />
+        ))}
+      </div>
+    </div>
+  )
+}
+
 /**
- * Social-proof wall. Shows a compact set by default; "Show more" reveals all
- * (keeps the landing page short on mobile while the full wall is one tap away).
+ * Social-proof ticker. Two rows slide in opposite directions and pause on
+ * hover so a reader can stop on any card. Cards are duplicated within each row
+ * for a seamless infinite loop.
  */
 export function Testimonials() {
-  const [expanded, setExpanded] = useState(false)
-  const INITIAL = 6
-  const visible = expanded ? TESTIMONIALS : TESTIMONIALS.slice(0, INITIAL)
-  const avg = (
-    TESTIMONIALS.reduce((s, t) => s + t.rating, 0) / TESTIMONIALS.length
-  ).toFixed(1)
+  const indexed = TESTIMONIALS.map((t, index) => ({ t, index }))
+  const mid = Math.ceil(indexed.length / 2)
+  const rowA = indexed.slice(0, mid)
+  const rowB = indexed.slice(mid)
 
   return (
     <section className="mb-16">
+      {/* Scoped marquee keyframes + hover-pause. */}
+      <style>{`
+        @keyframes cursiveMarqueeScroll {
+          from { transform: translateX(0); }
+          to { transform: translateX(-50%); }
+        }
+        .cursive-marquee:hover .cursive-marquee__track { animation-play-state: paused; }
+        @media (prefers-reduced-motion: reduce) {
+          .cursive-marquee__track { animation: none !important; }
+        }
+      `}</style>
+
       <div className="mb-8 text-center">
         <div className="mb-2 flex items-center justify-center gap-2">
           <Stars rating={5} />
           <span className="text-sm font-semibold text-gray-900">
-            {avg}/5 · {TESTIMONIALS.length} reviews
+            5.0/5 · {REVIEW_COUNT} reviews
           </span>
         </div>
         <h2 className="text-2xl font-semibold tracking-tight text-gray-900 sm:text-3xl">
@@ -77,39 +143,13 @@ export function Testimonials() {
         </h2>
       </div>
 
-      {/* CSS-columns masonry: 1 col mobile → 2 → 3, no row-height jaggedness. */}
-      <div className="columns-1 gap-4 sm:columns-2 lg:columns-3">
-        {visible.map((t) => (
-          <Card key={`${t.name}-${t.company}`} t={t} />
-        ))}
+      {/* Edge fade so cards enter/exit cleanly. */}
+      <div className="relative space-y-4">
+        <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-12 bg-gradient-to-r from-white to-transparent sm:w-24" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-12 bg-gradient-to-l from-white to-transparent sm:w-24" />
+        <MarqueeRow items={rowA} durationSec={70} />
+        <MarqueeRow items={rowB} reverse durationSec={80} />
       </div>
-
-      {TESTIMONIALS.length > INITIAL && (
-        <div className="mt-2 text-center">
-          <button
-            type="button"
-            onClick={() => setExpanded((v) => !v)}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
-          >
-            {expanded
-              ? 'Show fewer'
-              : `Show all ${TESTIMONIALS.length} reviews`}
-            <svg
-              className={`h-4 w-4 transition-transform ${expanded ? 'rotate-180' : ''}`}
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={2}
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M19.5 8.25l-7.5 7.5-7.5-7.5"
-              />
-            </svg>
-          </button>
-        </div>
-      )}
     </section>
   )
 }
