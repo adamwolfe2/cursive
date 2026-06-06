@@ -33,6 +33,7 @@ import { TargetingMissingBanner } from '@/components/dashboard/TargetingMissingB
 import { TrialCountdown } from '@/components/dashboard/TrialCountdown'
 import { FirstEnrichmentModal } from '@/components/onboarding/FirstEnrichmentModal'
 import { PixelTroubleshoot } from './PixelTroubleshoot'
+import { AudienceBuildingBanner } from './AudienceBuildingBanner'
 import { ProvisioningWidget } from '@/components/dashboard/ProvisioningWidget'
 import { FreePlanBanner } from '@/components/dashboard/FreePlanBanner'
 import { LiveLeadsFeed } from '@/components/leads/live-leads-feed'
@@ -765,6 +766,22 @@ export default async function DashboardPage({
   const pixelEventCount = statsData?.pixel_event_count ?? 0
   const intelligenceTierCount = statsData?.intelligence_leads ?? 0
 
+  // Audience build status (#10 follow-up): for funnel buyers, surface a
+  // "building" banner until the managed audience is delivered. funnel_orders
+  // has RLS enabled with no policy, so this MUST use the admin client (which
+  // bypasses RLS) — the user client would return zero rows.
+  const { data: funnelOrderRow } = await createAdminClient()
+    .from('funnel_orders')
+    .select('offer_slug, audience_delivered_at')
+    .eq('workspace_id', workspaceId)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+  const audienceBuilding =
+    !!funnelOrderRow &&
+    funnelOrderRow.offer_slug !== 'pixel_97' &&
+    !funnelOrderRow.audience_delivered_at
+
   const pixel           = pixelResult.data
   const hasPixel        = !!pixel
   const targeting       = userTargetingResult.data
@@ -826,6 +843,9 @@ export default async function DashboardPage({
   return (
     <div className="space-y-8 p-6">
       <DashboardAnimationWrapper>
+
+        {/* Funnel buyers: audience build-in-progress notice until delivered. */}
+        {audienceBuilding && <AudienceBuildingBanner />}
 
         {/* Header — pixel-aware. When pixel is installed we lead with the
             live-visitor story; otherwise we nudge toward installing the pixel. */}

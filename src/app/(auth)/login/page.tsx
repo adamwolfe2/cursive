@@ -35,15 +35,43 @@ function LoginForm() {
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(initialError)
+  const [magicSent, setMagicSent] = useState(false)
+  const [magicLoading, setMagicLoading] = useState(false)
 
   const {
     register,
     handleSubmit,
+    getValues,
     formState: { errors },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     mode: 'onBlur',
   })
+
+  // Passwordless login — emails a one-time link. Works for buyers provisioned
+  // without a password (e.g. funnel buyers). Generic UX (no account enumeration).
+  const handleMagicLink = async () => {
+    const email = (getValues('email') || '').trim()
+    if (!email) {
+      setError('Enter your email above, then tap "Email me a login link".')
+      return
+    }
+    setMagicLoading(true)
+    setError(null)
+    try {
+      await fetch('/api/auth/magic-link', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+      setMagicSent(true)
+    } catch {
+      // Generic success regardless — never reveal account state.
+      setMagicSent(true)
+    } finally {
+      setMagicLoading(false)
+    }
+  }
 
   const handleEmailLogin = async (data: LoginFormData) => {
     setLoading(true)
@@ -215,6 +243,24 @@ function LoginForm() {
             >
               {loading ? 'Signing in...' : 'Sign in'}
             </button>
+          </div>
+
+          {/* Passwordless option — for buyers without a password (funnel buyers). */}
+          <div className="text-center">
+            {magicSent ? (
+              <p className="text-sm text-emerald-600">
+                Check your email. If an account exists, a login link is on the way.
+              </p>
+            ) : (
+              <button
+                type="button"
+                onClick={handleMagicLink}
+                disabled={magicLoading}
+                className="text-sm font-medium text-primary hover:underline disabled:opacity-50"
+              >
+                {magicLoading ? 'Sending…' : 'Email me a login link instead'}
+              </button>
+            )}
           </div>
         </form>
 
