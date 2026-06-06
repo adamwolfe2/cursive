@@ -32,6 +32,7 @@ import { PendingLeadsBanner } from '@/components/dashboard/PendingLeadsBanner'
 import { TargetingMissingBanner } from '@/components/dashboard/TargetingMissingBanner'
 import { TrialCountdown } from '@/components/dashboard/TrialCountdown'
 import { FirstEnrichmentModal } from '@/components/onboarding/FirstEnrichmentModal'
+import { PixelTroubleshoot } from './PixelTroubleshoot'
 import { ProvisioningWidget } from '@/components/dashboard/ProvisioningWidget'
 import { FreePlanBanner } from '@/components/dashboard/FreePlanBanner'
 import { LiveLeadsFeed } from '@/components/leads/live-leads-feed'
@@ -449,6 +450,13 @@ async function DashboardMainGrid(props: MainGridProps) {
               )}
             </div>
           </AnimatedSection>
+
+          {/* Pixel-install assurance — only when installed but not yet firing (#8) */}
+          {hasPixel && !hasVerifiedPixel && (
+            <AnimatedSection delay={0.13}>
+              <PixelTroubleshoot />
+            </AnimatedSection>
+          )}
 
           {/* Next step */}
           <AnimatedSection delay={0.15}>
