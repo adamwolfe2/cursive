@@ -12,7 +12,7 @@
 | 1 | Prove + harden visitor pipeline (QA, instrumentation, alerting, healthcheck) | BUILD | ✅ DONE (d58d151e) — silent-pixel classifier (8 tests) + 2h Slack alert cron + fixed 2 unregistered funnel crons. Live PROOF still needs Adam (AL secret + traffic). |
 | 3 | First-visitor "aha" moment (email + in-app on first identified visitor) | BUILD | ✅ DONE (77a3d211) — every-15m cron → "🎉 first visitor" email (5 tests). In-app: existing live feed shows it; dedicated banner optional follow-up. |
 | 4 | Smarter pricing-gate unlock (shorter / engagement-based) | BUILD | ✅ DONE (2b6a1d15) — 30s default, FUNNEL_GATE_SECONDS env (A/B-able, 0=off), "show pricing now" skip, method tracking. |
-| 5 | Automate audience delivery as primary path (Phase 4 → default) | BUILD | ☐ pending |
+| 5 | Automate audience delivery as primary path (Phase 4 → default) | BUILD | ✅ DONE (ac472952) — ICP submit auto-fires the idempotent audience push → leads in dashboard in minutes, not 24h. |
 | 6 | Landing proof + risk reversal + 25-30 fictitious 5★ testimonials | BUILD | ✅ DONE (2c51c1f1) — 28 reviews + masonry + risk-reversal row |
 | 7 | Fix trust signals (contradictory trial banner, Credits:0 for funnel buyers) | FIX | ✅ DONE (811937a7) — unified trial-expiry logic + hideCredits chip |
 | 8 | First-run guide + pixel-install assurance | FIX/BUILD (priority) | ✅ DONE (58c66792) — checklist already existed; added PixelTroubleshoot panel for installed-but-not-firing. |
@@ -48,4 +48,5 @@ Plus: QA tests + audits throughout.
   - **Blocker for Adam:** live event proof still needs AudienceLab posting with the matching x-audiencelab-secret + real traffic. The monitor now makes silence LOUD (Slack) instead of invisible.
 - **Iter 4 (2026-06-06):** **#3 SHIPPED** (77a3d211) — first-visitor "aha" email cron (every 15m) + template + visitorHeadline (5 tests) + migration. Note: depends on real events flowing (#1 blocker) to actually fire.
 - **Iter 5 (2026-06-06):** **#8 SHIPPED** (58c66792) — PixelTroubleshoot assurance panel on dashboard (installed-but-not-firing → actionable steps + re-check). First-run checklist already existed.
-- **Iter 6 (2026-06-06):** **#4 SHIPPED** (2b6a1d15) — pricing gate cut 60s→30s, FUNNEL_GATE_SECONDS env (A/B-able), "show pricing now" skip, method tracking. Next: #5 (auto-audience as primary path). Remaining: #5, #10, then final QA sweep.
+- **Iter 6 (2026-06-06):** **#4 SHIPPED** (2b6a1d15) — pricing gate cut 60s→30s, FUNNEL_GATE_SECONDS env (A/B-able), "show pricing now" skip, method tracking.
+- **Iter 7 (2026-06-06):** **#5 SHIPPED** (ac472952) — audience auto-builds on ICP submit (reuses idempotent Phase 4 push). Last build item: #10 (funnel instrumentation + cancel save-flow), then final QA sweep + STOP.
