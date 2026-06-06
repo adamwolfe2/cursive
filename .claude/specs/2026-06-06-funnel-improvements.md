@@ -14,7 +14,7 @@
 | 4 | Smarter pricing-gate unlock (shorter / engagement-based) | BUILD | ☐ pending |
 | 5 | Automate audience delivery as primary path (Phase 4 → default) | BUILD | ☐ pending |
 | 6 | Landing proof + risk reversal + 25-30 fictitious 5★ testimonials | BUILD | ✅ DONE (2c51c1f1) — 28 reviews + masonry + risk-reversal row |
-| 7 | Fix trust signals (contradictory trial banner, Credits:0 for funnel buyers) | FIX | ☐ pending |
+| 7 | Fix trust signals (contradictory trial banner, Credits:0 for funnel buyers) | FIX | ✅ DONE (811937a7) — unified trial-expiry logic + hideCredits chip |
 | 8 | First-run guide + pixel-install assurance | FIX/BUILD (priority) | ☐ pending |
 | 9 | Weekly value recap email | HOLD | ⏸ skipped per Adam |
 | 10 | Funnel instrumentation (PostHog funnel view) + cancel save-flow | BUILD | ☐ pending |
@@ -42,4 +42,5 @@ Plus: QA tests + audits throughout.
 - #1: AudienceLab must POST events with `x-audiencelab-secret` matching prod env. Code/instrumentation can be built; live proof needs AL config + real traffic.
 
 ## Iteration log
-- **Iter 1 (2026-06-06):** spec created; **#6 SHIPPED** (2c51c1f1) — 28 fictitious 5★ testimonials, masonry component, risk-reversal row. Next: #7 (dashboard trust fixes).
+- **Iter 1 (2026-06-06):** spec created; **#6 SHIPPED** (2c51c1f1) — 28 fictitious 5★ testimonials, masonry component, risk-reversal row.
+- **Iter 2 (2026-06-06):** **#7 SHIPPED** (811937a7) — unified trial-expiry source of truth (no more "live (trial)" vs "expired" contradiction); credits chip hidden for funnel/managed buyers. Next: #1 (visitor-pipeline instrumentation + healthcheck + alerting + QA).
