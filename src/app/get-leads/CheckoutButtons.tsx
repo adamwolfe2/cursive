@@ -99,7 +99,7 @@ function PlanCard({ card }: { card: PlanCardConfig }) {
 
   return (
     <div
-      className={`flex flex-col rounded-2xl border bg-white p-6 transition-shadow ${
+      className={`flex flex-col rounded-2xl border bg-white p-5 transition-shadow sm:p-6 ${
         highlight
           ? 'relative border-blue-600 ring-1 ring-blue-600/30 shadow-[0_0_50px_-12px_rgba(37,99,235,0.45),0_0_25px_-8px_rgba(37,99,235,0.25)] md:-translate-y-4'
           : 'border-gray-200 hover:shadow-sm'
@@ -114,17 +114,17 @@ function PlanCard({ card }: { card: PlanCardConfig }) {
         )}
       </div>
 
-      <div className="mt-4 flex items-baseline gap-1">
-        <span className="text-5xl font-bold tracking-tight text-gray-900">
+      <div className="mt-3 flex items-baseline gap-1 sm:mt-4">
+        <span className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
           {formatPrice(offer.monthlyPriceCents)}
         </span>
       </div>
       <p className="mt-1 text-xs text-gray-500">Per month, billed monthly</p>
 
-      <p className="mt-6 text-sm font-semibold text-gray-900">{tagline}</p>
+      <p className="mt-5 text-sm font-semibold text-gray-900 sm:mt-6">{tagline}</p>
       <p className="mt-1.5 text-sm leading-relaxed text-gray-500">{audience}</p>
 
-      <ul className="mt-5 space-y-2.5">
+      <ul className="mt-4 space-y-2 sm:mt-5 sm:space-y-2.5">
         {features.map((feature) => (
           <li
             key={feature}
@@ -136,7 +136,7 @@ function PlanCard({ card }: { card: PlanCardConfig }) {
         ))}
       </ul>
 
-      <div className="mt-8 flex-1" />
+      <div className="mt-5 flex-1 sm:mt-8" />
 
       {/*
         Form submission with target="_blank" is the only bulletproof way to

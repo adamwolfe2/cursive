@@ -36,7 +36,7 @@ export default function GetLeadsPage() {
           treatment ("The Data Identity Layer / for Outbound, Intent, and
           Enrichment"). Concrete numbers in the body build credibility
           before the buyer hits the VSL. */}
-      <div className="mb-10 text-left sm:text-center">
+      <div className="mb-10 text-center">
         <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl lg:text-5xl">
           <span className="block">
             See the people searching for your product.
