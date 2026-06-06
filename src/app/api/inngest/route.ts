@@ -232,6 +232,7 @@ export const { GET, POST, PUT } = serve({
     functions.funnelPixelInstallReminder, // daily — "did the snippet land?" nudge
     functions.funnelVisitorDigest, // weekly visitor recap
     functions.funnelPixelHealthCheck, // every 2h — silent-pixel ops alert (#1)
+    functions.funnelFirstVisitor, // every 15m — first-visitor "aha" email (#3)
 
     // Cal.com No-Show Recovery (2-email recovery sequence when prospect misses call)
     functions.calNoShowRecovery,

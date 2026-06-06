@@ -67,6 +67,7 @@ export interface FunnelOrder {
   pixel_last_event_at: string | null
   pixel_install_reminded_at: string | null
   pixel_health_alerted_at: string | null
+  first_visitor_notified_at: string | null
 
   audience_solution: string | null
   audience_icp_description: string | null
@@ -523,6 +524,34 @@ export async function markPixelHealthAlerted(orderId: string): Promise<void> {
     .from('funnel_orders')
     .update({ pixel_health_alerted_at: new Date().toISOString() })
     .eq('id', orderId)
+}
+
+export async function markFirstVisitorNotified(orderId: string): Promise<void> {
+  const supabase = createAdminClient()
+  await supabase
+    .from('funnel_orders')
+    .update({ first_visitor_notified_at: new Date().toISOString() })
+    .eq('id', orderId)
+}
+
+/**
+ * Funnel orders that just got their FIRST visitor event but haven't been sent
+ * the "aha" email yet. pixel_last_event_at is set (an event arrived) and
+ * first_visitor_notified_at is still null. Active subs only.
+ */
+export async function findFirstVisitorCandidates(
+  limit = 100
+): Promise<FunnelOrder[]> {
+  const supabase = createAdminClient()
+  const { data } = await supabase
+    .from('funnel_orders')
+    .select('*')
+    .eq('subscription_state', 'active')
+    .not('pixel_last_event_at', 'is', null)
+    .is('first_visitor_notified_at', null)
+    .limit(limit)
+
+  return (data as FunnelOrder[] | null) ?? []
 }
 
 /**
