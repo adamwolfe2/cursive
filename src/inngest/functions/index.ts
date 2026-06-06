@@ -335,3 +335,4 @@ export { alEnrichmentPoller } from './al-enrichment-poller'
 // Funnel — buyer lifecycle automations
 export { funnelPixelInstallReminder } from './funnel-pixel-install-reminder'
 export { funnelVisitorDigest } from './funnel-visitor-digest'
+export { funnelPixelHealthCheck } from './funnel-pixel-health-check'

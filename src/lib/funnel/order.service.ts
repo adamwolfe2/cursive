@@ -66,6 +66,7 @@ export interface FunnelOrder {
   pixel_provisioned_at: string | null
   pixel_last_event_at: string | null
   pixel_install_reminded_at: string | null
+  pixel_health_alerted_at: string | null
 
   audience_solution: string | null
   audience_icp_description: string | null
@@ -514,6 +515,40 @@ export async function markVisitorDigestSent(orderId: string): Promise<void> {
     .from('funnel_orders')
     .update({ last_visitor_digest_at: new Date().toISOString() })
     .eq('id', orderId)
+}
+
+export async function markPixelHealthAlerted(orderId: string): Promise<void> {
+  const supabase = createAdminClient()
+  await supabase
+    .from('funnel_orders')
+    .update({ pixel_health_alerted_at: new Date().toISOString() })
+    .eq('id', orderId)
+}
+
+/**
+ * Silent funnel pixels — installed but receiving zero visitor events for longer
+ * than `thresholdHours`. The signal that AudienceLab isn't posting to our
+ * webhook (usually a missing/incorrect x-audiencelab-secret). Drives the ops
+ * health alert. Excludes orders already alerted so we notify once, not forever.
+ */
+export async function findSilentPixelOrders(
+  thresholdHours = 6,
+  limit = 100
+): Promise<FunnelOrder[]> {
+  const supabase = createAdminClient()
+  const cutoff = new Date(Date.now() - thresholdHours * 60 * 60 * 1000).toISOString()
+
+  const { data } = await supabase
+    .from('funnel_orders')
+    .select('*')
+    .eq('subscription_state', 'active')
+    .not('pixel_provisioned_at', 'is', null)
+    .lt('pixel_provisioned_at', cutoff)
+    .is('pixel_last_event_at', null)
+    .is('pixel_health_alerted_at', null)
+    .limit(limit)
+
+  return (data as FunnelOrder[] | null) ?? []
 }
 
 // ─── Cron candidates (used by Inngest functions) ───────────────────────

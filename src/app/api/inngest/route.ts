@@ -228,6 +228,11 @@ export const { GET, POST, PUT } = serve({
     // Provision Workspace Audience (event-triggered on signup — provisions initial leads)
     functions.provisionWorkspaceAudience,
 
+    // Funnel — buyer lifecycle automations (were exported but never registered)
+    functions.funnelPixelInstallReminder, // daily — "did the snippet land?" nudge
+    functions.funnelVisitorDigest, // weekly visitor recap
+    functions.funnelPixelHealthCheck, // every 2h — silent-pixel ops alert (#1)
+
     // Cal.com No-Show Recovery (2-email recovery sequence when prospect misses call)
     functions.calNoShowRecovery,
 
