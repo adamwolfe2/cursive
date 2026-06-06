@@ -11,6 +11,7 @@ export const runtime = 'nodejs'
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { getOrderByToken, recordAudienceSubmitted } from '@/lib/funnel/order.service'
+import { pushFunnelAudienceToWorkspace } from '@/lib/funnel/workspace-provision'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { sendFunnelAdminNotificationEmail } from '@/lib/email/templates/funnel-admin-notification'
 import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
@@ -88,6 +89,16 @@ export async function POST(
       order_id: order.id,
       titles_count: parsed.data.titles.length,
     })
+
+    // #5 — Auto-build the audience the moment the ICP is submitted, straight
+    // into the buyer's dashboard, instead of waiting for a manual admin
+    // delivery. Reuses the idempotent Phase 4 push (guards on
+    // audience_pushed_at), so a later "mark delivered" never double-pushes.
+    // Fire-and-forget + non-fatal: the Google Sheet remains the canonical
+    // deliverable, so submit must succeed regardless.
+    pushFunnelAudienceToWorkspace(updated).catch((err) =>
+      safeError('[funnel/audience] auto audience push failed:', err)
+    )
 
     // Notify admin via Slack (existing channel) + email (new). Both are
     // fire-and-forget — buyer's submit must succeed regardless of admin
