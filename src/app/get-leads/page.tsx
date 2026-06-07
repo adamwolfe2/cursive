@@ -106,15 +106,11 @@ export default function GetLeadsPage() {
         </h2>
         <p className="mx-auto mt-4 max-w-xl text-base text-gray-500">
           Pixel is live in 60 seconds. Audience delivered within 24 hours.
-          Cancel any time.
         </p>
         {/* Risk reversal — lowers the cost of saying yes. */}
         <div className="mx-auto mt-6 flex max-w-2xl flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-gray-600">
           <span className="inline-flex items-center gap-1.5">
             <GuaranteeIcon /> First audience in 24h or it&apos;s free
-          </span>
-          <span className="inline-flex items-center gap-1.5">
-            <GuaranteeIcon /> Cancel anytime, no contract
           </span>
           <span className="inline-flex items-center gap-1.5">
             <GuaranteeIcon /> Live in 60 seconds
@@ -132,7 +128,7 @@ export default function GetLeadsPage() {
 
       {/* Trust strip */}
       <p className="mt-12 text-center text-xs text-gray-400">
-        Secure checkout by Stripe · No long-term contract · Cancel any time
+        Secure checkout by Stripe · No long-term contract
       </p>
     </div>
   )
