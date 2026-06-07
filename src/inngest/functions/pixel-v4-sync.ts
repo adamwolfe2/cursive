@@ -29,7 +29,7 @@
 
 import { inngest } from '../client'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { fetchPixelEventsV4 } from '@/lib/audiencelab/api-client'
+import { fetchPixelEventsV4, fetchPixelEvents } from '@/lib/audiencelab/api-client'
 import { scoreUrlIntent, parseDncFlag } from '@/lib/audiencelab/intent-scoring'
 import { insertLeadFromALRecord } from '@/lib/audiencelab/lead-inserter'
 import { v4ResolutionToProfile, pickBestEmail } from '@/lib/audiencelab/provision-helpers'
@@ -242,9 +242,18 @@ export const pixelV4SyncWorker = inngest.createFunction(
       try {
         response = await fetchPixelEventsV4(al_pixel_id, 1, V4_PAGE_SIZE)
       } catch (err) {
-        safeError(`${LOG_PREFIX} V4 fetch failed for pixel ${al_pixel_id}:`, err)
-        // Re-throw so Inngest retries; the worker has retries: 2.
-        throw err
+        // AL's V4 endpoint has been returning 500s. Fall back to the V3
+        // events endpoint (GET /pixels/{id}) — identical envelope + resolution
+        // shape, so the lead mapper works the same. Only if BOTH fail do we
+        // re-throw for Inngest to retry (worker has retries: 2).
+        safeError(`${LOG_PREFIX} V4 fetch failed for pixel ${al_pixel_id}, falling back to V3:`, err)
+        try {
+          response = await fetchPixelEvents(al_pixel_id, 1, V4_PAGE_SIZE)
+          safeLog(`${LOG_PREFIX} V3 fallback succeeded for pixel ${al_pixel_id}`)
+        } catch (v3err) {
+          safeError(`${LOG_PREFIX} V3 fallback also failed for pixel ${al_pixel_id}:`, v3err)
+          throw v3err
+        }
       }
 
       const events = response.events || []

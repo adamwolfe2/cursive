@@ -818,6 +818,29 @@ export async function fetchPixelEventsV4(
   )
 }
 
+/**
+ * Fetch V3 pixel events (GET /pixels/{id}). Same response envelope as V4
+ * (total_records + events[].resolution); the resolution uses the V3 field set
+ * (DIRECT_NUMBER / MOBILE_PHONE / PERSONAL_PHONE instead of ALL_MOBILES /
+ * ALL_LANDLINES). Used as the reliable fallback when AL's V4 endpoint is
+ * erroring (it has been returning 500s) — the lead mapper reads UPPER_CASE
+ * fields and tolerates the differences.
+ */
+export async function fetchPixelEvents(
+  pixelId: string,
+  page = 1,
+  pageSize = 500
+): Promise<ALPixelEventsV4Response> {
+  const params = new URLSearchParams({
+    page: String(page),
+    page_size: String(Math.min(pageSize, 1000)),
+  })
+  return alFetch<ALPixelEventsV4Response>(
+    `/pixels/${pixelId}?${params.toString()}`,
+    { method: 'GET' }
+  )
+}
+
 // ============================================================================
 // BATCH ENRICHMENT
 // ============================================================================

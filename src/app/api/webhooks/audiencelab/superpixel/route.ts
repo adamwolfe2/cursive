@@ -214,15 +214,6 @@ export async function POST(request: NextRequest) {
     // Capture headers for audit trail
     const rawHeaders = captureHeaders(request)
 
-    // Verify authentication
-    if (!(await verifySecret(request, rawBody))) {
-      safeLog(`${LOG_PREFIX} Rejected: invalid secret/signature`)
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
-    }
-
     // Parse JSON
     let payload: unknown
     try {
@@ -249,6 +240,31 @@ export async function POST(request: NextRequest) {
 
     const supabase = createAdminClient()
 
+    // Resolve workspace by pixel_id — needed BOTH for routing and (below) auth.
+    const firstEvent = events[0] || {}
+    const pixelId = firstEvent.pixel_id || null
+    const workspaceId = await resolveWorkspace(supabase, pixelId)
+
+    // AUTHENTICATION (dual-mode):
+    //   1. Shared secret valid → accept (preferred, strongest).
+    //   2. No secret, but the event targets a pixel WE provisioned (known,
+    //      active pixel_id) → accept. AudienceLab's pixel webhook is URL-only
+    //      (no secret field in its dashboard), so it POSTs unauthenticated;
+    //      requiring a secret it cannot send was silently 401-ing every real
+    //      visitor event. The pixel_id is the de-facto credential AL sends.
+    // Defense-in-depth for mode 2: strict Zod schema (above), exact-retry
+    // idempotency (below), and per-(workspace,email) lead dedupe downstream.
+    const secretValid = await verifySecret(request, rawBody)
+    if (!secretValid && !workspaceId) {
+      safeLog(
+        `${LOG_PREFIX} Rejected: no valid secret and unknown pixel_id ${pixelId || 'null'}`
+      )
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+    if (!secretValid) {
+      safeLog(`${LOG_PREFIX} Accepted via known pixel_id (no shared secret): ${pixelId}`)
+    }
+
     // IDEMPOTENCY: Hash raw body to detect exact retries
     const eventHash = await sha256Hex(rawBody)
 
@@ -267,11 +283,6 @@ export async function POST(request: NextRequest) {
         ...(existingEvent.payload_summary as Record<string, unknown> || {}),
       })
     }
-
-    // Resolve workspace strictly by pixel_id
-    const firstEvent = events[0] || {}
-    const pixelId = firstEvent.pixel_id || null
-    const workspaceId = await resolveWorkspace(supabase, pixelId)
 
     // If pixel_id is unknown, store events with error state but do NOT create leads
     if (!workspaceId) {
