@@ -144,9 +144,12 @@ export const pixelV4SyncCron = inngest.createFunction(
       const supabase = createAdminClient()
       const { data, error } = await supabase
         .from('audiencelab_pixels')
-        .select('id, al_pixel_id, workspace_id, created_at, last_v4_synced_at')
+        // NOTE: the AudienceLab pixel id lives in the `pixel_id` column.
+        // (There is no `al_pixel_id` column — selecting it errored, which
+        // silently dispatched 0 pixels and made the whole V4 pull a no-op.)
+        .select('id, pixel_id, workspace_id, created_at, last_v4_synced_at')
         .eq('is_active', true)
-        .not('al_pixel_id', 'is', null)
+        .not('pixel_id', 'is', null)
         .limit(MAX_PIXELS_PER_TICK)
 
       if (error) {
@@ -169,7 +172,9 @@ export const pixelV4SyncCron = inngest.createFunction(
           name: 'pixel/v4-sync.requested',
           data: {
             pixel_row_id: p.id,
-            al_pixel_id: p.al_pixel_id as string,
+            // Event field stays `al_pixel_id` (worker + concurrency key
+            // unchanged); it is sourced from the real `pixel_id` column.
+            al_pixel_id: p.pixel_id as string,
             workspace_id: p.workspace_id as string,
             pixel_created_at: p.created_at as string,
             last_v4_synced_at: (p.last_v4_synced_at as string | null) ?? null,
