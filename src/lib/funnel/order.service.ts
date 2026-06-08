@@ -500,6 +500,33 @@ export async function refreshPixelLastEventTimestamp(
   return lastSeen
 }
 
+/**
+ * Stamp pixel_last_event_at on every funnel order bound to this AL pixel.
+ *
+ * This is the trigger that unblocks the first-visitor "aha" email
+ * (findFirstVisitorCandidates requires pixel_last_event_at IS NOT NULL) and
+ * flips the pixel-health/silent-pixel queries to "healthy". It MUST be called
+ * from every path that ingests a real visitor event — the webhook AND the V4
+ * pull — otherwise the column stays null forever and the aha email never fires.
+ *
+ * Keyed by pixel_id (not order id) because the ingesting paths resolve the
+ * pixel, not the order. Cheap, idempotent, fire-and-forget safe.
+ */
+export async function touchFunnelPixelLastEvent(
+  pixelAudienceLabId: string,
+  seenAtIso: string = new Date().toISOString()
+): Promise<void> {
+  if (!pixelAudienceLabId) return
+  const supabase = createAdminClient()
+  const { error } = await supabase
+    .from('funnel_orders')
+    .update({ pixel_last_event_at: seenAtIso })
+    .eq('pixel_audiencelab_id', pixelAudienceLabId)
+  if (error) {
+    safeError('[funnel/order] touchFunnelPixelLastEvent failed (non-fatal):', error)
+  }
+}
+
 // ─── Reminder bookkeeping ──────────────────────────────────────────────
 
 export async function markPixelInstallReminded(orderId: string): Promise<void> {

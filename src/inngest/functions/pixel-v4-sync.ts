@@ -33,6 +33,7 @@ import { fetchPixelEventsV4, fetchPixelEvents } from '@/lib/audiencelab/api-clie
 import { scoreUrlIntent, parseDncFlag } from '@/lib/audiencelab/intent-scoring'
 import { insertLeadFromALRecord } from '@/lib/audiencelab/lead-inserter'
 import { v4ResolutionToProfile, pickBestEmail } from '@/lib/audiencelab/provision-helpers'
+import { touchFunnelPixelLastEvent } from '@/lib/funnel/order.service'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 
 const LOG_PREFIX = '[PixelV4Sync]'
@@ -44,6 +45,12 @@ const MAX_PIXELS_PER_TICK = 50
 // V4 page size — small enough to fit comfortably in a single step,
 // large enough to amortize the HTTP round-trip cost.
 const V4_PAGE_SIZE = 500
+
+// Max pages to walk per pixel per run. Bounds work while still covering a
+// large backlog: 20 × 500 = 10k events/run. Without pagination a busy pixel
+// with >500 new events between runs would have the overflow skipped forever
+// once the watermark advanced.
+const MAX_V4_PAGES = 20
 
 // If a pixel is older than this AND a sync run produces zero usable
 // events AND its prior run was also zero, escalate to Slack so ops can
@@ -238,119 +245,144 @@ export const pixelV4SyncWorker = inngest.createFunction(
       const supabase = createAdminClient()
       const watermark = last_v4_synced_at ? new Date(last_v4_synced_at).getTime() : 0
 
-      let response: Awaited<ReturnType<typeof fetchPixelEventsV4>>
-      try {
-        response = await fetchPixelEventsV4(al_pixel_id, 1, V4_PAGE_SIZE)
-      } catch (err) {
-        // AL's V4 endpoint has been returning 500s. Fall back to the V3
-        // events endpoint (GET /pixels/{id}) — identical envelope + resolution
-        // shape, so the lead mapper works the same. Only if BOTH fail do we
-        // re-throw for Inngest to retry (worker has retries: 2).
-        safeError(`${LOG_PREFIX} V4 fetch failed for pixel ${al_pixel_id}, falling back to V3:`, err)
-        try {
-          response = await fetchPixelEvents(al_pixel_id, 1, V4_PAGE_SIZE)
-          safeLog(`${LOG_PREFIX} V3 fallback succeeded for pixel ${al_pixel_id}`)
-        } catch (v3err) {
-          safeError(`${LOG_PREFIX} V3 fallback also failed for pixel ${al_pixel_id}:`, v3err)
-          throw v3err
-        }
-      }
-
-      const events = response.events || []
       let processed = 0
       let enriched = 0
       let inserted = 0
       let skippedNoEmail = 0
+      // Advance the watermark to the NEWEST event we actually processed —
+      // never to wall-clock now(), which would skip events that exist
+      // server-side but weren't in the pages we read this run.
+      let maxEventTs = watermark
 
       // Track emails handled in THIS run to avoid double-inserting when
       // a single pixel has multiple events for the same person.
       const handledEmails = new Set<string>()
 
-      for (const event of events) {
-        processed++
-        if (!event.resolution) continue
-
-        // Watermark — events older than our last successful sync are
-        // already processed. v4 events have ISO event_timestamp.
-        if (watermark > 0 && event.event_timestamp) {
-          const ts = new Date(event.event_timestamp).getTime()
-          if (ts <= watermark) continue
+      // Walk pages until a short/empty page (last page) or the cap. Single
+      // page-1-only fetches silently dropped events 501+ once the watermark
+      // advanced past them.
+      for (let page = 1; page <= MAX_V4_PAGES; page++) {
+        let response: Awaited<ReturnType<typeof fetchPixelEventsV4>>
+        try {
+          response = await fetchPixelEventsV4(al_pixel_id, page, V4_PAGE_SIZE)
+        } catch (err) {
+          // AL's V4 endpoint has been returning 500s. Fall back to the V3
+          // events endpoint (GET /pixels/{id}) — identical envelope +
+          // resolution shape, so the lead mapper works the same.
+          safeError(`${LOG_PREFIX} V4 fetch failed (pixel ${al_pixel_id}, page ${page}), falling back to V3:`, err)
+          try {
+            response = await fetchPixelEvents(al_pixel_id, page, V4_PAGE_SIZE)
+            safeLog(`${LOG_PREFIX} V3 fallback succeeded for pixel ${al_pixel_id} page ${page}`)
+          } catch (v3err) {
+            // Page 1 total failure → throw so Inngest retries the whole run.
+            // Later-page failure → stop paginating, keep what we processed.
+            if (page === 1) {
+              safeError(`${LOG_PREFIX} V3 fallback also failed for pixel ${al_pixel_id}:`, v3err)
+              throw v3err
+            }
+            safeError(`${LOG_PREFIX} page ${page} fetch failed, stopping pagination:`, v3err)
+            break
+          }
         }
 
-        const emails = extractV4Emails(event.resolution)
-        if (emails.length === 0) {
-          skippedNoEmail++
-          continue
-        }
+        const events = response.events || []
+        if (events.length === 0) break
 
-        // Already handled in this run? Skip — webhook OR our own loop
-        // could have already inserted/enriched.
-        const dedupKey = emails[0]
-        if (handledEmails.has(dedupKey)) continue
+        for (const event of events) {
+          processed++
+          if (!event.resolution) continue
 
-        // Look for an existing lead matching ANY of the candidate emails.
-        const { data: matchedLeads } = await supabase
-          .from('leads')
-          .select('id')
-          .eq('workspace_id', workspace_id)
-          .in('email', emails)
-          .limit(1)
+          // Watermark — skip events at/older than our last successful sync.
+          // Track the newest timestamp seen so we can advance correctly.
+          if (event.event_timestamp) {
+            const ts = new Date(event.event_timestamp).getTime()
+            if (!Number.isNaN(ts)) {
+              if (watermark > 0 && ts <= watermark) continue
+              if (ts > maxEventTs) maxEventTs = ts
+            }
+          }
 
-        const enrichPatch = buildV4EnrichPatch(
-          event.resolution as Record<string, unknown>,
-          event.full_url
-        )
+          const emails = extractV4Emails(event.resolution)
+          if (emails.length === 0) {
+            skippedNoEmail++
+            continue
+          }
 
-        if (matchedLeads && matchedLeads.length > 0) {
-          // ENRICH existing lead
-          const { error } = await supabase
+          // Already handled in this run? Skip — webhook OR our own loop
+          // could have already inserted/enriched.
+          const dedupKey = emails[0]
+          if (handledEmails.has(dedupKey)) continue
+
+          // Look for an existing lead matching ANY of the candidate emails.
+          const { data: matchedLeads } = await supabase
             .from('leads')
-            .update(enrichPatch)
-            .eq('id', matchedLeads[0].id)
-          if (!error) {
-            enriched++
+            .select('id')
+            .eq('workspace_id', workspace_id)
+            .in('email', emails)
+            .limit(1)
+
+          const enrichPatch = buildV4EnrichPatch(
+            event.resolution as Record<string, unknown>,
+            event.full_url
+          )
+
+          if (matchedLeads && matchedLeads.length > 0) {
+            // ENRICH existing lead
+            const { error } = await supabase
+              .from('leads')
+              .update(enrichPatch)
+              .eq('id', matchedLeads[0].id)
+            if (!error) {
+              enriched++
+              handledEmails.add(dedupKey)
+            }
+            continue
+          }
+
+          // INSERT new lead via shared inserter — this is the visitor →
+          // dashboard-lead path that was missing pre-2026-06-06.
+          const profile = v4ResolutionToProfile(event.resolution)
+          const bestEmail = pickBestEmail(profile)
+          if (!bestEmail) {
+            skippedNoEmail++
+            continue
+          }
+
+          const insertResult = await insertLeadFromALRecord(profile, {
+            workspaceId: workspace_id,
+            sourceTag: 'audiencelab_pixel_v4',
+            extraTags: ['visitor', 'pixel-v4'],
+            industries: [],
+          })
+
+          if (insertResult.outcome === 'inserted' && insertResult.leadId) {
+            // Apply the v4-specific enrichment (intent score from full_url,
+            // DNC flags) — the shared inserter doesn't know about pages.
+            await supabase
+              .from('leads')
+              .update(enrichPatch)
+              .eq('id', insertResult.leadId)
+            inserted++
             handledEmails.add(dedupKey)
           }
-          continue
+          // Outcome 'skipped_duplicate' is expected when webhook beat us
+          // here; not an error. 'skipped_quality' / 'skipped_no_email'
+          // also no-op silently.
         }
 
-        // INSERT new lead via shared inserter — this is the visitor →
-        // dashboard-lead path that was missing pre-2026-06-06.
-        const profile = v4ResolutionToProfile(event.resolution)
-        const bestEmail = pickBestEmail(profile)
-        if (!bestEmail) {
-          skippedNoEmail++
-          continue
-        }
-
-        const insertResult = await insertLeadFromALRecord(profile, {
-          workspaceId: workspace_id,
-          sourceTag: 'audiencelab_pixel_v4',
-          extraTags: ['visitor', 'pixel-v4'],
-          industries: [],
-        })
-
-        if (insertResult.outcome === 'inserted' && insertResult.leadId) {
-          // Apply the v4-specific enrichment (intent score from full_url,
-          // DNC flags) — the shared inserter doesn't know about pages.
-          await supabase
-            .from('leads')
-            .update(enrichPatch)
-            .eq('id', insertResult.leadId)
-          inserted++
-          handledEmails.add(dedupKey)
-        }
-        // Outcome 'skipped_duplicate' is expected when webhook beat us
-        // here; not an error. 'skipped_quality' / 'skipped_no_email'
-        // also no-op silently.
+        // Last page reached.
+        if (events.length < V4_PAGE_SIZE) break
       }
 
-      // Bump watermark — only if we got a fresh response. On fetch
-      // failure we threw above and never reach this point.
-      await supabase
-        .from('audiencelab_pixels')
-        .update({ last_v4_synced_at: new Date().toISOString() })
-        .eq('id', pixel_row_id)
+      // Advance watermark to the newest processed event timestamp. Only
+      // moves forward; if nothing newer was seen, leave it untouched so we
+      // never skip a not-yet-arrived event by jumping to now().
+      if (maxEventTs > watermark) {
+        await supabase
+          .from('audiencelab_pixels')
+          .update({ last_v4_synced_at: new Date(maxEventTs).toISOString() })
+          .eq('id', pixel_row_id)
+      }
 
       return {
         processed,
@@ -360,6 +392,15 @@ export const pixelV4SyncWorker = inngest.createFunction(
         usableEvents: enriched + inserted,
       }
     })
+
+    // Stamp pixel_last_event_at on the funnel order(s) for this pixel so the
+    // first-visitor "aha" email fires even when the webhook missed the event
+    // and the pull is the path that surfaced it.
+    if (result.usableEvents > 0) {
+      await step.run('touch-funnel-last-event', async () => {
+        await touchFunnelPixelLastEvent(al_pixel_id)
+      })
+    }
 
     // ─── Failsafe alert: silent pixel after 24h ────────────────────
     // Only fire if the pixel has been alive long enough that we'd

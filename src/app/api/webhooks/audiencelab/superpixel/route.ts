@@ -395,6 +395,20 @@ export async function POST(request: NextRequest) {
 
     safeLog(`${LOG_PREFIX} Stored ${insertedIds.length}/${events.length} events for workspace ${workspaceId}`)
 
+    // Stamp pixel_last_event_at on any funnel order bound to this pixel.
+    // This is what unblocks the first-visitor "aha" email and flips the
+    // silent-pixel health checks to "healthy". Without it the column stays
+    // null forever. Fire-and-forget — never block event ingestion on it.
+    if (pixelId && insertedIds.length > 0) {
+      supabase
+        .from('funnel_orders')
+        .update({ pixel_last_event_at: new Date().toISOString() })
+        .eq('pixel_audiencelab_id', pixelId)
+        .then(({ error }) => {
+          if (error) safeError(`${LOG_PREFIX} pixel_last_event_at stamp failed (non-fatal):`, error)
+        })
+    }
+
     // Process events inline (Edge-compatible — bypasses Inngest callback)
     const processed: string[] = []
     for (const id of insertedIds) {
