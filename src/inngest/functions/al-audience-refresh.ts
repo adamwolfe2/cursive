@@ -78,15 +78,25 @@ export const alAudienceRefresh = inngest.createFunction(
     for (const audience of audiences) {
       const result = await step.run(`refresh-audience-${audience.id}`, async () => {
         const supabase = createAdminClient()
-        const filters = audience.filters as { industries?: string[]; states?: string[] } || {}
+        const filters = audience.filters as {
+          industries?: string[]
+          states?: string[]
+          titles?: string[]
+          employee_range?: string
+        } || {}
         const industries = filters.industries || []
         const states = filters.states || []
+        const titles = filters.titles || []
+        const employeeRange = filters.employee_range || ''
 
         try {
-          // Build fresh audience filters from stored preferences
+          // Build fresh audience filters from stored preferences — same full ICP
+          // (industry + geo + titles + size) as the initial build.
           const segmentFilters = buildWorkspaceAudienceFilters({
             industries: industries.length > 0 ? industries : undefined,
             states: states.length > 0 ? states : undefined,
+            titles: titles.length > 0 ? titles : undefined,
+            employeeRange: employeeRange || undefined,
           })
 
           // Preview to validate before pulling

@@ -73,11 +73,13 @@ export const provisionWorkspaceAudience = inngest.createFunction(
   },
   { event: 'audiencelab/provision-workspace-audience' },
   async ({ event, step }) => {
-    const { workspace_id, user_id, industries, states } = event.data as {
+    const { workspace_id, user_id, industries, states, titles, employeeRange } = event.data as {
       workspace_id: string
       user_id: string
       industries: string[]
       states: string[]
+      titles?: string[]
+      employeeRange?: string
     }
 
     if (!workspace_id || !user_id) {
@@ -88,6 +90,8 @@ export const provisionWorkspaceAudience = inngest.createFunction(
     // Defensive normalization: caller might send null/undefined arrays.
     const industriesIn = Array.isArray(industries) ? industries.filter(Boolean) : []
     const statesIn = Array.isArray(states) ? states.filter(Boolean) : []
+    const titlesIn = Array.isArray(titles) ? titles.filter(Boolean) : []
+    const employeeRangeIn = typeof employeeRange === 'string' ? employeeRange : ''
 
     // ─── Step 1: API key gate ────────────────────────────────────────
     const apiKeyOk = await step.run('check-api-key', async () => {
@@ -111,6 +115,8 @@ export const provisionWorkspaceAudience = inngest.createFunction(
       const segmentFilters = buildWorkspaceAudienceFilters({
         industries: industriesIn.length > 0 ? industriesIn : undefined,
         states: statesIn.length > 0 ? statesIn : undefined,
+        titles: titlesIn.length > 0 ? titlesIn : undefined,
+        employeeRange: employeeRangeIn || undefined,
       })
 
       safeLog(
@@ -401,7 +407,12 @@ export const provisionWorkspaceAudience = inngest.createFunction(
               al_audience_id: audienceResult.audienceId,
               name: `cursive-funnel-${workspace_id.slice(0, 8)}`,
               source: 'funnel_order',
-              filters: { industries: industriesIn, states: statesIn },
+              filters: {
+                industries: industriesIn,
+                states: statesIn,
+                titles: titlesIn,
+                employee_range: employeeRangeIn,
+              },
               leads_imported: insertResult.inserted,
               refresh_enabled: true,
               last_refreshed_at: new Date().toISOString(),

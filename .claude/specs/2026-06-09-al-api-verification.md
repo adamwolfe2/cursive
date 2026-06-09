@@ -197,3 +197,42 @@ Goal criterion B (every delivered lead is email-verified) is fully satisfied.
   slice). Reinforces iter-8: the dead PREVIEW-count guard doesn't matter for the
   funnel because the real total_records guard does the job (500k >> threshold →
   abort). Funnel protected.
+
+---
+
+## Iter 12 — CRITICAL: AL `/audiences` `filters` are IGNORED (audience auto-build does not target)
+
+Created a real audience filtered for {business:{industry:["Legal Services"],
+jobTitle:["Attorney","Lawyer","Partner"]}, location:{state:["CA"]}} and polled
+its records. Result:
+- `total_records = 500,000` (the SAME global count as an unfiltered build).
+- Records from the Netherlands, Pakistan, Australia, France — NOT US/CA.
+- **Match rates: legal-industry 0/20, attorney-title 1/20, CA 0/20.**
+- `/audiences/preview` likewise returns an identical generic sample for ANY
+  business filter (jobTitle camel/snake, industry) — filters not reflected.
+(Test audience deleted.)
+
+**Conclusion:** the `/audiences` (and `/audiences/preview`) `filters` payload is
+not honored — AL returns a global, unfiltered pool regardless. So the automated
+audience build does NOT produce a targeted list.
+
+How targeting actually happens today: `provisionWorkspaceAudience` applies a
+`matchesWorkspaceICP` POST-filter (industry + state substring) to the pulled
+records. From a RANDOM GLOBAL 500k pool, pulling ~200 → very few industry+state
+matches → low yield, and titles/company-size are never filtered at all.
+
+**Implication (validates Adam's concern):** real audience targeting needs AL's
+**Audience Builder / Studio** (the system already generates a builder prompt via
+`buildAudienceBuilderPrompt`), not the raw `/audiences` filter API. Recommended
+flow: ICP -> admin builds targeted audience in Studio (or we find a real
+targeting API) -> paste audience ID in /admin/funnel-orders -> pull from THAT
+audience (verified-gated + topped-up) -> sync to dashboard.
+
+OPEN QUESTION for AL support: is the `/audiences` filter genuinely unsupported
+(Studio required), or is our filter FORMAT wrong? If it is a format fix, the
+auto-build could be re-automated. Worth a 5-min confirmation before committing
+to the manual-Studio path long-term.
+
+NOTE: the titles/company-size threading (buildWorkspaceAudienceFilters +
+provision + refresh) is committed as forward-groundwork — correct + tested, but
+INERT until AL honors audience filters or we move to a targeting API.

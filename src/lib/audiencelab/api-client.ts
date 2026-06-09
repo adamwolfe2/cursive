@@ -947,12 +947,22 @@ export function buildWorkspaceAudienceFilters(params: {
   states?: string[]
   cities?: string[]
   zips?: string[]
+  /** Buyer's target job titles -> AL business.jobTitle (the role they actually want). */
+  titles?: string[]
+  /** Buyer's company-size band, e.g. "51-200" -> AL business.employeeCount. */
+  employeeRange?: string
 }): ALAudienceSegmentFilters {
   const filters: ALAudienceSegmentFilters = {}
 
-  if (params.industries?.length) {
-    filters.business = { industry: params.industries }
-  }
+  // Business: industry + jobTitle + company size. Dropping titles/size here was
+  // the gap that made auto-built audiences under-targeted (right industry/geo,
+  // any role). AL's audience filter supports all three.
+  const business: ALAudienceBusinessFilter = {}
+  if (params.industries?.length) business.industry = params.industries
+  if (params.titles?.length) business.jobTitle = params.titles
+  const employeeCount = parseEmployeeRange(params.employeeRange)
+  if (employeeCount) business.employeeCount = employeeCount
+  if (Object.keys(business).length > 0) filters.business = business
 
   const hasGeo = params.states?.length || params.cities?.length || params.zips?.length
   if (hasGeo) {
@@ -963,6 +973,32 @@ export function buildWorkspaceAudienceFilters(params: {
   }
 
   return filters
+}
+
+/**
+ * Parse a human company-size string into AL's employeeCount {min,max}.
+ * Handles "51-200", "51 to 200", "1,000-5,000", "1000+", "1000 plus".
+ * Returns null when unparseable, so we omit the constraint rather than send junk.
+ */
+export function parseEmployeeRange(range?: string): { min?: number; max?: number } | null {
+  if (!range) return null
+  const cleaned = range.replace(/,/g, '').replace(/employees?/i, '').trim()
+  if (!cleaned) return null
+
+  const span = cleaned.match(/^(\d+)\s*(?:-|–|to)\s*(\d+)$/i)
+  if (span) {
+    const min = parseInt(span[1], 10)
+    const max = parseInt(span[2], 10)
+    return Number.isFinite(min) && Number.isFinite(max) && max >= min ? { min, max } : null
+  }
+
+  const plus = cleaned.match(/^(\d+)\s*(?:\+|plus)$/i)
+  if (plus) {
+    const min = parseInt(plus[1], 10)
+    return Number.isFinite(min) ? { min } : null
+  }
+
+  return null
 }
 
 // ============================================================================

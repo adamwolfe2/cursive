@@ -296,6 +296,8 @@ export async function pushFunnelAudienceToWorkspace(
         user_id: userId,
         industries: order.audience_industries ?? [],
         states: order.audience_locations ?? [],
+        titles: order.audience_titles ?? [],
+        employeeRange: order.audience_employee_range ?? '',
       },
     })
     safeLog('[funnel/provision] audience push enqueued', {
