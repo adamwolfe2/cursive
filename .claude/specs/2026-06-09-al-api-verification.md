@@ -132,3 +132,26 @@ on `total_records` from a tiny created-audience/records call, or (b) drop the
 preview-count guards and rely on the records-based guard everywhere, or (c) ask
 AL for a count endpoint. Touches the outbound service + its tests — not an
 overnight change. NOT demo-blocking (funnel is protected by the records guard).
+
+---
+
+## Iter 9 — visitor path validated against REAL pixel events (demo-critical, GREEN)
+
+Found live pixels with real events (f6909338: 291, 1271d50c: 258, 0b708923: 7).
+Pulled 25 real V3 events and validated the visitor→lead path against real data
+(previously only the audience path was validated against real records):
+
+- **Event shape matches our mapper:** each event has
+  `{ pixel_id, hem_sha256, event_timestamp, referrer_url, full_url, edid,
+  resolution }`. The `resolution` object is the full enriched profile
+  (FIRST_NAME, PERSONAL_VERIFIED_EMAILS, COMPANY_NAME/STATE/DOMAIN, …) — exactly
+  what `v4ResolutionToProfile` + `hasVerifiedEmail` read. Both V3 and V4 events
+  nest the profile under `resolution`, so the gate works on both.
+- **Verified-email coverage on real visitor events: 18/25 (72%)** — higher than
+  the audience's 48%. ANY-email: 25/25 (100%).
+- **=> the P0-2(a) visitor verified-gate surfaces ~72% of identified visitors as
+  deliverable leads. The "Live Visitor Leads" feed stays well-populated, NOT
+  empty.** This de-risks the demo's centerpiece.
+
+Verdict: visitor pipeline validated end-to-end against real event data. Shape +
+verified yield both healthy.
