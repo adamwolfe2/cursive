@@ -50,11 +50,29 @@ That single "Mark delivered" action is the only manual step, ever.
 
 ---
 
-## Quality guarantees (enforced in code)
-- **Audience leads:** only AL-verified-email records are inserted (`hasVerifiedEmail`).
-- **Visitor leads:** same verified-email bar on the V4/V3 pull.
-- ~48% of raw AL records carry a verified email (measured live) → build/expect
-  ~2x the desired delivered count. Quality over volume, by design.
+## Quality guarantees (enforced in code) — Quality Gate v2
+Single shared assessor `assessLeadQuality(record)` (src/lib/services/
+lead-quality.service.ts) runs on EVERY path that writes a lead:
+1. **Not a bad email** — requires an AL-verified email AND rejects an explicitly
+   bad `email_validation_status` (invalid / catch-all / spamtrap) when AL gives one.
+2. **Fully filled out** — verified-but-sparse records (missing name/company/title)
+   are topped-up via `/enrich` (`maybeEnrichTopUp`, fills missing fields only,
+   never overwrites, never blocks on failure). Kill-switch: env `LEAD_ENRICH_TOPUP=off`.
+3. Inserted leads are stamped `validated` + `verification_status='verified'`.
+
+Wired into: audience pull (provisionWorkspaceAudience), visitor pull
+(pixel-v4-sync), weekly refresh + DFY onboarding (bulkInsertALRecords). The
+real-time webhook→processor path already enforces an equal-or-stricter bar
+(isLeadWorthy verified + meetsQualityBar name/company/email/phone/location);
+any sparse visitor it drops is re-captured + topped-up by the 4-hourly pull.
+
+Yields measured live: ~48% of audience records, ~72% of visitor events carry a
+verified email → build/expect ~2x the desired delivered count. Quality over
+volume, by design.
+
+NOTE: AudienceLab has no public REST email-validation endpoint (the dashboard
+"Email Validation" is a batch UI tool). The gate uses AL's per-record verified
+flags + the working `/enrich` lookup, which is the reliable path.
 
 ## Known external dependency (AL-side)
 - `/pixels/{id}/v4` returns 500 (AL bug). Our **V3 fallback** (`/pixels/{id}`)
