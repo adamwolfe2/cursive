@@ -90,5 +90,29 @@ is acceptable, but the client experience must feel automatic and flawless).
 - **Iter 5 (2026-06-09):** **P0-3 SHIPPED** — delivery runbook written
   (2026-06-09-delivery-runbook.md): automated happy path + one-action manual
   fallback (/admin/funnel-orders "Mark delivered"), quality guarantees, AL
-  dependency notes, pre-demo checklist. Next: P0-2(b) verified-only visibility
-  gate; P1-1 ready-gate.
+  dependency notes, pre-demo checklist.
+- **Iter 6 (2026-06-09):** Real-record mapper validation (d1f46228) — GREEN.
+  Core fields (name/title/company/industry/domain) well-populated on real AL
+  records; minor non-critical gaps (PERSONAL_STATE empty → COMPANY_STATE
+  fallback; ALL_MOBILES/INDIVIDUAL_LINKEDIN absent on audience records). No
+  mapper fix needed.
+- **Iter 7 (2026-06-09):** /enrich (email-verify) validated live (2492e0db) —
+  endpoint healthy. Flagged: verifyEmail() under-reports verified emails via
+  re-enrich, but the funnel gate uses hasVerifiedEmail on the source record
+  (not re-enrich) so it's unaffected. /v4 still 500.
+
+## State of the goal (post iter 7)
+- ✅ A. Cohesive UI (dashboard, nav, settings, copy) — done bar P1-2 alignment polish.
+- ✅ B. Lead quality guaranteed — verified-only insert on BOTH audience + visitor
+  paths; validated safe (~48% yield) on real data.
+- ✅ C. Delivery runbook done; weekly refresh wired. Ready-gate (P1-1) still open.
+- ⏳ D. Demo pre-load — BLOCKED on Adam (test workspace email + site/ICP).
+
+## Remaining work + risk note
+- **P1-1 ready-gate** (Tier-1 auth/access) and **P0-2(b) visibility gate**
+  (shared leads query) carry real regression risk; best done with Adam awake,
+  not unsupervised overnight. P0-2(b) is also largely redundant now (insertion
+  is already verified-gated, so funnel workspaces hold no unverified leads).
+- **P1-2 alignment polish** is the safest remaining UI item.
+- Loop will favor safe, reversible increments overnight; surface the Tier-1
+  items for Adam rather than rushing them.
