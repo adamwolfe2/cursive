@@ -270,6 +270,18 @@ export function AppShell({ children, user, workspace, todayLeadCount, hotLeadCou
   const isAdmin = user?.role === 'admin' || user?.role === 'owner'
   const userPlan = user?.plan || 'free'
   const isPartner = user?.isPartner || false
+  // Funnel / managed buyers run on the visible_features allowlist. They bought
+  // a pixel + audience, not the lead marketplace, so we hide credit/quota
+  // chrome and reshape the Leads sub-nav to only what they bought.
+  const isManagedBuyer = !!(visibleFeatures && visibleFeatures.length > 0)
+
+  // The Leads sub-nav a funnel buyer should see: their identified website
+  // visitors and their delivered audience. No daily-marketplace "Today" or
+  // industry/geo "Preferences".
+  const MANAGED_LEADS_CHILDREN = [
+    { name: 'Website Visitors', href: '/website-visitors' },
+    { name: 'Your Audience', href: '/leads?tab=all' },
+  ]
 
   const filteredNavItems = navigationItems
     .filter((item) => {
@@ -294,6 +306,10 @@ export function AppShell({ children, user, workspace, todayLeadCount, hotLeadCou
       return true
     })
     .map((item) => {
+      // Funnel buyers: reshape Leads → Website Visitors + Your Audience.
+      if (isManagedBuyer && item.href === '/leads') {
+        return { ...item, children: MANAGED_LEADS_CHILDREN }
+      }
       if (item.href === '/dashboard' && todayLeadCount && todayLeadCount > 0) {
         return { ...item, badge: todayLeadCount }
       }
@@ -323,10 +339,10 @@ export function AppShell({ children, user, workspace, todayLeadCount, hotLeadCou
         <Header
           user={user}
           workspace={workspace}
-          hideCredits={!!(visibleFeatures && visibleFeatures.length > 0)}
+          hideCredits={isManagedBuyer}
           onMenuClick={() => setSidebarOpen(!sidebarOpen)}
         />
-        {user && typeof user.creditsRemaining === 'number' && user.creditsRemaining <= 3 && !creditsBannerDismissed && CREDITS_BANNER_PATHS.some(p => pathname.startsWith(p)) && (
+        {!isManagedBuyer && user && typeof user.creditsRemaining === 'number' && user.creditsRemaining <= 3 && !creditsBannerDismissed && CREDITS_BANNER_PATHS.some(p => pathname.startsWith(p)) && (
           <div className={cn(
             'flex items-center justify-between gap-4 px-4 py-1.5 sm:px-6 lg:px-8 text-xs',
             user.creditsRemaining === 0

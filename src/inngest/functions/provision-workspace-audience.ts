@@ -367,6 +367,37 @@ export const provisionWorkspaceAudience = inngest.createFunction(
       `${LOG_PREFIX} Workspace ${workspace_id}: ${insertResult.inserted} leads inserted, ${insertResult.skipped} skipped`
     )
 
+    // ─── Step 3a: Register for the WEEKLY refresh ───────────────────
+    // Without an al_audiences row (refresh_enabled=true), the Monday refresh
+    // cron never sees this audience, so the buyer would get leads ONCE and
+    // never again — silently breaking the "refreshed weekly" promise. Store
+    // the RAW ICP filters so the cron rebuilds with the same targeting.
+    if (insertResult.inserted > 0 && audienceResult.audienceId) {
+      await step.run('register-weekly-refresh', async () => {
+        const supabase = createAdminClient()
+        const { error } = await supabase
+          .from('al_audiences')
+          .upsert(
+            {
+              workspace_id,
+              al_audience_id: audienceResult.audienceId,
+              name: `cursive-funnel-${workspace_id.slice(0, 8)}`,
+              source: 'funnel_order',
+              filters: { industries: industriesIn, states: statesIn },
+              leads_imported: insertResult.inserted,
+              refresh_enabled: true,
+              last_refreshed_at: new Date().toISOString(),
+            },
+            { onConflict: 'workspace_id,al_audience_id' }
+          )
+        if (error) {
+          safeError(`${LOG_PREFIX} al_audiences registration failed (weekly refresh won't run):`, error)
+        } else {
+          safeLog(`${LOG_PREFIX} Registered workspace ${workspace_id} for weekly audience refresh`)
+        }
+      })
+    }
+
     // ─── Step 3b: Affiliate activation (idempotent, non-fatal) ───────
     if (insertResult.inserted > 0) {
       await step.run('affiliate-activation', async () => {

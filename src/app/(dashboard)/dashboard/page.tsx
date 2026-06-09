@@ -34,6 +34,7 @@ import { TrialCountdown } from '@/components/dashboard/TrialCountdown'
 import { FirstEnrichmentModal } from '@/components/onboarding/FirstEnrichmentModal'
 import { PixelTroubleshoot } from './PixelTroubleshoot'
 import { AudienceBuildingBanner } from './AudienceBuildingBanner'
+import { FunnelBuyerDashboard } from './FunnelBuyerDashboard'
 import { ProvisioningWidget } from '@/components/dashboard/ProvisioningWidget'
 import { FreePlanBanner } from '@/components/dashboard/FreePlanBanner'
 import { LiveLeadsFeed } from '@/components/leads/live-leads-feed'
@@ -807,6 +808,33 @@ export default async function DashboardPage({
   const meetingsThisMonth = meetingsThisMonthResult.count ?? 0
   const meetingsAllTime   = meetingsAllTimeResult.count ?? 0
   const dailyLimit       = userProfile.daily_lead_limit ?? 10
+
+  // Funnel buyers get a dedicated, minimal home: only what they bought
+  // (identified visitors + their weekly audience). This early-return bypasses
+  // the entire lead-marketplace dashboard — daily-lead quotas, enrichment
+  // credits, targeting prompts, CRM upsells, stacked onboarding checklists —
+  // none of which apply to the funnel offer. A workspace is a funnel buyer iff
+  // it has a funnel_orders row (admin / marketplace workspaces have none and
+  // keep the existing dashboard untouched).
+  if (funnelOrderRow) {
+    return (
+      <FunnelBuyerDashboard
+        firstName={userProfile.full_name?.split(' ')[0] || 'there'}
+        workspaceName={userProfile.workspaces?.name ?? null}
+        workspaceId={workspaceId}
+        hasPixel={hasPixel}
+        hasVerifiedPixel={hasVerifiedPixel}
+        isPixelExpired={isPixelExpired}
+        isActiveTrial={isActiveTrial}
+        visitorCount={visitorCountTotal ?? pixelEventCount}
+        totalLeads={totalCount}
+        meetingsThisMonth={meetingsThisMonth}
+        meetingsAllTime={meetingsAllTime}
+        audienceBuilding={audienceBuilding}
+        includesAudience={funnelOrderRow.offer_slug !== 'pixel_97'}
+      />
+    )
+  }
 
   const outboundUpgradeTiers = ['outbound', 'pipeline', 'venture_studio']
   const showOutboundUpsell   = pixelEventCount >= 10 && !outboundUpgradeTiers.includes(userProfile.plan ?? '')
