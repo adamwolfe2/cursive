@@ -81,6 +81,13 @@ export interface InsertLeadOptions {
   extraTags?: string[]
   /** Industry context for fallback fields */
   industries?: string[]
+  /**
+   * Stamp the lead as email-verified (validated=true, verification_status=
+   * 'verified'). Callers pass this ONLY when they've already confirmed the
+   * record carries an AL-verified email (see hasVerifiedEmail). Drives the
+   * "never deliver an unverified lead" guarantee.
+   */
+  markVerified?: boolean
 }
 
 export interface InsertLeadResult {
@@ -98,7 +105,7 @@ export async function insertLeadFromALRecord(
   record: ALEnrichedProfile,
   options: InsertLeadOptions
 ): Promise<InsertLeadResult> {
-  const { workspaceId, assignedUserId, sourceTag, extraTags = [], industries = [] } = options
+  const { workspaceId, assignedUserId, sourceTag, extraTags = [], industries = [], markVerified = false } = options
 
   const qualityScore = scoreALProfile(record)
   if (qualityScore < MIN_QUALITY_SCORE) {
@@ -183,7 +190,9 @@ export async function insertLeadFromALRecord(
       freshness_score: 100,
       has_email: true,
       has_phone: phones.length > 0,
-      validated: false,
+      validated: markVerified,
+      verification_status: markVerified ? 'verified' : 'pending',
+      verified_at: markVerified ? new Date().toISOString() : null,
       assigned_user_id: assignedUserId || null,
       enrichment_method: 'audiencelab_pull',
       tags: ['audiencelab', sourceTag, ...extraTags, ...industries.map(i => i.toLowerCase())],

@@ -4,6 +4,7 @@ import {
   matchesWorkspaceICP,
   v4ResolutionToProfile,
   pickBestEmail,
+  hasVerifiedEmail,
   AUDIENCE_POLL_DELAYS_SECONDS,
 } from './provision-helpers'
 import type { ALEnrichedProfile, ALPixelResolutionV4 } from './api-client'
@@ -245,5 +246,31 @@ describe('pickBestEmail', () => {
 
   it('returns null when no email present', () => {
     expect(pickBestEmail({})).toBeNull()
+  })
+})
+
+describe('hasVerifiedEmail', () => {
+  it('is true for a business-verified email (string)', () => {
+    expect(hasVerifiedEmail({ BUSINESS_VERIFIED_EMAILS: 'biz@acme.com' })).toBe(true)
+  })
+
+  it('is true for a personal-verified email (array)', () => {
+    expect(hasVerifiedEmail({ PERSONAL_VERIFIED_EMAILS: ['jane@gmail.com'] } as unknown as ALEnrichedProfile)).toBe(true)
+  })
+
+  it('is FALSE when only unverified emails exist', () => {
+    expect(
+      hasVerifiedEmail({ PERSONAL_EMAILS: 'jane@gmail.com', BUSINESS_EMAIL: 'biz@acme.com' })
+    ).toBe(false)
+  })
+
+  it('is false for empty / missing', () => {
+    expect(hasVerifiedEmail({})).toBe(false)
+    expect(hasVerifiedEmail({ BUSINESS_VERIFIED_EMAILS: '' })).toBe(false)
+    expect(hasVerifiedEmail({ PERSONAL_VERIFIED_EMAILS: [] } as unknown as ALEnrichedProfile)).toBe(false)
+  })
+
+  it('ignores non-email junk in the verified field', () => {
+    expect(hasVerifiedEmail({ BUSINESS_VERIFIED_EMAILS: 'not-an-email' })).toBe(false)
   })
 })

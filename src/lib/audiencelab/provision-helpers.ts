@@ -144,6 +144,21 @@ function firstCsvValue(val: unknown): string | undefined {
  * canonical priority used inside `insertLeadFromALRecord` so callers
  * can early-skip records the inserter would also discard.
  */
+/**
+ * True when the record carries an AudienceLab-VERIFIED email
+ * (BUSINESS_VERIFIED_EMAILS or PERSONAL_VERIFIED_EMAILS). The quality gate for
+ * managed/funnel delivery: we only hand a client a lead whose email AL has
+ * already validated, so we never deliver a bounced or junk contact. Deterministic
+ * (reads AL's own verified flags) so it does not depend on a flaky live verify call.
+ */
+export function hasVerifiedEmail(record: ALEnrichedProfile): boolean {
+  const present = (v: unknown): boolean => {
+    if (Array.isArray(v)) return v.some((e) => typeof e === 'string' && e.includes('@'))
+    return typeof v === 'string' && v.includes('@')
+  }
+  return present(record.BUSINESS_VERIFIED_EMAILS) || present(record.PERSONAL_VERIFIED_EMAILS)
+}
+
 export function pickBestEmail(record: ALEnrichedProfile): string | null {
   const bve = record.BUSINESS_VERIFIED_EMAILS
   const pve = record.PERSONAL_VERIFIED_EMAILS

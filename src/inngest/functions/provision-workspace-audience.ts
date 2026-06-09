@@ -51,6 +51,7 @@ import {
   AUDIENCE_POLL_DELAYS_SECONDS,
   classifyPollResult,
   matchesWorkspaceICP,
+  hasVerifiedEmail,
 } from '@/lib/audiencelab/provision-helpers'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
@@ -308,14 +309,24 @@ export const provisionWorkspaceAudience = inngest.createFunction(
             continue
           }
 
+          // QUALITY GATE: never deliver a client an unverified contact. Only
+          // records carrying an AL-verified email pass; the rest are dropped.
+          if (!hasVerifiedEmail(record)) {
+            skipped++
+            continue
+          }
+
           // Hand off to the shared inserter — single source of truth for
-          // quality scoring, dedupe, and the lead row shape.
+          // quality scoring, dedupe, and the lead row shape. markVerified
+          // stamps the lead validated + verification_status='verified' since
+          // we just confirmed the email is AL-verified.
           const result = await insertLeadFromALRecord(record, {
             workspaceId: workspace_id,
             assignedUserId: user_id,
             sourceTag: 'audiencelab_pull',
             extraTags: ['signup-provision'],
             industries: industriesIn,
+            markVerified: true,
           })
 
           if (result.outcome !== 'inserted') {
