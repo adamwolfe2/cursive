@@ -79,4 +79,11 @@ is acceptable, but the client experience must feel automatic and flawless).
   hasVerifiedEmail helper + 5 tests.
   - **P0-2 remaining:** (a) same verified gate on the pixel→visitor lead path;
     (b) gate dashboard/leads VISIBILITY to verified leads only; (c) optional
-    live email-verify API enrich pass. Next iteration picks these up.
+    live email-verify API enrich pass.
+- **Iter 3 (2026-06-09):** Live AL API verification report (20f6c931) —
+  audience API healthy, verified gate safe (48% yield), V4 still 500, fixed
+  list-endpoint Data/data casing bug. See 2026-06-09-al-api-verification.md.
+- **Iter 4 (2026-06-09):** **P0-2 (a) SHIPPED** (32f78adc) — verified-email
+  gate on the pixel→visitor lead path (markVerified). Remaining: (b) visibility
+  gate to verified-only in the funnel leads view; (c) live email-verify pass;
+  P0-3 runbook; P1-1 ready-gate.
