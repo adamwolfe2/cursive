@@ -73,13 +73,20 @@ export const provisionWorkspaceAudience = inngest.createFunction(
   },
   { event: 'audiencelab/provision-workspace-audience' },
   async ({ event, step }) => {
-    const { workspace_id, user_id, industries, states, titles, employeeRange } = event.data as {
+    const { workspace_id, user_id, industries, states, titles, employeeRange, audienceId: providedAudienceId } = event.data as {
       workspace_id: string
       user_id: string
       industries: string[]
       states: string[]
       titles?: string[]
       employeeRange?: string
+      /**
+       * When set (admin pasted a Studio-built audience ID), skip create/preview
+       * and pull records straight from this targeted audience. This is the
+       * quality path: AL's /audiences filter API does not target, so a human
+       * builds the real audience in Studio and we ingest it by ID.
+       */
+      audienceId?: string
     }
 
     if (!workspace_id || !user_id) {
@@ -118,6 +125,13 @@ export const provisionWorkspaceAudience = inngest.createFunction(
         titles: titlesIn.length > 0 ? titlesIn : undefined,
         employeeRange: employeeRangeIn || undefined,
       })
+
+      // Admin pasted a Studio-built audience ID — skip create/preview and pull
+      // straight from that targeted audience (the quality path).
+      if (providedAudienceId) {
+        safeLog(`${LOG_PREFIX} Using admin-provided audience ${providedAudienceId} for workspace ${workspace_id}`)
+        return { audienceId: providedAudienceId, segmentFilters }
+      }
 
       safeLog(
         `${LOG_PREFIX} Workspace ${workspace_id}: industries=${industriesIn.join(',') || 'all'} states=${statesIn.join(',') || 'all'}`
@@ -309,9 +323,11 @@ export const provisionWorkspaceAudience = inngest.createFunction(
         for (const record of records) {
           if (inserted >= MAX_INITIAL_LEADS) break
 
-          // Workspace-side ICP post-filter — defense in depth even when
-          // AL respected the segment filters server-side.
-          if (!matchesWorkspaceICP(record, industriesIn, statesIn)) {
+          // Workspace-side ICP post-filter — defense in depth for the auto-build
+          // path (AL's /audiences filter doesn't target, so we filter here).
+          // Skip it for an admin-provided audience: it was built targeted in
+          // Studio, so trust its targeting and don't re-drop on industry/state.
+          if (!providedAudienceId && !matchesWorkspaceICP(record, industriesIn, statesIn)) {
             skipped++
             continue
           }

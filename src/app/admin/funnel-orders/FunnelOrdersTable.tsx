@@ -254,6 +254,78 @@ function DeliverActionInline({ orderId }: { orderId: string }) {
   )
 }
 
+// ─── Sync a Studio-built audience straight into the buyer's dashboard ─────
+
+function SyncAudienceInline({ orderId }: { orderId: string }) {
+  const [audienceId, setAudienceId] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [done, setDone] = useState(false)
+
+  async function handleSync() {
+    setSubmitting(true)
+    setError(null)
+    try {
+      const res = await fetch(`/api/admin/funnel-orders/${orderId}/sync-audience`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ audience_id: audienceId.trim() }),
+      })
+      const json = (await res.json().catch(() => ({}))) as { error?: string }
+      if (!res.ok) throw new Error(json.error || `Failed (HTTP ${res.status})`)
+      setDone(true)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not sync.')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  if (done) {
+    return (
+      <p className="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-700">
+        Sync started. Verified leads will land in the buyer&apos;s dashboard shortly.
+      </p>
+    )
+  }
+
+  return (
+    <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-4">
+      <p className="mb-1 text-sm font-semibold text-gray-900">
+        Sync the built audience to their dashboard
+      </p>
+      <p className="mb-3 text-xs text-gray-600">
+        Paste the AudienceLab audience ID you built in the copilot. We validate it,
+        pull verified leads (auto-enriched), and sync them to the buyer&apos;s dashboard
+        plus the weekly refresh. No Google Sheet needed.
+      </p>
+      <div className="flex flex-wrap items-center gap-2">
+        <input
+          type="text"
+          value={audienceId}
+          onChange={(e) => setAudienceId(e.target.value)}
+          placeholder="audience ID (UUID from the builder)"
+          disabled={submitting}
+          className="w-80 rounded-md border border-gray-300 px-2 py-1 text-xs"
+        />
+        <button
+          type="button"
+          onClick={handleSync}
+          disabled={submitting || audienceId.trim().length < 8}
+          className="rounded-md bg-emerald-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-emerald-700 disabled:opacity-50"
+        >
+          {submitting ? 'Syncing…' : 'Sync to dashboard'}
+        </button>
+      </div>
+      {error && (
+        <p className="mt-2 rounded-md border border-red-200 bg-red-50 px-2 py-1 text-[11px] text-red-600">
+          {error}
+        </p>
+      )}
+    </div>
+  )
+}
+
 // ─── ICP detail panel — raw input + audience-builder CTA ──────────────────
 
 function ICPDetailPanel({ order }: { order: FunnelOrder }) {
@@ -306,6 +378,22 @@ function ICPDetailPanel({ order }: { order: FunnelOrder }) {
         </a>
       </div>
 
+      {/* Sync the built audience straight to the buyer's dashboard (no Sheet). */}
+      <SyncAudienceInline orderId={order.id} />
+
+      {/* Workspace ID for reference (the buyer's dashboard target). */}
+      {order.workspace_id && (
+        <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-white px-3 py-2">
+          <span className="text-[10px] font-bold uppercase tracking-wide text-gray-500">
+            Workspace ID
+          </span>
+          <div className="flex items-center gap-2">
+            <code className="text-[11px] text-gray-700">{order.workspace_id}</code>
+            <CopyButton value={order.workspace_id} label="Copy" confirmedLabel="Copied" />
+          </div>
+        </div>
+      )}
+
       {/* Raw input from buyer — kept visible for reference + as a fallback
           if the copilot needs context that didn't fit in the prompt. */}
       <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
@@ -331,9 +419,11 @@ function ICPDetailPanel({ order }: { order: FunnelOrder }) {
 
       <p className="text-[11px] text-gray-500">
         Workflow: click <span className="font-medium">Build in Audience Builder</span> →
-        copilot returns verified segments → export to a Google Sheet →
-        drop the Sheet URL into the &quot;Mark delivered&quot; field on
-        the right.
+        copilot returns verified segments → copy the audience ID →
+        paste it into <span className="font-medium">Sync to dashboard</span> above.
+        Leads land in the buyer&apos;s dashboard automatically (verified +
+        enriched), and the audience is registered for the weekly refresh. (The
+        &quot;Mark delivered&quot; + Sheet path on the right remains as a fallback.)
       </p>
     </div>
   )

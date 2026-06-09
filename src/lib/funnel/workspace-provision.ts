@@ -255,7 +255,13 @@ export async function provisionFunnelWorkspace(
  * so a failed push never blocks the admin's "mark delivered" action.
  */
 export async function pushFunnelAudienceToWorkspace(
-  order: FunnelOrder
+  order: FunnelOrder,
+  opts: {
+    /** A Studio-built audience ID to pull from (the quality path). */
+    audienceId?: string
+    /** Bypass the audience_pushed_at idempotency guard (admin re-sync). */
+    force?: boolean
+  } = {}
 ): Promise<boolean> {
   if (!order.workspace_id) {
     safeLog('[funnel/provision] audience push skipped — no workspace', {
@@ -263,7 +269,7 @@ export async function pushFunnelAudienceToWorkspace(
     })
     return false
   }
-  if (order.audience_pushed_at) return false
+  if (!opts.force && order.audience_pushed_at) return false
 
   const admin = createAdminClient()
 
@@ -284,9 +290,12 @@ export async function pushFunnelAudienceToWorkspace(
     return false
   }
 
-  // Claim the push first (idempotent) so a retry/double-deliver can't enqueue twice.
-  const claimed = await markAudiencePushed(order.id)
-  if (!claimed) return false
+  // Claim the push first (idempotent) so a retry/double-deliver can't enqueue
+  // twice. An admin force-sync (a deliberate, real Studio audience) bypasses it.
+  if (!opts.force) {
+    const claimed = await markAudiencePushed(order.id)
+    if (!claimed) return false
+  }
 
   try {
     await inngest.send({
@@ -298,6 +307,7 @@ export async function pushFunnelAudienceToWorkspace(
         states: order.audience_locations ?? [],
         titles: order.audience_titles ?? [],
         employeeRange: order.audience_employee_range ?? '',
+        ...(opts.audienceId ? { audienceId: opts.audienceId } : {}),
       },
     })
     safeLog('[funnel/provision] audience push enqueued', {

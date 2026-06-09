@@ -679,6 +679,21 @@ export interface OrderWithToken {
 
 export type TokenLookupError = 'not_found' | 'revoked' | 'expired'
 
+/** Fetch a single funnel order by its id (admin surfaces). */
+export async function getOrderById(id: string): Promise<FunnelOrder | null> {
+  const supabase = createAdminClient()
+  const { data, error } = await supabase
+    .from('funnel_orders')
+    .select('*')
+    .eq('id', id)
+    .maybeSingle()
+  if (error) {
+    safeError('[funnel/order] getOrderById failed:', error)
+    return null
+  }
+  return (data as FunnelOrder | null) ?? null
+}
+
 export async function getOrderByToken(
   token: string
 ): Promise<
