@@ -72,7 +72,11 @@ is acceptable, but the client experience must feel automatic and flawless).
   tabs, weekly audience-refresh gap closed (al_audiences registration), V4 pull
   pagination + pixel_last_event_at fixes.
 - **Iter 1 (2026-06-08):** **P0-1 SHIPPED** (00969eae) — purged marketplace
-  copy from the buyer leads view: funnel-aware empty states, hid the leads/day
-  plan stat, free-plan upgrade banner, and the red "no enrichment credits"
-  alarm for managed buyers. Next: P0-2 (lead-quality pipeline — enrich +
-  email-verify before a lead is deliverable/visible).
+  copy from the buyer leads view.
+- **Iter 2 (2026-06-09):** **P0-2 (audience half) SHIPPED** (7b009bf0) —
+  verified-only audience delivery. Funnel audience pull skips records without
+  an AL-verified email and stamps inserted leads validated + verified. Pure
+  hasVerifiedEmail helper + 5 tests.
+  - **P0-2 remaining:** (a) same verified gate on the pixel→visitor lead path;
+    (b) gate dashboard/leads VISIBILITY to verified leads only; (c) optional
+    live email-verify API enrich pass. Next iteration picks these up.
