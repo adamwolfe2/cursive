@@ -81,3 +81,25 @@ Non-critical gaps (no code fix needed):
 
 Verdict: the automated audience pipeline will deliver quality, fully-populated,
 verified leads. Contract confirmed; no mapper changes required.
+
+---
+
+## Iter 7 — /enrich (email-verify) path validated live + v4 re-check
+
+- ✅ **POST /enrich works**: `{filter:{email}, is_or_match:false}` → 200,
+  `{request_id, timestamp, found, result[]}`. Accepts the `email` filter.
+  The email-verification dependency is live.
+- ⚠️ **verifyEmail() under-reports (NOT funnel-critical):** for an email taken
+  directly from an audience record's BUSINESS_VERIFIED_EMAILS, re-enriching by
+  that email returns a profile whose verified-email fields do NOT echo the
+  queried address → verifyEmail() returns `catch_all` instead of `valid`.
+  Likely the enrich-by-email lookup returns a profile keyed differently than
+  the by-audience record. IMPACT: none on the funnel quality gate — the gate
+  uses `hasVerifiedEmail(record)` on the ORIGINAL audience/pixel record (the
+  field AL already marked verified), and never re-enriches. The quirk only
+  affects the separate marketplace email-verification.service path. Flagged for
+  a later careful look; no funnel fix needed.
+- 🔴 **/pixels/{id}/v4 still 500** (re-checked). V3 fallback stays essential.
+
+Takeaway: the funnel verified-email guarantee is sound because it's
+deterministic on the source record, not dependent on the flaky re-enrich call.
