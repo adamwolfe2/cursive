@@ -26,6 +26,8 @@ export type DashboardData = {
   } | null
   creditBalance: number
   todayLeadCount: number
+  /** Funnel / managed buyer (workspace has a visible_features allowlist). */
+  managed?: boolean
 }
 
 const DashboardContext = createContext<DashboardData | null>(null)

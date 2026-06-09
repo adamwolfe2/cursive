@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { PageContainer, PageHeader } from '@/components/layout'
+import { useDashboard } from '@/lib/contexts/dashboard-context'
 
 const settingsTabs = [
   { label: 'Profile', href: '/settings' },
@@ -19,12 +20,26 @@ const settingsTabs = [
   { label: 'Webhooks', href: '/settings/webhooks' },
 ]
 
+// A funnel / managed buyer only needs the essentials. Hides the agency /
+// marketplace surfaces (client profile, branding, email accounts, integrations,
+// API keys, webhooks, team) that bloat their settings.
+const MANAGED_TAB_HREFS = new Set([
+  '/settings',
+  '/settings/pixel',
+  '/settings/billing',
+  '/settings/notifications',
+])
+
 export function SettingsLayoutClient({
   children,
 }: {
   children: React.ReactNode
 }) {
   const pathname = usePathname()
+  const { managed } = useDashboard()
+  const tabs = managed
+    ? settingsTabs.filter((t) => MANAGED_TAB_HREFS.has(t.href))
+    : settingsTabs
 
   return (
     <PageContainer>
@@ -40,7 +55,7 @@ export function SettingsLayoutClient({
       {/* Navigation Tabs */}
       <div className="mb-6 border-b border-border -mx-4 px-4 md:mx-0 md:px-0">
         <nav className="-mb-px flex space-x-1 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-          {settingsTabs.map((tab) => {
+          {tabs.map((tab) => {
             const isActive = pathname === tab.href
             return (
               <Link

@@ -1,8 +1,7 @@
+import type { ReactNode } from 'react'
 import Link from 'next/link'
 import { ArrowRight, Eye, Users, CalendarCheck } from 'lucide-react'
 import { LiveLeadsFeed } from '@/components/leads/live-leads-feed'
-import { AudienceBuildingBanner } from './AudienceBuildingBanner'
-import { PixelTroubleshoot } from './PixelTroubleshoot'
 
 /**
  * Funnel-buyer dashboard.
@@ -12,6 +11,10 @@ import { PixelTroubleshoot } from './PixelTroubleshoot'
  * their site, the leads that produced, and the audience status. None of the
  * generic lead-marketplace chrome (enrichment credits, daily-lead quotas,
  * targeting prompts, CRM upsells, stacked onboarding checklists) appears here.
+ *
+ * Layout order is deliberate: metrics first (the buyer's value at a glance),
+ * then a single calm status line, then the live feed. Restrained palette,
+ * no alarm colors.
  */
 
 interface Props {
@@ -40,6 +43,40 @@ function statusLine(p: Props): string {
   return 'Your pixel is installed. The moment a visitor is identified, they appear below.'
 }
 
+function Metric({
+  icon,
+  label,
+  value,
+  sub,
+  href,
+}: {
+  icon: ReactNode
+  label: string
+  value: number
+  sub: string
+  href?: string
+}) {
+  const inner = (
+    <div className="p-6">
+      <div className="flex items-center gap-1.5 text-muted-foreground">
+        {icon}
+        <span className="text-sm">{label}</span>
+      </div>
+      <div className="mt-2 text-4xl font-semibold tracking-tight text-foreground tabular-nums">
+        {value.toLocaleString()}
+      </div>
+      <p className="mt-1 text-xs text-muted-foreground">{sub}</p>
+    </div>
+  )
+  return href ? (
+    <Link href={href} className="block transition-colors hover:bg-muted/40">
+      {inner}
+    </Link>
+  ) : (
+    inner
+  )
+}
+
 export function FunnelBuyerDashboard(props: Props) {
   const {
     firstName,
@@ -55,15 +92,7 @@ export function FunnelBuyerDashboard(props: Props) {
     includesAudience,
   } = props
 
-  // One honest setup line, derived from real state. Not three checklists.
-  const steps = [
-    { label: 'Account', done: true },
-    { label: 'Pixel installed', done: hasPixel },
-    { label: 'First visitor identified', done: hasVerifiedPixel },
-    ...(includesAudience ? [{ label: 'Audience delivered', done: !audienceBuilding }] : []),
-  ]
-  const doneCount = steps.filter((s) => s.done).length
-  const allDone = doneCount === steps.length
+  const pixelWaiting = hasPixel && !hasVerifiedPixel
 
   return (
     <div className="mx-auto max-w-5xl px-6 py-10">
@@ -91,94 +120,65 @@ export function FunnelBuyerDashboard(props: Props) {
         </Link>
       </header>
 
-      {/* Setup progress — a single quiet line, not a wall of checklists */}
-      {!allDone && (
-        <div className="mt-8 rounded-xl border border-border bg-card px-5 py-4">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-foreground">Getting set up</span>
-            <span className="text-xs text-muted-foreground">
-              {doneCount} of {steps.length}
-            </span>
-          </div>
-          <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-2">
-            {steps.map((s, i) => (
-              <div key={s.label} className="flex items-center gap-2">
-                <span
-                  className={`flex h-5 w-5 items-center justify-center rounded-full text-[11px] font-semibold ${
-                    s.done
-                      ? 'bg-primary/10 text-primary'
-                      : 'bg-muted text-muted-foreground'
-                  }`}
-                >
-                  {s.done ? '✓' : i + 1}
-                </span>
-                <span
-                  className={`text-sm ${s.done ? 'text-muted-foreground line-through' : 'text-foreground'}`}
-                >
-                  {s.label}
-                </span>
-                {i < steps.length - 1 && (
-                  <span className="mx-1 h-px w-5 bg-border" aria-hidden="true" />
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Audience build status — calm, only while building */}
-      {includesAudience && audienceBuilding && (
-        <div className="mt-6">
-          <AudienceBuildingBanner />
-        </div>
-      )}
-
-      {/* Pixel installed but not firing — the actionable troubleshoot card */}
-      {hasPixel && !hasVerifiedPixel && (
-        <div className="mt-6">
-          <PixelTroubleshoot />
-        </div>
-      )}
-
-      {/* Metrics — one instrument panel, not a grid of identical hero cards */}
-      <div className="mt-8 grid grid-cols-1 divide-y divide-border rounded-xl border border-border bg-card sm:grid-cols-3 sm:divide-x sm:divide-y-0">
-        <Link href="/website-visitors" className="group p-5 transition-colors hover:bg-muted/40">
-          <div className="flex items-center gap-1.5 text-muted-foreground">
-            <Eye className="h-4 w-4" />
-            <span className="text-sm">Visitors identified</span>
-          </div>
-          <div className="mt-2 text-4xl font-semibold tracking-tight text-foreground">
-            {visitorCount.toLocaleString()}
-          </div>
-          <p className="mt-1 text-xs text-muted-foreground">
-            {hasVerifiedPixel ? 'From your website pixel' : 'Waiting for the first visitor'}
-          </p>
-        </Link>
-
-        <Link href="/leads" className="group p-5 transition-colors hover:bg-muted/40">
-          <div className="flex items-center gap-1.5 text-muted-foreground">
-            <Users className="h-4 w-4" />
-            <span className="text-sm">Total leads</span>
-          </div>
-          <div className="mt-2 text-4xl font-semibold tracking-tight text-foreground">
-            {totalLeads.toLocaleString()}
-          </div>
-          <p className="mt-1 text-xs text-muted-foreground">In your workspace</p>
-        </Link>
-
-        <div className="p-5">
-          <div className="flex items-center gap-1.5 text-muted-foreground">
-            <CalendarCheck className="h-4 w-4" />
-            <span className="text-sm">Meetings booked</span>
-          </div>
-          <div className="mt-2 text-4xl font-semibold tracking-tight text-foreground">
-            {meetingsThisMonth.toLocaleString()}
-          </div>
-          <p className="mt-1 text-xs text-muted-foreground">
-            {meetingsAllTime.toLocaleString()} all time
-          </p>
-        </div>
+      {/* Metrics — first, the value at a glance */}
+      <div className="mt-8 grid grid-cols-1 divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+        <Metric
+          icon={<Eye className="h-4 w-4" />}
+          label="Visitors identified"
+          value={visitorCount}
+          sub={hasVerifiedPixel ? 'From your website pixel' : 'Waiting for the first visitor'}
+          href="/website-visitors"
+        />
+        <Metric
+          icon={<Users className="h-4 w-4" />}
+          label="Total leads"
+          value={totalLeads}
+          sub="In your workspace"
+          href="/leads"
+        />
+        <Metric
+          icon={<CalendarCheck className="h-4 w-4" />}
+          label="Meetings booked"
+          value={meetingsThisMonth}
+          sub={`${meetingsAllTime.toLocaleString()} all time`}
+        />
       </div>
+
+      {/* One calm status line — audience building, or pixel waiting. Not both
+          shouted at once, no alarm color. */}
+      {includesAudience && audienceBuilding && (
+        <div className="mt-6 flex items-start gap-3 rounded-2xl border border-border bg-primary/[0.04] px-5 py-4">
+          <span className="mt-0.5 h-4 w-4 shrink-0 animate-spin rounded-full border-2 border-primary/40 border-t-transparent" />
+          <div className="min-w-0">
+            <p className="text-sm font-medium text-foreground">Your audience is being built</p>
+            <p className="mt-0.5 text-sm leading-relaxed text-muted-foreground">
+              We are assembling a verified audience around your ideal customer and routing it
+              here. Your identified website visitors start appearing the moment your pixel fires.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {pixelWaiting && !audienceBuilding && (
+        <div className="mt-6 rounded-2xl border border-border bg-card px-5 py-4">
+          <p className="text-sm font-medium text-foreground">Waiting for your first visitor</p>
+          <p className="mt-0.5 text-sm leading-relaxed text-muted-foreground">
+            Your pixel is installed. Identification needs real traffic. Once someone lands on your
+            site, their name appears below within minutes.
+          </p>
+          <div className="mt-3 flex flex-wrap items-center gap-4 text-sm">
+            <Link href="/settings/pixel" className="font-medium text-primary hover:underline">
+              View snippet &amp; install help
+            </Link>
+            <a
+              href="mailto:hello@meetcursive.com?subject=Pixel%20not%20firing"
+              className="text-muted-foreground hover:text-foreground"
+            >
+              Email us
+            </a>
+          </div>
+        </div>
+      )}
 
       {/* The proof: live identified visitors streaming in */}
       {hasPixel && (

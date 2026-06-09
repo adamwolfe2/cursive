@@ -285,6 +285,7 @@ export default async function DashboardLayout({
                 : null,
               creditBalance,
               todayLeadCount,
+              managed: !!(workspace?.visible_features && workspace.visible_features.length > 0),
             }}
           >
             <Suspense fallback={null}>
