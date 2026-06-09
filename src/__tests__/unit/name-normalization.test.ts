@@ -179,10 +179,14 @@ describe('isLeadWorthy', () => {
     expect(isLeadWorthy(rest)).toBe(false)
   })
 
-  it('returns false when deliverabilityScore is below threshold', () => {
+  it('stays worthy below the old score threshold (verified email is trusted)', () => {
     expect(
       isLeadWorthy({ ...VALID_PARAMS, deliverabilityScore: LEAD_CREATION_SCORE_THRESHOLD - 1 })
-    ).toBe(false)
+    ).toBe(true)
+  })
+
+  it('returns false only when the score is 0 (junk / invalid)', () => {
+    expect(isLeadWorthy({ ...VALID_PARAMS, deliverabilityScore: 0 })).toBe(false)
   })
 
   it('returns true when deliverabilityScore equals the threshold exactly', () => {

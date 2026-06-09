@@ -212,10 +212,24 @@ describe('isLeadWorthy', () => {
     })).toBe(false)
   })
 
-  it('should be false for score below threshold', () => {
+  it('is worthy for a verified + named lead even below the old 60 score gate', () => {
+    // A verified email is AL's quality guarantee; the deliverability score is
+    // tuned for unverified emails and wrongly dropped real pixel visitors.
+    // Completeness is enforced separately by meetsQualityBar.
     expect(isLeadWorthy({
       eventType: 'page_view',
       deliverabilityScore: 59,
+      hasVerifiedEmail: true,
+      hasBusinessEmail: true,
+      hasPhone: true,
+      hasName: true,
+    })).toBe(true)
+  })
+
+  it('is NOT worthy when the score is 0 (junk / invalid email)', () => {
+    expect(isLeadWorthy({
+      eventType: 'page_view',
+      deliverabilityScore: 0,
       hasVerifiedEmail: true,
       hasBusinessEmail: true,
       hasPhone: true,

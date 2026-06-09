@@ -121,7 +121,7 @@ describe('isLeadWorthy', () => {
       ).toBe(true)
     })
 
-    it('should return false when score < 60 even with verified email and name', () => {
+    it('is worthy below the old 60 gate when verified + named (real pixel visitors)', () => {
       expect(
         isLeadWorthy({
           eventType: 'page_view',
@@ -131,7 +131,7 @@ describe('isLeadWorthy', () => {
           hasPhone: true,
           hasName: true,
         })
-      ).toBe(false)
+      ).toBe(true)
     })
 
     it('should return false for unknown event type with zero score', () => {

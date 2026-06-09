@@ -95,8 +95,13 @@ export function isLeadWorthy(params: {
   if (!params.hasVerifiedEmail) return false
   // Must have proper first + last name (no single letters, no junk)
   if (!(params.hasName ?? false)) return false
-  // Must meet minimum deliverability score
-  return params.deliverabilityScore >= LEAD_CREATION_SCORE_THRESHOLD
+  // A verified email IS AL's quality guarantee. The deliverability score is
+  // tuned for the UNverified-email model (it needs ESP-last-seen / skiptrace
+  // signals that real-time pixel visitors rarely carry), so gating verified
+  // leads on it wrongly drops them. Field-completeness is still enforced
+  // separately by meetsQualityBar at the call site. A verified + named contact
+  // with a real score is lead-worthy.
+  return params.deliverabilityScore > 0
 }
 
 // ============ Types ============
@@ -383,6 +388,14 @@ export function normalizeALPayload(raw: Record<string, any>): NormalizedIdentity
   const personalEmails = parseEmailList(flat.PERSONAL_EMAILS || flat.personal_emails)
   const businessEmails = parseEmailList(flat.BUSINESS_EMAILS || flat.business_emails)
 
+  // AL's authoritative verification signal lives in *_VERIFIED_EMAILS. Real-time
+  // pixel/webhook events carry these but OMIT *_EMAIL_VALIDATION_STATUS, so
+  // without reading them every identified visitor with a verified email was
+  // being dropped as "not lead worthy". Treat a present verified email as valid.
+  const personalVerifiedEmails = parseEmailList(flat.PERSONAL_VERIFIED_EMAILS || flat.personal_verified_emails)
+  const businessVerifiedEmails = parseEmailList(flat.BUSINESS_VERIFIED_EMAILS || flat.business_verified_emails)
+  const hasVerifiedEmail = personalVerifiedEmails.length > 0 || businessVerifiedEmails.length > 0
+
   // Handle auth event email_raw
   if (flat.email_raw) {
     const normalized = normalizeEmail(flat.email_raw)
@@ -432,10 +445,31 @@ export function normalizeALPayload(raw: Record<string, any>): NormalizedIdentity
     })
   }
 
+  // Verified emails are AL's strongest signal — add them as high-confidence
+  // candidates so a verified address is selected as primary.
+  for (const email of personalVerifiedEmails) {
+    candidates.push({
+      email,
+      validationScore: getValidationScore('valid'),
+      lastSeen: personalLastSeen ? new Date(personalLastSeen) : null,
+      isBusiness: false,
+    })
+  }
+  for (const email of businessVerifiedEmails) {
+    candidates.push({
+      email,
+      validationScore: getValidationScore('valid'),
+      lastSeen: businessLastSeen ? new Date(businessLastSeen) : null,
+      isBusiness: true,
+    })
+  }
+
   const primaryEmail = selectPrimaryEmail(candidates)
 
-  // Best validation status for scoring
-  const bestValidation = personalValidation || businessValidation
+  // Best validation status for scoring. A present verified email IS the
+  // verification (webhook events omit the explicit status), so fall back to
+  // 'valid' — otherwise verified visitors score too low to become leads.
+  const bestValidation = personalValidation || businessValidation || (hasVerifiedEmail ? 'valid' : undefined)
   const bestLastSeen = personalLastSeen || businessLastSeen
   const skiptraceMatchBy = flat.SKIPTRACE_MATCH_BY || flat.skiptrace_match_by || null
 
@@ -464,7 +498,7 @@ export function normalizeALPayload(raw: Record<string, any>): NormalizedIdentity
     state: flat.PERSONAL_STATE || flat.SKIPTRACE_STATE || flat.STATE || flat.state || null,
     zip: flat.PERSONAL_ZIP || flat.SKIPTRACE_ZIP || flat.ZIP || flat.POSTAL_CODE || flat.zip || flat.postal_code || null,
     job_title: flat.JOB_TITLE || flat.job_title || null,
-    email_validation_status: bestValidation || null,
+    email_validation_status: bestValidation || (hasVerifiedEmail ? 'valid' : null),
     email_last_seen: bestLastSeen || null,
     skiptrace_match_by: skiptraceMatchBy,
     company_industry: flat.COMPANY_INDUSTRY || flat.company_industry || flat.INDUSTRY || flat.industry || null,
