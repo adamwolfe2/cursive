@@ -44,6 +44,20 @@ function asString(v: unknown): string {
   return typeof v === 'string' ? v : ''
 }
 
+/**
+ * Gated top-up: only spends an AL /enrich call when the record actually needs
+ * it (assessLeadQuality flagged needsEnrichment) AND the feature is not killed
+ * via `LEAD_ENRICH_TOPUP=off`. Safe to drop into any ingestion path.
+ */
+export async function maybeEnrichTopUp(
+  record: ALEnrichedProfile,
+  needsEnrichment: boolean
+): Promise<ALEnrichedProfile> {
+  if (!needsEnrichment) return record
+  if (process.env.LEAD_ENRICH_TOPUP === 'off') return record
+  return enrichTopUp(record)
+}
+
 export async function enrichTopUp(record: ALEnrichedProfile): Promise<ALEnrichedProfile> {
   // Prefer the verified email (same-person match); fall back to company domain.
   const email = pickBestEmail(record)

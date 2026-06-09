@@ -51,8 +51,9 @@ import {
   AUDIENCE_POLL_DELAYS_SECONDS,
   classifyPollResult,
   matchesWorkspaceICP,
-  hasVerifiedEmail,
 } from '@/lib/audiencelab/provision-helpers'
+import { assessLeadQuality } from '@/lib/services/lead-quality.service'
+import { maybeEnrichTopUp } from '@/lib/services/lead-enrichment.service'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 
@@ -309,18 +310,24 @@ export const provisionWorkspaceAudience = inngest.createFunction(
             continue
           }
 
-          // QUALITY GATE: never deliver a client an unverified contact. Only
-          // records carrying an AL-verified email pass; the rest are dropped.
-          if (!hasVerifiedEmail(record)) {
+          // QUALITY GATE v2: unified assessor — requires an AL-verified email
+          // AND rejects an explicitly-bad email_validation_status. Never deliver
+          // a client a bad/unverified contact.
+          const quality = assessLeadQuality(record)
+          if (!quality.deliverable) {
             skipped++
             continue
           }
+
+          // Top-up sparse-but-deliverable records (missing company/title) via
+          // /enrich before insert, so the client gets a fully-filled lead.
+          const finalRecord = await maybeEnrichTopUp(record, quality.needsEnrichment)
 
           // Hand off to the shared inserter — single source of truth for
           // quality scoring, dedupe, and the lead row shape. markVerified
           // stamps the lead validated + verification_status='verified' since
           // we just confirmed the email is AL-verified.
-          const result = await insertLeadFromALRecord(record, {
+          const result = await insertLeadFromALRecord(finalRecord, {
             workspaceId: workspace_id,
             assignedUserId: user_id,
             sourceTag: 'audiencelab_pull',

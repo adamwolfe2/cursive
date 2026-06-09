@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import type { ALEnrichedProfile } from '@/lib/audiencelab/api-client'
 
 vi.mock('@/lib/audiencelab/api-client', async (importActual) => ({
@@ -7,7 +7,7 @@ vi.mock('@/lib/audiencelab/api-client', async (importActual) => ({
 }))
 
 import { enrich } from '@/lib/audiencelab/api-client'
-import { enrichTopUp } from './lead-enrichment.service'
+import { enrichTopUp, maybeEnrichTopUp } from './lead-enrichment.service'
 
 const mockedEnrich = enrich as unknown as ReturnType<typeof vi.fn>
 
@@ -69,5 +69,35 @@ describe('enrichTopUp', () => {
     const out = await enrichTopUp(bare)
     expect(mockedEnrich).not.toHaveBeenCalled()
     expect(out).toEqual(bare)
+  })
+})
+
+describe('maybeEnrichTopUp (gating)', () => {
+  const env = process.env.LEAD_ENRICH_TOPUP
+  beforeEach(() => mockedEnrich.mockReset())
+  afterEach(() => {
+    if (env === undefined) delete process.env.LEAD_ENRICH_TOPUP
+    else process.env.LEAD_ENRICH_TOPUP = env
+  })
+
+  it('skips the enrich call when the record does not need enrichment', async () => {
+    const out = await maybeEnrichTopUp(sparse, false)
+    expect(mockedEnrich).not.toHaveBeenCalled()
+    expect(out).toBe(sparse)
+  })
+
+  it('skips the enrich call when killed via LEAD_ENRICH_TOPUP=off', async () => {
+    process.env.LEAD_ENRICH_TOPUP = 'off'
+    const out = await maybeEnrichTopUp(sparse, true)
+    expect(mockedEnrich).not.toHaveBeenCalled()
+    expect(out).toBe(sparse)
+  })
+
+  it('enriches when needed and not killed', async () => {
+    delete process.env.LEAD_ENRICH_TOPUP
+    mockedEnrich.mockResolvedValue({ found: 1, result: [{ COMPANY_NAME: 'Acme Inc' }] })
+    const out = (await maybeEnrichTopUp(sparse, true)) as Record<string, unknown>
+    expect(mockedEnrich).toHaveBeenCalledTimes(1)
+    expect(out.COMPANY_NAME).toBe('Acme Inc')
   })
 })
