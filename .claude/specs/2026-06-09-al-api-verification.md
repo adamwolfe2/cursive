@@ -182,3 +182,18 @@ gate is therefore UNNECESSARY (not merely redundant): there are no unverified
 leads in the funnel workspace to hide. Closing P0-2(b) as not-needed.
 
 Goal criterion B (every delivered lead is email-verified) is fully satisfied.
+
+---
+
+## Iter 11 — audience pagination correctness (read-only) + unfiltered-guard confirmation
+
+- **Pagination works:** GET /audiences/{id}?page=1 vs page=2 (page_size 10)
+  return DISTINCT records (0 overlap). So fetchAudienceRecords can pull up to
+  MAX_INITIAL_LEADS across pages without duplication/short pulls. ✓
+- **Incidental confirmation:** the test audience reported `total_records =
+  500,000` — a genuinely UNFILTERED audience ("Other" industry, nationwide).
+  This is exactly what the records-based guard `classifyPollResult(total_records,
+  UNFILTERED_RECORDS_THRESHOLD)` exists to catch (abort before inserting a global
+  slice). Reinforces iter-8: the dead PREVIEW-count guard doesn't matter for the
+  funnel because the real total_records guard does the job (500k >> threshold →
+  abort). Funnel protected.
