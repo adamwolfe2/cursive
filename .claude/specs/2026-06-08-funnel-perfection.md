@@ -87,3 +87,8 @@ is acceptable, but the client experience must feel automatic and flawless).
   gate on the pixel→visitor lead path (markVerified). Remaining: (b) visibility
   gate to verified-only in the funnel leads view; (c) live email-verify pass;
   P0-3 runbook; P1-1 ready-gate.
+- **Iter 5 (2026-06-09):** **P0-3 SHIPPED** — delivery runbook written
+  (2026-06-09-delivery-runbook.md): automated happy path + one-action manual
+  fallback (/admin/funnel-orders "Mark delivered"), quality guarantees, AL
+  dependency notes, pre-demo checklist. Next: P0-2(b) verified-only visibility
+  gate; P1-1 ready-gate.
