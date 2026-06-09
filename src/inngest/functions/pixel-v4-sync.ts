@@ -32,7 +32,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { fetchPixelEventsV4, fetchPixelEvents } from '@/lib/audiencelab/api-client'
 import { scoreUrlIntent, parseDncFlag } from '@/lib/audiencelab/intent-scoring'
 import { insertLeadFromALRecord } from '@/lib/audiencelab/lead-inserter'
-import { v4ResolutionToProfile, pickBestEmail } from '@/lib/audiencelab/provision-helpers'
+import { v4ResolutionToProfile, hasVerifiedEmail } from '@/lib/audiencelab/provision-helpers'
 import { touchFunnelPixelLastEvent } from '@/lib/funnel/order.service'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 
@@ -342,8 +342,11 @@ export const pixelV4SyncWorker = inngest.createFunction(
           // INSERT new lead via shared inserter — this is the visitor →
           // dashboard-lead path that was missing pre-2026-06-06.
           const profile = v4ResolutionToProfile(event.resolution)
-          const bestEmail = pickBestEmail(profile)
-          if (!bestEmail) {
+          // QUALITY GATE: only deliver a visitor lead with an AL-VERIFIED email,
+          // same bar as the audience path. Visitors whose email isn't verified
+          // are not surfaced as deliverable leads (the raw event is still
+          // stored upstream). markVerified stamps the ones we do insert.
+          if (!hasVerifiedEmail(profile)) {
             skippedNoEmail++
             continue
           }
@@ -353,6 +356,7 @@ export const pixelV4SyncWorker = inngest.createFunction(
             sourceTag: 'audiencelab_pixel_v4',
             extraTags: ['visitor', 'pixel-v4'],
             industries: [],
+            markVerified: true,
           })
 
           if (insertResult.outcome === 'inserted' && insertResult.leadId) {
