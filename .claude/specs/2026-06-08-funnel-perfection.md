@@ -70,4 +70,9 @@ is acceptable, but the client experience must feel automatic and flawless).
   minimal funnel dashboard (metrics-first, no orange), funnel nav (Website
   Visitors + Your Audience), credits chrome suppressed, settings trimmed to 4
   tabs, weekly audience-refresh gap closed (al_audiences registration), V4 pull
-  pagination + pixel_last_event_at fixes. Starting P0-1 now.
+  pagination + pixel_last_event_at fixes.
+- **Iter 1 (2026-06-08):** **P0-1 SHIPPED** (00969eae) — purged marketplace
+  copy from the buyer leads view: funnel-aware empty states, hid the leads/day
+  plan stat, free-plan upgrade banner, and the red "no enrichment credits"
+  alarm for managed buyers. Next: P0-2 (lead-quality pipeline — enrich +
+  email-verify before a lead is deliverable/visible).
