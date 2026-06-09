@@ -108,11 +108,22 @@ is acceptable, but the client experience must feel automatic and flawless).
 - ✅ C. Delivery runbook done; weekly refresh wired. Ready-gate (P1-1) still open.
 - ⏳ D. Demo pre-load — BLOCKED on Adam (test workspace email + site/ICP).
 
-## Remaining work + risk note
-- **P1-1 ready-gate** (Tier-1 auth/access) and **P0-2(b) visibility gate**
-  (shared leads query) carry real regression risk; best done with Adam awake,
-  not unsupervised overnight. P0-2(b) is also largely redundant now (insertion
-  is already verified-gated, so funnel workspaces hold no unverified leads).
-- **P1-2 alignment polish** is the safest remaining UI item.
-- Loop will favor safe, reversible increments overnight; surface the Tier-1
-  items for Adam rather than rushing them.
+## Remaining work + risk note (updated post iter 10)
+- **P0-2(b) visibility gate — CLOSED as UNNECESSARY.** Iter 10 confirmed all
+  three lead-creation paths (audience, pull, real-time webhook→processor) hard-
+  gate on a verified email, and LiveLeadsFeed/leads-page read the `leads` table.
+  So there are no unverified leads to hide. Guarantee holds by construction.
+- **P1-1 ready-gate** (Tier-1 auth/access) — the one substantive item left.
+  Real regression risk; do WITH Adam awake, with tests. Held overnight.
+- **Dead preview-count guard fix** (outbound service + tests) — for Adam.
+- **P1-2 alignment polish** — safest remaining UI item (funnel leads/visitors
+  width to match the centered dashboard); needs care re: shared LeadsPageTabs.
+- Loop favors safe, reversible validation/polish overnight; Tier-1 surfaced for Adam.
+
+## Demo-readiness summary (as of iter 10)
+- ✅ Quality guarantee airtight: verified-only on all 3 paths + the read path.
+- ✅ Audience pipeline API healthy (real records, ~48% verified yield).
+- ✅ Visitor feed validated on real events (~72% verified yield — stays full).
+- ✅ Cohesive premium UI; marketplace chrome/copy gone for funnel buyers.
+- ✅ Delivery runbook written; weekly refresh wired.
+- ⏳ BLOCKED on Adam: pre-load a demo workspace (test email + site/ICP); ready-gate.
