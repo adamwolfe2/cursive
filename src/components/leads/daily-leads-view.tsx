@@ -18,6 +18,7 @@ import {
   Target, CheckSquare,
 } from 'lucide-react'
 import { cn } from '@/lib/design-system'
+import { useDashboard } from '@/lib/contexts/dashboard-context'
 import { Button } from '@/components/ui/button'
 import { LeadCard, type Lead, exportToCSV } from './lead-card'
 import { StatCard } from './lead-stat-card'
@@ -60,6 +61,7 @@ export function DailyLeadsView({
 }: DailyLeadsViewProps) {
   const router = useRouter()
   const queryClient = useQueryClient()
+  const { managed } = useDashboard()
   const [tab, setTab] = useState<TabKey>('today')
   const [enrichFilter, setEnrichFilter] = useState('')
   const [search, setSearch] = useState('')
@@ -300,14 +302,14 @@ export function DailyLeadsView({
           icon={Crown}
           label="Your Plan"
           value={plan.charAt(0).toUpperCase() + plan.slice(1)}
-          sub={isFree ? undefined : `${dailyLimit} leads/day`}
+          sub={managed || isFree ? undefined : `${dailyLimit} leads/day`}
           accent={isFree}
           href={isFree ? '/settings/billing' : undefined}
         />
       </div>
 
-      {/* Upgrade banner */}
-      {isFree && (
+      {/* Upgrade banner — marketplace only */}
+      {isFree && !managed && (
         <div className="rounded-xl border border-primary/20 bg-gradient-to-r from-primary/5 to-blue-50 p-5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3">
@@ -332,8 +334,8 @@ export function DailyLeadsView({
         </div>
       )}
 
-      {/* Credit usage alert — shown when credits hit 80%+ usage */}
-      {creditLimit > 0 && creditsRemaining === 0 && (
+      {/* Credit usage alert — marketplace only (managed buyers have no credits) */}
+      {creditLimit > 0 && creditsRemaining === 0 && !managed && (
         <div className="rounded-xl border border-red-200 bg-red-50 px-5 py-3.5 flex items-center justify-between gap-4">
           <div className="flex items-center gap-2.5">
             <Zap className="h-4 w-4 text-red-600 shrink-0" />
@@ -459,7 +461,9 @@ export function DailyLeadsView({
             </h3>
             <p className="text-sm text-muted-foreground max-w-xs mx-auto">
               {todayCount === 0
-                ? 'Leads arrive every morning at 8am CT based on your targeting preferences.'
+                ? managed
+                  ? 'Your identified website visitors and your weekly audience appear here automatically.'
+                  : 'Leads arrive every morning at 8am CT based on your targeting preferences.'
                 : 'Try clearing your search or filter.'}
             </p>
             {todayCount === 0 && (

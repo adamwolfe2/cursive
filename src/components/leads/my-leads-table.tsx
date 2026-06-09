@@ -457,7 +457,7 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
             </button>
           ) : filter === 'all' ? (
             <div className="mt-4 flex flex-col items-center gap-3">
-              <p className="text-xs text-zinc-400">New leads arrive daily at 8am CT</p>
+              <p className="text-xs text-zinc-400">New leads appear here automatically as they are identified</p>
               <div className="flex items-center gap-2">
                 <button
                   onClick={fetchAssignments}
