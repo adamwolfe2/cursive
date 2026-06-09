@@ -103,3 +103,32 @@ verified leads. Contract confirmed; no mapper changes required.
 
 Takeaway: the funnel verified-email guarantee is sound because it's
 deterministic on the source record, not dependent on the flaky re-enrich call.
+
+---
+
+## Iter 8 — LATENT BUG found: preview `count` is the sample size, not the match total
+
+Live-verified: POST /audiences/preview returns `count == limit` every time
+(limit 1→1, 5→5, 50→50). The `result[]` is also a SLIM record (first_name,
+last_name, personal_email, personal_phone, sha256) — NOT the full enriched
+schema. The full enriched profile (COMPANY_*, verified emails) comes ONLY from
+GET /audiences/{id}. (Aside: preview result keys are lowercase `company_*`;
+audience-records keys are UPPERCASE `COMPANY_*`. Our code never inserts from
+preview, so no impact.)
+
+**Consequence — dead "overly-broad filter" guards** (`preview.count >=
+UNFILTERED_PREVIEW_THRESHOLD = 50_000`):
+- `provisionWorkspaceAudience` previews with limit 50 → guard never fires.
+  **BUT** it has a SECOND, WORKING guard: `classifyPollResult(total_records,
+  UNFILTERED_RECORDS_THRESHOLD)` on the real `total_records` from
+  /audiences/{id}, plus per-record matchesWorkspaceICP + hasVerifiedEmail.
+  → **Funnel lead quality is fully protected.** Dead preview guard is redundant.
+- `al-audience-refresh` previews with limit 5 → guard never fires (weekly path).
+- `al-prospecting.service` (OUTBOUND) previews with limit 25 →
+  `OverlyBroadFilterError` never throws. Real bug, outbound-only, not funnel.
+
+**Fix (for Adam, awake):** preview cannot report a true total. Either (a) gate
+on `total_records` from a tiny created-audience/records call, or (b) drop the
+preview-count guards and rely on the records-based guard everywhere, or (c) ask
+AL for a count endpoint. Touches the outbound service + its tests — not an
+overnight change. NOT demo-blocking (funnel is protected by the records guard).
