@@ -89,10 +89,13 @@ export async function POST(
     const websiteUrl = parsed.data.website_url
     const domain = new URL(websiteUrl).hostname.replace(/^www\./, '')
 
-    // Provision via AudienceLab (external API call)
+    // Provision via AudienceLab (external API call). Scope the webhook URL to
+    // the workspace (?ws=) so inbound events route deterministically — AL posts
+    // a pixel_id that differs from the one it returns here.
     const result = await provisionCustomerPixel({
       websiteName: domain,
       websiteUrl,
+      workspaceId: order.workspace_id ?? undefined,
     })
 
     const installUrl = result.install_url

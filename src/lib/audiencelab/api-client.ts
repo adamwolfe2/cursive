@@ -916,11 +916,20 @@ export async function provisionCustomerPixel(params: {
   websiteName: string
   websiteUrl: string
   cursiveWebhookUrl?: string
+  /**
+   * When provided, the webhook URL is scoped to this workspace (?ws=<id>) so
+   * inbound events route deterministically — AudienceLab posts a pixel_id that
+   * differs from the one it returns at creation, so pixel_id matching is unreliable.
+   */
+  workspaceId?: string
 }): Promise<ALPixelCreateResponse> {
   // Strip trailing slash — NEXT_PUBLIC_SITE_URL may have one, causing double-// in webhook URL
   const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://leads.meetcursive.com').replace(/\/$/, '')
-  const webhookUrl = params.cursiveWebhookUrl ||
+  let webhookUrl = params.cursiveWebhookUrl ||
     `${baseUrl}/api/webhooks/audiencelab/superpixel`
+  if (params.workspaceId && !webhookUrl.includes('ws=')) {
+    webhookUrl += `${webhookUrl.includes('?') ? '&' : '?'}ws=${encodeURIComponent(params.workspaceId)}`
+  }
 
   return createPixel({
     websiteName: params.websiteName,

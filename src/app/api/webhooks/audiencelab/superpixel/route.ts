@@ -124,6 +124,27 @@ async function resolveWorkspace(
 }
 
 /**
+ * Resolve a workspace directly from a `?ws=<workspace_id>` query param on the
+ * webhook URL. This is the DURABLE routing signal: AudienceLab posts events with
+ * a different pixel_id than it returns at pixel creation, so pixel_id matching
+ * silently 401s real visitors. A workspace-scoped webhook URL (one per pixel)
+ * makes routing deterministic regardless of which id AL sends. Validates the id
+ * is a real workspace so a bad param can't route events nowhere.
+ */
+async function resolveWorkspaceFromParam(
+  supabase: ReturnType<typeof createAdminClient>,
+  wsId: string | null,
+): Promise<string | null> {
+  if (!wsId || !/^[0-9a-f-]{36}$/i.test(wsId)) return null
+  const { data } = await supabase
+    .from('workspaces')
+    .select('id')
+    .eq('id', wsId)
+    .maybeSingle()
+  return data?.id || null
+}
+
+/**
  * Reachability probe handler.
  *
  * AudienceLab's "Test" button (and similar webhook UIs in their dashboard)
@@ -240,10 +261,16 @@ export async function POST(request: NextRequest) {
 
     const supabase = createAdminClient()
 
-    // Resolve workspace by pixel_id — needed BOTH for routing and (below) auth.
+    // Resolve workspace for routing + auth. DURABLE path: a workspace-scoped
+    // webhook URL (?ws=<id>) — AL posts a pixel_id that differs from the one we
+    // stored at creation, so prefer the URL's workspace and fall back to the
+    // pixel_id mapping for legacy pixels.
     const firstEvent = events[0] || {}
     const pixelId = firstEvent.pixel_id || null
-    const workspaceId = await resolveWorkspace(supabase, pixelId)
+    const wsParam = request.nextUrl.searchParams.get('ws')
+    const workspaceId =
+      (await resolveWorkspaceFromParam(supabase, wsParam)) ??
+      (await resolveWorkspace(supabase, pixelId))
 
     // AUTHENTICATION (dual-mode):
     //   1. Shared secret valid → accept (preferred, strongest).
