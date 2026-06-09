@@ -32,7 +32,9 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { fetchPixelEventsV4, fetchPixelEvents } from '@/lib/audiencelab/api-client'
 import { scoreUrlIntent, parseDncFlag } from '@/lib/audiencelab/intent-scoring'
 import { insertLeadFromALRecord } from '@/lib/audiencelab/lead-inserter'
-import { v4ResolutionToProfile, hasVerifiedEmail } from '@/lib/audiencelab/provision-helpers'
+import { v4ResolutionToProfile } from '@/lib/audiencelab/provision-helpers'
+import { assessLeadQuality } from '@/lib/services/lead-quality.service'
+import { maybeEnrichTopUp } from '@/lib/services/lead-enrichment.service'
 import { touchFunnelPixelLastEvent } from '@/lib/funnel/order.service'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 
@@ -342,16 +344,20 @@ export const pixelV4SyncWorker = inngest.createFunction(
           // INSERT new lead via shared inserter — this is the visitor →
           // dashboard-lead path that was missing pre-2026-06-06.
           const profile = v4ResolutionToProfile(event.resolution)
-          // QUALITY GATE: only deliver a visitor lead with an AL-VERIFIED email,
-          // same bar as the audience path. Visitors whose email isn't verified
-          // are not surfaced as deliverable leads (the raw event is still
-          // stored upstream). markVerified stamps the ones we do insert.
-          if (!hasVerifiedEmail(profile)) {
+          // QUALITY GATE v2: same unified bar as the audience path — verified
+          // email required + explicit-bad email_validation_status rejected.
+          // Visitors that don't pass are not surfaced as leads (the raw event is
+          // still stored upstream). markVerified stamps the ones we do insert.
+          const quality = assessLeadQuality(profile)
+          if (!quality.deliverable) {
             skippedNoEmail++
             continue
           }
 
-          const insertResult = await insertLeadFromALRecord(profile, {
+          // Top-up a sparse-but-deliverable visitor before insert.
+          const finalProfile = await maybeEnrichTopUp(profile, quality.needsEnrichment)
+
+          const insertResult = await insertLeadFromALRecord(finalProfile, {
             workspaceId: workspace_id,
             sourceTag: 'audiencelab_pixel_v4',
             extraTags: ['visitor', 'pixel-v4'],
