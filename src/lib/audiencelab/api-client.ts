@@ -503,14 +503,24 @@ export async function createPixel(params: ALPixelCreateRequest): Promise<ALPixel
 }
 
 /**
+ * AL list endpoints are inconsistent about casing: GET /pixels and GET
+ * /audiences return rows under `Data` (capital D), while GET /audiences/{id}
+ * returns `data` (lowercase). Verified live 2026-06-09. Read both so a list
+ * consumer never silently gets an empty array.
+ */
+function paginatedRows<T>(resp: { data?: T[]; Data?: T[] } | null | undefined): T[] {
+  return (resp?.data ?? resp?.Data) ?? []
+}
+
+/**
  * List all pixels on the account.
- * API returns { data: [...], page, page_size, total, total_pages }
+ * API returns rows under `Data` (capital) — see paginatedRows.
  */
 export async function listPixels(): Promise<ALPixel[]> {
-  const response = await alFetch<ALPaginatedResponse<ALPixel>>('/pixels', {
+  const response = await alFetch<ALPaginatedResponse<ALPixel> & { Data?: ALPixel[] }>('/pixels', {
     method: 'GET',
   })
-  return response.data || []
+  return paginatedRows<ALPixel>(response)
 }
 
 /**
@@ -539,7 +549,11 @@ export async function listAudiences(params?: {
   const query = searchParams.toString()
   const endpoint = query ? `/audiences?${query}` : '/audiences'
 
-  return alFetch<ALAudienceListResponse>(endpoint, { method: 'GET' })
+  // Normalize the casing so callers can always read `.data` (AL returns `Data`).
+  const resp = await alFetch<ALAudienceListResponse & { Data?: ALAudience[] }>(endpoint, {
+    method: 'GET',
+  })
+  return { ...resp, data: paginatedRows<ALAudience>(resp) }
 }
 
 /**
