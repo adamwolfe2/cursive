@@ -236,3 +236,30 @@ to the manual-Studio path long-term.
 NOTE: the titles/company-size threading (buildWorkspaceAudienceFilters +
 provision + refresh) is committed as forward-groundwork — correct + tested, but
 INERT until AL honors audience filters or we move to a targeting API.
+
+---
+
+## Iter 13 — HOW AL targeting actually works: a SEGMENT CATALOG, not filters
+
+Confirmed the mechanism behind iter-12 (filters ignored):
+- AL builds audiences from a **pre-built segment catalog** (our copilot copy:
+  "19,000+ options"), selected via the `segment` param on preview/create —
+  NOT the freeform `filters` payload (which AL ignores, returning a global pool).
+- We already MIRROR that catalog locally in `al_segment_catalog` (admin import
+  route + /admin/audiencelab/segments). The Cursive **Audience Builder copilot**
+  matches a buyer's ICP to segments from this catalog — that IS the real targeting.
+- `GET /audiences/segments` returns `{status}` only (needs params/search); the
+  local catalog is the practical source.
+
+**So the correct quality pipeline (live now, Slice 2):**
+ICP -> admin opens the copilot ("Build in Audience Builder") -> copilot matches
+ICP to catalog segments -> builds a targeted audience -> admin pastes the
+audience ID into /admin/funnel-orders "Sync to dashboard" -> we pull it
+(verified-gated + enrich-topped-up) -> buyer's dashboard + weekly refresh.
+
+**Full re-automation path (future, feasible):** run the copilot's ICP->segment
+matching HEADLESSLY on ICP submit (auto-select catalog segments -> auto-build
+with `segment` -> optional human-approve -> sync). The matching logic already
+exists in the copilot; making it headless is the work. The freeform
+buildWorkspaceAudienceFilters titles/size threading stays inert unless AL ever
+honors filters.
