@@ -9,6 +9,8 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import type { ALEnrichedProfile } from './api-client'
+import { assessLeadQuality } from '@/lib/services/lead-quality.service'
+import { maybeEnrichTopUp } from '@/lib/services/lead-enrichment.service'
 
 export const MIN_QUALITY_SCORE = 20
 
@@ -237,7 +239,19 @@ export async function bulkInsertALRecords(
   for (const record of records) {
     if (inserted >= maxRecords) break
 
-    const result = await insertLeadFromALRecord(record, insertOptions)
+    // Quality gate v2 — same bar as the live pull paths. Without this, the
+    // weekly refresh + DFY onboarding would insert unverified/unvalidated leads
+    // (insertLeadFromALRecord alone only requires *some* email). Require an
+    // AL-verified email, reject explicitly-bad statuses, top-up sparse records,
+    // and stamp markVerified so refreshed leads are verified, not pending.
+    const quality = assessLeadQuality(record)
+    if (!quality.deliverable) {
+      skipped++
+      continue
+    }
+    const finalRecord = await maybeEnrichTopUp(record, quality.needsEnrichment)
+
+    const result = await insertLeadFromALRecord(finalRecord, { ...insertOptions, markVerified: true })
     if (result.outcome === 'inserted') {
       inserted++
     } else if (result.outcome === 'error') {
