@@ -155,3 +155,30 @@ Pulled 25 real V3 events and validated the visitor→lead path against real data
 
 Verdict: visitor pipeline validated end-to-end against real event data. Shape +
 verified yield both healthy.
+
+---
+
+## Iter 10 — verified-only guarantee is AIRTIGHT across ALL lead-creation paths
+
+Traced every path that writes a row to the `leads` table and confirmed each
+hard-gates on a verified email:
+
+1. **Audience** (provisionWorkspaceAudience): `if (!hasVerifiedEmail(record)) skip`.
+2. **Pull** (pixel-v4-sync V4/V3): `if (!hasVerifiedEmail(profile)) skip`.
+3. **Real-time webhook** (superpixel route → stores audiencelab_events →
+   `audiencelab-processor` Inngest job → `isLeadWorthy()`): `isLeadWorthy` HARD-
+   requires it — `if (!params.hasVerifiedEmail) return false` (where
+   hasVerifiedEmail = isVerifiedEmail(email_validation_status)). Different
+   mechanism (validation-status string vs verified-email field presence), same
+   outcome: no verified email → no lead.
+
+**LiveLeadsFeed and the /leads page both read the `leads` table** (not raw
+audiencelab_events). Since every writer to `leads` gates on verified, the table
+contains ONLY verified leads.
+
+**=> The "never give a client a bad/unverified lead" guarantee holds end-to-end
+across all three ingestion paths AND the dashboard read path.** P0-2(b) visibility
+gate is therefore UNNECESSARY (not merely redundant): there are no unverified
+leads in the funnel workspace to hide. Closing P0-2(b) as not-needed.
+
+Goal criterion B (every delivered lead is email-verified) is fully satisfied.
