@@ -13,6 +13,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { SuperPixelWebhookPayloadSchema } from '@/lib/audiencelab/schemas'
 import { unwrapWebhookPayload, extractEventType, extractIpAddress } from '@/lib/audiencelab/field-map'
 import { processEventInline } from '@/lib/audiencelab/edge-processor'
+import { resolveEventAttribution, pixelRowForWorkspace } from '@/lib/audiencelab/pixel-attribution'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
 
@@ -272,6 +273,18 @@ export async function POST(request: NextRequest) {
       (await resolveWorkspaceFromParam(supabase, wsParam)) ??
       (await resolveWorkspace(supabase, pixelId))
 
+    // S3: canonical pixel-row attribution for stamping audiencelab_events.
+    // The raw upstream `pixel_id` (which AL sends differently than the
+    // management id, or null) stays diagnostic only; pixel_row_id is the FK to
+    // the managed pixel row. Gate on workspace agreement so a stamped pixel_row
+    // always belongs to the same workspace the event is stored under — a
+    // canonical id is never written across a tenant boundary.
+    const attribution = await resolveEventAttribution(supabase, {
+      wsParam,
+      eventPixelId: pixelId,
+    })
+    const pixelRowId = pixelRowForWorkspace(attribution, workspaceId)
+
     // AUTHENTICATION (dual-mode):
     //   1. Shared secret valid → accept (preferred, strongest).
     //   2. No secret, but the event targets a pixel WE provisioned (known,
@@ -334,6 +347,7 @@ export async function POST(request: NextRequest) {
             raw_headers: rawHeaders,
             processed: false,
             workspace_id: null,
+            pixel_row_id: pixelRowId,
           })
           .select('id')
           .maybeSingle()
@@ -395,6 +409,7 @@ export async function POST(request: NextRequest) {
           raw_headers: rawHeaders,
           processed: false,
           workspace_id: workspaceId,
+          pixel_row_id: pixelRowId,
         })
         .select('id')
         .maybeSingle()

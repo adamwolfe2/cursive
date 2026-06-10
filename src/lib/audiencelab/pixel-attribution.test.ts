@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest'
 import {
   decideAttribution,
   resolveEventAttribution,
+  pixelRowForWorkspace,
 } from './pixel-attribution'
 
 // ─── S2: canonical event → pixel attribution ─────────────────────────────────
@@ -42,6 +43,30 @@ describe('decideAttribution', () => {
         { id: 'p1', workspace_id: 'w1' },
       ])
     ).toEqual({ pixelRowId: 'p1', workspaceId: 'w1' })
+  })
+})
+
+describe('pixelRowForWorkspace', () => {
+  it('returns the pixel row when its workspace matches the stored workspace', () => {
+    expect(
+      pixelRowForWorkspace({ pixelRowId: 'p1', workspaceId: 'w1' }, 'w1')
+    ).toBe('p1')
+  })
+
+  it('returns null when the attribution workspace differs (no cross-tenant stamp)', () => {
+    expect(
+      pixelRowForWorkspace({ pixelRowId: 'p1', workspaceId: 'w1' }, 'w2')
+    ).toBeNull()
+  })
+
+  it('returns null for no attribution', () => {
+    expect(pixelRowForWorkspace(null, 'w1')).toBeNull()
+  })
+
+  it('returns null when the stored workspace is null', () => {
+    expect(
+      pixelRowForWorkspace({ pixelRowId: 'p1', workspaceId: 'w1' }, null)
+    ).toBeNull()
   })
 })
 

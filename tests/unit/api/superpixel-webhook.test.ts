@@ -39,6 +39,7 @@ function createChainMock(resolvedValue?: any) {
 
 let mockPixelLookup = vi.fn()
 let mockEventInsert = vi.fn()
+let mockResolveAttribution = vi.fn()
 
 vi.mock('@/lib/supabase/admin', () => ({
   createAdminClient: vi.fn(() => {
@@ -85,6 +86,18 @@ vi.mock('@/lib/supabase/admin', () => ({
 
 vi.mock('@/lib/audiencelab/edge-processor', () => ({
   processEventInline: vi.fn().mockResolvedValue({ success: true, lead_id: 'lead-001' }),
+}))
+
+vi.mock('@/lib/audiencelab/pixel-attribution', () => ({
+  resolveEventAttribution: (...args: unknown[]) => mockResolveAttribution(...args),
+  // Real gate logic so the integration test's cross-tenant assertion is honest.
+  pixelRowForWorkspace: (
+    attribution: { pixelRowId: string; workspaceId: string } | null,
+    storedWorkspaceId: string | null
+  ) =>
+    attribution && attribution.workspaceId === storedWorkspaceId
+      ? attribution.pixelRowId
+      : null,
 }))
 
 vi.mock('@/lib/monitoring/alerts', () => ({
@@ -168,6 +181,9 @@ describe('POST /api/webhooks/audiencelab/superpixel', () => {
       data: { id: 'evt-' + Math.random().toString(36).slice(2) },
       error: null,
     })
+
+    // Default: no canonical attribution (existing tests are agnostic to it)
+    mockResolveAttribution = vi.fn().mockResolvedValue(null)
   })
 
   // ============================================
@@ -439,5 +455,39 @@ describe('POST /api/webhooks/audiencelab/superpixel', () => {
       expect(typeof data.processed).toBe('number')
       expect(typeof data.total).toBe('number')
     })
+  })
+})
+
+// ─── S3: canonical pixel_row_id stamping ─────────────────────────────────────
+describe('S3: canonical pixel_row_id stamping', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    insertedEvents.length = 0
+    vi.stubEnv('AUDIENCELAB_WEBHOOK_SECRET', VALID_SECRET)
+    mockPixelLookup = vi.fn().mockResolvedValue({
+      data: { workspace_id: 'ws-001' },
+      error: null,
+    })
+    mockEventInsert = vi.fn().mockResolvedValue({ data: { id: 'evt-x' }, error: null })
+    mockResolveAttribution = vi.fn().mockResolvedValue(null)
+  })
+
+  it('wires pixel_row_id onto every stored event (value gated by pixelRowForWorkspace)', async () => {
+    // A foreign-workspace attribution must NEVER be stamped; the route stores
+    // the pixelRowForWorkspace() result (null here, since routed ws !== ws-999).
+    mockResolveAttribution = vi.fn().mockResolvedValue({
+      pixelRowId: 'pixrow-foreign',
+      workspaceId: 'ws-999',
+    })
+    const response = await POST(
+      makeWebhookRequest(makeValidPayload({ pixel_id: 'mgmt-1' }))
+    )
+    expect(response.status).not.toBe(401)
+    expect(insertedEvents.length).toBeGreaterThan(0)
+    // Field is present on every insert, and never the cross-tenant pixel row.
+    expect(insertedEvents.every((e) => 'pixel_row_id' in e)).toBe(true)
+    expect(insertedEvents.every((e) => e.pixel_row_id !== 'pixrow-foreign')).toBe(
+      true
+    )
   })
 })

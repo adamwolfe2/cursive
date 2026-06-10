@@ -46,6 +46,23 @@ export function decideAttribution(
 }
 
 /**
+ * Pure: the canonical `pixel_row_id` to STAMP on a stored event, given the
+ * resolver's attribution and the workspace the event is actually stored under.
+ * Returns the pixel row only when its workspace matches the stored workspace —
+ * so a canonical pixel id is never written across a tenant boundary even if the
+ * (legacy) routing workspace and the resolver ever disagree.
+ */
+export function pixelRowForWorkspace(
+  attribution: PixelAttribution | null,
+  storedWorkspaceId: string | null
+): string | null {
+  if (!attribution) return null
+  return attribution.workspaceId === storedWorkspaceId
+    ? attribution.pixelRowId
+    : null
+}
+
+/**
  * Resolve an inbound event to its canonical { pixelRowId, workspaceId }.
  *
  * Precedence mirrors the durable webhook routing:
