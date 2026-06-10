@@ -8,6 +8,7 @@ import {
 import { cn } from '@/lib/design-system'
 import { formatDistanceToNow } from 'date-fns'
 import { IntentScoreBadge } from './IntentScoreBadge'
+import { useDashboard } from '@/lib/contexts/dashboard-context'
 
 // ─── Quick Status ───────────────────────────────────────────
 
@@ -282,6 +283,9 @@ export const LeadCard = memo(function LeadCard({
 }) {
   const name = lead.full_name || [lead.first_name, lead.last_name].filter(Boolean).join(' ') || 'Unknown Lead'
   const isEnriched = lead.enrichment_status === 'enriched'
+  // Funnel/managed buyers get a clean, minimal card: no marketplace chrome
+  // (intent/Warm badges, avatars, internal source tags, credit CTAs).
+  const { managed } = useDashboard()
 
   return (
     <div
@@ -304,7 +308,7 @@ export const LeadCard = memo(function LeadCard({
               : <Square className="h-5 w-5 text-gray-300 group-hover:text-gray-400" />
             }
           </button>
-        ) : (
+        ) : managed ? null : (
           <div className={cn('h-9 w-9 rounded-full flex items-center justify-center text-sm font-bold shrink-0', avatarColor(lead.id))}>
             {getInitials(lead)}
           </div>
@@ -327,9 +331,9 @@ export const LeadCard = memo(function LeadCard({
               )}
             </div>
 
-            {/* Intent badge — typeof check, not !== null, so undefined values
-                from the DB don't slip through and render an empty badge. */}
-            {typeof lead.intent_score_calculated === 'number' && (
+            {/* Intent badge — hidden for managed buyers (no marketplace
+                scoring / yellow "Warm" chrome). */}
+            {!managed && typeof lead.intent_score_calculated === 'number' && (
               <div className="shrink-0">
                 <IntentScoreBadge score={lead.intent_score_calculated} />
               </div>
@@ -363,8 +367,9 @@ export const LeadCard = memo(function LeadCard({
             )}
           </div>
 
-          {/* Tags */}
-          {lead.tags && lead.tags.length > 0 && (
+          {/* Tags — hidden for managed buyers (internal source tags like
+              'audiencelab'/'studio-audience' must never show to a client). */}
+          {!managed && lead.tags && lead.tags.length > 0 && (
             <div className="flex flex-wrap gap-1 mt-2">
               {lead.tags.slice(0, 3).map((t) => (
                 <span key={t} className="text-[10px] bg-gray-100 text-gray-500 rounded-full px-2 py-0.5">{t}</span>
@@ -380,7 +385,7 @@ export const LeadCard = memo(function LeadCard({
                   <Zap className="h-2.5 w-2.5" /> Enriched
                 </span>
               )}
-              {(() => {
+              {!managed && (() => {
                 const src = sourceLabel(lead.source)
                 return src ? (
                   <span className={cn('inline-flex items-center text-[10px] border rounded-full px-2 py-0.5 font-medium', src.className)}>
@@ -420,7 +425,7 @@ export const LeadCard = memo(function LeadCard({
                   <PhoneCall className="h-3 w-3" />
                 </a>
               )}
-              {!isEnriched && creditsRemaining === 0 && (
+              {!managed && !isEnriched && creditsRemaining === 0 && (
                 <a
                   href="/settings/billing"
                   className="inline-flex items-center gap-1 text-xs bg-gray-400 text-white rounded-full px-2.5 py-1 font-medium hover:bg-gray-500 transition-colors"
@@ -428,7 +433,7 @@ export const LeadCard = memo(function LeadCard({
                   <Zap className="h-2.5 w-2.5" /> Buy Credits
                 </a>
               )}
-              {!isEnriched && creditsRemaining > 0 && (
+              {!managed && !isEnriched && creditsRemaining > 0 && (
                 <button
                   onClick={() => onEnrich(lead)}
                   className="inline-flex items-center gap-1 text-xs bg-gradient-to-r from-blue-500 to-primary text-white rounded-full px-2.5 py-1 font-medium hover:opacity-90 transition-opacity"
