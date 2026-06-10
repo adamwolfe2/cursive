@@ -17,6 +17,7 @@ import {
   Zap,
 } from 'lucide-react'
 import { EnrichLeadPanel } from '@/components/leads/EnrichLeadPanel'
+import { useDashboard } from '@/lib/contexts/dashboard-context'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -58,6 +59,7 @@ export function LeadDetailClient({ initialLead }: LeadDetailClientProps) {
   const searchParams = useSearchParams()
   const toast = useToast()
   const queryClient = useQueryClient()
+  const { managed } = useDashboard()
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [showEditDialog, setShowEditDialog] = useState(false)
   const [showEnrichPanel, setShowEnrichPanel] = useState(false)
@@ -167,19 +169,25 @@ export function LeadDetailClient({ initialLead }: LeadDetailClientProps) {
               </a>
             )}
 
-            <Button
-              className="gap-2 bg-primary hover:bg-primary/90 text-white shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-              onClick={() => setShowEnrichPanel(true)}
-              disabled={creditsData?.creditsRemaining === 0}
-              title={creditsData?.creditsRemaining === 0 ? 'You have 0 enrichment credits. Buy more to continue.' : undefined}
-            >
-              <Zap className="h-4 w-4" />
-              {creditsData?.creditsRemaining === 0 ? 'No credits' : 'Enrich Lead'}
-            </Button>
-            {creditsData?.creditsRemaining === 0 && (
-              <a href="/settings/billing" className="text-xs text-blue-600 hover:underline ml-2">
-                Buy credits →
-              </a>
+            {/* Enrichment + credit chrome — marketplace only. Managed buyers'
+                leads arrive fully enriched, so we never show credit prompts. */}
+            {!managed && (
+              <>
+                <Button
+                  className="gap-2 bg-primary hover:bg-primary/90 text-white shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={() => setShowEnrichPanel(true)}
+                  disabled={creditsData?.creditsRemaining === 0}
+                  title={creditsData?.creditsRemaining === 0 ? 'You have 0 enrichment credits. Buy more to continue.' : undefined}
+                >
+                  <Zap className="h-4 w-4" />
+                  {creditsData?.creditsRemaining === 0 ? 'No credits' : 'Enrich Lead'}
+                </Button>
+                {creditsData?.creditsRemaining === 0 && (
+                  <a href="/settings/billing" className="text-xs text-blue-600 hover:underline ml-2">
+                    Buy credits →
+                  </a>
+                )}
+              </>
             )}
 
             <DropdownMenu>
@@ -368,6 +376,9 @@ export function LeadDetailClient({ initialLead }: LeadDetailClientProps) {
                   <div className="bg-white rounded-lg border border-gray-200 p-6">
                     <h3 className="text-sm font-medium text-gray-900 mb-4">Lead Scores</h3>
                     <div className="space-y-4">
+                      {/* Intent score is a marketplace metric — hidden for
+                          managed buyers (no "Enrich to compute" credit prompt). */}
+                      {!managed && (
                       <div>
                         <div className="flex justify-between items-center mb-2">
                           <span className="text-sm text-gray-600">Intent Score</span>
@@ -382,6 +393,7 @@ export function LeadDetailClient({ initialLead }: LeadDetailClientProps) {
                           </p>
                         )}
                       </div>
+                      )}
                       <div>
                         <div className="flex justify-between items-center mb-2">
                           <span className="text-sm text-gray-600">Freshness Score</span>

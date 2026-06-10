@@ -103,6 +103,31 @@ export interface InsertLeadResult {
  * Handles quality scoring, email extraction, and deduplication.
  * Returns the lead ID on success, or null with an outcome reason on skip/error.
  */
+/**
+ * Freshness = how recently AL last saw this contact's email active (via ESP
+ * signals). Replaces the old hardcoded 100. A contact verified this month is
+ * fresh; older data decays. Unknown last-seen falls back to a neutral default
+ * (the record was just pulled, so it's not stale, but we can't claim 100).
+ */
+export function freshnessFromRecord(record: ALEnrichedProfile): number {
+  const raw = record as Record<string, unknown>
+  const lastSeen =
+    raw.PERSONAL_EMAIL_LAST_SEEN_BY_ESP_DATE ||
+    raw.BUSINESS_EMAIL_LAST_SEEN_BY_ESP_DATE ||
+    raw.EMAIL_LAST_SEEN ||
+    raw.email_last_seen
+  if (typeof lastSeen !== 'string' || !lastSeen) return 80
+  const t = new Date(lastSeen).getTime()
+  if (!Number.isFinite(t)) return 80
+  const days = (Date.now() - t) / 86_400_000
+  if (days < 0) return 80
+  if (days <= 30) return 100
+  if (days <= 90) return 88
+  if (days <= 180) return 72
+  if (days <= 365) return 58
+  return 40
+}
+
 export async function insertLeadFromALRecord(
   record: ALEnrichedProfile,
   options: InsertLeadOptions
@@ -194,7 +219,7 @@ export async function insertLeadFromALRecord(
         : undefined,
       lead_score: Math.min(qualityScore, 100),
       intent_score_calculated: Math.round(qualityScore * 0.8),
-      freshness_score: 100,
+      freshness_score: freshnessFromRecord(record),
       has_email: true,
       has_phone: phones.length > 0,
       validated: markVerified,
