@@ -170,7 +170,7 @@ export const FUNNEL_VSL_ASPECT_RATIO = (() => {
  */
 export const FUNNEL_GATE_SECONDS = (() => {
   const raw = Number.parseInt(process.env.FUNNEL_GATE_SECONDS ?? '', 10)
-  if (Number.isNaN(raw)) return 30
+  if (Number.isNaN(raw)) return 60
   return Math.min(180, Math.max(0, raw))
 })()
 

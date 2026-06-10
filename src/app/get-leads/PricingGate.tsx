@@ -28,8 +28,36 @@ export function PricingGate({
   unlockAfterSeconds?: number
 }) {
   const [secondsLeft, setSecondsLeft] = useState(unlockAfterSeconds)
-  const [method, setMethod] = useState<'timer' | 'skip'>('timer')
+  const [method, setMethod] = useState<'timer' | 'skip' | 'email'>('timer')
+  const [showEmail, setShowEmail] = useState(false)
+  const [email, setEmail] = useState('')
+  const [submitting, setSubmitting] = useState(false)
   const unlocked = secondsLeft <= 0
+
+  async function captureAndUnlock(e: React.FormEvent) {
+    e.preventDefault()
+    if (!email.trim() || submitting) return
+    setSubmitting(true)
+    try {
+      const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '')
+      await fetch('/api/funnel/capture-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: email.trim(),
+          source: 'pricing_gate',
+          utm_source: params.get('utm_source') || undefined,
+          utm_medium: params.get('utm_medium') || undefined,
+          utm_campaign: params.get('utm_campaign') || undefined,
+        }),
+      }).catch(() => {})
+    } finally {
+      // Never block the reveal on the capture request.
+      setMethod('email')
+      setSecondsLeft(0)
+      setSubmitting(false)
+    }
+  }
 
   useEffect(() => {
     if (unlocked) return
@@ -86,18 +114,41 @@ export function PricingGate({
               </p>
             </div>
             <p className="text-xs text-gray-500">
-              Keep watching — we&apos;ll show you the plans in a moment.
+              Keep watching, we&apos;ll show you the plans in a moment.
             </p>
-            <button
-              type="button"
-              onClick={() => {
-                setMethod('skip')
-                setSecondsLeft(0)
-              }}
-              className="mt-3 text-xs font-medium text-blue-600 hover:text-blue-700 hover:underline"
-            >
-              Show me pricing now →
-            </button>
+
+            {!showEmail ? (
+              <button
+                type="button"
+                onClick={() => setShowEmail(true)}
+                className="mt-3 text-xs font-medium text-blue-600 hover:text-blue-700 hover:underline"
+              >
+                Show me pricing now →
+              </button>
+            ) : (
+              <form onSubmit={captureAndUnlock} className="mt-3 flex flex-col items-stretch gap-2">
+                <p className="text-[11px] text-gray-500">Enter your email to see pricing</p>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="email"
+                    required
+                    autoFocus
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="you@company.com"
+                    disabled={submitting}
+                    className="w-48 rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:border-blue-500 focus:outline-none"
+                  />
+                  <button
+                    type="submit"
+                    disabled={submitting || !email.trim()}
+                    className="rounded-lg bg-blue-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
+                  >
+                    {submitting ? '…' : 'See pricing'}
+                  </button>
+                </div>
+              </form>
+            )}
           </div>
         </div>
       )}

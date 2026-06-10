@@ -314,6 +314,21 @@ async function handleFunnelOrderCompleted(session: Stripe.Checkout.Session): Pro
 
   const { order, portalUrl } = result
 
+  // Mark any pricing-gate email capture for this buyer as converted, so the
+  // founder re-engagement cron never emails someone who actually bought.
+  if (order.customer_email) {
+    try {
+      const supabase = createAdminClient()
+      await supabase
+        .from('funnel_email_captures')
+        .update({ converted_at: new Date().toISOString() })
+        .eq('email', order.customer_email.toLowerCase())
+        .is('converted_at', null)
+    } catch (err) {
+      safeError('[funnel/checkout] capture conversion mark failed:', err)
+    }
+  }
+
   // Phase 2: auto-provision a dashboard workspace + login so the buyer can use
   // the full dashboard, not just the token portal. Non-fatal — the portal
   // delivers fulfillment regardless, so a provisioning hiccup never blocks a

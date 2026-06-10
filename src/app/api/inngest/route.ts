@@ -163,6 +163,7 @@ export const { GET, POST, PUT } = serve({
     // DFY Onboarding Sequence + AL Fulfillment Automation
     functions.dfyOnboardingSequence,
     functions.alAudienceRefresh,
+    functions.funnelReengagement,
     functions.alEnrichmentPoller,
 
     // Autonomous Monitoring & Pipeline Tracking
