@@ -18,7 +18,16 @@ import { createClient } from '@/lib/supabase/client'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 const MAX_FEED_LEADS = 10
-const AL_SOURCES = new Set(['audiencelab', 'audiencelab_pull'])
+// Visitor + audience lead sources. 'superpixel' is what the real webhook writes
+// for pixel-identified visitors (edge-processor) — it was missing here, so live
+// visitors never appeared in this feed for any user. Keep the audience sources
+// too so the feed reflects all incoming leads.
+const AL_SOURCES = new Set([
+  'superpixel',
+  'audiencelab_superpixel',
+  'audiencelab',
+  'audiencelab_pull',
+])
 const PULSE_DURATION_MS = 2000
 
 interface FeedLead {
