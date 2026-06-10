@@ -149,7 +149,7 @@ export function WebsiteVisitorsClient({ initialStats, initialPixel, initialVisit
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           <button
             onClick={() => visitors.length && exportVisitorsCSV(visitors, dateRange)}
             disabled={!visitors.length}
