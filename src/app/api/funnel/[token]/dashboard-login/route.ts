@@ -51,7 +51,9 @@ export async function GET(
 
     // Ensure the dashboard workspace + auth user exist (idempotent). Covers
     // orders created before provisioning ran, or a provisioning hiccup at
-    // checkout.
+    // checkout. Provisioning is collision-safe (S1): if the checkout email
+    // matches a pre-existing account it returns null and we fall back to the
+    // token portal — never auto-login onto someone else's account.
     if (!order.workspace_id) {
       const provisioned = await provisionFunnelWorkspace(order)
       if (!provisioned) {
@@ -61,10 +63,84 @@ export async function GET(
       }
     }
 
-    const email = normalizeEmail(order.customer_email)
     const admin = createAdminClient()
 
-    // Mint a single-use magic link for this buyer.
+    // S1 takeover gate (defense in depth): only mint a session into a workspace
+    // that THIS funnel order provisioned. Re-read the order's workspace and
+    // confirm it is funnel-sourced for this exact order id. This blocks any
+    // legacy order that the old email-reuse path linked to a pre-existing /
+    // marketplace workspace from ever minting that account's session.
+    const { data: freshOrderRow } = await admin
+      .from('funnel_orders')
+      .select('workspace_id')
+      .eq('id', order.id)
+      .maybeSingle()
+    const wsId =
+      (freshOrderRow as { workspace_id: string | null } | null)?.workspace_id ?? null
+    if (!wsId) {
+      return NextResponse.redirect(new URL(portalUrlForToken(token), APP_URL))
+    }
+    const { data: wsRow } = await admin
+      .from('workspaces')
+      .select('settings')
+      .eq('id', wsId)
+      .maybeSingle()
+    const wsFunnelOrderId = (
+      wsRow?.settings as { funnel_order_id?: string } | null
+    )?.funnel_order_id
+    if (wsFunnelOrderId !== order.id) {
+      safeError(
+        '[funnel/dashboard-login] blocked: order workspace was not provisioned for this order — refusing auto-login',
+        { order_id: order.id }
+      )
+      return NextResponse.redirect(new URL(portalUrlForToken(token), APP_URL))
+    }
+
+    // Bind the session to the workspace's OWNER identity — never to a
+    // free-floating email string. Resolve the owner's auth_user_id, then
+    // confirm that auth account's CURRENT verified email still equals this
+    // order's buyer email. This guarantees the magic link we mint authenticates
+    // exactly the account that owns this funnel workspace (not whoever a
+    // reassigned/garbled email might point at later).
+    const orderEmail = normalizeEmail(order.customer_email)
+
+    const { data: ownerRow } = await admin
+      .from('users')
+      .select('auth_user_id')
+      .eq('workspace_id', wsId)
+      .eq('role', 'owner')
+      .order('created_at', { ascending: true })
+      .limit(1)
+      .maybeSingle()
+    const ownerAuthUserId =
+      (ownerRow as { auth_user_id: string | null } | null)?.auth_user_id ?? null
+
+    if (!ownerAuthUserId) {
+      safeError(
+        '[funnel/dashboard-login] blocked: no owner for order workspace — refusing auto-login',
+        { order_id: order.id }
+      )
+      return NextResponse.redirect(new URL(portalUrlForToken(token), APP_URL))
+    }
+
+    const { data: ownerAuth } = await admin.auth.admin.getUserById(ownerAuthUserId)
+    const ownerEmail = ownerAuth?.user?.email
+      ? normalizeEmail(ownerAuth.user.email)
+      : null
+
+    if (!ownerEmail || ownerEmail !== orderEmail) {
+      // The workspace owner's auth account no longer matches this order's buyer
+      // — refuse rather than mint a session for a drifted identity.
+      safeError(
+        '[funnel/dashboard-login] blocked: workspace owner identity no longer matches order buyer — refusing auto-login',
+        { order_id: order.id }
+      )
+      return NextResponse.redirect(new URL(portalUrlForToken(token), APP_URL))
+    }
+
+    const email = ownerEmail
+
+    // Mint a single-use magic link for the verified workspace owner.
     const { data: linkData, error: linkErr } =
       await admin.auth.admin.generateLink({
         type: 'magiclink',
