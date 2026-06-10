@@ -410,6 +410,13 @@ export const pixelV4SyncWorker = inngest.createFunction(
       await step.run('touch-funnel-last-event', async () => {
         await touchFunnelPixelLastEvent(al_pixel_id)
       })
+
+      // Fire the first-visitor "aha" check immediately instead of waiting for
+      // its 15-min cron — the pull just surfaced new visitor leads, so a brand
+      // new buyer gets their activation email within seconds, not minutes.
+      await step.sendEvent('trigger-first-visitor-check', {
+        name: 'funnel/first-visitor.run',
+      })
     }
 
     // ─── Failsafe alert: silent pixel after 24h ────────────────────

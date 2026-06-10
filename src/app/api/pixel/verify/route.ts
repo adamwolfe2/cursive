@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server'
+import { after } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { inngest } from '@/inngest/client'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { unauthorized } from '@/lib/utils/api-error-handler'
@@ -26,7 +28,7 @@ export async function GET() {
     // Get the pixel for this workspace (RLS enforces isolation)
     const { data: pixel, error: pixelError } = await supabase
       .from('audiencelab_pixels')
-      .select('pixel_id')
+      .select('id, pixel_id, last_v4_synced_at, created_at')
       .eq('workspace_id', user.workspace_id)
       .maybeSingle()
 
@@ -75,6 +77,32 @@ export async function GET() {
       } else {
         lastEventAt = latestEvent?.received_at ?? null
       }
+    }
+
+    // Frontload ROI: the buyer is on the install/verify screen, so the pixel is
+    // (about to be) live. Kick an immediate AL visitor pull AFTER the response
+    // (non-blocking, throttled to once / 5 min) so their backlog is already
+    // landing as leads by the time they open the dashboard — even earlier than
+    // the dashboard-open trigger.
+    const lastSyncMs = pixel.last_v4_synced_at
+      ? new Date(pixel.last_v4_synced_at as string).getTime()
+      : 0
+    if (Date.now() - lastSyncMs > 5 * 60_000) {
+      after(() =>
+        inngest
+          .send({
+            name: 'pixel/v4-sync.requested',
+            data: {
+              pixel_row_id: pixel.id,
+              al_pixel_id: pixel.pixel_id,
+              workspace_id: user.workspace_id,
+              pixel_created_at:
+                (pixel.created_at as string) ?? new Date().toISOString(),
+              last_v4_synced_at: (pixel.last_v4_synced_at as string) ?? null,
+            },
+          })
+          .catch(() => undefined)
+      )
     }
 
     return NextResponse.json({
