@@ -67,7 +67,7 @@ export function LiveLeadsFeed({ workspaceId, initialLeads }: LiveLeadsFeedProps)
     const supabase = createClient()
     supabase
       .from('leads')
-      .select('id, first_name, last_name, company:company_name, job_title, city, state, source, intent_category, created_at')
+      .select('id, first_name, last_name, company:company_name, job_title, city, state, source, created_at')
       .eq('workspace_id', workspaceId)
       .in('source', Array.from(AL_SOURCES))
       .order('created_at', { ascending: false })
