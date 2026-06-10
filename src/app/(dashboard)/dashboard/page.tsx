@@ -826,7 +826,7 @@ export default async function DashboardPage({
         hasVerifiedPixel={hasVerifiedPixel}
         isPixelExpired={isPixelExpired}
         isActiveTrial={isActiveTrial}
-        visitorCount={visitorCountTotal ?? pixelEventCount}
+        visitorCount={visitorCountTotal || pixelEventCount}
         totalLeads={totalCount}
         meetingsThisMonth={meetingsThisMonth}
         meetingsAllTime={meetingsAllTime}
@@ -1074,7 +1074,7 @@ export default async function DashboardPage({
                     <span className="text-sm text-muted-foreground">Visitors Identified</span>
                   </div>
                   <div className="text-3xl font-semibold text-foreground mt-2">
-                    {(visitorCountTotal ?? pixelEventCount).toLocaleString()}
+                    {(visitorCountTotal || pixelEventCount).toLocaleString()}
                   </div>
                   <p className="text-sm text-muted-foreground mt-1">
                     {hasVerifiedPixel ? 'From your website pixel' : 'Waiting for first visitor'}
