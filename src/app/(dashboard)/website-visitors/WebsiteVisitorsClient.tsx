@@ -34,9 +34,12 @@ interface WebsiteVisitorsClientProps {
   initialStats: VisitorStats | null
   /** Pixel info pre-fetched server-side */
   initialPixel: PixelInfo | null
+  /** First page of visitors pre-fetched server-side — renders the table on first
+   *  paint and survives an unreliable client refetch. */
+  initialVisitors?: VisitorLead[]
 }
 
-export function WebsiteVisitorsClient({ initialStats, initialPixel }: WebsiteVisitorsClientProps) {
+export function WebsiteVisitorsClient({ initialStats, initialPixel, initialVisitors }: WebsiteVisitorsClientProps) {
   const router = useRouter()
   const queryClient = useQueryClient()
   const [page, setPage] = useState(1)
@@ -75,10 +78,25 @@ export function WebsiteVisitorsClient({ initialStats, initialPixel }: WebsiteVis
       return res.json()
     },
     staleTime: 60_000,
-    // Seed from server-side props so stats render on first paint without a skeleton
-    initialData: initialStats && initialPixel
-      ? { visitors: [], pagination: { total: 0, page: 1, limit: 25, pages: 0 }, stats: initialStats, pixel: initialPixel }
-      : undefined,
+    // Seed from server-side props so stats AND the visitor table render on first
+    // paint. If the client refetch fails (cookie/auth), react-query keeps this
+    // seed — so the list stays populated instead of falling back to empty.
+    // Only seed the table on the default view (page 1, 30d, no filter); other
+    // views always fetch fresh.
+    initialData:
+      initialStats && initialPixel && page === 1 && dateRange === '30' && !enrichmentFilter
+        ? {
+            visitors: initialVisitors ?? [],
+            pagination: {
+              total: initialVisitors?.length ?? 0,
+              page: 1,
+              limit: 25,
+              pages: 1,
+            },
+            stats: initialStats,
+            pixel: initialPixel,
+          }
+        : undefined,
     initialDataUpdatedAt: 0, // treat as stale so client fetch runs immediately for fresh table data
   })
 

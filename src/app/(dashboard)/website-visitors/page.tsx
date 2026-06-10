@@ -44,6 +44,7 @@ export default async function WebsiteVisitorsPage() {
     { count: thisWeek },
     { data: scoreData },
     { data: pixel },
+    { data: initialVisitorRows },
   ] = await Promise.all([
     admin
       .from('leads')
@@ -77,6 +78,17 @@ export default async function WebsiteVisitorsPage() {
       .select('pixel_id, domain, trial_status, trial_ends_at, is_active')
       .eq('workspace_id', workspaceId)
       .maybeSingle(),
+    // Server-render the first page of visitors too — the client-side /api/visitors
+    // fetch was unreliable (cookie dependency), leaving the list blank while the
+    // stats showed data. This guarantees the table renders on first paint.
+    admin
+      .from('leads')
+      .select('id, first_name, last_name, full_name, email, phone, company_name, company_domain, job_title, city, state, country, intent_score_calculated, enrichment_status, created_at, source, linkedin_url')
+      .eq('workspace_id', workspaceId)
+      .or('source.ilike.*pixel*,source.ilike.*superpixel*')
+      .gte('created_at', since30)
+      .order('created_at', { ascending: false })
+      .limit(25),
   ])
 
   const scores = (scoreData ?? [])
@@ -101,6 +113,7 @@ export default async function WebsiteVisitorsPage() {
     <WebsiteVisitorsClient
       initialStats={initialStats}
       initialPixel={pixel ?? null}
+      initialVisitors={initialVisitorRows ?? []}
     />
   )
 }

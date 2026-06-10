@@ -21,7 +21,19 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const workspaceId = req.cookies.get('x-workspace-id')?.value
+    // Resolve workspace from the middleware cookie when present, but fall back
+    // to the user record — the cookie isn't always set (notably for funnel
+    // buyers), which made this endpoint 400 and left the visitor list blank
+    // even though the page's server-fetched stats showed visitors.
+    let workspaceId = req.cookies.get('x-workspace-id')?.value
+    if (!workspaceId) {
+      const { data: u } = await supabase
+        .from('users')
+        .select('workspace_id')
+        .eq('auth_user_id', authUser.id)
+        .maybeSingle()
+      workspaceId = u?.workspace_id ?? undefined
+    }
     if (!workspaceId) {
       return NextResponse.json({ error: 'No workspace' }, { status: 400 })
     }
@@ -45,7 +57,7 @@ export async function GET(req: NextRequest) {
         { count: 'exact' }
       )
       .eq('workspace_id', workspaceId)
-      .or('source.ilike.%pixel%,source.ilike.%superpixel%')
+      .or('source.ilike.*pixel*,source.ilike.*superpixel*')
       .gte('created_at', since)
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1)
@@ -62,7 +74,7 @@ export async function GET(req: NextRequest) {
           .from('leads')
           .select('*', { count: 'exact', head: true })
           .eq('workspace_id', workspaceId)
-          .or('source.ilike.%pixel%,source.ilike.%superpixel%')
+          .or('source.ilike.*pixel*,source.ilike.*superpixel*')
           .gte('created_at', since)
       : Promise.resolve({ count: null as number | null, error: null })
 

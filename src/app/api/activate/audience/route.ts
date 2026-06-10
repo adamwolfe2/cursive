@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
       .from('leads')
       .select('id', { count: 'exact', head: true })
       .eq('workspace_id', user.workspace_id)
-      .or('source.ilike.%pixel%,source.ilike.%superpixel%')
+      .or('source.ilike.*pixel*,source.ilike.*superpixel*')
 
     const { count: enrichedCount } = await adminSupabase
       .from('leads')
