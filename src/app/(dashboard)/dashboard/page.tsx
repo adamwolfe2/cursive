@@ -35,6 +35,7 @@ import { FirstEnrichmentModal } from '@/components/onboarding/FirstEnrichmentMod
 import { PixelTroubleshoot } from './PixelTroubleshoot'
 import { AudienceBuildingBanner } from './AudienceBuildingBanner'
 import { FunnelBuyerDashboard } from './FunnelBuyerDashboard'
+import type { FeedLead } from '@/components/leads/live-leads-feed'
 import { ProvisioningWidget } from '@/components/dashboard/ProvisioningWidget'
 import { FreePlanBanner } from '@/components/dashboard/FreePlanBanner'
 import { LiveLeadsFeed } from '@/components/leads/live-leads-feed'
@@ -817,6 +818,17 @@ export default async function DashboardPage({
   // it has a funnel_orders row (admin / marketplace workspaces have none and
   // keep the existing dashboard untouched).
   if (funnelOrderRow) {
+    // Server-render the Live Visitor Leads feed seed with the admin client
+    // (bypasses RLS). The client-side feed query was unreliable and left the
+    // card blank even when leads existed.
+    const { data: feedSeed } = await createAdminClient()
+      .from('leads')
+      .select('id, first_name, last_name, company:company_name, job_title, city, state, source, intent_category, created_at')
+      .eq('workspace_id', workspaceId)
+      .in('source', ['superpixel', 'audiencelab_superpixel', 'audiencelab', 'audiencelab_pull'])
+      .order('created_at', { ascending: false })
+      .limit(10)
+
     return (
       <FunnelBuyerDashboard
         firstName={userProfile.full_name?.split(' ')[0] || 'there'}
@@ -828,6 +840,7 @@ export default async function DashboardPage({
         isActiveTrial={isActiveTrial}
         visitorCount={visitorCountTotal || pixelEventCount}
         totalLeads={totalCount}
+        visitorLeads={(feedSeed ?? []) as unknown as FeedLead[]}
         meetingsThisMonth={meetingsThisMonth}
         meetingsAllTime={meetingsAllTime}
         audienceBuilding={audienceBuilding}

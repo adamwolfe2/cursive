@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import Link from 'next/link'
 import { ArrowRight, Eye, Users, CalendarCheck } from 'lucide-react'
-import { LiveLeadsFeed } from '@/components/leads/live-leads-feed'
+import { LiveLeadsFeed, type FeedLead } from '@/components/leads/live-leads-feed'
 import { AudienceProgress } from './AudienceProgress'
 
 /**
@@ -34,6 +34,7 @@ interface Props {
   includesAudience: boolean
   audienceSubmittedAt?: string | null
   audienceReceivedAt?: string | null
+  visitorLeads?: FeedLead[]
 }
 
 function statusLine(p: Props): string {
@@ -95,6 +96,7 @@ export function FunnelBuyerDashboard(props: Props) {
     includesAudience,
     audienceSubmittedAt,
     audienceReceivedAt,
+    visitorLeads,
   } = props
 
   const pixelWaiting = hasPixel && !hasVerifiedPixel
@@ -183,7 +185,7 @@ export function FunnelBuyerDashboard(props: Props) {
       {/* The proof: live identified visitors streaming in */}
       {hasPixel && (
         <div className="mt-8">
-          <LiveLeadsFeed workspaceId={workspaceId} />
+          <LiveLeadsFeed workspaceId={workspaceId} initialLeads={visitorLeads} />
         </div>
       )}
     </div>

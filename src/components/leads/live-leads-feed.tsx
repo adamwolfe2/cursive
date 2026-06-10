@@ -30,7 +30,7 @@ const AL_SOURCES = new Set([
 ])
 const PULSE_DURATION_MS = 2000
 
-interface FeedLead {
+export interface FeedLead {
   id: string
   first_name: string | null
   last_name: string | null
@@ -45,15 +45,24 @@ interface FeedLead {
 
 interface LiveLeadsFeedProps {
   workspaceId: string
+  /**
+   * Server-rendered seed leads (fetched with the admin client, bypassing RLS).
+   * When provided, the feed renders these immediately and skips the client-side
+   * fetch — the RLS-bound browser query was unreliable, leaving the feed blank
+   * even when leads existed. Realtime still layers new arrivals on top.
+   */
+  initialLeads?: FeedLead[]
 }
 
-export function LiveLeadsFeed({ workspaceId }: LiveLeadsFeedProps) {
-  const [recentLeads, setRecentLeads] = useState<FeedLead[]>([])
+export function LiveLeadsFeed({ workspaceId, initialLeads }: LiveLeadsFeedProps) {
+  const [recentLeads, setRecentLeads] = useState<FeedLead[]>(initialLeads ?? [])
   const [pulsedIds, setPulsedIds] = useState<Set<string>>(new Set())
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(!initialLeads)
 
-  // Seed feed with last 10 AL leads on mount
+  // Seed feed with last 10 AL leads on mount — only when the server didn't
+  // already provide them (marketplace dashboard still uses the client path).
   useEffect(() => {
+    if (initialLeads) return
     let cancelled = false
     const supabase = createClient()
     supabase
@@ -76,6 +85,8 @@ export function LiveLeadsFeed({ workspaceId }: LiveLeadsFeedProps) {
     return () => {
       cancelled = true
     }
+    // initialLeads is a mount-only seed; intentionally excluded from deps.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [workspaceId])
 
   const handleInsert = useCallback((lead: any) => {
