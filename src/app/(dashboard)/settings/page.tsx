@@ -6,7 +6,10 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { profileSettingsSchema, type ProfileSettingsFormData } from '@/lib/validation/schemas'
+import {
+  profileSettingsSchema,
+  type ProfileSettingsFormData,
+} from '@/lib/validation/schemas'
 import { GradientCard } from '@/components/ui/gradient-card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -20,7 +23,7 @@ export default function ProfileSettingsPage() {
   const queryClient = useQueryClient()
   const router = useRouter()
   const toast = useToast()
-  const { userProfile: contextProfile } = useDashboard()
+  const { userProfile: contextProfile, managed } = useDashboard()
   const [successMessage, setSuccessMessage] = useState('')
   const [errorMessage, _setErrorMessage] = useState('')
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
@@ -38,7 +41,10 @@ export default function ProfileSettingsPage() {
       const response = await fetch('/api/users/me')
       if (!response.ok) {
         const json = await response.json().catch(() => ({}))
-        throw Object.assign(new Error(json.error || 'Failed to fetch user data'), { status: response.status })
+        throw Object.assign(
+          new Error(json.error || 'Failed to fetch user data'),
+          { status: response.status }
+        )
       }
       return response.json()
     },
@@ -55,7 +61,10 @@ export default function ProfileSettingsPage() {
     plan: contextProfile.plan,
     daily_credit_limit: contextProfile.dailyCreditLimit,
     daily_credits_used: contextProfile.dailyCreditsUsed,
-    credits_remaining: Math.max(0, contextProfile.dailyCreditLimit - contextProfile.dailyCreditsUsed),
+    credits_remaining: Math.max(
+      0,
+      contextProfile.dailyCreditLimit - contextProfile.dailyCreditsUsed
+    ),
     // Supplemental fields from API (may be undefined until loaded)
     referral_code: userData?.data?.referral_code ?? null,
     created_at: userData?.data?.created_at ?? null,
@@ -156,7 +165,6 @@ export default function ProfileSettingsPage() {
 
   return (
     <div>
-
       {/* Success Message */}
       {successMessage && (
         <Alert variant="success" className="mb-6">
@@ -182,11 +190,13 @@ export default function ProfileSettingsPage() {
         {/* Profile Form */}
         <GradientCard variant="subtle">
           <div className="mb-6">
-            <h2 className="text-lg font-semibold text-foreground">Personal Information</h2>
+            <h2 className="text-lg font-semibold text-foreground">
+              Personal Information
+            </h2>
           </div>
           <div>
             <form onSubmit={handleSubmit(onSubmit)}>
-              <div className="space-y-4 max-w-md">
+              <div className="max-w-md space-y-4">
                 <FormField
                   label="Full Name"
                   htmlFor="full_name"
@@ -219,9 +229,14 @@ export default function ProfileSettingsPage() {
               <FormActions>
                 <Button
                   type="submit"
-                  disabled={updateProfileMutation.isPending || Object.keys(errors).length > 0}
+                  disabled={
+                    updateProfileMutation.isPending ||
+                    Object.keys(errors).length > 0
+                  }
                 >
-                  {updateProfileMutation.isPending ? 'Saving...' : 'Save Changes'}
+                  {updateProfileMutation.isPending
+                    ? 'Saving...'
+                    : 'Save Changes'}
                 </Button>
               </FormActions>
             </form>
@@ -231,14 +246,16 @@ export default function ProfileSettingsPage() {
         {/* Workspace Info */}
         <GradientCard variant="subtle">
           <div className="mb-6">
-            <h2 className="text-lg font-semibold text-foreground">Workspace Information</h2>
+            <h2 className="text-lg font-semibold text-foreground">
+              Workspace Information
+            </h2>
           </div>
           <div>
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4 max-w-md">
+              <div className="grid max-w-md grid-cols-2 gap-4">
                 <div>
                   <p className="text-sm text-muted-foreground">Role</p>
-                  <p className="text-sm font-medium text-foreground capitalize">
+                  <p className="text-sm font-medium capitalize text-foreground">
                     {user?.role || 'Member'}
                   </p>
                 </div>
@@ -259,12 +276,17 @@ export default function ProfileSettingsPage() {
                   </div>
                 </div>
 
-                <div>
-                  <p className="text-sm text-muted-foreground">Daily Credits</p>
-                  <p className="text-sm font-medium text-foreground">
-                    {user?.credits_remaining || 0} / {user?.daily_credit_limit || 3}
-                  </p>
-                </div>
+                {!managed && (
+                  <div>
+                    <p className="text-sm text-muted-foreground">
+                      Daily Credits
+                    </p>
+                    <p className="text-sm font-medium text-foreground">
+                      {user?.credits_remaining || 0} /{' '}
+                      {user?.daily_credit_limit || 3}
+                    </p>
+                  </div>
+                )}
 
                 <div>
                   <p className="text-sm text-muted-foreground">Member Since</p>
@@ -285,15 +307,17 @@ export default function ProfileSettingsPage() {
         {/* Referral Program */}
         <GradientCard variant="accent">
           <div className="mb-6">
-            <h2 className="text-lg font-semibold text-foreground">Referral Program</h2>
+            <h2 className="text-lg font-semibold text-foreground">
+              Referral Program
+            </h2>
           </div>
           <div>
-            <p className="text-sm text-muted-foreground mb-4">
+            <p className="mb-4 text-sm text-muted-foreground">
               Share Cursive with your network and earn bonus credits when they
               sign up using your referral link.
             </p>
 
-            <div className="space-y-4 max-w-md">
+            <div className="max-w-md space-y-4">
               <FormField label="Your Referral Code">
                 <div className="flex gap-2">
                   <Input
@@ -305,7 +329,10 @@ export default function ProfileSettingsPage() {
                     variant="outline"
                     disabled={!user?.referral_code}
                     onClick={() =>
-                      copyToClipboard(user?.referral_code ?? '', 'Referral code copied!')
+                      copyToClipboard(
+                        user?.referral_code ?? '',
+                        'Referral code copied!'
+                      )
                     }
                   >
                     Copy
@@ -345,9 +372,12 @@ export default function ProfileSettingsPage() {
         {/* Danger Zone */}
         <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-6">
           <div className="mb-4">
-            <h2 className="text-lg font-semibold text-destructive">Danger Zone</h2>
-            <p className="text-sm text-muted-foreground mt-1">
-              Permanently delete your account and all associated data. This action cannot be undone.
+            <h2 className="text-lg font-semibold text-destructive">
+              Danger Zone
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Permanently delete your account and all associated data. This
+              action cannot be undone.
             </p>
           </div>
 
@@ -365,11 +395,11 @@ export default function ProfileSettingsPage() {
               Delete Account
             </Button>
           ) : (
-            <div className="space-y-4 max-w-md">
+            <div className="max-w-md space-y-4">
               <Alert variant="destructive">
                 <AlertDescription>
-                  This will permanently delete your account, all leads, campaigns, and workspace data.
-                  This action is irreversible.
+                  This will permanently delete your account, all leads,
+                  campaigns, and workspace data. This action is irreversible.
                 </AlertDescription>
               </Alert>
 
@@ -390,10 +420,15 @@ export default function ProfileSettingsPage() {
               <div className="flex gap-3">
                 <Button
                   variant="destructive"
-                  disabled={deleteConfirmText !== 'delete my account' || deleteAccountMutation.isPending}
+                  disabled={
+                    deleteConfirmText !== 'delete my account' ||
+                    deleteAccountMutation.isPending
+                  }
                   onClick={() => deleteAccountMutation.mutate()}
                 >
-                  {deleteAccountMutation.isPending ? 'Deleting...' : 'Permanently Delete Account'}
+                  {deleteAccountMutation.isPending
+                    ? 'Deleting...'
+                    : 'Permanently Delete Account'}
                 </Button>
                 <Button
                   variant="outline"

@@ -15,7 +15,9 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://leads.meetcursive.com'),
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_APP_URL || 'https://leads.meetcursive.com'
+  ),
   title: 'Cursive - AI Intent Systems That Never Sleep',
   description:
     'Cursive identifies real people actively searching for your service, enriches them with verified contact data, and activates them through automated outbound.',
@@ -70,15 +72,25 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   return (
     <html lang="en" className={inter.variable}>
+      <head>
+        {/* Preconnect to Supabase — the client hits it for every REST query and
+            the realtime websocket. Warming the TLS handshake up front shaves
+            ~100-300ms off the first data fetch on each page. */}
+        {supabaseUrl && (
+          <>
+            <link rel="preconnect" href={supabaseUrl} crossOrigin="anonymous" />
+            <link rel="dns-prefetch" href={supabaseUrl} />
+          </>
+        )}
+      </head>
       <body className="font-sans antialiased">
         <SkipLink href="#main-content">Skip to main content</SkipLink>
         <Providers>
           <AffiliateRefCapture />
-          <main id="main-content">
-            {children}
-          </main>
+          <main id="main-content">{children}</main>
         </Providers>
         <CrispChat />
         <SpeedInsights />

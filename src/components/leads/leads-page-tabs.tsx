@@ -26,6 +26,9 @@ interface LeadsPageTabsProps {
   allLeadsProps: {
     workspaceId: string
   }
+  /** Funnel/managed buyers get a single clean leads view — no Today/Assigned/All
+   *  tabs (those are marketplace concepts). */
+  managed?: boolean
 }
 
 type TabValue = 'today' | 'assigned' | 'all'
@@ -36,12 +39,19 @@ function LeadsPageTabsInner({
   dailyLeadsProps,
   assignedLeadsProps,
   allLeadsProps,
+  managed,
 }: LeadsPageTabsProps) {
   const searchParams = useSearchParams()
   const router = useRouter()
 
+  // Managed buyers: just their leads, no marketplace tab chrome.
+  if (managed) {
+    return <DailyLeadsView {...dailyLeadsProps} />
+  }
+
   const tabParam = searchParams.get('tab') as TabValue | null
-  const defaultTab: TabValue = tabParam && VALID_TABS.includes(tabParam) ? tabParam : 'today'
+  const defaultTab: TabValue =
+    tabParam && VALID_TABS.includes(tabParam) ? tabParam : 'today'
 
   function handleTabChange(value: string) {
     const newTab = value as TabValue
@@ -56,7 +66,11 @@ function LeadsPageTabsInner({
   }
 
   return (
-    <Tabs defaultValue={defaultTab} onValueChange={handleTabChange} className="space-y-6">
+    <Tabs
+      defaultValue={defaultTab}
+      onValueChange={handleTabChange}
+      className="space-y-6"
+    >
       <TabsList className="w-full sm:w-auto">
         <TabsTrigger value="today">Today</TabsTrigger>
         <TabsTrigger value="assigned">Assigned</TabsTrigger>

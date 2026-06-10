@@ -8,7 +8,10 @@ import { cn } from '@/lib/design-system'
 import { Sidebar, SidebarMobile } from './sidebar'
 import { Header } from './header'
 import { useDismissible } from '@/lib/hooks/use-dismissible'
-import { isFeatureVisible, type FeatureKey } from '@/lib/workspaces/feature-flags'
+import {
+  isFeatureVisible,
+  type FeatureKey,
+} from '@/lib/workspaces/feature-flags'
 import {
   LayoutDashboard,
   Users,
@@ -137,8 +140,18 @@ const navigationItems: NavItemConfig[] = [
     section: 'admin',
     adminOnly: true,
     icon: (
-      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+      <svg
+        className="h-5 w-5"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+        />
       </svg>
     ),
     children: [
@@ -152,7 +165,13 @@ const navigationItems: NavItemConfig[] = [
     section: 'admin',
     adminOnly: true,
     icon: (
-      <Image src="/cursive-logo.png" alt="Cursive" width={20} height={20} className="h-5 w-5 object-contain" />
+      <Image
+        src="/cursive-logo.png"
+        alt="Cursive"
+        width={20}
+        height={20}
+        className="h-5 w-5 object-contain"
+      />
     ),
   },
   {
@@ -161,8 +180,18 @@ const navigationItems: NavItemConfig[] = [
     section: 'admin',
     adminOnly: true,
     icon: (
-      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
+      <svg
+        className="h-5 w-5"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"
+        />
       </svg>
     ),
     children: [
@@ -177,8 +206,18 @@ const navigationItems: NavItemConfig[] = [
     section: 'admin',
     adminOnly: true,
     icon: (
-      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+      <svg
+        className="h-5 w-5"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+        />
       </svg>
     ),
     children: [
@@ -192,8 +231,18 @@ const navigationItems: NavItemConfig[] = [
     section: 'admin',
     adminOnly: true,
     icon: (
-      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+      <svg
+        className="h-5 w-5"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+        />
       </svg>
     ),
     children: [
@@ -208,8 +257,18 @@ const navigationItems: NavItemConfig[] = [
     section: 'admin',
     adminOnly: true,
     icon: (
-      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
+      <svg
+        className="h-5 w-5"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"
+        />
       </svg>
     ),
   },
@@ -260,11 +319,25 @@ interface AppShellProps {
   hotLeadCount?: number
 }
 
-const CREDITS_BANNER_PATHS = ['/leads', '/find-leads', '/lead-database', '/people-search', '/website-visitors']
+const CREDITS_BANNER_PATHS = [
+  '/leads',
+  '/find-leads',
+  '/lead-database',
+  '/people-search',
+  '/website-visitors',
+]
 
-export function AppShell({ children, user, workspace, todayLeadCount, hotLeadCount, visibleFeatures }: AppShellProps) {
+export function AppShell({
+  children,
+  user,
+  workspace,
+  todayLeadCount,
+  hotLeadCount,
+  visibleFeatures,
+}: AppShellProps) {
   const [sidebarOpen, setSidebarOpen] = React.useState(false)
-  const { dismissed: creditsBannerDismissed, dismiss: dismissCreditsBanner } = useDismissible('cursive_credits_banner_dismissed', 24)
+  const { dismissed: creditsBannerDismissed, dismiss: dismissCreditsBanner } =
+    useDismissible('cursive_credits_banner_dismissed', 24)
   const pathname = usePathname()
 
   const isAdmin = user?.role === 'admin' || user?.role === 'owner'
@@ -281,6 +354,14 @@ export function AppShell({ children, user, workspace, todayLeadCount, hotLeadCou
   const MANAGED_LEADS_CHILDREN = [
     { name: 'Website Visitors', href: '/website-visitors' },
     { name: 'Your Audience', href: '/leads?tab=all' },
+  ]
+
+  // Funnel buyers get a stripped Settings: just their profile, pixel, and
+  // billing. No email accounts, team, integrations, GHL, or Shopify.
+  const MANAGED_SETTINGS_CHILDREN = [
+    { name: 'Profile', href: '/settings' },
+    { name: 'Pixel & Tracking', href: '/settings/pixel' },
+    { name: 'Billing', href: '/settings/billing' },
   ]
 
   const filteredNavItems = navigationItems
@@ -310,6 +391,9 @@ export function AppShell({ children, user, workspace, todayLeadCount, hotLeadCou
       if (isManagedBuyer && item.href === '/leads') {
         return { ...item, children: MANAGED_LEADS_CHILDREN }
       }
+      if (isManagedBuyer && item.href === '/settings') {
+        return { ...item, children: MANAGED_SETTINGS_CHILDREN }
+      }
       if (item.href === '/dashboard' && todayLeadCount && todayLeadCount > 0) {
         return { ...item, badge: todayLeadCount }
       }
@@ -335,52 +419,79 @@ export function AppShell({ children, user, workspace, todayLeadCount, hotLeadCou
           content width and wide tables (e.g. CRM leads table) push the column
           wider than the viewport, causing the table to render BEHIND the
           fixed sidebar. The min-w-0 lets the flex layout constrain properly. */}
-      <div className="flex flex-1 flex-col min-w-0 lg:pl-64">
+      <div className="flex min-w-0 flex-1 flex-col lg:pl-64">
         <Header
           user={user}
           workspace={workspace}
           hideCredits={isManagedBuyer}
           onMenuClick={() => setSidebarOpen(!sidebarOpen)}
         />
-        {!isManagedBuyer && user && typeof user.creditsRemaining === 'number' && user.creditsRemaining <= 3 && !creditsBannerDismissed && CREDITS_BANNER_PATHS.some(p => pathname.startsWith(p)) && (
-          <div className={cn(
-            'flex items-center justify-between gap-4 px-4 py-1.5 sm:px-6 lg:px-8 text-xs',
-            user.creditsRemaining === 0
-              ? 'bg-red-600 text-white'
-              : 'bg-amber-500 text-white'
-          )}>
-            <div className="flex items-center gap-2">
-              <svg className="h-3.5 w-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-              <span>
-                {user.creditsRemaining === 0
-                  ? 'You\'re out of enrichment credits — leads can\'t be enriched until you top up.'
-                  : `Only ${user.creditsRemaining} enrichment credit${user.creditsRemaining === 1 ? '' : 's'} remaining.`}
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Link
-                href="/settings/billing"
-                className="shrink-0 rounded-md border border-white/40 px-3 py-1 text-xs font-semibold hover:bg-white/10 transition-colors"
-              >
-                Buy Credits
-              </Link>
-              <button
-                onClick={dismissCreditsBanner}
-                className="shrink-0 text-current opacity-50 hover:opacity-100 transition-opacity"
-                aria-label="Dismiss credits banner"
-              >
-                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        {!isManagedBuyer &&
+          user &&
+          typeof user.creditsRemaining === 'number' &&
+          user.creditsRemaining <= 3 &&
+          !creditsBannerDismissed &&
+          CREDITS_BANNER_PATHS.some((p) => pathname.startsWith(p)) && (
+            <div
+              className={cn(
+                'flex items-center justify-between gap-4 px-4 py-1.5 text-xs sm:px-6 lg:px-8',
+                user.creditsRemaining === 0
+                  ? 'bg-red-600 text-white'
+                  : 'bg-amber-500 text-white'
+              )}
+            >
+              <div className="flex items-center gap-2">
+                <svg
+                  className="h-3.5 w-3.5 shrink-0"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  />
                 </svg>
-              </button>
+                <span>
+                  {user.creditsRemaining === 0
+                    ? "You're out of enrichment credits — leads can't be enriched until you top up."
+                    : `Only ${user.creditsRemaining} enrichment credit${user.creditsRemaining === 1 ? '' : 's'} remaining.`}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Link
+                  href="/settings/billing"
+                  className="shrink-0 rounded-md border border-white/40 px-3 py-1 text-xs font-semibold transition-colors hover:bg-white/10"
+                >
+                  Buy Credits
+                </Link>
+                <button
+                  onClick={dismissCreditsBanner}
+                  className="shrink-0 text-current opacity-50 transition-opacity hover:opacity-100"
+                  aria-label="Dismiss credits banner"
+                >
+                  <svg
+                    className="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
             </div>
-          </div>
-        )}
+          )}
         <main
           id="main-content"
-          className="flex-1 min-w-0 overflow-x-hidden px-4 py-6 sm:px-6 lg:px-8"
+          className="min-w-0 flex-1 overflow-x-hidden px-4 py-6 sm:px-6 lg:px-8"
           tabIndex={-1}
         >
           {children}

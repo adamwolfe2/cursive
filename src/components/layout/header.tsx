@@ -16,7 +16,15 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { HeaderNotificationBell } from '@/components/notifications/header-notification-bell'
 import { GlobalSearch } from '@/components/search/global-search'
-import { Menu, ChevronDown, Settings, CreditCard, Bell, ExternalLink, LogOut } from 'lucide-react'
+import {
+  Menu,
+  ChevronDown,
+  Settings,
+  CreditCard,
+  Bell,
+  ExternalLink,
+  LogOut,
+} from 'lucide-react'
 
 interface HeaderProps {
   user?: {
@@ -37,7 +45,13 @@ interface HeaderProps {
   className?: string
 }
 
-export function Header({ user, workspace, onMenuClick, className, hideCredits }: HeaderProps) {
+export function Header({
+  user,
+  workspace,
+  onMenuClick,
+  className,
+  hideCredits,
+}: HeaderProps) {
   const router = useRouter()
 
   return (
@@ -57,29 +71,32 @@ export function Header({ user, workspace, onMenuClick, className, hideCredits }:
         <Menu className="h-5 w-5" />
       </button>
 
-      {/* Workspace info */}
-      {workspace && (
+      {/* Workspace info — hidden for managed/funnel buyers (their workspace is
+          named after them, so it just duplicates the account avatar). */}
+      {workspace && !hideCredits && (
         <div className="flex items-center gap-3">
           {workspace.logoUrl ? (
-            <div className="relative h-8 w-8 overflow-hidden rounded-lg border border-border bg-muted flex-shrink-0">
+            <div className="relative h-8 w-8 flex-shrink-0 overflow-hidden rounded-lg border border-border bg-muted">
               <Image
                 src={workspace.logoUrl}
                 alt={workspace.name}
                 fill
                 className="object-contain"
                 onError={(e) => {
-                  (e.target as HTMLImageElement).style.display = 'none'
+                  ;(e.target as HTMLImageElement).style.display = 'none'
                 }}
               />
             </div>
           ) : (
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary/10 to-indigo-100 text-primary flex-shrink-0">
+            <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary/10 to-indigo-100 text-primary">
               <span className="text-xs font-bold">
                 {workspace.name?.charAt(0)?.toUpperCase() || 'B'}
               </span>
             </div>
           )}
-          <span className="text-sm font-medium text-foreground">{workspace.name}</span>
+          <span className="text-sm font-medium text-foreground">
+            {workspace.name}
+          </span>
         </div>
       )}
 
@@ -93,14 +110,21 @@ export function Header({ user, workspace, onMenuClick, className, hideCredits }:
         {/* Credits display — hidden for managed/funnel buyers (no credit model) */}
         {user && !hideCredits && (
           <div className="flex items-center gap-2">
-            <span className="hidden text-sm text-muted-foreground sm:inline">Credits:</span>
-            <span className={cn(
-              'text-sm font-semibold',
-              user.creditsRemaining === 0 ? 'text-red-600' :
-              user.creditsRemaining <= 5 ? 'text-amber-600' :
-              user.creditsRemaining <= 20 ? 'text-yellow-600' :
-              'text-foreground'
-            )}>
+            <span className="hidden text-sm text-muted-foreground sm:inline">
+              Credits:
+            </span>
+            <span
+              className={cn(
+                'text-sm font-semibold',
+                user.creditsRemaining === 0
+                  ? 'text-red-600'
+                  : user.creditsRemaining <= 5
+                    ? 'text-amber-600'
+                    : user.creditsRemaining <= 20
+                      ? 'text-yellow-600'
+                      : 'text-foreground'
+              )}
+            >
               {user.creditsRemaining.toLocaleString()}
             </span>
           </div>
@@ -144,21 +168,29 @@ export function Header({ user, workspace, onMenuClick, className, hideCredits }:
                 <Settings className="mr-2 h-4 w-4" />
                 Settings
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => router.push('/settings/billing')}>
+              <DropdownMenuItem
+                onClick={() => router.push('/settings/billing')}
+              >
                 <CreditCard className="mr-2 h-4 w-4" />
                 Billing
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => router.push('/settings/notifications')}>
+              <DropdownMenuItem
+                onClick={() => router.push('/settings/notifications')}
+              >
                 <Bell className="mr-2 h-4 w-4" />
                 Notifications
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => router.push('/settings/integrations')}>
+              <DropdownMenuItem
+                onClick={() => router.push('/settings/integrations')}
+              >
                 <ExternalLink className="mr-2 h-4 w-4" />
                 Integrations
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
-                onClick={() => { window.location.href = '/auth/signout' }}
+                onClick={() => {
+                  window.location.href = '/auth/signout'
+                }}
                 destructive
               >
                 <LogOut className="mr-2 h-4 w-4" />

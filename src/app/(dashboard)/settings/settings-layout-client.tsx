@@ -27,7 +27,6 @@ const MANAGED_TAB_HREFS = new Set([
   '/settings',
   '/settings/pixel',
   '/settings/billing',
-  '/settings/notifications',
 ])
 
 export function SettingsLayoutClient({
@@ -53,18 +52,18 @@ export function SettingsLayoutClient({
       />
 
       {/* Navigation Tabs */}
-      <div className="mb-6 border-b border-border -mx-4 px-4 md:mx-0 md:px-0">
-        <nav className="-mb-px flex space-x-1 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+      <div className="-mx-4 mb-6 border-b border-border px-4 md:mx-0 md:px-0">
+        <nav className="-mb-px flex space-x-1 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {tabs.map((tab) => {
             const isActive = pathname === tab.href
             return (
               <Link
                 key={tab.href}
                 href={tab.href}
-                className={`whitespace-nowrap border-b-2 py-4 px-3 text-sm font-medium transition-colors ${
+                className={`whitespace-nowrap border-b-2 px-3 py-4 text-sm font-medium transition-colors ${
                   isActive
                     ? 'border-primary text-primary'
-                    : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
+                    : 'border-transparent text-muted-foreground hover:border-border hover:text-foreground'
                 }`}
               >
                 {tab.label}

@@ -14,7 +14,10 @@ import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { enrich, AudienceLabApiError } from '@/lib/audiencelab/api-client'
 import { safeError } from '@/lib/utils/log-sanitizer'
-import { withRateLimit, getRequestIdentifier } from '@/lib/middleware/rate-limiter'
+import {
+  withRateLimit,
+  getRequestIdentifier,
+} from '@/lib/middleware/rate-limiter'
 
 const ENRICH_CREDIT_COST = 1
 
@@ -50,7 +53,11 @@ export async function POST(
     if (!userProfile) return unauthorized()
 
     // Rate limit: 30 requests/min per user
-    const rateLimitResponse = await withRateLimit(req, 'lead-enrich', getRequestIdentifier(req, userProfile.id))
+    const rateLimitResponse = await withRateLimit(
+      req,
+      'lead-enrich',
+      getRequestIdentifier(req, userProfile.id)
+    )
     if (rateLimitResponse) return rateLimitResponse
 
     // Compute credits for informational use in responses (not for gating — atomic RPC handles that)
@@ -61,7 +68,9 @@ export async function POST(
     // Fetch the lead — must belong to user's workspace
     const { data: lead } = await supabase
       .from('leads')
-      .select('id, workspace_id, first_name, last_name, full_name, email, phone, company_name, company_domain, job_title, city, state, linkedin_url, metadata, enrichment_status, enriched_at')
+      .select(
+        'id, workspace_id, first_name, last_name, full_name, email, phone, company_name, company_domain, job_title, city, state, linkedin_url, metadata, enrichment_status, enriched_at'
+      )
       .eq('id', leadId)
       .eq('workspace_id', userProfile.workspace_id)
       .maybeSingle()
@@ -87,12 +96,15 @@ export async function POST(
       const RETRY_COOLDOWN_DAYS = 30
       const enrichedAt = lead.enriched_at ? new Date(lead.enriched_at) : null
       const cooldownExpired = enrichedAt
-        ? Date.now() - enrichedAt.getTime() > RETRY_COOLDOWN_DAYS * 24 * 60 * 60 * 1000
+        ? Date.now() - enrichedAt.getTime() >
+          RETRY_COOLDOWN_DAYS * 24 * 60 * 60 * 1000
         : true // No enriched_at = legacy lead, allow retry
 
       if (!cooldownExpired) {
         const daysLeft = Math.ceil(
-          (RETRY_COOLDOWN_DAYS * 24 * 60 * 60 * 1000 - (Date.now() - enrichedAt!.getTime())) / (24 * 60 * 60 * 1000)
+          (RETRY_COOLDOWN_DAYS * 24 * 60 * 60 * 1000 -
+            (Date.now() - enrichedAt!.getTime())) /
+            (24 * 60 * 60 * 1000)
         )
         return NextResponse.json({
           success: false,
@@ -100,7 +112,9 @@ export async function POST(
           fields_added: [],
           credits_used: 0,
           credits_remaining: creditsRemaining,
-          retry_available_at: new Date(enrichedAt!.getTime() + RETRY_COOLDOWN_DAYS * 24 * 60 * 60 * 1000).toISOString(),
+          retry_available_at: new Date(
+            enrichedAt!.getTime() + RETRY_COOLDOWN_DAYS * 24 * 60 * 60 * 1000
+          ).toISOString(),
         })
       }
 
@@ -113,8 +127,13 @@ export async function POST(
     }
 
     // Build the enrichment filter — use whatever identifiers we have
-    const firstName = lead.first_name || lead.full_name?.split(' ')[0] || undefined
-    const lastName = lead.last_name || (lead.full_name?.split(' ').length > 1 ? lead.full_name?.split(' ').slice(1).join(' ') : undefined)
+    const firstName =
+      lead.first_name || lead.full_name?.split(' ')[0] || undefined
+    const lastName =
+      lead.last_name ||
+      (lead.full_name?.split(' ').length > 1
+        ? lead.full_name?.split(' ').slice(1).join(' ')
+        : undefined)
 
     const enrichFilter: Record<string, string> = {}
     if (lead.email) enrichFilter.email = lead.email
@@ -132,10 +151,13 @@ export async function POST(
 
     // Atomically check AND deduct credits before calling the external API.
     // This closes the TOCTOU race: two concurrent requests can't both pass — only one deducts.
-    const { data: deducted } = await adminSupabase.rpc('atomic_deduct_credits', {
-      p_user_id: userProfile.id,
-      p_amount: ENRICH_CREDIT_COST,
-    })
+    const { data: deducted } = await adminSupabase.rpc(
+      'atomic_deduct_credits',
+      {
+        p_user_id: userProfile.id,
+        p_amount: ENRICH_CREDIT_COST,
+      }
+    )
 
     if (!deducted) {
       return NextResponse.json(
@@ -153,6 +175,13 @@ export async function POST(
     const enrichResult = await enrich({ filter: enrichFilter })
 
     if (!enrichResult.found || !enrichResult.result?.length) {
+      // No data found — refund the reserved credit. Buyers should never pay for
+      // a lookup that returned nothing. A negative deduct reverses the charge
+      // atomically (atomic_deduct_credits does daily_credits_used += amount).
+      await adminSupabase.rpc('atomic_deduct_credits', {
+        p_user_id: userProfile.id,
+        p_amount: -ENRICH_CREDIT_COST,
+      })
 
       // Mark lead as enrichment_failed with timestamp for cooldown tracking
       await adminSupabase
@@ -169,15 +198,15 @@ export async function POST(
         lead_id: leadId,
         user_id: userProfile.id,
         status: 'no_data',
-        credits_used: ENRICH_CREDIT_COST,
+        credits_used: 0,
         fields_added: [],
       })
 
       return NextResponse.json({
         success: false,
-        message: 'No additional data found for this lead',
-        credits_used: ENRICH_CREDIT_COST,
-        credits_remaining: creditsRemaining - ENRICH_CREDIT_COST,
+        message: 'No additional data found for this lead — no credit charged',
+        credits_used: 0,
+        credits_remaining: creditsRemaining,
         fields_added: [],
       })
     }
@@ -197,35 +226,51 @@ export async function POST(
     }
 
     // Build updates — prefer verified emails, respect existing data
-    const bve = typeof profile.BUSINESS_VERIFIED_EMAILS === 'string'
-      ? profile.BUSINESS_VERIFIED_EMAILS.split(',')[0]?.trim()
-      : Array.isArray(profile.BUSINESS_VERIFIED_EMAILS)
-        ? profile.BUSINESS_VERIFIED_EMAILS[0]
-        : null
-    const pve = typeof profile.PERSONAL_VERIFIED_EMAILS === 'string'
-      ? profile.PERSONAL_VERIFIED_EMAILS.split(',')[0]?.trim()
-      : Array.isArray(profile.PERSONAL_VERIFIED_EMAILS)
-        ? profile.PERSONAL_VERIFIED_EMAILS[0]
-        : null
+    const bve =
+      typeof profile.BUSINESS_VERIFIED_EMAILS === 'string'
+        ? profile.BUSINESS_VERIFIED_EMAILS.split(',')[0]?.trim()
+        : Array.isArray(profile.BUSINESS_VERIFIED_EMAILS)
+          ? profile.BUSINESS_VERIFIED_EMAILS[0]
+          : null
+    const pve =
+      typeof profile.PERSONAL_VERIFIED_EMAILS === 'string'
+        ? profile.PERSONAL_VERIFIED_EMAILS.split(',')[0]?.trim()
+        : Array.isArray(profile.PERSONAL_VERIFIED_EMAILS)
+          ? profile.PERSONAL_VERIFIED_EMAILS[0]
+          : null
 
-    const personalEmail = typeof profile.PERSONAL_EMAILS === 'string'
-      ? profile.PERSONAL_EMAILS.split(',')?.[0]?.trim()
-      : Array.isArray(profile.PERSONAL_EMAILS)
-        ? profile.PERSONAL_EMAILS[0]
-        : null
-    const enrichedEmail = bve || pve || profile.BUSINESS_EMAIL || personalEmail || null
-    const enrichedPhone = profile.MOBILE_PHONE || profile.DIRECT_NUMBER || profile.PERSONAL_PHONE || null
-    const enrichedLinkedIn = typeof profile.LINKEDIN_URL === 'string' ? profile.LINKEDIN_URL : null
+    const personalEmail =
+      typeof profile.PERSONAL_EMAILS === 'string'
+        ? profile.PERSONAL_EMAILS.split(',')?.[0]?.trim()
+        : Array.isArray(profile.PERSONAL_EMAILS)
+          ? profile.PERSONAL_EMAILS[0]
+          : null
+    const enrichedEmail =
+      bve || pve || profile.BUSINESS_EMAIL || personalEmail || null
+    const enrichedPhone =
+      profile.MOBILE_PHONE ||
+      profile.DIRECT_NUMBER ||
+      profile.PERSONAL_PHONE ||
+      null
+    const enrichedLinkedIn =
+      typeof profile.LINKEDIN_URL === 'string' ? profile.LINKEDIN_URL : null
 
     const updates: Record<string, string | null> = {}
     if (!lead.email && enrichedEmail) updates.email = enrichedEmail
     if (!lead.phone && enrichedPhone) updates.phone = enrichedPhone as string
-    if (!lead.company_name && profile.COMPANY_NAME) updates.company_name = profile.COMPANY_NAME as string
-    if (!lead.company_domain && profile.COMPANY_DOMAIN) updates.company_domain = profile.COMPANY_DOMAIN as string
-    if (!lead.job_title && (profile.JOB_TITLE || profile.HEADLINE)) updates.job_title = (profile.JOB_TITLE || profile.HEADLINE) as string
-    if (!lead.city && (profile.PERSONAL_CITY || profile.COMPANY_CITY)) updates.city = (profile.PERSONAL_CITY || profile.COMPANY_CITY) as string
-    if (!lead.state && (profile.PERSONAL_STATE || profile.COMPANY_STATE)) updates.state = (profile.PERSONAL_STATE || profile.COMPANY_STATE) as string
-    if (!lead.linkedin_url && enrichedLinkedIn) updates.linkedin_url = enrichedLinkedIn
+    if (!lead.company_name && profile.COMPANY_NAME)
+      updates.company_name = profile.COMPANY_NAME as string
+    if (!lead.company_domain && profile.COMPANY_DOMAIN)
+      updates.company_domain = profile.COMPANY_DOMAIN as string
+    if (!lead.job_title && (profile.JOB_TITLE || profile.HEADLINE))
+      updates.job_title = (profile.JOB_TITLE || profile.HEADLINE) as string
+    if (!lead.city && (profile.PERSONAL_CITY || profile.COMPANY_CITY))
+      updates.city = (profile.PERSONAL_CITY || profile.COMPANY_CITY) as string
+    if (!lead.state && (profile.PERSONAL_STATE || profile.COMPANY_STATE))
+      updates.state = (profile.PERSONAL_STATE ||
+        profile.COMPANY_STATE) as string
+    if (!lead.linkedin_url && enrichedLinkedIn)
+      updates.linkedin_url = enrichedLinkedIn
 
     const fieldsAdded = Object.keys(updates)
 
@@ -244,7 +289,10 @@ export async function POST(
 
       if (updateError) {
         safeError('[Enrich] Failed to update lead:', updateError)
-        return NextResponse.json({ error: 'Failed to save enrichment' }, { status: 500 })
+        return NextResponse.json(
+          { error: 'Failed to save enrichment' },
+          { status: 500 }
+        )
       }
     }
 
@@ -270,19 +318,27 @@ export async function POST(
     })
   } catch (error) {
     // AudienceLab API configuration errors — return friendly message instead of 500
-    if (error instanceof AudienceLabApiError && (error.statusCode === 401 || error.statusCode === 403)) {
+    if (
+      error instanceof AudienceLabApiError &&
+      (error.statusCode === 401 || error.statusCode === 403)
+    ) {
       return NextResponse.json(
         {
-          error: 'AudienceLab API not configured. Contact your admin to set up the AudienceLab integration in Settings → Integrations.',
+          error:
+            'AudienceLab API not configured. Contact your admin to set up the AudienceLab integration in Settings → Integrations.',
           code: 'AUDIENCELAB_NOT_CONFIGURED',
         },
         { status: 503 }
       )
     }
-    if (error instanceof Error && error.message === 'AUDIENCELAB_ACCOUNT_API_KEY not configured') {
+    if (
+      error instanceof Error &&
+      error.message === 'AUDIENCELAB_ACCOUNT_API_KEY not configured'
+    ) {
       return NextResponse.json(
         {
-          error: 'AudienceLab API not configured. Contact your admin to set up the AudienceLab integration in Settings → Integrations.',
+          error:
+            'AudienceLab API not configured. Contact your admin to set up the AudienceLab integration in Settings → Integrations.',
           code: 'AUDIENCELAB_NOT_CONFIGURED',
         },
         { status: 503 }

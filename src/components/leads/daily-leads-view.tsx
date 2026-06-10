@@ -12,15 +12,24 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import {
-  Calendar, TrendingUp, Zap, Download, Search,
-  Crown, Sparkles, Star,
-  SlidersHorizontal, ChevronRight,
-  Target, CheckSquare,
+  Calendar,
+  TrendingUp,
+  Zap,
+  Download,
+  Search,
+  Crown,
+  Sparkles,
+  Star,
+  SlidersHorizontal,
+  ChevronRight,
+  Target,
+  CheckSquare,
 } from 'lucide-react'
 import { cn } from '@/lib/design-system'
 import { useDashboard } from '@/lib/contexts/dashboard-context'
 import { Button } from '@/components/ui/button'
 import { LeadCard, type Lead, exportToCSV } from './lead-card'
+import { LeadsListTable } from './leads-list-table'
 import { StatCard } from './lead-stat-card'
 import { BulkActionBar } from './bulk-action-bar'
 import { ArchiveTab } from './archive-tab'
@@ -96,7 +105,9 @@ export function DailyLeadsView({
     queryKey: ['leads-week'],
     queryFn: async () => {
       const since = new Date(Date.now() - 7 * 86_400_000).toISOString()
-      const res = await fetch(`/api/leads?date_from=${encodeURIComponent(since)}&per_page=50`)
+      const res = await fetch(
+        `/api/leads?date_from=${encodeURIComponent(since)}&per_page=50`
+      )
       if (!res.ok) throw new Error('Failed')
       return res.json()
     },
@@ -111,10 +122,16 @@ export function DailyLeadsView({
   const filteredToday = todayLeads.filter((l) => {
     if (search) {
       const q = search.toLowerCase()
-      if (![l.full_name, l.email, l.company_name].some((v) => v?.toLowerCase().includes(q))) return false
+      if (
+        ![l.full_name, l.email, l.company_name].some((v) =>
+          v?.toLowerCase().includes(q)
+        )
+      )
+        return false
     }
     if (enrichFilter === 'enriched') return l.enrichment_status === 'enriched'
-    if (enrichFilter === 'pending') return l.enrichment_status === 'pending' || l.enrichment_status === null
+    if (enrichFilter === 'pending')
+      return l.enrichment_status === 'pending' || l.enrichment_status === null
     return true
   })
 
@@ -135,7 +152,9 @@ export function DailyLeadsView({
   function handleEnrichSuccess() {
     if (enrichTarget) {
       setTodayLeads((prev) =>
-        prev.map((l) => l.id === enrichTarget.id ? { ...l, enrichment_status: 'enriched' } : l)
+        prev.map((l) =>
+          l.id === enrichTarget.id ? { ...l, enrichment_status: 'enriched' } : l
+        )
       )
     }
     queryClient.invalidateQueries({ queryKey: ['leads-week'] })
@@ -167,9 +186,12 @@ export function DailyLeadsView({
   }
 
   // Get current tab's visible leads for bulk operations
-  const currentTabLeads: Lead[] = tab === 'today' ? filteredToday : tab === 'week' ? weekLeads : []
+  const currentTabLeads: Lead[] =
+    tab === 'today' ? filteredToday : tab === 'week' ? weekLeads : []
   const selectedLeads = currentTabLeads.filter((l) => selectedIds.has(l.id))
-  const selectedUnenriched = selectedLeads.filter((l) => l.enrichment_status !== 'enriched')
+  const selectedUnenriched = selectedLeads.filter(
+    (l) => l.enrichment_status !== 'enriched'
+  )
 
   async function handleBulkEnrich() {
     if (selectedUnenriched.length === 0 || bulkEnriching) return
@@ -181,7 +203,9 @@ export function DailyLeadsView({
     for (let i = 0; i < selectedUnenriched.length; i++) {
       const lead = selectedUnenriched[i]
       try {
-        const res = await fetch(`/api/leads/${lead.id}/enrich`, { method: 'POST' })
+        const res = await fetch(`/api/leads/${lead.id}/enrich`, {
+          method: 'POST',
+        })
         if (res.ok) {
           const data = await res.json()
           setTodayLeads((prev) =>
@@ -219,24 +243,29 @@ export function DailyLeadsView({
   }
 
   function handleBulkExport() {
-    exportToCSV(selectedLeads, `cursive-leads-selected-${new Date().toISOString().split('T')[0]}.csv`)
+    exportToCSV(
+      selectedLeads,
+      `cursive-leads-selected-${new Date().toISOString().split('T')[0]}.csv`
+    )
   }
 
-  const unenrichedToday = todayLeads.filter((l) => l.enrichment_status !== 'enriched').length
+  const unenrichedToday = todayLeads.filter(
+    (l) => l.enrichment_status !== 'enriched'
+  ).length
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
         <div>
-          <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
-            <Star className="h-6 w-6 text-primary fill-primary" />
+          <h1 className="flex items-center gap-2 text-2xl font-bold text-foreground">
+            {!managed && <Star className="h-6 w-6 fill-primary text-primary" />}
             Your Daily Leads
           </h1>
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="mt-1 text-sm text-muted-foreground">
             Fresh, verified leads matched to your industry and location.
             {industrySegment && (
-              <span className="ml-2 inline-flex items-center gap-1 text-xs text-primary bg-primary/10 rounded-full px-2 py-0.5">
+              <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-xs text-primary">
                 <Target className="h-3 w-3" />
                 {industrySegment}
                 {locationSegment && ` · ${locationSegment}`}
@@ -256,7 +285,12 @@ export function DailyLeadsView({
             variant="outline"
             size="sm"
             className="gap-1.5"
-            onClick={() => exportToCSV(todayLeads, `cursive-leads-${new Date().toISOString().split('T')[0]}.csv`)}
+            onClick={() =>
+              exportToCSV(
+                todayLeads,
+                `cursive-leads-${new Date().toISOString().split('T')[0]}.csv`
+              )
+            }
             disabled={todayLeads.length === 0}
           >
             <Download className="h-3.5 w-3.5" />
@@ -265,9 +299,9 @@ export function DailyLeadsView({
           <button
             onClick={toggleSelectionMode}
             className={cn(
-              'inline-flex items-center gap-1.5 text-sm rounded-lg px-3 py-2 transition-colors',
+              'inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm transition-colors',
               selectionMode
-                ? 'bg-primary text-white border border-primary hover:bg-primary/90'
+                ? 'border border-primary bg-primary text-white hover:bg-primary/90'
                 : 'border border-border text-muted-foreground hover:bg-muted'
             )}
           >
@@ -278,13 +312,22 @@ export function DailyLeadsView({
       </div>
 
       {/* Stats row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div
+        className={cn(
+          'grid grid-cols-2 gap-4',
+          managed ? 'lg:grid-cols-3' : 'lg:grid-cols-4'
+        )}
+      >
         <StatCard
           icon={Calendar}
           label="Today"
           value={todayCount}
-          sub={`${todayCount} of ${dailyLimit} delivered`}
-          progress={progressPct}
+          sub={
+            managed
+              ? `${todayCount} delivered`
+              : `${todayCount} of ${dailyLimit} delivered`
+          }
+          progress={managed ? undefined : progressPct}
         />
         <StatCard
           icon={TrendingUp}
@@ -298,34 +341,39 @@ export function DailyLeadsView({
           value={monthCount}
           sub={isFree ? `${dailyLimit * 30}/mo limit` : 'Unlimited'}
         />
-        <StatCard
-          icon={Crown}
-          label="Your Plan"
-          value={plan.charAt(0).toUpperCase() + plan.slice(1)}
-          sub={managed || isFree ? undefined : `${dailyLimit} leads/day`}
-          accent={isFree}
-          href={isFree ? '/settings/billing' : undefined}
-        />
+        {!managed && (
+          <StatCard
+            icon={Crown}
+            label="Your Plan"
+            value={plan.charAt(0).toUpperCase() + plan.slice(1)}
+            sub={isFree ? undefined : `${dailyLimit} leads/day`}
+            accent={isFree}
+            href={isFree ? '/settings/billing' : undefined}
+          />
+        )}
       </div>
 
       {/* Upgrade banner — marketplace only */}
       {isFree && !managed && (
         <div className="rounded-xl border border-primary/20 bg-gradient-to-r from-primary/5 to-blue-50 p-5">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-primary/10">
+              <div className="rounded-lg bg-primary/10 p-2">
                 <Sparkles className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <p className="font-semibold text-foreground text-sm">You&apos;re on the free plan</p>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  Upgrade to Pro for up to 100 leads/day, 1,000 enrichments, and unlimited CSV export.
+                <p className="text-sm font-semibold text-foreground">
+                  You&apos;re on the free plan
+                </p>
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  Upgrade to Pro for up to 100 leads/day, 1,000 enrichments, and
+                  unlimited CSV export.
                 </p>
               </div>
             </div>
             <a
               href="/settings/billing"
-              className="shrink-0 inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary/90 transition-colors"
+              className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary/90"
             >
               <Zap className="h-4 w-4" />
               Upgrade to Pro
@@ -336,45 +384,54 @@ export function DailyLeadsView({
 
       {/* Credit usage alert — marketplace only (managed buyers have no credits) */}
       {creditLimit > 0 && creditsRemaining === 0 && !managed && (
-        <div className="rounded-xl border border-red-200 bg-red-50 px-5 py-3.5 flex items-center justify-between gap-4">
+        <div className="flex items-center justify-between gap-4 rounded-xl border border-red-200 bg-red-50 px-5 py-3.5">
           <div className="flex items-center gap-2.5">
-            <Zap className="h-4 w-4 text-red-600 shrink-0" />
+            <Zap className="h-4 w-4 shrink-0 text-red-600" />
             <p className="text-sm text-red-800">
-              <strong>No enrichment credits remaining.</strong> Your daily credits reset at 8am CT tomorrow. Each enrichment costs 1 credit.
+              <strong>No enrichment credits remaining.</strong> Your daily
+              credits reset at 8am CT tomorrow. Each enrichment costs 1 credit.
             </p>
           </div>
           <a
             href="/settings/billing"
-            className="shrink-0 text-xs font-semibold text-red-700 border border-red-300 rounded-lg px-3 py-1.5 hover:bg-red-100 transition-colors"
+            className="shrink-0 rounded-lg border border-red-300 px-3 py-1.5 text-xs font-semibold text-red-700 transition-colors hover:bg-red-100"
           >
             Buy Credits
           </a>
         </div>
       )}
-      {creditLimit > 0 && creditsRemaining > 0 && creditsRemaining / creditLimit <= 0.2 && (
-        <div className="rounded-xl border border-amber-200 bg-amber-50/60 px-5 py-3.5 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-2.5">
-            <Zap className="h-4 w-4 text-amber-600 shrink-0" />
-            <p className="text-sm text-amber-800">
-              <strong>{creditsRemaining} credit{creditsRemaining === 1 ? '' : 's'} left today</strong> — running low on enrichment credits.
-            </p>
+      {creditLimit > 0 &&
+        creditsRemaining > 0 &&
+        creditsRemaining / creditLimit <= 0.2 && (
+          <div className="flex items-center justify-between gap-4 rounded-xl border border-amber-200 bg-amber-50/60 px-5 py-3.5">
+            <div className="flex items-center gap-2.5">
+              <Zap className="h-4 w-4 shrink-0 text-amber-600" />
+              <p className="text-sm text-amber-800">
+                <strong>
+                  {creditsRemaining} credit{creditsRemaining === 1 ? '' : 's'}{' '}
+                  left today
+                </strong>{' '}
+                — running low on enrichment credits.
+              </p>
+            </div>
+            <a
+              href="/settings/billing"
+              className="shrink-0 rounded-lg border border-amber-300 px-3 py-1.5 text-xs font-semibold text-amber-700 transition-colors hover:bg-amber-100"
+            >
+              Get More
+            </a>
           </div>
-          <a
-            href="/settings/billing"
-            className="shrink-0 text-xs font-semibold text-amber-700 border border-amber-300 rounded-lg px-3 py-1.5 hover:bg-amber-100 transition-colors"
-          >
-            Get More
-          </a>
-        </div>
-      )}
+        )}
 
       {/* Unenriched call to action */}
       {unenrichedToday > 0 && !isFree && creditsRemaining > 0 && (
-        <div className="rounded-xl border border-blue-100 bg-blue-50/60 px-5 py-3.5 flex items-center justify-between gap-4">
+        <div className="flex items-center justify-between gap-4 rounded-xl border border-blue-100 bg-blue-50/60 px-5 py-3.5">
           <div className="flex items-center gap-2.5">
-            <Zap className="h-4 w-4 text-blue-600 shrink-0" />
+            <Zap className="h-4 w-4 shrink-0 text-blue-600" />
             <p className="text-sm text-blue-800">
-              <strong>{unenrichedToday} leads</strong> today haven&apos;t been enriched — fill in their email, phone, and LinkedIn. <span className="text-blue-600">1 credit each.</span>
+              <strong>{unenrichedToday} leads</strong> today haven&apos;t been
+              enriched — fill in their email, phone, and LinkedIn.{' '}
+              <span className="text-blue-600">1 credit each.</span>
             </p>
           </div>
         </div>
@@ -398,21 +455,23 @@ export function DailyLeadsView({
       )}
 
       {/* Tabs */}
-      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center border-b border-border pb-0">
+      <div className="flex flex-col items-start gap-4 border-b border-border pb-0 sm:flex-row sm:items-center">
         <div className="flex gap-0">
-          {([
-            { key: 'today', label: `Today (${todayCount})` },
-            { key: 'week', label: `This Week (${weekCount})` },
-            { key: 'archive', label: 'All Leads' },
-          ] as { key: TabKey; label: string }[]).map((t) => (
+          {(
+            [
+              { key: 'today', label: `Today (${todayCount})` },
+              { key: 'week', label: `This Week (${weekCount})` },
+              { key: 'archive', label: 'All Leads' },
+            ] as { key: TabKey; label: string }[]
+          ).map((t) => (
             <button
               key={t.key}
               onClick={() => setTab(t.key)}
               className={cn(
-                'px-4 py-3 text-sm font-medium border-b-2 transition-colors',
+                'border-b-2 px-4 py-3 text-sm font-medium transition-colors',
                 tab === t.key
                   ? 'border-primary text-primary'
-                  : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
+                  : 'border-transparent text-muted-foreground hover:border-border hover:text-foreground'
               )}
             >
               {t.label}
@@ -424,42 +483,50 @@ export function DailyLeadsView({
         {(tab === 'today' || tab === 'week') && (
           <div className="flex items-center gap-3 sm:ml-auto">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
               <input
                 type="search"
                 placeholder="Search..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="pl-8 pr-3 py-1.5 text-sm border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 w-44"
+                className="w-44 rounded-lg border border-border py-1.5 pl-8 pr-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
               />
             </div>
-            <div className="flex items-center gap-1 bg-card border border-border rounded-lg p-1">
-              {ENRICHMENT_FILTERS.map((f) => (
-                <button
-                  key={f.value}
-                  onClick={() => setEnrichFilter(f.value)}
-                  className={cn(
-                    'px-2.5 py-1 text-xs rounded-md transition-colors',
-                    enrichFilter === f.value ? 'bg-primary text-white font-medium' : 'text-muted-foreground hover:bg-muted'
-                  )}
-                >
-                  {f.label}
-                </button>
-              ))}
-            </div>
+            {/* Enriched/Pending filter — marketplace only. Managed buyers' leads
+                are all enriched, so the filter is meaningless. */}
+            {!managed && (
+              <div className="flex items-center gap-1 rounded-lg border border-border bg-card p-1">
+                {ENRICHMENT_FILTERS.map((f) => (
+                  <button
+                    key={f.value}
+                    onClick={() => setEnrichFilter(f.value)}
+                    className={cn(
+                      'rounded-md px-2.5 py-1 text-xs transition-colors',
+                      enrichFilter === f.value
+                        ? 'bg-primary font-medium text-white'
+                        : 'text-muted-foreground hover:bg-muted'
+                    )}
+                  >
+                    {f.label}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>
 
       {/* Tab content */}
-      {tab === 'today' && (
-        filteredToday.length === 0 ? (
-          <div className="text-center py-14 bg-card rounded-xl border border-dashed border-border">
-            <Calendar className="h-12 w-12 text-muted-foreground/40 mx-auto mb-3" />
-            <h3 className="font-semibold text-foreground mb-1">
-              {todayCount === 0 ? 'No leads yet today' : 'No leads match your filters'}
+      {tab === 'today' &&
+        (filteredToday.length === 0 ? (
+          <div className="rounded-xl border border-dashed border-border bg-card py-14 text-center">
+            <Calendar className="mx-auto mb-3 h-12 w-12 text-muted-foreground/40" />
+            <h3 className="mb-1 font-semibold text-foreground">
+              {todayCount === 0
+                ? 'No leads yet today'
+                : 'No leads match your filters'}
             </h3>
-            <p className="text-sm text-muted-foreground max-w-xs mx-auto">
+            <p className="mx-auto max-w-xs text-sm text-muted-foreground">
               {todayCount === 0
                 ? managed
                   ? 'Your identified website visitors and your weekly audience appear here automatically.'
@@ -467,13 +534,18 @@ export function DailyLeadsView({
                 : 'Try clearing your search or filter.'}
             </p>
             {todayCount === 0 && (
-              <a href="/my-leads/preferences" className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">
+              <a
+                href="/my-leads/preferences"
+                className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+              >
                 Set preferences <ChevronRight className="h-3.5 w-3.5" />
               </a>
             )}
           </div>
+        ) : managed ? (
+          <LeadsListTable leads={filteredToday} onView={handleView} />
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
             {filteredToday.map((lead) => (
               <LeadCard
                 key={lead.id}
@@ -487,54 +559,65 @@ export function DailyLeadsView({
               />
             ))}
           </div>
-        )
-      )}
+        ))}
 
-      {tab === 'week' && (
-        weekLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+      {tab === 'week' &&
+        (weekLoading ? (
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="bg-card rounded-xl border border-border p-5 animate-pulse h-36" />
+              <div
+                key={i}
+                className="h-36 animate-pulse rounded-xl border border-border bg-card p-5"
+              />
             ))}
           </div>
         ) : weekLeads.length === 0 ? (
-          <div className="text-center py-12 bg-card rounded-xl border border-dashed border-border">
-            <TrendingUp className="h-10 w-10 text-muted-foreground/40 mx-auto mb-3" />
-            <p className="font-medium text-foreground mb-1">No leads this week yet</p>
-            <p className="text-sm text-muted-foreground max-w-xs mx-auto">
-              New leads are delivered daily based on your targeting preferences. Check back soon!
+          <div className="rounded-xl border border-dashed border-border bg-card py-12 text-center">
+            <TrendingUp className="mx-auto mb-3 h-10 w-10 text-muted-foreground/40" />
+            <p className="mb-1 font-medium text-foreground">
+              No leads this week yet
             </p>
-            <a href="/my-leads/preferences" className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">
+            <p className="mx-auto max-w-xs text-sm text-muted-foreground">
+              New leads are delivered daily based on your targeting preferences.
+              Check back soon!
+            </p>
+            <a
+              href="/my-leads/preferences"
+              className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+            >
               Review preferences
             </a>
           </div>
         ) : (
           <>
-            <div className="flex justify-end mb-2">
+            <div className="mb-2 flex justify-end">
               <button
                 onClick={() => exportToCSV(weekLeads, `cursive-leads-week.csv`)}
-                className="inline-flex items-center gap-1.5 text-sm text-muted-foreground border border-border rounded-lg px-3 py-2 hover:bg-muted transition-colors"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted"
               >
                 <Download className="h-3.5 w-3.5" /> Export CSV
               </button>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-              {weekLeads.map((lead: Lead) => (
-                <LeadCard
-                  key={lead.id}
-                  lead={lead}
-                  onEnrich={handleEnrich}
-                  onView={handleView}
-                  selectionMode={selectionMode}
-                  isSelected={selectedIds.has(lead.id)}
-                  onToggleSelect={toggleSelect}
-                  creditsRemaining={creditsRemaining}
-                />
-              ))}
-            </div>
+            {managed ? (
+              <LeadsListTable leads={weekLeads} onView={handleView} />
+            ) : (
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+                {weekLeads.map((lead: Lead) => (
+                  <LeadCard
+                    key={lead.id}
+                    lead={lead}
+                    onEnrich={handleEnrich}
+                    onView={handleView}
+                    selectionMode={selectionMode}
+                    isSelected={selectedIds.has(lead.id)}
+                    onToggleSelect={toggleSelect}
+                    creditsRemaining={creditsRemaining}
+                  />
+                ))}
+              </div>
+            )}
           </>
-        )
-      )}
+        ))}
 
       {tab === 'archive' && (
         <ArchiveTab
@@ -557,7 +640,12 @@ export function DailyLeadsView({
             city: enrichTarget.city,
             state: enrichTarget.state,
             linkedin_url: null,
-            full_name: enrichTarget.full_name || [enrichTarget.first_name, enrichTarget.last_name].filter(Boolean).join(' ') || null,
+            full_name:
+              enrichTarget.full_name ||
+              [enrichTarget.first_name, enrichTarget.last_name]
+                .filter(Boolean)
+                .join(' ') ||
+              null,
           }}
           creditsRemaining={creditsRemaining}
           open={!!enrichTarget}

@@ -15,6 +15,7 @@ import { BuyCreditsCard } from './BuyCreditsCard'
 import { AutoRechargeCard } from './AutoRechargeCard'
 import { getErrorMessage } from '@/lib/utils/error-helpers'
 import { ServiceTiersCard } from './ServiceTiersCard'
+import { useDashboard } from '@/lib/contexts/dashboard-context'
 
 interface EnrichmentEntry {
   id: string
@@ -28,6 +29,7 @@ interface EnrichmentEntry {
 export default function BillingClient() {
   const toast = useToast()
   const queryClient = useQueryClient()
+  const { managed } = useDashboard()
   const [loading, setLoading] = useState(false)
   const [showCancelConfirm, setShowCancelConfirm] = useState(false)
 
@@ -36,7 +38,12 @@ export default function BillingClient() {
   const [alertSaving, setAlertSaving] = useState(false)
 
   // Fetch current user data
-  const { data: userData, isLoading, isError, error } = useQuery({
+  const {
+    data: userData,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
     queryKey: ['user', 'me'],
     queryFn: async () => {
       const response = await fetch('/api/users/me')
@@ -55,7 +62,8 @@ export default function BillingClient() {
     queryKey: ['enrichment-history'],
     queryFn: async () => {
       const response = await fetch('/api/leads/enrichment-history')
-      if (!response.ok) return { enrichments: [], stats: { total: 0, successful: 0, today: 0 } }
+      if (!response.ok)
+        return { enrichments: [], stats: { total: 0, successful: 0, today: 0 } }
       return response.json()
     },
   })
@@ -160,13 +168,16 @@ export default function BillingClient() {
   if (isError) {
     return (
       <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-6 text-center">
-        <p className="text-sm text-destructive font-medium mb-2">Failed to load billing information</p>
-        <p className="text-xs text-muted-foreground mb-4">
-          {(error as Error)?.message || 'An unexpected error occurred. Please try again.'}
+        <p className="mb-2 text-sm font-medium text-destructive">
+          Failed to load billing information
+        </p>
+        <p className="mb-4 text-xs text-muted-foreground">
+          {(error as Error)?.message ||
+            'An unexpected error occurred. Please try again.'}
         </p>
         <button
           onClick={() => window.location.reload()}
-          className="text-sm font-medium underline text-foreground hover:text-primary"
+          className="text-sm font-medium text-foreground underline hover:text-primary"
         >
           Reload page
         </button>
@@ -176,12 +187,12 @@ export default function BillingClient() {
 
   const isPro = user?.plan === 'pro'
   const hasActiveSubscription =
-    user?.subscription_status === 'active' || user?.subscription_status === 'trialing'
+    user?.subscription_status === 'active' ||
+    user?.subscription_status === 'trialing'
   const isCancelled = user?.cancel_at_period_end
 
   return (
     <div className="space-y-6">
-
       {/* Current Plan + Free value prop strip */}
       <CurrentPlanCard
         user={user}
@@ -192,78 +203,92 @@ export default function BillingClient() {
         onManageBilling={handleManageBilling}
       />
 
-      {/* Usage Card */}
-      <UsageCard user={user} isPro={isPro} />
+      {/* Marketplace credit + upsell sections — hidden for funnel/managed buyers.
+          Their leads come pre-enriched, so they have no credits to buy, recharge,
+          or alert on, and the done-for-you service upsells don't apply. */}
+      {!managed && (
+        <>
+          {/* Usage Card */}
+          <UsageCard user={user} isPro={isPro} />
 
-      {/* Send Limits */}
-      <SendLimitsCard />
+          {/* Send Limits */}
+          <SendLimitsCard />
 
-      {/* Enrichment Activity */}
-      {enrichmentData && enrichmentData.stats.total > 0 && (
-        <EnrichmentActivityCard
-          enrichments={enrichmentData.enrichments}
-          stats={enrichmentData.stats}
-        />
-      )}
+          {/* Enrichment Activity */}
+          {enrichmentData && enrichmentData.stats.total > 0 && (
+            <EnrichmentActivityCard
+              enrichments={enrichmentData.enrichments}
+              stats={enrichmentData.stats}
+            />
+          )}
 
-      {/* Buy Credits Section */}
-      <BuyCreditsCard />
+          {/* Buy Credits Section */}
+          <BuyCreditsCard />
 
-      {/* Auto-Recharge Section */}
-      <AutoRechargeCard />
+          {/* Auto-Recharge Section */}
+          <AutoRechargeCard />
 
-      {/* Low Balance Alert */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle>Low Balance Alert</CardTitle>
-            <Badge variant="outline" className="text-xs">Notification</Badge>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <p className="text-sm text-muted-foreground">
-            Get notified when your marketplace credit balance drops below a set threshold.
-          </p>
-          <div className="flex items-end gap-4">
-            <div className="space-y-1.5">
-              <label
-                htmlFor="alert-threshold"
-                className="text-sm font-medium text-foreground"
-              >
-                Alert me when balance drops below
-              </label>
-              <div className="flex items-center gap-2">
-                <input
-                  id="alert-threshold"
-                  type="number"
-                  min={1}
-                  max={1000}
-                  value={alertThreshold}
-                  onChange={(e) => {
-                    const val = parseInt(e.target.value, 10)
-                    if (!isNaN(val) && val >= 1 && val <= 1000) {
-                      setAlertThreshold(val)
-                    }
-                  }}
-                  className="w-24 rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                />
-                <span className="text-sm text-muted-foreground">credits</span>
+          {/* Low Balance Alert */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle>Low Balance Alert</CardTitle>
+                <Badge variant="outline" className="text-xs">
+                  Notification
+                </Badge>
               </div>
-              <p className="text-xs text-muted-foreground">Between 1 and 1,000</p>
-            </div>
-            <Button
-              onClick={handleSaveAlertThreshold}
-              disabled={alertSaving}
-              className="mb-0"
-            >
-              {alertSaving ? 'Saving...' : 'Save'}
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Get notified when your marketplace credit balance drops below a
+                set threshold.
+              </p>
+              <div className="flex items-end gap-4">
+                <div className="space-y-1.5">
+                  <label
+                    htmlFor="alert-threshold"
+                    className="text-sm font-medium text-foreground"
+                  >
+                    Alert me when balance drops below
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      id="alert-threshold"
+                      type="number"
+                      min={1}
+                      max={1000}
+                      value={alertThreshold}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value, 10)
+                        if (!isNaN(val) && val >= 1 && val <= 1000) {
+                          setAlertThreshold(val)
+                        }
+                      }}
+                      className="w-24 rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
+                    <span className="text-sm text-muted-foreground">
+                      credits
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Between 1 and 1,000
+                  </p>
+                </div>
+                <Button
+                  onClick={handleSaveAlertThreshold}
+                  disabled={alertSaving}
+                  className="mb-0"
+                >
+                  {alertSaving ? 'Saving...' : 'Save'}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
 
-      {/* Service Tiers Section */}
-      <ServiceTiersCard />
+          {/* Service Tiers Section */}
+          <ServiceTiersCard />
+        </>
+      )}
 
       {/* Payment Method */}
       <Card>
@@ -271,10 +296,11 @@ export default function BillingClient() {
           <CardTitle>Payment Method</CardTitle>
         </CardHeader>
         <CardContent>
-          {isPro && hasActiveSubscription ? (
+          {(isPro && hasActiveSubscription) || managed ? (
             <div className="space-y-3">
               <p className="text-sm text-muted-foreground">
-                Your payment method and billing details are securely managed by Stripe.
+                Your payment method and billing details are securely managed by
+                Stripe.
               </p>
               <Button
                 variant="link"
@@ -287,8 +313,8 @@ export default function BillingClient() {
             </div>
           ) : (
             <p className="text-sm text-muted-foreground">
-              You don&apos;t have an active subscription. Upgrade to Pro to add a payment
-              method.
+              You don&apos;t have an active subscription. Upgrade to Pro to add
+              a payment method.
             </p>
           )}
         </CardContent>
@@ -300,10 +326,11 @@ export default function BillingClient() {
           <CardTitle>Billing History</CardTitle>
         </CardHeader>
         <CardContent>
-          {isPro && hasActiveSubscription ? (
+          {(isPro && hasActiveSubscription) || managed ? (
             <div className="space-y-3">
               <p className="text-sm text-muted-foreground">
-                View and download your billing history in the Stripe Customer Portal.
+                View and download your billing history in the Stripe Customer
+                Portal.
               </p>
               <Button
                 variant="link"
@@ -315,7 +342,9 @@ export default function BillingClient() {
               </Button>
             </div>
           ) : (
-            <p className="text-sm text-muted-foreground">No billing history available.</p>
+            <p className="text-sm text-muted-foreground">
+              No billing history available.
+            </p>
           )}
         </CardContent>
       </Card>
@@ -324,12 +353,14 @@ export default function BillingClient() {
       {isPro && hasActiveSubscription && !isCancelled && (
         <Card className="border-destructive/20 bg-destructive/5">
           <CardHeader>
-            <CardTitle className="text-destructive">Cancel Subscription</CardTitle>
+            <CardTitle className="text-destructive">
+              Cancel Subscription
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-muted-foreground mb-4">
-              Your subscription will remain active until the end of the current billing
-              period. You can reactivate at any time before then.
+            <p className="mb-4 text-sm text-muted-foreground">
+              Your subscription will remain active until the end of the current
+              billing period. You can reactivate at any time before then.
             </p>
 
             {!showCancelConfirm ? (
@@ -342,7 +373,7 @@ export default function BillingClient() {
               </Button>
             ) : (
               <div className="space-y-3">
-                <p className="text-sm text-destructive font-medium">
+                <p className="text-sm font-medium text-destructive">
                   Are you sure you want to cancel your subscription?
                 </p>
                 <div className="flex gap-3">
