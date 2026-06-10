@@ -146,6 +146,11 @@ export async function insertLeadFromALRecord(
       source: sourceTag,
       enrichment_status: 'enriched',
       status: 'new',
+      // Stamp delivered_at on insert: pulling a lead into the workspace IS the
+      // delivery. Without it the dashboard's today/week stats and the /leads
+      // "Today" view (both filter on delivered_at) silently show 0 even though
+      // the leads exist.
+      delivered_at: new Date().toISOString(),
       first_name: firstName || null,
       last_name: lastName || null,
       full_name: fullName || null,

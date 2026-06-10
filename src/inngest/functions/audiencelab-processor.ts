@@ -324,6 +324,10 @@ export const processAudienceLabEvent = inngest.createFunction(
           source: 'audiencelab',
           enrichment_status: 'enriched',
           delivery_status: 'pending',
+          // An identified visitor IS delivered the moment we create the lead.
+          // Without delivered_at the dashboard today/week stats and the /leads
+          // "Today" view show 0 even though the lead exists.
+          delivered_at: new Date().toISOString(),
           hash_key: dedupResult.hashKey,
           intent_score: identity.deliverability_score,
           raw_data: {
