@@ -419,6 +419,9 @@ export async function processEventInline(
               source,
               enrichment_status: 'enriched',
               delivery_status: 'pending',
+              // Identifying a visitor IS the delivery — without this the
+              // dashboard today/week stats and /leads "Today" view show 0.
+              delivered_at: new Date().toISOString(),
               hash_key: dedupResult.hashKey,
               qualification_score: normalized.deliverability_score,
               status: 'new',
