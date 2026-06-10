@@ -11,7 +11,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { formatDistanceToNow } from 'date-fns'
-import { Activity, Sparkles } from 'lucide-react'
+import { Activity, Sparkles, Mail, Phone } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useRealtimeLeads } from '@/hooks/use-realtime-leads'
 import { createClient } from '@/lib/supabase/client'
@@ -36,6 +36,8 @@ export interface FeedLead {
   last_name: string | null
   company: string | null
   job_title: string | null
+  email: string | null
+  phone: string | null
   city: string | null
   state: string | null
   source: string | null
@@ -67,7 +69,7 @@ export function LiveLeadsFeed({ workspaceId, initialLeads }: LiveLeadsFeedProps)
     const supabase = createClient()
     supabase
       .from('leads')
-      .select('id, first_name, last_name, company:company_name, job_title, city, state, source, created_at')
+      .select('id, first_name, last_name, company:company_name, job_title, email, phone, city, state, source, created_at')
       .eq('workspace_id', workspaceId)
       .in('source', Array.from(AL_SOURCES))
       .order('created_at', { ascending: false })
@@ -97,6 +99,8 @@ export function LiveLeadsFeed({ workspaceId, initialLeads }: LiveLeadsFeedProps)
       last_name: lead.last_name ?? null,
       company: lead.company_name ?? lead.company ?? null,
       job_title: lead.job_title ?? null,
+      email: lead.email ?? null,
+      phone: lead.phone ?? null,
       city: lead.city ?? null,
       state: lead.state ?? null,
       source: lead.source ?? null,
@@ -214,16 +218,34 @@ export function LiveLeadsFeed({ workspaceId, initialLeads }: LiveLeadsFeedProps)
                         {lead.job_title && lead.company ? ' · ' : ''}
                         {lead.company || ''}
                       </p>
-                      {(location || lead.intent_category) && (
-                        <p className="truncate text-xs text-muted-foreground/80">
-                          {location}
-                          {location && lead.intent_category ? ' · ' : ''}
-                          {lead.intent_category ? (
-                            <span className="inline-flex items-center rounded-full bg-emerald-100 dark:bg-emerald-950 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700 dark:text-emerald-300">
-                              {lead.intent_category}
-                            </span>
-                          ) : null}
-                        </p>
+                      {location && (
+                        <p className="truncate text-xs text-muted-foreground/80">{location}</p>
+                      )}
+                      {/* Contact info — the whole point of identifying a visitor. */}
+                      {(lead.email || lead.phone) && (
+                        <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1">
+                          {lead.email && (
+                            <a
+                              href={`mailto:${lead.email}`}
+                              onClick={(e) => e.stopPropagation()}
+                              className="inline-flex max-w-full items-center gap-1 text-xs font-medium text-primary hover:underline"
+                              title={lead.email}
+                            >
+                              <Mail className="h-3 w-3 shrink-0" />
+                              <span className="truncate">{lead.email}</span>
+                            </a>
+                          )}
+                          {lead.phone && (
+                            <a
+                              href={`tel:${lead.phone}`}
+                              onClick={(e) => e.stopPropagation()}
+                              className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+                            >
+                              <Phone className="h-3 w-3 shrink-0" />
+                              {lead.phone}
+                            </a>
+                          )}
+                        </div>
                       )}
                     </div>
                     <span className="shrink-0 text-[10px] uppercase tracking-wide text-muted-foreground">

@@ -823,7 +823,7 @@ export default async function DashboardPage({
     // card blank even when leads existed.
     const { data: feedSeed } = await createAdminClient()
       .from('leads')
-      .select('id, first_name, last_name, company:company_name, job_title, city, state, source, created_at')
+      .select('id, first_name, last_name, company:company_name, job_title, email, phone, city, state, source, created_at')
       .eq('workspace_id', workspaceId)
       .in('source', ['superpixel', 'audiencelab_superpixel', 'audiencelab', 'audiencelab_pull'])
       .order('created_at', { ascending: false })
