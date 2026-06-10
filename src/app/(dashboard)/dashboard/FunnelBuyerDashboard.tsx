@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import Link from 'next/link'
 import { ArrowRight, Eye, Users, CalendarCheck } from 'lucide-react'
 import { LiveLeadsFeed } from '@/components/leads/live-leads-feed'
+import { AudienceProgress } from './AudienceProgress'
 
 /**
  * Funnel-buyer dashboard.
@@ -31,6 +32,8 @@ interface Props {
   meetingsAllTime: number
   audienceBuilding: boolean
   includesAudience: boolean
+  audienceSubmittedAt?: string | null
+  audienceReceivedAt?: string | null
 }
 
 function statusLine(p: Props): string {
@@ -90,6 +93,8 @@ export function FunnelBuyerDashboard(props: Props) {
     meetingsAllTime,
     audienceBuilding,
     includesAudience,
+    audienceSubmittedAt,
+    audienceReceivedAt,
   } = props
 
   const pixelWaiting = hasPixel && !hasVerifiedPixel
@@ -144,19 +149,14 @@ export function FunnelBuyerDashboard(props: Props) {
         />
       </div>
 
-      {/* One calm status line — audience building, or pixel waiting. Not both
-          shouted at once, no alarm color. */}
+      {/* Audience build progress — milestone bar so the buyer sees momentum
+          instead of an indeterminate spinner. */}
       {includesAudience && audienceBuilding && (
-        <div className="mt-6 flex items-start gap-3 rounded-2xl border border-border bg-primary/[0.04] px-5 py-4">
-          <span className="mt-0.5 h-4 w-4 shrink-0 animate-spin rounded-full border-2 border-primary/40 border-t-transparent" />
-          <div className="min-w-0">
-            <p className="text-sm font-medium text-foreground">Your audience is being built</p>
-            <p className="mt-0.5 text-sm leading-relaxed text-muted-foreground">
-              We are assembling a verified audience around your ideal customer and routing it
-              here. Your identified website visitors start appearing the moment your pixel fires.
-            </p>
-          </div>
-        </div>
+        <AudienceProgress
+          submittedAt={audienceSubmittedAt}
+          receivedAt={audienceReceivedAt}
+          delivered={false}
+        />
       )}
 
       {pixelWaiting && !audienceBuilding && (

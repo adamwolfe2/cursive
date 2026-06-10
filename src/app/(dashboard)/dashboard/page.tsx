@@ -773,7 +773,7 @@ export default async function DashboardPage({
   // bypasses RLS) — the user client would return zero rows.
   const { data: funnelOrderRow } = await createAdminClient()
     .from('funnel_orders')
-    .select('offer_slug, audience_delivered_at')
+    .select('offer_slug, audience_delivered_at, audience_submitted_at, audience_pushed_at')
     .eq('workspace_id', workspaceId)
     .order('created_at', { ascending: false })
     .limit(1)
@@ -832,6 +832,8 @@ export default async function DashboardPage({
         meetingsAllTime={meetingsAllTime}
         audienceBuilding={audienceBuilding}
         includesAudience={funnelOrderRow.offer_slug !== 'pixel_97'}
+        audienceSubmittedAt={funnelOrderRow.audience_submitted_at}
+        audienceReceivedAt={funnelOrderRow.audience_pushed_at}
       />
     )
   }
