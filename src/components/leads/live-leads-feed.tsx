@@ -25,6 +25,7 @@ const MAX_FEED_LEADS = 10
 const AL_SOURCES = new Set([
   'superpixel',
   'audiencelab_superpixel',
+  'audiencelab_pixel_v4', // pixelV4SyncCron pull (the primary visitor sync)
   'audiencelab',
   'audiencelab_pull',
 ])

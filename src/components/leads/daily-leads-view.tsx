@@ -275,12 +275,17 @@ export function DailyLeadsView({
         </div>
 
         <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-          <a href="/my-leads/preferences">
-            <Button variant="outline" size="sm" className="gap-1.5">
-              <SlidersHorizontal className="h-3.5 w-3.5" />
-              Targeting
-            </Button>
-          </a>
+          {/* Targeting drives marketplace lead-routing + user_lead_assignments
+              (the removed "Assigned" tab). It has no effect on a funnel buyer's
+              pixel/audience leads, so we don't show it to them. */}
+          {!managed && (
+            <a href="/my-leads/preferences">
+              <Button variant="outline" size="sm" className="gap-1.5">
+                <SlidersHorizontal className="h-3.5 w-3.5" />
+                Targeting
+              </Button>
+            </a>
+          )}
           <Button
             variant="outline"
             size="sm"
@@ -533,7 +538,7 @@ export function DailyLeadsView({
                   : 'Leads arrive every morning at 8am CT based on your targeting preferences.'
                 : 'Try clearing your search or filter.'}
             </p>
-            {todayCount === 0 && (
+            {todayCount === 0 && !managed && (
               <a
                 href="/my-leads/preferences"
                 className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
@@ -578,15 +583,18 @@ export function DailyLeadsView({
               No leads this week yet
             </p>
             <p className="mx-auto max-w-xs text-sm text-muted-foreground">
-              New leads are delivered daily based on your targeting preferences.
-              Check back soon!
+              {managed
+                ? 'Identified visitors and your weekly audience appear here as they come in.'
+                : 'New leads are delivered daily based on your targeting preferences. Check back soon!'}
             </p>
-            <a
-              href="/my-leads/preferences"
-              className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
-            >
-              Review preferences
-            </a>
+            {!managed && (
+              <a
+                href="/my-leads/preferences"
+                className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+              >
+                Review preferences
+              </a>
+            )}
           </div>
         ) : (
           <>
