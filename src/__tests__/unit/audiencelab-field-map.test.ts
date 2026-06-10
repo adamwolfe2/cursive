@@ -11,6 +11,7 @@ import {
   computeDeliverabilityScore,
   isLeadWorthy,
   isVerifiedEmail,
+  coerceEmployeeCount,
   sanitizeName,
   extractEventType,
   extractIpAddress,
@@ -561,5 +562,27 @@ describe('unwrapWebhookPayload', () => {
   it('should wrap single object in array', () => {
     const payload = { event: 'a' }
     expect(unwrapWebhookPayload(payload)).toEqual([{ event: 'a' }])
+  })
+})
+
+describe('coerceEmployeeCount (AL range string -> integer column)', () => {
+  it('takes the lower bound of a range', () => {
+    expect(coerceEmployeeCount('26 to 50')).toBe(26)
+    expect(coerceEmployeeCount('501 to 1000')).toBe(501)
+  })
+  it('handles open-ended and plain numbers', () => {
+    expect(coerceEmployeeCount('10000+')).toBe(10000)
+    expect(coerceEmployeeCount('150')).toBe(150)
+    expect(coerceEmployeeCount(250)).toBe(250)
+  })
+  it('returns null for empty/non-numeric/nullish', () => {
+    expect(coerceEmployeeCount('')).toBeNull()
+    expect(coerceEmployeeCount('unknown')).toBeNull()
+    expect(coerceEmployeeCount(null)).toBeNull()
+    expect(coerceEmployeeCount(undefined)).toBeNull()
+  })
+  it('normalizeALPayload emits an integer, never a range string', () => {
+    const n = normalizeALPayload({ resolution: { COMPANY_EMPLOYEE_COUNT: '26 to 50' } })
+    expect(n.company_employee_count).toBe(26)
   })
 })

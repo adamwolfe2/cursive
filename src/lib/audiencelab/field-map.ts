@@ -134,7 +134,7 @@ export interface NormalizedIdentity {
   department: string | null
   seniority_level: string | null
   company_revenue: string | null
-  company_employee_count: string | null
+  company_employee_count: number | null
   net_worth: string | null
   income_range: string | null
   dnc_mobile: boolean
@@ -380,6 +380,18 @@ function flattenPayload(raw: Record<string, any>): Record<string, any> {
  * Accepts raw JSONB from audiencelab_events.raw.
  * Extracts fields from top-level, resolution.*, event_data.*, and event.data.*.
  */
+/**
+ * AL company employee count arrives as a range string ("26 to 50", "10000+")
+ * or a plain number; the DB column is an integer. parseInt takes the leading
+ * digits (the range's lower bound) and returns null for anything non-numeric.
+ */
+export function coerceEmployeeCount(val: unknown): number | null {
+  if (val === null || val === undefined) return null
+  if (typeof val === 'number') return Number.isFinite(val) ? Math.trunc(val) : null
+  const n = parseInt(String(val).trim(), 10)
+  return Number.isFinite(n) ? n : null
+}
+
 export function normalizeALPayload(raw: Record<string, any>): NormalizedIdentity {
   // Flatten nested structures so field lookups work regardless of nesting
   const flat = flattenPayload(raw)
@@ -508,7 +520,12 @@ export function normalizeALPayload(raw: Record<string, any>): NormalizedIdentity
     department: flat.DEPARTMENT || flat.department || null,
     seniority_level: flat.SENIORITY_LEVEL || flat.seniority_level || null,
     company_revenue: flat.COMPANY_REVENUE || flat.company_revenue || null,
-    company_employee_count: flat.COMPANY_EMPLOYEE_COUNT || flat.company_employee_count || null,
+    // AL sends this as a range string ("26 to 50", "501 to 1000", "10000+"),
+    // but leads.company_employee_count is an integer column. Coerce to the
+    // lower-bound int (parseInt stops at the first non-digit) or null — passing
+    // the raw range string made every visitor lead insert throw "invalid input
+    // syntax for type integer", so identities saved but leads never did.
+    company_employee_count: coerceEmployeeCount(flat.COMPANY_EMPLOYEE_COUNT || flat.company_employee_count),
     net_worth: flat.NET_WORTH || flat.net_worth || null,
     income_range: flat.INCOME_RANGE || flat.income_range || null,
     dnc_mobile: String(flat.MOBILE_DNC || flat.mobile_dnc || '').toLowerCase() === 'true',
