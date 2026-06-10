@@ -147,7 +147,7 @@ export const pixelV4SyncCron = inngest.createFunction(
     retries: 1,
     timeouts: { finish: '2m' },
   },
-  { cron: '0 */4 * * *' }, // Every 4 hours
+  { cron: '0 * * * *' }, // Hourly — keeps every pixel's visitor pipeline fresh
   async ({ step }) => {
     const pixels = await step.run('list-active-pixels', async () => {
       const supabase = createAdminClient()

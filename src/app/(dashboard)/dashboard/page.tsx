@@ -14,6 +14,8 @@ import type { Metadata } from 'next'
 import { unstable_cache } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { after } from 'next/server'
+import { inngest } from '@/inngest/client'
 import { CreditService } from '@/lib/services/credit.service'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
@@ -729,7 +731,7 @@ export default async function DashboardPage({
     ]).catch(() => null),
     supabase
       .from('audiencelab_pixels')
-      .select('pixel_id, trial_status, trial_ends_at, visitor_count_total')
+      .select('id, pixel_id, trial_status, trial_ends_at, visitor_count_total, last_v4_synced_at')
       .eq('workspace_id', workspaceId)
       .eq('is_active', true)
       .maybeSingle(),
@@ -828,6 +830,32 @@ export default async function DashboardPage({
       .in('source', ['superpixel', 'audiencelab_superpixel', 'audiencelab_pixel_v4', 'audiencelab', 'audiencelab_pull'])
       .order('created_at', { ascending: false })
       .limit(10)
+
+    // Frontload ROI: when a funnel buyer opens the dashboard, kick an immediate
+    // AL visitor pull AFTER the response (non-blocking) if we haven't synced in a
+    // few minutes. New visitors land as leads and stream into the live feed, so
+    // the pipeline fills on first visit instead of waiting for the hourly cron.
+    if (pixel?.id) {
+      const lastSyncMs = pixel.last_v4_synced_at
+        ? new Date(pixel.last_v4_synced_at).getTime()
+        : 0
+      if (Date.now() - lastSyncMs > 5 * 60_000) {
+        after(() =>
+          inngest
+            .send({
+              name: 'pixel/v4-sync.requested',
+              data: {
+                pixel_row_id: pixel.id,
+                al_pixel_id: pixel.pixel_id,
+                workspace_id: workspaceId,
+                pixel_created_at: new Date().toISOString(),
+                last_v4_synced_at: pixel.last_v4_synced_at ?? null,
+              },
+            })
+            .catch(() => undefined)
+        )
+      }
+    }
 
     return (
       <FunnelBuyerDashboard
