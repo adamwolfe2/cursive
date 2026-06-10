@@ -60,20 +60,29 @@ export async function POST(
     }
 
     // Validate the audience exists and has records before we commit to a sync.
-    let sampleCount = 0
     try {
       const probe = await fetchAudienceRecords(audienceId, 1, 1)
-      sampleCount = probe.data?.length ?? 0
+      const sampleCount = probe.data?.length ?? 0
+      // total_records is null when the id is not a real audience (e.g. a Studio
+      // SEGMENT id or list id, or a mistyped/truncated id) vs 0 for a genuinely
+      // empty audience. Distinguish so the admin gets an actionable message.
+      const total = probe.total_records
+      if ((total === null || total === undefined) && sampleCount === 0) {
+        return NextResponse.json(
+          { error: "Couldn't find that audience. Use the AUDIENCE id from the /audience/... URL (36-char UUID) — not the Studio segment id or the list id." },
+          { status: 422 }
+        )
+      }
       if (sampleCount === 0) {
         return NextResponse.json(
-          { error: 'That audience exists but returned no records yet. Check it built in Studio.' },
+          { error: 'That audience is empty. Build + save it in Studio first, then sync.' },
           { status: 422 }
         )
       }
     } catch (err) {
       safeError('[admin/sync-audience] audience validation failed:', err)
       return NextResponse.json(
-        { error: 'Could not read that audience from AudienceLab. Check the ID.' },
+        { error: 'Could not read that audience from AudienceLab. Double-check the audience id.' },
         { status: 422 }
       )
     }
