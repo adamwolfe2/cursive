@@ -116,7 +116,7 @@ export function ResultsDashboard({ results, domain, monthlyVisitors, dealSize, i
 
       <div className={`${deck ? '' : 'space-y-4'} text-center`}>
         <a
-          href={deck ? 'https://leads.meetcursive.com/sign-up' : BOOK_ANCHOR}
+          href={deck ? 'https://leads.meetcursive.com/get-leads' : BOOK_ANCHOR}
           className={`inline-block w-full sm:w-auto bg-primary hover:bg-primary-dark text-white font-bold rounded-lg transition-all shadow-lg shadow-primary/25 ${deck ? 'px-8 py-3 text-base' : 'px-10 py-4 text-lg'}`}
         >
           {deck ? 'Install the Pixel on This Call →' : 'Book a Free Demo — See It Running on Your Site'}

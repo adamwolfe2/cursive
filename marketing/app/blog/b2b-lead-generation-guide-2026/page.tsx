@@ -413,7 +413,7 @@ export default function BlogPost() {
 
               <p>
                 To see how many warm leads you are currently missing, <Link href="https://cal.com/cursiveteam/30min">book
-                a demo</Link> or start with the <Link href="https://leads.meetcursive.com">Cursive self-serve
+                a demo</Link> or start with the <Link href="https://leads.meetcursive.com/get-leads">Cursive self-serve
                 marketplace</Link> at $0.60/lead with no monthly commitment.
               </p>
 

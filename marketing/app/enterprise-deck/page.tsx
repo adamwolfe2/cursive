@@ -896,7 +896,7 @@ function S11() {
               ))}
             </div>
             <a
-              href="https://leads.meetcursive.com"
+              href="https://leads.meetcursive.com/get-leads"
               target="_blank"
               rel="noopener noreferrer"
               className="block w-full text-center px-6 py-3 border border-gray-300 hover:border-primary hover:text-primary text-gray-700 font-semibold rounded-lg transition-colors"

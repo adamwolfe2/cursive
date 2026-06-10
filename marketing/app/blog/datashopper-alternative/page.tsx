@@ -1238,7 +1238,7 @@ export default function BlogPost() {
               { label: "What Is B2B Intent Data", href: "/what-is-b2b-intent-data", description: "Guide to intent signals and buyer behavior tracking" },
               { label: "Visitor Identification", href: "/visitor-identification", description: "How Cursive identifies 70% of anonymous website visitors" },
               { label: "AI SDR", href: "/what-is-ai-sdr", description: "How AI sales development representatives automate outreach" },
-              { label: "Marketplace Self-Serve", href: "https://leads.meetcursive.com", description: "Buy leads at $0.60 each, no monthly commitment" }
+              { label: "Marketplace Self-Serve", href: "https://leads.meetcursive.com/get-leads", description: "Buy leads at $0.60 each, no monthly commitment" }
             ]} />
           </MachineSection>
 
@@ -1249,7 +1249,7 @@ export default function BlogPost() {
             <MachineList items={[
               { label: "Platform Overview", href: "/platform", description: "Complete lead generation platform" },
               { label: "Pricing", href: "/pricing", description: "$1,000/mo managed or $0.60/lead self-serve" },
-              { label: "Marketplace (Self-Serve)", href: "https://leads.meetcursive.com", description: "Buy intent-qualified leads at $0.60 each" },
+              { label: "Marketplace (Self-Serve)", href: "https://leads.meetcursive.com/get-leads", description: "Buy intent-qualified leads at $0.60 each" },
               { label: "Visitor Identification", href: "/visitor-identification", description: "70% person-level match on anonymous website traffic" },
               { label: "Intent Audiences", href: "/intent-audiences", description: "60B+ behaviors & URLs scanned weekly, 30,000+ buying categories" },
               { label: "AI SDR", href: "/what-is-ai-sdr", description: "Automated outreach across email, LinkedIn, SMS, direct mail" },

@@ -73,7 +73,7 @@ export function WebMCPProvider() {
               },
             ],
             free_credits: 100,
-            signup_url: "https://leads.meetcursive.com/signup",
+            signup_url: "https://leads.meetcursive.com/get-leads",
             includes: [
               "Verified B2B contacts",
               "Filter by industry, title, location",
@@ -413,7 +413,7 @@ export function WebMCPProvider() {
             free_audit:
               "https://www.meetcursive.com/free-audit",
             marketplace_signup:
-              "https://leads.meetcursive.com/signup",
+              "https://leads.meetcursive.com/get-leads",
             email: "hey@meetcursive.com",
           },
         }

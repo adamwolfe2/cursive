@@ -1197,7 +1197,7 @@ export default function BlogPost() {
               { label: "Intent Audiences", href: "/intent-audiences", description: "60B+ behaviors & URLs scanned weekly across 30,000+ categories" },
               { label: "Platform Overview", href: "/platform", description: "AI SDR: email + LinkedIn + SMS + direct mail outreach" },
               { label: "Pricing", href: "/pricing", description: "$0.60/lead self-serve or $1k/month managed, month-to-month" },
-              { label: "Self-Serve Marketplace", href: "https://leads.meetcursive.com", description: "Buy leads at $0.60/lead with no monthly minimum" }
+              { label: "Self-Serve Marketplace", href: "https://leads.meetcursive.com/get-leads", description: "Buy leads at $0.60/lead with no monthly minimum" }
             ]} />
           </MachineSection>
 

@@ -280,7 +280,7 @@ export default function BlogPost() {
                   and launch personalized multi-channel outreach automatically. For teams without dedicated SDRs,
                   the <Link href="/marketplace" className="text-blue-600 hover:underline">managed service at $1,000/mo</Link> runs
                   full campaigns on your behalf. For agencies or teams with variable volume, the{" "}
-                  <Link href="https://leads.meetcursive.com" className="text-blue-600 hover:underline">self-serve marketplace</Link> at
+                  <Link href="https://leads.meetcursive.com/get-leads" className="text-blue-600 hover:underline">self-serve marketplace</Link> at
                   leads.meetcursive.com offers $0.60/lead with no monthly commitment.
                 </p>
 
@@ -956,7 +956,7 @@ export default function BlogPost() {
                 To see exactly what your current website traffic looks like translated into pipeline,{" "}
                 <Link href="/free-audit">request a free audit</Link>. We will analyze your traffic and show you what
                 identification + intent + automated outreach would look like for your site specifically. Or explore the{" "}
-                <Link href="https://leads.meetcursive.com">Cursive self-serve marketplace</Link> to try the $0.60/lead
+                <Link href="https://leads.meetcursive.com/get-leads">Cursive self-serve marketplace</Link> to try the $0.60/lead
                 model before committing to a monthly plan.
               </p>
 
@@ -1241,7 +1241,7 @@ export default function BlogPost() {
               { label: "AI SDR", href: "/what-is-ai-sdr", description: "How Cursive automates outreach across email, LinkedIn, SMS, direct mail" },
               { label: "Free AI Audit", href: "/free-audit", description: "See which visitors you are missing and what pipeline you could generate" },
               { label: "Book a Demo", href: "https://cal.com/cursiveteam/30min", description: "See Cursive in action with your traffic data" },
-              { label: "Marketplace Self-Serve", href: "https://leads.meetcursive.com", description: "Buy intent-qualified leads at $0.60 each, no monthly commitment" }
+              { label: "Marketplace Self-Serve", href: "https://leads.meetcursive.com/get-leads", description: "Buy intent-qualified leads at $0.60 each, no monthly commitment" }
             ]} />
           </MachineSection>
 
@@ -1263,7 +1263,7 @@ export default function BlogPost() {
             <MachineList items={[
               { label: "Platform Overview", href: "/platform", description: "Complete visitor ID + intent + AI SDR platform" },
               { label: "Pricing", href: "/pricing", description: "$1,000/mo managed or $0.60/lead self-serve" },
-              { label: "Marketplace (Self-Serve)", href: "https://leads.meetcursive.com", description: "Buy intent-qualified leads at $0.60 each" },
+              { label: "Marketplace (Self-Serve)", href: "https://leads.meetcursive.com/get-leads", description: "Buy intent-qualified leads at $0.60 each" },
               { label: "Visitor Identification", href: "/visitor-identification", description: "70% person-level match on anonymous website traffic" },
               { label: "Intent Audiences", href: "/intent-audiences", description: "60B+ behaviors & URLs scanned weekly, 30,000+ buying categories" },
               { label: "AI SDR", href: "/what-is-ai-sdr", description: "Automated outreach across email, LinkedIn, SMS, direct mail" },

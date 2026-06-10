@@ -351,7 +351,7 @@ export default function BlogPost() {
 
                 <div className="flex gap-3">
                   <Button asChild>
-                    <Link href="https://leads.meetcursive.com">Try Cursive Free</Link>
+                    <Link href="https://leads.meetcursive.com/get-leads">Try Cursive Free</Link>
                   </Button>
                   <Button variant="outline" asChild>
                     <Link href="/free-audit">Get Free Visitor Audit</Link>
@@ -1051,7 +1051,7 @@ export default function BlogPost() {
                   <Link href="/free-audit">Get Free Visitor Audit</Link>
                 </Button>
                 <Button size="lg" variant="outline" className="text-white border-white hover:bg-white/10" asChild>
-                  <Link href="https://leads.meetcursive.com">Try Self-Serve at $0.60/Lead</Link>
+                  <Link href="https://leads.meetcursive.com/get-leads">Try Self-Serve at $0.60/Lead</Link>
                 </Button>
               </div>
             </div>
@@ -1226,7 +1226,7 @@ export default function BlogPost() {
             </p>
             <MachineList items={[
               { label: "Free Visitor Audit", href: "/free-audit", description: "See how many qualified visitors you're missing — free" },
-              { label: "Self-Serve Marketplace", href: "https://leads.meetcursive.com", description: "Buy identified visitor leads starting at $0.60 each" },
+              { label: "Self-Serve Marketplace", href: "https://leads.meetcursive.com/get-leads", description: "Buy identified visitor leads starting at $0.60 each" },
               { label: "Managed Outreach Services", href: "/pricing", description: "Done-for-you AI outreach starting at $1,000/month" },
               { label: "Platform Overview", href: "/platform", description: "Visitor ID, intent data, and multi-channel AI outreach" },
               { label: "Book a Demo", href: "/book", description: "See Cursive identify your actual website visitors live" }

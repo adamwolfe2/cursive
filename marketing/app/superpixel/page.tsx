@@ -602,7 +602,7 @@ export default function SuperPixelPage() {
                   </li>
                 ))}
               </ul>
-              <Button href="https://leads.meetcursive.com/signup" className="w-full text-center bg-primary text-white hover:bg-primary-dark">
+              <Button href="https://leads.meetcursive.com/get-leads" className="w-full text-center bg-primary text-white hover:bg-primary-dark">
                 Start Free Trial →
               </Button>
             </div>

@@ -1,34 +1,37 @@
 /**
- * Pricing — talk-to-us page
+ * Pricing — self-serve plans
  *
- * Cursive's pricing is structured per use case and volume, not published
- * as fixed tiers. Every prospect goes through a discovery call with the
- * team so we can scope the right engagement (data partnership, audience
- * access, managed services, marketplace credits). This page replaces the
- * old self-serve pricing tiers with a single contact-driven flow.
+ * Cursive sells three productized plans, all month-to-month, all self-serve:
+ *   - Visitor Pixel ($97/mo) — identify the companies + people on your site
+ *   - Custom Audience ($197/mo) — weekly list of in-market prospects → Sheets
+ *   - Pixel + Audience Bundle ($247/mo) — both, the full top-of-funnel layer
  *
- * URL is preserved (/pricing) so existing inbound links and SEO signals
- * carry over. Server component, no client JS — keeps it fast and clean.
+ * Every CTA routes to the funnel at leads.meetcursive.com/get-leads, which
+ * runs Stripe Checkout and drops the buyer into the correct portal (pixel
+ * onboarding vs audience intake) based on what they bought.
+ *
+ * Source of truth for prices: src/lib/stripe/funnel-products.ts (app repo).
+ * URL is preserved (/pricing) so existing inbound links + SEO carry over.
  */
 
 import type { Metadata } from "next"
 import Link from "next/link"
+import { Check } from "lucide-react"
 import { Container } from "@/components/ui/container"
 import { StructuredData } from "@/components/seo/structured-data"
-
-const BOOKING_URL = "https://cal.com/cursiveteam/30min"
+import { GET_LEADS_URL, BOOKING_URL } from "@/lib/cta"
 
 export const metadata: Metadata = {
   title: "Pricing | Cursive",
   description:
-    "Cursive's pricing is structured per use case and volume — data partnerships, audience access, managed services, and marketplace credits. Every engagement is scoped on a 30-minute discovery call.",
+    "Simple, self-serve pricing. Visitor Pixel from $97/mo, Custom Audience from $197/mo, or both in the bundle for $247/mo. Install in 60 seconds, first audience in 24 hours.",
   alternates: {
     canonical: "https://www.meetcursive.com/pricing",
   },
   openGraph: {
     title: "Pricing | Cursive",
     description:
-      "Pricing structured per use case and volume. Data partnerships, audience access, managed services, marketplace credits. Schedule a 30-minute scoping call.",
+      "Visitor Pixel $97/mo, Custom Audience $197/mo, or the bundle for $247/mo. Self-serve, month-to-month, cancel anytime.",
     url: "https://www.meetcursive.com/pricing",
     siteName: "Cursive",
     type: "website",
@@ -39,72 +42,91 @@ export const metadata: Metadata = {
   },
 }
 
-const ENGAGEMENT_PATHS = [
+interface Plan {
+  slug: string
+  name: string
+  price: string
+  cadence: string
+  summary: string
+  features: string[]
+  cta: string
+  highlight: boolean
+}
+
+const PLANS: Plan[] = [
   {
-    n: "01",
-    name: "Data & API Partnerships",
+    slug: "pixel_97",
+    name: "Visitor Pixel",
+    price: "$97",
+    cadence: "/mo",
     summary:
-      "Identity, intent, and enrichment delivered via API. Pay-as-you-go for evaluation, or committed tiers from $15K/month for scaled production use.",
-    bullets: [
-      "Pixel identification + audience enrichment",
-      "~50,000 white-label intent segments via taxonomy endpoint",
-      "Closed-loop feedback pixel for continuous segment improvement",
-      "Bulk append (monthly) or real-time API waterfall",
+      "Identify the companies and people visiting your site. Installs in 60 seconds.",
+    features: [
+      "Deterministic visitor identification (40–60% resolution)",
+      "Company + person-level detail on every visit",
+      "60-second pixel install, no engineering required",
+      "Identified visitors synced to your portal",
+      "Month-to-month, cancel anytime",
     ],
-    cta: { label: "Read the partnership overview", href: "/data-partnerships" },
+    cta: "Get the Pixel",
+    highlight: false,
   },
   {
-    n: "02",
-    name: "Managed Services",
+    slug: "bundle_247",
+    name: "Pixel + Audience Bundle",
+    price: "$247",
+    cadence: "/mo",
     summary:
-      "Done-for-you outbound built on the Cursive data layer. Cursive Data, Cursive Outbound, and Cursive Pipeline are scoped per ICP, monthly volume, and channel mix.",
-    bullets: [
-      "Cursive Data — verified contacts delivered monthly to your CRM",
-      "Cursive Outbound — campaigns built, launched, and optimized for you",
-      "Cursive Pipeline — full AI SDR with multi-channel follow-up",
-      "Cursive Venture Studio — white-glove partnership for high-volume programs",
+      "Both the visitor pixel and the weekly audience — your full top-of-funnel intel layer.",
+    features: [
+      "Everything in Visitor Pixel",
+      "Everything in Custom Audience",
+      "Site traffic + in-market intent in one feed",
+      "Priority audience updates within 24 hours",
+      "Best value — save vs. buying separately",
     ],
-    cta: { label: "See the services overview", href: "/services" },
+    cta: "Get the Bundle",
+    highlight: true,
   },
   {
-    n: "03",
-    name: "Self-Serve Marketplace",
+    slug: "audience_197",
+    name: "Custom Audience",
+    price: "$197",
+    cadence: "/mo",
     summary:
-      "Buy verified leads on demand. Marketplace credits and the Cursive platform are available for teams that prefer to build and run programs in-house.",
-    bullets: [
-      "Pay-as-you-go pricing per record",
-      "Filter by industry, geography, intent, and seniority",
-      "Direct sync to your CRM",
-      "Same identity graph as enterprise partnerships",
+      "A fresh weekly list of people actively searching for your product, delivered to Google Sheets.",
+    features: [
+      "Weekly list of in-market prospects",
+      "Built to your exact ICP and geography",
+      "Delivered straight to Google Sheets",
+      "First audience delivered within 24 hours",
+      "No pixel or site traffic required",
     ],
-    cta: { label: "Explore the marketplace", href: "/marketplace" },
+    cta: "Get an Audience",
+    highlight: false,
   },
-] as const
+]
 
 const FAQS = [
   {
-    q: "Why don't you publish fixed prices?",
-    a: "Cursive's data layer powers very different use cases — a partner licensing white-label intent segments has a fundamentally different cost structure than a team buying enriched contacts off the marketplace. Publishing one set of tiers would either over-charge the small use cases or under-resource the large ones. We scope every engagement so the price reflects the actual work and data volume.",
+    q: "What's the difference between the Pixel and the Audience?",
+    a: "The Visitor Pixel identifies people already coming to your website — it turns anonymous traffic into named companies and contacts. The Custom Audience is proactive: each week we deliver a fresh list of people actively searching for what you sell, whether or not they've visited your site. The bundle gives you both — your inbound traffic and net-new in-market prospects in one feed.",
   },
   {
-    q: "What's the smallest engagement you offer?",
-    a: "There's no formal minimum. The marketplace starts at pay-as-you-go pricing per record with no commitment. Managed services start with Cursive Data at the entry tier. Data partnerships have a committed tier from $15K/month for scaled production use, with pay-as-you-go available for evaluation.",
+    q: "How fast can I get started?",
+    a: "Immediately. Pick a plan, check out, and you're dropped straight into your portal. The pixel installs in about 60 seconds with a single snippet. Audience plans deliver your first list within 24 hours.",
   },
   {
-    q: "What happens on the call?",
-    a: "A 30-minute working session with the team. We'll ask about your ICP, current data stack, monthly volume, and what you're trying to solve. You'll see a live walkthrough of the platform on real data, and we'll propose a structure that fits — usually with a follow-up sandbox or look-back POC against your own customer list.",
+    q: "Is there a contract or setup fee?",
+    a: "No. Every plan is month-to-month with no setup fee. Cancel anytime from your portal.",
   },
   {
-    q: "How quickly can we get started?",
-    a: "Marketplace and self-serve programs are live the same day. Managed services are typically scoped and launched within one to two weeks of the discovery call. Enterprise data partnerships move on a procurement timeline that fits your team — we can run a conversion look-back POC in parallel so you have evidence before signing anything.",
+    q: "What data powers this?",
+    a: "The same identity graph across every plan — 280M+ verified consumer records sourced from offline partners and refreshed every 30 days, layered with intent signals from a 15M-domain organic network.",
   },
   {
-    q: "Do you offer a free trial or proof of concept?",
-    a: "Yes. For data partnerships, the standard POC is a conversion look-back: you provide a hashed list of known buyers, and we reverse-engineer the segments and behavioral signals those individuals were part of in the period leading up to conversion. This gives you a controlled view of data quality without an open-ended live test. We can also onboard a sample of customer data (e.g. 10,000 hashed records) and demonstrate which segments those customers participated in over the previous seven days.",
-  },
-  {
-    q: "Is the data the same across all engagement paths?",
-    a: "Yes. Whether you access Cursive through the marketplace, a managed service, or a data partnership, you're querying the same identity graph — 280M+ verified consumer records sourced from offline partners (TransUnion, Experian), refreshed every 30 days against the National Change of Address database, layered with intent signals from our 15M-domain organic network and standard SSP/RTB feeds.",
+    q: "Can I talk to someone before buying?",
+    a: "Of course. Book a 30-minute call and we'll walk through your ICP, show the platform on real data, and recommend the right plan. But most teams just pick a plan and get started the same day.",
   },
 ] as const
 
@@ -118,7 +140,7 @@ export default function PricingPage() {
             "@type": "Service",
             name: "Cursive",
             description:
-              "Identity and intent data infrastructure offered through data partnerships, managed services, and a self-serve marketplace. Pricing scoped per use case and volume.",
+              "Self-serve visitor identification and in-market audience plans. Visitor Pixel $97/mo, Custom Audience $197/mo, Pixel + Audience Bundle $247/mo.",
             provider: {
               "@type": "Organization",
               name: "Cursive",
@@ -128,27 +150,27 @@ export default function PricingPage() {
             areaServed: "Global",
             hasOfferCatalog: {
               "@type": "OfferCatalog",
-              name: "Cursive engagement paths",
+              name: "Cursive plans",
               itemListElement: [
                 {
                   "@type": "Offer",
-                  itemOffered: {
-                    "@type": "Service",
-                    name: "Data & API Partnerships",
-                  },
+                  price: "97",
+                  priceCurrency: "USD",
+                  itemOffered: { "@type": "Service", name: "Visitor Pixel" },
                 },
                 {
                   "@type": "Offer",
-                  itemOffered: {
-                    "@type": "Service",
-                    name: "Managed Services",
-                  },
+                  price: "197",
+                  priceCurrency: "USD",
+                  itemOffered: { "@type": "Service", name: "Custom Audience" },
                 },
                 {
                   "@type": "Offer",
+                  price: "247",
+                  priceCurrency: "USD",
                   itemOffered: {
                     "@type": "Service",
-                    name: "Self-Serve Marketplace",
+                    name: "Pixel + Audience Bundle",
                   },
                 },
               ],
@@ -177,136 +199,88 @@ export default function PricingPage() {
 
       <article className="bg-white text-gray-900">
         {/* ── Hero ────────────────────────────────────────────────────────── */}
-        <section className="relative border-b border-gray-100 pt-20 pb-16 sm:pt-24 sm:pb-20 overflow-hidden">
+        <section className="relative border-b border-gray-100 pt-20 pb-14 sm:pt-24 sm:pb-16 overflow-hidden">
           <div
             aria-hidden
             className="pointer-events-none absolute inset-0 bg-gradient-to-b from-blue-50/40 via-white to-white"
           />
-          <Container className="relative max-w-3xl">
+          <Container className="relative max-w-3xl text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
               Pricing
             </p>
             <h1 className="mt-5 text-4xl sm:text-5xl font-light tracking-tight text-gray-900 leading-[1.1]">
-              Built Around Your Data Needs.
+              Simple plans. Pipeline in minutes.
             </h1>
-            <p className="mt-6 text-lg text-gray-600 leading-relaxed">
-              Cursive&apos;s pricing is structured per use case and volume — not as
-              a fixed list of tiers. Every engagement is scoped on a 30-minute
-              call so the structure fits the data, the channels, and the team
-              that will actually use it.
-            </p>
-            <div className="mt-8 flex flex-col items-start gap-3 sm:flex-row">
-              <Link
-                href={BOOKING_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-primary/90"
-              >
-                Book a 30-Minute Call
-                <span aria-hidden>→</span>
-              </Link>
-              <Link
-                href="/data-partnerships"
-                className="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-6 py-3 text-sm font-medium text-gray-900 transition-colors hover:border-gray-400"
-              >
-                See the data partnership overview
-              </Link>
-            </div>
-            <p className="mt-4 text-sm text-gray-500">
-              Or email{" "}
-              <a
-                href="mailto:hey@meetcursive.com"
-                className="text-primary underline underline-offset-4 decoration-primary/40 hover:decoration-primary"
-              >
-                hey@meetcursive.com
-              </a>{" "}
-              with a one-paragraph description of what you&apos;re solving and we&apos;ll
-              come back with a structure proposal.
+            <p className="mx-auto mt-6 max-w-2xl text-lg text-gray-600 leading-relaxed">
+              Identify the visitors already on your site, get a weekly list of
+              people searching for your product, or both. Self-serve,
+              month-to-month, cancel anytime.
             </p>
           </Container>
         </section>
 
-        {/* ── Engagement paths ────────────────────────────────────────────── */}
-        <section className="border-b border-gray-100 py-20 sm:py-24">
-          <Container className="max-w-3xl">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
-              How We Work
-            </p>
-            <h2 className="mt-5 text-3xl sm:text-4xl font-light tracking-tight text-gray-900">
-              Three engagement paths.
-            </h2>
-            <p className="mt-5 text-base text-gray-600 leading-relaxed">
-              Every Cursive customer accesses the same identity and intent
-              infrastructure — the differences below are about how that data is
-              delivered, who operates the workflow, and how the commercials are
-              structured.
-            </p>
-
-            <div className="mt-12 space-y-12">
-              {ENGAGEMENT_PATHS.map((path) => (
-                <div key={path.n}>
-                  <div className="flex items-baseline gap-5">
-                    <span className="font-mono text-xs text-primary">{path.n}</span>
-                    <h3 className="text-xl sm:text-2xl font-light tracking-tight text-gray-900">
-                      {path.name}
-                    </h3>
+        {/* ── Plans ───────────────────────────────────────────────────────── */}
+        <section className="border-b border-gray-100 py-16 sm:py-20">
+          <Container className="max-w-5xl">
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+              {PLANS.map((plan) => (
+                <div
+                  key={plan.slug}
+                  className={`relative flex flex-col rounded-2xl border p-7 ${
+                    plan.highlight
+                      ? "border-primary shadow-lg ring-1 ring-primary/20"
+                      : "border-gray-200"
+                  }`}
+                >
+                  {plan.highlight && (
+                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white">
+                      Most Popular
+                    </span>
+                  )}
+                  <h2 className="text-lg font-medium text-gray-900">
+                    {plan.name}
+                  </h2>
+                  <div className="mt-4 flex items-baseline gap-1">
+                    <span className="text-4xl font-light tracking-tight text-gray-900">
+                      {plan.price}
+                    </span>
+                    <span className="text-sm text-gray-500">{plan.cadence}</span>
                   </div>
-                  <p className="mt-4 text-base text-gray-600 leading-relaxed pl-[44px]">
-                    {path.summary}
+                  <p className="mt-4 text-sm text-gray-600 leading-relaxed">
+                    {plan.summary}
                   </p>
-                  <ul className="mt-5 space-y-2.5 pl-[44px]">
-                    {path.bullets.map((bullet) => (
+                  <ul className="mt-6 space-y-3">
+                    {plan.features.map((feature) => (
                       <li
-                        key={bullet}
-                        className="flex items-start gap-3 text-[0.95rem] text-gray-700"
+                        key={feature}
+                        className="flex items-start gap-2.5 text-sm text-gray-700"
                       >
-                        <span
-                          className="mt-2 h-1 w-1 shrink-0 rounded-full bg-primary"
-                          aria-hidden
-                        />
-                        <span>{bullet}</span>
+                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                        <span>{feature}</span>
                       </li>
                     ))}
                   </ul>
-                  <div className="mt-5 pl-[44px]">
+                  <div className="mt-8 pt-2">
                     <Link
-                      href={path.cta.href}
-                      className="text-sm font-medium text-primary hover:underline underline-offset-4"
+                      href={GET_LEADS_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`inline-flex w-full items-center justify-center gap-2 rounded-md px-6 py-3 text-sm font-medium transition-colors ${
+                        plan.highlight
+                          ? "bg-primary text-white hover:bg-primary/90"
+                          : "border border-gray-300 bg-white text-gray-900 hover:border-gray-400"
+                      }`}
                     >
-                      {path.cta.label} →
+                      {plan.cta}
+                      <span aria-hidden>→</span>
                     </Link>
                   </div>
                 </div>
               ))}
             </div>
-          </Container>
-        </section>
-
-        {/* ── Mid-page CTA ────────────────────────────────────────────────── */}
-        <section className="border-b border-gray-100 bg-gray-50 py-16">
-          <Container className="max-w-3xl text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
-              Talk to the Team
+            <p className="mt-8 text-center text-sm text-gray-500">
+              All plans are month-to-month. No setup fee. Cancel anytime.
             </p>
-            <h2 className="mt-5 text-2xl sm:text-3xl font-light tracking-tight text-gray-900">
-              Every engagement starts with a 30-minute call.
-            </h2>
-            <p className="mt-5 text-base text-gray-600 leading-relaxed max-w-xl mx-auto">
-              Walk through your ICP, current data stack, and what you&apos;re
-              trying to solve. You&apos;ll see the platform on real data and leave
-              with a proposed structure.
-            </p>
-            <div className="mt-8">
-              <Link
-                href={BOOKING_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 rounded-md bg-gray-900 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-gray-800"
-              >
-                Schedule a Call
-                <span aria-hidden>→</span>
-              </Link>
-            </div>
           </Container>
         </section>
 
@@ -344,27 +318,30 @@ export default function PricingPage() {
               Next Step
             </p>
             <h2 className="mt-5 text-3xl sm:text-4xl font-light tracking-tight text-gray-900">
-              Let&apos;s Scope Your Engagement.
+              Start turning traffic into pipeline.
             </h2>
-            <p className="mt-5 text-base text-gray-600 leading-relaxed max-w-xl mx-auto">
-              Pick a time that works. We&apos;ll come prepared with relevant
-              examples and a structure proposal you can take back to your team.
+            <p className="mx-auto mt-5 max-w-xl text-base text-gray-600 leading-relaxed">
+              Pick a plan and you&apos;re live in minutes — or book a quick call
+              if you&apos;d like a walkthrough first.
             </p>
             <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <Link
+                href={GET_LEADS_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-primary/90"
+              >
+                Get Started
+                <span aria-hidden>→</span>
+              </Link>
               <Link
                 href={BOOKING_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center rounded-md bg-primary px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-primary/90"
+                className="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-6 py-3 text-sm font-medium text-gray-900 transition-colors hover:border-gray-400"
               >
                 Book a 30-Minute Call
               </Link>
-              <a
-                href="mailto:hey@meetcursive.com"
-                className="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-6 py-3 text-sm font-medium text-gray-900 transition-colors hover:border-gray-400"
-              >
-                Email hey@meetcursive.com
-              </a>
             </div>
           </Container>
         </section>

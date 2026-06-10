@@ -330,7 +330,7 @@ export default function WhatIsSalesIntelligence() {
                 </p>
 
                 <div className="flex gap-4">
-                  <Link href="https://leads.meetcursive.com">
+                  <Link href="https://leads.meetcursive.com/get-leads">
                     <Button>Start Free Trial</Button>
                   </Link>
                   <Link href="/blog/best-b2b-data-providers-2026" className="inline-flex items-center text-primary hover:underline font-medium">
@@ -345,7 +345,7 @@ export default function WhatIsSalesIntelligence() {
                 headline="Turn Anonymous Visitors Into Sales Intelligence"
                 description="Cursive identifies 70% of your website visitors by name and email, enriches them with firmographic data and intent signals, and pushes them directly into your CRM. No more guessing who visited your site."
                 ctaText="Start Free Trial"
-                ctaUrl="https://leads.meetcursive.com"
+                ctaUrl="https://leads.meetcursive.com/get-leads"
               />
 
               {/* Related Links */}

@@ -342,7 +342,7 @@ export default function WhatIsDemandGeneration() {
                 headline="See Which Demand Gen Visitors Are Actually In-Market"
                 description="Cursive identifies 70% of anonymous website visitors — including everyone who reads your blog, watches your webinars, and browses your pricing page. Start seeing names and emails behind your demand gen traffic."
                 ctaText="Start Free Trial"
-                ctaUrl="https://leads.meetcursive.com"
+                ctaUrl="https://leads.meetcursive.com/get-leads"
               />
 
               {/* Related Links */}

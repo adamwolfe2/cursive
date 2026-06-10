@@ -315,8 +315,8 @@ export function Footer() {
             <h3 className="text-gray-900 font-medium mb-4 mt-8">Get Started</h3>
             <ul className="space-y-2 text-sm text-gray-600">
               <li>
-                <a href="https://leads.meetcursive.com/signup" className="hover:text-primary transition-colors">
-                  Sign Up Free
+                <a href="https://leads.meetcursive.com/get-leads" className="hover:text-primary transition-colors">
+                  Get Started
                 </a>
               </li>
               <li>

@@ -46,8 +46,8 @@ export default function AudienceBuilderPage() {
                 Stop paying per contact or hitting export limits. Build audiences of any size and launch campaigns in minutes, not weeks.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <Button size="lg" href="https://cal.com/cursiveteam/30min">
-                  Build Your First Audience
+                <Button size="lg" href="https://leads.meetcursive.com/get-leads" target="_blank" rel="noopener noreferrer">
+                  Build My Audience
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
                 <Button size="lg" variant="outline" href="/pricing">
@@ -545,11 +545,12 @@ export default function AudienceBuilderPage() {
 
               <Button
                 size="lg"
-                href="https://cal.com/cursiveteam/30min"
+                href="https://leads.meetcursive.com/get-leads"
                 target="_blank"
+                rel="noopener noreferrer"
                 className="bg-primary text-white hover:bg-primary-dark text-lg px-10 py-5 mb-4"
               >
-                Build Your First Audience Now
+                Build My Audience
               </Button>
 
               <div className="flex items-center justify-center gap-8 text-sm text-gray-600 mt-4">
@@ -761,9 +762,9 @@ export default function AudienceBuilderPage() {
               description: "Explore pricing tiers and plans"
             },
             {
-              label: "Schedule Demo",
-              href: "https://cal.com/cursiveteam/30min",
-              description: "Book a personalized walkthrough of the platform"
+              label: "Build My Audience",
+              href: "https://leads.meetcursive.com/get-leads",
+              description: "Start building audiences in the platform"
             }
           ]} />
         </MachineSection>
@@ -773,8 +774,8 @@ export default function AudienceBuilderPage() {
           <MachineList items={[
             {
               label: "Build First Audience",
-              href: "https://cal.com/cursiveteam/30min",
-              description: "Schedule a demo to see the platform in action"
+              href: "https://leads.meetcursive.com/get-leads",
+              description: "Start building audiences in the platform"
             },
             {
               label: "Website",
@@ -782,7 +783,7 @@ export default function AudienceBuilderPage() {
             },
             {
               label: "Platform Access",
-              href: "https://leads.meetcursive.com"
+              href: "https://leads.meetcursive.com/get-leads"
             }
           ]} />
         </MachineSection>

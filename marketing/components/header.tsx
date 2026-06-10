@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
 import { useState } from "react"
 import { Menu, X, ChevronDown, Eye, Users, Mail, Target, Database, Shield, Building2, ShoppingCart, Code, Briefcase, Home, Store, BookOpen, BarChart3, FileText } from "lucide-react"
+import { GET_LEADS_URL, BOOKING_URL } from "@/lib/cta"
 
 interface DropdownItem {
   href: string
@@ -218,11 +219,11 @@ export function Header() {
 
             {/* Desktop CTA Buttons */}
             <div className="hidden md:flex items-center gap-4">
-              <Button size="sm" variant="outline" href="/free-audit">
-                Get Free Audit
-              </Button>
-              <Button size="sm" href="https://cal.com/cursiveteam/30min" target="_blank">
+              <Button size="sm" variant="outline" href={BOOKING_URL} target="_blank">
                 Book a Call
+              </Button>
+              <Button size="sm" href={GET_LEADS_URL} target="_blank">
+                Get Started
               </Button>
             </div>
 
@@ -319,18 +320,19 @@ export function Header() {
                 <Button
                   variant="outline"
                   className="w-full"
-                  href="/free-audit"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Get Free Audit
-                </Button>
-                <Button
-                  className="w-full"
-                  href="https://cal.com/cursiveteam/30min"
+                  href={BOOKING_URL}
                   target="_blank"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Book a Call
+                </Button>
+                <Button
+                  className="w-full"
+                  href={GET_LEADS_URL}
+                  target="_blank"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Get Started
                 </Button>
               </nav>
             </motion.div>

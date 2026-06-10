@@ -70,7 +70,7 @@ export default function CursiveVsRb2bPage() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button size="lg" asChild>
-                  <a href="https://leads.meetcursive.com/signup" target="_blank" rel="noopener noreferrer">
+                  <a href="https://leads.meetcursive.com/get-leads" target="_blank" rel="noopener noreferrer">
                     Start Free with Cursive
                   </a>
                 </Button>
@@ -198,7 +198,7 @@ export default function CursiveVsRb2bPage() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button size="lg" variant="default" className="bg-white text-primary hover:bg-white/90" asChild>
-                  <a href="https://leads.meetcursive.com/signup" target="_blank" rel="noopener noreferrer">
+                  <a href="https://leads.meetcursive.com/get-leads" target="_blank" rel="noopener noreferrer">
                     Start Free
                   </a>
                 </Button>
@@ -268,7 +268,7 @@ export default function CursiveVsRb2bPage() {
             <MachineList items={[
               { label: "SuperPixel Installation", href: "/superpixel", description: "Replaces RB2B pixel in under 2 minutes" },
               { label: "RB2B Alternative", href: "/blog/rb2b-alternative", description: "Full guide to switching from RB2B" },
-              { label: "Start Free", href: "https://leads.meetcursive.com/signup", description: "Create a Cursive account" },
+              { label: "Start Free", href: "https://leads.meetcursive.com/get-leads", description: "Create a Cursive account" },
             ]} />
           </MachineSection>
         </MachineContent>

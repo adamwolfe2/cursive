@@ -41,7 +41,7 @@ export default function PlatformPage() {
               managed services (or use them yourself).
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Button size="lg" href="https://leads.meetcursive.com" target="_blank">
+              <Button size="lg" href="https://leads.meetcursive.com/get-leads" target="_blank">
                 Try the Platform
                 <ArrowRight className="w-5 h-5" />
               </Button>
@@ -649,7 +649,7 @@ export default function PlatformPage() {
                 </div>
               </div>
 
-              <Button size="lg" href="https://leads.meetcursive.com" target="_blank">
+              <Button size="lg" href="https://leads.meetcursive.com/get-leads" target="_blank">
                 Try Intelligence Layer
                 <ArrowRight className="w-5 h-5" />
               </Button>
@@ -876,7 +876,7 @@ export default function PlatformPage() {
         <MachineList items={[
           {
             label: "Try the Platform",
-            href: "https://leads.meetcursive.com",
+            href: "https://leads.meetcursive.com/get-leads",
             description: "Start using AI Studio, People Search, and Lead Marketplace"
           },
           {
