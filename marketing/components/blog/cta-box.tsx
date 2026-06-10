@@ -1,5 +1,6 @@
 import { Button } from '../ui/button'
 import { ArrowRight, Sparkles, Target, Zap } from 'lucide-react'
+import { GET_LEADS_URL } from '@/lib/cta'
 
 type CTAVariant = 'demo' | 'trial' | 'pricing' | 'newsletter'
 
@@ -26,27 +27,27 @@ const ctaConfig: Record<
     icon: Target,
     title: 'See Cursive in action',
     description:
-      'Book a personalized demo and discover how Cursive resolves 40–60% of your anonymous website visitors with a deterministic pixel — vs 2–5% for cookie-based tools — and turns them into qualified leads.',
-    buttonText: 'Book Your Demo',
-    buttonHref: 'https://cal.com/cursiveteam/30min',
+      'Cursive resolves 40–60% of your anonymous website visitors with a deterministic pixel — vs 2–5% for cookie-based tools — and turns them into qualified leads. Install in 60 seconds.',
+    buttonText: 'Get Started',
+    buttonHref: GET_LEADS_URL,
     accentColor: 'bg-blue-50 border-blue-200',
   },
   trial: {
     icon: Zap,
     title: 'Start identifying visitors today',
     description:
-      'Install our tracking pixel in 5 minutes and start seeing which companies are visiting your site. No credit card required.',
-    buttonText: 'Get Started Free',
-    buttonHref: '/signup',
+      'Install the Cursive pixel in 60 seconds and start seeing the companies and people visiting your site. Plans from $97/mo.',
+    buttonText: 'Get Started',
+    buttonHref: GET_LEADS_URL,
     accentColor: 'bg-blue-50 border-blue-200',
   },
   pricing: {
     icon: Sparkles,
     title: 'Ready to grow your pipeline?',
     description:
-      'Explore our flexible pricing plans designed for B2B SaaS companies, agencies, and enterprise sales teams.',
-    buttonText: 'View Pricing',
-    buttonHref: '/pricing',
+      'Visitor Pixel from $97/mo, Custom Audience from $197/mo, or both in the bundle. Pick a plan and get started in minutes.',
+    buttonText: 'Get Started',
+    buttonHref: GET_LEADS_URL,
     accentColor: 'bg-blue-50 border-blue-200',
   },
   newsletter: {

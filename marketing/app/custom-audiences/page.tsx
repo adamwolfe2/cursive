@@ -647,9 +647,9 @@ export default function CustomAudiencesPage() {
                 description: "Browse pre-built audience lists for instant access"
               },
               {
-                label: "Book a Call",
-                href: "https://cal.com/cursiveteam/30min",
-                description: "Discuss custom requirements with our team"
+                label: "Get Started",
+                href: "https://leads.meetcursive.com/get-leads",
+                description: "Request your custom audience and get a free 25-lead sample"
               }
             ]} />
           </MachineSection>

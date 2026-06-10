@@ -126,7 +126,7 @@ export default function MarketplacePage() {
                   Sign up free and get 100 credits to start browsing.
                 </p>
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                  <Button size="lg" href="https://leads.meetcursive.com/signup?source=marketplace" target="_blank">
+                  <Button size="lg" href="https://leads.meetcursive.com/get-leads" target="_blank">
                     Start Free -- Get 100 Credits
                     <ArrowRight className="w-5 h-5" />
                   </Button>
@@ -245,7 +245,7 @@ export default function MarketplacePage() {
 
                     <Button
                       className="w-full"
-                      href="https://leads.meetcursive.com/signup?source=marketplace"
+                      href="https://leads.meetcursive.com/get-leads"
                       target="_blank"
                     >
                       Get {pkg.tier}
@@ -389,7 +389,7 @@ export default function MarketplacePage() {
                   Sign up free and get 100 credits. No credit card required. Start building your pipeline today.
                 </p>
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
-                  <Button size="lg" href="https://leads.meetcursive.com/signup?source=marketplace" target="_blank">
+                  <Button size="lg" href="https://leads.meetcursive.com/get-leads" target="_blank">
                     Start Free -- Get 100 Credits
                     <ArrowRight className="w-5 h-5" />
                   </Button>
@@ -452,7 +452,7 @@ export default function MarketplacePage() {
             subheadline="Your Pipeline?"
             description="Sign up for the marketplace and start browsing 50,000+ verified B2B leads. Get 100 free credits on signup."
             ctaText="Start Free -- Get 100 Credits"
-            ctaUrl="https://leads.meetcursive.com/signup?source=marketplace"
+            ctaUrl="https://leads.meetcursive.com/get-leads"
           />
         </main>
       </HumanView>
@@ -537,7 +537,7 @@ export default function MarketplacePage() {
             <MachineList items={[
               {
                 label: "Sign Up Free (100 Credits Included)",
-                href: "https://leads.meetcursive.com/signup?source=marketplace",
+                href: "https://leads.meetcursive.com/get-leads",
                 description: "Create your account and start browsing leads immediately"
               },
               {

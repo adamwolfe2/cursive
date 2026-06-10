@@ -402,7 +402,7 @@ export default function WhatIsBuyerIntent() {
                 </p>
 
                 <div className="flex gap-4">
-                  <Link href="https://leads.meetcursive.com">
+                  <Link href="https://leads.meetcursive.com/get-leads">
                     <Button>Start Free Trial</Button>
                   </Link>
                   <Link href="/blog/intent-data-providers-comparison" className="inline-flex items-center text-primary hover:underline font-medium">
@@ -417,7 +417,7 @@ export default function WhatIsBuyerIntent() {
                 headline="Act on Buyer Intent Before Competitors Do"
                 description="Cursive combines website visitor identification (70% ID rate) with 60B+ behaviors & URLs scanned weekly refreshed weekly. See which prospects are actively in-market right now — and reach them before they book a demo with a competitor."
                 ctaText="Start Free Trial"
-                ctaUrl="https://leads.meetcursive.com"
+                ctaUrl="https://leads.meetcursive.com/get-leads"
               />
 
               {/* Related Links */}

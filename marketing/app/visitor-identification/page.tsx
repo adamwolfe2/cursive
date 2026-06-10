@@ -47,8 +47,8 @@ export default function VisitorIdentificationPage() {
                 See who visited your pricing page, automatically enrich their profiles, trigger personalized outreach, and build lookalike audiences from our database of hundreds of millions of verified B2B and B2C leads.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <Button size="lg" href="https://cal.com/cursiveteam/30min">
-                  See Who's Visiting Your Site
+                <Button size="lg" href="https://leads.meetcursive.com/get-leads" target="_blank" rel="noopener noreferrer">
+                  Get Started
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
                 <Button size="lg" variant="outline" href="/pricing">
@@ -574,11 +574,12 @@ export default function VisitorIdentificationPage() {
 
               <Button
                 size="lg"
-                href="https://cal.com/cursiveteam/30min"
+                href="https://leads.meetcursive.com/get-leads"
                 target="_blank"
+                rel="noopener noreferrer"
                 className="bg-primary text-white hover:bg-primary-dark text-lg px-10 py-5 mb-4"
               >
-                Book Your Free AI Audit Now
+                Get Started
               </Button>
 
               <div className="flex items-center justify-center gap-8 text-sm text-gray-600 mt-4">
@@ -751,9 +752,9 @@ export default function VisitorIdentificationPage() {
         <MachineSection title="Getting Started">
           <MachineList items={[
             {
-              label: "Book a Demo",
-              href: "https://cal.com/cursiveteam/30min",
-              description: "See visitor identification in action with a personalized walkthrough"
+              label: "Get Started",
+              href: "https://leads.meetcursive.com/get-leads",
+              description: "Start identifying your website visitors self-serve"
             },
             {
               label: "View Platform",

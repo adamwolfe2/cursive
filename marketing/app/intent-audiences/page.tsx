@@ -176,8 +176,8 @@ export default function IntentAudiencesPage() {
                 Skip the manual list building. Launch campaigns in minutes with audiences already showing purchase intent. No research, no guessing—just ready-to-convert prospects.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <Button size="lg" href="https://cal.com/cursiveteam/30min">
-                  Explore Intent Audiences
+                <Button size="lg" href="https://leads.meetcursive.com/get-leads" target="_blank" rel="noopener noreferrer">
+                  Get Started
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
                 <Button size="lg" variant="outline" href="/pricing">
@@ -748,11 +748,12 @@ export default function IntentAudiencesPage() {
 
               <Button
                 size="lg"
-                href="https://cal.com/cursiveteam/30min"
+                href="https://leads.meetcursive.com/get-leads"
                 target="_blank"
+                rel="noopener noreferrer"
                 className="bg-primary text-white hover:bg-primary-dark text-lg px-10 py-5 mb-4"
               >
-                Explore Intent Audiences Now
+                Get Started
               </Button>
 
               <div className="flex items-center justify-center gap-8 text-sm text-gray-600 mt-4">
@@ -947,9 +948,9 @@ export default function IntentAudiencesPage() {
               description: "View pricing tiers"
             },
             {
-              label: "Explore Intent Audiences",
-              href: "https://cal.com/cursiveteam/30min",
-              description: "Schedule a demo"
+              label: "Get Started",
+              href: "https://leads.meetcursive.com/get-leads",
+              description: "Build and activate your intent audience"
             }
           ]} />
         </MachineSection>
@@ -958,8 +959,8 @@ export default function IntentAudiencesPage() {
         <MachineSection title="Getting Started">
           <MachineList items={[
             {
-              label: "Schedule Demo",
-              href: "https://cal.com/cursiveteam/30min",
+              label: "Get Started",
+              href: "https://leads.meetcursive.com/get-leads",
               description: "See how intent audiences work"
             },
             {

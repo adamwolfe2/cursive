@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Container } from "@/components/ui/container"
 import { motion } from "framer-motion"
 import { DashboardPreview } from "@/components/dashboard-preview"
+import { GET_LEADS_URL } from "@/lib/cta"
 
 interface DashboardCTAProps {
   headline?: string
@@ -17,8 +18,8 @@ export function DashboardCTA({
   headline = "Stop Guessing. Start Converting.",
   subheadline = "your pipeline starts here",
   description = "Resolve 40–60% of your anonymous website visitors with a deterministic pixel and turn them into pipeline — automatically.",
-  ctaText = "Book Your Free AI Audit Now",
-  ctaUrl = "https://cal.com/cursiveteam/30min",
+  ctaText = "Get Started",
+  ctaUrl = GET_LEADS_URL,
 }: DashboardCTAProps = {}) {
   return (
     <section className="relative py-32 bg-white overflow-hidden">

@@ -644,7 +644,7 @@ export default function BlogPost() {
 
               <p>
                 To see how many warm leads you are currently missing, <Link href="https://cal.com/cursiveteam/30min">book a
-                demo</Link> or explore the <Link href="https://leads.meetcursive.com">Cursive self-serve marketplace</Link> at
+                demo</Link> or explore the <Link href="https://leads.meetcursive.com/get-leads">Cursive self-serve marketplace</Link> at
                 $0.60/lead with no monthly commitment.
               </p>
 
@@ -841,7 +841,7 @@ export default function BlogPost() {
           <MachineSection title="Get Started with Cursive">
             <MachineList items={[
               { label: "Book a Demo", href: "https://cal.com/cursiveteam/30min", description: "See Cursive visitor ID and intent data against your actual traffic" },
-              { label: "Marketplace (Self-Serve)", href: "https://leads.meetcursive.com", description: "Buy leads at $0.60 each, no monthly commitment" },
+              { label: "Marketplace (Self-Serve)", href: "https://leads.meetcursive.com/get-leads", description: "Buy leads at $0.60 each, no monthly commitment" },
               { label: "Free AI Audit", href: "/free-audit", description: "See which visitors you are missing and the pipeline you could generate" },
               { label: "Pricing", href: "/pricing", description: "$1,000/mo managed or $0.60/lead self-serve" }
             ]} />

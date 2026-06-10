@@ -655,7 +655,7 @@ export default function ContactPage() {
           },
           {
             label: "Platform Login",
-            href: "https://leads.meetcursive.com"
+            href: "https://leads.meetcursive.com/get-leads"
           }
         ]} />
       </MachineSection>

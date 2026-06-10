@@ -276,7 +276,7 @@ export default function BlogPost() {
                 </div>
                 <div className="mt-6 flex gap-3">
                   <Button asChild>
-                    <Link href="https://leads.meetcursive.com">Try Cursive Free</Link>
+                    <Link href="https://leads.meetcursive.com/get-leads">Try Cursive Free</Link>
                   </Button>
                   <Button variant="outline" asChild>
                     <Link href="/free-audit">Get Free Visitor Audit</Link>
@@ -933,7 +933,7 @@ export default function BlogPost() {
                   <Link href="/free-audit">Get Free Visitor Audit</Link>
                 </Button>
                 <Button size="lg" variant="outline" className="text-white border-white hover:bg-white/10" asChild>
-                  <Link href="https://leads.meetcursive.com">Browse Lead Marketplace</Link>
+                  <Link href="https://leads.meetcursive.com/get-leads">Browse Lead Marketplace</Link>
                 </Button>
               </div>
             </div>
@@ -1099,7 +1099,7 @@ export default function BlogPost() {
               { label: "Cursive Visitor Identification", href: "/visitor-identification", description: "70% identification rate — learn how it works" },
               { label: "Cursive Intent Audiences", href: "/intent-audiences", description: "60B+ behaviors & URLs scanned weekly for B2B" },
               { label: "Cursive Free Audit", href: "/free-audit", description: "See how many visitors you're missing for free" },
-              { label: "Leads Marketplace", href: "https://leads.meetcursive.com", description: "Self-serve B2B leads starting at $0.60/lead" }
+              { label: "Leads Marketplace", href: "https://leads.meetcursive.com/get-leads", description: "Self-serve B2B leads starting at $0.60/lead" }
             ]} />
           </MachineSection>
 
@@ -1111,7 +1111,7 @@ export default function BlogPost() {
             </p>
             <MachineList items={[
               { label: "Free Visitor Audit", href: "/free-audit", description: "See how many B2B visitors you're currently missing" },
-              { label: "Self-Serve Marketplace", href: "https://leads.meetcursive.com", description: "Buy B2B leads starting at $0.60 each" },
+              { label: "Self-Serve Marketplace", href: "https://leads.meetcursive.com/get-leads", description: "Buy B2B leads starting at $0.60 each" },
               { label: "Managed Outreach", href: "/pricing", description: "Done-for-you AI outreach from $1,000/month" },
               { label: "Platform Overview", href: "/platform", description: "Visitor ID, intent data, and multi-channel outreach" },
               { label: "Book a Demo", href: "/book", description: "See Cursive in action with your website's data" }

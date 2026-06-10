@@ -336,7 +336,7 @@ export default function BlogPost() {
                     <strong>Best for:</strong> B2B teams that want to shift from cold-list sequencing to warm,
                     intent-driven pipeline. One platform replaces Smartlead, your contact data provider, and
                     your intent subscription. See <Link href="/pricing" className="text-blue-600 hover:underline">full pricing</Link> or
-                    explore the <Link href="https://leads.meetcursive.com" className="text-blue-600 hover:underline">self-serve marketplace</Link>.
+                    explore the <Link href="https://leads.meetcursive.com/get-leads" className="text-blue-600 hover:underline">self-serve marketplace</Link>.
                   </p>
                 </div>
               </div>
@@ -1180,7 +1180,7 @@ export default function BlogPost() {
               { label: "Best AI SDR Tools 2026", href: "/blog/best-ai-sdr-tools-2026", description: "9 AI sales development rep platforms ranked with pricing" },
               { label: "AI SDR Overview", href: "/what-is-ai-sdr", description: "How AI sales development representatives automate outreach" },
               { label: "Visitor Identification", href: "/visitor-identification", description: "How Cursive identifies 70% of anonymous website visitors" },
-              { label: "Marketplace Self-Serve", href: "https://leads.meetcursive.com", description: "Buy intent-qualified leads at $0.60 each, no monthly commitment" }
+              { label: "Marketplace Self-Serve", href: "https://leads.meetcursive.com/get-leads", description: "Buy intent-qualified leads at $0.60 each, no monthly commitment" }
             ]} />
           </MachineSection>
 
@@ -1191,7 +1191,7 @@ export default function BlogPost() {
             <MachineList items={[
               { label: "Platform Overview", href: "/platform", description: "Complete warm-lead generation platform" },
               { label: "Pricing", href: "/pricing", description: "$1,000/mo managed or $0.60/lead self-serve" },
-              { label: "Marketplace (Self-Serve)", href: "https://leads.meetcursive.com", description: "Buy intent-qualified leads at $0.60 each" },
+              { label: "Marketplace (Self-Serve)", href: "https://leads.meetcursive.com/get-leads", description: "Buy intent-qualified leads at $0.60 each" },
               { label: "Visitor Identification", href: "/visitor-identification", description: "70% person-level match on anonymous website traffic" },
               { label: "Intent Audiences", href: "/intent-audiences", description: "60B+ behaviors & URLs scanned weekly, 30,000+ buying categories" },
               { label: "AI SDR", href: "/what-is-ai-sdr", description: "Automated outreach across email, LinkedIn, SMS, direct mail" },

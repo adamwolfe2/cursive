@@ -197,7 +197,7 @@ export default function BlogPost() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button size="lg" variant="default" className="bg-white text-primary hover:bg-white/90" asChild>
-                  <a href="https://leads.meetcursive.com/signup" target="_blank" rel="noopener noreferrer">
+                  <a href="https://leads.meetcursive.com/get-leads" target="_blank" rel="noopener noreferrer">
                     Start Free
                   </a>
                 </Button>
@@ -275,7 +275,7 @@ export default function BlogPost() {
             <MachineList items={[
               { label: "Cursive vs RB2B Comparison", href: "/cursive-vs-rb2b", description: "14-feature side-by-side breakdown" },
               { label: "RB2B Alternative", href: "/blog/rb2b-alternative", description: "Why teams switch from RB2B to Cursive" },
-              { label: "Start Free", href: "https://leads.meetcursive.com/signup", description: "Create a Cursive account" },
+              { label: "Start Free", href: "https://leads.meetcursive.com/get-leads", description: "Create a Cursive account" },
             ]} />
           </MachineSection>
         </MachineContent>

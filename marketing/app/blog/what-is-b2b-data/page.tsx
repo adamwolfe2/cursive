@@ -384,7 +384,7 @@ export default function BlogPost() {
 
               <p>
                 To see how real-time B2B data could change your pipeline, <Link href="https://cal.com/cursiveteam/30min">book
-                a demo</Link> or explore the <Link href="https://leads.meetcursive.com">Cursive lead marketplace</Link> at
+                a demo</Link> or explore the <Link href="https://leads.meetcursive.com/get-leads">Cursive lead marketplace</Link> at
                 $0.60/lead with no monthly commitment.
               </p>
 

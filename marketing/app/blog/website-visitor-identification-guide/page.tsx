@@ -397,7 +397,7 @@ export default function BlogPost() {
               <p>
                 To see your actual identification rate against your real traffic before making any commitment,
                 <Link href="https://cal.com/cursiveteam/30min"> book a demo</Link>. Or explore the
-                <Link href="https://leads.meetcursive.com"> Cursive self-serve marketplace</Link> to purchase
+                <Link href="https://leads.meetcursive.com/get-leads"> Cursive self-serve marketplace</Link> to purchase
                 identified leads at $0.60 each with no monthly commitment.
               </p>
 
@@ -562,7 +562,7 @@ export default function BlogPost() {
           <MachineSection title="Get Started with Cursive">
             <MachineList items={[
               { label: "Book a Demo", href: "https://cal.com/cursiveteam/30min", description: "See your actual identification rate against your real traffic" },
-              { label: "Marketplace (Self-Serve)", href: "https://leads.meetcursive.com", description: "Buy identified leads at $0.60 each, no monthly commitment" },
+              { label: "Marketplace (Self-Serve)", href: "https://leads.meetcursive.com/get-leads", description: "Buy identified leads at $0.60 each, no monthly commitment" },
               { label: "Free AI Audit", href: "/free-audit", description: "See which visitors you are missing and the pipeline you could generate" },
               { label: "Visitor Identification Feature", href: "/visitor-identification", description: "Learn how Cursive's 70% person-level identification works" }
             ]} />

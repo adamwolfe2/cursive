@@ -103,8 +103,8 @@ export default function PixelPage() {
                   Included with all service plans. Flat monthly pricing, no per-visitor fees. Setup done in 48 hours.
                 </p>
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                  <Button size="lg" href="https://cal.com/cursiveteam/30min" target="_blank">
-                    Book Pixel Setup Call
+                  <Button size="lg" href="https://leads.meetcursive.com/get-leads" target="_blank" rel="noopener noreferrer">
+                    Get Started
                     <ArrowRight className="w-5 h-5" />
                   </Button>
                   <Button size="lg" variant="outline" href="#roi-calculator">
@@ -172,8 +172,8 @@ export default function PixelPage() {
                 </div>
 
                 <div className="mt-8 text-center">
-                  <Button size="lg" className="w-full" href="https://cal.com/cursiveteam/30min" target="_blank">
-                    Book Pixel Setup Call
+                  <Button size="lg" className="w-full" href="https://leads.meetcursive.com/get-leads" target="_blank" rel="noopener noreferrer">
+                    Get Started
                     <ArrowRight className="w-5 h-5" />
                   </Button>
                   <p className="text-xs text-gray-500 mt-3">No setup fees. Cancel anytime.</p>
@@ -407,8 +407,8 @@ export default function PixelPage() {
                       </div>
                     ))}
                   </div>
-                  <Button className="w-full" href="https://cal.com/cursiveteam/30min" target="_blank">
-                    Book Pixel Setup
+                  <Button className="w-full" href="https://leads.meetcursive.com/get-leads" target="_blank" rel="noopener noreferrer">
+                    Get Started
                     <ArrowRight className="w-4 h-4" />
                   </Button>
                 </motion.div>
@@ -478,8 +478,8 @@ export default function PixelPage() {
                   Book a 15-minute setup call. We'll install the pixel on your website within 48 hours and you'll start getting leads immediately.
                 </p>
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
-                  <Button size="lg" href="https://cal.com/cursiveteam/30min" target="_blank">
-                    Book Pixel Setup Call
+                  <Button size="lg" href="https://leads.meetcursive.com/get-leads" target="_blank" rel="noopener noreferrer">
+                    Get Started
                     <ArrowRight className="w-5 h-5" />
                   </Button>
                   <Button size="lg" variant="outline" href="/marketplace">
@@ -506,8 +506,8 @@ export default function PixelPage() {
             headline="Stop Losing"
             subheadline="Website Visitors"
             description="Book a setup call and we'll install the Cursive Pixel on your website within 48 hours. Start identifying anonymous visitors and converting them into leads."
-            ctaText="Book Pixel Setup Call"
-            ctaUrl="https://cal.com/cursiveteam/30min"
+            ctaText="Get Started"
+            ctaUrl="https://leads.meetcursive.com/get-leads"
           />
         </main>
       </HumanView>
@@ -601,9 +601,9 @@ export default function PixelPage() {
           <MachineSection title="Get Started">
             <MachineList items={[
               {
-                label: "Book Pixel Setup Call",
-                href: "https://cal.com/cursiveteam/30min",
-                description: "15-minute call to scope installation. Pixel installed within 48 hours."
+                label: "Get Started",
+                href: "https://leads.meetcursive.com/get-leads",
+                description: "Start self-serve. Pixel installed within 48 hours."
               },
               {
                 label: "Browse Lead Marketplace",

@@ -1238,7 +1238,7 @@ export default function CallBookedPage() {
                   <p className="text-sm text-gray-500 mb-8">Search by industry, title, company size, intent score, and more. Export leads instantly.</p>
 
                   <div className="flex flex-col items-center gap-4">
-                    <Button href="https://leads.meetcursive.com/signup?source=call-booked-gift" target="_blank" size="lg">
+                    <Button href="https://leads.meetcursive.com/get-leads" target="_blank" size="lg">
                       Try the Marketplace Free
                       <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
@@ -1386,7 +1386,7 @@ export default function CallBookedPage() {
           <MachineSection title="Get Started">
             <MachineList items={[
               { label: "Book a Call", href: "https://cal.com/cursiveteam/30min", description: "30-minute strategy call to review your ICP and see matching leads" },
-              { label: "Lead Marketplace (Free Gift)", href: "https://leads.meetcursive.com/signup?source=call-booked-gift", description: "Try the marketplace free with 100 credits — no credit card required" },
+              { label: "Lead Marketplace (Free Gift)", href: "https://leads.meetcursive.com/get-leads", description: "Try the marketplace free with 100 credits — no credit card required" },
               { label: "View Pricing", href: "https://www.meetcursive.com/pricing", description: "See all plans and pricing details" },
               { label: "Contact Us", href: "https://www.meetcursive.com/contact", description: "Email hey@meetcursive.com for questions" },
             ]} />
