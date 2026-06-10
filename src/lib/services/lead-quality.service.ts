@@ -77,15 +77,25 @@ export function assessLeadQuality(record: ALEnrichedProfile): LeadQualityAssessm
   return { deliverable: true, needsEnrichment }
 }
 
-export function meetsQualityBar(lead: {
-  first_name?: string | null
-  last_name?: string | null
-  company_name?: string | null
-  email?: string | null
-  phone?: string | null
-  city?: string | null
-  state?: string | null
-}): { passes: boolean; reason?: string } {
+export function meetsQualityBar(
+  lead: {
+    first_name?: string | null
+    last_name?: string | null
+    company_name?: string | null
+    email?: string | null
+    phone?: string | null
+    city?: string | null
+    state?: string | null
+  },
+  opts: {
+    /**
+     * Require a phone. Default true (marketplace leads). The website-visitor
+     * (pixel) path sets this false: identified visitors are reached by their
+     * verified email, and most carry no phone, so requiring one drops them all.
+     */
+    requirePhone?: boolean
+  } = {}
+): { passes: boolean; reason?: string } {
   // Name: both parts required, minimum 2 chars each
   const firstName = lead.first_name?.trim() ?? ''
   if (firstName.length < 2) return { passes: false, reason: 'missing_first_name' }
@@ -99,9 +109,12 @@ export function meetsQualityBar(lead: {
   const email = lead.email?.trim() ?? ''
   if (!email || !emailRegex.test(email)) return { passes: false, reason: 'missing_email' }
 
-  // Phone: required — users need a way to reach the lead
-  const phone = lead.phone?.trim() ?? ''
-  if (!phone || phone.length < 7) return { passes: false, reason: 'missing_phone' }
+  // Phone: required for marketplace leads; optional for identified visitors
+  // (reached by verified email — see opts.requirePhone).
+  if (opts.requirePhone ?? true) {
+    const phone = lead.phone?.trim() ?? ''
+    if (!phone || phone.length < 7) return { passes: false, reason: 'missing_phone' }
+  }
 
   // Location: at least a state or city required — "US" alone is not useful
   const hasLocation = !!(lead.city?.trim() || lead.state?.trim())

@@ -264,7 +264,9 @@ export const processAudienceLabEvent = inngest.createFunction(
         return { lead_id: null, is_new_lead: false, reason: 'not_lead_worthy' }
       }
 
-      // Field-completeness gate: requires name, email, phone, and location
+      // Field-completeness gate. Phone is NOT required here: these are
+      // pixel-identified website visitors, reached by their verified email, and
+      // most carry no phone — requiring one dropped every real visitor.
       const qualityCheck = meetsQualityBar({
         first_name: identity.first_name,
         last_name: identity.last_name,
@@ -273,7 +275,7 @@ export const processAudienceLabEvent = inngest.createFunction(
         phone: identity.phones[0] || null,
         city: identity.city || null,
         state: identity.state || null,
-      })
+      }, { requirePhone: false })
       if (!qualityCheck.passes) {
         return { lead_id: null, is_new_lead: false, reason: `quality_gate_${qualityCheck.reason}` }
       }

@@ -75,4 +75,19 @@ describe('meetsQualityBar (regression — unchanged)', () => {
       meetsQualityBar({ first_name: 'Jane', last_name: 'Doe', email: 'jane@acme.com', phone: '+15551234567', state: 'CA' })
     ).toMatchObject({ passes: false, reason: 'missing_company_name' })
   })
+
+  it('fails a phone-less lead by default (marketplace)', () => {
+    expect(
+      meetsQualityBar({ first_name: 'Jane', last_name: 'Doe', company_name: 'Acme', email: 'jane@acme.com', state: 'CA' })
+    ).toMatchObject({ passes: false, reason: 'missing_phone' })
+  })
+
+  it('passes a phone-less identified visitor when requirePhone is false', () => {
+    expect(
+      meetsQualityBar(
+        { first_name: 'Carol', last_name: 'Smith', company_name: 'Village Creek', email: 'carole@hotmail.com', state: 'CA', city: 'Fair Oaks' },
+        { requirePhone: false }
+      ).passes
+    ).toBe(true)
+  })
 })
