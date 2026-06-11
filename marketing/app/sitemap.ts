@@ -12,15 +12,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
 { url: '/platform', priority: 0.9, changefreq: 'weekly' as const },
     { url: '/pricing', priority: 0.9, changefreq: 'weekly' as const },
     { url: '/free-audit', priority: 0.9, changefreq: 'weekly' as const },
-    { url: '/marketplace', priority: 0.9, changefreq: 'weekly' as const },
   ]
 
   // Feature pages - main feature/product pages
   const featurePages = [
     '/visitor-identification',
     '/audience-builder',
-    '/direct-mail',
-    '/data-access',
     '/data-partnerships',
     '/integrations',
     '/intent-audiences',
@@ -30,12 +27,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     changefreq: 'weekly' as const,
   }))
 
-  // Service/offer pages - main feature/product pages
+  // Product pages
   const servicePages = [
-    '/services',
     '/pixel',
     '/custom-audiences',
-    '/venture-studio',
   ].map(url => ({
     url,
     priority: 0.9,
@@ -80,7 +75,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const secondaryPages = [
     '/about',
     '/contact',
-    '/demos',
     '/faq',
     '/case-studies',
   ].map(url => ({
