@@ -52,45 +52,10 @@ const navLinks: NavLink[] = [
       },
     ],
   },
-  {
-    label: "Services",
-    dropdown: [
-      {
-        href: "/services#data",
-        label: "Cursive Data",
-        description: "Verified leads delivered monthly",
-        icon: Database,
-      },
-      {
-        href: "/services#outbound",
-        label: "Cursive Outbound",
-        description: "Done-for-you email campaigns",
-        icon: Mail,
-      },
-      {
-        href: "/services#pipeline",
-        label: "Cursive Pipeline",
-        description: "Full-stack AI SDR solution",
-        icon: Target,
-      },
-      {
-        href: "/venture-studio",
-        label: "Venture Studio",
-        description: "White-glove partnership",
-        icon: Building2,
-      },
-    ],
-  },
   { href: "/pricing", label: "Pricing" },
   {
     label: "Resources",
     dropdown: [
-      {
-        href: "/data-partnerships",
-        label: "Data Partnerships",
-        description: "Identity & intent infrastructure for enterprise buyers",
-        icon: Database,
-      },
       {
         href: "/case-studies",
         label: "Case Studies",
@@ -114,12 +79,6 @@ const navLinks: NavLink[] = [
         label: "About Cursive",
         description: "Our mission and team",
         icon: BookOpen,
-      },
-      {
-        href: "/demos",
-        label: "Demos",
-        description: "See Cursive in action",
-        icon: BarChart3,
       },
     ],
   },
