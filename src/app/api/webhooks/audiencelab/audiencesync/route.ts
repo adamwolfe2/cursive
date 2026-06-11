@@ -144,26 +144,10 @@ export async function POST(request: NextRequest) {
 
     const supabase = createAdminClient()
 
-    // IDEMPOTENCY: Hash raw body to detect exact retries
-    const eventHash = await sha256Hex(rawBody)
-
-    const { data: existingEvent } = await supabase
-      .from('processed_webhook_events')
-      .select('id, payload_summary')
-      .eq('event_id', eventHash)
-      .eq('source', 'audience-labs')
-      .maybeSingle()
-
-    if (existingEvent) {
-      safeLog(`${LOG_PREFIX} Duplicate webhook detected, skipping`)
-      return NextResponse.json({
-        success: true,
-        duplicate: true,
-        ...(existingEvent.payload_summary as Record<string, unknown> || {}),
-      })
-    }
-
-    // Resolve workspace from audience_id or domain mapping
+    // Resolve workspace FIRST — before the idempotency check — so the
+    // idempotency key can be scoped per-tenant (ripple #10). Otherwise an
+    // identical payload delivered for two workspaces would dedupe the second
+    // tenant away.
     let workspaceId: string | null = null
 
     // Try audience_id → pixel mapping first (AudienceSync may include audience_id)
@@ -189,6 +173,29 @@ export async function POST(request: NextRequest) {
         { error: 'Could not determine target workspace for this audience sync' },
         { status: 400 }
       )
+    }
+
+    // IDEMPOTENCY: hash the raw body to detect exact retries — SCOPED BY
+    // WORKSPACE (resolved above). processed_webhook_events is globally unique on
+    // (event_id, source); mixing the workspace into the hash keeps retries
+    // idempotent per-tenant without suppressing another workspace's identical
+    // payload.
+    const eventHash = await sha256Hex(`${workspaceId}:${rawBody}`)
+
+    const { data: existingEvent } = await supabase
+      .from('processed_webhook_events')
+      .select('id, payload_summary')
+      .eq('event_id', eventHash)
+      .eq('source', 'audience-labs')
+      .maybeSingle()
+
+    if (existingEvent) {
+      safeLog(`${LOG_PREFIX} Duplicate webhook detected, skipping`)
+      return NextResponse.json({
+        success: true,
+        duplicate: true,
+        ...(existingEvent.payload_summary as Record<string, unknown> || {}),
+      })
     }
 
     const insertedIds: string[] = []
