@@ -305,8 +305,13 @@ export async function POST(request: NextRequest) {
       safeLog(`${LOG_PREFIX} Accepted via known pixel_id (no shared secret): ${pixelId}`)
     }
 
-    // IDEMPOTENCY: Hash raw body to detect exact retries
-    const eventHash = await sha256Hex(rawBody)
+    // IDEMPOTENCY: hash the raw body to detect exact retries — SCOPED BY
+    // WORKSPACE. The event_id is globally unique on (event_id, source), so an
+    // identical payload legitimately delivered to two different workspace-scoped
+    // webhook URLs would otherwise dedupe the second tenant away. Mixing the
+    // resolved workspace into the hash keeps retries idempotent per-tenant
+    // without cross-tenant suppression.
+    const eventHash = await sha256Hex(`${workspaceId ?? 'unknown'}:${rawBody}`)
 
     const { data: existingEvent } = await supabase
       .from('processed_webhook_events')
