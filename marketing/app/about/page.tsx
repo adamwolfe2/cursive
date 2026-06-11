@@ -191,114 +191,96 @@ export default function AboutPage() {
           </section>
 
           {/* Philosophy — Recursive Intelligence */}
-          <section className="py-20 sm:py-24 bg-[#F7F9FB]">
+          <section className="py-20 sm:py-28 bg-[#F7F9FB]">
             <Container>
-              <div className="max-w-5xl mx-auto grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
-                <motion.div
-                  initial={{ opacity: 0, y: 16 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, ease: EASE }}
-                  className="space-y-8"
-                >
-                  <div className="rounded-xl bg-white border border-gray-200 p-5">
-                    <p className="text-xs font-semibold tracking-[0.2em] text-primary uppercase mb-1">re·cur·sive</p>
-                    <p className="text-sm text-gray-600 italic leading-relaxed">
-                      /rəˈkərsiv/ — a process that calls itself, using its own output as its next input.
-                    </p>
-                  </div>
+              {/* Intro */}
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, ease: EASE }}
+                className="text-center max-w-2xl mx-auto"
+              >
+                <p className="text-xs font-semibold tracking-[0.25em] text-primary uppercase">
+                  Re · cur · sive
+                </p>
+                <h2 className="mt-4 text-3xl sm:text-4xl lg:text-5xl font-light text-gray-900">
+                  Our philosophy
+                  <span className="block font-cursive text-4xl sm:text-5xl lg:text-6xl text-gray-500 mt-1">
+                    Recursive Intelligence
+                  </span>
+                </h2>
+                <p className="mt-6 text-lg text-gray-600 leading-relaxed">
+                  A system that feeds its own output back in as the next input.{" "}
+                  <span className="text-gray-900 font-medium">The teams that learn from their own growth data outrun the ones that don&apos;t.</span>
+                </p>
+              </motion.div>
 
-                  <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light text-gray-900">
-                    Our philosophy
-                    <span className="block font-cursive text-4xl sm:text-5xl lg:text-6xl text-gray-500 mt-1">
-                      Recursive Intelligence
+              {/* Compounding cycle — stepper */}
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.1, ease: EASE }}
+                className="mt-12 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-3 max-w-3xl mx-auto"
+              >
+                {cycle.map((item, i) => (
+                  <span key={item.step} className="flex items-center gap-2.5">
+                    <span className="inline-flex items-center rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-800 shadow-sm">
+                      {item.step}
                     </span>
-                  </h2>
+                    {i < cycle.length - 1 && (
+                      <ArrowRight className="w-4 h-4 text-gray-300" aria-hidden />
+                    )}
+                  </span>
+                ))}
+                <ArrowRight className="w-4 h-4 text-gray-300" aria-hidden />
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-medium text-primary">
+                  <RefreshCw className="w-3.5 h-3.5" />
+                  Repeat
+                </span>
+              </motion.div>
 
-                  <div className="space-y-4 text-base sm:text-lg text-gray-700 leading-relaxed">
-                    <p>
-                      We&apos;re betting on one premise:{" "}
-                      <strong className="text-gray-900 font-medium">the companies that learn from their own growth data will outrun the ones that don&apos;t.</strong>
-                    </p>
-                    <p>
-                      Most tools hand you a static database and say &ldquo;go find leads.&rdquo; That&apos;s a
-                      library card. Cursive gets smarter every time you use it: every visitor identified,
-                      every audience built, every deal closed feeds back into the system.
-                    </p>
-                  </div>
+              {/* Before / after */}
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.15, ease: EASE }}
+                className="mt-16 grid sm:grid-cols-2 gap-5 max-w-3xl mx-auto"
+              >
+                <div className="rounded-2xl bg-white border border-gray-200 p-7">
+                  <h4 className="text-xs font-semibold text-gray-400 tracking-widest mb-4 uppercase">Most teams</h4>
+                  <ul className="space-y-2.5 text-sm text-gray-500">
+                    <li>Buy a list, blast it</li>
+                    <li>Wonder why nothing converts</li>
+                    <li>Buy another list</li>
+                    <li>Repeat, no learning</li>
+                  </ul>
+                </div>
+                <div className="rounded-2xl bg-primary/[0.06] border border-primary/20 p-7">
+                  <h4 className="text-xs font-semibold text-primary tracking-widest mb-4 uppercase">With Cursive</h4>
+                  <ul className="space-y-2.5 text-sm text-gray-700">
+                    <li>Identify who&apos;s already interested</li>
+                    <li>Reach with proven messaging</li>
+                    <li>Learn from every outcome</li>
+                    <li>Compound every cycle</li>
+                  </ul>
+                </div>
+              </motion.div>
 
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-4">The cycle that compounds</h3>
-                    <ol className="space-y-3">
-                      {cycle.map((item, i) => (
-                        <motion.li
-                          key={item.step}
-                          initial={{ opacity: 0, x: -8 }}
-                          whileInView={{ opacity: 1, x: 0 }}
-                          viewport={{ once: true }}
-                          transition={{ delay: i * 0.06, ease: EASE }}
-                          className="flex items-start gap-3"
-                        >
-                          <span className="flex-shrink-0 mt-0.5 w-6 h-6 rounded-full bg-primary text-white text-xs font-semibold flex items-center justify-center">
-                            {i + 1}
-                          </span>
-                          <span className="text-sm sm:text-base text-gray-700">
-                            <span className="font-medium text-gray-900">{item.step}</span> — {item.desc}
-                          </span>
-                        </motion.li>
-                      ))}
-                      <li className="flex items-center gap-3 pt-1">
-                        <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center">
-                          <RefreshCw className="w-3.5 h-3.5" />
-                        </span>
-                        <span className="text-sm font-medium text-primary italic">Repeat, smarter</span>
-                      </li>
-                    </ol>
-                  </div>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 16 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: 0.1, ease: EASE }}
-                  className="space-y-6"
-                >
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="rounded-2xl bg-white border border-gray-200 p-6">
-                      <h4 className="text-xs font-semibold text-gray-400 tracking-widest mb-4 uppercase">Most teams</h4>
-                      <ul className="space-y-3 text-sm text-gray-500">
-                        <li>Buy a lead list</li>
-                        <li>Blast generic emails</li>
-                        <li>Wonder why nothing converts</li>
-                        <li>Buy another list</li>
-                        <li>Repeat, no learning</li>
-                      </ul>
-                    </div>
-                    <div className="rounded-2xl bg-primary/[0.06] border border-primary/20 p-6">
-                      <h4 className="text-xs font-semibold text-primary tracking-widest mb-4 uppercase">With Cursive</h4>
-                      <ul className="space-y-3 text-sm text-gray-700">
-                        <li>Identify who&apos;s already interested</li>
-                        <li>Enrich with real-time context</li>
-                        <li>Reach through channels that work</li>
-                        <li>Convert with proven messaging</li>
-                        <li>Compound every cycle</li>
-                      </ul>
-                    </div>
-                  </div>
-
-                  <figure className="rounded-2xl bg-white border border-gray-200 p-6">
-                    <blockquote className="text-base sm:text-lg font-light text-gray-800 leading-relaxed">
-                      &ldquo;While your competitors treat every lead like the first one they&apos;ve ever
-                      gotten, Cursive treats every lead like the thousandth.{" "}
-                      <em className="text-primary not-italic font-medium">Because it is.</em>&rdquo;
-                    </blockquote>
-                    <figcaption className="mt-3 text-sm text-gray-500">
-                      Your CAC drops, your LTV rises, your growth compounds instead of plateaus.
-                    </figcaption>
-                  </figure>
-                </motion.div>
-              </div>
+              {/* Pull quote */}
+              <motion.blockquote
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.2, ease: EASE }}
+                className="mt-16 max-w-3xl mx-auto text-center text-xl sm:text-2xl font-light text-gray-800 leading-relaxed text-balance"
+              >
+                &ldquo;Your competitors treat every lead like the first one. Cursive treats every lead
+                like the thousandth.{" "}
+                <span className="text-primary font-normal">Because it is.</span>&rdquo;
+              </motion.blockquote>
             </Container>
           </section>
 
