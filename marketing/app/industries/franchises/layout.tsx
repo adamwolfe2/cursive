@@ -24,7 +24,7 @@ const franchisesFAQs = [
   },
   {
     question: 'What is the typical lead cost for franchise opportunity leads?',
-    answer: 'Traditional franchise lead generation through portals and paid advertising often costs $50-$200+ per lead with variable quality. Cursive identifies warm, first-party leads directly from your own website traffic starting at $1,000/month, making the cost per identified prospect a fraction of portal-sourced leads while delivering higher intent and better conversion rates.',
+    answer: 'Traditional franchise lead generation through portals and paid advertising often costs $50-$200+ per lead with variable quality. Cursive\'s Visitor Pixel identifies warm, first-party prospects directly from your own website traffic for $97/month. The plan is month-to-month with no setup fee, and you can cancel anytime at leads.meetcursive.com/get-leads.',
   },
   {
     question: "How does Cursive's direct mail work for franchise development?",

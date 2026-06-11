@@ -20,7 +20,7 @@ const ecommerceFAQs = [
   },
   {
     question: "How does Cursive's direct mail work for ecommerce retargeting?",
-    answer: "Cursive can trigger personalized direct mail to identified B2B visitors who don't convert online, sending physical mailers with 95%+ deliverability to the identified business addresses. This omnichannel approach — combining email, digital, and direct mail — significantly increases conversion rates for B2B ecommerce companies by reaching buyers through multiple touchpoints.",
+    answer: "Cursive's current self-serve plans do not include direct mail. Ecommerce teams can use the Visitor Pixel to identify companies and people visiting their site, or the Custom Audience plan to receive a fresh weekly list of in-market buyers in Google Sheets, then activate that data through their preferred channels.",
   },
   {
     question: 'Can Cursive integrate with ecommerce platforms like Shopify?',
@@ -32,7 +32,7 @@ const ecommerceFAQs = [
   },
   {
     question: 'What is the ROI of visitor identification for B2B ecommerce?',
-    answer: 'B2B ecommerce companies using Cursive typically see a strong return by converting previously invisible website traffic into wholesale accounts, with many customers recouping their $1,000/month investment from a single new bulk buyer. By resolving the 40–60% of anonymous visitors who never fill out a form, ecommerce brands unlock a major untapped revenue channel from their existing traffic.',
+    answer: 'B2B ecommerce companies using Cursive typically see a strong return by converting previously invisible website traffic into wholesale accounts. Cursive offers the Visitor Pixel at $97/month, Custom Audience at $197/month, and Pixel + Audience Bundle at $247/month. All plans are month-to-month with no setup fee and can be canceled anytime at leads.meetcursive.com/get-leads.',
   },
 ]
 

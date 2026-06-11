@@ -32,7 +32,7 @@ const realEstateFAQs = [
   },
   {
     question: 'What results do real estate firms see with Cursive?',
-    answer: 'Commercial real estate firms using Cursive report a meaningful increase in qualified meetings and deal flow generated from their website traffic, with identified visitors converting into tenant tours, investor calls, and listing inquiries. Starting at $1,000/month, Cursive delivers strong ROI for CRE firms where a single transaction can generate hundreds of thousands of dollars in fees.',
+    answer: 'Commercial real estate firms using Cursive report a meaningful increase in qualified meetings and deal flow generated from their website traffic, with identified visitors converting into tenant tours, investor calls, and listing inquiries. The Visitor Pixel identifies companies and people on your site for $97/month. All plans are month-to-month with no setup fee, and you can cancel anytime at leads.meetcursive.com/get-leads.',
   },
 ]
 

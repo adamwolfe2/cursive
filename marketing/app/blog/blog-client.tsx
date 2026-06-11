@@ -290,7 +290,7 @@ export function BlogClient() {
         <DashboardCTA
           headline="Want to Put These"
           subheadline="Strategies Into Action?"
-          description="See how Cursive helps you identify website visitors, capture intent data, and automate personalized outreach at scale."
+          description="See how Cursive helps you identify website visitors and receive fresh weekly lists of in-market buyers."
         />
       </HumanView>
 
@@ -364,8 +364,8 @@ export function BlogClient() {
               The Cursive blog covers B2B marketing, lead generation, visitor identification, intent data, audience targeting, and sales automation. New content published weekly. Topics include practical guides, platform comparisons, data strategy, and AI-powered growth tactics.
             </p>
             <MachineList items={[
-              { label: "Cursive Platform", href: "/platform", description: "Visitor identification, intent data, AI outreach" },
-              { label: "Pricing", href: "/pricing", description: "Self-serve marketplace + done-for-you services" },
+              { label: "Cursive Platform", href: "/platform", description: "Visitor identification and fresh weekly in-market audiences" },
+              { label: "Pricing", href: "/pricing", description: "Three month-to-month self-serve plans starting at $97/month" },
               { label: "Book a Demo", href: "/book", description: "See Cursive in real-time" },
               { label: "Resources", href: "/resources", description: "Guides on visitor identification & lead generation" },
             ]} />
@@ -550,7 +550,7 @@ const blogPosts = [
   {
     slug: "ai-sales-engagement-platform",
     title: "Cursive: AI Sales Engagement Platform",
-    excerpt: "How Cursive combines visitor identification, AI research, and automated outreach into a single platform that replaces your entire outbound stack.",
+    excerpt: "How Cursive combines visitor identification and fresh weekly in-market audiences to help teams find active buyers.",
     category: "AI in Sales",
     categorySlug: "ai-in-sales",
     date: "April 3, 2026",

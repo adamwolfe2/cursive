@@ -32,7 +32,7 @@ const retailFAQs = [
   },
   {
     question: 'What results do retail companies see with Cursive?',
-    answer: 'B2B retail and wholesale companies using Cursive report a consistent increase in new account acquisitions from their existing website traffic, with many attributing significant wholesale revenue to Cursive-identified buyer outreach. Starting at $1,000/month, Cursive delivers compelling ROI for retail brands where a single new wholesale account can represent tens of thousands of dollars in recurring annual revenue.',
+    answer: 'B2B retail and wholesale companies using Cursive report a consistent increase in new account acquisitions from their existing website traffic, with many attributing significant wholesale revenue to Cursive-identified buyer outreach. The Visitor Pixel identifies companies and people on your site for $97/month. All plans are month-to-month with no setup fee, and you can cancel anytime at leads.meetcursive.com/get-leads.',
   },
 ]
 

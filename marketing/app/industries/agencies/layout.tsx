@@ -12,11 +12,11 @@ export const metadata = generateMetadata({
 const agenciesFAQs = [
   {
     question: 'How can marketing agencies use Cursive for client lead generation?',
-    answer: 'Marketing agencies use Cursive to resolve anonymous visitors on client sites against a deterministic identity graph of 280M+ verified consumer and 140M+ business profiles, with a 40–60% pixel match rate (vs 2–5% for cookie-based tools and 10–15% for IP databases). Agencies layer in Cursive intent data and AI-powered outreach to build always-on lead generation programs for clients across industries, improving retention and demonstrating measurable pipeline impact.',
+    answer: 'Marketing agencies use Cursive to resolve anonymous visitors on client sites against a deterministic identity graph of 280M+ verified consumer and 140M+ business profiles, with a 40–60% pixel match rate (vs 2–5% for cookie-based tools and 10–15% for IP databases). Agencies can also receive fresh weekly lists of in-market buyers in Google Sheets to support client lead generation programs across industries.',
   },
   {
     question: 'Does Cursive offer white-label or agency pricing?',
-    answer: "Cursive supports multi-client account management so agencies can run campaigns across all their clients from a single platform. Reach out to the Cursive team to discuss agency pricing and white-label options starting from the base $1,000/month plan, with volume discounts available for agencies managing multiple client accounts.",
+    answer: "Cursive supports multi-client account management so agencies can run campaigns across all their clients from a single platform. Self-serve plans are Visitor Pixel at $97/month, Custom Audience at $197/month, and the Pixel + Audience Bundle at $247/month. All are month-to-month with no setup fee and can be canceled anytime at leads.meetcursive.com/get-leads.",
   },
   {
     question: "How do agencies use visitor identification for client campaigns?",
@@ -24,7 +24,7 @@ const agenciesFAQs = [
   },
   {
     question: 'What reporting does Cursive provide for agency client reporting?',
-    answer: "Cursive provides dashboards showing identified visitors, intent signal activity, outreach performance, and pipeline attribution, giving agencies the data they need for compelling client reports. Agencies can export reports and connect Cursive data to their clients' CRMs so pipeline impact is visible directly in tools like HubSpot and Salesforce.",
+    answer: "Cursive provides identified visitor and in-market audience data that agencies can use for compelling client reports. Agencies can export the data and connect it to their clients' workflows so pipeline impact is visible alongside tools like HubSpot and Salesforce.",
   },
   {
     question: 'Can agencies manage multiple client accounts in Cursive?',

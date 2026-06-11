@@ -3,13 +3,13 @@ import { StructuredData } from '@/components/seo/structured-data'
 import { generateBreadcrumbSchema, generateBlogPostSchema } from '@/lib/seo/structured-data'
 
 export const metadata: Metadata = {
-  title: "6sense vs Cursive: $50k-$200k/yr vs $1k/mo — Intent Data Compared (2026) | Cursive",
-  description: "6sense costs $50,000-$200,000/year with multi-year contracts. Cursive delivers intent data, visitor identification, and AI SDR for $1,000/month with no commitment. Full comparison inside.",
+  title: "6sense vs Cursive: $50k-$200k/yr vs Plans From $97/mo — Intent Data Compared (2026) | Cursive",
+  description: "6sense costs $50,000-$200,000/year with multi-year contracts. Cursive offers month-to-month visitor identification and weekly in-market audience plans from $97/month, with no setup fee and cancellation anytime. Full comparison inside.",
   keywords: "6sense vs cursive, 6sense alternative, visitor identification comparison, intent data platforms, abm platform comparison, cursive vs 6sense, 6sense pricing, cursive pricing, b2b intent data, account based marketing",
 
   openGraph: {
-    title: "6sense vs Cursive: $50k-$200k/yr vs $1k/mo — Intent Data Compared (2026) | Cursive",
-    description: "6sense costs $50,000-$200,000/year with multi-year contracts. Cursive delivers intent data, visitor identification, and AI SDR for $1,000/month with no commitment. Full comparison inside.",
+    title: "6sense vs Cursive: $50k-$200k/yr vs Plans From $97/mo — Intent Data Compared (2026) | Cursive",
+    description: "6sense costs $50,000-$200,000/year with multi-year contracts. Cursive offers month-to-month visitor identification and weekly in-market audience plans from $97/month, with no setup fee and cancellation anytime. Full comparison inside.",
     type: "article",
     url: "https://www.meetcursive.com/blog/6sense-vs-cursive-comparison",
     siteName: "Cursive",
@@ -24,8 +24,8 @@ export const metadata: Metadata = {
 
   twitter: {
     card: "summary_large_image",
-    title: "6sense vs Cursive: $50k-$200k/yr vs $1k/mo — Intent Data Compared (2026) | Cursive",
-    description: "6sense costs $50,000-$200,000/year with multi-year contracts. Cursive delivers intent data, visitor identification, and AI SDR for $1,000/month with no commitment.",
+    title: "6sense vs Cursive: $50k-$200k/yr vs Plans From $97/mo — Intent Data Compared (2026) | Cursive",
+    description: "6sense costs $50,000-$200,000/year with multi-year contracts. Cursive offers month-to-month visitor identification and weekly in-market audience plans from $97/month, with no setup fee and cancellation anytime.",
     images: ["https://www.meetcursive.com/og-image.png"],
     creator: "@meetcursive",
   },
@@ -47,11 +47,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         generateBreadcrumbSchema([
           { name: 'Home', url: 'https://www.meetcursive.com' },
           { name: 'Blog', url: 'https://www.meetcursive.com/blog' },
-          { name: '6sense vs Cursive: $50k-$200k/yr vs $1k/mo — Intent Data Compared (2026)', url: 'https://www.meetcursive.com/blog/6sense-vs-cursive-comparison' },
+          { name: '6sense vs Cursive: $50k-$200k/yr vs Plans From $97/mo — Intent Data Compared (2026)', url: 'https://www.meetcursive.com/blog/6sense-vs-cursive-comparison' },
         ]),
         generateBlogPostSchema({
-          title: '6sense vs Cursive: $50k-$200k/yr vs $1k/mo — Intent Data Compared (2026)',
-          description: '6sense costs $50,000-$200,000/year with multi-year contracts. Cursive delivers intent data, visitor identification, and AI SDR for $1,000/month with no commitment. Full comparison inside.',
+          title: '6sense vs Cursive: $50k-$200k/yr vs Plans From $97/mo — Intent Data Compared (2026)',
+          description: '6sense costs $50,000-$200,000/year with multi-year contracts. Cursive offers month-to-month visitor identification and weekly in-market audience plans from $97/month, with no setup fee and cancellation anytime. Full comparison inside.',
           url: 'https://www.meetcursive.com/blog/6sense-vs-cursive-comparison',
           datePublished: '2026-02-18',
           dateModified: '2026-02-18',

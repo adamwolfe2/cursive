@@ -32,7 +32,7 @@ const technologyFAQs = [
   },
   {
     question: 'What is the typical implementation timeline for technology companies?',
-    answer: "Technology companies can install Cursive's JavaScript pixel and begin identifying website visitors within minutes, with CRM integrations and automated outreach workflows typically configured within the first week. Most technology sales teams see their first pipeline opportunities from Cursive-identified visitors within 30 days of going live, with full ROI typically realized within the first 60-90 days at the $1,000/month starting price.",
+    answer: "Technology companies can install Cursive's JavaScript pixel and begin identifying website visitors within minutes, with CRM integrations and automated outreach workflows typically configured within the first week. The Visitor Pixel identifies companies and people on your site for $97/month. All plans are month-to-month with no setup fee, and you can cancel anytime at leads.meetcursive.com/get-leads.",
   },
 ]
 

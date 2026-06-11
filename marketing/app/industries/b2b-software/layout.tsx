@@ -12,7 +12,7 @@ export const metadata = generateMetadata({
 const b2bSoftwareFAQs = [
   {
     question: 'How does Cursive help B2B SaaS companies generate leads?',
-    answer: 'Cursive resolves anonymous B2B visitors on your SaaS site against a deterministic identity graph of 280M+ verified consumer and 140M+ business profiles, with a 40–60% pixel match rate (vs 2–5% for cookie-based tools and 10–15% for IP databases). Once identified, Cursive automatically triggers personalized outreach via email, LinkedIn, or direct mail so your sales team can engage in-market buyers before they convert on a competitor.',
+    answer: 'Cursive resolves anonymous B2B visitors on your SaaS site against a deterministic identity graph of 280M+ verified consumer and 140M+ business profiles, with a 40–60% pixel match rate (vs 2–5% for cookie-based tools and 10–15% for IP databases). Your sales team can use the identified company and person-level data to engage in-market buyers before they convert on a competitor.',
   },
   {
     question: 'What visitor identification rate can B2B software companies expect?',
@@ -28,11 +28,11 @@ const b2bSoftwareFAQs = [
   },
   {
     question: "How do B2B software companies use Cursive's AI SDR?",
-    answer: "Cursive's AI SDR automatically crafts personalized outreach messages for each identified visitor based on the pages they viewed, their company profile, and real-time intent signals. SaaS teams use the AI SDR to send timely, relevant emails that reference a prospect's specific product interest, dramatically improving reply rates compared to generic sequences.",
+    answer: "Cursive's current self-serve plans focus on buyer identification rather than automated outreach. SaaS teams use the Visitor Pixel to identify companies and people visiting their site, or the Custom Audience plan to receive a fresh weekly list of in-market buyers in Google Sheets, then engage those prospects through their preferred sales tools.",
   },
   {
     question: 'What results do B2B SaaS companies typically see with Cursive?',
-    answer: 'B2B SaaS companies using Cursive report a significant increase in pipeline from their existing web traffic without increasing ad spend, with many customers attributing 20-40% of new demos booked to Cursive-identified visitors. Starting at $1,000/month, Cursive delivers a positive ROI for most SaaS teams within the first 60 days by converting previously invisible website traffic into qualified sales conversations.',
+    answer: 'B2B SaaS companies using Cursive report a significant increase in pipeline from their existing web traffic without increasing ad spend, with many customers attributing 20-40% of new demos booked to Cursive-identified visitors. Cursive offers the Visitor Pixel at $97/month, Custom Audience at $197/month, and Pixel + Audience Bundle at $247/month. All plans are month-to-month with no setup fee and can be canceled anytime at leads.meetcursive.com/get-leads.',
   },
 ]
 

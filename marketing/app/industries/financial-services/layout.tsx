@@ -32,7 +32,7 @@ const financialServicesFAQs = [
   },
   {
     question: 'What results do financial services firms see with Cursive?',
-    answer: 'Financial services firms using Cursive report a significant uplift in qualified meetings and pipeline from their website traffic, with many customers converting previously anonymous visitors into new client relationships. Starting at $1,000/month, Cursive helps financial services firms maximize the return on their marketing spend by turning every website visit into an identifiable, actionable sales opportunity.',
+    answer: 'Financial services firms using Cursive report a significant uplift in qualified meetings and pipeline from their website traffic, with many customers converting previously anonymous visitors into new client relationships. The Visitor Pixel identifies companies and people on your site for $97/month. All plans are month-to-month with no setup fee, and you can cancel anytime at leads.meetcursive.com/get-leads.',
   },
 ]
 

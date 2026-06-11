@@ -14,7 +14,7 @@ export async function GET() {
       url: "https://meetcursive.com",
       tagline: "Turn Website Visitors Into Booked Meetings",
       description:
-        "AI-powered visitor identification and outbound automation for B2B companies. Identifies 70% of anonymous website visitors, enriches them against 280M verified contacts, and automates personalized outreach across email, LinkedIn, and SMS.",
+        "Self-serve visitor identification and in-market audience plans for B2B companies. Identify companies and people visiting your website or receive a fresh weekly buyer audience in Google Sheets.",
       products: [
         {
           name: "Visitor Identification",
@@ -23,11 +23,11 @@ export async function GET() {
             "Identify 70% of anonymous visitors with name, company, email, and browsing behavior in real-time",
         },
         {
-          name: "Lead Marketplace",
-          url: "/marketplace",
-          price: "$0.60/lead",
+          name: "Custom Audience",
+          url: "https://leads.meetcursive.com/get-leads",
+          price: "$197/mo",
           description:
-            "Self-serve B2B lead marketplace. Browse and buy verified leads with credits. 100 free credits to start.",
+            "Fresh weekly in-market audience delivered to Google Sheets. Month-to-month with no setup fee; cancel anytime.",
         },
         {
           name: "Intent Data Audiences",
@@ -42,50 +42,50 @@ export async function GET() {
             "Build unlimited audiences from 280M US consumer and 140M+ business profiles. No caps or restrictive licensing.",
         },
         {
-          name: "AI Studio",
-          url: "/platform",
+          name: "Google Sheets Delivery",
+          url: "https://leads.meetcursive.com/get-leads",
           description:
-            "AI SDR for email, LinkedIn, SMS outreach with autonomous follow-ups, brand voice training, and meeting booking.",
+            "Receive a fresh weekly list of in-market buyers directly in Google Sheets with the Custom Audience plan.",
         },
         {
-          name: "Direct Mail",
-          url: "/direct-mail",
+          name: "Flexible Plan Terms",
+          url: "https://leads.meetcursive.com/get-leads",
           description:
-            "Physical postcards triggered by digital behavior, delivered in 48 hours with scan-rate tracking.",
+            "All three self-serve plans are month-to-month with no setup fee and can be canceled anytime.",
         },
         {
-          name: "Custom Audiences",
-          url: "/custom-audiences",
-          price: "$0.50/lead",
+          name: "Pixel + Audience Bundle",
+          url: "https://leads.meetcursive.com/get-leads",
+          price: "$247/mo",
           description:
-            "Bespoke B2B lead lists built to your exact ICP. Free 25-lead sample in 48 hours.",
+            "Combine website visitor identification with a fresh weekly in-market audience. Month-to-month with no setup fee; cancel anytime.",
         },
       ],
       services: [
         {
-          name: "Cursive Data",
-          price: "$1,000/mo",
-          annual_price: "$800/mo",
-          url: "/services#data",
+          name: "Visitor Pixel",
+          price: "$97/mo",
+          annual_price: "Month-to-month",
+          url: "https://leads.meetcursive.com/get-leads",
           description:
-            "500-2,000 verified leads/month with custom ICP targeting and 95%+ email deliverability.",
+            "Identify companies and people visiting your website. No setup fee; cancel anytime.",
         },
         {
-          name: "Cursive Outbound",
-          price: "$2,500/mo",
-          annual_price: "$2,000/mo",
+          name: "Custom Audience",
+          price: "$197/mo",
+          annual_price: "Month-to-month",
           label: "Most Popular",
-          url: "/services#outbound",
+          url: "https://leads.meetcursive.com/get-leads",
           description:
-            "Done-for-you email campaigns with AI personalization, infrastructure setup, and weekly strategy calls.",
+            "Receive a fresh weekly list of in-market buyers in Google Sheets. No setup fee; cancel anytime.",
         },
         {
-          name: "Cursive Pipeline",
-          price: "$5,000/mo",
-          annual_price: "$4,000/mo",
-          url: "/services#pipeline",
+          name: "Pixel + Audience Bundle",
+          price: "$247/mo",
+          annual_price: "Month-to-month",
+          url: "https://leads.meetcursive.com/get-leads",
           description:
-            "Full-stack AI SDR across email, LinkedIn, and SMS with unlimited enrichment and dedicated success manager.",
+            "Get website visitor identification plus a fresh weekly in-market audience. No setup fee; cancel anytime.",
         },
       ],
       stats: {
