@@ -3,130 +3,175 @@
 import { Button } from "@/components/ui/button"
 import { Container } from "@/components/ui/container"
 import { motion } from "framer-motion"
-import { useState } from "react"
 import {
-  ArrowRight, CheckCircle2, ClipboardList, Send,
-  ThumbsUp, Package, ShoppingCart, Users
+  Eye, Users, Layers, Target, CalendarClock, Sparkles,
+  ShieldCheck, Search, SlidersHorizontal, TrendingUp,
+  ArrowRight, CheckCircle2, Check, FileSpreadsheet,
+  type LucideIcon,
 } from "lucide-react"
-import { DashboardCTA } from "@/components/dashboard-cta"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
+import { DashboardCTA } from "@/components/dashboard-cta"
+import { Breadcrumbs } from "@/components/Breadcrumbs"
+import { GET_LEADS_URL, BOOKING_URL } from "@/lib/cta"
 
-const industries = [
-  "SaaS",
-  "Financial Services",
-  "Healthcare",
-  "eCommerce",
-  "Manufacturing",
-  "Real Estate",
-  "Education",
-  "Other",
+const EASE = [0.22, 1, 0.36, 1] as const
+
+function SectionHeading({ plain, script, sub }: { plain: string; script?: string; sub?: string }) {
+  return (
+    <div className="text-center mb-14">
+      <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light text-gray-900">
+        {plain}
+        {script && (
+          <span className="block font-cursive text-4xl sm:text-5xl lg:text-6xl text-gray-500 mt-1">
+            {script}
+          </span>
+        )}
+      </h2>
+      {sub && (
+        <p className="mt-5 text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">{sub}</p>
+      )}
+    </div>
+  )
+}
+
+function IconChip({ Icon }: { Icon: LucideIcon }) {
+  return (
+    <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center">
+      <Icon className="w-6 h-6 text-primary" />
+    </div>
+  )
+}
+
+const steps = [
+  { icon: SlidersHorizontal, title: "Define your ICP", desc: "Industry, geography, company size, seniority, and intent — set it once." },
+  { icon: Search, title: "We find in-market buyers", desc: "People actively searching for what you sell, matched to your profile." },
+  { icon: FileSpreadsheet, title: "Delivered to your sheet", desc: "A fresh, verified list lands in Google Sheets — first one within 24 hours." },
 ]
 
-const companySizes = ["1-10", "11-50", "51-200", "201-1000", "1000+"]
-
-const seniorityOptions = [
-  "C-Suite",
-  "VP",
-  "Director",
-  "Manager",
-  "Individual Contributor",
+const benefits: Array<{ icon: LucideIcon; title: string; body: string }> = [
+  { icon: CalendarClock, title: "Fresh every week", body: "A new list of in-market buyers each week — not a stale database you bought once." },
+  { icon: Target, title: "Built to your exact ICP", body: "Industry, geo, company size, seniority, and intent signals — tuned to who you actually sell to." },
+  { icon: ShieldCheck, title: "Verified work emails", body: "Every contact carries a validated work email, continuously checked through Deep Verify." },
+  { icon: TrendingUp, title: "Real buying intent", body: "Prospects already searching for your category — caught while the intent is hot." },
+  { icon: FileSpreadsheet, title: "Straight to Google Sheets", body: "No new tool to learn. Your audience arrives in a sheet, ready to import or sequence." },
+  { icon: Sparkles, title: "Sharper every cycle", body: "Targeting compounds week over week as the system learns what converts for you." },
 ]
 
-const desiredVolumes = ["100", "500", "1,000", "5,000", "10,000+"]
+const useCases = [
+  { audience: "Outbound Sales", body: "A fresh weekly list of in-market accounts to load straight into your sequencer." },
+  { audience: "Demand Gen", body: "Feed verified, intent-matched contacts into ads and nurture without buying static lists." },
+  { audience: "Agencies", body: "Spin up a tailored audience per client ICP and deliver pipeline, not just reports." },
+  { audience: "Founders", body: "Skip the data ops. Get buyers searching for what you built, every week." },
+]
 
-const budgetRanges = ["<$500", "$500-$2k", "$2k-$5k", "$5k+"]
+const plans: Array<{
+  name: string
+  price: string
+  icon: LucideIcon
+  description: string
+  items: string[]
+  cta: string
+  highlight: boolean
+}> = [
+  {
+    name: "Visitor Pixel",
+    price: "$97",
+    icon: Eye,
+    description: "Identify the companies and people visiting your site.",
+    items: [
+      "40–60% deterministic match rate",
+      "Company + person-level detail",
+      "One-snippet install, 60 seconds",
+      "Identified visitors synced to your portal",
+    ],
+    cta: "Get the Pixel",
+    highlight: false,
+  },
+  {
+    name: "Custom Audience",
+    price: "$197",
+    icon: Users,
+    description: "A fresh weekly list of buyers searching for your product.",
+    items: [
+      "Weekly list of in-market prospects",
+      "Built to your exact ICP",
+      "Verified work email on every record",
+      "Delivered to Google Sheets",
+      "First audience within 24 hours",
+    ],
+    cta: "Get an Audience",
+    highlight: true,
+  },
+  {
+    name: "Pixel + Audience Bundle",
+    price: "$247",
+    icon: Layers,
+    description: "Site traffic and in-market intent in one feed.",
+    items: [
+      "Everything in Visitor Pixel",
+      "Everything in Custom Audience",
+      "Priority audience updates within 24h",
+      "Best value vs. buying separately",
+    ],
+    cta: "Get the Bundle",
+    highlight: false,
+  },
+]
+
+const faqs = [
+  {
+    question: "What is a Custom Audience?",
+    answer: "A fresh weekly list of in-market buyers — people actively searching for what you sell — built to your exact ICP and delivered to Google Sheets. It refreshes every week, so you always have new prospects, not a static database that decays.",
+  },
+  {
+    question: "How fast do I get my first list?",
+    answer: "Your first audience lands within 24 hours of setting your ICP. After that, a new list arrives every week automatically.",
+  },
+  {
+    question: "What targeting can I set?",
+    answer: "Industry, geography, company size, seniority, and intent signals. Tune them once and every weekly list matches your profile.",
+  },
+  {
+    question: "What's in each record?",
+    answer: "Name, company, role, and a verified work email — validated continuously through Deep Verify so deliverability stays high.",
+  },
+  {
+    question: "How is it delivered?",
+    answer: "Straight to Google Sheets. No new tool to learn — import it into your CRM or sequencer in minutes.",
+  },
+  {
+    question: "How much does it cost?",
+    answer: "Custom Audience is $197/mo flat. Add the Visitor Pixel for $97/mo, or get both in the Bundle for $247/mo. Self-serve, month-to-month, cancel anytime.",
+  },
+]
 
 export default function CustomAudiencesPage() {
-  const [formData, setFormData] = useState({
-    industry: "",
-    geography: "",
-    companySize: "",
-    seniorityLevels: [] as string[],
-    intentSignals: "",
-    desiredVolume: "",
-    budgetRange: "",
-    email: "",
-    companyName: "",
-  })
-  const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle")
-  const [errorMessage, setErrorMessage] = useState("")
-
-  const handleSeniorityToggle = (level: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      seniorityLevels: prev.seniorityLevels.includes(level)
-        ? prev.seniorityLevels.filter((l) => l !== level)
-        : [...prev.seniorityLevels, level],
-    }))
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setStatus("submitting")
-    setErrorMessage("")
-
-    try {
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          type: "custom-audience",
-          ...formData,
-        }),
-      })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        setStatus("error")
-        setErrorMessage(data.error || "Failed to submit. Please try again.")
-        return
-      }
-
-      setStatus("success")
-      setFormData({
-        industry: "",
-        geography: "",
-        companySize: "",
-        seniorityLevels: [],
-        intentSignals: "",
-        desiredVolume: "",
-        budgetRange: "",
-        email: "",
-        companyName: "",
-      })
-    } catch {
-      setStatus("error")
-      setErrorMessage("An unexpected error occurred. Please try again later.")
-    }
-  }
-
   const schemaMarkup = {
     "@context": "https://schema.org",
     "@graph": [
       {
         "@type": "Service",
         "@id": "https://www.meetcursive.com/custom-audiences#service",
-        "name": "Cursive Custom Audiences",
-        "description": "Bespoke B2B lead lists built to your exact specifications. Free 25-lead sample in 48 hours. Starts at $0.50/lead.",
+        "name": "Cursive Custom Audience",
+        "description": "A fresh weekly list of in-market B2B buyers built to your exact ICP, each with a verified work email, delivered to Google Sheets. First audience within 24 hours. $197/month, self-serve, month-to-month.",
         "provider": {
           "@type": "Organization",
-          "name": "Cursive"
+          "name": "Cursive",
         },
-        "serviceType": "Custom Lead Generation",
+        "serviceType": "B2B Audience Building",
         "areaServed": "Worldwide",
         "offers": {
           "@type": "Offer",
           "priceCurrency": "USD",
-          "price": "0.50",
+          "price": "197",
           "priceSpecification": {
             "@type": "UnitPriceSpecification",
-            "price": "0.50",
+            "price": "197",
             "priceCurrency": "USD",
-            "unitText": "per lead"
+            "unitText": "per month",
           },
-          "availability": "https://schema.org/InStock"
-        }
+          "availability": "https://schema.org/InStock",
+        },
       },
       {
         "@type": "BreadcrumbList",
@@ -135,17 +180,17 @@ export default function CustomAudiencesPage() {
             "@type": "ListItem",
             "position": 1,
             "name": "Home",
-            "item": "https://www.meetcursive.com"
+            "item": "https://www.meetcursive.com",
           },
           {
             "@type": "ListItem",
             "position": 2,
             "name": "Custom Audiences",
-            "item": "https://www.meetcursive.com/custom-audiences"
-          }
-        ]
-      }
-    ]
+            "item": "https://www.meetcursive.com/custom-audiences",
+          },
+        ],
+      },
+    ],
   }
 
   return (
@@ -158,398 +203,239 @@ export default function CustomAudiencesPage() {
       {/* Human View */}
       <HumanView>
         <main className="overflow-hidden">
-          {/* Hero Section */}
-          <section className="pt-24 pb-20 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <Breadcrumbs items={[
+              { name: "Home", href: "/" },
+              { name: "Custom Audiences", href: "/custom-audiences" },
+            ]} />
+          </div>
+
+          {/* Hero */}
+          <section className="relative pt-16 pb-20 sm:pt-20 sm:pb-24 bg-white">
             <Container>
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className="text-center max-w-5xl mx-auto"
+                transition={{ duration: 0.7, ease: EASE }}
+                className="text-center max-w-3xl mx-auto"
               >
-                <span className="text-sm text-primary mb-4 block font-medium tracking-wide">CUSTOM AUDIENCES</span>
-                <h1 className="text-5xl lg:text-7xl font-light text-gray-900 mb-6">
-                  Need a Specific Audience?{" "}
-                  <span className="block font-cursive text-6xl lg:text-7xl text-gray-500 mt-2">We'll Build It.</span>
+                <span className="text-xs font-semibold tracking-[0.25em] text-primary uppercase">
+                  Custom Audience
+                </span>
+                <h1 className="mt-4 text-4xl sm:text-5xl lg:text-6xl font-light text-gray-900 leading-[1.1]">
+                  A fresh list of buyers
+                  <span className="block font-cursive text-4xl sm:text-5xl lg:text-6xl text-gray-500 mt-2">
+                    every single week
+                  </span>
                 </h1>
-                <p className="text-xl text-gray-600 mb-6 max-w-3xl mx-auto leading-relaxed">
-                  Tell us exactly who you need to reach. We'll deliver a verified, custom-built list -- starting with a free 25-lead sample.
+                <p className="mt-6 text-lg sm:text-xl text-gray-600 leading-relaxed">
+                  Tell us who you sell to. Cursive finds in-market buyers searching for your category,
+                  verifies every work email, and drops a fresh list into your Google Sheet — first one
+                  within 24 hours.
                 </p>
-                <div className="flex items-center justify-center gap-8 text-sm text-gray-600 flex-wrap">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="h-5 w-5 text-green-600" />
-                    <span>Free 25-lead sample</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="h-5 w-5 text-green-600" />
-                    <span>48-hour turnaround</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="h-5 w-5 text-green-600" />
-                    <span>Starts at $0.50/lead</span>
-                  </div>
+                <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center">
+                  <Button size="lg" href={GET_LEADS_URL} target="_blank" rel="noopener noreferrer">
+                    Get Started
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                  <Button size="lg" variant="outline" href={BOOKING_URL} target="_blank" rel="noopener noreferrer">
+                    Book a Call
+                  </Button>
+                </div>
+                <div className="mt-8 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm text-gray-600">
+                  {["$197/mo flat", "First audience in 24h", "Delivered to Google Sheets"].map((item) => (
+                    <span key={item} className="flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-primary" />
+                      {item}
+                    </span>
+                  ))}
                 </div>
               </motion.div>
             </Container>
           </section>
 
-          {/* Form Section */}
-          <section className="py-20 bg-[#F7F9FB]">
+          {/* How It Works — stepper */}
+          <section className="py-20 sm:py-24 bg-[#F7F9FB]">
             <Container>
-              <div className="max-w-3xl mx-auto">
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                >
-                  <h2 className="text-3xl lg:text-4xl font-light text-gray-900 mb-2 text-center">
-                    Describe Your Ideal Audience
-                  </h2>
-                  <p className="text-gray-600 text-center mb-10">
-                    The more detail you provide, the better we can match your needs.
-                  </p>
-
-                  <form
-                    onSubmit={handleSubmit}
-                    className="space-y-6 bg-white rounded-2xl p-8 border border-gray-200"
-                    toolname="requestCustomAudience"
-                    tooldescription="Request a custom B2B audience list built to exact specifications. Free 25-lead sample delivered in 48 hours. Starts at $0.50/lead with volume discounts."
-                  >
-                    {/* Industry */}
-                    <div>
-                      <label htmlFor="industry" className="block text-sm font-medium text-gray-700 mb-2">
-                        Industry *
-                      </label>
-                      <select
-                        id="industry"
-                        name="industry"
-                        required
-                        value={formData.industry}
-                        onChange={(e) => setFormData({ ...formData, industry: e.target.value })}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white"
-                        toolparamdescription="Target industry for the custom audience"
-                      >
-                        <option value="">Select an industry</option>
-                        {industries.map((ind) => (
-                          <option key={ind} value={ind}>{ind}</option>
-                        ))}
-                      </select>
-                    </div>
-
-                    {/* Geography */}
-                    <div>
-                      <label htmlFor="geography" className="block text-sm font-medium text-gray-700 mb-2">
-                        Geography *
-                      </label>
-                      <input
-                        type="text"
-                        id="geography"
-                        name="geography"
-                        required
-                        value={formData.geography}
-                        onChange={(e) => setFormData({ ...formData, geography: e.target.value })}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                        placeholder="e.g., US, UK, DACH region"
-                        toolparamdescription="Geographic region to target (e.g., US, UK, DACH, APAC)"
-                      />
-                    </div>
-
-                    {/* Company Size */}
-                    <div>
-                      <label htmlFor="companySize" className="block text-sm font-medium text-gray-700 mb-2">
-                        Company Size *
-                      </label>
-                      <select
-                        id="companySize"
-                        name="companySize"
-                        required
-                        value={formData.companySize}
-                        onChange={(e) => setFormData({ ...formData, companySize: e.target.value })}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white"
-                        toolparamdescription="Target company size by employee count"
-                      >
-                        <option value="">Select company size</option>
-                        {companySizes.map((size) => (
-                          <option key={size} value={size}>{size} employees</option>
-                        ))}
-                      </select>
-                    </div>
-
-                    {/* Seniority Level */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-3">
-                        Seniority Level *
-                      </label>
-                      <div className="flex flex-wrap gap-3">
-                        {seniorityOptions.map((level) => (
-                          <label
-                            key={level}
-                            className={`flex items-center gap-2 px-4 py-2.5 rounded-lg border cursor-pointer transition-all ${
-                              formData.seniorityLevels.includes(level)
-                                ? "bg-primary text-white border-primary"
-                                : "bg-white text-gray-700 border-gray-300 hover:border-primary"
-                            }`}
-                          >
-                            <input
-                              type="checkbox"
-                              name="seniorityLevels"
-                              value={level}
-                              checked={formData.seniorityLevels.includes(level)}
-                              onChange={() => handleSeniorityToggle(level)}
-                              className="sr-only"
-                              toolparamdescription="Target seniority levels (C-Suite, VP, Director, Manager, Individual Contributor)"
-                            />
-                            <span className="text-sm">{level}</span>
-                          </label>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Intent Signals */}
-                    <div>
-                      <label htmlFor="intentSignals" className="block text-sm font-medium text-gray-700 mb-2">
-                        Intent Signals
-                      </label>
-                      <textarea
-                        id="intentSignals"
-                        name="intentSignals"
-                        value={formData.intentSignals}
-                        onChange={(e) => setFormData({ ...formData, intentSignals: e.target.value })}
-                        rows={3}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
-                        placeholder="e.g., Actively researching CRM solutions, evaluating marketing automation tools"
-                        toolparamdescription="Specific purchase intent signals to target (e.g., researching CRM solutions)"
-                      />
-                    </div>
-
-                    {/* Desired Volume & Budget - Side by Side */}
-                    <div className="grid md:grid-cols-2 gap-6">
-                      <div>
-                        <label htmlFor="desiredVolume" className="block text-sm font-medium text-gray-700 mb-2">
-                          Desired Volume *
-                        </label>
-                        <select
-                          id="desiredVolume"
-                          name="desiredVolume"
-                          required
-                          value={formData.desiredVolume}
-                          onChange={(e) => setFormData({ ...formData, desiredVolume: e.target.value })}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white"
-                          toolparamdescription="Number of leads desired"
-                        >
-                          <option value="">Select volume</option>
-                          {desiredVolumes.map((vol) => (
-                            <option key={vol} value={vol}>{vol} leads</option>
-                          ))}
-                        </select>
-                      </div>
-                      <div>
-                        <label htmlFor="budgetRange" className="block text-sm font-medium text-gray-700 mb-2">
-                          Budget Range *
-                        </label>
-                        <select
-                          id="budgetRange"
-                          name="budgetRange"
-                          required
-                          value={formData.budgetRange}
-                          onChange={(e) => setFormData({ ...formData, budgetRange: e.target.value })}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-white"
-                          toolparamdescription="Monthly budget range for lead generation"
-                        >
-                          <option value="">Select budget</option>
-                          {budgetRanges.map((budget) => (
-                            <option key={budget} value={budget}>{budget}</option>
-                          ))}
-                        </select>
-                      </div>
-                    </div>
-
-                    {/* Email & Company Name */}
-                    <div className="grid md:grid-cols-2 gap-6">
-                      <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                          Email *
-                        </label>
-                        <input
-                          type="email"
-                          id="email"
-                          name="email"
-                          required
-                          value={formData.email}
-                          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                          placeholder="you@company.com"
-                          toolparamdescription="Work email to receive the custom audience sample"
-                        />
-                      </div>
-                      <div>
-                        <label htmlFor="companyName" className="block text-sm font-medium text-gray-700 mb-2">
-                          Company Name
-                        </label>
-                        <input
-                          type="text"
-                          id="companyName"
-                          name="companyName"
-                          value={formData.companyName}
-                          onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                          placeholder="Your company name (optional)"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Status Messages */}
-                    {status === "success" && (
-                      <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-green-800">
-                        <p className="font-medium">Request Submitted!</p>
-                        <p className="text-sm mt-1">We'll deliver your free 25-lead sample within 48 hours. Check your email.</p>
-                      </div>
-                    )}
-
-                    {status === "error" && (
-                      <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-800">
-                        <p className="font-medium">Error</p>
-                        <p className="text-sm mt-1">{errorMessage}</p>
-                      </div>
-                    )}
-
-                    <Button
-                      type="submit"
-                      size="lg"
-                      className="w-full"
-                      disabled={status === "submitting"}
-                    >
-                      {status === "submitting" ? "Submitting..." : "Get My Free 25-Lead Sample"}
-                      {status !== "submitting" && <ArrowRight className="ml-2 h-4 w-4" />}
-                    </Button>
-                  </form>
-                </motion.div>
-              </div>
-            </Container>
-          </section>
-
-          {/* How It Works */}
-          <section className="py-20 bg-white">
-            <Container>
-              <div className="text-center mb-16">
-                <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
-                  How It Works
-                </h2>
-                <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                  From request to delivery in 4 simple steps
-                </p>
-              </div>
-              <div className="grid md:grid-cols-4 gap-8 max-w-5xl mx-auto">
-                {[
-                  {
-                    step: "1",
-                    title: "Submit Your Criteria",
-                    description: "Tell us your ideal customer profile -- industry, geography, seniority, company size, and any intent signals.",
-                    icon: ClipboardList,
-                  },
-                  {
-                    step: "2",
-                    title: "Free Sample in 48 Hours",
-                    description: "We deliver a verified 25-lead sample so you can evaluate quality before committing.",
-                    icon: Send,
-                  },
-                  {
-                    step: "3",
-                    title: "Approve the Sample",
-                    description: "Review the sample, request adjustments, and confirm the full list specifications.",
-                    icon: ThumbsUp,
-                  },
-                  {
-                    step: "4",
-                    title: "Full Delivery",
-                    description: "Receive your complete custom audience list, verified and ready to activate.",
-                    icon: Package,
-                  },
-                ].map((step, i) => (
+              <SectionHeading
+                plain="How It"
+                script="Works"
+                sub="From ICP to a verified weekly list in three steps."
+              />
+              <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                {steps.map((s, i) => (
                   <motion.div
-                    key={i}
-                    initial={{ opacity: 0, y: 20 }}
+                    key={s.title}
+                    initial={{ opacity: 0, y: 16 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.15 }}
-                    className="relative"
+                    viewport={{ once: true, margin: "-60px" }}
+                    transition={{ delay: i * 0.06, duration: 0.4, ease: EASE }}
+                    className="rounded-2xl border border-gray-200 p-6 sm:p-8 hover:shadow-lg transition-shadow"
                   >
-                    <div className="flex flex-col items-center text-center">
-                      <div className="w-16 h-16 rounded-2xl bg-[#F7F9FB] border border-gray-200 flex items-center justify-center mb-5">
-                        <step.icon className="h-8 w-8 text-gray-700" />
-                      </div>
-                      <div className="text-sm text-primary font-medium mb-2">STEP {step.step}</div>
-                      <h3 className="text-xl text-gray-900 mb-3 font-medium">
-                        {step.title}
-                      </h3>
-                      <p className="text-gray-600 leading-relaxed text-sm">
-                        {step.description}
-                      </p>
+                    <div className="flex items-center gap-3">
+                      <IconChip Icon={s.icon} />
+                      <span className="text-sm font-semibold text-gray-300">0{i + 1}</span>
                     </div>
+                    <h3 className="mt-5 text-lg font-medium text-gray-900">{s.title}</h3>
+                    <p className="mt-3 text-sm text-gray-600 leading-relaxed">{s.desc}</p>
                   </motion.div>
                 ))}
               </div>
             </Container>
           </section>
 
-          {/* Pricing */}
-          <section className="py-20 bg-[#F7F9FB]">
+          {/* Benefits */}
+          <section className="py-20 sm:py-24 bg-white">
             <Container>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="text-center max-w-3xl mx-auto"
-              >
-                <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
-                  Simple, Transparent Pricing
-                </h2>
-                <div className="bg-white rounded-2xl p-8 border border-gray-200 mb-8">
-                  <div className="text-5xl font-light text-primary mb-2">$0.50</div>
-                  <div className="text-xl text-gray-600 mb-6">per lead, volume discounts available</div>
-                  <div className="grid md:grid-cols-3 gap-6 text-left">
-                    {[
-                      { volume: "100-500 leads", price: "$0.50/lead" },
-                      { volume: "500-5,000 leads", price: "$0.35/lead" },
-                      { volume: "10,000+ leads", price: "Custom pricing" },
-                    ].map((tier, i) => (
-                      <div key={i} className="bg-[#F7F9FB] rounded-xl p-4">
-                        <div className="text-gray-900 font-medium mb-1">{tier.volume}</div>
-                        <div className="text-primary">{tier.price}</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <p className="text-gray-600 mb-6">
-                  Every list includes verified emails, phone numbers, LinkedIn profiles, and company data.
-                </p>
-              </motion.div>
+              <SectionHeading
+                plain="Buyers, Not"
+                script="A Static List"
+                sub="Stop buying databases that decay. Get fresh, intent-matched buyers every week."
+              />
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                {benefits.map((b, i) => (
+                  <motion.div
+                    key={b.title}
+                    initial={{ opacity: 0, y: 16 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-60px" }}
+                    transition={{ delay: i * 0.05, duration: 0.4, ease: EASE }}
+                    className="rounded-2xl border border-gray-200 p-6 sm:p-8 hover:shadow-lg transition-shadow"
+                  >
+                    <IconChip Icon={b.icon} />
+                    <h3 className="mt-5 text-lg font-medium text-gray-900">{b.title}</h3>
+                    <p className="mt-3 text-sm text-gray-600 leading-relaxed">{b.body}</p>
+                  </motion.div>
+                ))}
+              </div>
             </Container>
           </section>
 
-          {/* Secondary CTA - Browse Marketplace */}
-          <section className="py-20 bg-white">
+          {/* Targeting — chips */}
+          <section className="py-20 sm:py-24 bg-[#F7F9FB]">
             <Container>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="text-center max-w-3xl mx-auto"
-              >
-                <div className="bg-[#F7F9FB] rounded-2xl p-10 border border-gray-200">
-                  <ShoppingCart className="h-10 w-10 text-primary mx-auto mb-4" />
-                  <h3 className="text-2xl lg:text-3xl font-light text-gray-900 mb-3">
-                    Need Leads Right Now?
-                  </h3>
-                  <p className="text-gray-600 mb-6 max-w-xl mx-auto">
-                    Browse the marketplace for pre-built, ready-to-download audience lists across popular industries and roles. Instant access, no waiting.
-                  </p>
-                  <Button size="lg" variant="outline" href="/marketplace">
-                    Browse the Marketplace
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </div>
-              </motion.div>
+              <SectionHeading
+                plain="Tune It To Your"
+                script="Exact ICP"
+                sub="Set these once. Every weekly audience matches your profile."
+              />
+              <div className="flex flex-wrap items-center justify-center gap-3 max-w-3xl mx-auto">
+                {["Industry", "Geography", "Company size", "Seniority", "Intent signals", "Job title", "Technologies"].map((chip) => (
+                  <span
+                    key={chip}
+                    className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-800 shadow-sm"
+                  >
+                    <Check className="w-3.5 h-3.5 text-primary" />
+                    {chip}
+                  </span>
+                ))}
+              </div>
+            </Container>
+          </section>
+
+          {/* Use Cases — chips */}
+          <section className="py-20 sm:py-24 bg-white">
+            <Container>
+              <SectionHeading plain="Built for Your" script="Workflow" />
+              <div className="grid sm:grid-cols-2 gap-5 max-w-4xl mx-auto">
+                {useCases.map((u, i) => (
+                  <motion.div
+                    key={u.audience}
+                    initial={{ opacity: 0, y: 16 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-60px" }}
+                    transition={{ delay: i * 0.06, duration: 0.4, ease: EASE }}
+                    className="rounded-2xl border border-gray-200 p-6 sm:p-7"
+                  >
+                    <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                      {u.audience}
+                    </span>
+                    <p className="mt-4 text-sm text-gray-600 leading-relaxed">{u.body}</p>
+                  </motion.div>
+                ))}
+              </div>
+            </Container>
+          </section>
+
+          {/* Pricing — three self-serve plans */}
+          <section className="py-20 sm:py-24 bg-[#F7F9FB]">
+            <Container>
+              <SectionHeading
+                plain="Pick Your"
+                script="Plan"
+                sub="Self-serve, month-to-month, cancel anytime. First audience within 24 hours."
+              />
+              <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto items-stretch">
+                {plans.map((plan, i) => (
+                  <motion.div
+                    key={plan.name}
+                    initial={{ opacity: 0, y: 16 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.05, duration: 0.4, ease: EASE }}
+                    className={`relative flex flex-col rounded-2xl p-6 sm:p-8 transition-shadow ${
+                      plan.highlight
+                        ? "bg-white border border-primary shadow-lg ring-1 ring-primary/20"
+                        : "bg-white border border-gray-200 hover:shadow-lg"
+                    }`}
+                  >
+                    {plan.highlight && (
+                      <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white whitespace-nowrap">
+                        This Page
+                      </span>
+                    )}
+                    <IconChip Icon={plan.icon} />
+                    <h3 className="mt-5 text-lg font-medium text-gray-900">{plan.name}</h3>
+                    <div className="mt-2 flex items-baseline gap-1">
+                      <span className="text-4xl font-light text-gray-900">{plan.price}</span>
+                      <span className="text-sm text-gray-500">/mo</span>
+                    </div>
+                    <p className="mt-3 text-sm text-gray-600 leading-relaxed">{plan.description}</p>
+                    <ul className="mt-5 space-y-2.5 flex-1">
+                      {plan.items.map((item) => (
+                        <li key={item} className="flex items-start gap-2.5 text-sm text-gray-600">
+                          <Check className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <Button
+                      href={GET_LEADS_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      variant={plan.highlight ? "default" : "outline"}
+                      className="w-full mt-8"
+                    >
+                      {plan.cta}
+                    </Button>
+                  </motion.div>
+                ))}
+              </div>
+              <p className="mt-8 text-center text-sm text-gray-500">
+                No setup fee. No long-term contract. Cancel anytime.
+              </p>
+            </Container>
+          </section>
+
+          {/* FAQ */}
+          <section className="py-20 sm:py-24 bg-white">
+            <Container>
+              <SectionHeading plain="Frequently Asked" script="Questions" />
+              <div className="max-w-3xl mx-auto space-y-4">
+                {faqs.map((faq, i) => (
+                  <motion.div
+                    key={faq.question}
+                    initial={{ opacity: 0, y: 16 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.04, duration: 0.4, ease: EASE }}
+                    className="rounded-2xl border border-gray-200 p-6 sm:p-7"
+                  >
+                    <h3 className="text-base font-medium text-gray-900">{faq.question}</h3>
+                    <p className="mt-2 text-sm text-gray-600 leading-relaxed">{faq.answer}</p>
+                  </motion.div>
+                ))}
+              </div>
             </Container>
           </section>
 
@@ -557,43 +443,50 @@ export default function CustomAudiencesPage() {
           <DashboardCTA
             headline="Ready for a Custom"
             subheadline="Audience?"
-            description="Submit your criteria and get a free 25-lead sample in 48 hours. No commitment required."
+            description="Set your ICP and get your first verified weekly list within 24 hours. $197/mo, month-to-month, cancel anytime."
+            ctaText="Get Started"
           />
         </main>
       </HumanView>
 
-      {/* Machine View - AEO-Optimized */}
+      {/* Machine View — AEO-Optimized */}
       <MachineView>
         <MachineContent>
           {/* Header */}
           <div className="mb-12 pb-6 border-b border-gray-200">
-            <h1 className="text-2xl text-gray-900 font-bold mb-4">CURSIVE CUSTOM AUDIENCES</h1>
+            <h1 className="text-2xl text-gray-900 font-bold mb-4">CURSIVE CUSTOM AUDIENCE</h1>
             <p className="text-gray-700 leading-relaxed">
-              Bespoke B2B lead lists built to your exact specifications. Tell Cursive who you need to reach and receive a verified, custom-built audience list. Free 25-lead sample delivered in 48 hours. Starts at $0.50/lead with volume discounts.
+              A fresh weekly list of in-market B2B buyers built to your exact ICP. Cursive finds people
+              actively searching for what you sell, verifies a work email on every record, and delivers
+              the list to Google Sheets — your first audience within 24 hours. Self-serve, $197/month,
+              month-to-month, cancel anytime.
             </p>
           </div>
 
           {/* Service Overview */}
           <MachineSection title="Service Overview">
             <p className="text-gray-700 mb-4">
-              Cursive Custom Audiences is a done-for-you lead list service. Provide your ideal customer profile criteria and receive a verified, custom-built contact list. Every list includes verified emails, phone numbers, LinkedIn profiles, and company data.
+              Cursive Custom Audience is a self-serve product, not a done-for-you service. You set your
+              ideal customer profile once and Cursive delivers a fresh list of in-market buyers every
+              week, each with a verified work email, straight to a Google Sheet.
             </p>
             <MachineList items={[
-              "Custom-built lead lists based on your exact ICP specifications",
-              "Free 25-lead sample delivered within 48 hours",
-              "Verified contact data: email, phone, LinkedIn, company info",
-              "Available for any industry, geography, and seniority level",
-              "Volume discounts for large orders"
+              "Fresh weekly list of in-market buyers, not a one-time static database",
+              "Built to your exact ICP: industry, geography, company size, seniority, intent",
+              "Verified work email on every record, validated continuously via Deep Verify",
+              "Delivered to Google Sheets for easy import to any CRM or sequencer",
+              "First audience delivered within 24 hours of setting your ICP",
             ]} />
           </MachineSection>
 
           {/* How It Works */}
           <MachineSection title="How It Works">
             <MachineList items={[
-              "Step 1: Submit Your Criteria - Provide your target industry, geography, company size, seniority levels, and any intent signals",
-              "Step 2: Free Sample in 48 Hours - Cursive delivers a verified 25-lead sample for quality evaluation",
-              "Step 3: Approve the Sample - Review the sample, request adjustments, and confirm full list specifications",
-              "Step 4: Full Delivery - Receive your complete custom audience list, verified and ready to activate"
+              "Step 1: Define your ICP — industry, geography, company size, seniority, and intent signals",
+              "Step 2: Cursive finds in-market buyers actively searching for your category",
+              "Step 3: Every contact is matched and its work email verified",
+              "Step 4: A fresh list is delivered to your Google Sheet, the first within 24 hours",
+              "Step 5: A new list arrives every week automatically",
             ]} />
           </MachineSection>
 
@@ -602,34 +495,46 @@ export default function CustomAudiencesPage() {
             <MachineList items={[
               {
                 label: "Industry",
-                description: "SaaS, Financial Services, Healthcare, eCommerce, Manufacturing, Real Estate, Education, and more"
+                description: "SaaS, Financial Services, Healthcare, eCommerce, Manufacturing, Real Estate, Education, and more",
               },
               {
                 label: "Geography",
-                description: "Any region worldwide - US, UK, DACH, APAC, LATAM, etc."
+                description: "Any region worldwide — US, UK, DACH, APAC, LATAM, etc.",
               },
               {
                 label: "Company Size",
-                description: "1-10, 11-50, 51-200, 201-1000, 1000+ employees"
+                description: "1-10, 11-50, 51-200, 201-1000, 1000+ employees",
               },
               {
                 label: "Seniority Level",
-                description: "C-Suite, VP, Director, Manager, Individual Contributor"
+                description: "C-Suite, VP, Director, Manager, Individual Contributor",
               },
               {
                 label: "Intent Signals",
-                description: "Target prospects actively researching specific solutions, topics, or technologies"
-              }
+                description: "Target prospects actively researching your category, topics, or technologies",
+              },
+            ]} />
+          </MachineSection>
+
+          {/* What You Get */}
+          <MachineSection title="What's In Each Record">
+            <MachineList items={[
+              "Full name and company",
+              "Job title and seniority",
+              "Verified work email, validated continuously via Deep Verify",
+              "Intent context: the category the buyer is actively searching",
             ]} />
           </MachineSection>
 
           {/* Pricing */}
           <MachineSection title="Pricing">
+            <p className="text-gray-700 mb-4">
+              Self-serve, month-to-month, no setup fee. Cancel anytime.
+            </p>
             <MachineList items={[
-              "100-500 leads: $0.50 per lead",
-              "500-5,000 leads: $0.35 per lead",
-              "10,000+ leads: Custom pricing available",
-              "Free 25-lead sample included with every request"
+              "Custom Audience ($197/month) — A fresh weekly list of in-market buyers, delivered to Google Sheets",
+              "Visitor Pixel ($97/month) — Identify the companies and people visiting your site",
+              "Pixel + Audience Bundle ($247/month) — Both, in one feed",
             ]} />
           </MachineSection>
 
@@ -637,20 +542,20 @@ export default function CustomAudiencesPage() {
           <MachineSection title="Getting Started">
             <MachineList items={[
               {
-                label: "Request Custom Audience",
-                href: "https://www.meetcursive.com/custom-audiences",
-                description: "Submit your criteria and get a free 25-lead sample in 48 hours"
-              },
-              {
-                label: "Browse Marketplace",
-                href: "https://www.meetcursive.com/marketplace",
-                description: "Browse pre-built audience lists for instant access"
-              },
-              {
                 label: "Get Started",
                 href: "https://leads.meetcursive.com/get-leads",
-                description: "Request your custom audience and get a free 25-lead sample"
-              }
+                description: "Set your ICP and get your first audience within 24 hours",
+              },
+              {
+                label: "Pricing",
+                href: "https://www.meetcursive.com/pricing",
+                description: "Custom Audience $197/mo, Visitor Pixel $97/mo, or both for $247/mo",
+              },
+              {
+                label: "Book a Call",
+                href: "https://cal.com/cursiveteam/30min",
+                description: "Talk to the team before you buy",
+              },
             ]} />
           </MachineSection>
 

@@ -6,788 +6,542 @@ import { motion } from "framer-motion"
 import {
   Eye, Target, Zap, Shield, Filter, BarChart3,
   Users, Clock, TrendingUp, CheckCircle2,
-  ArrowRight, Sparkles, Database, Lock
+  ArrowRight, Database, Layers, Check,
+  type LucideIcon,
 } from "lucide-react"
-import { DashboardPreview } from "@/components/dashboard-preview"
 import { IntegrationsShowcase } from "@/components/integrations-showcase"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
 import Link from "next/link"
 import { Breadcrumbs } from "@/components/Breadcrumbs"
+import { GET_LEADS_URL, BOOKING_URL } from "@/lib/cta"
+
+const EASE = [0.22, 1, 0.36, 1] as const
+
+function SectionHeading({ plain, script, sub }: { plain: string; script?: string; sub?: string }) {
+  return (
+    <div className="text-center mb-14">
+      <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light text-gray-900">
+        {plain}
+        {script && (
+          <span className="block font-cursive text-4xl sm:text-5xl lg:text-6xl text-gray-500 mt-1">
+            {script}
+          </span>
+        )}
+      </h2>
+      {sub && (
+        <p className="mt-5 text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">{sub}</p>
+      )}
+    </div>
+  )
+}
+
+function IconChip({ Icon }: { Icon: LucideIcon }) {
+  return (
+    <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center">
+      <Icon className="w-6 h-6 text-primary" />
+    </div>
+  )
+}
+
+const steps = [
+  { icon: Zap, title: "Install the pixel", desc: "One lightweight snippet. 60 seconds, any platform." },
+  { icon: Eye, title: "Identify in real time", desc: "Visitors resolved to company and person the moment they land." },
+  { icon: Target, title: "Activate everywhere", desc: "Verified contacts synced to your CRM, ads, and sequences." },
+]
+
+const benefits: Array<{ icon: LucideIcon; title: string; body: string }> = [
+  { icon: Database, title: "40–60% match rate", body: "Deterministic, offline-rooted identity — not modeled. Cookie sync averages 2–5%, IP-only 10–15%." },
+  { icon: Users, title: "Company + person data", body: "See the business and the specific people browsing — job title, seniority, verified work email." },
+  { icon: Clock, title: "Real-time, not batched", body: "Visitors resolved the second they land, so you can reach out while intent is hot." },
+  { icon: BarChart3, title: "Page-level intent", body: "Know who hit your pricing page. Prioritize the highest-intent visitors first." },
+  { icon: Filter, title: "Smart filtering", body: "Auto-exclude existing customers, bots, and internal traffic. Only new opportunities surface." },
+  { icon: Shield, title: "Privacy-compliant", body: "GDPR and CCPA ready out of the box — hashed IDs, honored opt-outs, regional rules." },
+]
+
+const useCases = [
+  { audience: "B2B SaaS Sales", body: "Hot accounts land in your CRM with the pages they viewed — no more blind prospecting." },
+  { audience: "Marketing", body: "See which companies clicked your ads but didn't convert, then retarget them by name." },
+  { audience: "Customer Success", body: "Get alerted when at-risk accounts revisit pricing, and save them before they churn." },
+  { audience: "Agencies", body: "Tie website visits to closed deals and prove campaign ROI to win renewals." },
+]
+
+const plans: Array<{
+  name: string
+  price: string
+  icon: LucideIcon
+  description: string
+  items: string[]
+  cta: string
+  highlight: boolean
+}> = [
+  {
+    name: "Visitor Pixel",
+    price: "$97",
+    icon: Eye,
+    description: "Identify the companies and people visiting your site.",
+    items: [
+      "40–60% deterministic match rate",
+      "Company + person-level detail",
+      "One-snippet install, 60 seconds",
+      "Identified visitors synced to your portal",
+    ],
+    cta: "Get the Pixel",
+    highlight: false,
+  },
+  {
+    name: "Pixel + Audience Bundle",
+    price: "$247",
+    icon: Layers,
+    description: "Site traffic and in-market intent in one feed.",
+    items: [
+      "Everything in Visitor Pixel",
+      "Everything in Custom Audience",
+      "Priority audience updates within 24h",
+      "Best value vs. buying separately",
+    ],
+    cta: "Get the Bundle",
+    highlight: true,
+  },
+  {
+    name: "Custom Audience",
+    price: "$197",
+    icon: Users,
+    description: "A fresh weekly list of buyers searching for your product.",
+    items: [
+      "Weekly list of in-market prospects",
+      "Built to your exact ICP",
+      "Delivered to Google Sheets",
+      "First audience within 24 hours",
+    ],
+    cta: "Get an Audience",
+    highlight: false,
+  },
+]
+
+const faqs = [
+  {
+    question: "How accurate is visitor identification?",
+    answer: "Cursive's pixel achieves a 40–60% match rate on US B2B traffic — deterministic, not modeled. Cookie-sync providers average 2–5% and IP-only databases sit around 10–15%. Accuracy on a matched record is 60–80%, driven by geo-framing and an offline-rooted identity graph of 280M+ verified profiles refreshed every 30 days against NCOA.",
+  },
+  {
+    question: "How quickly are visitors identified?",
+    answer: "In real time, within seconds of landing. Unlike batch tools, Cursive enriches instantly so you can act on hot leads immediately.",
+  },
+  {
+    question: "Is it GDPR and CCPA compliant?",
+    answer: "Yes. We honor all opt-outs, use hashed identifiers, and comply with GDPR, CCPA, and regional privacy regulations out of the box.",
+  },
+  {
+    question: "What data do I get per visitor?",
+    answer: "Company name, industry, size, location, and technologies — plus, where available, the individual's job title, seniority, department, and verified work email.",
+  },
+  {
+    question: "How does it work with my CRM?",
+    answer: "Native sync to Salesforce, HubSpot, and 200+ tools. Identified visitors flow into your existing stack automatically.",
+  },
+  {
+    question: "How much does it cost?",
+    answer: "Flat monthly pricing, no per-visitor fees. Visitor Pixel is $97/mo, Custom Audience $197/mo, or both for $247/mo. Self-serve, month-to-month, cancel anytime.",
+  },
+]
 
 export default function VisitorIdentificationPage() {
   return (
     <>
-
       {/* Human View */}
       <HumanView>
-        <main>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Breadcrumbs items={[
-            { name: "Home", href: "/" },
-            { name: "Visitor Identification", href: "/visitor-identification" },
-          ]} />
-        </div>
-        {/* Hero Section */}
-        <section className="pt-24 pb-20 bg-white">
-          <Container>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="text-center max-w-5xl mx-auto"
-            >
-              <span className="text-sm text-primary mb-4 block font-medium tracking-wide">IDENTITY &amp; INTENT INFRASTRUCTURE</span>
-              <h1 className="text-5xl lg:text-7xl font-light text-gray-900 mb-6">
-                Stop Losing 98% of Your Website Visitors
-              </h1>
-              <p className="text-xl text-gray-600 mb-6 max-w-3xl mx-auto leading-relaxed">
-                Most B2B companies never know who visits their site. Cursive&apos;s pixel matches 40&ndash;60% of your anonymous traffic deterministically&mdash;against 280M+ verified consumer profiles refreshed every 30 days&mdash;then activates them through automated outreach and a 15M-domain organic intent network.
+        <main className="overflow-hidden">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <Breadcrumbs items={[
+              { name: "Home", href: "/" },
+              { name: "Visitor Identification", href: "/visitor-identification" },
+            ]} />
+          </div>
+
+          {/* Hero */}
+          <section className="relative pt-16 pb-20 sm:pt-20 sm:pb-24 bg-white">
+            <Container>
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, ease: EASE }}
+                className="text-center max-w-3xl mx-auto"
+              >
+                <span className="text-xs font-semibold tracking-[0.25em] text-primary uppercase">
+                  Website Visitor Identification
+                </span>
+                <h1 className="mt-4 text-4xl sm:text-5xl lg:text-6xl font-light text-gray-900 leading-[1.1]">
+                  Stop losing 98% of
+                  <span className="block font-cursive text-4xl sm:text-5xl lg:text-6xl text-gray-500 mt-2">
+                    your website visitors
+                  </span>
+                </h1>
+                <p className="mt-6 text-lg sm:text-xl text-gray-600 leading-relaxed">
+                  Most B2B sites never know who shows up. The Cursive pixel resolves 40–60% of your
+                  anonymous traffic to real companies and people — deterministically, the moment they land.
+                </p>
+                <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center">
+                  <Button size="lg" href={GET_LEADS_URL} target="_blank" rel="noopener noreferrer">
+                    Get Started
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                  <Button size="lg" variant="outline" href={BOOKING_URL} target="_blank" rel="noopener noreferrer">
+                    Book a Call
+                  </Button>
+                </div>
+                <div className="mt-8 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm text-gray-600">
+                  {["60-second setup", "40–60% match rate", "200+ integrations"].map((item) => (
+                    <span key={item} className="flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-primary" />
+                      {item}
+                    </span>
+                  ))}
+                </div>
+              </motion.div>
+            </Container>
+          </section>
+
+          {/* How It Works — stepper */}
+          <section className="py-20 sm:py-24 bg-[#F7F9FB]">
+            <Container>
+              <SectionHeading
+                plain="How It"
+                script="Works"
+                sub="From anonymous visitor to qualified lead in three steps."
+              />
+              <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                {steps.map((s, i) => (
+                  <motion.div
+                    key={s.title}
+                    initial={{ opacity: 0, y: 16 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-60px" }}
+                    transition={{ delay: i * 0.06, duration: 0.4, ease: EASE }}
+                    className="rounded-2xl border border-gray-200 p-6 sm:p-8 hover:shadow-lg transition-shadow"
+                  >
+                    <div className="flex items-center gap-3">
+                      <IconChip Icon={s.icon} />
+                      <span className="text-sm font-semibold text-gray-300">0{i + 1}</span>
+                    </div>
+                    <h3 className="mt-5 text-lg font-medium text-gray-900">{s.title}</h3>
+                    <p className="mt-3 text-sm text-gray-600 leading-relaxed">{s.desc}</p>
+                  </motion.div>
+                ))}
+              </div>
+            </Container>
+          </section>
+
+          {/* Benefits */}
+          <section className="py-20 sm:py-24 bg-white">
+            <Container>
+              <SectionHeading
+                plain="Turn Anonymous Traffic"
+                script="Into Revenue"
+                sub="Stop guessing who's interested. Start reaching out while leads are hot."
+              />
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                {benefits.map((b, i) => (
+                  <motion.div
+                    key={b.title}
+                    initial={{ opacity: 0, y: 16 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-60px" }}
+                    transition={{ delay: i * 0.05, duration: 0.4, ease: EASE }}
+                    className="rounded-2xl border border-gray-200 p-6 sm:p-8 hover:shadow-lg transition-shadow"
+                  >
+                    <IconChip Icon={b.icon} />
+                    <h3 className="mt-5 text-lg font-medium text-gray-900">{b.title}</h3>
+                    <p className="mt-3 text-sm text-gray-600 leading-relaxed">{b.body}</p>
+                  </motion.div>
+                ))}
+              </div>
+            </Container>
+          </section>
+
+          {/* Use Cases — chips */}
+          <section className="py-20 sm:py-24 bg-[#F7F9FB]">
+            <Container>
+              <SectionHeading plain="Built for Your" script="Workflow" />
+              <div className="grid sm:grid-cols-2 gap-5 max-w-4xl mx-auto">
+                {useCases.map((u, i) => (
+                  <motion.div
+                    key={u.audience}
+                    initial={{ opacity: 0, y: 16 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-60px" }}
+                    transition={{ delay: i * 0.06, duration: 0.4, ease: EASE }}
+                    className="rounded-2xl bg-white border border-gray-200 p-6 sm:p-7"
+                  >
+                    <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                      {u.audience}
+                    </span>
+                    <p className="mt-4 text-sm text-gray-600 leading-relaxed">{u.body}</p>
+                  </motion.div>
+                ))}
+              </div>
+            </Container>
+          </section>
+
+          {/* Pricing — three self-serve plans */}
+          <section className="py-20 sm:py-24 bg-white">
+            <Container>
+              <SectionHeading
+                plain="Pick Your"
+                script="Plan"
+                sub="Self-serve, month-to-month, cancel anytime. Install in 60 seconds, first audience in 24 hours."
+              />
+              <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto items-stretch">
+                {plans.map((plan, i) => (
+                  <motion.div
+                    key={plan.name}
+                    initial={{ opacity: 0, y: 16 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.05, duration: 0.4, ease: EASE }}
+                    className={`relative flex flex-col rounded-2xl p-6 sm:p-8 transition-shadow ${
+                      plan.highlight
+                        ? "bg-white border border-primary shadow-lg ring-1 ring-primary/20"
+                        : "bg-white border border-gray-200 hover:shadow-lg"
+                    }`}
+                  >
+                    {plan.highlight && (
+                      <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white whitespace-nowrap">
+                        Most Popular
+                      </span>
+                    )}
+                    <IconChip Icon={plan.icon} />
+                    <h3 className="mt-5 text-lg font-medium text-gray-900">{plan.name}</h3>
+                    <div className="mt-2 flex items-baseline gap-1">
+                      <span className="text-4xl font-light text-gray-900">{plan.price}</span>
+                      <span className="text-sm text-gray-500">/mo</span>
+                    </div>
+                    <p className="mt-3 text-sm text-gray-600 leading-relaxed">{plan.description}</p>
+                    <ul className="mt-5 space-y-2.5 flex-1">
+                      {plan.items.map((item) => (
+                        <li key={item} className="flex items-start gap-2.5 text-sm text-gray-600">
+                          <Check className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <Button
+                      href={GET_LEADS_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      variant={plan.highlight ? "default" : "outline"}
+                      className="w-full mt-8"
+                    >
+                      {plan.cta}
+                    </Button>
+                  </motion.div>
+                ))}
+              </div>
+              <p className="mt-8 text-center text-sm text-gray-500">
+                No setup fee. No long-term contract. Cancel anytime.
               </p>
-              <p className="text-lg text-gray-500 mb-8 max-w-2xl mx-auto">
-                See who visited your pricing page, automatically enrich their profiles, trigger personalized outreach, and build lookalike audiences from our database of hundreds of millions of verified B2B and B2C leads.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <Button size="lg" href="https://leads.meetcursive.com/get-leads" target="_blank" rel="noopener noreferrer">
-                  Get Started
+            </Container>
+          </section>
+
+          {/* Integrations */}
+          <section className="py-20 sm:py-24 bg-[#F7F9FB]">
+            <Container>
+              <IntegrationsShowcase
+                title="Works With Your Existing Stack"
+                subtitle="Native integrations with 200+ CRMs, ad platforms, and marketing tools"
+              />
+              <div className="text-center mt-8">
+                <Button variant="outline" href="/integrations">
+                  View All Integrations
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
-                <Button size="lg" variant="outline" href="/pricing">
-                  View Pricing
-                </Button>
               </div>
-              <div className="mt-8 flex items-center justify-center gap-8 text-sm text-gray-600">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="h-5 w-5 text-green-600" />
-                  <span>5-minute setup</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="h-5 w-5 text-green-600" />
-                  <span>40&ndash;60% pixel match rate</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="h-5 w-5 text-green-600" />
-                  <span>200+ integrations</span>
-                </div>
-              </div>
-            </motion.div>
-          </Container>
-        </section>
+            </Container>
+          </section>
 
-        {/* How It Works */}
-        <section className="py-20 bg-[#F7F9FB]">
-          <Container>
-            <div className="text-center mb-16">
-              <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
-                How It Works
-              </h2>
-              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                From anonymous visitor to qualified lead in three simple steps
-              </p>
-            </div>
-            <div className="grid md:grid-cols-3 gap-12 max-w-5xl mx-auto">
-              {[
-                {
-                  step: "1",
-                  title: "Install the Pixel",
-                  description: "Add our lightweight JavaScript tag to your website. Takes 5 minutes. Works on any platform—WordPress, Webflow, custom builds.",
-                  icon: Zap
-                },
-                {
-                  step: "2",
-                  title: "Real-Time Identification",
-                  description: "Our system identifies visitors the moment they land. We enrich profiles with company data, job titles, contact info, and intent signals.",
-                  icon: Eye
-                },
-                {
-                  step: "3",
-                  title: "Activate Everywhere",
-                  description: "Sync identified visitors to your CRM, ad platforms, and email tools. Trigger automated outreach or sales alerts instantly.",
-                  icon: Target
-                }
-              ].map((step, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.15 }}
-                  className="relative"
-                >
-                  <div className="flex flex-col items-center text-center">
-                    <div className="w-20 h-20 rounded-2xl bg-[#F7F9FB] border border-gray-200 flex items-center justify-center mb-6">
-                      <step.icon className="h-10 w-10 text-gray-700" />
-                    </div>
-                    <h3 className="text-2xl text-gray-900 mb-3 font-medium">
-                      {step.title}
-                    </h3>
-                    <p className="text-gray-600 leading-relaxed">
-                      {step.description}
-                    </p>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </Container>
-        </section>
-
-        {/* Benefits Grid */}
-        <section className="py-20 bg-white">
-          <Container>
-            <div className="text-center mb-16">
-              <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
-                Turn Anonymous Traffic Into Revenue
-              </h2>
-              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                Stop guessing who's interested. Start converting while leads are hot.
-              </p>
-            </div>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {[
-                {
-                  icon: TrendingUp,
-                  title: "3x More Qualified Leads",
-                  description: "Identify prospects before they fill out forms. Reach out while they're actively researching—not days later when they've already chosen a competitor."
-                },
-                {
-                  icon: Clock,
-                  title: "Instant Identification",
-                  description: "Real-time enrichment, not batch processing. Know who's on your site right now so sales can strike while the iron is hot."
-                },
-                {
-                  icon: Database,
-                  title: "40\u201360% Deterministic Match Rate",
-                  description: "Pixel match driven by geo-framing and offline-rooted identity\u2014not modeled or probabilistic. For context: cookie sync averages 2\u20135%, IP-only databases 10\u201315%."
-                },
-                {
-                  icon: Users,
-                  title: "Company + Individual Data",
-                  description: "See which companies visited—and the specific people browsing. Get job titles, seniority, verified emails, and LinkedIn profiles."
-                },
-                {
-                  icon: Filter,
-                  title: "Smart Filtering",
-                  description: "Automatically exclude existing customers, bots, and internal traffic. Your sales team only sees new opportunities worth pursuing."
-                },
-                {
-                  icon: Shield,
-                  title: "Privacy-Compliant",
-                  description: "GDPR and CCPA compliant out of the box. We honor opt-outs, use hashed IDs, and follow regional privacy regulations."
-                },
-                {
-                  icon: BarChart3,
-                  title: "Page-Level Tracking",
-                  description: "See exactly which pages each visitor viewed. Prioritize leads who checked your pricing page or high-intent product pages."
-                },
-                {
-                  icon: Sparkles,
-                  title: "Return Visitor Detection",
-                  description: "Track visitors across multiple sessions. Know when hot prospects come back—that's your signal to reach out."
-                }
-              ].map((benefit, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.05 }}
-                  className="bg-white rounded-xl p-6 border border-gray-200 hover:border-primary hover:shadow-lg transition-all"
-                >
-                  <benefit.icon className="h-8 w-8 text-primary mb-4" />
-                  <h3 className="text-xl text-gray-900 mb-3 font-medium">
-                    {benefit.title}
-                  </h3>
-                  <p className="text-gray-600 leading-relaxed">
-                    {benefit.description}
-                  </p>
-                </motion.div>
-              ))}
-            </div>
-          </Container>
-        </section>
-
-        {/* Use Cases */}
-        <section className="py-20 bg-[#F7F9FB]">
-          <Container>
-            <div className="text-center mb-16">
-              <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
-                Built for Your Workflow
-              </h2>
-              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                Real scenarios from real B2B companies using Cursive
-              </p>
-            </div>
-            <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-              {[
-                {
-                  audience: "B2B SaaS Sales Teams",
-                  scenario: "Your sales team wastes hours researching companies manually. You have tons of traffic but no idea who they are.",
-                  solution: "Cursive automatically identifies which companies visited your site and what they viewed. Your SDRs get hot leads delivered to Salesforce with context—no more blind prospecting."
-                },
-                {
-                  audience: "Marketing Teams",
-                  scenario: "You spend thousands on ads but 98% of visitors leave without converting. You can't retarget anonymous traffic effectively.",
-                  solution: "See exactly which companies clicked your ads but didn't convert. Build custom audiences of identified visitors and retarget them on LinkedIn, Facebook, and Google with personalized messaging."
-                },
-                {
-                  audience: "Customer Success",
-                  scenario: "Churning customers often revisit your pricing page before canceling. You have no way to spot this early warning signal.",
-                  solution: "Get alerts when at-risk accounts visit competitor comparison pages or pricing. Proactively reach out to save the account before it's too late."
-                },
-                {
-                  audience: "Digital Agencies",
-                  scenario: "Clients expect you to prove ROI on campaigns, but you can't track anonymous traffic back to outcomes.",
-                  solution: "Show clients exactly which companies visited after seeing their campaigns. Prove attribution and win renewals by connecting website visits to closed deals."
-                }
-              ].map((useCase, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                  className="bg-white rounded-xl p-8 border border-gray-200"
-                >
-                  <div className="text-sm text-primary font-medium mb-2">FOR {useCase.audience.toUpperCase()}</div>
-                  <h3 className="text-2xl text-gray-900 mb-4 font-medium">
-                    {useCase.scenario}
-                  </h3>
-                  <div className="border-l-4 border-gray-200 pl-4 mt-4">
-                    <p className="text-gray-600 leading-relaxed">
-                      <strong className="text-gray-900">How Cursive helps:</strong> {useCase.solution}
-                    </p>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </Container>
-        </section>
-
-        {/* Features Deep Dive */}
-        <section className="py-20 bg-white">
-          <Container>
-            <div className="text-center mb-16">
-              <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
-                Technical Features for Data Teams
-              </h2>
-              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                Enterprise-grade visitor identification built for scale
-              </p>
-            </div>
-            <div className="space-y-16 max-w-5xl mx-auto">
-              {[
-                {
-                  title: "Multi-Source Data Enrichment",
-                  description: "We don't rely on a single data provider. Cursive cross-references multiple sources including IP intelligence, device fingerprinting, email graphs, and third-party B2B databases to maximize identification accuracy.",
-                  features: [
-                    "IP address resolution with company matching",
-                    "Reverse email lookup from hashed identifiers",
-                    "Device fingerprinting for return visitor tracking",
-                    "Integration with Clearbit, ZoomInfo, Apollo data layers"
-                  ]
-                },
-                {
-                  title: "Advanced Filtering & Segmentation",
-                  description: "Not all traffic is equal. Cursive includes intelligent filters to focus your team on high-value prospects and exclude noise.",
-                  features: [
-                    "Exclude existing customers by CRM sync",
-                    "Filter out internal teams by IP range or domain",
-                    "Bot detection and removal",
-                    "Custom scoring based on firmographics and behavior",
-                    "Segment by company size, industry, tech stack"
-                  ]
-                },
-                {
-                  title: "Real-Time vs. Batch Processing",
-                  description: "Most visitor ID tools process data in batches (daily or weekly). Cursive identifies and enriches visitors in real-time so you can act immediately.",
-                  features: [
-                    "Sub-second identification latency",
-                    "Instant CRM sync via webhooks",
-                    "Live dashboards showing current visitors",
-                    "Trigger sales alerts in Slack or email instantly"
-                  ]
-                },
-                {
-                  title: "Privacy & Compliance",
-                  description: "Built for a privacy-first world. Cursive handles GDPR, CCPA, and regional regulations automatically so you stay compliant without manual work.",
-                  features: [
-                    "Honor all industry opt-out lists",
-                    "Hashed identifier storage (no plain-text PII)",
-                    "Right-to-forget automation",
-                    "Consent management integration",
-                    "Regional data residency options"
-                  ]
-                }
-              ].map((feature, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, x: i % 2 === 0 ? -20 : 20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  className="bg-gradient-to-br from-gray-50 to-white rounded-2xl p-8 border border-gray-200"
-                >
-                  <h3 className="text-2xl text-gray-900 mb-4 font-medium">
-                    {feature.title}
-                  </h3>
-                  <p className="text-gray-600 mb-6 leading-relaxed">
-                    {feature.description}
-                  </p>
-                  <ul className="space-y-3">
-                    {feature.features.map((item, j) => (
-                      <li key={j} className="flex items-start gap-3">
-                        <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
-                        <span className="text-gray-700">{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </motion.div>
-              ))}
-            </div>
-          </Container>
-        </section>
-
-        {/* Integrations */}
-        <section className="py-20 bg-[#F7F9FB]">
-          <Container>
-            <IntegrationsShowcase
-              title="Works With Your Existing Stack"
-              subtitle="Native integrations with 200+ CRMs, ad platforms, and marketing tools"
-            />
-            <div className="text-center mt-8">
-              <Button variant="outline" href="/integrations">
-                View All Integrations
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </div>
-          </Container>
-        </section>
-
-
-        {/* FAQ */}
-        <section className="py-20 bg-[#F7F9FB]">
-          <Container>
-            <div className="text-center mb-16">
-              <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
-                Frequently Asked Questions
-              </h2>
-            </div>
-            <div className="max-w-4xl mx-auto space-y-6">
-              {[
-                {
-                  question: "How accurate is visitor identification?",
-                  answer: "Cursive's pixel achieves a 40\u201360% match rate on US B2B traffic\u2014deterministic, not modeled. By way of comparison, cookie-sync providers average 2\u20135% and IP-only databases sit around 10\u201315%. Pixel-level accuracy on a matched record is 60\u201380%, driven by geo-framing methodology and an offline-rooted identity graph of 280M+ verified consumer profiles refreshed every 30 days against NCOA."
-                },
-                {
-                  question: "How quickly can you identify visitors?",
-                  answer: "Visitors are identified in real-time within seconds of landing on your site. Unlike batch processing tools, Cursive enriches data instantly so you can act on hot leads immediately."
-                },
-                {
-                  question: "Is visitor identification GDPR compliant?",
-                  answer: "Yes. Cursive is built with privacy compliance at its core. We honor all opt-outs, use hashed identifiers, and comply with GDPR, CCPA, and regional privacy regulations."
-                },
-                {
-                  question: "What data do you provide for each visitor?",
-                  answer: "For B2B traffic, we provide company name, industry, size, location, revenue, technologies used, and contact information. For individuals, we include job title, seniority, department, and verified email addresses."
-                },
-                {
-                  question: "How does visitor identification integrate with my CRM?",
-                  answer: "Cursive offers native integrations with 200+ platforms including Salesforce, HubSpot, Marketo, and major ad platforms. Identified visitors sync automatically to your existing tools with one-click setup."
-                },
-                {
-                  question: "Can I filter out existing customers?",
-                  answer: "Yes. Cursive includes intelligent filtering to exclude existing customers, internal traffic, bots, and other non-prospects. This ensures your sales team focuses only on new opportunities."
-                },
-                {
-                  question: "How long does setup take?",
-                  answer: "Installation takes about 5 minutes. Simply add our JavaScript pixel to your website, and you'll start identifying visitors immediately. No complex configuration required."
-                },
-                {
-                  question: "What's the difference between company-level and individual-level identification?",
-                  answer: "Company-level identification reveals which businesses visited your site. Individual-level identification goes deeper to show specific people, their roles, and contact information. Cursive provides both."
-                },
-                {
-                  question: "Can I see which pages visitors viewed?",
-                  answer: "Absolutely. Cursive tracks page-level behavior so you can see exactly which content each visitor engaged with—pricing pages, feature pages, blog posts, and more. This helps prioritize your outreach."
-                },
-                {
-                  question: "How much does visitor identification cost?",
-                  answer: "All Cursive plans include visitor identification at flat monthly pricing -- no per-visitor or per-lead fees. Plans start at $1,000/month for Cursive Data. Visit our pricing page for full details."
-                }
-              ].map((faq, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.05 }}
-                  className="bg-white rounded-xl p-6 border border-gray-200"
-                >
-                  <h3 className="text-lg text-gray-900 mb-3 font-medium">
-                    {faq.question}
-                  </h3>
-                  <p className="text-gray-600 leading-relaxed">
-                    {faq.answer}
-                  </p>
-                </motion.div>
-              ))}
-            </div>
-          </Container>
-        </section>
-
-        {/* Related Products & Resources */}
-        <section className="py-20 bg-white">
-          <Container>
-            <div className="text-center mb-16">
-              <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
-                Explore Related Solutions
-              </h2>
-              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                Visitor identification is just the beginning. Combine it with these tools to build a complete pipeline.
-              </p>
-            </div>
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto mb-12">
-              {[
-                {
-                  title: "Audience Builder",
-                  description: "Turn identified visitors into segmented audiences for targeted outreach across 280M US consumer and 140M+ business profiles.",
-                  href: "/audience-builder"
-                },
-                {
-                  title: "Intent Data",
-                  description: "Layer intent signals on top of visitor data to prioritize prospects actively researching solutions like yours.",
-                  href: "/intent-audiences"
-                },
-                {
-                  title: "Direct Mail",
-                  description: "Trigger personalized postcards to identified visitors who haven't responded to digital outreach. 3-5x higher conversion.",
-                  href: "/direct-mail"
-                },
-                {
-                  title: "Integrations",
-                  description: "Sync identified visitors directly to Salesforce, HubSpot, and 200+ tools in your existing tech stack.",
-                  href: "/integrations"
-                }
-              ].map((product, i) => (
-                <Link
-                  key={i}
-                  href={product.href}
-                  className="block bg-[#F7F9FB] rounded-xl p-6 border border-gray-200 hover:border-primary hover:shadow-lg transition-all group"
-                >
-                  <h3 className="text-lg text-gray-900 mb-2 font-medium group-hover:text-primary transition-colors">
-                    {product.title}
-                  </h3>
-                  <p className="text-gray-600 text-sm leading-relaxed">
-                    {product.description}
-                  </p>
-                  <div className="mt-4 text-primary text-sm font-medium flex items-center gap-2">
-                    Learn more <ArrowRight className="h-4 w-4" />
-                  </div>
-                </Link>
-              ))}
-            </div>
-
-            {/* Comparison Guides */}
-            <div className="max-w-5xl mx-auto">
-              <h3 className="text-xl text-gray-900 font-medium mb-6 text-center">How Cursive Compares</h3>
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {[
-                  { title: "Clearbit Alternatives", href: "/blog/clearbit-alternatives-comparison", description: "Compare visitor identification providers" },
-                  { title: "Warmly vs Cursive", href: "/blog/warmly-vs-cursive-comparison", description: "Website visitor identification head-to-head" },
-                  { title: "ZoomInfo vs Cursive", href: "/blog/zoominfo-vs-cursive-comparison", description: "Data enrichment and identification compared" },
-                  { title: "Apollo vs Cursive", href: "/blog/apollo-vs-cursive-comparison", description: "Prospecting and outbound tools compared" },
-                  { title: "6sense vs Cursive", href: "/blog/6sense-vs-cursive-comparison", description: "Intent data platforms side-by-side" },
-                  { title: "Cursive vs Warmly", href: "/blog/cursive-vs-warmly", description: "40\u201360% deterministic match vs 8% modeled, $1k vs $3.5k/mo" },
-                  { title: "Cursive vs 6sense", href: "/blog/cursive-vs-6sense", description: "$1k/mo all-in vs $50k-$200k/yr enterprise" },
-                  { title: "How to Identify Anonymous Visitors", href: "/blog/how-to-identify-anonymous-website-visitors", description: "Complete guide with tool recommendations" },
-                ].map((comparison, i) => (
-                  <Link
-                    key={i}
-                    href={comparison.href}
-                    className="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-primary transition-colors group"
+          {/* FAQ */}
+          <section className="py-20 sm:py-24 bg-white">
+            <Container>
+              <SectionHeading plain="Frequently Asked" script="Questions" />
+              <div className="max-w-3xl mx-auto space-y-4">
+                {faqs.map((faq, i) => (
+                  <motion.div
+                    key={faq.question}
+                    initial={{ opacity: 0, y: 16 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.04, duration: 0.4, ease: EASE }}
+                    className="rounded-2xl border border-gray-200 p-6 sm:p-7"
                   >
-                    <div className="flex-1">
-                      <div className="text-gray-900 text-sm font-medium group-hover:text-primary transition-colors">{comparison.title}</div>
-                      <div className="text-gray-500 text-xs">{comparison.description}</div>
-                    </div>
+                    <h3 className="text-base font-medium text-gray-900">{faq.question}</h3>
+                    <p className="mt-2 text-sm text-gray-600 leading-relaxed">{faq.answer}</p>
+                  </motion.div>
+                ))}
+              </div>
+            </Container>
+          </section>
+
+          {/* Related */}
+          <section className="py-20 sm:py-24 bg-[#F7F9FB]">
+            <Container>
+              <SectionHeading
+                plain="How Cursive"
+                script="Compares"
+                sub="See visitor identification side by side with the alternatives."
+              />
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto">
+                {[
+                  { title: "Clearbit Alternatives", href: "/blog/clearbit-alternatives-comparison" },
+                  { title: "Warmly vs Cursive", href: "/blog/warmly-vs-cursive-comparison" },
+                  { title: "ZoomInfo vs Cursive", href: "/blog/zoominfo-vs-cursive-comparison" },
+                  { title: "Apollo vs Cursive", href: "/blog/apollo-vs-cursive-comparison" },
+                  { title: "6sense vs Cursive", href: "/blog/6sense-vs-cursive-comparison" },
+                  { title: "Identify Anonymous Visitors", href: "/blog/how-to-identify-anonymous-website-visitors" },
+                ].map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className="flex items-center justify-between gap-3 rounded-xl border border-gray-200 bg-white p-4 hover:border-primary transition-colors group"
+                  >
+                    <span className="text-sm font-medium text-gray-900 group-hover:text-primary transition-colors">
+                      {link.title}
+                    </span>
                     <ArrowRight className="h-4 w-4 text-gray-400 group-hover:text-primary flex-shrink-0" />
                   </Link>
                 ))}
               </div>
-            </div>
-          </Container>
-        </section>
+            </Container>
+          </section>
 
-        {/* How to Get Started */}
-        <section className="py-24 bg-[#F7F9FB]">
-          <Container>
-            <div className="text-center mb-12">
-              <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
-                How to Get Started
-              </h2>
-              <p className="text-xl text-gray-600">
-                Two options to start identifying your website visitors today.
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-              <div className="bg-white rounded-2xl p-8 border border-gray-200">
-                <div className="text-sm font-medium text-primary mb-2">OPTION 1</div>
-                <h3 className="text-2xl font-light text-gray-900 mb-3">Done-For-You Setup</h3>
-                <p className="text-gray-600 mb-4">We install your pixel, configure your CRM integration, and set up automated outreach to identified visitors. Done in 48 hours.</p>
-                <div className="text-2xl font-light text-primary mb-6">Starting at $1,000/mo</div>
-                <Button className="w-full" href="/pricing">
-                  View Plans
-                </Button>
-              </div>
-
-              <div className="bg-white rounded-2xl p-8 border border-gray-200">
-                <div className="text-sm font-medium text-primary mb-2">OPTION 2</div>
-                <h3 className="text-2xl font-light text-gray-900 mb-3">Self-Serve Marketplace</h3>
-                <p className="text-gray-600 mb-4">Browse our database of 280M+ verified consumer and 140M+ business profiles &mdash; offline-rooted, refreshed every 30 days against NCOA. Filter by industry, title, intent, and more. Buy with credits.</p>
-                <div className="text-2xl font-light text-primary mb-6">From $0.60/lead</div>
-                <Button className="w-full" href="/marketplace">
-                  Browse Marketplace
-                </Button>
-              </div>
-            </div>
-          </Container>
-        </section>
-
-        {/* Final CTA */}
-        <section className="relative py-32 bg-white overflow-hidden">
-          <Container>
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-              className="text-center relative z-10 mb-16"
-            >
-              <h2 className="text-5xl lg:text-7xl font-light text-gray-900 mb-4 leading-tight">
-                Ready to See Who's
-              </h2>
-              <p className="font-cursive text-6xl lg:text-7xl text-gray-500 mb-6">
-                Visiting Your Site?
-              </p>
-              <p className="text-xl text-gray-600 mb-10 max-w-2xl mx-auto">
-                Book a free AI audit. We'll show you exactly which companies are researching your product right now—and how to convert them.
-              </p>
-
-              <Button
-                size="lg"
-                href="https://leads.meetcursive.com/get-leads"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-primary text-white hover:bg-primary-dark text-lg px-10 py-5 mb-4"
+          {/* Final CTA */}
+          <section className="py-20 sm:py-28 bg-white">
+            <Container>
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, ease: EASE }}
+                className="text-center max-w-2xl mx-auto"
               >
-                Get Started
-              </Button>
-
-              <div className="flex items-center justify-center gap-8 text-sm text-gray-600 mt-4">
-                <div className="flex items-center gap-2">
-                  <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  <span>No commitment required</span>
+                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light text-gray-900">
+                  Ready to see who&apos;s
+                  <span className="block font-cursive text-4xl sm:text-5xl lg:text-6xl text-gray-500 mt-1">
+                    visiting your site?
+                  </span>
+                </h2>
+                <p className="mt-5 text-lg text-gray-600 leading-relaxed">
+                  Install the pixel in 60 seconds. Plans from $97/mo, month-to-month, cancel anytime.
+                </p>
+                <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center">
+                  <Button size="lg" href={GET_LEADS_URL} target="_blank" rel="noopener noreferrer">
+                    Get Started
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                  <Button size="lg" variant="outline" href={BOOKING_URL} target="_blank" rel="noopener noreferrer">
+                    Book a Call
+                  </Button>
                 </div>
-                <div className="flex items-center gap-2">
-                  <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  <span>Setup in 5 minutes</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  <span>See results in 24 hours</span>
-                </div>
-              </div>
-            </motion.div>
+              </motion.div>
+            </Container>
+          </section>
+        </main>
+      </HumanView>
 
-            {/* Dashboard Preview */}
-            <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-              className="relative max-w-6xl mx-auto"
-            >
-              <div className="relative rounded-xl overflow-hidden shadow-2xl">
-                <DashboardPreview />
-                <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none" />
-              </div>
-            </motion.div>
-          </Container>
-        </section>
-      </main>
-    </HumanView>
-
-    {/* Machine View - AEO-Optimized */}
-    <MachineView>
-      <MachineContent>
-        {/* Header */}
-        <div className="mb-12 pb-6 border-b border-gray-200">
-          <h1 className="text-2xl text-gray-900 font-bold mb-4">VISITOR IDENTIFICATION</h1>
-          <p className="text-gray-700 leading-relaxed">
-            Identify 40&ndash;60% of anonymous website visitors deterministically against an offline-rooted identity graph of 280M+ verified consumer profiles refreshed every 30 days against NCOA. Turn unknown traffic into qualified leads with company and individual-level data, page-level tracking, and instant CRM integration.
-          </p>
-        </div>
-
-        {/* Key Stats */}
-        <MachineSection title="Key Metrics">
-          <MachineList items={[
-            "40\u201360% - Pixel match rate on US B2B traffic (deterministic, not modeled)",
-            "60\u201380% - Pixel-level accuracy on a matched record",
-            "2\u20135% - Industry cookie-sync match rate (for context)",
-            "10\u201315% - Industry IP-database match rate (for context)",
-            "280M+ - Verified consumer profiles, refreshed every 30 days against NCOA",
-            "140M+ - Business profiles in database",
-            "15M+ - Organic-network domains feeding the intent layer"
-          ]} />
-        </MachineSection>
-
-        {/* How It Works */}
-        <MachineSection title="How Visitor Identification Works">
-          <p className="text-gray-700 mb-4">
-            Install a lightweight tracking pixel on your website. When visitors land on your site, Cursive uses advanced IP intelligence, device fingerprinting, and behavioral analysis to match their digital footprint against our database.
-          </p>
-          <MachineList items={[
-            "Step 1: Install tracking pixel (5 minutes)",
-            "Step 2: Visitors browse your website",
-            "Step 3: Cursive identifies company + individual in real-time",
-            "Step 4: Data syncs to your CRM automatically",
-            "Step 5: Sales team receives warm lead alerts"
-          ]} />
-        </MachineSection>
-
-        {/* Core Features */}
-        <MachineSection title="Core Features">
-          <div className="space-y-4">
-            <div>
-              <p className="text-white mb-2">Company-Level Identification:</p>
-              <MachineList items={[
-                "Company name, industry, revenue",
-                "Employee count, location",
-                "Technologies used",
-                "Funding information"
-              ]} />
-            </div>
-
-            <div>
-              <p className="text-white mb-2">Individual-Level Data:</p>
-              <MachineList items={[
-                "Name and job title",
-                "Email address and phone number",
-                "LinkedIn profile",
-                "Department and seniority level"
-              ]} />
-            </div>
-
-            <div>
-              <p className="text-white mb-2">Behavioral Tracking:</p>
-              <MachineList items={[
-                "Page-level browsing history",
-                "Time spent on each page",
-                "Content viewed (pricing, features, comparisons)",
-                "Return visitor detection"
-              ]} />
-            </div>
+      {/* Machine View — AEO-Optimized */}
+      <MachineView>
+        <MachineContent>
+          <div className="mb-12 pb-6 border-b border-gray-200">
+            <h1 className="text-2xl text-gray-900 font-bold mb-4">WEBSITE VISITOR IDENTIFICATION</h1>
+            <p className="text-gray-700 leading-relaxed">
+              Cursive identifies 40&ndash;60% of anonymous website visitors deterministically against an
+              offline-rooted identity graph of 280M+ verified profiles refreshed every 30 days against NCOA.
+              Turn unknown traffic into qualified leads with company and individual-level data, page-level
+              tracking, and instant CRM sync. Self-serve from $97/month.
+            </p>
           </div>
-        </MachineSection>
 
-        {/* Use Cases */}
-        <MachineSection title="Common Use Cases">
-          <div className="space-y-4">
-            <div>
-              <p className="text-white mb-2">B2B SaaS Sales Teams:</p>
-              <p className="text-gray-400">
-                Identify prospects viewing pricing pages, feature comparisons, or competitor alternatives. Sales team receives instant alerts with company details and browsing behavior for warm outreach.
-              </p>
-            </div>
+          <MachineSection title="Key Metrics">
+            <MachineList items={[
+              "40–60% - Pixel match rate on US B2B traffic (deterministic, not modeled)",
+              "60–80% - Accuracy on a matched record",
+              "2–5% - Industry cookie-sync match rate (for context)",
+              "10–15% - Industry IP-database match rate (for context)",
+              "280M+ - Verified profiles, refreshed every 30 days against NCOA",
+              "200+ - Native CRM and ad-platform integrations",
+              "60 seconds - To install the pixel and go live",
+            ]} />
+          </MachineSection>
 
-            <div>
-              <p className="text-white mb-2">Account-Based Marketing:</p>
-              <p className="text-gray-400">
-                Track when target accounts visit your website. Know which stakeholders are researching your product and what pages they're viewing to time outreach perfectly.
-              </p>
-            </div>
+          <MachineSection title="How Visitor Identification Works">
+            <MachineList items={[
+              "Step 1: Install the lightweight tracking pixel (60 seconds)",
+              "Step 2: Visitors browse your website",
+              "Step 3: Cursive resolves company + individual in real time",
+              "Step 4: Verified contacts sync to your CRM automatically",
+              "Step 5: Your team acts on warm, in-market leads",
+            ]} />
+          </MachineSection>
 
-            <div>
-              <p className="text-white mb-2">Content Marketing Attribution:</p>
-              <p className="text-gray-400">
-                See which blog posts, whitepapers, or case studies drive the most qualified traffic. Prove content ROI by connecting anonymous visitors to closed deals.
-              </p>
-            </div>
-          </div>
-        </MachineSection>
+          <MachineSection title="What You Get Per Visitor">
+            <MachineList items={[
+              "Company name, industry, size, location, and technologies",
+              "Individual job title, seniority, and department",
+              "Verified work email (and phone where available)",
+              "Page-level browsing behavior and return-visitor detection",
+            ]} />
+          </MachineSection>
 
-        {/* Pricing */}
-        <MachineSection title="Pricing">
-          <p className="text-gray-700 mb-4">
-            Visitor Identification is included with all Cursive service plans starting at $1,000/month. Flat monthly pricing with no per-visitor fees. Includes pixel installation, CRM integration setup, and ongoing support.
-          </p>
-          <MachineList items={[
-            {
-              label: "View Detailed Pricing",
-              href: "https://www.meetcursive.com/pricing",
-              description: "See all plans and volume discounts"
-            }
-          ]} />
-        </MachineSection>
+          <MachineSection title="Common Use Cases">
+            <MachineList items={[
+              "B2B SaaS Sales: Hot accounts land in the CRM with the pages they viewed",
+              "Marketing: Retarget companies that clicked ads but didn't convert",
+              "Customer Success: Get alerted when at-risk accounts revisit pricing",
+              "Agencies: Tie website visits to closed deals and prove campaign ROI",
+            ]} />
+          </MachineSection>
 
-        {/* Integrations */}
-        <MachineSection title="CRM Integrations">
-          <p className="text-gray-700 mb-4">
-            Visitor data syncs automatically to your CRM with two-way updates. Supported platforms:
-          </p>
-          <MachineList items={[
-            "Salesforce - Real-time lead creation and updates",
-            "HubSpot - Contact enrichment and activity tracking",
-            "Pipedrive - Deal stage automation based on visits",
-            "Custom API - Build your own integrations"
-          ]} />
-        </MachineSection>
+          <MachineSection title="Pricing">
+            <p className="text-gray-700 mb-4">
+              Self-serve, month-to-month, no setup fee. Cancel anytime.
+            </p>
+            <MachineList items={[
+              "Visitor Pixel ($97/month) - Identify the companies and people visiting your site",
+              "Custom Audience ($197/month) - A fresh weekly list of in-market buyers, delivered to Google Sheets",
+              "Pixel + Audience Bundle ($247/month) - Both, in one feed",
+            ]} />
+          </MachineSection>
 
-        {/* Getting Started */}
-        <MachineSection title="Getting Started">
-          <MachineList items={[
-            {
-              label: "Get Started",
-              href: "https://leads.meetcursive.com/get-leads",
-              description: "Start identifying your website visitors self-serve"
-            },
-            {
-              label: "View Platform",
-              href: "https://www.meetcursive.com/platform",
-              description: "Explore all platform features"
-            },
-            {
-              label: "Contact Sales",
-              href: "https://www.meetcursive.com/contact",
-              description: "Get custom pricing for high-volume needs"
-            }
-          ]} />
-        </MachineSection>
+          <MachineSection title="CRM Integrations">
+            <p className="text-gray-700 mb-4">
+              Visitor data syncs automatically to 200+ platforms, including:
+            </p>
+            <MachineList items={[
+              "Salesforce - Real-time lead creation and updates",
+              "HubSpot - Contact enrichment and activity tracking",
+              "Pipedrive - Deal stage automation based on visits",
+              "Custom API - Build your own integrations",
+            ]} />
+          </MachineSection>
 
-        {/* Privacy & Compliance */}
-        <MachineSection title="Privacy & Compliance">
-          <p className="text-gray-700 mb-4">
-            Cursive is fully compliant with GDPR, CCPA, and other privacy regulations. We provide opt-out mechanisms, respect Do Not Track signals, and maintain strict data handling policies.
-          </p>
-          <MachineList items={[
-            {
-              label: "Privacy Policy",
-              href: "https://www.meetcursive.com/privacy"
-            },
-            {
-              label: "Terms of Service",
-              href: "https://www.meetcursive.com/terms"
-            }
-          ]} />
-        </MachineSection>
+          <MachineSection title="Privacy & Compliance">
+            <p className="text-gray-700 mb-4">
+              Fully compliant with GDPR, CCPA, and regional privacy regulations. We honor opt-outs,
+              respect Do Not Track signals, and store only hashed identifiers.
+            </p>
+            <MachineList items={[
+              { label: "Privacy Policy", href: "https://www.meetcursive.com/privacy" },
+              { label: "Terms of Service", href: "https://www.meetcursive.com/terms" },
+            ]} />
+          </MachineSection>
 
-      </MachineContent>
-    </MachineView>
-  </>
+          <MachineSection title="Getting Started">
+            <MachineList items={[
+              { label: "Get Started", href: "https://leads.meetcursive.com/get-leads", description: "Pick a plan and you are live in minutes" },
+              { label: "Pricing", href: "https://www.meetcursive.com/pricing", description: "Visitor Pixel $97/mo, Custom Audience $197/mo, or both for $247/mo" },
+              { label: "Book a Call", href: "https://cal.com/cursiveteam/30min", description: "Talk to the team before you buy" },
+            ]} />
+          </MachineSection>
+        </MachineContent>
+      </MachineView>
+    </>
   )
 }
