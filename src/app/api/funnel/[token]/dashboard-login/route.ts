@@ -127,12 +127,16 @@ export async function GET(
     const ownerEmail = ownerAuth?.user?.email
       ? normalizeEmail(ownerAuth.user.email)
       : null
+    // The owner's auth email must be CONFIRMED — never mint a session for an
+    // account whose email ownership was never verified.
+    const ownerEmailConfirmed = !!ownerAuth?.user?.email_confirmed_at
 
-    if (!ownerEmail || ownerEmail !== orderEmail) {
+    if (!ownerEmail || ownerEmail !== orderEmail || !ownerEmailConfirmed) {
       // The workspace owner's auth account no longer matches this order's buyer
-      // — refuse rather than mint a session for a drifted identity.
+      // (or its email is unconfirmed) — refuse rather than mint a session for a
+      // drifted/unverified identity.
       safeError(
-        '[funnel/dashboard-login] blocked: workspace owner identity no longer matches order buyer — refusing auto-login',
+        '[funnel/dashboard-login] blocked: workspace owner identity not a verified match for order buyer — refusing auto-login',
         { order_id: order.id }
       )
       return NextResponse.redirect(new URL(portalUrlForToken(token), APP_URL))
@@ -183,12 +187,25 @@ export async function GET(
     )
 
     // Consume the magic link immediately → sets the session on `response`.
-    const { error: verifyErr } = await supabase.auth.verifyOtp({
+    const { data: verifiedData, error: verifyErr } = await supabase.auth.verifyOtp({
       type: 'magiclink',
       token_hash: tokenHash,
     })
     if (verifyErr) {
       safeError('[funnel/dashboard-login] verifyOtp failed:', verifyErr)
+      return NextResponse.redirect(new URL(portalUrlForToken(token), APP_URL))
+    }
+
+    // FINAL binding check: the session we just minted MUST belong to the exact
+    // workspace owner we resolved by id. Defends against a concurrent email
+    // reassignment between resolution and mint (TOCTOU) — the session cookies
+    // were written onto `response`, which we DISCARD on mismatch, so the bad
+    // session is never delivered to the browser.
+    if (verifiedData?.user?.id !== ownerAuthUserId) {
+      safeError(
+        '[funnel/dashboard-login] blocked: minted session identity != resolved workspace owner — refusing',
+        { order_id: order.id }
+      )
       return NextResponse.redirect(new URL(portalUrlForToken(token), APP_URL))
     }
 
