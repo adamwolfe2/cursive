@@ -3,6 +3,7 @@
 import { motion } from "framer-motion"
 import { CheckCircle, TrendingUp, Database, Zap, DollarSign, Shield } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
+import { GET_LEADS_URL } from "@/lib/cta"
 
 interface Advantage {
   icon: LucideIcon
@@ -43,10 +44,10 @@ const advantages: Advantage[] = [
   },
   {
     icon: DollarSign,
-    title: "Enterprise-Grade Pricing Structure",
-    description: "Pay-as-you-go for evaluation and lower-volume use, or committed tiers from $15K/month for scaled production with significantly lower per-record economics. Self-serve marketplace and managed services also available.",
-    metric: "From $15K",
-    metricLabel: "monthly committed tier",
+    title: "Self-Serve, No Contracts",
+    description: "Start in minutes for a flat monthly price. The Visitor Pixel is $97/mo, a weekly Custom Audience is $197/mo, or get both for $247/mo. Month-to-month, no setup fee, cancel anytime.",
+    metric: "From $97",
+    metricLabel: "per month, month-to-month",
   },
   {
     icon: Shield,
@@ -71,7 +72,7 @@ export function CompetitiveAdvantagesSection() {
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
               Why Teams Choose
             </h2>
-            <p className="font-cursive text-6xl lg:text-7xl text-gray-500 mb-6">
+            <p className="font-cursive text-5xl sm:text-6xl lg:text-7xl text-gray-500 mb-6">
               Cursive
             </p>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
@@ -139,12 +140,12 @@ export function CompetitiveAdvantagesSection() {
             See the difference for yourself
           </p>
           <a
-            href="https://cal.com/cursiveteam/30min"
+            href={GET_LEADS_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-6 py-3 bg-white text-primary border-2 border-primary rounded-lg font-medium hover:bg-primary hover:text-white transition-all group"
           >
-            <span>Book Your Free AI Audit</span>
+            <span>Get Started</span>
             <svg
               className="w-5 h-5 group-hover:translate-x-1 transition-transform"
               fill="none"

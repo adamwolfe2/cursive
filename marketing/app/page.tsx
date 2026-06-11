@@ -19,8 +19,8 @@ const homepageFAQs = [
     answer: 'Most intent providers pull from the same finite pool of feeds — roughly 700,000 SSP publisher sites, only ~40,000 of which actually generate the underlying signals. Cursive ingests from substantially all of them, then layers a proprietary 15M-domain organic network on top, then validates every signal through a closed feedback loop that maps conversions back to source. The result is broader coverage, deterministic match accuracy (not modeled), and a data set that compounds over time rather than degrading.',
   },
   {
-    question: 'What does the data layer cost?',
-    answer: 'Two structures: pay-as-you-go for evaluation and lower-volume use, and committed tiers starting at $15,000/month for scaled production use with significantly lower per-record economics. Self-serve marketplace credits start at $0.60/lead. Done-for-you services start at $1,000/month. For enterprise data partnerships, we structure agreements that reflect commitment level and use case.',
+    question: 'What does Cursive cost?',
+    answer: 'Three self-serve plans, all month-to-month: the Visitor Pixel is $97/month, a weekly Custom Audience is $197/month, and the Pixel + Audience Bundle is $247/month. No setup fee and no long-term contract. Enterprise teams that need direct API access to the underlying identity infrastructure can reach out about a committed data partnership.',
   },
   {
     question: 'What can I do with Cursive beyond visitor identification?',
@@ -107,9 +107,9 @@ export default function HomePage() {
                 description: "Reveal up to 70% of anonymous website visitors in real-time. See which companies viewed your pricing page, feature pages, or comparison content before they fill out a form."
               },
               {
-                label: "AI-Powered Outreach",
-                href: "https://www.meetcursive.com/platform",
-                description: "AI agents that book meetings while you sleep. Multi-channel campaigns across email, LinkedIn, and SMS with autonomous follow-ups and meeting booking."
+                label: "Custom Audiences",
+                href: "https://www.meetcursive.com/custom-audiences",
+                description: "A fresh weekly list of people actively searching for your product, built to your ICP and delivered to Google Sheets. First audience within 24 hours."
               },
               {
                 label: "Intent Data Audiences",
@@ -127,9 +127,9 @@ export default function HomePage() {
                 description: "Send physical postcards triggered by digital behavior. Automated triggers based on website visits, email engagement, or custom events."
               },
               {
-                label: "Lead Marketplace",
-                href: "https://www.meetcursive.com/marketplace",
-                description: "Self-serve B2B lead marketplace. Browse and buy verified leads with credits starting at $0.60/lead."
+                label: "Pixel + Audience Bundle",
+                href: "https://www.meetcursive.com/pricing",
+                description: "Site traffic and in-market intent in one feed: the Visitor Pixel plus a weekly Custom Audience for $247/month, month-to-month."
               },
               {
                 label: "Intelligence Layer",
@@ -198,23 +198,23 @@ export default function HomePage() {
             </div>
           </MachineSection>
 
-          {/* Services */}
-          <MachineSection title="Done-For-You Services">
+          {/* Plans */}
+          <MachineSection title="Plans & Pricing">
             <MachineList items={[
               {
-                label: "Cursive Data — $1,000/month",
-                href: "https://www.meetcursive.com/services",
-                description: "Verified B2B contacts delivered monthly. Custom targeting based on your ICP with 95%+ email deliverability."
+                label: "Visitor Pixel — $97/month",
+                href: "https://www.meetcursive.com/pricing",
+                description: "Identify the companies and people visiting your site. 40–60% deterministic match rate, company and person-level detail, installs in 60 seconds."
               },
               {
-                label: "Cursive Outbound — $2,500/month",
-                href: "https://www.meetcursive.com/services",
-                description: "Done-for-you email campaigns with AI-powered personalization. We build, launch, and optimize campaigns using your brand voice."
+                label: "Custom Audience — $197/month",
+                href: "https://www.meetcursive.com/pricing",
+                description: "A fresh weekly list of people actively searching for your product, built to your ICP and delivered to Google Sheets within 24 hours."
               },
               {
-                label: "Cursive Pipeline — $5,000/month",
-                href: "https://www.meetcursive.com/services",
-                description: "Full-stack AI SDR solution. Researches, writes, sends, follows up, and books meetings automatically across email, LinkedIn, and SMS."
+                label: "Pixel + Audience Bundle — $247/month",
+                href: "https://www.meetcursive.com/pricing",
+                description: "Both the Visitor Pixel and the weekly Custom Audience in one feed. Month-to-month, no setup fee, cancel anytime."
               }
             ]} />
           </MachineSection>
@@ -285,7 +285,7 @@ export default function HomePage() {
                 {
                   label: "View Pricing",
                   href: "https://www.meetcursive.com/pricing",
-                  description: "Self-serve credits from $0.60/lead, managed services from $1,000/month"
+                  description: "Visitor Pixel $97/mo, Custom Audience $197/mo, or both for $247/mo. Month-to-month, no setup fee."
                 }
               ]} />
             </div>
