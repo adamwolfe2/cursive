@@ -1,12 +1,22 @@
 "use client"
 
 import { Container } from "@/components/ui/container"
+import { Button } from "@/components/ui/button"
+import { motion } from "framer-motion"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateFAQSchema } from "@/lib/seo/faq-schema"
 import { Breadcrumbs } from "@/components/Breadcrumbs"
 import { OrganizationSchema, ArticleSchema } from "@/components/schema/SchemaMarkup"
 import Link from "next/link"
-import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
+import {
+  Target, Users, Layers, Workflow, BarChart3, ListChecks,
+  Crosshair, Network, FileText, Megaphone, Database, Eye,
+  AlertTriangle, ArrowRight, type LucideIcon,
+} from "lucide-react"
+import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
+import { GET_LEADS_URL, BOOKING_URL } from "@/lib/cta"
+
+const EASE = [0.22, 1, 0.36, 1] as const
 
 const faqs = [
   {
@@ -22,12 +32,8 @@ const faqs = [
     answer: "The three types are Strategic ABM (one-to-one) for your top 10-50 accounts with fully customized campaigns, ABM Lite (one-to-few) for clusters of 50-500 accounts that share similar characteristics receiving semi-personalized campaigns, and Programmatic ABM (one-to-many) for 500+ accounts using technology to deliver personalized experiences at scale. Most mature programs use all three tiers simultaneously."
   },
   {
-    question: "How much does ABM cost to implement?",
-    answer: "ABM costs vary significantly by approach. Strategic one-to-one ABM can cost $5,000-$25,000 per account annually in campaign investment. One-to-few programs typically run $50,000-$200,000 per year for technology and campaigns targeting 50-500 accounts. Programmatic ABM platforms cost $30,000-$150,000 annually for the technology stack. However, ABM consistently delivers higher ROI than traditional marketing -- ITSMA reports that 87% of B2B marketers say ABM outperforms other investments in terms of ROI."
-  },
-  {
     question: "What technology do I need for ABM?",
-    answer: "A modern ABM tech stack includes four core layers: identification and intent data (platforms like Cursive for visitor identification and intent signals), orchestration (for coordinating multi-channel campaigns), engagement tools (email, LinkedIn, direct mail, display ads), and measurement (CRM and attribution platforms). You do not need every tool to start -- begin with identification and intent data, then add orchestration and channels as your program matures."
+    answer: "A modern ABM tech stack includes four core layers: identification and intent data (a platform like Cursive that identifies the accounts visiting your site and delivers in-market audiences), orchestration (for coordinating multi-channel campaigns), engagement tools (email, LinkedIn, display ads), and measurement (CRM and attribution platforms). You do not need every tool to start -- begin with identification and intent data, then add orchestration and channels as your program matures."
   },
   {
     question: "How do you measure ABM success?",
@@ -43,9 +49,256 @@ const faqs = [
   },
 ]
 
+function SectionHeading({ plain, script, sub }: { plain: string; script?: string; sub?: string }) {
+  return (
+    <div className="text-center mb-14">
+      <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light text-gray-900">
+        {plain}
+        {script && (
+          <span className="block font-cursive text-4xl sm:text-5xl lg:text-6xl text-gray-500 mt-1">
+            {script}
+          </span>
+        )}
+      </h2>
+      {sub && (
+        <p className="mt-5 text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">{sub}</p>
+      )}
+    </div>
+  )
+}
+
+function IconChip({ Icon }: { Icon: LucideIcon }) {
+  return (
+    <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center">
+      <Icon className="w-6 h-6 text-primary" />
+    </div>
+  )
+}
+
+const howItWorks: Array<{ icon: LucideIcon; title: string; body: string }> = [
+  {
+    icon: Crosshair,
+    title: "Identify target accounts",
+    body: "Start from your ICP and the total addressable market, filtering by firmographic fit, technographic signals, and intent. The best programs pair historical win analysis with the accounts already showing buying interest.",
+  },
+  {
+    icon: Network,
+    title: "Map buying committees",
+    body: "B2B purchases involve 6-10 decision makers, per Gartner. Map the economic buyer, technical evaluator, champion, influencer, and blocker at each account — with verified contacts where available.",
+  },
+  {
+    icon: FileText,
+    title: "Develop personalized content",
+    body: "Speak to each account's specific challenges, industry context, and competitive situation. Personalization depth scales by tier: fully custom for strategic accounts, dynamic templates for programmatic.",
+  },
+  {
+    icon: Workflow,
+    title: "Orchestrate multi-channel campaigns",
+    body: "Coordinate messaging across every channel the committee uses — email, LinkedIn, display, web personalization, and sales calls — so each touch builds on the last instead of landing in isolation.",
+  },
+  {
+    icon: BarChart3,
+    title: "Measure account-level metrics",
+    body: "Track engagement scores, pipeline from target accounts, deal velocity, win rate, and average contract value — judging marketing on revenue contribution, not activity volume.",
+  },
+]
+
+const abmTypes: Array<{ icon: LucideIcon; title: string; range: string; body: string }> = [
+  {
+    icon: Target,
+    title: "Strategic ABM (1:1)",
+    range: "10–50 accounts",
+    body: "Your top accounts get fully customized campaigns — a dedicated account plan, bespoke content, and executive engagement. Reserved for $100K+ ACV opportunities, it consistently delivers 2–5x higher win rates than untargeted outreach.",
+  },
+  {
+    icon: Users,
+    title: "ABM Lite (1:Few)",
+    range: "50–500 accounts",
+    body: "Cluster accounts by industry, size, or challenge, then run semi-personalized campaigns per cluster with dynamic account-level details. Delivers 70–80% of strategic ABM's impact at a fraction of the cost.",
+  },
+  {
+    icon: Layers,
+    title: "Programmatic ABM (1:Many)",
+    range: "500+ accounts",
+    body: "Use technology to personalize at scale across hundreds or thousands of accounts. Lighter per-account personalization, dramatically greater reach — ideal for mid-market motions where one-to-one isn't justified.",
+  },
+]
+
+const framework: Array<{ title: string; body: string }> = [
+  {
+    title: "ICP definition",
+    body: "Analyze your top 20-30 customers to define firmographic, technographic, buying-process, and outcome attributes. The ICP should be specific enough to disqualify non-fit accounts while broad enough to sustain pipeline.",
+  },
+  {
+    title: "Account selection",
+    body: "Score the addressable market against ICP criteria, then layer in intent signals to find accounts actively in-market. Prioritize strong fit combined with active buying signals.",
+  },
+  {
+    title: "Intelligence gathering",
+    body: "For each account, research org structure, strategic priorities, competitive landscape, and recent events — plus which pages and topics they're already researching on your site.",
+  },
+  {
+    title: "Content creation",
+    body: "Build a content matrix that maps assets to buying stages and committee roles: thought leadership for the full committee, technical depth for evaluators, ROI analyses for economic buyers.",
+  },
+  {
+    title: "Channel orchestration",
+    body: "Create a surround-sound effect across channels — display for awareness, then personalized email, LinkedIn, and SDR outreach — sequenced to the persona's preferences and engagement history.",
+  },
+  {
+    title: "Sales enablement",
+    body: "Equip sales with account briefs, tailored talk tracks, warm-intro pathways, and real-time alerts when a target account spikes in engagement or hits a high-intent page like pricing.",
+  },
+  {
+    title: "Measurement and optimization",
+    body: "Track reach, engagement depth, pipeline progression, and revenue impact at the account level — then continuously refine selection, messaging, and channel mix.",
+  },
+]
+
+const channels: Array<{ channel: string; bestFor: string; effectiveness: string }> = [
+  { channel: "Email", bestFor: "Nurture sequences, content delivery", effectiveness: "High" },
+  { channel: "LinkedIn", bestFor: "Executive engagement, social selling", effectiveness: "Very High" },
+  { channel: "Display Ads", bestFor: "Awareness, air cover for outbound", effectiveness: "Medium" },
+  { channel: "Website Personalization", bestFor: "Conversion for known accounts", effectiveness: "High" },
+  { channel: "Events / Webinars", bestFor: "Relationship building, thought leadership", effectiveness: "High" },
+  { channel: "Phone / Video", bestFor: "Sales conversations, demos", effectiveness: "Very High" },
+]
+
+const scoring: Array<{ icon: LucideIcon; title: string; body: string }> = [
+  {
+    icon: Database,
+    title: "Firmographic fit",
+    body: "Score how closely an account matches your ICP on industry, revenue, employee count, geography, and growth — weighted by correlation with your closed-won deals.",
+  },
+  {
+    icon: Layers,
+    title: "Technographic signals",
+    body: "What tools and technologies a company uses reveals both fit and readiness — current stack, infrastructure maturity, and recent technology change signals.",
+  },
+  {
+    icon: Target,
+    title: "Intent data",
+    body: "First-party (site visits, content engagement) and third-party (research across the web) signals flag active buying cycles. High-intent accounts are 2-3x more likely to convert.",
+  },
+  {
+    icon: BarChart3,
+    title: "Engagement scoring",
+    body: "Score every committee interaction into a composite that decays over time, so a burst three months ago doesn't permanently elevate an account that has gone quiet.",
+  },
+  {
+    icon: ListChecks,
+    title: "Predictive models",
+    body: "ML models trained on win/loss history combine the signals above with relationship proximity and look-alike modeling to flag accounts manual analysis might miss.",
+  },
+]
+
+const contentTypes = [
+  { title: "Account-specific research", body: "Custom analysis of the account's market position and strategic opportunities. Highest-impact, reserved for strategic targets." },
+  { title: "Industry insights", body: "Thought leadership tailored to the account's vertical — trends, challenges, and benchmarks relevant to their context." },
+  { title: "Competitive battlecards", body: "Content that directly addresses the alternatives an account is evaluating, with honest comparisons and clear positioning." },
+  { title: "ROI calculators", body: "Interactive tools that estimate business impact using the account's actual metrics — revenue, team size, conversion rates." },
+  { title: "Executive briefs", body: "One-to-two-page summaries for C-suite consumption, focused on strategic outcomes over technical features." },
+  { title: "Custom demos", body: "Pre-configured demonstrations using the account's branding or use cases to make value immediately tangible." },
+]
+
+const techStack: Array<{ icon: LucideIcon; title: string; body: string }> = [
+  {
+    icon: Eye,
+    title: "Identification & intent",
+    body: "The foundational layer reveals who's visiting your site and which accounts are in-market. Cursive sits here — its Visitor Pixel resolves anonymous traffic to the companies and people on your site, while Custom Audiences deliver a fresh weekly list of in-market buyers built to your ICP.",
+  },
+  {
+    icon: Workflow,
+    title: "Orchestration",
+    body: "Orchestration platforms coordinate multi-channel campaigns — managing targeting, timing, and sequencing. Cursive feeds this layer with named accounts and audiences you can activate across email and ads.",
+  },
+  {
+    icon: Megaphone,
+    title: "Engagement",
+    body: "Engagement tools execute the actual touches — email automation, LinkedIn Sales Navigator, and conversational marketing. The most effective programs use 4-6 channels in coordinated sequences.",
+  },
+  {
+    icon: Database,
+    title: "CRM",
+    body: "The CRM is the system of record for account data and pipeline. Salesforce and HubSpot dominate; every identification, engagement, and intent signal should flow in to give sales a complete view.",
+  },
+  {
+    icon: BarChart3,
+    title: "Analytics",
+    body: "ABM analytics attribute revenue to account-level campaigns using multi-touch models that credit the full committee — something traditional lead-based analytics can't support.",
+  },
+]
+
+const implementation: Array<{ title: string; body: string }> = [
+  {
+    title: "Define your ICP (weeks 1-2)",
+    body: "Analyze your top 20-30 customers by revenue, retention, and time to close. Document the attributes that define best-fit accounts and validate the ICP with both marketing and sales leadership.",
+  },
+  {
+    title: "Build your account list (weeks 2-3)",
+    body: "Start small — 25-50 accounts scored against your ICP and prioritized by intent. Cursive's Custom Audiences surface accounts that match your ICP and are actively researching relevant topics.",
+  },
+  {
+    title: "Set up your tech stack (weeks 3-4)",
+    body: "A minimum viable stack is an identification and intent platform (Cursive's Visitor Pixel), a CRM, and an email tool. Install the pixel, then wire identified accounts into your sales workflow.",
+  },
+  {
+    title: "Create content (weeks 4-6)",
+    body: "Build a library for each buying stage: an industry thought-leadership piece, a competitive comparison, a relevant case study, and a personalized email sequence. Custom for strategic, templated for programmatic.",
+  },
+  {
+    title: "Launch campaigns (weeks 6-8)",
+    body: "Run a coordinated multi-channel campaign at your pilot accounts — display for awareness, then email to the committee, then LinkedIn from sales. Monitor engagement in real time and adjust.",
+  },
+  {
+    title: "Measure and optimize (ongoing)",
+    body: "At 30 days review engagement, at 90 days assess pipeline impact, and at 6 months measure revenue attribution and ABM ROI. Use results to justify expanding the program.",
+  },
+]
+
+const mistakes: Array<{ title: string; body: string }> = [
+  {
+    title: "Targeting too many accounts",
+    body: "If you're hitting 5,000 accounts with the same generic content, that's demand gen with an account list — not ABM. Start with 25-50 and invest deeply. Expand only after you've proven the model.",
+  },
+  {
+    title: "Not aligning sales and marketing",
+    body: "ABM requires both teams to operate as one. Establish shared account plans, joint KPIs, regular pipeline reviews, and clear handoff protocols around account selection and qualification.",
+  },
+  {
+    title: "Generic messaging",
+    body: "If your emails could be sent to any company in your market without changes, they aren't personalized. Reference the account's industry context, specific challenges, and competitive dynamics.",
+  },
+  {
+    title: "Ignoring buying committees",
+    body: "Targeting one contact leaves you exposed to politics and role changes. Map all 6-10 stakeholders and tailor messaging to each role — technical for evaluators, ROI for buyers, validation for champions.",
+  },
+  {
+    title: "Wrong metrics",
+    body: "Measuring ABM on MQL volume rewards quantity over account quality. Use account-centric metrics: engagement scores, pipeline from target accounts, deal velocity, and revenue attribution.",
+  },
+]
+
+const providerRows: Array<{ name: string; id: string; intent: string; contract: string; highlight?: boolean }> = [
+  { name: "Cursive", id: "Individual + company", intent: "Visitor Pixel + Custom Audience", contract: "From $97/mo", highlight: true },
+  { name: "Demandbase", id: "Company-level", intent: "Bombora partnership", contract: "$50K-$250K/yr" },
+  { name: "6sense", id: "Company-level", intent: "Proprietary AI model", contract: "$60K-$300K/yr" },
+  { name: "Terminus", id: "Company-level", intent: "Bombora partnership", contract: "$30K-$150K/yr" },
+  { name: "RollWorks", id: "Company-level", intent: "Bombora partnership", contract: "$15K-$75K/yr" },
+]
+
+const relatedResources = [
+  { title: "What is Website Visitor Identification?", href: "/what-is-website-visitor-identification", desc: "How visitor ID powers the account-intelligence layer of ABM." },
+  { title: "What is B2B Intent Data?", href: "/what-is-b2b-intent-data", desc: "Understanding intent signals for ABM account selection and prioritization." },
+  { title: "Cursive Visitor Identification", href: "/visitor-identification", desc: "Identify which target accounts are visiting your website." },
+  { title: "Audience Builder", href: "/audience-builder", desc: "Build in-market audiences from firmographic and intent filters." },
+  { title: "Cursive Platform", href: "/platform", desc: "The identity and intent data layer behind modern ABM programs." },
+  { title: "Pricing", href: "/pricing", desc: "Visitor Pixel $97/mo, Custom Audience $197/mo, or both for $247/mo." },
+]
+
 export default function WhatIsAccountBasedMarketing() {
   return (
-    <main>
+    <main className="overflow-hidden">
       <OrganizationSchema />
       <ArticleSchema
         title="What is Account-Based Marketing (ABM)? Complete Guide (2026)"
@@ -55,776 +308,569 @@ export default function WhatIsAccountBasedMarketing() {
       <StructuredData data={generateFAQSchema({ faqs })} />
 
       <HumanView>
-      <section className="py-12 bg-white">
-        <Container>
-          <div className="max-w-4xl mx-auto">
-            <Breadcrumbs
-              items={[
-                { name: "Home", href: "/" },
-                { name: "Resources", href: "/resources" },
-                { name: "What is Account-Based Marketing?", href: "/what-is-account-based-marketing" },
-              ]}
-            />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Breadcrumbs
+            items={[
+              { name: "Home", href: "/" },
+              { name: "Resources", href: "/resources" },
+              { name: "What is Account-Based Marketing?", href: "/what-is-account-based-marketing" },
+            ]}
+          />
+        </div>
 
-            <article className="prose prose-lg max-w-none">
-              {/* Hero Definition */}
-              <h1 className="text-4xl lg:text-5xl font-light text-gray-900 mb-6 mt-8">
-                What is Account-Based Marketing (ABM)? Complete Guide (2026)
+        {/* Hero */}
+        <section className="relative pt-16 pb-20 sm:pt-20 sm:pb-24 bg-white">
+          <Container>
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, ease: EASE }}
+              className="text-center max-w-3xl mx-auto"
+            >
+              <span className="text-xs font-semibold tracking-[0.25em] text-primary uppercase">
+                Complete Guide · 2026
+              </span>
+              <h1 className="mt-4 text-4xl sm:text-5xl lg:text-6xl font-light text-gray-900 leading-[1.1]">
+                What is account-based
+                <span className="block font-cursive text-4xl sm:text-5xl lg:text-6xl text-gray-500 mt-2">
+                  marketing (ABM)?
+                </span>
               </h1>
-
-              <p className="text-xl text-gray-700 leading-relaxed mb-8 border-l-4 border-primary pl-6">
-                Account-Based Marketing (ABM) is a strategic B2B marketing approach that focuses resources on a defined set of target accounts, using personalized campaigns across multiple channels to engage specific buying committees and drive revenue from high-value opportunities. It represents a fundamental shift from volume-based lead generation to precision-targeted account engagement.
+              <p className="mt-6 text-lg sm:text-xl text-gray-600 leading-relaxed">
+                <strong className="text-gray-900 font-medium">Account-Based Marketing (ABM)</strong> focuses
+                your resources on a defined set of target accounts, using personalized campaigns across
+                multiple channels to engage specific buying committees — a shift from volume-based lead
+                generation to precision-targeted account engagement.
               </p>
+              <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center">
+                <Button size="lg" href={GET_LEADS_URL} target="_blank" rel="noopener noreferrer">
+                  Get Started
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+                <Button size="lg" variant="outline" href={BOOKING_URL} target="_blank" rel="noopener noreferrer">
+                  Book a Call
+                </Button>
+              </div>
+            </motion.div>
 
-              <p className="text-gray-700 leading-relaxed">
-                ABM has moved from an emerging tactic to a core B2B strategy. According to research from ITSMA, 87% of B2B marketers report that ABM delivers higher ROI than any other marketing approach, and 91% of companies using ABM report larger average deal sizes. The strategy works because it aligns marketing and sales around shared revenue goals, concentrating effort on the accounts most likely to close and expand. Platforms like{" "}
-                <Link href="/platform" className="text-primary hover:underline">Cursive</Link>{" "}
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.1, ease: EASE }}
+              className="mt-12 max-w-3xl mx-auto rounded-2xl border border-gray-200 bg-[#F7F9FB] p-6 sm:p-8"
+            >
+              <p className="text-base text-gray-700 leading-relaxed">
+                ABM has moved from an emerging tactic to a core B2B strategy. According to ITSMA, 87% of B2B
+                marketers report that ABM delivers higher ROI than any other approach, and 91% of companies
+                using ABM report larger average deal sizes. It works by aligning marketing and sales around
+                shared revenue goals. Platforms like{" "}
+                <Link href="/platform" className="text-primary hover:underline font-medium">Cursive</Link>{" "}
                 provide the identification and{" "}
-                <Link href="/what-is-b2b-intent-data" className="text-primary hover:underline">intent data foundation</Link>{" "}
-                that modern ABM programs require.
+                <Link href="/what-is-b2b-intent-data" className="text-primary hover:underline font-medium">intent data foundation</Link>{" "}
+                modern ABM programs require.
               </p>
-
-              {/* Table of Contents */}
-              <nav className="my-10 p-6 bg-gray-50 rounded-lg border border-gray-200">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4 mt-0">Table of Contents</h2>
-                <ol className="list-decimal list-inside space-y-2 text-gray-700">
-                  <li><a href="#how-abm-works" className="text-primary hover:underline">How ABM Works</a></li>
-                  <li><a href="#abm-vs-traditional-marketing" className="text-primary hover:underline">ABM vs. Traditional Marketing</a></li>
-                  <li><a href="#types-of-abm" className="text-primary hover:underline">Types of ABM</a></li>
-                  <li><a href="#abm-framework" className="text-primary hover:underline">The ABM Framework</a></li>
-                  <li><a href="#key-abm-channels" className="text-primary hover:underline">Key ABM Channels</a></li>
-                  <li><a href="#account-selection-scoring" className="text-primary hover:underline">Account Selection and Scoring</a></li>
-                  <li><a href="#content-strategy" className="text-primary hover:underline">Content Strategy for ABM</a></li>
-                  <li><a href="#abm-technology-stack" className="text-primary hover:underline">ABM Technology Stack</a></li>
-                  <li><a href="#measuring-abm-success" className="text-primary hover:underline">Measuring ABM Success</a></li>
-                  <li><a href="#implementation-guide" className="text-primary hover:underline">Implementation Guide</a></li>
-                  <li><a href="#common-mistakes" className="text-primary hover:underline">Common ABM Mistakes</a></li>
-                  <li><a href="#provider-comparison" className="text-primary hover:underline">Provider Comparison</a></li>
-                  <li><a href="#faqs" className="text-primary hover:underline">Frequently Asked Questions</a></li>
-                  <li><a href="#related-resources" className="text-primary hover:underline">Related Resources</a></li>
-                </ol>
-              </nav>
-
-              {/* How ABM Works */}
-              <h2 id="how-abm-works" className="text-3xl font-light text-gray-900 mt-12 mb-6">
-                How ABM Works
-              </h2>
-
-              <p className="text-gray-700 leading-relaxed">
-                ABM inverts the traditional marketing funnel. Instead of attracting a large volume of leads and then qualifying them down to a handful of opportunities, ABM starts by identifying the accounts you want to win and then works backward to create the campaigns, content, and experiences needed to engage them. This approach ensures that every marketing dollar is spent on accounts that fit your ideal customer profile and have real revenue potential.
-              </p>
-
-              <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">1. Identify Target Accounts</h3>
-              <p className="text-gray-700 leading-relaxed">
-                The foundation of any ABM program is a well-defined list of target accounts. This list is built by analyzing your ideal customer profile (ICP) against the total addressable market, filtering by firmographic fit (industry, revenue, employee count, geography), technographic signals (technology stack, tool usage), and{" "}
-                <Link href="/intent-audiences" className="text-primary hover:underline">intent data</Link>{" "}
-                (research activity indicating buying interest). The best programs combine historical win analysis with predictive modeling to identify accounts with the highest likelihood of closing.
-              </p>
-
-              <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">2. Map Buying Committees</h3>
-              <p className="text-gray-700 leading-relaxed">
-                B2B purchases involve an average of 6-10 decision makers, according to Gartner. ABM requires mapping the full buying committee at each target account, including the economic buyer (budget authority), the technical evaluator (product assessment), the champion (internal advocate), the influencer (opinion leader), and the blocker (potential objection source). Cursive&apos;s{" "}
-                <Link href="/data-access" className="text-primary hover:underline">data access platform</Link>{" "}
-                helps identify these contacts with verified email addresses, direct phone numbers, and job function data.
-              </p>
-
-              <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">3. Develop Personalized Content</h3>
-              <p className="text-gray-700 leading-relaxed">
-                ABM content speaks directly to the target account&apos;s specific challenges, industry context, and competitive situation. This ranges from account-specific research reports and custom ROI analyses to personalized landing pages and industry-tailored case studies. The depth of personalization scales with the ABM tier: strategic accounts receive fully custom content, while programmatic accounts receive dynamically personalized versions of templated assets.
-              </p>
-
-              <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">4. Orchestrate Multi-Channel Campaigns</h3>
-              <p className="text-gray-700 leading-relaxed">
-                Effective ABM campaigns coordinate messaging across every channel the buying committee uses. This includes email sequences, LinkedIn outreach, display advertising, website personalization,{" "}
-                <Link href="/direct-mail" className="text-primary hover:underline">direct mail</Link>, webinars, and sales calls -- all delivering consistent, account-specific messaging. The key is choreography: each touchpoint builds on the previous one, moving the account through the buying process rather than delivering disconnected impressions.
-              </p>
-
-              <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">5. Measure Account-Level Metrics</h3>
-              <p className="text-gray-700 leading-relaxed">
-                ABM measures success at the account level, not the lead level. Instead of tracking MQLs and form fills, ABM teams track account engagement scores (how actively is the buying committee interacting with your content and campaigns), pipeline generated from target accounts, deal velocity, win rates, and average contract value. This shift in measurement ensures that marketing is judged on its contribution to revenue, not just activity volume.
-              </p>
-
-              {/* ABM vs Traditional Marketing */}
-              <h2 id="abm-vs-traditional-marketing" className="text-3xl font-light text-gray-900 mt-12 mb-6">
-                ABM vs. Traditional Marketing
-              </h2>
-
-              <p className="text-gray-700 leading-relaxed mb-6">
-                The fundamental difference between ABM and traditional marketing is directionality. Traditional marketing casts a wide net and filters down; ABM selects targets and builds up. Here is a detailed comparison across key dimensions.
-              </p>
-
-              <div className="overflow-x-auto my-6">
-                <table className="min-w-full border-collapse border border-gray-200">
-                  <thead>
-                    <tr className="bg-gray-50">
-                      <th className="border border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-900">Dimension</th>
-                      <th className="border border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-900">Traditional Marketing</th>
-                      <th className="border border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-900">Account-Based Marketing</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700 font-medium">Targeting Approach</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Broad audience segments, persona-based</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Named accounts, buying committee-focused</td>
-                    </tr>
-                    <tr className="bg-gray-50">
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700 font-medium">Key Metrics</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">MQLs, lead volume, cost per lead</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Account engagement, pipeline, deal velocity</td>
-                    </tr>
-                    <tr>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700 font-medium">Content Strategy</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Scaled content for broad appeal</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Personalized content per account/industry</td>
-                    </tr>
-                    <tr className="bg-gray-50">
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700 font-medium">Sales Alignment</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Handoff model (marketing generates, sales closes)</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Collaborative model (shared account plans)</td>
-                    </tr>
-                    <tr>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700 font-medium">Budget Allocation</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Spread across channels and segments</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Concentrated on target accounts</td>
-                    </tr>
-                    <tr className="bg-gray-50">
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700 font-medium">Timeline</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Quick lead capture, longer qualification</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Longer initial setup, faster qualification</td>
-                    </tr>
-                    <tr>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700 font-medium">Typical Win Rate</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">10-15%</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">25-40% (ABM Council benchmark)</td>
-                    </tr>
-                    <tr className="bg-gray-50">
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700 font-medium">Average Deal Size</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Market average</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">30-50% larger than non-ABM deals</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Types of ABM */}
-              <h2 id="types-of-abm" className="text-3xl font-light text-gray-900 mt-12 mb-6">
-                Types of ABM
-              </h2>
-
-              <p className="text-gray-700 leading-relaxed mb-6">
-                ABM is not a one-size-fits-all approach. The market has evolved into three distinct tiers, each suited to different account values, sales cycle lengths, and resource levels. The most successful programs run all three tiers simultaneously, allocating the deepest personalization to the highest-value accounts.
-              </p>
-
-              <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">Strategic ABM (One-to-One)</h3>
-              <p className="text-gray-700 leading-relaxed">
-                Strategic ABM is the most intensive form, targeting your top 10-50 accounts with fully customized campaigns. Each account gets a dedicated account plan developed jointly by marketing and sales, with bespoke content, personalized outreach sequences, custom events, and executive-level engagement. This tier is reserved for accounts with the highest potential deal values, typically $100,000+ annual contract value. The investment per account is significant ($5,000-$25,000+ annually in campaign costs), but the returns are proportional -- strategic ABM programs consistently report 2-5x higher win rates than untargeted outreach.
-              </p>
-
-              <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">ABM Lite (One-to-Few)</h3>
-              <p className="text-gray-700 leading-relaxed">
-                ABM Lite targets clusters of 50-500 accounts that share similar characteristics such as industry, company size, technology stack, or business challenge. Rather than creating unique content for each account, marketing develops semi-personalized campaigns for each cluster -- for example, a campaign tailored to mid-market healthcare companies evaluating CRM platforms. Content is customized at the cluster level (industry pain points, relevant case studies) with dynamic personalization at the account level (company name, specific competitive context). This approach delivers 70-80% of the impact of strategic ABM at a fraction of the cost.
-              </p>
-
-              <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">Programmatic ABM (One-to-Many)</h3>
-              <p className="text-gray-700 leading-relaxed">
-                Programmatic ABM uses technology to deliver personalized experiences to 500+ accounts at scale. It leverages{" "}
-                <Link href="/audience-builder" className="text-primary hover:underline">audience building tools</Link>{" "}
-                and marketing automation to dynamically personalize campaigns based on account attributes and engagement signals. While individual account personalization is lighter, the reach is dramatically greater. Programmatic ABM is particularly effective for mid-market sales motions where the deal size does not justify one-to-one investment but the accounts still benefit from targeted messaging over generic demand generation.
-              </p>
-
-              {/* ABM Types Comparison Table */}
-              <div className="overflow-x-auto my-6">
-                <table className="min-w-full border-collapse border border-gray-200">
-                  <thead>
-                    <tr className="bg-gray-50">
-                      <th className="border border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-900">Attribute</th>
-                      <th className="border border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-900">Strategic (1:1)</th>
-                      <th className="border border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-900">ABM Lite (1:Few)</th>
-                      <th className="border border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-900">Programmatic (1:Many)</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700 font-medium">Target Accounts</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">10-50</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">50-500</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">500-5,000+</td>
-                    </tr>
-                    <tr className="bg-gray-50">
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700 font-medium">Personalization Depth</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Fully custom per account</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Cluster-level + dynamic</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Template + dynamic tokens</td>
-                    </tr>
-                    <tr>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700 font-medium">Typical Deal Size</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">$100K+ ACV</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">$25K-$100K ACV</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">$10K-$50K ACV</td>
-                    </tr>
-                    <tr className="bg-gray-50">
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700 font-medium">Resource Requirement</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">High (dedicated team)</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Medium (shared team)</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Low (technology-driven)</td>
-                    </tr>
-                    <tr>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700 font-medium">Sales Cycle Impact</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">30-50% faster</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">20-30% faster</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">10-20% faster</td>
-                    </tr>
-                    <tr className="bg-gray-50">
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700 font-medium">Win Rate Uplift</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">2-5x improvement</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">1.5-3x improvement</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">1.2-2x improvement</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-
-              {/* The ABM Framework */}
-              <h2 id="abm-framework" className="text-3xl font-light text-gray-900 mt-12 mb-6">
-                The ABM Framework
-              </h2>
-
-              <p className="text-gray-700 leading-relaxed mb-4">
-                A complete ABM framework consists of seven interconnected stages, from defining your ideal customer profile through ongoing measurement and optimization. Each stage builds on the previous one, and skipping steps typically leads to underperformance.
-              </p>
-
-              <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">1. ICP Definition</h3>
-              <p className="text-gray-700 leading-relaxed">
-                Your ideal customer profile is the DNA of your ABM program. Analyze your top 20-30 existing customers to identify common firmographic attributes (industry, revenue range, employee count, geography), technographic indicators (technology stack, infrastructure maturity), buying process characteristics (typical buying committee structure, evaluation timeline, procurement requirements), and outcome metrics (time to value, NRR, LTV). The resulting ICP should be specific enough to disqualify non-fit accounts while broad enough to sustain a meaningful pipeline.
-              </p>
-
-              <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">2. Account Selection</h3>
-              <p className="text-gray-700 leading-relaxed">
-                With the ICP defined, build your target account list by scoring the total addressable market against ICP criteria and layering in{" "}
-                <Link href="/what-is-b2b-intent-data" className="text-primary hover:underline">intent data signals</Link>{" "}
-                to identify accounts actively in-market. Prioritize accounts that combine strong ICP fit with active buying signals. Cursive&apos;s{" "}
-                <Link href="/audience-builder" className="text-primary hover:underline">audience builder</Link>{" "}
-                automates this process by combining firmographic filters, technographic data, and real-time intent signals to surface the highest-priority accounts.
-              </p>
-
-              <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">3. Intelligence Gathering</h3>
-              <p className="text-gray-700 leading-relaxed">
-                For each target account, gather intelligence on organizational structure, strategic priorities, competitive landscape, and recent events (funding rounds, leadership changes, expansion plans, technology migrations). This intelligence informs the personalization strategy and helps sales develop relevant talking points. Key sources include company websites, SEC filings, press releases, social media, job postings (which reveal technology and strategic priorities), and{" "}
-                <Link href="/visitor-identification" className="text-primary hover:underline">visitor identification data</Link>{" "}
-                showing which pages and topics the account is researching.
-              </p>
-
-              <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">4. Content Creation</h3>
-              <p className="text-gray-700 leading-relaxed">
-                Develop a content matrix that maps content assets to buying stages and committee roles. Early-stage content (thought leadership, industry research) targets the full committee. Mid-stage content (comparison guides, technical documentation) targets evaluators. Late-stage content (ROI analyses, implementation guides) targets economic buyers and champions. Each asset should be adaptable for different personalization levels across your ABM tiers.
-              </p>
-
-              <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">5. Channel Orchestration</h3>
-              <p className="text-gray-700 leading-relaxed">
-                Coordinate campaigns across channels to create a surround-sound effect at each target account. A typical ABM campaign sequence might start with display ads for awareness, followed by personalized email outreach, then LinkedIn engagement, then{" "}
-                <Link href="/direct-mail" className="text-primary hover:underline">direct mail</Link>{" "}
-                for physical impact, and finally SDR phone outreach. The exact channel mix depends on the target persona&apos;s preferences and the account&apos;s engagement history.
-              </p>
-
-              <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">6. Sales Enablement</h3>
-              <p className="text-gray-700 leading-relaxed">
-                Marketing&apos;s job in ABM extends beyond campaign execution to equipping sales with the intelligence and assets they need to convert accounts. This includes account briefing documents (company overview, key contacts, competitive intelligence), tailored talk tracks aligned with the account&apos;s specific challenges, warm introduction pathways (identifying mutual connections or event co-attendees), and real-time alerts when target accounts show engagement spikes or visit high-intent pages like pricing.
-              </p>
-
-              <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">7. Measurement and Optimization</h3>
-              <p className="text-gray-700 leading-relaxed">
-                ABM measurement tracks progress at the account level across the full funnel. Report on target account reach (percentage of buying committee engaged), engagement depth (content interactions, meeting attendance, website visits), pipeline progression (stage movement, deal velocity), and revenue impact (closed-won revenue, expansion revenue). Use these metrics to continuously optimize account selection, messaging, and channel mix.
-              </p>
-
-              {/* Key ABM Channels */}
-              <h2 id="key-abm-channels" className="text-3xl font-light text-gray-900 mt-12 mb-6">
-                Key ABM Channels
-              </h2>
-
-              <p className="text-gray-700 leading-relaxed mb-6">
-                ABM is inherently multi-channel. The most effective programs use seven or more channels in coordinated sequences. Here is how each channel contributes to ABM success, with effectiveness ratings based on aggregate data from ABM practitioners.
-              </p>
-
-              <div className="overflow-x-auto my-6">
-                <table className="min-w-full border-collapse border border-gray-200">
-                  <thead>
-                    <tr className="bg-gray-50">
-                      <th className="border border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-900">Channel</th>
-                      <th className="border border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-900">Best For</th>
-                      <th className="border border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-900">ABM Effectiveness</th>
-                      <th className="border border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-900">Personalization Level</th>
-                      <th className="border border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-900">Cost per Touch</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700 font-medium">Email</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Nurture sequences, content delivery</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">High</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">High (dynamic content)</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">$0.10-$2.00</td>
-                    </tr>
-                    <tr className="bg-gray-50">
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700 font-medium">LinkedIn</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Executive engagement, social selling</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Very High</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">High (InMail, connection requests)</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">$5-$25</td>
-                    </tr>
-                    <tr>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700 font-medium">Direct Mail</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Breaking through noise, executive outreach</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Very High</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Very High (physical personalization)</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">$15-$100+</td>
-                    </tr>
-                    <tr className="bg-gray-50">
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700 font-medium">Display Ads</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Awareness, air cover for outbound</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Medium</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Medium (account-targeted)</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">$1-$10 CPM</td>
-                    </tr>
-                    <tr>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700 font-medium">Website Personalization</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Conversion optimization for known accounts</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">High</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Very High (dynamic pages)</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Platform cost only</td>
-                    </tr>
-                    <tr className="bg-gray-50">
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700 font-medium">Events/Webinars</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Relationship building, thought leadership</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">High</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Medium-High (invite-only)</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">$50-$500+</td>
-                    </tr>
-                    <tr>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700 font-medium">Phone/Video</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Sales conversations, demos</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Very High</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Maximum (1:1 conversation)</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">SDR time cost</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Account Selection & Scoring */}
-              <h2 id="account-selection-scoring" className="text-3xl font-light text-gray-900 mt-12 mb-6">
-                Account Selection and Scoring
-              </h2>
-
-              <p className="text-gray-700 leading-relaxed">
-                Account selection is arguably the most important decision in ABM. Targeting the wrong accounts wastes resources and demoralizes sales teams. A robust scoring model combines five categories of signals to rank and prioritize accounts.
-              </p>
-
-              <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">Firmographic Fit</h3>
-              <p className="text-gray-700 leading-relaxed">
-                Firmographic scoring evaluates how closely an account matches your ICP on measurable company characteristics: industry vertical, annual revenue, employee count, geographic footprint, ownership structure (public, private, PE-backed), and growth trajectory. Weight these factors based on their correlation with closed-won deals in your historical data. For example, if 80% of your best customers are $50M-$500M revenue technology companies, that firmographic combination should receive the highest score.
-              </p>
-
-              <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">Technographic Signals</h3>
-              <p className="text-gray-700 leading-relaxed">
-                Technographic data reveals what tools and technologies a company uses, indicating both fit and readiness. Key signals include current technology stack (do they use tools that complement or compete with yours), infrastructure maturity (cloud adoption, security posture, data architecture), and technology change signals (new technology adoptions or vendor evaluations). Cursive&apos;s platform provides{" "}
-                <Link href="/data-access" className="text-primary hover:underline">real-time technographic data</Link>{" "}
-                for account scoring.
-              </p>
-
-              <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">Intent Data</h3>
-              <p className="text-gray-700 leading-relaxed">
-                Intent data identifies accounts actively researching topics related to your solution. This includes first-party intent (visiting your website, engaging with your content, attending your events) and third-party intent (researching relevant topics across the broader web). Accounts showing strong intent signals are 2-3x more likely to convert, making intent data one of the most valuable inputs for account prioritization. Learn more in our{" "}
-                <Link href="/what-is-b2b-intent-data" className="text-primary hover:underline">guide to B2B intent data</Link>.
-              </p>
-
-              <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">Engagement Scoring</h3>
-              <p className="text-gray-700 leading-relaxed">
-                Track and score every interaction across the buying committee to build a composite engagement score for each account. High-value engagements include attending demos or webinars, requesting pricing information, visiting your site multiple times, and engaging with comparison or competitive content. Low-value engagements include single blog visits or social media likes. The engagement score should decay over time, so that a burst of activity three months ago does not permanently elevate an account that has since gone quiet.
-              </p>
-
-              <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">Predictive Models</h3>
-              <p className="text-gray-700 leading-relaxed">
-                Advanced ABM programs use machine learning models trained on historical win/loss data to predict which accounts are most likely to convert. These models combine all of the above signals (firmographic, technographic, intent, engagement) with additional features like relationship proximity (do you have existing connections at the account), timing patterns (are they in a budget cycle), and look-alike modeling (do they resemble your best existing customers). Predictive scores complement human judgment rather than replacing it, flagging accounts that might be overlooked by manual analysis.
-              </p>
-
-              {/* Content Strategy for ABM */}
-              <h2 id="content-strategy" className="text-3xl font-light text-gray-900 mt-12 mb-6">
-                Content Strategy for ABM
-              </h2>
-
-              <p className="text-gray-700 leading-relaxed mb-4">
-                ABM content must be relevant at three levels: the industry, the company, and the individual. Generic content fails in ABM because target accounts expect messaging that demonstrates understanding of their specific situation. Here are the core content types that drive ABM engagement.
-              </p>
-
-              <ul className="list-disc list-inside text-gray-700 space-y-3">
-                <li><strong>Account-Specific Research:</strong> Custom analysis of the target account&apos;s market position, competitive landscape, and strategic opportunities. This is the most labor-intensive but highest-impact content type, reserved for strategic ABM targets.</li>
-                <li><strong>Industry Insights:</strong> Thought leadership content tailored to the target account&apos;s industry vertical, addressing trends, challenges, and benchmarks relevant to their business context.</li>
-                <li><strong>Competitive Battlecards:</strong> Content that directly addresses the competitive alternatives the account is evaluating, with honest comparisons and differentiated positioning.</li>
-                <li><strong>ROI Calculators:</strong> Interactive tools that estimate the business impact of your solution using the target account&apos;s actual metrics (revenue, team size, current conversion rates).</li>
-                <li><strong>Executive Briefs:</strong> Concise one-to-two-page summaries designed for C-suite consumption, focusing on strategic impact and business outcomes rather than technical features.</li>
-                <li><strong>Custom Demos:</strong> Pre-configured product demonstrations using the target account&apos;s branding, data structure, or use cases to make the value proposition immediately tangible.</li>
-              </ul>
-
-              {/* ABM Technology Stack */}
-              <h2 id="abm-technology-stack" className="text-3xl font-light text-gray-900 mt-12 mb-6">
-                ABM Technology Stack
-              </h2>
-
-              <p className="text-gray-700 leading-relaxed mb-6">
-                A modern ABM technology stack consists of five layers, each serving a distinct function in the account-based motion. The right combination of tools depends on your ABM maturity, budget, and existing technology investments.
-              </p>
-
-              <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">Identification and Intent Layer</h3>
-              <p className="text-gray-700 leading-relaxed">
-                This foundational layer reveals who is visiting your website and which accounts are actively researching your solution category.{" "}
-                <Link href="/platform" className="text-primary hover:underline">Cursive</Link>{" "}
-                provides both{" "}
-                <Link href="/visitor-identification" className="text-primary hover:underline">visitor identification</Link>{" "}
-                (resolving anonymous visitors to companies and contacts) and{" "}
-                <Link href="/intent-audiences" className="text-primary hover:underline">intent data</Link>{" "}
-                (tracking research behavior across 60B+ behaviors & URLs scanned weekly). Other tools in this layer include 6sense (predictive intent and account intelligence) and Bombora (B2B intent data from content consumption patterns).
-              </p>
-
-              <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">Orchestration Layer</h3>
-              <p className="text-gray-700 leading-relaxed">
-                Orchestration platforms coordinate multi-channel ABM campaigns, managing targeting, timing, and sequencing across channels. Leading platforms include Demandbase (ABM advertising and website personalization) and Terminus (multi-channel campaign orchestration and account-level analytics). Cursive also provides orchestration capabilities through its{" "}
-                <Link href="/audience-builder" className="text-primary hover:underline">audience builder</Link>, which enables teams to build targeted segments and activate them across email, ads, and{" "}
-                <Link href="/direct-mail" className="text-primary hover:underline">direct mail</Link>{" "}
-                from a single platform.
-              </p>
-
-              <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">Engagement Layer</h3>
-              <p className="text-gray-700 leading-relaxed">
-                Engagement tools execute the actual touches in ABM campaigns. This includes email automation platforms, LinkedIn Sales Navigator for social selling, direct mail platforms for physical touchpoints, and conversational marketing tools for real-time website engagement. The most effective ABM programs use 4-6 engagement channels in coordinated sequences.
-              </p>
-
-              <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">CRM Layer</h3>
-              <p className="text-gray-700 leading-relaxed">
-                The CRM serves as the system of record for all account-level data, interactions, and pipeline progression. Salesforce and HubSpot are the dominant CRM platforms for ABM, both offering native ABM features (account hierarchies, buying committee tracking, account-level reporting). The CRM integration is critical -- every identification, engagement, and intent signal from your ABM tools should flow into the CRM to give sales a complete view of account activity.
-              </p>
-
-              <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">Analytics Layer</h3>
-              <p className="text-gray-700 leading-relaxed">
-                ABM analytics must attribute revenue to account-level campaigns rather than individual lead touches. This requires multi-touch attribution models that credit the full buying committee&apos;s interactions across channels. Dedicated ABM analytics platforms provide account engagement scoring, pipeline attribution, and program-level ROI analysis that traditional marketing analytics tools cannot support.
-              </p>
-
-              {/* Measuring ABM Success */}
-              <h2 id="measuring-abm-success" className="text-3xl font-light text-gray-900 mt-12 mb-6">
-                Measuring ABM Success
-              </h2>
-
-              <p className="text-gray-700 leading-relaxed mb-6">
-                Traditional marketing metrics (MQLs, cost per lead, form conversions) are insufficient for ABM. Account-based programs require account-level metrics that track the progression of target accounts through the buying journey. Here are the key metrics every ABM program should track, with benchmarks from industry research.
-              </p>
-
-              <div className="overflow-x-auto my-6">
-                <table className="min-w-full border-collapse border border-gray-200">
-                  <thead>
-                    <tr className="bg-gray-50">
-                      <th className="border border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-900">Metric</th>
-                      <th className="border border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-900">Definition</th>
-                      <th className="border border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-900">Benchmark (ABM)</th>
-                      <th className="border border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-900">Benchmark (Non-ABM)</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700 font-medium">Account Engagement Score</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Composite score of all buying committee interactions</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">3-5 contacts engaged per account</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">1-2 contacts per account</td>
-                    </tr>
-                    <tr className="bg-gray-50">
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700 font-medium">Pipeline Generated</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Total pipeline value from target accounts</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">3-5x of annual target</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">2-3x of annual target</td>
-                    </tr>
-                    <tr>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700 font-medium">Deal Velocity</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Average days from opportunity creation to close</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">20-30% faster than average</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Industry baseline</td>
-                    </tr>
-                    <tr className="bg-gray-50">
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700 font-medium">Win Rate</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Percentage of ABM opportunities that close</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">25-40%</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">10-15%</td>
-                    </tr>
-                    <tr>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700 font-medium">Average Deal Size</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Mean ACV of ABM-sourced deals</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">30-50% larger</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Baseline average</td>
-                    </tr>
-                    <tr className="bg-gray-50">
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700 font-medium">Expansion Revenue</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Upsell/cross-sell revenue from ABM accounts</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">120-140% NRR</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">100-110% NRR</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Implementation Guide */}
-              <h2 id="implementation-guide" className="text-3xl font-light text-gray-900 mt-12 mb-6">
-                Implementation Guide
-              </h2>
-
-              <p className="text-gray-700 leading-relaxed mb-4">
-                Implementing ABM is a phased process. Rushing to launch campaigns before the foundation is set leads to poor results and organizational skepticism. Follow these six phases to build a sustainable ABM program.
-              </p>
-
-              <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">Phase 1: Define Your ICP (Weeks 1-2)</h3>
-              <p className="text-gray-700 leading-relaxed">
-                Analyze your top 20-30 customers by revenue, retention, and time to close. Interview sales leadership to understand what makes these accounts successful. Document the firmographic, technographic, and behavioral attributes that define your best-fit accounts. Validate the ICP with both marketing and sales leadership to ensure alignment. The output is a detailed ICP document that serves as the scoring rubric for account selection.
-              </p>
-
-              <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">Phase 2: Build Your Account List (Weeks 2-3)</h3>
-              <p className="text-gray-700 leading-relaxed">
-                Start small. Select 25-50 accounts for your pilot program, scoring each against your ICP criteria and prioritizing those showing{" "}
-                <Link href="/intent-audiences" className="text-primary hover:underline">intent signals</Link>. Use Cursive&apos;s{" "}
-                <Link href="/audience-builder" className="text-primary hover:underline">audience builder</Link>{" "}
-                to identify accounts that match your ICP and are actively researching relevant topics. Map the buying committee at each account, identifying 3-5 key contacts with verified contact information.
-              </p>
-
-              <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">Phase 3: Set Up Your Tech Stack (Weeks 3-4)</h3>
-              <p className="text-gray-700 leading-relaxed">
-                You do not need every ABM tool to start. The minimum viable ABM tech stack includes a{" "}
-                <Link href="/visitor-identification" className="text-primary hover:underline">visitor identification and intent platform</Link>{" "}
-                (Cursive), a CRM (Salesforce or HubSpot), and an email automation tool. Install the Cursive pixel on your website to begin capturing visitor intelligence. Configure CRM integrations so that identified accounts and contacts flow directly into your sales workflow. Add additional tools (LinkedIn Sales Navigator, direct mail, display ads) as your program scales.
-              </p>
-
-              <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">Phase 4: Create Content (Weeks 4-6)</h3>
-              <p className="text-gray-700 leading-relaxed">
-                Develop a content library that supports your ABM campaigns at each buying stage. Start with three to four core assets: an industry-specific thought leadership piece, a competitive comparison guide, a case study from a similar company, and a personalized outreach email sequence. For strategic accounts, create account-specific content. For programmatic accounts, build templates with dynamic personalization fields.
-              </p>
-
-              <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">Phase 5: Launch Campaigns (Weeks 6-8)</h3>
-              <p className="text-gray-700 leading-relaxed">
-                Begin with a coordinated multi-channel campaign targeting your pilot accounts. A proven launch sequence is to first run display ads for two weeks to build awareness, then launch personalized email sequences targeting the buying committee, then activate LinkedIn outreach from sales, and finally send{" "}
-                <Link href="/direct-mail" className="text-primary hover:underline">direct mail packages</Link>{" "}
-                to key decision makers. Monitor account engagement in real time and adjust messaging and channel mix based on what resonates.
-              </p>
-
-              <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">Phase 6: Measure and Optimize (Ongoing)</h3>
-              <p className="text-gray-700 leading-relaxed">
-                After 30 days, review account engagement data. Which accounts are responding? Which channels are driving the most engagement? Which messaging resonates? Use these insights to refine your targeting, content, and channel strategy. After 90 days, assess pipeline impact. Are target accounts entering the pipeline at a higher rate than non-ABM accounts? After 6 months, measure revenue attribution and calculate ABM ROI. Use results to justify expanding the program to more accounts and additional ABM tiers.
-              </p>
-
-              {/* Common ABM Mistakes */}
-              <h2 id="common-mistakes" className="text-3xl font-light text-gray-900 mt-12 mb-6">
-                Common ABM Mistakes
-              </h2>
-
-              <p className="text-gray-700 leading-relaxed mb-4">
-                ABM programs fail more often from execution errors than strategy problems. Here are the five most common mistakes and how to avoid them.
-              </p>
-
-              <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">1. Targeting Too Many Accounts</h3>
-              <p className="text-gray-700 leading-relaxed">
-                The most common ABM mistake is treating it like demand generation with a different label. If you are targeting 5,000 accounts with the same generic content, you are not doing ABM -- you are doing demand gen with an account list. ABM&apos;s power comes from concentration. Start with 25-50 accounts and invest deeply in each one. It is better to deeply engage 25 accounts than to superficially touch 500. Expand the list only after you have proven the model works and have the resources to maintain quality.
-              </p>
-
-              <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">2. Not Aligning Sales and Marketing</h3>
-              <p className="text-gray-700 leading-relaxed">
-                ABM fundamentally requires marketing and sales to operate as a single team. When marketing selects accounts without sales input, or sales ignores marketing-generated intelligence, the program fragments. Establish shared account plans, joint KPIs, regular pipeline review meetings, and clear handoff protocols. Both teams must agree on account selection criteria, engagement definitions, and what constitutes a qualified opportunity.
-              </p>
-
-              <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">3. Generic Messaging</h3>
-              <p className="text-gray-700 leading-relaxed">
-                Sending the same messaging to every target account defeats the purpose of ABM. If your emails could be sent to any company in your target market without modification, they are not personalized enough. At a minimum, ABM messaging should reference the target account&apos;s industry context, specific challenges identified through research, and relevant competitive dynamics. For strategic accounts, messaging should reference company-specific initiatives, recent news, and individual role-based pain points.
-              </p>
-
-              <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">4. Ignoring Buying Committees</h3>
-              <p className="text-gray-700 leading-relaxed">
-                Many ABM programs target a single contact per account -- typically the perceived decision maker. In reality, B2B purchases involve 6-10 stakeholders, and reaching only one leaves you vulnerable to internal politics, role changes, and incomplete evaluation processes. Map the full buying committee using{" "}
-                <Link href="/data-access" className="text-primary hover:underline">contact data platforms</Link>{" "}
-                and develop messaging tailored to each role: technical content for evaluators, ROI analysis for economic buyers, peer validation for champions, and risk mitigation for blockers.
-              </p>
-
-              <h3 className="text-2xl font-light text-gray-900 mt-8 mb-4">5. Wrong Metrics</h3>
-              <p className="text-gray-700 leading-relaxed">
-                Measuring ABM with lead generation metrics creates misaligned incentives. If marketing is measured on MQL volume, they will prioritize quantity over account quality. ABM metrics must be account-centric: account engagement scores, pipeline from target accounts, deal velocity, and revenue attribution. Set these metrics at program launch and report on them consistently to build organizational confidence in the ABM approach.
-              </p>
-
-              {/* Provider Comparison */}
-              <h2 id="provider-comparison" className="text-3xl font-light text-gray-900 mt-12 mb-6">
-                Provider Comparison
-              </h2>
-
-              <p className="text-gray-700 leading-relaxed mb-6">
-                The ABM technology market includes platforms at different price points and capability levels. Here is how the leading providers compare. For more detail on specific comparisons, see our{" "}
-                <Link href="/blog/6sense-vs-cursive-comparison" className="text-primary hover:underline">6sense vs. Cursive comparison</Link>{" "}
-                and{" "}
-                <Link href="/blog/clearbit-alternatives-comparison" className="text-primary hover:underline">Clearbit alternatives comparison</Link>.
-              </p>
-
-              <div className="overflow-x-auto my-6">
-                <table className="min-w-full border-collapse border border-gray-200">
-                  <thead>
-                    <tr className="bg-gray-50">
-                      <th className="border border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-900">Capability</th>
-                      <th className="border border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-900">Cursive</th>
-                      <th className="border border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-900">Demandbase</th>
-                      <th className="border border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-900">6sense</th>
-                      <th className="border border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-900">Terminus</th>
-                      <th className="border border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-900">RollWorks</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700 font-medium">Visitor Identification</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Individual + company</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Company-level</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Company-level</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Company-level</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Company-level</td>
-                    </tr>
-                    <tr className="bg-gray-50">
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700 font-medium">Intent Data</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">60B+ signals (built-in)</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Bombora partnership</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Proprietary AI model</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Bombora partnership</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Bombora partnership</td>
-                    </tr>
-                    <tr>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700 font-medium">Contact Data</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">200M+ verified contacts</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Limited (partner data)</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Limited (partner data)</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Not included</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Not included</td>
-                    </tr>
-                    <tr className="bg-gray-50">
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700 font-medium">Multi-Channel Activation</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Email, ads, direct mail, SDR</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Display ads, web personalization</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Display ads, email orchestration</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Display ads, email, chat</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Display ads, LinkedIn</td>
-                    </tr>
-                    <tr>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700 font-medium">Direct Mail</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Built-in automation</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Third-party integration</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Third-party integration</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Third-party integration</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Not available</td>
-                    </tr>
-                    <tr className="bg-gray-50">
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700 font-medium">Audience Building</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Advanced segmentation</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Account lists</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Predictive segments</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Account lists</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">Account lists</td>
-                    </tr>
-                    <tr>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700 font-medium">Typical Contract</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">$12K-$60K/yr</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">$50K-$250K/yr</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">$60K-$300K/yr</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">$30K-$150K/yr</td>
-                      <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">$15K-$75K/yr</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-
-              {/* FAQ Section */}
-              <h2 id="faqs" className="text-3xl font-light text-gray-900 mt-12 mb-6">
-                Frequently Asked Questions
-              </h2>
-
-              <div className="space-y-8">
-                {faqs.map((faq, index) => (
-                  <div key={index} className="border-b border-gray-200 pb-6">
-                    <h3 className="text-xl font-medium text-gray-900 mb-3">{faq.question}</h3>
-                    <p className="text-gray-700 leading-relaxed">{faq.answer}</p>
+            </motion.div>
+          </Container>
+        </section>
+
+        {/* How ABM Works */}
+        <section className="py-20 sm:py-24 bg-[#F7F9FB]">
+          <Container>
+            <SectionHeading
+              plain="How ABM"
+              script="Works"
+              sub="ABM inverts the funnel: identify the accounts you want to win, then work backward to the campaigns, content, and experiences that engage them."
+            />
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+              {howItWorks.map((s, i) => (
+                <motion.div
+                  key={s.title}
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-60px" }}
+                  transition={{ delay: i * 0.05, duration: 0.4, ease: EASE }}
+                  className="rounded-2xl border border-gray-200 bg-white p-6 sm:p-8 hover:shadow-lg transition-shadow"
+                >
+                  <div className="flex items-center gap-3">
+                    <IconChip Icon={s.icon} />
+                    <span className="text-sm font-semibold text-gray-300">0{i + 1}</span>
                   </div>
-                ))}
-              </div>
+                  <h3 className="mt-5 text-lg font-medium text-gray-900">{s.title}</h3>
+                  <p className="mt-3 text-sm text-gray-600 leading-relaxed">{s.body}</p>
+                </motion.div>
+              ))}
+            </div>
+          </Container>
+        </section>
 
-              {/* Related Resources */}
-              <h2 id="related-resources" className="text-3xl font-light text-gray-900 mt-12 mb-6">
-                Related Resources
+        {/* ABM vs Traditional */}
+        <section className="py-20 sm:py-24 bg-white">
+          <Container>
+            <SectionHeading
+              plain="ABM vs."
+              script="Traditional Marketing"
+              sub="The fundamental difference is directionality. Traditional marketing casts a wide net and filters down; ABM selects targets and builds up."
+            />
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, ease: EASE }}
+              className="max-w-4xl mx-auto rounded-2xl border border-gray-200 p-2 sm:p-3 overflow-hidden"
+            >
+              <div className="overflow-x-auto">
+                <table className="min-w-full text-sm">
+                  <thead>
+                    <tr className="text-left text-gray-500">
+                      <th className="px-4 py-3 font-medium">Dimension</th>
+                      <th className="px-4 py-3 font-medium">Traditional Marketing</th>
+                      <th className="px-4 py-3 font-medium">Account-Based Marketing</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {[
+                      ["Targeting", "Broad segments, persona-based", "Named accounts, committee-focused"],
+                      ["Key metrics", "MQLs, lead volume, cost per lead", "Engagement, pipeline, deal velocity"],
+                      ["Content", "Scaled for broad appeal", "Personalized per account / industry"],
+                      ["Sales alignment", "Handoff model", "Collaborative, shared account plans"],
+                      ["Budget", "Spread across channels", "Concentrated on target accounts"],
+                      ["Typical win rate", "10–15%", "25–40%"],
+                      ["Average deal size", "Market average", "30–50% larger"],
+                    ].map((row) => (
+                      <tr key={row[0]} className="text-gray-700">
+                        <td className="px-4 py-3 font-medium text-gray-900">{row[0]}</td>
+                        <td className="px-4 py-3 text-gray-500">{row[1]}</td>
+                        <td className="px-4 py-3 text-primary font-medium">{row[2]}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </motion.div>
+          </Container>
+        </section>
+
+        {/* Types of ABM */}
+        <section className="py-20 sm:py-24 bg-[#F7F9FB]">
+          <Container>
+            <SectionHeading
+              plain="Three Types"
+              script="of ABM"
+              sub="ABM isn't one-size-fits-all. The most successful programs run all three tiers at once, allocating the deepest personalization to the highest-value accounts."
+            />
+            <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+              {abmTypes.map((t, i) => (
+                <motion.div
+                  key={t.title}
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-60px" }}
+                  transition={{ delay: i * 0.06, duration: 0.4, ease: EASE }}
+                  className="rounded-2xl border border-gray-200 bg-white p-6 sm:p-8 hover:shadow-lg transition-shadow"
+                >
+                  <div className="flex items-center justify-between">
+                    <IconChip Icon={t.icon} />
+                    <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                      {t.range}
+                    </span>
+                  </div>
+                  <h3 className="mt-5 text-lg font-medium text-gray-900">{t.title}</h3>
+                  <p className="mt-3 text-sm text-gray-600 leading-relaxed">{t.body}</p>
+                </motion.div>
+              ))}
+            </div>
+          </Container>
+        </section>
+
+        {/* The ABM Framework */}
+        <section className="py-20 sm:py-24 bg-white">
+          <Container>
+            <SectionHeading
+              plain="The ABM"
+              script="Framework"
+              sub="Seven interconnected stages, from defining your ideal customer profile through ongoing measurement. Skipping steps typically leads to underperformance."
+            />
+            <div className="max-w-3xl mx-auto space-y-4">
+              {framework.map((step, i) => (
+                <motion.div
+                  key={step.title}
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-40px" }}
+                  transition={{ delay: i * 0.04, duration: 0.4, ease: EASE }}
+                  className="flex gap-5 rounded-2xl border border-gray-200 p-6 sm:p-7"
+                >
+                  <span className="flex-shrink-0 w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-sm font-semibold text-primary">
+                    {i + 1}
+                  </span>
+                  <div>
+                    <h3 className="text-base font-medium text-gray-900 capitalize">{step.title}</h3>
+                    <p className="mt-1.5 text-sm text-gray-600 leading-relaxed">{step.body}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </Container>
+        </section>
+
+        {/* Key ABM Channels */}
+        <section className="py-20 sm:py-24 bg-[#F7F9FB]">
+          <Container>
+            <SectionHeading
+              plain="Key ABM"
+              script="Channels"
+              sub="ABM is inherently multi-channel. The most effective programs use several channels in coordinated sequences."
+            />
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, ease: EASE }}
+              className="max-w-3xl mx-auto rounded-2xl border border-gray-200 bg-white p-2 sm:p-3 overflow-hidden"
+            >
+              <div className="overflow-x-auto">
+                <table className="min-w-full text-sm">
+                  <thead>
+                    <tr className="text-left text-gray-500">
+                      <th className="px-4 py-3 font-medium">Channel</th>
+                      <th className="px-4 py-3 font-medium">Best For</th>
+                      <th className="px-4 py-3 font-medium">ABM Effectiveness</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {channels.map((c) => (
+                      <tr key={c.channel} className="text-gray-700">
+                        <td className="px-4 py-3 font-medium text-gray-900">{c.channel}</td>
+                        <td className="px-4 py-3 text-gray-500">{c.bestFor}</td>
+                        <td className="px-4 py-3 text-primary font-medium">{c.effectiveness}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </motion.div>
+          </Container>
+        </section>
+
+        {/* Account Selection & Scoring */}
+        <section className="py-20 sm:py-24 bg-white">
+          <Container>
+            <SectionHeading
+              plain="Account Selection"
+              script="and Scoring"
+              sub="Selecting the wrong accounts wastes resources and demoralizes sales. A robust model combines five categories of signals to rank and prioritize."
+            />
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+              {scoring.map((s, i) => (
+                <motion.div
+                  key={s.title}
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-60px" }}
+                  transition={{ delay: i * 0.05, duration: 0.4, ease: EASE }}
+                  className="rounded-2xl border border-gray-200 p-6 sm:p-8 hover:shadow-lg transition-shadow"
+                >
+                  <IconChip Icon={s.icon} />
+                  <h3 className="mt-5 text-lg font-medium text-gray-900">{s.title}</h3>
+                  <p className="mt-3 text-sm text-gray-600 leading-relaxed">{s.body}</p>
+                </motion.div>
+              ))}
+            </div>
+            <p className="mt-8 text-center text-sm text-gray-500 max-w-2xl mx-auto leading-relaxed">
+              Surface the highest-priority accounts with Cursive's{" "}
+              <Link href="/audience-builder" className="text-primary hover:underline">audience builder</Link>{" "}
+              and prioritize the hottest{" "}
+              <Link href="/what-is-b2b-intent-data" className="text-primary hover:underline">intent signals</Link> first.
+            </p>
+          </Container>
+        </section>
+
+        {/* Content Strategy */}
+        <section className="py-20 sm:py-24 bg-[#F7F9FB]">
+          <Container>
+            <SectionHeading
+              plain="Content Strategy"
+              script="for ABM"
+              sub="ABM content must be relevant at three levels — the industry, the company, and the individual. Generic content fails because target accounts expect messaging that understands their situation."
+            />
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+              {contentTypes.map((c, i) => (
+                <motion.div
+                  key={c.title}
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-60px" }}
+                  transition={{ delay: i * 0.05, duration: 0.4, ease: EASE }}
+                  className="rounded-2xl border border-gray-200 bg-white p-6 sm:p-8 hover:shadow-lg transition-shadow"
+                >
+                  <h3 className="text-base font-medium text-gray-900">{c.title}</h3>
+                  <p className="mt-2.5 text-sm text-gray-600 leading-relaxed">{c.body}</p>
+                </motion.div>
+              ))}
+            </div>
+          </Container>
+        </section>
+
+        {/* ABM Technology Stack */}
+        <section className="py-20 sm:py-24 bg-white">
+          <Container>
+            <SectionHeading
+              plain="ABM Technology"
+              script="Stack"
+              sub="Five layers, each serving a distinct function. The right combination depends on your ABM maturity, budget, and existing investments."
+            />
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+              {techStack.map((t, i) => (
+                <motion.div
+                  key={t.title}
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-60px" }}
+                  transition={{ delay: i * 0.05, duration: 0.4, ease: EASE }}
+                  className="rounded-2xl border border-gray-200 p-6 sm:p-8 hover:shadow-lg transition-shadow"
+                >
+                  <IconChip Icon={t.icon} />
+                  <h3 className="mt-5 text-lg font-medium text-gray-900">{t.title}</h3>
+                  <p className="mt-3 text-sm text-gray-600 leading-relaxed">{t.body}</p>
+                </motion.div>
+              ))}
+            </div>
+          </Container>
+        </section>
+
+        {/* Measuring ABM Success */}
+        <section className="py-20 sm:py-24 bg-[#F7F9FB]">
+          <Container>
+            <SectionHeading
+              plain="Measuring ABM"
+              script="Success"
+              sub="Traditional marketing metrics are insufficient for ABM. Account-based programs require account-level metrics that track target accounts through the buying journey."
+            />
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, ease: EASE }}
+              className="max-w-4xl mx-auto rounded-2xl border border-gray-200 bg-white p-2 sm:p-3 overflow-hidden"
+            >
+              <div className="overflow-x-auto">
+                <table className="min-w-full text-sm">
+                  <thead>
+                    <tr className="text-left text-gray-500">
+                      <th className="px-4 py-3 font-medium">Metric</th>
+                      <th className="px-4 py-3 font-medium">Definition</th>
+                      <th className="px-4 py-3 font-medium">ABM</th>
+                      <th className="px-4 py-3 font-medium">Non-ABM</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {[
+                      ["Account engagement", "Contacts engaged per account", "3–5 per account", "1–2 per account"],
+                      ["Pipeline generated", "Pipeline from target accounts", "3–5x of target", "2–3x of target"],
+                      ["Deal velocity", "Days from creation to close", "20–30% faster", "Industry baseline"],
+                      ["Win rate", "Opportunities that close", "25–40%", "10–15%"],
+                      ["Average deal size", "Mean ACV of sourced deals", "30–50% larger", "Baseline average"],
+                      ["Expansion revenue", "Upsell from ABM accounts", "120–140% NRR", "100–110% NRR"],
+                    ].map((row) => (
+                      <tr key={row[0]} className="text-gray-700">
+                        <td className="px-4 py-3 font-medium text-gray-900">{row[0]}</td>
+                        <td className="px-4 py-3 text-gray-500">{row[1]}</td>
+                        <td className="px-4 py-3 text-primary font-medium">{row[2]}</td>
+                        <td className="px-4 py-3 text-gray-500">{row[3]}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </motion.div>
+          </Container>
+        </section>
+
+        {/* Implementation Guide */}
+        <section className="py-20 sm:py-24 bg-white">
+          <Container>
+            <SectionHeading
+              plain="Implementation"
+              script="Guide"
+              sub="Implementing ABM is a phased process. Rushing to launch before the foundation is set leads to poor results — follow these six phases."
+            />
+            <div className="max-w-3xl mx-auto space-y-4">
+              {implementation.map((step, i) => (
+                <motion.div
+                  key={step.title}
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-40px" }}
+                  transition={{ delay: i * 0.04, duration: 0.4, ease: EASE }}
+                  className="flex gap-5 rounded-2xl border border-gray-200 p-6 sm:p-7"
+                >
+                  <span className="flex-shrink-0 w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-sm font-semibold text-primary">
+                    {i + 1}
+                  </span>
+                  <div>
+                    <h3 className="text-base font-medium text-gray-900 capitalize">{step.title}</h3>
+                    <p className="mt-1.5 text-sm text-gray-600 leading-relaxed">{step.body}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </Container>
+        </section>
+
+        {/* Common ABM Mistakes */}
+        <section className="py-20 sm:py-24 bg-[#F7F9FB]">
+          <Container>
+            <SectionHeading
+              plain="Common ABM"
+              script="Mistakes"
+              sub="ABM programs fail more often from execution errors than strategy problems. Here are the five most common — and how to avoid them."
+            />
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+              {mistakes.map((m, i) => (
+                <motion.div
+                  key={m.title}
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-60px" }}
+                  transition={{ delay: i * 0.05, duration: 0.4, ease: EASE }}
+                  className="rounded-2xl border border-gray-200 bg-white p-6 sm:p-8 hover:shadow-lg transition-shadow"
+                >
+                  <IconChip Icon={AlertTriangle} />
+                  <h3 className="mt-5 text-lg font-medium text-gray-900">{m.title}</h3>
+                  <p className="mt-3 text-sm text-gray-600 leading-relaxed">{m.body}</p>
+                </motion.div>
+              ))}
+            </div>
+          </Container>
+        </section>
+
+        {/* Provider Comparison */}
+        <section className="py-20 sm:py-24 bg-white">
+          <Container>
+            <SectionHeading
+              plain="Provider"
+              script="Comparison"
+              sub="ABM platforms span a wide range of price points and capabilities. Here's how the leading providers compare."
+            />
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, ease: EASE }}
+              className="max-w-4xl mx-auto rounded-2xl border border-gray-200 p-2 sm:p-3 overflow-hidden"
+            >
+              <div className="overflow-x-auto">
+                <table className="min-w-full text-sm">
+                  <thead>
+                    <tr className="text-left text-gray-500">
+                      <th className="px-4 py-3 font-medium">Platform</th>
+                      <th className="px-4 py-3 font-medium">Visitor ID</th>
+                      <th className="px-4 py-3 font-medium">Intent / Data</th>
+                      <th className="px-4 py-3 font-medium">Typical Cost</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {providerRows.map((row) => (
+                      <tr key={row.name} className={row.highlight ? "bg-primary/[0.04]" : ""}>
+                        <td className="px-4 py-3 font-semibold text-gray-900">{row.name}</td>
+                        <td className="px-4 py-3 text-gray-700">{row.id}</td>
+                        <td className="px-4 py-3 text-gray-700">{row.intent}</td>
+                        <td className={`px-4 py-3 ${row.highlight ? "text-primary font-medium" : "text-gray-500"}`}>{row.contract}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </motion.div>
+            <p className="mt-6 text-center text-sm text-gray-500 max-w-2xl mx-auto leading-relaxed">
+              For head-to-head detail, see our{" "}
+              <Link href="/blog/6sense-vs-cursive-comparison" className="text-primary hover:underline">6sense vs. Cursive</Link>{" "}
+              and{" "}
+              <Link href="/blog/clearbit-alternatives-comparison" className="text-primary hover:underline">Clearbit alternatives</Link> comparisons.
+            </p>
+          </Container>
+        </section>
+
+        {/* FAQ */}
+        <section className="py-20 sm:py-24 bg-[#F7F9FB]">
+          <Container>
+            <SectionHeading plain="Frequently Asked" script="Questions" />
+            <div className="max-w-3xl mx-auto space-y-4">
+              {faqs.map((faq, i) => (
+                <motion.div
+                  key={faq.question}
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.03, duration: 0.4, ease: EASE }}
+                  className="rounded-2xl border border-gray-200 bg-white p-6 sm:p-7"
+                >
+                  <h3 className="text-base font-medium text-gray-900">{faq.question}</h3>
+                  <p className="mt-2 text-sm text-gray-600 leading-relaxed">{faq.answer}</p>
+                </motion.div>
+              ))}
+            </div>
+          </Container>
+        </section>
+
+        {/* Related Resources */}
+        <section className="py-20 sm:py-24 bg-white">
+          <Container>
+            <SectionHeading plain="Related" script="Resources" />
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto">
+              {relatedResources.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="group flex flex-col rounded-2xl border border-gray-200 bg-white p-5 hover:border-primary hover:shadow-lg transition-all"
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-sm font-medium text-gray-900 group-hover:text-primary transition-colors">
+                      {link.title}
+                    </span>
+                    <ArrowRight className="h-4 w-4 text-gray-400 group-hover:text-primary flex-shrink-0" />
+                  </div>
+                  <p className="mt-2 text-xs text-gray-500 leading-relaxed">{link.desc}</p>
+                </Link>
+              ))}
+            </div>
+          </Container>
+        </section>
+
+        {/* Final CTA */}
+        <section className="py-20 sm:py-28 bg-[#F7F9FB]">
+          <Container>
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, ease: EASE }}
+              className="text-center max-w-2xl mx-auto"
+            >
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light text-gray-900">
+                Power your ABM with
+                <span className="block font-cursive text-4xl sm:text-5xl lg:text-6xl text-gray-500 mt-1">
+                  Cursive
+                </span>
               </h2>
-
-              <p className="text-gray-700 leading-relaxed mb-4">
-                Continue learning about ABM and B2B marketing technologies with these related guides and platform pages:
+              <p className="mt-5 text-lg text-gray-600 leading-relaxed">
+                See which target accounts are on your site with the Visitor Pixel, and get a fresh weekly
+                list of in-market buyers with Custom Audiences. Plans from $97/mo — self-serve,
+                month-to-month, cancel anytime.
               </p>
-
-              <ul className="list-disc list-inside text-gray-700 space-y-3">
-                <li>
-                  <Link href="/what-is-website-visitor-identification" className="text-primary hover:underline">What is Website Visitor Identification?</Link> -- How visitor identification powers the account intelligence layer of ABM
-                </li>
-                <li>
-                  <Link href="/what-is-b2b-intent-data" className="text-primary hover:underline">What is B2B Intent Data?</Link> -- Understanding intent signals for ABM account selection and prioritization
-                </li>
-                <li>
-                  <Link href="/what-is-ai-sdr" className="text-primary hover:underline">What is an AI SDR?</Link> -- How AI-powered sales development automates ABM outreach at scale
-                </li>
-                <li>
-                  <Link href="/what-is-lead-enrichment" className="text-primary hover:underline">What is Lead Enrichment?</Link> -- Enriching your ABM contact data with firmographic and technographic details
-                </li>
-                <li>
-                  <Link href="/what-is-direct-mail-automation" className="text-primary hover:underline">What is Direct Mail Automation?</Link> -- Automating physical touchpoints in your ABM campaigns
-                </li>
-                <li>
-                  <Link href="/visitor-identification" className="text-primary hover:underline">Cursive Visitor Identification</Link> -- Identify which target accounts are visiting your website
-                </li>
-                <li>
-                  <Link href="/platform" className="text-primary hover:underline">Cursive Platform Overview</Link> -- Explore the full-stack B2B data and outbound automation platform
-                </li>
-                <li>
-                  <Link href="/blog/6sense-vs-cursive-comparison" className="text-primary hover:underline">6sense vs. Cursive Comparison</Link> -- Compare two approaches to account-based intelligence
-                </li>
-                <li>
-                  <Link href="/industries/b2b-software" className="text-primary hover:underline">B2B Software Industry Solutions</Link> -- ABM strategies for SaaS and software companies
-                </li>
-                <li>
-                  <Link href="/industries/agencies" className="text-primary hover:underline">Agency Solutions</Link> -- How agencies implement ABM for their clients
-                </li>
-                <li>
-                  <Link href="/industries/technology" className="text-primary hover:underline">Technology Industry Solutions</Link> -- ABM approaches for technology companies
-                </li>
-              </ul>
-
-              {/* CTA */}
-              <div className="mt-12 p-8 bg-gray-50 rounded-lg border border-gray-200 text-center">
-                <h2 className="text-2xl font-light text-gray-900 mb-4">
-                  Launch Your ABM Program with Cursive
-                </h2>
-                <p className="text-gray-700 mb-6 max-w-2xl mx-auto">
-                  Cursive provides the identification, intent data, and multi-channel activation capabilities that modern ABM programs require. Start with a free audit to see which target accounts are already visiting your website and get actionable intelligence to accelerate your pipeline.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Link
-                    href="/free-audit"
-                    className="inline-block px-8 py-3 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors text-center"
-                  >
-                    Get Your Free Audit
-                  </Link>
-                  <Link
-                    href="/pricing"
-                    className="inline-block px-8 py-3 border border-gray-300 text-gray-700 rounded-lg hover:border-primary hover:text-primary transition-colors text-center"
-                  >
-                    View Pricing
-                  </Link>
-                </div>
-                <p className="text-sm text-gray-500 mt-4">
-                  Questions? <Link href="/contact" className="text-primary hover:underline">Contact our team</Link> for a personalized ABM strategy consultation.
-                </p>
+              <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center">
+                <Button size="lg" href={GET_LEADS_URL} target="_blank" rel="noopener noreferrer">
+                  Get Started
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+                <Button size="lg" variant="outline" href={BOOKING_URL} target="_blank" rel="noopener noreferrer">
+                  Book a Call
+                </Button>
               </div>
-            </article>
-          </div>
-        </Container>
-      </section>
+            </motion.div>
+          </Container>
+        </section>
       </HumanView>
 
       <MachineView>
@@ -845,13 +891,15 @@ export default function WhatIsAccountBasedMarketing() {
             ]} />
           </MachineSection>
 
-          <MachineSection title="ABM Framework (5 Phases)">
+          <MachineSection title="ABM Framework (7 Stages)">
             <MachineList items={[
-              "Phase 1: Account Selection — Use ICP criteria (firmographic, technographic, intent signals) to build tiered target account list",
-              "Phase 2: Account Intelligence — Research each account's business context, tech stack, org structure, and buying signals",
-              "Phase 3: Content & Messaging — Create account-specific or segment-specific content tailored to each buying committee role",
-              "Phase 4: Multi-Channel Orchestration — Coordinate outreach across email, ads, direct mail, LinkedIn, and phone",
-              "Phase 5: Measurement & Optimization — Track account-level engagement, pipeline velocity, and revenue attribution"
+              "Stage 1: ICP Definition — Analyze top customers to define firmographic, technographic, and behavioral fit",
+              "Stage 2: Account Selection — Score the market against ICP criteria and layer in intent signals",
+              "Stage 3: Intelligence Gathering — Research each account's context, tech stack, org structure, and research behavior",
+              "Stage 4: Content Creation — Map account- or segment-specific content to buying stages and committee roles",
+              "Stage 5: Channel Orchestration — Coordinate outreach across email, ads, LinkedIn, web, and phone",
+              "Stage 6: Sales Enablement — Equip sales with account briefs, talk tracks, and real-time engagement alerts",
+              "Stage 7: Measurement & Optimization — Track account-level engagement, pipeline velocity, and revenue attribution"
             ]} />
           </MachineSection>
 
@@ -865,20 +913,31 @@ export default function WhatIsAccountBasedMarketing() {
 
           <MachineSection title="ABM Technology Stack">
             <MachineList items={[
-              "Visitor Identification — Identify target accounts on your website (Cursive provides individual + company-level ID)",
-              "Intent Data — 60B+ signals to detect active buying research (built into Cursive)",
-              "Contact Data — 200M+ verified contacts for buying committee mapping",
-              "Multi-Channel Activation — Email, display ads, direct mail, LinkedIn, SDR outreach",
-              "Analytics — Account-level engagement scoring and pipeline attribution"
+              "Identification & Intent — Identify the accounts visiting your site and surface in-market buyers (Cursive provides the Visitor Pixel for individual + company-level identification and Custom Audiences for in-market intent)",
+              "Orchestration — Coordinate multi-channel campaigns; activate named accounts and audiences across email and ads",
+              "Engagement — Email automation, LinkedIn Sales Navigator, and conversational marketing tools",
+              "CRM — Salesforce or HubSpot as the system of record for account data and pipeline",
+              "Analytics — Account-level engagement scoring and multi-touch pipeline attribution"
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="How Cursive Fits ABM">
+            <p className="text-gray-700 mb-3">
+              Cursive is the identification and intent layer for ABM. The Visitor Pixel resolves anonymous website traffic to the companies and people on your site, so you can see which target accounts are already engaging. Custom Audiences deliver a fresh weekly list of in-market buyers built to your exact ICP, so you can prioritize the accounts most likely to convert. Cursive does not run your ad campaigns or send your email — it supplies the account intelligence that makes the rest of your ABM stack effective.
+            </p>
+            <MachineList items={[
+              "Visitor Pixel ($97/month) — Identify the companies and people visiting your site",
+              "Custom Audience ($197/month) — A fresh weekly list of in-market buyers, delivered to Google Sheets",
+              "Pixel + Audience Bundle ($247/month) — Both, in one feed"
             ]} />
           </MachineSection>
 
           <MachineSection title="ABM Channels">
             <MachineList items={[
               "Email: Personalized sequences referencing account-specific insights, 15-25% open rates for ABM vs. 5-10% for mass email",
-              "Display Advertising: Account-targeted ads on LinkedIn, programmatic networks; IP-based targeting for known accounts",
-              "Direct Mail: Automated handwritten notes and dimensional packages for executive outreach (3-5x higher meeting rates)",
+              "Display Advertising: Account-targeted ads on LinkedIn and programmatic networks; IP-based targeting for known accounts",
               "LinkedIn: Multi-threaded engagement across the buying committee with personalized connection requests",
+              "Website Personalization: Dynamic messaging and CTAs for known accounts",
               "Phone: Warm calling after multi-channel touches significantly increases connect rates"
             ]} />
           </MachineSection>
@@ -906,7 +965,7 @@ export default function WhatIsAccountBasedMarketing() {
 
           <MachineSection title="Provider Comparison">
             <MachineList items={[
-              "Cursive — Individual + company visitor ID, 60B+ behaviors & URLs scanned weekly, multi-channel activation, direct mail built-in ($12K-$60K/yr)",
+              "Cursive — Individual + company visitor identification (Visitor Pixel) plus in-market Custom Audiences; self-serve from $97/mo, month-to-month",
               "Demandbase — Company-level ID, Bombora intent, display ads + web personalization ($50K-$250K/yr)",
               "6sense — Company-level ID, proprietary AI intent model, display ads + email orchestration ($60K-$300K/yr)",
               "Terminus — Company-level ID, Bombora intent, display ads + email + chat ($30K-$150K/yr)",
@@ -918,23 +977,22 @@ export default function WhatIsAccountBasedMarketing() {
             <MachineList items={[
               { label: "Website Visitor Identification Guide", href: "/what-is-website-visitor-identification", description: "How visitor ID powers ABM account intelligence" },
               { label: "B2B Intent Data Guide", href: "/what-is-b2b-intent-data", description: "Intent signals for ABM account selection" },
-              { label: "AI SDR Guide", href: "/what-is-ai-sdr", description: "AI-powered sales development for ABM outreach" },
-              { label: "Lead Enrichment Guide", href: "/what-is-lead-enrichment", description: "Enriching ABM contact data" },
-              { label: "Direct Mail Automation Guide", href: "/what-is-direct-mail-automation", description: "Physical touchpoints in ABM campaigns" },
-              { label: "Cursive Platform", href: "/platform", description: "Full-stack B2B data and outbound automation" },
+              { label: "Cursive Visitor Identification", href: "/visitor-identification", description: "Identify which target accounts visit your site" },
+              { label: "Audience Builder", href: "/audience-builder", description: "Build in-market audiences for ABM" },
+              { label: "Cursive Platform", href: "/platform", description: "The identity and intent data layer for ABM" },
               { label: "6sense vs Cursive", href: "/blog/6sense-vs-cursive-comparison", description: "Compare account-based intelligence approaches" },
-              { label: "Pricing", href: "/pricing", description: "Cursive pricing and plans" }
+              { label: "Pricing", href: "/pricing", description: "Visitor Pixel $97/mo, Custom Audience $197/mo, or both for $247/mo" }
             ]} />
           </MachineSection>
 
           <MachineSection title="Get Started with ABM">
             <p className="text-gray-700 mb-3">
-              Cursive provides the identification, intent data, and multi-channel activation that modern ABM programs require. See which target accounts are already visiting your website.
+              Cursive provides the identification and intent layer that modern ABM programs require — see which target accounts are already visiting your website, and get a fresh weekly list of in-market buyers built to your ICP. Self-serve from $97/month, month-to-month.
             </p>
             <MachineList items={[
-              { label: "Get Your Free Audit", href: "/free-audit", description: "See which target accounts visit your site" },
-              { label: "View Pricing", href: "/pricing", description: "Plans starting at $1,000/mo" },
-              { label: "Contact Sales", href: "/contact", description: "Personalized ABM strategy consultation" }
+              { label: "Get Started", href: "https://leads.meetcursive.com/get-leads", description: "Pick a plan and you are live in minutes" },
+              { label: "Book a Call", href: "https://cal.com/cursiveteam/30min", description: "Talk to the team before you buy" },
+              { label: "Pricing", href: "https://www.meetcursive.com/pricing", description: "Visitor Pixel $97/mo, Custom Audience $197/mo, or both for $247/mo" }
             ]} />
           </MachineSection>
         </MachineContent>

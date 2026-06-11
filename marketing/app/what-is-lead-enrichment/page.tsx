@@ -1,12 +1,18 @@
 "use client"
 
 import { Container } from "@/components/ui/container"
+import { Button } from "@/components/ui/button"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateFAQSchema } from "@/lib/seo/faq-schema"
 import { Breadcrumbs } from "@/components/Breadcrumbs"
 import { OrganizationSchema, ArticleSchema } from "@/components/schema/SchemaMarkup"
 import Link from "next/link"
-import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
+import { motion } from "framer-motion"
+import { ShieldCheck, ArrowRight } from "lucide-react"
+import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
+import { GET_LEADS_URL, BOOKING_URL } from "@/lib/cta"
+
+const EASE = [0.22, 1, 0.36, 1] as const
 
 const faqs = [
   {
@@ -27,7 +33,7 @@ const faqs = [
   },
   {
     question: "How much does lead enrichment cost?",
-    answer: "Lead enrichment pricing varies widely depending on the provider and data volume. Per-record costs typically range from $0.01 to $0.50 depending on the data points included. Many providers offer monthly subscription plans starting at a few hundred dollars for small teams up to enterprise contracts exceeding $50,000 per year. Cursive offers enrichment as part of its integrated platform starting at $1,000 per month."
+    answer: "Lead enrichment pricing varies widely depending on the provider and data volume. Per-record costs typically range from $0.01 to $0.50 depending on the data points included. Many providers offer monthly subscription plans starting at a few hundred dollars for small teams up to enterprise contracts exceeding $50,000 per year. Cursive takes a different approach: every record we deliver already arrives enriched, with a verified work email and full firmographics built in. Plans are flat and self-serve — Visitor Pixel at $97/mo, Custom Audience at $197/mo, or both bundled at $247/mo, month-to-month with no per-record fees."
   },
   {
     question: "Can lead enrichment help with GDPR and data compliance?",
@@ -69,13 +75,56 @@ export default function WhatIsLeadEnrichment() {
 
             <article className="prose prose-lg max-w-none">
               {/* Hero Definition */}
-              <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl mb-6">
-                What is Lead Enrichment? Complete Guide (2026)
-              </h1>
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, ease: EASE }}
+                className="not-prose mb-10"
+              >
+                <span className="text-xs font-semibold tracking-[0.25em] text-primary uppercase">
+                  Lead Enrichment Guide
+                </span>
+                <h1 className="mt-4 text-4xl sm:text-5xl font-light text-gray-900 leading-[1.1] tracking-tight">
+                  What is lead enrichment?
+                  <span className="block font-cursive text-4xl sm:text-5xl lg:text-6xl text-gray-500 mt-2">
+                    the complete 2026 guide
+                  </span>
+                </h1>
 
-              <p className="text-xl text-gray-600 leading-relaxed mb-8">
-                <strong>Lead enrichment</strong> is the process of enhancing existing lead records with additional data points from third-party sources, including contact details, company information, technographic data, and behavioral signals. By filling gaps in your CRM data, enrichment enables sales and marketing teams to prioritize outreach, personalize messaging, and convert more prospects into customers.
-              </p>
+                <p className="mt-6 text-lg sm:text-xl text-gray-600 leading-relaxed">
+                  <strong className="text-gray-900 font-semibold">Lead enrichment</strong> is the process of enhancing existing lead records with additional data points from third-party sources — contact details, company information, technographic data, and behavioral signals. By filling gaps in your CRM, enrichment lets sales and marketing teams prioritize outreach, personalize messaging, and convert more prospects into customers.
+                </p>
+
+                <div className="mt-8 flex flex-col sm:flex-row gap-3">
+                  <Button size="lg" href={GET_LEADS_URL} target="_blank" rel="noopener noreferrer">
+                    Get enriched leads
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                  <Button size="lg" variant="outline" href={BOOKING_URL} target="_blank" rel="noopener noreferrer">
+                    Book a Call
+                  </Button>
+                </div>
+              </motion.div>
+
+              {/* Cursive enrichment callout */}
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-60px" }}
+                transition={{ duration: 0.5, ease: EASE }}
+                className="not-prose mb-10 rounded-2xl border border-gray-200 bg-[#F7F9FB] p-6 sm:p-8"
+              >
+                <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center">
+                  <ShieldCheck className="w-6 h-6 text-primary" />
+                </div>
+                <p className="mt-5 text-base text-gray-700 leading-relaxed">
+                  Most teams bolt enrichment on after the fact. With Cursive, every record arrives
+                  enriched: a <strong className="text-gray-900 font-medium">verified work email</strong> plus full
+                  firmographics, validated continuously through Deep Verify at roughly{" "}
+                  <strong className="text-gray-900 font-medium">20 million records a day</strong>. No per-record
+                  fees, no waterfall to assemble.
+                </p>
+              </motion.div>
 
               <p className="text-gray-600 leading-relaxed mb-8">
                 In 2026, the average B2B lead record is missing 30-50% of the data points needed for effective outreach. Lead enrichment solves this by automatically appending verified contact information, firmographic details, technology stack data, and real-time intent signals to your existing records. The result: sales teams spend less time researching and more time selling, while marketing teams deliver more targeted campaigns that resonate with buyers.
@@ -121,7 +170,7 @@ export default function WhatIsLeadEnrichment() {
               </h3>
               <p className="text-gray-600 leading-relaxed mb-4">
                 Once a match is found, the enrichment engine makes API calls to retrieve the associated data points. Modern enrichment platforms aggregate data from multiple sources, including public business registrations, web scraping of corporate websites, social media profiles, job postings, technology detection scripts, and proprietary data partnerships. The{" "}
-                <Link href="/data-access" className="text-primary hover:underline">data access layer</Link>{" "}
+                <Link href="/pricing" className="text-primary hover:underline">data access layer</Link>{" "}
                 in enterprise-grade platforms may query dozens of data sources in parallel to maximize the completeness of the returned profile. This waterfall approach means that if one source lacks a particular data point, the system checks the next source until the field is populated.
               </p>
 
@@ -494,9 +543,8 @@ export default function WhatIsLeadEnrichment() {
                 Step 1: Choose Your Enrichment Provider
               </h3>
               <p className="text-gray-600 leading-relaxed mb-4">
-                Start by evaluating providers against your specific requirements. Key criteria include: data coverage for your target market (geography, industry, company size), accuracy guarantees and SLAs, integration options with your existing CRM and marketing stack, pricing model (per-record vs. subscription), compliance certifications, and data source transparency. Request sample enrichment on a set of your existing records to benchmark accuracy and completeness before committing. Platforms like{" "}
-                <Link href="/platform" className="text-primary hover:underline">Cursive</Link>{" "}
-                offer integrated enrichment alongside visitor identification and outreach, eliminating the need for multiple point solutions.
+                Start by evaluating providers against your specific requirements. Key criteria include: data coverage for your target market (geography, industry, company size), accuracy guarantees and SLAs, integration options with your existing CRM and marketing stack, pricing model (per-record vs. subscription), compliance certifications, and data source transparency. Request sample enrichment on a set of your existing records to benchmark accuracy and completeness before committing. With{" "}
+                <Link href="/platform" className="text-primary hover:underline">Cursive</Link>, the records you receive are already enriched — each one ships with a verified work email and firmographics — so you can skip the separate enrichment vendor altogether.
               </p>
 
               <h3 className="text-2xl font-semibold text-gray-900 mt-8 mb-4">
@@ -554,10 +602,10 @@ export default function WhatIsLeadEnrichment() {
                 <tbody>
                   <tr>
                     <td className="border border-gray-200 px-4 py-3 text-sm text-gray-600 font-medium">Cursive</td>
-                    <td className="border border-gray-200 px-4 py-3 text-sm text-gray-600">Multi-source waterfall + reverse enrichment</td>
-                    <td className="border border-gray-200 px-4 py-3 text-sm text-gray-600">Integrated platform: enrichment + visitor ID + outreach</td>
+                    <td className="border border-gray-200 px-4 py-3 text-sm text-gray-600">Pre-enriched records + reverse enrichment (visitor ID)</td>
+                    <td className="border border-gray-200 px-4 py-3 text-sm text-gray-600">Every record ships with a verified work email + firmographics built in</td>
                     <td className="border border-gray-200 px-4 py-3 text-sm text-gray-600">Yes</td>
-                    <td className="border border-gray-200 px-4 py-3 text-sm text-gray-600">$1,000/mo</td>
+                    <td className="border border-gray-200 px-4 py-3 text-sm text-gray-600">$97/mo</td>
                   </tr>
                   <tr className="bg-gray-50">
                     <td className="border border-gray-200 px-4 py-3 text-sm text-gray-600 font-medium">Clearbit (HubSpot)</td>
@@ -591,13 +639,13 @@ export default function WhatIsLeadEnrichment() {
               </table>
 
               <p className="text-gray-600 leading-relaxed mb-4">
-                When choosing a provider, consider your complete workflow. Standalone enrichment tools require additional solutions for visitor identification, outreach, and campaign management. Integrated platforms like{" "}
-                <Link href="/platform" className="text-primary hover:underline">Cursive</Link>{" "}
-                combine enrichment with{" "}
-                <Link href="/visitor-identification" className="text-primary hover:underline">visitor identification</Link>,{" "}
-                <Link href="/audience-builder" className="text-primary hover:underline">audience building</Link>, and multi-channel outreach in a single platform, reducing tool sprawl and ensuring data consistency across your go-to-market stack. Visit our{" "}
+                When choosing a provider, consider your complete workflow. Standalone enrichment tools require additional solutions for visitor identification and audience sourcing. Cursive removes that step entirely: instead of buying raw records and enriching them later, every contact you receive already carries a verified work email and full firmographics. Pair the{" "}
+                <Link href="/visitor-identification" className="text-primary hover:underline">Visitor Pixel</Link>{" "}
+                with a weekly{" "}
+                <Link href="/audience-builder" className="text-primary hover:underline">Custom Audience</Link>{" "}
+                to cover both anonymous site traffic and in-market buyers, exported straight to your CRM or sheet. Visit our{" "}
                 <Link href="/pricing" className="text-primary hover:underline">pricing page</Link>{" "}
-                to compare plans and find the right fit for your team.
+                to compare the three flat plans and find the right fit for your team.
               </p>
 
               {/* FAQ Section */}
@@ -662,28 +710,31 @@ export default function WhatIsLeadEnrichment() {
               </ul>
 
               {/* CTA */}
-              <div className="bg-gray-50 rounded-2xl p-8 text-center mt-12">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                  Ready to Enrich Your Lead Data?
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-60px" }}
+                transition={{ duration: 0.5, ease: EASE }}
+                className="not-prose rounded-2xl border border-gray-200 bg-[#F7F9FB] p-8 sm:p-12 text-center mt-12"
+              >
+                <h2 className="text-3xl sm:text-4xl font-light text-gray-900">
+                  Skip the enrichment step
                 </h2>
-                <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-                  Cursive combines lead enrichment, website visitor identification, audience building, and multi-channel outreach in one platform. Stop juggling multiple tools and start converting more leads with complete, accurate data.
+                <p className="mt-4 text-gray-600 leading-relaxed max-w-2xl mx-auto">
+                  Cursive delivers leads that are already enriched — every record carries a verified
+                  work email and full firmographics, validated through Deep Verify daily. No waterfall to
+                  build, no per-record fees. Plans from $97/mo, month-to-month.
                 </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Link
-                    href="/free-audit"
-                    className="inline-flex items-center justify-center px-6 py-3 bg-primary text-white font-semibold rounded-lg hover:bg-blue-600 transition-colors"
-                  >
-                    Get a Free Data Audit
-                  </Link>
-                  <Link
-                    href="/contact"
-                    className="inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors"
-                  >
-                    Talk to Sales
-                  </Link>
+                <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
+                  <Button size="lg" href={GET_LEADS_URL} target="_blank" rel="noopener noreferrer">
+                    Get enriched leads
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                  <Button size="lg" variant="outline" href={BOOKING_URL} target="_blank" rel="noopener noreferrer">
+                    Book a Call
+                  </Button>
                 </div>
-              </div>
+              </motion.div>
             </article>
           </div>
         </Container>
@@ -770,7 +821,7 @@ export default function WhatIsLeadEnrichment() {
 
           <MachineSection title="Provider Comparison">
             <MachineList items={[
-              "Cursive — Multi-source waterfall + reverse enrichment, integrated with visitor ID + outreach ($1,000/mo)",
+              "Cursive — Records ship pre-enriched (verified work email + firmographics) plus reverse enrichment via visitor ID; flat self-serve plans from $97/mo",
               "Clearbit (HubSpot) — API-first, deep HubSpot integration, strong firmographic data (included in HubSpot plans)",
               "ZoomInfo — Largest B2B contact database, strong phone data, WebSights visitor ID ($15,000+/yr)",
               "Apollo.io — Large free tier, crowdsourced data, integrated sequencing ($49/mo+)",
@@ -793,11 +844,12 @@ export default function WhatIsLeadEnrichment() {
 
           <MachineSection title="Get Started">
             <p className="text-gray-700 mb-3">
-              Cursive combines lead enrichment, website visitor identification, audience building, and multi-channel outreach in one platform. Stop juggling multiple tools and start converting more leads with complete, accurate data.
+              Cursive delivers leads that are already enriched — every record carries a verified work email and full firmographics, validated through Deep Verify at roughly 20 million records per day. Skip the separate enrichment vendor and the per-record fees. Flat, self-serve plans: Visitor Pixel $97/mo, Custom Audience $197/mo, or both bundled at $247/mo, month-to-month.
             </p>
             <MachineList items={[
-              { label: "Get a Free Data Audit", href: "/free-audit", description: "Identify gaps in your current enrichment strategy" },
-              { label: "Talk to Sales", href: "/contact", description: "Discuss enrichment implementation for your team" }
+              { label: "Get Started", href: "https://leads.meetcursive.com/get-leads", description: "Pick a plan and you are live in minutes — every record arrives enriched" },
+              { label: "Pricing", href: "https://www.meetcursive.com/pricing", description: "Visitor Pixel $97/mo, Custom Audience $197/mo, or both for $247/mo" },
+              { label: "Book a Call", href: "https://cal.com/cursiveteam/30min", description: "Talk to the team before you buy" }
             ]} />
           </MachineSection>
         </MachineContent>

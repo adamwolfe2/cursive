@@ -1,12 +1,23 @@
 "use client"
 
 import { Container } from "@/components/ui/container"
+import { Button } from "@/components/ui/button"
+import { motion } from "framer-motion"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateFAQSchema } from "@/lib/seo/faq-schema"
 import { Breadcrumbs } from "@/components/Breadcrumbs"
 import { OrganizationSchema, ArticleSchema } from "@/components/schema/SchemaMarkup"
 import Link from "next/link"
-import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
+import {
+  Code2, Database, Fingerprint, Network, Sparkles,
+  Globe, Cookie, FileCheck, Users, Target, BarChart3,
+  Megaphone, LayoutTemplate, GitMerge, ShieldCheck, Scale,
+  ArrowRight, type LucideIcon,
+} from "lucide-react"
+import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
+import { GET_LEADS_URL, BOOKING_URL } from "@/lib/cta"
+
+const EASE = [0.22, 1, 0.36, 1] as const
 
 const faqs = [
   {
@@ -37,7 +48,7 @@ const faqs = [
   {
     question: "How long does it take to set up visitor identification?",
     answer:
-      "Most visitor identification platforms can be set up in under 10 minutes. Installation typically involves adding a small JavaScript tracking pixel to your website, similar to adding Google Analytics. Once installed, visitor data begins flowing immediately, and most platforms offer one-click CRM integrations.",
+      "Most visitor identification platforms can be set up in under 10 minutes. Installation typically involves adding a small JavaScript tracking pixel to your website, similar to adding Google Analytics. With Cursive the pixel installs in about 60 seconds, and once installed, visitor data begins flowing immediately through one-click CRM integrations.",
   },
   {
     question: "What is the ROI of website visitor identification?",
@@ -51,9 +62,195 @@ const faqs = [
   },
 ]
 
+function SectionHeading({ plain, script, sub }: { plain: string; script?: string; sub?: string }) {
+  return (
+    <div className="text-center mb-14">
+      <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light text-gray-900">
+        {plain}
+        {script && (
+          <span className="block font-cursive text-4xl sm:text-5xl lg:text-6xl text-gray-500 mt-1">
+            {script}
+          </span>
+        )}
+      </h2>
+      {sub && (
+        <p className="mt-5 text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">{sub}</p>
+      )}
+    </div>
+  )
+}
+
+function IconChip({ Icon }: { Icon: LucideIcon }) {
+  return (
+    <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center">
+      <Icon className="w-6 h-6 text-primary" />
+    </div>
+  )
+}
+
+const howItWorks: Array<{ icon: LucideIcon; title: string; body: string }> = [
+  {
+    icon: Code2,
+    title: "Tracking pixel installation",
+    body: "A lightweight JavaScript pixel loads asynchronously on every page. Cursive's pixel is privacy-compliant by default and adds less than 20ms of page load time.",
+  },
+  {
+    icon: Database,
+    title: "Data collection",
+    body: "The pixel collects non-PII session signals — IP address, user agent, browser configuration, screen resolution, language, and referring URL — which combine into a unique signature.",
+  },
+  {
+    icon: Fingerprint,
+    title: "Device fingerprinting",
+    body: "Dozens of browser and device attributes form a probabilistic identifier that holds up even when visitors use VPNs, privacy features, or randomized signals.",
+  },
+  {
+    icon: Network,
+    title: "Database matching",
+    body: "Signals are matched against hundreds of millions of business records in real time, typically within 200–500ms. Database freshness is the primary differentiator between platforms.",
+  },
+  {
+    icon: GitMerge,
+    title: "Identity resolution",
+    body: "Fragmented sessions across devices, IPs, and browsers merge into a single unified profile — essential in B2B, where buying committees visit at different times.",
+  },
+  {
+    icon: Sparkles,
+    title: "Enrichment & real-time delivery",
+    body: "Identified visitors are enriched with firmographic and contact data, then delivered to your CRM and tools within minutes — before intent signals decay.",
+  },
+]
+
+const methods: Array<{ icon: LucideIcon; title: string; rate: string; body: string }> = [
+  {
+    icon: Globe,
+    title: "Reverse IP lookup",
+    rate: "30–40% match",
+    body: "Maps a visitor's IP to the company that owns the address block. Reliable for static corporate IPs, but struggles with remote workers, VPNs, and residential ISPs. Company-level only.",
+  },
+  {
+    icon: Fingerprint,
+    title: "Device fingerprinting",
+    rate: "60–70% match",
+    body: "Analyzes 100+ browser, device, and software attributes to identify individuals — not just companies — and works even over VPNs or remote networks.",
+  },
+  {
+    icon: Cookie,
+    title: "Cookie-based tracking",
+    rate: "Variable",
+    body: "First-party cookies reconnect returning visitors to an existing profile. Third-party cookie restrictions have reduced effectiveness, so it works best combined with other methods.",
+  },
+  {
+    icon: FileCheck,
+    title: "Form-based identification",
+    rate: "2–5% capture",
+    body: "Visitors self-report via forms and gated content — the highest accuracy, but the lowest coverage. Best used to validate and enhance data from other methods.",
+  },
+]
+
+const dataCategories: Array<{ icon: LucideIcon; title: string; body: string }> = [
+  {
+    icon: Database,
+    title: "Company-level data",
+    body: "Company name, domain, industry (SIC/NAICS), employee count, revenue range, HQ location, funding status, and technology stack — instant ICP qualification.",
+  },
+  {
+    icon: Users,
+    title: "Person-level data",
+    body: "Full name, job title, department, seniority, verified work email, phone, and LinkedIn URL — enabling direct, personalized outreach when available.",
+  },
+  {
+    icon: BarChart3,
+    title: "Behavioral data",
+    body: "Pages viewed, time on page, scroll depth, visit count, referring source, and UTM parameters — turning identity into actionable context.",
+  },
+  {
+    icon: Target,
+    title: "Intent signals",
+    body: "Composite scores that flag active buying cycles: pricing-page views, competitor comparisons, and repeat sessions in a short window.",
+  },
+]
+
+const useCases: Array<{ icon: LucideIcon; title: string; body: string }> = [
+  {
+    icon: Users,
+    title: "B2B lead generation",
+    body: "Capture far more than the 2% who fill out forms. A site with 20,000 monthly visitors and a 40–60% match rate surfaces 8,000–12,000 identified visitors — vs 400–1,000 from a cookie tool.",
+  },
+  {
+    icon: Target,
+    title: "Account-based marketing",
+    body: "See which target accounts are already engaging, then reach out at the moment of interest. Intent-driven ABM typically lifts engagement rates by 2–3x.",
+  },
+  {
+    icon: BarChart3,
+    title: "Sales intelligence",
+    body: "Know a prospect viewed pricing, read an industry case study, and returned three times this week — and craft outreach that turns cold conversations warm.",
+  },
+  {
+    icon: Megaphone,
+    title: "Retargeting & advertising",
+    body: "Segment retargeting audiences by firmographic fit and behavior. Tailored ads typically cut cost per acquisition by 40–60% versus broad retargeting.",
+  },
+  {
+    icon: LayoutTemplate,
+    title: "Content personalization",
+    body: "Adjust messaging, case studies, and CTAs in real time based on who's visiting. Visitor-based personalization drives 15–25% lifts in conversion rates.",
+  },
+  {
+    icon: GitMerge,
+    title: "Pipeline attribution",
+    body: "Connect anonymous pre-form-fill visits to closed revenue, attributing pipeline to the campaigns, content, and channels that actually work.",
+  },
+]
+
+const implementation: Array<{ title: string; body: string }> = [
+  {
+    title: "Choose the right platform",
+    body: "Evaluate match rate, data accuracy, integrations, and compliance posture. Run a proof of concept against your real traffic rather than trusting marketing claims.",
+  },
+  {
+    title: "Install the tracking pixel",
+    body: "Add the JavaScript snippet to your site header or tag manager and confirm it loads on every page. With Cursive this takes about 60 seconds.",
+  },
+  {
+    title: "Connect your integrations",
+    body: "Wire visitor data into your CRM (Salesforce, HubSpot), marketing automation, Slack, and ad platforms with one-click integrations.",
+  },
+  {
+    title: "Set up workflows and alerts",
+    body: "Route identified visitors to the right teams — Slack alerts when a target account hits pricing, auto-created CRM leads for ICP matches, and segmented ad audiences.",
+  },
+  {
+    title: "Train your team",
+    body: "Teach reps to reference behavioral data without being intrusive, and set expectations around match rates and acceptable use.",
+  },
+  {
+    title: "Measure and optimize",
+    body: "Track match-rate trends, qualified leads, pipeline influenced, and cost per identified lead against your baselines to quantify ROI.",
+  },
+]
+
+const platformRows: Array<{ name: string; rate: string; level: string; integrations: string; note: string; highlight?: boolean }> = [
+  { name: "Cursive", rate: "40–60% (deterministic)", level: "Company + Individual", integrations: "200+", note: "Newer platform", highlight: true },
+  { name: "Warmly", rate: "40–50%", level: "Company + Individual", integrations: "50+", note: "Higher price point" },
+  { name: "Clearbit", rate: "N/A", level: "N/A", integrations: "N/A", note: "Shut down / absorbed into HubSpot" },
+  { name: "Leadfeeder", rate: "30–40%", level: "Company only", integrations: "30+", note: "No individual identification" },
+  { name: "RB2B", rate: "50–60%", level: "Company + Individual", integrations: "20+", note: "US-only coverage" },
+]
+
+const relatedResources = [
+  { title: "What is B2B Intent Data?", href: "/what-is-b2b-intent-data", desc: "How intent signals reveal which companies are actively researching solutions like yours." },
+  { title: "Cursive Visitor Identification", href: "/visitor-identification", desc: "See how Cursive's deterministic pixel resolves 40–60% of your website traffic." },
+  { title: "Audience Builder", href: "/audience-builder", desc: "Build targeted segments from identified visitors using firmographic and behavioral filters." },
+  { title: "Visitor Identification for B2B Software", href: "/industries/b2b-software", desc: "Industry-specific strategies for SaaS and technology companies." },
+  { title: "Clearbit Alternatives Comparison", href: "/blog/clearbit-alternatives-comparison", desc: "Evaluate the top visitor identification platforms available in 2026." },
+  { title: "Pricing", href: "/pricing", desc: "Visitor Pixel $97/mo, Custom Audience $197/mo, or both for $247/mo." },
+]
+
 export default function WhatIsWebsiteVisitorIdentificationPage() {
   return (
-    <main>
+    <main className="overflow-hidden">
       <OrganizationSchema />
       <ArticleSchema
         title="What is Website Visitor Identification? Complete Guide (2026)"
@@ -64,610 +261,476 @@ export default function WhatIsWebsiteVisitorIdentificationPage() {
       <StructuredData data={generateFAQSchema({ faqs })} />
 
       <HumanView>
-      <section className="py-12 bg-white">
-        <Container>
-          <div className="max-w-4xl mx-auto">
-            <Breadcrumbs
-              items={[
-                { name: "Home", href: "/" },
-                { name: "Resources", href: "/resources" },
-                { name: "What is Website Visitor Identification?", href: "/what-is-website-visitor-identification" },
-              ]}
-            />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Breadcrumbs
+            items={[
+              { name: "Home", href: "/" },
+              { name: "Resources", href: "/resources" },
+              { name: "What is Website Visitor Identification?", href: "/what-is-website-visitor-identification" },
+            ]}
+          />
+        </div>
 
-            <article className="prose prose-lg max-w-none">
-              {/* Hero Definition */}
-              <h1 className="text-4xl lg:text-5xl font-light text-gray-900 mb-6 mt-8">
-                What is Website Visitor Identification? Complete Guide (2026)
+        {/* Hero */}
+        <section className="relative pt-16 pb-20 sm:pt-20 sm:pb-24 bg-white">
+          <Container>
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, ease: EASE }}
+              className="text-center max-w-3xl mx-auto"
+            >
+              <span className="text-xs font-semibold tracking-[0.25em] text-primary uppercase">
+                Complete Guide · 2026
+              </span>
+              <h1 className="mt-4 text-4xl sm:text-5xl lg:text-6xl font-light text-gray-900 leading-[1.1]">
+                What is website
+                <span className="block font-cursive text-4xl sm:text-5xl lg:text-6xl text-gray-500 mt-2">
+                  visitor identification?
+                </span>
               </h1>
-
-              <p className="text-xl text-gray-700 leading-relaxed mb-8">
-                <strong>Website visitor identification</strong> is the technology that reveals which companies and individuals are browsing your website, even when they never fill out a form. By matching anonymous web traffic to real business contacts using IP intelligence, device fingerprinting, and data enrichment, visitor identification transforms the 98% of traffic that typically leaves your site unknown into actionable sales opportunities.
+              <p className="mt-6 text-lg sm:text-xl text-gray-600 leading-relaxed">
+                <strong className="text-gray-900 font-medium">Website visitor identification</strong> reveals
+                which companies and people browse your site — even when they never fill out a form. By matching
+                anonymous traffic to real business contacts, it turns the 98% of traffic that usually leaves
+                unknown into actionable sales opportunities.
               </p>
-
-              <p className="text-lg text-gray-600 mb-8">
-                In 2026, visitor identification has become a foundational capability for B2B revenue teams. With buyer journeys happening increasingly online and anonymously, the ability to see who is researching your product before they raise their hand gives sales and marketing teams a decisive competitive advantage. According to Forrester, 68% of the B2B buying process now happens digitally, making the ability to identify anonymous visitors more valuable than ever. Platforms like{" "}
-                <Link href="/platform" className="text-primary hover:underline">Cursive</Link> are the identity layer for outbound, intent, and enrichment &mdash; delivering a 40&ndash;60% deterministic pixel match rate (vs 2&ndash;5% for cookie-based tools and 10&ndash;15% for IP databases) backed by 280M+ verified consumer and 140M+ business profiles refreshed every 30 days via NCOA.
-              </p>
-
-              {/* Table of Contents */}
-              <nav className="bg-gray-50 rounded-lg p-6 mb-10">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4 mt-0">Table of Contents</h2>
-                <ol className="list-decimal list-inside space-y-2 text-primary mb-0">
-                  <li><a href="#how-it-works" className="hover:underline">How Website Visitor Identification Works</a></li>
-                  <li><a href="#identification-methods" className="hover:underline">Visitor Identification Methods</a></li>
-                  <li><a href="#accuracy-match-rates" className="hover:underline">Accuracy and Match Rates</a></li>
-                  <li><a href="#what-data-you-get" className="hover:underline">What Data Do You Get?</a></li>
-                  <li><a href="#use-cases" className="hover:underline">Use Cases for Visitor Identification</a></li>
-                  <li><a href="#legal-compliance" className="hover:underline">Legal and Compliance Considerations</a></li>
-                  <li><a href="#implementation-guide" className="hover:underline">Implementation Guide</a></li>
-                  <li><a href="#platform-comparison" className="hover:underline">Platform Comparison</a></li>
-                  <li><a href="#faq" className="hover:underline">Frequently Asked Questions</a></li>
-                  <li><a href="#related-resources" className="hover:underline">Related Resources</a></li>
-                </ol>
-              </nav>
-
-              {/* Section 1: How It Works */}
-              <h2 id="how-it-works" className="text-3xl font-semibold text-gray-900 mt-12 mb-6">
-                How Website Visitor Identification Works
-              </h2>
-
-              <p>
-                Website visitor identification operates through a multi-step process that transforms anonymous web sessions into identified contacts. Understanding this pipeline is essential for evaluating tools and setting realistic expectations for match rates and data quality.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                Step 1: Tracking Pixel Installation
-              </h3>
-              <p>
-                The process begins with a lightweight JavaScript tracking pixel placed on your website. This code snippet, typically just a few lines, loads asynchronously so it does not affect page performance. When a visitor lands on any page where the pixel is installed, it begins collecting session data. Modern pixels like{" "}
-                <Link href="/visitor-identification" className="text-primary hover:underline">Cursive&apos;s identification pixel</Link> are designed to be privacy-compliant by default and add less than 20ms of page load time.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                Step 2: Data Collection
-              </h3>
-              <p>
-                Once the pixel fires, it collects several types of non-personally-identifiable data points from the visitor&apos;s browser session. These include the visitor&apos;s IP address, user agent string, browser configuration, screen resolution, installed fonts, language preferences, and referring URL. None of this data is personally identifiable on its own, but when combined, it creates a unique signature that can be matched against business databases.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                Step 3: Device Fingerprinting
-              </h3>
-              <p>
-                Advanced visitor identification platforms go beyond simple IP matching by creating a device fingerprint. This combines dozens of browser and device attributes into a probabilistic identifier. In 2026, fingerprinting technology has evolved to account for browser privacy features and VPN usage, using machine learning models that maintain accuracy even when individual signals are masked or randomized.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                Step 4: Database Matching
-              </h3>
-              <p>
-                The collected signals are matched against proprietary databases containing hundreds of millions of business records. This matching happens in real time, typically within 200-500 milliseconds. The databases map IP ranges to companies, device fingerprints to professional identities, and cookie graphs to cross-device user journeys. The quality and freshness of these databases is the primary differentiator between platforms.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                Step 5: Identity Resolution
-              </h3>
-              <p>
-                Identity resolution is the process of merging multiple signals into a single unified profile. A visitor might access your site from different devices, IP addresses, or browsers over time. Identity resolution engines connect these fragmented sessions to build a complete picture of the buyer&apos;s journey. This is particularly important in B2B, where buying committees involve multiple stakeholders from the same company visiting at different times.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                Step 6: Data Enrichment
-              </h3>
-              <p>
-                Once a visitor is identified, their profile is enriched with additional firmographic and demographic data. This includes company details such as industry, employee count, annual revenue, and technology stack, as well as individual details like job title, department, seniority level, and verified contact information. Platforms like Cursive pull from multiple{" "}
-                <Link href="/data-access" className="text-primary hover:underline">data sources</Link> to ensure enrichment accuracy and completeness.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                Step 7: Real-Time Delivery
-              </h3>
-              <p>
-                The final step is delivering identified visitor data to your sales and marketing tools in real time. This includes CRM platforms, marketing automation tools, Slack notifications, and outbound engagement platforms. The speed of delivery matters because{" "}
-                <Link href="/what-is-b2b-intent-data" className="text-primary hover:underline">intent signals</Link> decay rapidly. A visitor browsing your pricing page right now is far more valuable than one who visited last week. Real-time webhooks and native integrations ensure your team can act on fresh intent within minutes.
-              </p>
-
-              {/* Section 2: Identification Methods */}
-              <h2 id="identification-methods" className="text-3xl font-semibold text-gray-900 mt-12 mb-6">
-                Visitor Identification Methods
-              </h2>
-
-              <p>
-                There are four primary methods for identifying website visitors, each with different accuracy levels, coverage, and compliance characteristics. Most modern platforms combine multiple methods to maximize identification rates.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                1. Reverse IP Lookup
-              </h3>
-              <p>
-                Reverse IP lookup is the most established method of visitor identification. It works by matching a visitor&apos;s IP address against databases that map IP ranges to company names. When a visitor accesses your site from a corporate network, their IP address can be traced back to the company that owns that address block. This method is reliable for identifying companies with static IP addresses but struggles with remote workers, VPN users, and visitors on residential ISPs. Typical match rates range from 30-40% of B2B traffic at the company level only.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                2. Advanced Device Fingerprinting
-              </h3>
-              <p>
-                Device fingerprinting goes beyond IP addresses by analyzing the unique combination of browser, device, and software attributes that create a distinctive digital signature. This method can identify individual visitors rather than just companies, and it works even when visitors use VPNs or work remotely. In 2026, machine learning models analyze over 100 data points to create probabilistic matches with high confidence. Advanced fingerprinting achieves match rates of 60-70% and can identify returning visitors across sessions and devices.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                3. Cookie-Based Tracking
-              </h3>
-              <p>
-                Cookie-based tracking uses first-party and third-party cookies to maintain visitor identity across sessions. When a visitor first arrives, a unique identifier is stored in their browser cookies. On subsequent visits, this identifier reconnects the new session to their existing profile. While browser restrictions on third-party cookies have reduced the effectiveness of this method in isolation, first-party cookies remain a reliable mechanism for recognizing returning visitors. Cookie-based tracking is most effective when combined with other identification methods.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                4. Form-Based Identification
-              </h3>
-              <p>
-                Form-based identification occurs when visitors voluntarily submit their information through contact forms, gated content downloads, newsletter signups, or chat widgets. While this method provides the highest data accuracy since visitors self-report their information, it captures only 2-5% of website visitors. The primary value of form submissions in a visitor identification strategy is to validate and enhance data collected through other methods, creating a feedback loop that improves overall accuracy.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                Method Comparison
-              </h3>
-              <div className="overflow-x-auto mb-8">
-                <table className="min-w-full border-collapse border border-gray-200">
-                  <thead>
-                    <tr className="bg-gray-50">
-                      <th className="border border-gray-200 px-4 py-3 text-left font-semibold">Method</th>
-                      <th className="border border-gray-200 px-4 py-3 text-left font-semibold">Match Rate</th>
-                      <th className="border border-gray-200 px-4 py-3 text-left font-semibold">Identification Level</th>
-                      <th className="border border-gray-200 px-4 py-3 text-left font-semibold">Works with VPN</th>
-                      <th className="border border-gray-200 px-4 py-3 text-left font-semibold">Best For</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td className="border border-gray-200 px-4 py-3">Reverse IP Lookup</td>
-                      <td className="border border-gray-200 px-4 py-3">30-40%</td>
-                      <td className="border border-gray-200 px-4 py-3">Company only</td>
-                      <td className="border border-gray-200 px-4 py-3">No</td>
-                      <td className="border border-gray-200 px-4 py-3">Enterprise traffic</td>
-                    </tr>
-                    <tr className="bg-gray-50">
-                      <td className="border border-gray-200 px-4 py-3">Device Fingerprinting</td>
-                      <td className="border border-gray-200 px-4 py-3">60-70%</td>
-                      <td className="border border-gray-200 px-4 py-3">Individual</td>
-                      <td className="border border-gray-200 px-4 py-3">Yes</td>
-                      <td className="border border-gray-200 px-4 py-3">All B2B traffic</td>
-                    </tr>
-                    <tr>
-                      <td className="border border-gray-200 px-4 py-3">Cookie-Based Tracking</td>
-                      <td className="border border-gray-200 px-4 py-3">Variable</td>
-                      <td className="border border-gray-200 px-4 py-3">Session-level</td>
-                      <td className="border border-gray-200 px-4 py-3">Yes</td>
-                      <td className="border border-gray-200 px-4 py-3">Returning visitors</td>
-                    </tr>
-                    <tr className="bg-gray-50">
-                      <td className="border border-gray-200 px-4 py-3">Form-Based</td>
-                      <td className="border border-gray-200 px-4 py-3">2-5%</td>
-                      <td className="border border-gray-200 px-4 py-3">Individual (verified)</td>
-                      <td className="border border-gray-200 px-4 py-3">Yes</td>
-                      <td className="border border-gray-200 px-4 py-3">Data validation</td>
-                    </tr>
-                  </tbody>
-                </table>
+              <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center">
+                <Button size="lg" href={GET_LEADS_URL} target="_blank" rel="noopener noreferrer">
+                  Get Started
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+                <Button size="lg" variant="outline" href={BOOKING_URL} target="_blank" rel="noopener noreferrer">
+                  Book a Call
+                </Button>
               </div>
+            </motion.div>
 
-              {/* Section 3: Accuracy & Match Rates */}
-              <h2 id="accuracy-match-rates" className="text-3xl font-semibold text-gray-900 mt-12 mb-6">
-                Accuracy and Match Rates
-              </h2>
-
-              <p>
-                Match rate is the single most important metric when evaluating visitor identification platforms. It represents the percentage of your total website visitors that can be successfully identified. In 2026, match rates vary significantly across providers, and understanding what drives these differences is essential for making an informed purchasing decision.
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.1, ease: EASE }}
+              className="mt-12 max-w-3xl mx-auto rounded-2xl border border-gray-200 bg-[#F7F9FB] p-6 sm:p-8"
+            >
+              <p className="text-base text-gray-700 leading-relaxed">
+                In 2026, visitor identification is a foundational capability for B2B revenue teams. According
+                to Forrester, 68% of the B2B buying process now happens digitally — so seeing who researches
+                your product before they raise their hand is a decisive advantage. Platforms like{" "}
+                <Link href="/platform" className="text-primary hover:underline font-medium">Cursive</Link>{" "}
+                deliver a 40–60% deterministic match rate (vs 2–5% for cookie tools and 10–15% for IP
+                databases), backed by 280M+ verified consumer and 140M+ business profiles refreshed every 30
+                days via NCOA.
               </p>
+            </motion.div>
+          </Container>
+        </section>
 
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                Industry Benchmarks (2026)
-              </h3>
-              <div className="overflow-x-auto mb-8">
-                <table className="min-w-full border-collapse border border-gray-200">
-                  <thead>
-                    <tr className="bg-gray-50">
-                      <th className="border border-gray-200 px-4 py-3 text-left font-semibold">Metric</th>
-                      <th className="border border-gray-200 px-4 py-3 text-left font-semibold">Industry Average</th>
-                      <th className="border border-gray-200 px-4 py-3 text-left font-semibold">Best-in-Class</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td className="border border-gray-200 px-4 py-3">Company-Level Match Rate</td>
-                      <td className="border border-gray-200 px-4 py-3">30-40%</td>
-                      <td className="border border-gray-200 px-4 py-3">65-75%</td>
-                    </tr>
-                    <tr className="bg-gray-50">
-                      <td className="border border-gray-200 px-4 py-3">Individual-Level Match Rate</td>
-                      <td className="border border-gray-200 px-4 py-3">15-25%</td>
-                      <td className="border border-gray-200 px-4 py-3">50-60%</td>
-                    </tr>
-                    <tr>
-                      <td className="border border-gray-200 px-4 py-3">Email Accuracy</td>
-                      <td className="border border-gray-200 px-4 py-3">80-85%</td>
-                      <td className="border border-gray-200 px-4 py-3">95%+</td>
-                    </tr>
-                    <tr className="bg-gray-50">
-                      <td className="border border-gray-200 px-4 py-3">Data Freshness</td>
-                      <td className="border border-gray-200 px-4 py-3">30-90 days</td>
-                      <td className="border border-gray-200 px-4 py-3">Real-time</td>
-                    </tr>
-                    <tr>
-                      <td className="border border-gray-200 px-4 py-3">Firmographic Completeness</td>
-                      <td className="border border-gray-200 px-4 py-3">60-70%</td>
-                      <td className="border border-gray-200 px-4 py-3">90%+</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                What Affects Match Rates
-              </h3>
-              <p>
-                Several factors influence how many of your website visitors can be successfully identified:
-              </p>
-              <ul>
-                <li><strong>Traffic composition:</strong> B2B traffic from corporate networks has higher match rates than traffic from residential ISPs, mobile devices, or consumer VPNs.</li>
-                <li><strong>Geographic distribution:</strong> Match rates tend to be higher for North American and European traffic where business databases have better coverage.</li>
-                <li><strong>Industry vertical:</strong> Technology, financial services, and professional services sectors typically see the highest match rates because these industries have the most comprehensive digital footprints.</li>
-                <li><strong>Traffic volume:</strong> Higher traffic volumes provide more data points for machine learning models, which can improve match accuracy over time.</li>
-                <li><strong>Device type:</strong> Desktop traffic from office environments identifies at roughly 2x the rate of mobile traffic.</li>
-              </ul>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                How to Improve Your Match Rates
-              </h3>
-              <p>
-                There are several tactics you can use to maximize the percentage of visitors your identification platform can match:
-              </p>
-              <ol>
-                <li><strong>Implement the pixel site-wide:</strong> Install the tracking pixel on every page, not just high-intent pages. More touchpoints create more opportunities for matching.</li>
-                <li><strong>Use multiple identification methods:</strong> Choose a platform like{" "}
-                  <Link href="/visitor-identification" className="text-primary hover:underline">Cursive</Link> that combines IP lookup, fingerprinting, and cookie matching rather than relying on a single method.</li>
-                <li><strong>Drive authenticated traffic:</strong> Encourage visitors to log in or create accounts. Even a single authenticated session permanently links that visitor to their identity.</li>
-                <li><strong>Optimize for business traffic:</strong> Focus paid advertising on channels that reach decision-makers during business hours from corporate networks.</li>
-                <li><strong>Keep data fresh:</strong> Use platforms that continuously update their databases rather than relying on static lookups that degrade over time.</li>
-              </ol>
-
-              {/* Section 4: What Data You Get */}
-              <h2 id="what-data-you-get" className="text-3xl font-semibold text-gray-900 mt-12 mb-6">
-                What Data Do You Get?
-              </h2>
-
-              <p>
-                The value of visitor identification is directly tied to the depth and accuracy of the data provided. Modern platforms deliver four categories of data for each identified visitor, giving sales and marketing teams a complete picture of who is engaging with their website and why.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                Company-Level Data
-              </h3>
-              <p>
-                Company-level (firmographic) data reveals the organization behind the visitor. This includes the company name, domain, industry classification (SIC/NAICS codes), employee count, annual revenue range, headquarters location, number of office locations, funding status, technology stack, and social media profiles. This data helps sales teams instantly qualify whether a visiting company matches their{" "}
-                <Link href="/audience-builder" className="text-primary hover:underline">ideal customer profile</Link>.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                Person-Level Data
-              </h3>
-              <p>
-                When individual-level identification is available, platforms provide the visitor&apos;s full name, job title, department, seniority level, verified email address, phone number, LinkedIn profile URL, and professional history. Not every visitor can be identified at the individual level, but when they can, this data enables direct, personalized outreach. The ability to see that a VP of Marketing from a target account viewed your pricing page is transformational for sales teams.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                Behavioral Data
-              </h3>
-              <p>
-                Beyond identity, visitor identification captures detailed behavioral data about each session. This includes pages viewed, time spent on each page, scroll depth, number of visits, referring source, UTM parameters, content downloaded, and video watched. Behavioral data transforms raw identification into actionable{" "}
-                <Link href="/intent-audiences" className="text-primary hover:underline">intent signals</Link> by revealing not just who visited, but what they were interested in.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                Intent Signals
-              </h3>
-              <p>
-                The most sophisticated platforms synthesize identity and behavioral data into composite intent scores. These signals indicate how likely a visitor is to be in an active buying cycle. High-intent signals include visiting the pricing page, viewing competitor comparison content, returning multiple times in a short window, and researching product features across multiple sessions. Understanding{" "}
-                <Link href="/what-is-b2b-intent-data" className="text-primary hover:underline">B2B intent data</Link> helps teams prioritize the hottest opportunities and focus outreach where it will have the greatest impact.
-              </p>
-
-              {/* Section 5: Use Cases */}
-              <h2 id="use-cases" className="text-3xl font-semibold text-gray-900 mt-12 mb-6">
-                Use Cases for Visitor Identification
-              </h2>
-
-              <p>
-                Website visitor identification powers a wide range of B2B sales and marketing strategies. Here are the six most impactful use cases, along with real examples of how companies are generating ROI.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                1. B2B Lead Generation
-              </h3>
-              <p>
-                The most common use case is turning anonymous traffic into a pipeline of qualified leads. Instead of waiting for the 2% of visitors who fill out forms, visitor identification captures a much larger share. A mid-market SaaS company with 20,000 monthly visitors using Cursive&apos;s deterministic pixel (40&ndash;60% match rate) generates 8,000&ndash;12,000 identified visitors per month &mdash; vs 400&ndash;1,000 from a cookie-based tool (2&ndash;5%) and 2,000&ndash;3,000 from an IP database (10&ndash;15%). If 10% match the ICP, that is 800&ndash;1,200 qualified leads from a single month of existing traffic. Platforms like{" "}
-                <Link href="/platform" className="text-primary hover:underline">Cursive</Link> automate the process from identification through outreach, so these leads enter your pipeline without manual effort.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                2. Account-Based Marketing (ABM)
-              </h3>
-              <p>
-                For ABM programs, visitor identification reveals which target accounts are already engaging with your brand. Instead of cold outreach to an account list, marketing and sales can prioritize accounts that have shown intent by visiting the website. This intent-driven approach to ABM typically increases engagement rates by 2-3x because you are reaching out at the moment of interest. You can build{" "}
-                <Link href="/audience-builder" className="text-primary hover:underline">targeted audiences</Link> from identified visitors who match your ABM account list.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                3. Sales Intelligence
-              </h3>
-              <p>
-                Sales teams use visitor identification data to prioritize their outreach and personalize conversations. When a rep knows that a prospect visited the pricing page, read a case study about their industry, and returned three times this week, they can craft outreach that addresses the prospect&apos;s specific interests. This moves conversations from cold to warm, improving connect rates and shortening sales cycles. Integrating visitor data with your CRM creates a live feed of buyer intent that transforms how reps manage their pipeline.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                4. Retargeting and Advertising
-              </h3>
-              <p>
-                Identified visitors can be used to build high-intent retargeting audiences for paid advertising. Rather than retargeting every visitor with generic ads, you can segment audiences based on firmographic fit and behavioral signals. Show pricing-focused ads to visitors who viewed your pricing page. Deliver case study ads to visitors from specific industries. This approach typically reduces cost per acquisition by 40-60% compared to broad retargeting. Cursive&apos;s{" "}
-                <Link href="/intent-audiences" className="text-primary hover:underline">intent audiences</Link> feature makes it easy to push these segments to your ad platforms automatically.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                5. Content Personalization
-              </h3>
-              <p>
-                When you know who is visiting your site, you can personalize the experience in real time. Show different messaging to enterprise visitors versus SMBs. Display relevant case studies based on the visitor&apos;s industry. Adjust CTAs based on where the visitor is in the buying journey. Companies that implement visitor-based personalization see 15-25% increases in conversion rates because the website experience becomes relevant to each visitor&apos;s specific context.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                6. Pipeline Attribution
-              </h3>
-              <p>
-                Visitor identification closes the attribution gap between marketing activity and revenue. By identifying which companies engaged with which content before converting, marketing teams can accurately attribute pipeline to specific campaigns, content assets, and channels. This data-driven approach to attribution replaces guesswork with precision, helping teams invest more in what works and cut spending on what does not.
-              </p>
-
-              {/* Section 6: Legal & Compliance */}
-              <h2 id="legal-compliance" className="text-3xl font-semibold text-gray-900 mt-12 mb-6">
-                Legal and Compliance Considerations
-              </h2>
-
-              <p>
-                Compliance is a critical consideration when implementing visitor identification. The legal landscape in 2026 requires careful attention to data privacy regulations, but B2B visitor identification is broadly permissible when implemented correctly. Here is what you need to know.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                GDPR (General Data Protection Regulation)
-              </h3>
-              <p>
-                Under GDPR, B2B visitor identification is typically processed under the &quot;legitimate interest&quot; legal basis (Article 6(1)(f)). This applies when the processing is necessary for a legitimate business purpose and does not override the fundamental rights of the data subject. For B2B use cases where you are identifying business professionals in their professional capacity, legitimate interest is the standard legal basis used by most providers. Key requirements include providing notice through your privacy policy, conducting a Legitimate Interest Assessment (LIA), and offering a clear opt-out mechanism.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                CCPA (California Consumer Privacy Act)
-              </h3>
-              <p>
-                Under CCPA and its successor CPRA, visitor identification is permitted as long as you disclose the categories of personal information collected, provide a &quot;Do Not Sell or Share My Personal Information&quot; link, honor opt-out requests within 15 business days, and include visitor identification in your privacy policy disclosures. Most compliant platforms handle these requirements automatically and provide documentation to support your privacy program.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                B2B vs. B2C Compliance Differences
-              </h3>
-              <p>
-                It is important to understand that B2B and B2C visitor identification have different compliance profiles. B2B identification of business professionals using their work-related digital footprints has broader legal support because the data is collected and used in a professional context. B2C identification of consumers in their personal capacity is subject to stricter regulations, particularly in the EU. Most visitor identification platforms, including Cursive, focus exclusively on B2B data to maintain the strongest possible compliance posture.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                Best Practices for Compliance
-              </h3>
-              <ul>
-                <li>Update your privacy policy to disclose visitor identification technology and its purposes</li>
-                <li>Implement a visible opt-out mechanism on your website</li>
-                <li>Maintain a record of your Legitimate Interest Assessment for GDPR</li>
-                <li>Work with providers who have SOC 2 Type II certification and regular compliance audits</li>
-                <li>Only use identified data for legitimate business purposes such as sales outreach and marketing</li>
-                <li>Honor all opt-out and deletion requests promptly</li>
-                <li>Regularly review your data retention policies and delete data that is no longer needed</li>
-              </ul>
-
-              {/* Section 7: Implementation Guide */}
-              <h2 id="implementation-guide" className="text-3xl font-semibold text-gray-900 mt-12 mb-6">
-                Implementation Guide
-              </h2>
-
-              <p>
-                Implementing website visitor identification is straightforward when you follow a structured approach. Here is a six-step guide to getting started and maximizing your results.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                Step 1: Choose the Right Platform
-              </h3>
-              <p>
-                Evaluate platforms based on match rate, data accuracy, integration ecosystem, compliance posture, and pricing model. Request a proof of concept or free trial where the provider runs their identification against your actual website traffic so you can measure real match rates rather than relying on marketing claims. Cursive offers a{" "}
-                <Link href="/free-audit" className="text-primary hover:underline">free website audit</Link> that shows exactly how many of your visitors can be identified before you commit.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                Step 2: Install the Tracking Pixel
-              </h3>
-              <p>
-                Installation is typically a one-time, five-minute process. Add the provider&apos;s JavaScript snippet to the header of your website, either directly in the HTML or through a tag manager like Google Tag Manager. Ensure the pixel loads on all pages, including landing pages, blog posts, and documentation. Verify the installation using the provider&apos;s debugging tools to confirm data is flowing correctly.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                Step 3: Connect Your Integrations
-              </h3>
-              <p>
-                Connect visitor identification to your existing tech stack to ensure data flows seamlessly. Priority integrations typically include your CRM (Salesforce, HubSpot), marketing automation platform (Marketo, Pardot), communication tools (Slack, Microsoft Teams), and ad platforms (Google Ads, LinkedIn Ads, Meta). Most platforms offer one-click integrations that can be configured in minutes.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                Step 4: Set Up Workflows and Alerts
-              </h3>
-              <p>
-                Configure automated workflows to route identified visitors to the right teams and trigger timely actions. Common workflows include sending Slack alerts when a target account visits your pricing page, automatically creating leads in your CRM for visitors matching your ICP, triggering{" "}
-                <Link href="/what-is-ai-sdr" className="text-primary hover:underline">AI SDR</Link> outreach sequences for high-intent visitors, and adding identified visitors to{" "}
-                <Link href="/direct-mail" className="text-primary hover:underline">direct mail</Link> campaigns for high-value accounts.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                Step 5: Train Your Team
-              </h3>
-              <p>
-                Ensure your sales and marketing teams understand how to use visitor identification data effectively. Train SDRs on how to reference behavioral data in outreach without being intrusive. Show marketing how to build audience segments based on identified visitor attributes. Establish clear guidelines on acceptable use of identified data and compliance requirements. Set expectations around match rates and data accuracy so the team understands what is and is not possible.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                Step 6: Measure and Optimize
-              </h3>
-              <p>
-                Track key metrics to continuously improve your visitor identification program. Monitor match rate trends over time, qualified leads generated, pipeline influenced, revenue attributed, and cost per identified lead. Compare these metrics against your pre-identification baselines to quantify ROI. Use the data to refine your ICP, optimize your website for business traffic, and improve your outreach sequences. Visit{" "}
-                <Link href="/pricing" className="text-primary hover:underline">Cursive&apos;s pricing page</Link> to explore plans that scale with your traffic.
-              </p>
-
-              {/* Section 8: Platform Comparison */}
-              <h2 id="platform-comparison" className="text-3xl font-semibold text-gray-900 mt-12 mb-6">
-                Platform Comparison
-              </h2>
-
-              <p>
-                The visitor identification market in 2026 includes several major players, each with different strengths, match rates, and approaches. Here is how the leading platforms compare across the most important evaluation criteria.
-              </p>
-
-              <div className="overflow-x-auto mb-8">
-                <table className="min-w-full border-collapse border border-gray-200">
-                  <thead>
-                    <tr className="bg-gray-50">
-                      <th className="border border-gray-200 px-4 py-3 text-left font-semibold">Platform</th>
-                      <th className="border border-gray-200 px-4 py-3 text-left font-semibold">Match Rate</th>
-                      <th className="border border-gray-200 px-4 py-3 text-left font-semibold">ID Level</th>
-                      <th className="border border-gray-200 px-4 py-3 text-left font-semibold">AI Outreach</th>
-                      <th className="border border-gray-200 px-4 py-3 text-left font-semibold">Integrations</th>
-                      <th className="border border-gray-200 px-4 py-3 text-left font-semibold">Key Limitation</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td className="border border-gray-200 px-4 py-3 font-medium">Cursive</td>
-                      <td className="border border-gray-200 px-4 py-3">40&ndash;60% (deterministic)</td>
-                      <td className="border border-gray-200 px-4 py-3">Company + Individual</td>
-                      <td className="border border-gray-200 px-4 py-3">Yes (built-in)</td>
-                      <td className="border border-gray-200 px-4 py-3">200+</td>
-                      <td className="border border-gray-200 px-4 py-3">Newer platform</td>
-                    </tr>
-                    <tr className="bg-gray-50">
-                      <td className="border border-gray-200 px-4 py-3 font-medium">Warmly</td>
-                      <td className="border border-gray-200 px-4 py-3">40-50%</td>
-                      <td className="border border-gray-200 px-4 py-3">Company + Individual</td>
-                      <td className="border border-gray-200 px-4 py-3">Limited</td>
-                      <td className="border border-gray-200 px-4 py-3">50+</td>
-                      <td className="border border-gray-200 px-4 py-3">Higher price point</td>
-                    </tr>
-                    <tr>
-                      <td className="border border-gray-200 px-4 py-3 font-medium">Clearbit</td>
-                      <td className="border border-gray-200 px-4 py-3">N/A</td>
-                      <td className="border border-gray-200 px-4 py-3">N/A</td>
-                      <td className="border border-gray-200 px-4 py-3">N/A</td>
-                      <td className="border border-gray-200 px-4 py-3">N/A</td>
-                      <td className="border border-gray-200 px-4 py-3">Shut down / absorbed into HubSpot</td>
-                    </tr>
-                    <tr className="bg-gray-50">
-                      <td className="border border-gray-200 px-4 py-3 font-medium">Leadfeeder</td>
-                      <td className="border border-gray-200 px-4 py-3">30-40%</td>
-                      <td className="border border-gray-200 px-4 py-3">Company only</td>
-                      <td className="border border-gray-200 px-4 py-3">No</td>
-                      <td className="border border-gray-200 px-4 py-3">30+</td>
-                      <td className="border border-gray-200 px-4 py-3">No individual identification</td>
-                    </tr>
-                    <tr>
-                      <td className="border border-gray-200 px-4 py-3 font-medium">RB2B</td>
-                      <td className="border border-gray-200 px-4 py-3">50-60%</td>
-                      <td className="border border-gray-200 px-4 py-3">Company + Individual</td>
-                      <td className="border border-gray-200 px-4 py-3">No</td>
-                      <td className="border border-gray-200 px-4 py-3">20+</td>
-                      <td className="border border-gray-200 px-4 py-3">US-only coverage</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-
-              <p>
-                For a detailed head-to-head analysis, see our{" "}
-                <Link href="/blog/clearbit-alternatives-comparison" className="text-primary hover:underline">Clearbit alternatives comparison</Link>,{" "}
-                <Link href="/blog/warmly-vs-cursive-comparison" className="text-primary hover:underline">Warmly vs. Cursive comparison</Link>, and{" "}
-                <Link href="/blog/apollo-vs-cursive-comparison" className="text-primary hover:underline">Apollo vs. Cursive comparison</Link>.
-              </p>
-
-              {/* Section 9: FAQ */}
-              <h2 id="faq" className="text-3xl font-semibold text-gray-900 mt-12 mb-6">
-                Frequently Asked Questions
-              </h2>
-
-              <div className="space-y-8 mb-12">
-                {faqs.map((faq, index) => (
-                  <div key={index}>
-                    <h3 className="text-xl font-medium text-gray-900 mb-2">{faq.question}</h3>
-                    <p className="text-gray-700">{faq.answer}</p>
+        {/* How It Works */}
+        <section className="py-20 sm:py-24 bg-[#F7F9FB]">
+          <Container>
+            <SectionHeading
+              plain="How Visitor Identification"
+              script="Actually Works"
+              sub="A multi-step pipeline that transforms anonymous web sessions into identified contacts."
+            />
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+              {howItWorks.map((s, i) => (
+                <motion.div
+                  key={s.title}
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-60px" }}
+                  transition={{ delay: i * 0.05, duration: 0.4, ease: EASE }}
+                  className="rounded-2xl border border-gray-200 bg-white p-6 sm:p-8 hover:shadow-lg transition-shadow"
+                >
+                  <div className="flex items-center gap-3">
+                    <IconChip Icon={s.icon} />
+                    <span className="text-sm font-semibold text-gray-300">0{i + 1}</span>
                   </div>
-                ))}
-              </div>
+                  <h3 className="mt-5 text-lg font-medium text-gray-900">{s.title}</h3>
+                  <p className="mt-3 text-sm text-gray-600 leading-relaxed">{s.body}</p>
+                </motion.div>
+              ))}
+            </div>
+          </Container>
+        </section>
 
-              {/* Section 10: Related Resources */}
-              <h2 id="related-resources" className="text-3xl font-semibold text-gray-900 mt-12 mb-6">
-                Related Resources
+        {/* Identification Methods */}
+        <section className="py-20 sm:py-24 bg-white">
+          <Container>
+            <SectionHeading
+              plain="Visitor Identification"
+              script="Methods"
+              sub="Four primary methods, each with different accuracy, coverage, and compliance characteristics. Modern platforms combine several to maximize match rates."
+            />
+            <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+              {methods.map((m, i) => (
+                <motion.div
+                  key={m.title}
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-60px" }}
+                  transition={{ delay: i * 0.05, duration: 0.4, ease: EASE }}
+                  className="rounded-2xl border border-gray-200 p-6 sm:p-8 hover:shadow-lg transition-shadow"
+                >
+                  <div className="flex items-center justify-between">
+                    <IconChip Icon={m.icon} />
+                    <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                      {m.rate}
+                    </span>
+                  </div>
+                  <h3 className="mt-5 text-lg font-medium text-gray-900">{m.title}</h3>
+                  <p className="mt-3 text-sm text-gray-600 leading-relaxed">{m.body}</p>
+                </motion.div>
+              ))}
+            </div>
+          </Container>
+        </section>
+
+        {/* Accuracy & Match Rates */}
+        <section className="py-20 sm:py-24 bg-[#F7F9FB]">
+          <Container>
+            <SectionHeading
+              plain="Accuracy and"
+              script="Match Rates"
+              sub="Match rate — the share of visitors you can identify — is the single most important metric when comparing platforms."
+            />
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, ease: EASE }}
+              className="max-w-3xl mx-auto rounded-2xl border border-gray-200 bg-white p-2 sm:p-3 overflow-hidden"
+            >
+              <div className="overflow-x-auto">
+                <table className="min-w-full text-sm">
+                  <thead>
+                    <tr className="text-left text-gray-500">
+                      <th className="px-4 py-3 font-medium">Metric</th>
+                      <th className="px-4 py-3 font-medium">Industry Average</th>
+                      <th className="px-4 py-3 font-medium">Best-in-Class</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {[
+                      ["Company-level match rate", "30–40%", "65–75%"],
+                      ["Individual-level match rate", "15–25%", "50–60%"],
+                      ["Email accuracy", "80–85%", "95%+"],
+                      ["Data freshness", "30–90 days", "Real-time"],
+                      ["Firmographic completeness", "60–70%", "90%+"],
+                    ].map((row) => (
+                      <tr key={row[0]} className="text-gray-700">
+                        <td className="px-4 py-3 font-medium text-gray-900">{row[0]}</td>
+                        <td className="px-4 py-3">{row[1]}</td>
+                        <td className="px-4 py-3 text-primary font-medium">{row[2]}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </motion.div>
+
+            <div className="mt-12 grid sm:grid-cols-2 gap-5 max-w-3xl mx-auto">
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, ease: EASE }}
+                className="rounded-2xl border border-gray-200 bg-white p-7"
+              >
+                <h4 className="text-xs font-semibold text-gray-400 tracking-widest mb-4 uppercase">What lowers match rates</h4>
+                <ul className="space-y-2.5 text-sm text-gray-600">
+                  <li>Residential ISP, mobile, and consumer-VPN traffic</li>
+                  <li>Regions with thinner business-database coverage</li>
+                  <li>Lower-footprint industries</li>
+                  <li>Mobile traffic (~half the rate of desktop)</li>
+                </ul>
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.05, ease: EASE }}
+                className="rounded-2xl border border-primary/20 bg-primary/[0.06] p-7"
+              >
+                <h4 className="text-xs font-semibold text-primary tracking-widest mb-4 uppercase">How to improve them</h4>
+                <ul className="space-y-2.5 text-sm text-gray-700">
+                  <li>Install the pixel site-wide, not just key pages</li>
+                  <li>Use a platform that combines multiple methods</li>
+                  <li>Drive authenticated, business-hours traffic</li>
+                  <li>Keep your data source continuously fresh</li>
+                </ul>
+              </motion.div>
+            </div>
+          </Container>
+        </section>
+
+        {/* What Data You Get */}
+        <section className="py-20 sm:py-24 bg-white">
+          <Container>
+            <SectionHeading
+              plain="What Data"
+              script="You Get"
+              sub="Modern platforms deliver four categories of data for each identified visitor — a complete picture of who is engaging and why."
+            />
+            <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+              {dataCategories.map((d, i) => (
+                <motion.div
+                  key={d.title}
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-60px" }}
+                  transition={{ delay: i * 0.05, duration: 0.4, ease: EASE }}
+                  className="rounded-2xl border border-gray-200 p-6 sm:p-8 hover:shadow-lg transition-shadow"
+                >
+                  <IconChip Icon={d.icon} />
+                  <h3 className="mt-5 text-lg font-medium text-gray-900">{d.title}</h3>
+                  <p className="mt-3 text-sm text-gray-600 leading-relaxed">{d.body}</p>
+                </motion.div>
+              ))}
+            </div>
+            <p className="mt-8 text-center text-sm text-gray-500 max-w-2xl mx-auto leading-relaxed">
+              Use these signals to qualify against your{" "}
+              <Link href="/audience-builder" className="text-primary hover:underline">ideal customer profile</Link>{" "}
+              and prioritize the hottest{" "}
+              <Link href="/what-is-b2b-intent-data" className="text-primary hover:underline">intent signals</Link> first.
+            </p>
+          </Container>
+        </section>
+
+        {/* Use Cases */}
+        <section className="py-20 sm:py-24 bg-[#F7F9FB]">
+          <Container>
+            <SectionHeading
+              plain="Use Cases for"
+              script="Visitor Identification"
+              sub="Six of the highest-impact ways B2B teams turn identified traffic into revenue."
+            />
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+              {useCases.map((u, i) => (
+                <motion.div
+                  key={u.title}
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-60px" }}
+                  transition={{ delay: i * 0.05, duration: 0.4, ease: EASE }}
+                  className="rounded-2xl border border-gray-200 bg-white p-6 sm:p-8 hover:shadow-lg transition-shadow"
+                >
+                  <IconChip Icon={u.icon} />
+                  <h3 className="mt-5 text-lg font-medium text-gray-900">{u.title}</h3>
+                  <p className="mt-3 text-sm text-gray-600 leading-relaxed">{u.body}</p>
+                </motion.div>
+              ))}
+            </div>
+          </Container>
+        </section>
+
+        {/* Legal & Compliance */}
+        <section className="py-20 sm:py-24 bg-white">
+          <Container>
+            <SectionHeading
+              plain="Legal and"
+              script="Compliance"
+              sub="B2B visitor identification is broadly permissible in 2026 when implemented correctly. Here's what matters."
+            />
+            <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+              {[
+                {
+                  icon: ShieldCheck,
+                  title: "GDPR",
+                  body: "B2B identification is typically processed under legitimate interest (Article 6(1)(f)). Provide privacy-policy notice, complete a Legitimate Interest Assessment, and offer a clear opt-out.",
+                },
+                {
+                  icon: Scale,
+                  title: "CCPA / CPRA",
+                  body: "Permitted with disclosure: list the categories of data collected, provide a \"Do Not Sell or Share\" link, honor opt-outs within 15 business days, and document it in your privacy policy.",
+                },
+                {
+                  icon: Users,
+                  title: "B2B vs. B2C",
+                  body: "Identifying business professionals via work-related footprints has broader legal support than consumer tracking. Cursive focuses exclusively on B2B data for the strongest posture.",
+                },
+              ].map((c, i) => (
+                <motion.div
+                  key={c.title}
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-60px" }}
+                  transition={{ delay: i * 0.06, duration: 0.4, ease: EASE }}
+                  className="rounded-2xl border border-gray-200 p-6 sm:p-8 hover:shadow-lg transition-shadow"
+                >
+                  <IconChip Icon={c.icon} />
+                  <h3 className="mt-5 text-lg font-medium text-gray-900">{c.title}</h3>
+                  <p className="mt-3 text-sm text-gray-600 leading-relaxed">{c.body}</p>
+                </motion.div>
+              ))}
+            </div>
+            <p className="mt-8 text-center text-sm text-gray-500 max-w-2xl mx-auto leading-relaxed">
+              Best practice: disclose the technology in your privacy policy, add a visible opt-out, keep an LIA
+              on record, work with SOC 2 Type II providers, and honor deletion requests promptly.
+            </p>
+          </Container>
+        </section>
+
+        {/* Implementation Guide */}
+        <section className="py-20 sm:py-24 bg-[#F7F9FB]">
+          <Container>
+            <SectionHeading
+              plain="Implementation"
+              script="Guide"
+              sub="Six steps to launch visitor identification and maximize your results."
+            />
+            <div className="max-w-3xl mx-auto space-y-4">
+              {implementation.map((step, i) => (
+                <motion.div
+                  key={step.title}
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-40px" }}
+                  transition={{ delay: i * 0.04, duration: 0.4, ease: EASE }}
+                  className="flex gap-5 rounded-2xl border border-gray-200 bg-white p-6 sm:p-7"
+                >
+                  <span className="flex-shrink-0 w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-sm font-semibold text-primary">
+                    {i + 1}
+                  </span>
+                  <div>
+                    <h3 className="text-base font-medium text-gray-900">{step.title}</h3>
+                    <p className="mt-1.5 text-sm text-gray-600 leading-relaxed">{step.body}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </Container>
+        </section>
+
+        {/* Platform Comparison */}
+        <section className="py-20 sm:py-24 bg-white">
+          <Container>
+            <SectionHeading
+              plain="Platform"
+              script="Comparison"
+              sub="How the leading visitor identification platforms compare across the criteria that matter most."
+            />
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, ease: EASE }}
+              className="max-w-4xl mx-auto rounded-2xl border border-gray-200 p-2 sm:p-3 overflow-hidden"
+            >
+              <div className="overflow-x-auto">
+                <table className="min-w-full text-sm">
+                  <thead>
+                    <tr className="text-left text-gray-500">
+                      <th className="px-4 py-3 font-medium">Platform</th>
+                      <th className="px-4 py-3 font-medium">Match Rate</th>
+                      <th className="px-4 py-3 font-medium">ID Level</th>
+                      <th className="px-4 py-3 font-medium">Integrations</th>
+                      <th className="px-4 py-3 font-medium">Key Limitation</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {platformRows.map((row) => (
+                      <tr key={row.name} className={row.highlight ? "bg-primary/[0.04]" : ""}>
+                        <td className="px-4 py-3 font-semibold text-gray-900">{row.name}</td>
+                        <td className="px-4 py-3 text-gray-700">{row.rate}</td>
+                        <td className="px-4 py-3 text-gray-700">{row.level}</td>
+                        <td className="px-4 py-3 text-gray-700">{row.integrations}</td>
+                        <td className="px-4 py-3 text-gray-500">{row.note}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </motion.div>
+            <p className="mt-6 text-center text-sm text-gray-500 max-w-2xl mx-auto leading-relaxed">
+              For head-to-head detail, see our{" "}
+              <Link href="/blog/clearbit-alternatives-comparison" className="text-primary hover:underline">Clearbit alternatives</Link>,{" "}
+              <Link href="/blog/warmly-vs-cursive-comparison" className="text-primary hover:underline">Warmly vs. Cursive</Link>, and{" "}
+              <Link href="/blog/apollo-vs-cursive-comparison" className="text-primary hover:underline">Apollo vs. Cursive</Link> comparisons.
+            </p>
+          </Container>
+        </section>
+
+        {/* FAQ */}
+        <section className="py-20 sm:py-24 bg-[#F7F9FB]">
+          <Container>
+            <SectionHeading plain="Frequently Asked" script="Questions" />
+            <div className="max-w-3xl mx-auto space-y-4">
+              {faqs.map((faq, i) => (
+                <motion.div
+                  key={faq.question}
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.03, duration: 0.4, ease: EASE }}
+                  className="rounded-2xl border border-gray-200 bg-white p-6 sm:p-7"
+                >
+                  <h3 className="text-base font-medium text-gray-900">{faq.question}</h3>
+                  <p className="mt-2 text-sm text-gray-600 leading-relaxed">{faq.answer}</p>
+                </motion.div>
+              ))}
+            </div>
+          </Container>
+        </section>
+
+        {/* Related Resources */}
+        <section className="py-20 sm:py-24 bg-white">
+          <Container>
+            <SectionHeading plain="Related" script="Resources" />
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto">
+              {relatedResources.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="group flex flex-col rounded-2xl border border-gray-200 bg-white p-5 hover:border-primary hover:shadow-lg transition-all"
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-sm font-medium text-gray-900 group-hover:text-primary transition-colors">
+                      {link.title}
+                    </span>
+                    <ArrowRight className="h-4 w-4 text-gray-400 group-hover:text-primary flex-shrink-0" />
+                  </div>
+                  <p className="mt-2 text-xs text-gray-500 leading-relaxed">{link.desc}</p>
+                </Link>
+              ))}
+            </div>
+          </Container>
+        </section>
+
+        {/* Final CTA */}
+        <section className="py-20 sm:py-28 bg-[#F7F9FB]">
+          <Container>
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, ease: EASE }}
+              className="text-center max-w-2xl mx-auto"
+            >
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light text-gray-900">
+                See who&apos;s already
+                <span className="block font-cursive text-4xl sm:text-5xl lg:text-6xl text-gray-500 mt-1">
+                  on your site
+                </span>
               </h2>
-
-              <p>
-                Continue learning about the technologies and strategies that work alongside visitor identification:
+              <p className="mt-5 text-lg text-gray-600 leading-relaxed">
+                Install the Cursive pixel in 60 seconds and resolve 40–60% of your anonymous traffic. Plans
+                from $97/mo — self-serve, month-to-month, cancel anytime.
               </p>
-
-              <ul>
-                <li>
-                  <Link href="/what-is-b2b-intent-data" className="text-primary hover:underline">What is B2B Intent Data?</Link> &mdash; Understand how intent signals reveal which companies are actively researching solutions like yours.
-                </li>
-                <li>
-                  <Link href="/what-is-ai-sdr" className="text-primary hover:underline">What is an AI SDR?</Link> &mdash; Learn how AI-powered sales development automates outreach to identified visitors.
-                </li>
-                <li>
-                  <Link href="/visitor-identification" className="text-primary hover:underline">Cursive Visitor Identification</Link> &mdash; See how Cursive&apos;s deterministic pixel resolves 40&ndash;60% of your website traffic.
-                </li>
-                <li>
-                  <Link href="/audience-builder" className="text-primary hover:underline">Audience Builder</Link> &mdash; Build targeted segments from identified visitors using firmographic and behavioral filters.
-                </li>
-                <li>
-                  <Link href="/industries/b2b-software" className="text-primary hover:underline">Visitor Identification for B2B Software</Link> &mdash; Industry-specific strategies for SaaS and technology companies.
-                </li>
-                <li>
-                  <Link href="/blog/clearbit-alternatives-comparison" className="text-primary hover:underline">Clearbit Alternatives Comparison</Link> &mdash; Evaluate the top visitor identification platforms available in 2026.
-                </li>
-              </ul>
-
-              {/* CTA Section */}
-              <div className="bg-gray-50 rounded-xl p-8 mt-12 text-center">
-                <h2 className="text-2xl font-semibold text-gray-900 mb-4">
-                  See How Many of Your Visitors You Can Identify
-                </h2>
-                <p className="text-lg text-gray-600 mb-6 max-w-2xl mx-auto">
-                  Get a free website audit that reveals exactly how many of your anonymous visitors can be identified, what companies are visiting, and how much pipeline you are leaving on the table.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Link
-                    href="/free-audit"
-                    className="inline-flex items-center justify-center px-6 py-3 bg-primary text-white font-medium rounded-lg hover:bg-[#0063D1] transition-colors no-underline"
-                  >
-                    Get Your Free Audit
-                  </Link>
-                  <Link
-                    href="/contact"
-                    className="inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-100 transition-colors no-underline"
-                  >
-                    Talk to an Expert
-                  </Link>
-                </div>
+              <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center">
+                <Button size="lg" href={GET_LEADS_URL} target="_blank" rel="noopener noreferrer">
+                  Get Started
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+                <Button size="lg" variant="outline" href={BOOKING_URL} target="_blank" rel="noopener noreferrer">
+                  Book a Call
+                </Button>
               </div>
-            </article>
-          </div>
-        </Container>
-      </section>
+            </motion.div>
+          </Container>
+        </section>
       </HumanView>
 
       <MachineView>
@@ -754,7 +817,7 @@ export default function WhatIsWebsiteVisitorIdentificationPage() {
 
           <MachineSection title="Provider Comparison">
             <MachineList items={[
-              "Cursive — Deterministic individual + company ID (40–60% match, 60–80% pixel-level accuracy), integrated enrichment + AI outreach + direct mail ($1,000/mo+ managed, from $15K/mo committed data partnerships)",
+              "Cursive — Deterministic individual + company ID (40–60% match, 60–80% pixel-level accuracy) with integrated enrichment; self-serve from $97/mo (Visitor Pixel), $197/mo (Custom Audience), or $247/mo for both",
               "Clearbit Reveal — Company-level IP resolution, deep HubSpot integration (included in HubSpot plans)",
               "6sense — Company-level ID with predictive buying stage AI ($60,000+/yr)",
               "Demandbase — Company-level ID with ABM ad activation ($50,000+/yr)",
@@ -763,26 +826,34 @@ export default function WhatIsWebsiteVisitorIdentificationPage() {
             ]} />
           </MachineSection>
 
+          <MachineSection title="Pricing">
+            <p className="text-gray-700 mb-4">
+              Self-serve, month-to-month, no setup fee. Cancel anytime.
+            </p>
+            <MachineList items={[
+              "Visitor Pixel ($97/month) — identify the companies and people visiting your site",
+              "Custom Audience ($197/month) — a fresh weekly list of in-market buyers, delivered to Google Sheets",
+              "Pixel + Audience Bundle ($247/month) — both, in one feed"
+            ]} />
+          </MachineSection>
+
           <MachineSection title="Related Resources">
             <MachineList items={[
-              { label: "Visitor Deanonymization Technical Guide", href: "/what-is-visitor-deanonymization", description: "Deep dive into deanonymization methods and architecture" },
               { label: "B2B Intent Data Guide", href: "/what-is-b2b-intent-data", description: "Intent signals from identified visitor behavior" },
-              { label: "Lead Enrichment Guide", href: "/what-is-lead-enrichment", description: "Enrich identified visitor profiles with full contact data" },
-              { label: "AI SDR Guide", href: "/what-is-ai-sdr", description: "Automate outreach to identified website visitors" },
-              { label: "Account-Based Marketing Guide", href: "/what-is-account-based-marketing", description: "ABM strategies powered by visitor identification" },
               { label: "Cursive Visitor Identification", href: "/visitor-identification", description: "40–60% deterministic pixel match rate for B2B traffic" },
-              { label: "Cursive Platform", href: "/platform", description: "Full-stack visitor ID, enrichment, and outreach" },
-              { label: "Pricing", href: "/pricing", description: "Cursive pricing and plans" }
+              { label: "Audience Builder", href: "/audience-builder", description: "Build targeted segments from identified visitors" },
+              { label: "Cursive Platform", href: "/platform", description: "Full-stack visitor ID, enrichment, and activation" },
+              { label: "Pricing", href: "/pricing", description: "Visitor Pixel $97/mo, Custom Audience $197/mo, or both for $247/mo" }
             ]} />
           </MachineSection>
 
           <MachineSection title="Get Started">
             <p className="text-gray-700 mb-3">
-              Cursive is the identity layer for outbound, intent, and enrichment — resolving visitors against 280M+ verified consumer and 140M+ business profiles with a 40–60% deterministic pixel match rate (vs 2–5% for cookies, 10–15% for IP databases) and 60–80% pixel-level accuracy. Integrated enrichment, ~50,000 intent segments, and multi-channel outreach turn anonymous traffic into qualified pipeline.
+              Cursive is the identity layer for outbound, intent, and enrichment — resolving visitors against 280M+ verified consumer and 140M+ business profiles with a 40–60% deterministic pixel match rate (vs 2–5% for cookies, 10–15% for IP databases) and 60–80% pixel-level accuracy. Self-serve from $97/month, live in minutes.
             </p>
             <MachineList items={[
-              { label: "Get Your Free Audit", href: "/free-audit", description: "See how many visitors can be identified on your site" },
-              { label: "Talk to an Expert", href: "/contact", description: "Discuss visitor identification for your team" }
+              { label: "Get Started", href: "https://leads.meetcursive.com/get-leads", description: "Pick a plan and you are live in minutes" },
+              { label: "Book a Call", href: "https://cal.com/cursiveteam/30min", description: "Talk to the team before you buy" }
             ]} />
           </MachineSection>
         </MachineContent>

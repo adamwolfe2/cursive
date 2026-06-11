@@ -101,25 +101,35 @@ export function FreeAuditForm() {
             </div>
           </div>
 
-          {/* Step 2: Book the call — primary CTA */}
+          {/* Step 2: Get started self-serve — primary CTA */}
           <div className="flex gap-3 p-4 bg-primary/5 border-2 border-primary/40 rounded-xl">
             <div className="flex-shrink-0 w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center text-sm font-bold">2</div>
             <div className="flex-1">
-              <p className="font-semibold text-sm text-gray-900">Book a call — we&apos;ll walk through your results live</p>
+              <p className="font-semibold text-sm text-gray-900">Don&apos;t want to wait? Install the pixel now</p>
               <p className="text-sm text-gray-600 mt-0.5 mb-3">
-                On the call, Darren will review your audit <em>and</em> set up your
-                SuperPixel live so you see your first identified visitors{" "}
-                <strong>within 5 minutes.</strong> Free 14-day trial — no credit card.
+                The Visitor Pixel installs in about 60 seconds and starts identifying
+                your visitors immediately. Plans from <strong>$97/mo</strong>,
+                month-to-month, cancel anytime.
               </p>
-              <a
-                href="https://cal.com/cursiveteam/30min"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary hover:bg-primary-dark text-white text-sm font-semibold rounded-lg transition-colors"
-              >
-                <Calendar className="w-4 h-4" />
-                Book 30 Minutes with Darren →
-              </a>
+              <div className="flex flex-wrap gap-2">
+                <a
+                  href="https://leads.meetcursive.com/get-leads"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary hover:bg-primary-dark text-white text-sm font-semibold rounded-lg transition-colors"
+                >
+                  Get Started →
+                </a>
+                <a
+                  href="https://cal.com/cursiveteam/30min"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 border border-gray-300 text-gray-700 hover:border-gray-400 text-sm font-semibold rounded-lg transition-colors"
+                >
+                  <Calendar className="w-4 h-4" />
+                  Book a Call
+                </a>
+              </div>
             </div>
           </div>
         </div>
