@@ -74,6 +74,7 @@ const nextConfig: NextConfig = {
     // products). 301 them to /pricing so the funnel is the single source of
     // truth and the inbound SEO/link equity consolidates onto the live offer.
     const RETIRED_OFFER_PAGES = [
+      '/direct-mail',
       '/marketplace',
       '/services',
       '/venture-studio',
