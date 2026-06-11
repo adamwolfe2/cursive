@@ -34,6 +34,7 @@ interface LeadData {
   email: string
   firstName?: string
   company?: string
+  website?: string
   source: string
   timestamp: string
 }
@@ -93,6 +94,7 @@ async function sendInternalNotification(leadData: LeadData): Promise<void> {
         <p style="margin: 8px 0;"><strong>Email:</strong> ${escapeHtml(leadData.email)}</p>
         ${leadData.firstName ? `<p style="margin: 8px 0;"><strong>First Name:</strong> ${escapeHtml(leadData.firstName)}</p>` : ''}
         ${leadData.company ? `<p style="margin: 8px 0;"><strong>Company:</strong> ${escapeHtml(leadData.company)}</p>` : ''}
+        ${leadData.website ? `<p style="margin: 8px 0;"><strong>Website:</strong> ${escapeHtml(leadData.website)}</p>` : ''}
         <p style="margin: 8px 0;"><strong>Source:</strong> ${escapeHtml(leadData.source)}</p>
         <p style="margin: 8px 0;"><strong>Submitted:</strong> ${escapeHtml(leadData.timestamp)}</p>
       </div>
@@ -245,6 +247,7 @@ export async function POST(request: NextRequest) {
       email: body.email.trim().toLowerCase(),
       firstName: body.firstName ? body.firstName.trim() : undefined,
       company: body.company ? body.company.trim() : undefined,
+      website: body.website_url ? String(body.website_url).trim() : undefined,
       source: body.source || 'popup',
       timestamp: body.timestamp || new Date().toISOString(),
     }

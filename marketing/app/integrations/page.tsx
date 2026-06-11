@@ -5,15 +5,48 @@ import { Container } from "@/components/ui/container"
 import { DashboardCTA } from "@/components/dashboard-cta"
 import { motion } from "framer-motion"
 import { IntegrationsShowcase } from "@/components/integrations-showcase"
-import { ArrowRight } from "lucide-react"
+import {
+  ArrowRight, Database, Megaphone, Mail, BarChart3,
+  Workflow, Server, type LucideIcon,
+} from "lucide-react"
 import Link from "next/link"
 import { integrations } from "@/lib/integrations-data"
 import type { Integration } from "@/lib/integrations-data"
-import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
+import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
+import { Breadcrumbs } from "@/components/Breadcrumbs"
+import { GET_LEADS_URL, BOOKING_URL } from "@/lib/cta"
+
+const EASE = [0.22, 1, 0.36, 1] as const
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
+
+function SectionHeading({ plain, script, sub }: { plain: string; script?: string; sub?: string }) {
+  return (
+    <div className="text-center mb-14">
+      <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light text-gray-900">
+        {plain}
+        {script && (
+          <span className="block font-cursive text-4xl sm:text-5xl lg:text-6xl text-gray-500 mt-1">
+            {script}
+          </span>
+        )}
+      </h2>
+      {sub && (
+        <p className="mt-5 text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">{sub}</p>
+      )}
+    </div>
+  )
+}
+
+function IconChip({ Icon }: { Icon: LucideIcon }) {
+  return (
+    <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center">
+      <Icon className="w-6 h-6 text-primary" />
+    </div>
+  )
+}
 
 function connectionBadge(method: Integration["connectionMethod"]) {
   const styles: Record<
@@ -62,18 +95,21 @@ function groupByCategory(
   }))
 }
 
+const categoryCards: Array<{ icon: LucideIcon; title: string; examples: string }> = [
+  { icon: Database, title: "CRM Platforms", examples: "Salesforce, HubSpot, Pipedrive, Close" },
+  { icon: Megaphone, title: "Ad Platforms", examples: "Facebook, Google, LinkedIn, TikTok" },
+  { icon: Mail, title: "Email Tools", examples: "Mailchimp, SendGrid, ActiveCampaign" },
+  { icon: BarChart3, title: "Analytics", examples: "Google Analytics, Segment, Mixpanel" },
+  { icon: Workflow, title: "Automation", examples: "Zapier, Make, n8n, webhooks" },
+  { icon: Server, title: "Data Warehouses", examples: "Snowflake, BigQuery, Redshift" },
+]
+
 // ---------------------------------------------------------------------------
 // Page component
 // ---------------------------------------------------------------------------
 
 export default function IntegrationsPage() {
   const grouped = groupByCategory(integrations)
-
-  // Build machine-readable category summary
-  const categorySummary = grouped.map(g => ({
-    label: `${g.category} (${g.items.length} integrations)`,
-    description: g.items.map(i => i.name).join(", "),
-  }))
 
   // Build machine-readable integration list by category
   const integrationLinks = grouped.flatMap(g =>
@@ -87,35 +123,56 @@ export default function IntegrationsPage() {
   return (
     <main>
       <HumanView>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Breadcrumbs items={[
+            { name: "Home", href: "/" },
+            { name: "Integrations", href: "/integrations" },
+          ]} />
+        </div>
+
         {/* ---- Hero ---- */}
-        <section className="pt-24 pb-20 bg-white">
+        <section className="relative pt-16 pb-20 sm:pt-20 sm:pb-24 bg-white overflow-hidden">
           <Container>
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="text-center max-w-5xl mx-auto">
-              <span className="text-sm text-primary mb-4 block">INTEGRATIONS</span>
-              <h1 className="text-5xl lg:text-7xl font-light text-gray-900 mb-6">
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, ease: EASE }}
+              className="text-center max-w-3xl mx-auto"
+            >
+              <span className="text-xs font-semibold tracking-[0.25em] text-primary uppercase">
+                Integrations
+              </span>
+              <h1 className="mt-4 text-4xl sm:text-5xl lg:text-6xl font-light text-gray-900 leading-[1.1]">
                 Seamlessly Sync Data
-                <span className="block font-cursive text-6xl lg:text-8xl text-gray-500 mt-2">With Your Stack</span>
+                <span className="block font-cursive text-4xl sm:text-5xl lg:text-6xl text-gray-500 mt-2">
+                  With Your Stack
+                </span>
               </h1>
-              <p className="text-lg text-gray-600 mb-8 max-w-3xl mx-auto">
-                Connect Cursive to 50+ tools or use our API and webhooks for custom integrations.
+              <p className="mt-6 text-lg sm:text-xl text-gray-600 leading-relaxed">
+                Connect Cursive to 50+ tools, or use our API and webhooks for custom flows. Verified
+                contacts and intent data land in the tools your team already runs.
               </p>
-              <Button size="lg" href="https://cal.com/cursiveteam/30min">View Integrations</Button>
+              <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center">
+                <Button size="lg" href={GET_LEADS_URL} target="_blank" rel="noopener noreferrer">
+                  Get Started
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+                <Button size="lg" variant="outline" href={BOOKING_URL} target="_blank" rel="noopener noreferrer">
+                  Book a Call
+                </Button>
+              </div>
             </motion.div>
           </Container>
         </section>
 
         {/* ---- Browse All Integrations ---- */}
-        <section className="py-20 bg-white">
+        <section className="py-20 sm:py-24 bg-[#F7F9FB]">
           <Container>
-            <div className="text-center mb-16">
-              <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
-                Browse All Integrations
-              </h2>
-              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                Explore every tool that connects with Cursive. Click on an
-                integration to see data mapping, setup steps, and workflows.
-              </p>
-            </div>
+            <SectionHeading
+              plain="Browse All"
+              script="Integrations"
+              sub="Every tool that connects with Cursive. Click one to see data mapping, setup steps, and workflows."
+            />
 
             {grouped.map((group) => (
               <div key={group.category} className="mb-16 last:mb-0">
@@ -127,30 +184,30 @@ export default function IntegrationsPage() {
                   {group.items.map((integration, idx) => (
                     <motion.div
                       key={integration.slug}
-                      initial={{ opacity: 0, y: 20 }}
+                      initial={{ opacity: 0, y: 16 }}
                       whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: idx * 0.03 }}
+                      viewport={{ once: true, margin: "-60px" }}
+                      transition={{ delay: idx * 0.03, duration: 0.4, ease: EASE }}
                     >
                       <Link
                         href={`/integrations/${integration.slug}`}
-                        className="block border border-gray-200 rounded-xl p-5 bg-white hover:border-primary hover:shadow-lg transition-all group h-full"
+                        className="flex flex-col h-full rounded-2xl border border-gray-200 bg-white p-6 hover:shadow-lg hover:border-primary transition-all group"
                       >
-                        <div className="flex items-start justify-between mb-3">
+                        <div className="flex items-start justify-between mb-4">
                           {integration.logo.startsWith('/') ? (
-                            <img src={integration.logo} alt={integration.name} className="w-8 h-8 object-contain" />
+                            <img src={integration.logo} alt={integration.name} className="w-9 h-9 object-contain" />
                           ) : (
-                            <span className="text-3xl">{integration.logo}</span>
+                            <span className="text-3xl leading-none">{integration.logo}</span>
                           )}
                           {connectionBadge(integration.connectionMethod)}
                         </div>
-                        <h4 className="text-base font-medium text-gray-900 mb-1 group-hover:text-primary transition-colors">
+                        <h4 className="text-base font-medium text-gray-900 group-hover:text-primary transition-colors">
                           {integration.name}
                         </h4>
-                        <p className="text-xs text-gray-500 mb-2">
+                        <p className="mt-1 text-xs text-gray-400">
                           {integration.category}
                         </p>
-                        <p className="text-sm text-gray-600 line-clamp-2">
+                        <p className="mt-2 text-sm text-gray-600 leading-relaxed line-clamp-2">
                           {integration.description}
                         </p>
                       </Link>
@@ -163,79 +220,82 @@ export default function IntegrationsPage() {
         </section>
 
         {/* ---- Integrations Showcase ---- */}
-        <section className="py-20 bg-[#F7F9FB]">
+        <section className="py-20 sm:py-24 bg-white">
           <Container>
             <IntegrationsShowcase />
           </Container>
         </section>
 
         {/* ---- Integration Categories ---- */}
-        <section className="py-20 bg-white">
+        <section className="py-20 sm:py-24 bg-[#F7F9FB]">
           <Container>
-            <h2 className="text-3xl lg:text-4xl font-light text-gray-900 mb-12 text-center">
-              Integration Categories
-            </h2>
-            <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-              {[
-                { title: 'CRM Platforms', examples: 'Salesforce, HubSpot, Pipedrive, Close' },
-                { title: 'Ad Platforms', examples: 'Facebook, Google, LinkedIn, TikTok' },
-                { title: 'Email Tools', examples: 'Mailchimp, SendGrid, ActiveCampaign' },
-                { title: 'Analytics', examples: 'Google Analytics, Segment, Mixpanel' },
-                { title: 'Automation', examples: 'Zapier, Make, n8n, webhooks' },
-                { title: 'Data Warehouses', examples: 'Snowflake, BigQuery, Redshift' },
-              ].map((category, i) => (
-                <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="bg-white rounded-xl p-6 border border-gray-200">
-                  <h3 className="text-xl text-gray-900 mb-2">{category.title}</h3>
-                  <p className="text-gray-600 text-sm">{category.examples}</p>
+            <SectionHeading
+              plain="Integration"
+              script="Categories"
+              sub="From CRMs to data warehouses, Cursive plugs into every layer of your GTM stack."
+            />
+            <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+              {categoryCards.map((category, i) => (
+                <motion.div
+                  key={category.title}
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-60px" }}
+                  transition={{ delay: i * 0.06, duration: 0.4, ease: EASE }}
+                  className="rounded-2xl bg-white border border-gray-200 p-6 sm:p-8 hover:shadow-lg transition-shadow"
+                >
+                  <IconChip Icon={category.icon} />
+                  <h3 className="mt-5 text-lg font-medium text-gray-900">{category.title}</h3>
+                  <p className="mt-3 text-sm text-gray-600 leading-relaxed">{category.examples}</p>
                 </motion.div>
               ))}
             </div>
           </Container>
         </section>
 
-        {/* Related Resources */}
-        <section className="py-20 bg-white">
+        {/* ---- Related Resources ---- */}
+        <section className="py-20 sm:py-24 bg-white">
           <Container>
-            <div className="text-center mb-16">
-              <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
-                Learn More About Data Integration
-              </h2>
-              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                Best practices for connecting your marketing data platforms
-              </p>
-            </div>
-            <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto mb-16">
+            <SectionHeading
+              plain="Learn More About"
+              script="Data Integration"
+              sub="Best practices for connecting your marketing data platforms."
+            />
+            <div className="grid sm:grid-cols-2 gap-6 max-w-4xl mx-auto">
               {[
                 {
                   title: "CRM Integration Best Practices",
                   description: "Connect your CRM to centralize lead data and improve workflows.",
-                  href: "/blog/crm-integration"
+                  href: "/blog/crm-integration",
                 },
                 {
                   title: "Marketing Data Platforms",
                   description: "Leverage integrated data platforms to boost campaign ROI and unify customer data.",
-                  href: "/blog/data-platforms"
-                }
+                  href: "/blog/data-platforms",
+                },
               ].map((resource, i) => (
-                <motion.a
-                  key={i}
-                  href={resource.href}
-                  initial={{ opacity: 0, y: 20 }}
+                <motion.div
+                  key={resource.href}
+                  initial={{ opacity: 0, y: 16 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.05 }}
-                  className="block bg-gray-50 rounded-xl p-6 border border-gray-200 hover:border-primary hover:shadow-lg transition-all group"
+                  viewport={{ once: true, margin: "-60px" }}
+                  transition={{ delay: i * 0.06, duration: 0.4, ease: EASE }}
                 >
-                  <h3 className="text-lg text-gray-900 mb-2 font-medium group-hover:text-primary transition-colors">
-                    {resource.title}
-                  </h3>
-                  <p className="text-gray-600 text-sm leading-relaxed">
-                    {resource.description}
-                  </p>
-                  <div className="mt-4 text-primary text-sm font-medium flex items-center gap-2">
-                    Read article <ArrowRight className="h-4 w-4" />
-                  </div>
-                </motion.a>
+                  <Link
+                    href={resource.href}
+                    className="flex flex-col h-full rounded-2xl border border-gray-200 bg-white p-6 sm:p-8 hover:shadow-lg hover:border-primary transition-all group"
+                  >
+                    <h3 className="text-lg font-medium text-gray-900 group-hover:text-primary transition-colors">
+                      {resource.title}
+                    </h3>
+                    <p className="mt-2 text-sm text-gray-600 leading-relaxed">
+                      {resource.description}
+                    </p>
+                    <span className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-primary">
+                      Read article <ArrowRight className="h-4 w-4" />
+                    </span>
+                  </Link>
+                </motion.div>
               ))}
             </div>
           </Container>
@@ -244,7 +304,7 @@ export default function IntegrationsPage() {
         <DashboardCTA
           headline="Ready to Connect"
           subheadline="Your Stack?"
-          description="See how Cursive integrates with your CRM, ad platforms, and marketing tools to create a seamless data flow across your entire GTM stack."
+          description="See how Cursive syncs verified contacts and intent data into your CRM, ad platforms, and marketing tools. Plans from $97/mo, month-to-month."
         />
       </HumanView>
 
@@ -309,8 +369,8 @@ export default function IntegrationsPage() {
               { label: "CRM Integration Best Practices", href: "/blog/crm-integration", description: "Connect your CRM to centralize lead data and improve workflows" },
               { label: "Marketing Data Platforms", href: "/blog/data-platforms", description: "Leverage integrated data platforms to boost campaign ROI" },
               { label: "Platform Overview", href: "/platform", description: "Full visitor identification and lead generation platform" },
-              { label: "Pricing", href: "/pricing", description: "Self-serve marketplace + done-for-you services" },
-              { label: "Book a Demo", href: "https://cal.com/cursiveteam/30min", description: "See how Cursive integrates with your stack" },
+              { label: "Pricing", href: "/pricing", description: "Visitor Pixel $97/mo, Custom Audience $197/mo, or both for $247/mo" },
+              { label: "Book a Call", href: "https://cal.com/cursiveteam/30min", description: "See how Cursive integrates with your stack" },
             ]} />
           </MachineSection>
         </MachineContent>

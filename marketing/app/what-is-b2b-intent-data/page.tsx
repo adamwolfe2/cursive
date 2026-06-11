@@ -1,12 +1,22 @@
 "use client"
 
 import { Container } from "@/components/ui/container"
+import { Button } from "@/components/ui/button"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateFAQSchema } from "@/lib/seo/faq-schema"
 import { Breadcrumbs } from "@/components/Breadcrumbs"
 import { OrganizationSchema, ArticleSchema } from "@/components/schema/SchemaMarkup"
+import { motion } from "framer-motion"
+import {
+  Radar, Layers, Database, Gauge, Target, ShieldCheck,
+  Search, FileText, Users, Star, Share2, ArrowRight,
+  CheckCircle2, type LucideIcon,
+} from "lucide-react"
 import Link from "next/link"
-import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
+import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
+import { GET_LEADS_URL, BOOKING_URL } from "@/lib/cta"
+
+const EASE = [0.22, 1, 0.36, 1] as const
 
 const faqs = [
   {
@@ -37,7 +47,7 @@ const faqs = [
   {
     question: "How much does B2B intent data cost?",
     answer:
-      "B2B intent data pricing varies widely. Standalone intent data feeds from providers like Bombora typically cost between $25,000 and $100,000 per year. Integrated platforms like Cursive that include intent data alongside visitor identification and outreach capabilities offer more cost-effective bundles. Pricing usually scales based on the number of accounts monitored or contacts enriched.",
+      "B2B intent data pricing varies widely. Standalone intent data feeds from legacy providers like Bombora typically cost between $25,000 and $100,000 per year. Cursive takes a different approach: intent data powers our Custom Audience, a fresh weekly list of in-market buyers built to your ICP, for a flat $197/month. It is self-serve and month-to-month, with no annual contract or enterprise minimum.",
   },
   {
     question: "Can intent data predict when a company will buy?",
@@ -47,13 +57,96 @@ const faqs = [
   {
     question: "How do you integrate intent data with your CRM?",
     answer:
-      "Most intent data platforms offer native CRM integrations with Salesforce, HubSpot, and other major platforms. Integration typically involves connecting via API or one-click OAuth, mapping intent signals to account records, and configuring alert thresholds. Once integrated, intent scores appear directly on account records, enabling reps to prioritize their pipeline based on real-time buying signals.",
+      "Most intent data platforms offer native CRM integrations with Salesforce, HubSpot, and other major platforms. With Cursive, your weekly Custom Audience is delivered straight to a Google Sheet and syncs to 200+ tools, so in-market contacts land in your existing stack with no engineering work. Once connected, reps can prioritize their pipeline based on real-time buying signals.",
   },
 ]
 
+const pipeline: Array<{ icon: LucideIcon; title: string; body: string }> = [
+  {
+    icon: Radar,
+    title: "Signal collection",
+    body: "Behavioral signals are captured across the web — searches, content consumption, review-site activity, and your own identified website visitors.",
+  },
+  {
+    icon: Layers,
+    title: "Processing & normalization",
+    body: "Raw signals are deduplicated, baselined against typical behavior per company, and mapped to topic taxonomies that match real buying categories.",
+  },
+  {
+    icon: Gauge,
+    title: "Scoring & delivery",
+    body: "Signals become quantified intent scores. A pricing-page visit outweighs a blog read; clustered signals create a surge — then it ships to your tools.",
+  },
+]
+
+const types: Array<{ icon: LucideIcon; label: string; title: string; body: string }> = [
+  {
+    icon: Database,
+    label: "Most accurate",
+    title: "First-party intent",
+    body: "Signals from your own website, product, and content. Highest accuracy because you observe behavior directly — but visitor identification is required, since 95–98% of traffic is otherwise anonymous.",
+  },
+  {
+    icon: Share2,
+    label: "Mid-funnel",
+    title: "Second-party intent",
+    body: "Signals shared by a trusted intermediary like G2, TrustRadius, or an industry publisher. Strong indicator of active evaluation, limited to that platform's coverage.",
+  },
+  {
+    icon: Target,
+    label: "Broadest reach",
+    title: "Third-party intent",
+    body: "Aggregated from web-wide data cooperatives. The widest coverage of early research activity, with lower precision — best used alongside first-party validation.",
+  },
+]
+
+const sources = [
+  { icon: Search, title: "Search behavior", body: "Explicit queries like “best CRM for mid-market” signal clear research intent — among the strongest signals available." },
+  { icon: FileText, title: "Content consumption", body: "Spikes in topic-specific reading across publisher networks reveal a company exploring a new category." },
+  { icon: Radar, title: "Competitor visits", body: "Accounts engaging with competitor content are actively comparison shopping — ideal for displacement timing." },
+  { icon: Star, title: "Review-site activity", body: "G2, TrustRadius, and Capterra research is high-quality, late-stage intent from buyers actively shortlisting." },
+  { icon: Users, title: "Social signals", body: "LinkedIn engagement and group activity add context — weaker alone, valuable combined with other signals." },
+  { icon: Database, title: "Identified visitors", body: "Your own resolved website traffic is the highest-precision intent source, attributable to specific accounts." },
+]
+
+const useCases = [
+  { audience: "Sales prioritization", body: "Reps work accounts showing active buying signals first. Intent-flagged accounts are ~2.5x more likely to convert than cold outreach." },
+  { audience: "ABM targeting", body: "Concentrate ad and campaign budget on in-market accounts for 40–60% higher engagement and lower cost per opportunity." },
+  { audience: "Content personalization", body: "Tailor the on-site experience to what a visiting company is researching, lifting conversion 15–30%." },
+  { audience: "Competitive intelligence", body: "Get alerted when key accounts research a competitor, then reach out with differentiated messaging in time." },
+  { audience: "Churn prevention", body: "Surface customers researching alternatives early so CS can intervene — teams report 20–30% better net retention." },
+  { audience: "Pipeline acceleration", body: "Spot renewed research activity on open opportunities and time the next touch to a real moment of interest." },
+]
+
+function SectionHeading({ plain, script, sub }: { plain: string; script?: string; sub?: string }) {
+  return (
+    <div className="text-center mb-14">
+      <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light text-gray-900">
+        {plain}
+        {script && (
+          <span className="block font-cursive text-4xl sm:text-5xl lg:text-6xl text-gray-500 mt-1">
+            {script}
+          </span>
+        )}
+      </h2>
+      {sub && (
+        <p className="mt-5 text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">{sub}</p>
+      )}
+    </div>
+  )
+}
+
+function IconChip({ Icon }: { Icon: LucideIcon }) {
+  return (
+    <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center">
+      <Icon className="w-6 h-6 text-primary" />
+    </div>
+  )
+}
+
 export default function WhatIsB2BIntentDataPage() {
   return (
-    <main>
+    <>
       <OrganizationSchema />
       <ArticleSchema
         title="What is B2B Intent Data? Complete Guide (2026)"
@@ -64,9 +157,8 @@ export default function WhatIsB2BIntentDataPage() {
       <StructuredData data={generateFAQSchema({ faqs })} />
 
       <HumanView>
-      <section className="py-12 bg-white">
-        <Container>
-          <div className="max-w-4xl mx-auto">
+        <main className="overflow-hidden">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <Breadcrumbs
               items={[
                 { name: "Home", href: "/" },
@@ -74,137 +166,161 @@ export default function WhatIsB2BIntentDataPage() {
                 { name: "What is B2B Intent Data?", href: "/what-is-b2b-intent-data" },
               ]}
             />
+          </div>
 
-            <article className="prose prose-lg max-w-none">
-              {/* Hero Definition */}
-              <h1 className="text-4xl lg:text-5xl font-light text-gray-900 mb-6 mt-8">
-                What is B2B Intent Data? Complete Guide (2026)
-              </h1>
+          {/* Hero */}
+          <section className="relative pt-16 pb-20 sm:pt-20 sm:pb-24 bg-white">
+            <Container>
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, ease: EASE }}
+                className="text-center max-w-3xl mx-auto"
+              >
+                <span className="text-xs font-semibold tracking-[0.25em] text-primary uppercase">
+                  Resource &middot; Complete Guide 2026
+                </span>
+                <h1 className="mt-4 text-4xl sm:text-5xl lg:text-6xl font-light text-gray-900 leading-[1.1]">
+                  What is B2B
+                  <span className="block font-cursive text-4xl sm:text-5xl lg:text-6xl text-gray-500 mt-2">
+                    intent data?
+                  </span>
+                </h1>
+                <p className="mt-6 text-lg sm:text-xl text-gray-600 leading-relaxed">
+                  <strong className="font-medium text-gray-900">B2B intent data</strong> reveals when
+                  companies are actively researching products or services based on their online behavior.
+                  By tracking searches, content consumption, competitor visits, and review-site activity,
+                  it identifies organizations in an active buying cycle — so you engage them at the precise
+                  moment they are evaluating solutions.
+                </p>
+              </motion.div>
+            </Container>
+          </section>
 
-              <p className="text-xl text-gray-700 leading-relaxed mb-8">
-                <strong>B2B intent data</strong> reveals when companies are actively researching products or services based on their online behavior signals. By tracking actions like web searches, content consumption, competitor website visits, and review site engagement, intent data identifies organizations that are in an active buying cycle, allowing sales and marketing teams to engage prospects at the precise moment they are evaluating solutions.
-              </p>
+          {/* Article body */}
+          <section className="pb-8 bg-white">
+            <Container>
+              <article className="prose prose-lg max-w-3xl mx-auto">
+                <p className="text-gray-600">
+                  In 2026, intent data has evolved from a niche enterprise capability into a core part of
+                  every modern B2B go-to-market strategy. According to Gartner, 70% of B2B marketers now
+                  use intent data in some form, up from just 28% in 2021 — driven by a simple shift in
+                  buyer behavior: decision-makers complete 70–80% of their research online before ever
+                  contacting a vendor. Cursive&apos;s{" "}
+                  <Link href="/custom-audiences" className="text-primary hover:underline">Custom Audience</Link>{" "}
+                  is built directly on this signal, pairing intent data with{" "}
+                  <Link href="/visitor-identification" className="text-primary hover:underline">visitor identification</Link>{" "}
+                  so revenue teams see who is interested and what they are researching.
+                </p>
 
-              <p className="text-lg text-gray-600 mb-8">
-                In 2026, intent data has evolved from a niche capability used by enterprise marketing teams into a core component of every modern B2B go-to-market strategy. According to Gartner, 70% of B2B marketers now use intent data in some form, up from just 28% in 2021. The shift is driven by a fundamental change in buyer behavior: decision-makers complete 70-80% of their research online before ever contacting a vendor. Platforms like{" "}
-                <Link href="/platform" className="text-primary hover:underline">Cursive</Link> combine intent data with{" "}
-                <Link href="/visitor-identification" className="text-primary hover:underline">visitor identification</Link> to give revenue teams a complete picture of who is interested and what they are researching.
-              </p>
+                {/* Table of Contents */}
+                <nav className="not-prose rounded-2xl border border-gray-200 bg-[#F7F9FB] p-6 my-10">
+                  <h2 className="text-lg font-semibold text-gray-900 mb-4">Table of Contents</h2>
+                  <ol className="list-decimal list-inside space-y-2 text-primary">
+                    <li><a href="#how-it-works" className="hover:underline">How B2B Intent Data Works</a></li>
+                    <li><a href="#types-of-intent-data" className="hover:underline">Types of Intent Data</a></li>
+                    <li><a href="#intent-data-sources" className="hover:underline">Intent Data Sources</a></li>
+                    <li><a href="#intent-scoring" className="hover:underline">Intent Scoring</a></li>
+                    <li><a href="#use-cases" className="hover:underline">Use Cases</a></li>
+                    <li><a href="#accuracy-quality" className="hover:underline">Accuracy and Quality</a></li>
+                    <li><a href="#implementation-guide" className="hover:underline">Implementation Guide</a></li>
+                    <li><a href="#provider-comparison" className="hover:underline">Provider Comparison</a></li>
+                    <li><a href="#faq" className="hover:underline">Frequently Asked Questions</a></li>
+                  </ol>
+                </nav>
+              </article>
+            </Container>
+          </section>
 
-              {/* Table of Contents */}
-              <nav className="bg-gray-50 rounded-lg p-6 mb-10">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4 mt-0">Table of Contents</h2>
-                <ol className="list-decimal list-inside space-y-2 text-primary mb-0">
-                  <li><a href="#how-it-works" className="hover:underline">How B2B Intent Data Works</a></li>
-                  <li><a href="#types-of-intent-data" className="hover:underline">Types of Intent Data</a></li>
-                  <li><a href="#intent-data-sources" className="hover:underline">Intent Data Sources</a></li>
-                  <li><a href="#intent-scoring" className="hover:underline">Intent Scoring</a></li>
-                  <li><a href="#use-cases" className="hover:underline">Use Cases</a></li>
-                  <li><a href="#accuracy-quality" className="hover:underline">Accuracy and Quality</a></li>
-                  <li><a href="#implementation-guide" className="hover:underline">Implementation Guide</a></li>
-                  <li><a href="#provider-comparison" className="hover:underline">Provider Comparison</a></li>
-                  <li><a href="#faq" className="hover:underline">Frequently Asked Questions</a></li>
-                  <li><a href="#related-resources" className="hover:underline">Related Resources</a></li>
-                </ol>
-              </nav>
+          {/* Section 1: How It Works — cards */}
+          <section id="how-it-works" className="py-20 sm:py-24 bg-[#F7F9FB] scroll-mt-24">
+            <Container>
+              <SectionHeading
+                plain="How B2B Intent Data"
+                script="Works"
+                sub="Raw behavior becomes an actionable buying signal through a three-stage pipeline."
+              />
+              <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                {pipeline.map((s, i) => (
+                  <motion.div
+                    key={s.title}
+                    initial={{ opacity: 0, y: 16 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-60px" }}
+                    transition={{ delay: i * 0.06, duration: 0.4, ease: EASE }}
+                    className="rounded-2xl border border-gray-200 bg-white p-6 sm:p-8 hover:shadow-lg transition-shadow"
+                  >
+                    <div className="flex items-center gap-3">
+                      <IconChip Icon={s.icon} />
+                      <span className="text-sm font-semibold text-gray-300">0{i + 1}</span>
+                    </div>
+                    <h3 className="mt-5 text-lg font-medium text-gray-900">{s.title}</h3>
+                    <p className="mt-3 text-sm text-gray-600 leading-relaxed">{s.body}</p>
+                  </motion.div>
+                ))}
+              </div>
+              <div className="mt-10 max-w-3xl mx-auto text-center text-gray-600 leading-relaxed">
+                <p>
+                  Modern systems process billions of signals daily. A single buyer might search for
+                  &ldquo;best CRM for mid-market,&rdquo; read comparison articles on G2, visit three
+                  vendor sites, and download an analyst report in one week — each action captured,
+                  timestamped, and tied back to their company. Cursive&apos;s{" "}
+                  <Link href="/intent-audiences" className="text-primary hover:underline">intent audiences</Link>{" "}
+                  segment companies by intent level automatically and route them to the right workflow.
+                </p>
+              </div>
+            </Container>
+          </section>
 
-              {/* Section 1: How It Works */}
-              <h2 id="how-it-works" className="text-3xl font-semibold text-gray-900 mt-12 mb-6">
-                How B2B Intent Data Works
-              </h2>
+          {/* Section 2: Types — cards */}
+          <section id="types-of-intent-data" className="py-20 sm:py-24 bg-white scroll-mt-24">
+            <Container>
+              <SectionHeading
+                plain="Types of"
+                script="Intent Data"
+                sub="Three types, defined by where the signal originates. The strongest strategies combine all three."
+              />
+              <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                {types.map((t, i) => (
+                  <motion.div
+                    key={t.title}
+                    initial={{ opacity: 0, y: 16 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-60px" }}
+                    transition={{ delay: i * 0.06, duration: 0.4, ease: EASE }}
+                    className="rounded-2xl border border-gray-200 p-6 sm:p-8 hover:shadow-lg transition-shadow"
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <IconChip Icon={t.icon} />
+                      <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                        {t.label}
+                      </span>
+                    </div>
+                    <h3 className="mt-5 text-lg font-medium text-gray-900">{t.title}</h3>
+                    <p className="mt-3 text-sm text-gray-600 leading-relaxed">{t.body}</p>
+                  </motion.div>
+                ))}
+              </div>
 
-              <p>
-                B2B intent data is generated through a three-stage pipeline: signal collection, processing and normalization, and scoring and delivery. Each stage is critical for transforming raw behavioral data into actionable buying signals that revenue teams can use to prioritize accounts and personalize outreach.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                Signal Collection
-              </h3>
-              <p>
-                The intent data pipeline begins with collecting behavioral signals from across the internet. These signals come from multiple sources: website visits tracked through{" "}
-                <Link href="/what-is-website-visitor-identification" className="text-primary hover:underline">visitor identification</Link> pixels, content consumption on publisher networks, search engine queries, social media engagement, review site activity, and event registrations. Each signal type provides a different view into a company&apos;s research activity. The breadth and depth of signal collection is what separates basic intent tools from comprehensive platforms.
-              </p>
-
-              <p>
-                Modern intent data systems process billions of signals daily. A single B2B buyer might generate dozens of intent signals in a week: searching for &quot;best CRM for mid-market companies,&quot; reading comparison articles on G2, visiting three vendor websites, downloading an analyst report, and engaging with sponsored content on LinkedIn. Each of these actions is captured, timestamped, and associated with the individual&apos;s company.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                Processing and Normalization
-              </h3>
-              <p>
-                Raw signals are noisy and require significant processing before they become useful. The processing stage involves several steps. First, signals are deduplicated to prevent the same action from being counted multiple times. Second, they are normalized against a baseline of typical behavior for each company and industry. This is critical because a technology company regularly reading tech news is not the same as a manufacturing company suddenly consuming tech content, even if the raw signals look identical. Third, signals are mapped to topic taxonomies that align with product categories and use cases, making them relevant to specific vendors and solutions.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                Scoring and Delivery
-              </h3>
-              <p>
-                The final stage converts processed signals into quantified intent scores that are delivered to your go-to-market tools. Scoring models weight different signal types based on their predictive value. Visiting a pricing page is weighted more heavily than reading a general industry article. Multiple signals from the same company in a short time window create a &quot;surge&quot; that indicates heightened buying activity. These scores are then pushed to CRMs, marketing automation platforms, and sales engagement tools in real time, enabling immediate action. Cursive&apos;s{" "}
-                <Link href="/intent-audiences" className="text-primary hover:underline">intent audiences</Link> feature automatically segments companies by their intent level and routes them to the appropriate workflow.
-              </p>
-
-              {/* Section 2: Types of Intent Data */}
-              <h2 id="types-of-intent-data" className="text-3xl font-semibold text-gray-900 mt-12 mb-6">
-                Types of Intent Data
-              </h2>
-
-              <p>
-                Intent data is categorized into three types based on where the signals originate. Each type has distinct advantages and limitations, and the most effective strategies combine all three.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                First-Party Intent Data
-              </h3>
-              <p>
-                First-party intent data comes from behavioral signals on your own digital properties: your website, product, mobile app, and owned content. This is the most valuable type of intent data because you have complete visibility into the actions and can directly attribute them to specific visitors. First-party signals include page visits, content downloads, pricing page views, demo requests, free trial signups, product usage patterns, and email engagement.
-              </p>
-              <p>
-                The primary limitation of first-party data is scope. You can only observe behavior that happens on your own properties, which represents a small fraction of a buyer&apos;s total research activity. A prospect might spend weeks researching a category before ever visiting your website. To capture these earlier-stage signals, you need second-party and third-party data.{" "}
-                <Link href="/visitor-identification" className="text-primary hover:underline">Visitor identification</Link> is the foundation of first-party intent because without it, 95-98% of your website visitors remain anonymous.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                Second-Party Intent Data
-              </h3>
-              <p>
-                Second-party intent data is collected by another organization and shared or sold to you through a direct relationship. The most common sources of second-party intent data are review sites (G2, TrustRadius, Capterra), industry publishers, event platforms, and media companies. For example, G2 can tell you which companies are actively researching your product category on their platform, including which specific products they are comparing. This data is valuable because review site research is a strong indicator of active evaluation.
-              </p>
-              <p>
-                Second-party data fills the gap between first-party and third-party by providing high-quality signals from trusted intermediary sources. The data tends to be more accurate than broad third-party data because the source organization has a direct relationship with the users generating the signals. However, coverage is limited to the specific platforms providing the data.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                Third-Party Intent Data
-              </h3>
-              <p>
-                Third-party intent data is aggregated from a broad network of websites, content publishers, and data cooperatives across the open web. Providers like Bombora operate data cooperatives where thousands of B2B websites contribute anonymized behavioral data, which is then processed to identify companies showing above-normal research activity on specific topics. Third-party data provides the broadest coverage, capturing intent signals from websites you do not own or have direct relationships with.
-              </p>
-              <p>
-                The trade-off with third-party data is precision. Because the signals come from diverse sources and are aggregated at the account level, they can produce false positives. A single employee reading an article about a topic does not necessarily mean the company is in a buying cycle. The best third-party providers use sophisticated algorithms to filter noise and require sustained patterns of research activity before flagging an account as showing intent.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                Type Comparison
-              </h3>
-              <div className="overflow-x-auto mb-8">
-                <table className="min-w-full border-collapse border border-gray-200">
+              {/* Type comparison table */}
+              <div className="max-w-4xl mx-auto mt-12 overflow-x-auto">
+                <table className="min-w-full border-collapse overflow-hidden rounded-2xl border border-gray-200">
                   <thead>
-                    <tr className="bg-gray-50">
-                      <th className="border border-gray-200 px-4 py-3 text-left font-semibold">Attribute</th>
-                      <th className="border border-gray-200 px-4 py-3 text-left font-semibold">First-Party</th>
-                      <th className="border border-gray-200 px-4 py-3 text-left font-semibold">Second-Party</th>
-                      <th className="border border-gray-200 px-4 py-3 text-left font-semibold">Third-Party</th>
+                    <tr className="bg-[#F7F9FB]">
+                      <th className="border border-gray-200 px-4 py-3 text-left font-semibold text-gray-900">Attribute</th>
+                      <th className="border border-gray-200 px-4 py-3 text-left font-semibold text-gray-900">First-Party</th>
+                      <th className="border border-gray-200 px-4 py-3 text-left font-semibold text-gray-900">Second-Party</th>
+                      <th className="border border-gray-200 px-4 py-3 text-left font-semibold text-gray-900">Third-Party</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="text-sm text-gray-700">
                     <tr>
                       <td className="border border-gray-200 px-4 py-3 font-medium">Source</td>
                       <td className="border border-gray-200 px-4 py-3">Your website and app</td>
                       <td className="border border-gray-200 px-4 py-3">Review sites, publishers</td>
                       <td className="border border-gray-200 px-4 py-3">Web-wide data cooperatives</td>
                     </tr>
-                    <tr className="bg-gray-50">
+                    <tr className="bg-[#F7F9FB]">
                       <td className="border border-gray-200 px-4 py-3 font-medium">Accuracy</td>
                       <td className="border border-gray-200 px-4 py-3">Very high (90%+)</td>
                       <td className="border border-gray-200 px-4 py-3">High (80-90%)</td>
@@ -216,19 +332,13 @@ export default function WhatIsB2BIntentDataPage() {
                       <td className="border border-gray-200 px-4 py-3">Specific platforms</td>
                       <td className="border border-gray-200 px-4 py-3">Broad web coverage</td>
                     </tr>
-                    <tr className="bg-gray-50">
+                    <tr className="bg-[#F7F9FB]">
                       <td className="border border-gray-200 px-4 py-3 font-medium">Signal Timing</td>
                       <td className="border border-gray-200 px-4 py-3">Late-stage (evaluating you)</td>
                       <td className="border border-gray-200 px-4 py-3">Mid-stage (comparing)</td>
                       <td className="border border-gray-200 px-4 py-3">Early-stage (researching)</td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-200 px-4 py-3 font-medium">Cost</td>
-                      <td className="border border-gray-200 px-4 py-3">Low (part of your stack)</td>
-                      <td className="border border-gray-200 px-4 py-3">Medium</td>
-                      <td className="border border-gray-200 px-4 py-3">High</td>
-                    </tr>
-                    <tr className="bg-gray-50">
                       <td className="border border-gray-200 px-4 py-3 font-medium">Resolution</td>
                       <td className="border border-gray-200 px-4 py-3">Individual + company</td>
                       <td className="border border-gray-200 px-4 py-3">Company</td>
@@ -237,247 +347,225 @@ export default function WhatIsB2BIntentDataPage() {
                   </tbody>
                 </table>
               </div>
-
-              {/* Section 3: Intent Data Sources */}
-              <h2 id="intent-data-sources" className="text-3xl font-semibold text-gray-900 mt-12 mb-6">
-                Intent Data Sources
-              </h2>
-
-              <p>
-                Understanding where intent signals come from helps you evaluate which providers have the best data for your specific market. Here are the five primary source categories.
+              <p className="max-w-3xl mx-auto mt-8 text-center text-gray-600 leading-relaxed">
+                First-party data is the most valuable but limited to your own properties —{" "}
+                <Link href="/visitor-identification" className="text-primary hover:underline">visitor identification</Link>{" "}
+                is its foundation, because without it 95–98% of your website visitors stay anonymous.
               </p>
+            </Container>
+          </section>
 
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                Search Behavior
-              </h3>
-              <p>
-                Search queries are among the strongest intent signals because they represent explicit expressions of interest. When someone at a company searches for &quot;best project management software for agencies&quot; or &quot;HubSpot alternatives for mid-market,&quot; they are clearly in a research mode. Search intent data is captured through partnerships with search engines, browser extensions, and content distribution networks. The challenge is attributing searches to specific companies, which typically requires matching IP addresses or user profiles to company records.
-              </p>
+          {/* Section 3: Sources — cards */}
+          <section id="intent-data-sources" className="py-20 sm:py-24 bg-[#F7F9FB] scroll-mt-24">
+            <Container>
+              <SectionHeading
+                plain="Intent Data"
+                script="Sources"
+                sub="Where signals come from determines which providers have the best data for your market."
+              />
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                {sources.map((s, i) => (
+                  <motion.div
+                    key={s.title}
+                    initial={{ opacity: 0, y: 16 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-60px" }}
+                    transition={{ delay: i * 0.05, duration: 0.4, ease: EASE }}
+                    className="rounded-2xl border border-gray-200 bg-white p-6 sm:p-8 hover:shadow-lg transition-shadow"
+                  >
+                    <IconChip Icon={s.icon} />
+                    <h3 className="mt-5 text-lg font-medium text-gray-900">{s.title}</h3>
+                    <p className="mt-3 text-sm text-gray-600 leading-relaxed">{s.body}</p>
+                  </motion.div>
+                ))}
+              </div>
+            </Container>
+          </section>
 
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                Content Consumption
-              </h3>
-              <p>
-                Content consumption signals track which topics companies are reading about across publisher networks. This includes articles, whitepapers, ebooks, webinars, and video content. When a company&apos;s employees consume an unusually high volume of content about a specific topic compared to their baseline, it triggers an intent signal. For example, if employees at a financial services firm suddenly start reading extensively about marketing automation after months of no such activity, that company is likely exploring a purchase in that category.
-              </p>
+          {/* Section 4: Scoring — prose */}
+          <section id="intent-scoring" className="py-20 sm:py-24 bg-white scroll-mt-24">
+            <Container>
+              <SectionHeading
+                plain="Intent"
+                script="Scoring"
+                sub="Turning raw behavioral signals into a quantified measure of buying likelihood."
+              />
+              <article className="prose prose-lg max-w-3xl mx-auto">
+                <h3 className="text-2xl font-medium text-gray-900">How signals are weighted</h3>
+                <p className="text-gray-600">
+                  Not all signals carry equal predictive value. A pricing-page visit is a far stronger
+                  signal than a blog read. Scoring models assign weights based on historical correlation
+                  with closed-won deals — demo requests and pricing views at the top, then competitor
+                  comparison content, feature pages, case studies, and general educational content below.
+                  Weights should be calibrated to your business using your own conversion data.
+                </p>
+                <h3 className="text-2xl font-medium text-gray-900">Scoring models</h3>
+                <p className="text-gray-600">
+                  <strong>Rule-based models</strong> use predefined weights and thresholds — a pricing
+                  view might be worth 20 points, a blog visit 3. <strong>Machine-learning models</strong>{" "}
+                  learn which signal patterns predict conversion and adjust continuously, growing more
+                  accurate with enough historical data. Modern platforms, including Cursive, use hybrid
+                  approaches that combine a rule-based foundation with ML-driven optimization.
+                </p>
+                <h3 className="text-2xl font-medium text-gray-900">Thresholds and surge detection</h3>
+                <p className="text-gray-600">
+                  A &ldquo;surge&rdquo; occurs when an account&apos;s research activity on a topic
+                  significantly exceeds its normal baseline in a defined window. If a company usually
+                  generates 5 content signals a week but suddenly produces 25, that 5x jump is a surge.
+                  Relative change matters more than absolute volume — a construction firm suddenly reading
+                  tech content shows intent that a tech firm reading tech content does not.
+                </p>
+              </article>
+            </Container>
+          </section>
 
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                Competitor Visits
-              </h3>
-              <p>
-                Knowing which companies are visiting your competitors&apos; websites is enormously valuable. This signal indicates active comparison shopping and evaluation. Through{" "}
-                <Link href="/what-is-website-visitor-identification" className="text-primary hover:underline">visitor identification technology</Link> and data cooperative networks, some providers can surface when target accounts are engaging with competitor content. This is particularly useful for competitive displacement campaigns and for timing outreach to coincide with active evaluation windows.
-              </p>
+          {/* Section 5: Use Cases — chips */}
+          <section id="use-cases" className="py-20 sm:py-24 bg-[#F7F9FB] scroll-mt-24">
+            <Container>
+              <SectionHeading
+                plain="Use"
+                script="Cases"
+                sub="The most impactful ways revenue teams put intent data to work."
+              />
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-5xl mx-auto">
+                {useCases.map((u, i) => (
+                  <motion.div
+                    key={u.audience}
+                    initial={{ opacity: 0, y: 16 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-60px" }}
+                    transition={{ delay: i * 0.05, duration: 0.4, ease: EASE }}
+                    className="rounded-2xl bg-white border border-gray-200 p-6 sm:p-7"
+                  >
+                    <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                      {u.audience}
+                    </span>
+                    <p className="mt-4 text-sm text-gray-600 leading-relaxed">{u.body}</p>
+                  </motion.div>
+                ))}
+              </div>
+            </Container>
+          </section>
 
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                Review Site Activity
-              </h3>
-              <p>
-                Review sites like G2, TrustRadius, and Capterra are where B2B buyers go to compare products and read peer reviews. Activity on these platforms, including viewing product profiles, reading reviews, downloading comparison reports, and requesting demos, represents some of the highest-quality intent signals available. Buyers on review sites are typically in the mid-to-late stages of their evaluation and are actively shortlisting vendors.
-              </p>
+          {/* Section 6: Accuracy & Quality — prose */}
+          <section id="accuracy-quality" className="py-20 sm:py-24 bg-white scroll-mt-24">
+            <Container>
+              <SectionHeading
+                plain="Accuracy and"
+                script="Quality"
+                sub="Intent data is only as good as its accuracy. Know what affects it before you trust it."
+              />
+              <article className="prose prose-lg max-w-3xl mx-auto">
+                <h3 className="text-2xl font-medium text-gray-900">Signal decay</h3>
+                <p className="text-gray-600">
+                  Intent signals have a shelf life. A company researching CRMs three months ago may have
+                  already bought. Signals are most predictive within the first 7–14 days, moderately
+                  useful within 30, and largely unreliable beyond 60 — which is why real-time or
+                  near-real-time delivery matters, and why weekly-refresh feeds beat monthly batches.
+                </p>
+                <h3 className="text-2xl font-medium text-gray-900">False positives</h3>
+                <p className="text-gray-600">
+                  False positives flag an account as in-market when it is not — caused by employees doing
+                  competitive research, analysts and journalists, students, or bots. Quality providers use
+                  bot detection, role-based filtering, and multi-source cross-referencing to reduce them,
+                  but expect a 15–30% false-positive rate even with top-tier data.
+                </p>
+                <h3 className="text-2xl font-medium text-gray-900">Validation methods</h3>
+                <ul className="text-gray-600">
+                  <li><strong>Cross-reference with first-party data:</strong> validate third-party signals against your own visitor data and CRM records</li>
+                  <li><strong>Track predictive accuracy:</strong> measure what share of intent-flagged accounts enter pipeline within 90 days</li>
+                  <li><strong>A/B test outreach:</strong> compare intent-driven versus non-intent conversion to quantify the signal&apos;s value</li>
+                  <li><strong>Feedback loops:</strong> have reps report when signals were accurate to continuously improve scoring</li>
+                  <li><strong>Multi-source validation:</strong> require signals from multiple sources before flagging an account</li>
+                </ul>
+              </article>
+            </Container>
+          </section>
 
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                Social Signals
-              </h3>
-              <p>
-                Social media platforms, particularly LinkedIn, generate intent signals through engagement patterns. When decision-makers follow thought leaders in a specific space, engage with vendor content, join industry groups, or post about challenges that your product solves, these actions indicate professional interest that may correlate with buying intent. Social signals are generally weaker than search or review site signals on their own, but they add valuable context when combined with other signal types.
-              </p>
+          {/* Section 7: Implementation — prose */}
+          <section id="implementation-guide" className="py-20 sm:py-24 bg-[#F7F9FB] scroll-mt-24">
+            <Container>
+              <SectionHeading
+                plain="Implementation"
+                script="Guide"
+                sub="Three phases: choose a provider, integrate your tools, and operationalize the workflow."
+              />
+              <article className="prose prose-lg max-w-3xl mx-auto">
+                <h3 className="text-2xl font-medium text-gray-900">Phase 1: Choosing a provider</h3>
+                <p className="text-gray-600">
+                  Evaluate providers on the criteria that matter for your business: types of intent data
+                  offered, topic-taxonomy coverage for your industry, geographic reach, integration
+                  capabilities, and pricing model. Request sample data for your target accounts before
+                  committing. Cursive&apos;s{" "}
+                  <Link href="/free-audit" className="text-primary hover:underline">free audit</Link>{" "}
+                  shows you intent data for your actual website visitors before you buy.
+                </p>
+                <h3 className="text-2xl font-medium text-gray-900">Phase 2: Integration</h3>
+                <p className="text-gray-600">
+                  Connect the intent feed to the tools your team already lives in — CRM (Salesforce,
+                  HubSpot), marketing automation, sales engagement, and ad platforms. The goal is to make
+                  intent data visible and actionable where reps work, not in a separate dashboard they
+                  have to remember to check. Cursive delivers your weekly audience straight to a Google
+                  Sheet that syncs across 200+ tools.
+                </p>
+                <h3 className="text-2xl font-medium text-gray-900">Phase 3: Workflow setup</h3>
+                <p className="text-gray-600">
+                  Define what happens at each intent level. High-intent accounts (surging on your category,
+                  visiting your site, engaging competitors) trigger immediate outreach and targeted ads.
+                  Medium-intent accounts enter nurture and ABM programs. Low-intent accounts are monitored
+                  until signals strengthen. Automating these paths ensures consistent follow-through and
+                  maximum ROI. Pair intent with a fresh weekly{" "}
+                  <Link href="/custom-audiences" className="text-primary hover:underline">Custom Audience</Link>{" "}
+                  so your team always has new in-market contacts to action.
+                </p>
+              </article>
+            </Container>
+          </section>
 
-              {/* Section 4: Intent Scoring */}
-              <h2 id="intent-scoring" className="text-3xl font-semibold text-gray-900 mt-12 mb-6">
-                Intent Scoring
-              </h2>
-
-              <p>
-                Intent scoring is the process of converting raw behavioral signals into a quantified measure of buying likelihood. Effective scoring models consider the type, volume, recency, and pattern of signals to produce a reliable indicator of purchase intent.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                How Signals Are Weighted
-              </h3>
-              <p>
-                Not all intent signals carry equal predictive value. A pricing page visit is a much stronger buying signal than reading a blog post. Scoring models assign weights to different signal types based on their historical correlation with closed-won deals. Typical weighting hierarchies put demo requests and pricing page visits at the top, followed by competitor comparison content, product feature pages, case studies, and then general educational content at the bottom. The specific weights should be calibrated to your business using historical conversion data.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                Scoring Models
-              </h3>
-              <p>
-                There are two primary approaches to intent scoring. <strong>Rule-based models</strong> use predefined weights and thresholds set by the user. For example, a pricing page visit might be worth 20 points, a case study download worth 10 points, and a blog visit worth 3 points. Accounts exceeding a threshold score are flagged as showing intent. <strong>Machine learning models</strong> use historical data to automatically learn which signal patterns predict conversion and continuously adjust their weights. ML models are more accurate over time but require sufficient historical data to train effectively. Most modern platforms, including Cursive, use hybrid approaches that combine rule-based foundations with ML-driven optimization.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                Thresholds and Surge Detection
-              </h3>
-              <p>
-                The concept of &quot;surge&quot; is central to intent scoring. A surge occurs when an account&apos;s research activity on a specific topic significantly exceeds its normal baseline over a defined time window. For example, if a company typically generates 5 content consumption signals per week on marketing topics but suddenly generates 25 in a single week, that 5x increase is a surge. Surge detection is important because absolute signal volume is less meaningful than relative change. A technology company that always reads tech content does not have the same intent as a construction company that suddenly starts reading tech content at high volume.
-              </p>
-
-              {/* Section 5: Use Cases */}
-              <h2 id="use-cases" className="text-3xl font-semibold text-gray-900 mt-12 mb-6">
-                Use Cases
-              </h2>
-
-              <p>
-                B2B intent data powers a wide range of sales and marketing strategies. Here are the five most impactful applications, along with specific examples of how teams are generating measurable ROI.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                1. Prioritizing Sales Outreach
-              </h3>
-              <p>
-                The most immediate application of intent data is helping sales teams prioritize which accounts to contact first. Instead of working through a static account list alphabetically or by company size, reps focus on accounts showing active buying signals. Research from SiriusDecisions found that accounts showing intent are 2.5x more likely to convert to opportunities compared to accounts contacted through cold outreach. By integrating intent data with your CRM, reps see real-time intent scores on their accounts and can prioritize their daily outreach accordingly. Cursive&apos;s{" "}
-                <Link href="/audience-builder" className="text-primary hover:underline">audience builder</Link> makes it easy to create dynamic lists of high-intent accounts that update automatically.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                2. Account-Based Marketing Targeting
-              </h3>
-              <p>
-                Intent data transforms ABM from a spray-and-pray approach into precision targeting. Instead of running ads and campaigns to your entire target account list, you focus budget on the accounts actively researching your category. This means your display ads, LinkedIn campaigns, and{" "}
-                <Link href="/direct-mail" className="text-primary hover:underline">direct mail</Link> pieces reach accounts when they are most receptive. ABM programs powered by intent data typically see 40-60% higher engagement rates and 25-35% lower cost per qualified opportunity because marketing spend is concentrated on accounts that are already in-market.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                3. Content Personalization
-              </h3>
-              <p>
-                When you know what topics a visiting company is researching, you can personalize their website experience accordingly. Show a visitor from a company researching &quot;CRM migration&quot; your migration guide and relevant case studies instead of generic messaging. Display industry-specific content to visitors from sectors you specialize in. This real-time personalization increases conversion rates by 15-30% because visitors see content that directly addresses their current needs and challenges.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                4. Competitive Intelligence
-              </h3>
-              <p>
-                Intent data reveals when target accounts are researching your competitors. If a key prospect is consuming content about a competing product, your team can proactively reach out with differentiated messaging, competitive battlecards, and targeted campaigns that address the prospect&apos;s likely concerns. This competitive awareness enables timely intervention in deals you might otherwise lose. Some teams set up real-time Slack alerts for competitor intent signals on their most important accounts, ensuring instant awareness and rapid response.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                5. Churn Prevention
-              </h3>
-              <p>
-                Intent data is not only for acquiring new customers. It is equally valuable for retaining existing ones. When a current customer starts researching competitor products or topics like &quot;switching from [your product]&quot; or &quot;alternatives to [your product],&quot; intent data surfaces these early warning signals. Customer success teams can then intervene proactively, address concerns, and reduce churn before the customer makes a decision to leave. Companies using intent data for churn prevention report 20-30% improvements in net retention rates.
-              </p>
-
-              {/* Section 6: Accuracy & Quality */}
-              <h2 id="accuracy-quality" className="text-3xl font-semibold text-gray-900 mt-12 mb-6">
-                Accuracy and Quality
-              </h2>
-
-              <p>
-                The effectiveness of intent data depends entirely on its accuracy and quality. Understanding the factors that affect data quality helps you evaluate providers and set appropriate expectations.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                Signal Decay
-              </h3>
-              <p>
-                Intent signals have a shelf life. A company that was actively researching CRM solutions three months ago may have already made a purchase or put the project on hold. The value of an intent signal decreases exponentially over time. Research indicates that intent signals are most predictive within the first 7-14 days, moderately useful within 30 days, and largely unreliable beyond 60 days. This is why real-time or near-real-time delivery of intent data is critical. Platforms that batch-process and deliver data weekly or monthly miss the window of peak predictive value.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                False Positives
-              </h3>
-              <p>
-                False positives occur when intent data flags an account as in-market when they are not actually considering a purchase. Common causes of false positives include employees doing competitive research for existing vendors, analysts or journalists researching industry trends, students or academics conducting research, and automated bots generating artificial signals. High-quality providers use filtering mechanisms to reduce false positives, including bot detection, role-based filtering, and cross-referencing multiple signal sources. Despite best efforts, expect false positive rates of 15-30% even with top-tier providers.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                Validation Methods
-              </h3>
-              <p>
-                To maximize the accuracy of your intent data program, implement these validation practices:
-              </p>
-              <ul>
-                <li><strong>Cross-reference with first-party data:</strong> Validate third-party intent signals against your own website visitor data and CRM engagement records</li>
-                <li><strong>Track predictive accuracy:</strong> Measure what percentage of intent-flagged accounts actually enter your pipeline within 90 days</li>
-                <li><strong>A/B test outreach:</strong> Compare conversion rates between intent-driven outreach and non-intent outreach to quantify the signal&apos;s value</li>
-                <li><strong>Feedback loops:</strong> Have reps report when intent signals were accurate versus inaccurate to continuously improve scoring models</li>
-                <li><strong>Multi-source validation:</strong> Require signals from multiple sources before flagging an account, reducing reliance on any single data stream</li>
-              </ul>
-
-              {/* Section 7: Implementation Guide */}
-              <h2 id="implementation-guide" className="text-3xl font-semibold text-gray-900 mt-12 mb-6">
-                Implementation Guide
-              </h2>
-
-              <p>
-                Implementing a B2B intent data program involves three phases: choosing the right provider, integrating with your existing tools, and setting up operational workflows. Here is a step-by-step guide.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                Phase 1: Choosing a Provider
-              </h3>
-              <p>
-                Start by evaluating providers based on the criteria that matter most for your business. Consider the types of intent data offered (first-party, second-party, third-party), topic taxonomy coverage for your industry, geographic coverage if you sell internationally, integration capabilities with your existing stack, and pricing model. Request sample data for your target accounts to evaluate quality before committing. Cursive&apos;s{" "}
-                <Link href="/free-audit" className="text-primary hover:underline">free audit</Link> lets you see intent data for your actual website visitors before making a purchase decision.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                Phase 2: Integration
-              </h3>
-              <p>
-                Once you have selected a provider, integrate intent data into your existing go-to-market infrastructure. This typically involves connecting the intent data feed to your CRM (Salesforce, HubSpot), marketing automation platform (Marketo, Pardot), sales engagement tool (Outreach, SalesLoft), and advertising platforms (LinkedIn Ads, Google Ads). The goal is to make intent data visible and actionable in the tools your teams already use daily, rather than creating a new dashboard they need to check separately.
-              </p>
-
-              <h3 className="text-2xl font-medium text-gray-900 mt-8 mb-4">
-                Phase 3: Workflow Setup
-              </h3>
-              <p>
-                The final phase is building operational workflows that turn intent data into action. Define what should happen when an account shows different levels of intent. High-intent accounts (surging on your product category, visiting your website, engaging with competitors) should trigger immediate sales outreach and targeted advertising. Medium-intent accounts (researching your category but not yet engaged with you) should enter nurture campaigns and ABM programs. Low-intent accounts should continue to be monitored until they show stronger signals. Setting up these automated workflows ensures consistent follow-through and maximum ROI from your intent data investment. Pair intent data with an{" "}
-                <Link href="/what-is-ai-sdr" className="text-primary hover:underline">AI SDR</Link> to automate personalized outreach at scale.
-              </p>
-
-              {/* Section 8: Provider Comparison */}
-              <h2 id="provider-comparison" className="text-3xl font-semibold text-gray-900 mt-12 mb-6">
-                Provider Comparison
-              </h2>
-
-              <p>
-                The B2B intent data market includes several established providers and emerging platforms. Here is how the leading options compare across the most important evaluation criteria in 2026.
-              </p>
-
-              <div className="overflow-x-auto mb-8">
-                <table className="min-w-full border-collapse border border-gray-200">
+          {/* Section 8: Provider Comparison — table */}
+          <section id="provider-comparison" className="py-20 sm:py-24 bg-white scroll-mt-24">
+            <Container>
+              <SectionHeading
+                plain="Provider"
+                script="Comparison"
+                sub="How the leading options compare across the criteria that matter most in 2026."
+              />
+              <div className="max-w-5xl mx-auto overflow-x-auto">
+                <table className="min-w-full border-collapse overflow-hidden rounded-2xl border border-gray-200">
                   <thead>
-                    <tr className="bg-gray-50">
-                      <th className="border border-gray-200 px-4 py-3 text-left font-semibold">Provider</th>
-                      <th className="border border-gray-200 px-4 py-3 text-left font-semibold">Intent Types</th>
-                      <th className="border border-gray-200 px-4 py-3 text-left font-semibold">Visitor ID</th>
-                      <th className="border border-gray-200 px-4 py-3 text-left font-semibold">AI Outreach</th>
-                      <th className="border border-gray-200 px-4 py-3 text-left font-semibold">Pricing Model</th>
-                      <th className="border border-gray-200 px-4 py-3 text-left font-semibold">Best For</th>
+                    <tr className="bg-[#F7F9FB]">
+                      <th className="border border-gray-200 px-4 py-3 text-left font-semibold text-gray-900">Provider</th>
+                      <th className="border border-gray-200 px-4 py-3 text-left font-semibold text-gray-900">Intent Types</th>
+                      <th className="border border-gray-200 px-4 py-3 text-left font-semibold text-gray-900">Visitor ID</th>
+                      <th className="border border-gray-200 px-4 py-3 text-left font-semibold text-gray-900">Pricing Model</th>
+                      <th className="border border-gray-200 px-4 py-3 text-left font-semibold text-gray-900">Best For</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="text-sm text-gray-700">
                     <tr>
                       <td className="border border-gray-200 px-4 py-3 font-medium">Cursive</td>
                       <td className="border border-gray-200 px-4 py-3">First + third-party</td>
                       <td className="border border-gray-200 px-4 py-3">Yes (40&ndash;60% deterministic)</td>
-                      <td className="border border-gray-200 px-4 py-3">Yes (built-in)</td>
-                      <td className="border border-gray-200 px-4 py-3">Platform license</td>
-                      <td className="border border-gray-200 px-4 py-3">Full-stack GTM teams</td>
+                      <td className="border border-gray-200 px-4 py-3">Self-serve, $197/mo</td>
+                      <td className="border border-gray-200 px-4 py-3">Lean B2B GTM teams</td>
                     </tr>
-                    <tr className="bg-gray-50">
+                    <tr className="bg-[#F7F9FB]">
                       <td className="border border-gray-200 px-4 py-3 font-medium">Bombora</td>
                       <td className="border border-gray-200 px-4 py-3">Third-party (co-op)</td>
                       <td className="border border-gray-200 px-4 py-3">No</td>
-                      <td className="border border-gray-200 px-4 py-3">No</td>
-                      <td className="border border-gray-200 px-4 py-3">Data feed subscription</td>
+                      <td className="border border-gray-200 px-4 py-3">Annual data feed</td>
                       <td className="border border-gray-200 px-4 py-3">Enterprise data teams</td>
                     </tr>
                     <tr>
                       <td className="border border-gray-200 px-4 py-3 font-medium">6sense</td>
                       <td className="border border-gray-200 px-4 py-3">First + third-party</td>
                       <td className="border border-gray-200 px-4 py-3">Limited</td>
-                      <td className="border border-gray-200 px-4 py-3">Limited</td>
                       <td className="border border-gray-200 px-4 py-3">Enterprise license</td>
                       <td className="border border-gray-200 px-4 py-3">Large ABM programs</td>
                     </tr>
-                    <tr className="bg-gray-50">
+                    <tr className="bg-[#F7F9FB]">
                       <td className="border border-gray-200 px-4 py-3 font-medium">G2</td>
                       <td className="border border-gray-200 px-4 py-3">Second-party (review site)</td>
-                      <td className="border border-gray-200 px-4 py-3">No</td>
                       <td className="border border-gray-200 px-4 py-3">No</td>
                       <td className="border border-gray-200 px-4 py-3">Per-category subscription</td>
                       <td className="border border-gray-200 px-4 py-3">Competitive intelligence</td>
@@ -486,91 +574,117 @@ export default function WhatIsB2BIntentDataPage() {
                       <td className="border border-gray-200 px-4 py-3 font-medium">TrustRadius</td>
                       <td className="border border-gray-200 px-4 py-3">Second-party (review site)</td>
                       <td className="border border-gray-200 px-4 py-3">No</td>
-                      <td className="border border-gray-200 px-4 py-3">No</td>
                       <td className="border border-gray-200 px-4 py-3">Per-category subscription</td>
                       <td className="border border-gray-200 px-4 py-3">Enterprise tech buyers</td>
                     </tr>
                   </tbody>
                 </table>
               </div>
-
-              <p>
-                For a detailed comparison of how Cursive&apos;s intent data capabilities stack up against 6sense, see our{" "}
-                <Link href="/blog/6sense-vs-cursive-comparison" className="text-primary hover:underline">6sense vs. Cursive comparison</Link>. You can also learn more about how intent data integrates with visitor identification on our{" "}
-                <Link href="/data-access" className="text-primary hover:underline">data access</Link> page.
+              <p className="max-w-3xl mx-auto mt-8 text-center text-gray-600 leading-relaxed">
+                For a detailed look at how Cursive stacks up against 6sense, see our{" "}
+                <Link href="/blog/6sense-vs-cursive-comparison" className="text-primary hover:underline">6sense vs. Cursive comparison</Link>,
+                or explore how intent data feeds the{" "}
+                <Link href="/custom-audiences" className="text-primary hover:underline">Custom Audience</Link>.
               </p>
+            </Container>
+          </section>
 
-              {/* Section 9: FAQ */}
-              <h2 id="faq" className="text-3xl font-semibold text-gray-900 mt-12 mb-6">
-                Frequently Asked Questions
-              </h2>
-
-              <div className="space-y-8 mb-12">
-                {faqs.map((faq, index) => (
-                  <div key={index}>
-                    <h3 className="text-xl font-medium text-gray-900 mb-2">{faq.question}</h3>
-                    <p className="text-gray-700">{faq.answer}</p>
-                  </div>
+          {/* FAQ */}
+          <section id="faq" className="py-20 sm:py-24 bg-[#F7F9FB] scroll-mt-24">
+            <Container>
+              <SectionHeading plain="Frequently Asked" script="Questions" />
+              <div className="max-w-3xl mx-auto space-y-4">
+                {faqs.map((faq, i) => (
+                  <motion.div
+                    key={faq.question}
+                    initial={{ opacity: 0, y: 16 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.04, duration: 0.4, ease: EASE }}
+                    className="rounded-2xl border border-gray-200 bg-white p-6 sm:p-7"
+                  >
+                    <h3 className="text-base font-medium text-gray-900">{faq.question}</h3>
+                    <p className="mt-2 text-sm text-gray-600 leading-relaxed">{faq.answer}</p>
+                  </motion.div>
                 ))}
               </div>
+            </Container>
+          </section>
 
-              {/* Section 10: Related Resources */}
-              <h2 id="related-resources" className="text-3xl font-semibold text-gray-900 mt-12 mb-6">
-                Related Resources
-              </h2>
-
-              <p>
-                Deepen your understanding of the technologies and strategies that work alongside B2B intent data:
-              </p>
-
-              <ul>
-                <li>
-                  <Link href="/what-is-website-visitor-identification" className="text-primary hover:underline">What is Website Visitor Identification?</Link> &mdash; Learn how to identify the companies and individuals behind your anonymous website traffic.
-                </li>
-                <li>
-                  <Link href="/what-is-ai-sdr" className="text-primary hover:underline">What is an AI SDR?</Link> &mdash; Discover how AI-powered sales development automates follow-up on intent signals.
-                </li>
-                <li>
-                  <Link href="/intent-audiences" className="text-primary hover:underline">Intent Audiences</Link> &mdash; Build dynamic audience segments based on real-time intent signals.
-                </li>
-                <li>
-                  <Link href="/platform" className="text-primary hover:underline">Cursive Platform</Link> &mdash; See how Cursive combines visitor identification, intent data, and AI outreach in one platform.
-                </li>
-                <li>
-                  <Link href="/industries/b2b-software" className="text-primary hover:underline">Intent Data for B2B Software</Link> &mdash; Industry-specific strategies for leveraging intent data in the software sector.
-                </li>
-                <li>
-                  <Link href="/industries/technology" className="text-primary hover:underline">Intent Data for Technology Companies</Link> &mdash; How technology companies use intent signals to accelerate pipeline.
-                </li>
-              </ul>
-
-              {/* CTA Section */}
-              <div className="bg-gray-50 rounded-xl p-8 mt-12 text-center">
-                <h2 className="text-2xl font-semibold text-gray-900 mb-4">
-                  See Which Companies Are Showing Buying Intent Right Now
-                </h2>
-                <p className="text-lg text-gray-600 mb-6 max-w-2xl mx-auto">
-                  Get a free audit that reveals the companies actively researching your product category, which ones are visiting your website, and how to turn those signals into pipeline.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          {/* Related */}
+          <section className="py-20 sm:py-24 bg-white">
+            <Container>
+              <SectionHeading
+                plain="Related"
+                script="Resources"
+                sub="The technologies and strategies that work alongside B2B intent data."
+              />
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto">
+                {[
+                  { title: "Website Visitor Identification", href: "/what-is-website-visitor-identification" },
+                  { title: "Intent Audiences", href: "/intent-audiences" },
+                  { title: "Custom Audiences", href: "/custom-audiences" },
+                  { title: "Cursive Platform", href: "/platform" },
+                  { title: "Intent Data for B2B Software", href: "/industries/b2b-software" },
+                  { title: "Intent Data for Technology", href: "/industries/technology" },
+                ].map((link) => (
                   <Link
-                    href="/free-audit"
-                    className="inline-flex items-center justify-center px-6 py-3 bg-primary text-white font-medium rounded-lg hover:bg-[#0063D1] transition-colors no-underline"
+                    key={link.href}
+                    href={link.href}
+                    className="flex items-center justify-between gap-3 rounded-xl border border-gray-200 bg-white p-4 hover:border-primary transition-colors group"
                   >
-                    Get Your Free Audit
+                    <span className="text-sm font-medium text-gray-900 group-hover:text-primary transition-colors">
+                      {link.title}
+                    </span>
+                    <ArrowRight className="h-4 w-4 text-gray-400 group-hover:text-primary flex-shrink-0" />
                   </Link>
-                  <Link
-                    href="/contact"
-                    className="inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-100 transition-colors no-underline"
-                  >
-                    Talk to an Expert
-                  </Link>
-                </div>
+                ))}
               </div>
-            </article>
-          </div>
-        </Container>
-      </section>
+            </Container>
+          </section>
+
+          {/* Final CTA */}
+          <section className="py-20 sm:py-28 bg-[#F7F9FB]">
+            <Container>
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, ease: EASE }}
+                className="text-center max-w-2xl mx-auto"
+              >
+                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light text-gray-900">
+                  Put intent data
+                  <span className="block font-cursive text-4xl sm:text-5xl lg:text-6xl text-gray-500 mt-1">
+                    to work
+                  </span>
+                </h2>
+                <p className="mt-5 text-lg text-gray-600 leading-relaxed">
+                  Cursive&apos;s Custom Audience turns intent signals into a fresh weekly list of
+                  in-market buyers built to your ICP — delivered to your sheet for a flat $197/mo,
+                  month-to-month, cancel anytime.
+                </p>
+                <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-gray-600">
+                  {["Built to your ICP", "Fresh every week", "Self-serve, month-to-month"].map((item) => (
+                    <span key={item} className="flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-primary" />
+                      {item}
+                    </span>
+                  ))}
+                </div>
+                <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center">
+                  <Button size="lg" href={GET_LEADS_URL} target="_blank" rel="noopener noreferrer">
+                    Get Started
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                  <Button size="lg" variant="outline" href={BOOKING_URL} target="_blank" rel="noopener noreferrer">
+                    Book a Call
+                  </Button>
+                </div>
+              </motion.div>
+            </Container>
+          </section>
+        </main>
       </HumanView>
 
       <MachineView>
@@ -587,7 +701,7 @@ export default function WhatIsB2BIntentDataPage() {
               "Three types: First-party (your own properties), Second-party (partner data), Third-party (external web signals)",
               "Companies using intent data see 2-3x higher conversion rates on targeted accounts",
               "Intent scoring models combine topic relevance, signal strength, and recency for prioritization",
-              "Best results come from combining first-party and third-party intent data sources"
+              "Best results come from combining first-party and third-party intent data sources",
             ]} />
           </MachineSection>
 
@@ -597,28 +711,28 @@ export default function WhatIsB2BIntentDataPage() {
               "Second-Party Intent — Partner or publisher data shared through data cooperatives",
               "Third-Party Intent — Aggregated from external sources: review sites, content networks, search behavior, ad interactions",
               "Topic-Level Intent — Tracks research on specific topics/keywords across the web",
-              "Account-Level Intent — Aggregated signals showing company-wide research activity"
+              "Account-Level Intent — Aggregated signals showing company-wide research activity",
             ]} />
           </MachineSection>
 
           <MachineSection title="How Intent Data Works">
             <MachineList items={[
-              "Step 1: Data Collection — Signals gathered from web scraping, publisher cooperatives, bid stream, and proprietary tracking",
-              "Step 2: Company Resolution — Anonymous signals are matched to companies via IP lookup, cookie matching, and device graphs",
+              "Step 1: Signal Collection — Behavioral signals gathered from searches, publishers, review sites, and identified website visitors",
+              "Step 2: Company Resolution — Anonymous signals matched to companies via identity graphs and visitor identification",
               "Step 3: Topic Classification — NLP models classify content consumption into relevant buying topics",
               "Step 4: Baseline Calculation — Normal research activity is baselined per company to detect surges",
               "Step 5: Intent Scoring — Surge above baseline triggers intent signal with confidence score",
-              "Step 6: Delivery — Intent signals pushed to CRM, marketing automation, or sales engagement platforms"
+              "Step 6: Delivery — Intent signals delivered to your CRM, sheet, or sales engagement tools",
             ]} />
           </MachineSection>
 
           <MachineSection title="Use Cases">
             <MachineList items={[
-              "Prioritize outbound prospecting — Focus SDR time on accounts showing active buying research",
-              "Trigger automated campaigns — Launch email, ad, and direct mail sequences when intent spikes",
+              "Prioritize outbound prospecting — Focus rep time on accounts showing active buying research",
+              "ABM targeting — Concentrate budget on in-market accounts for higher engagement",
+              "Content personalization — Tailor the on-site experience to what an account is researching",
               "Competitive displacement — Target accounts researching your competitors",
-              "Pipeline acceleration — Identify existing opportunities showing renewed research activity",
-              "Churn prevention — Detect customers researching competitor alternatives"
+              "Churn prevention — Detect customers researching competitor alternatives",
             ]} />
           </MachineSection>
 
@@ -628,43 +742,53 @@ export default function WhatIsB2BIntentDataPage() {
               "Topic-level third-party: 65-80% accuracy (depends on provider and methodology)",
               "Account-level matching: 70-85% accuracy for company identification",
               "Best practice: Validate third-party signals against first-party data for higher confidence",
-              "Freshness matters: Intent signals degrade quickly; weekly or real-time refresh recommended"
+              "Freshness matters: Intent signals degrade quickly; weekly or real-time refresh recommended",
             ]} />
           </MachineSection>
 
           <MachineSection title="Provider Comparison">
             <MachineList items={[
-              "Cursive — 60B+ behaviors & URLs scanned weekly, combined with visitor ID and outreach activation ($1,000/mo+)",
+              "Cursive — Intent data powers a fresh weekly Custom Audience built to your ICP, plus deterministic visitor ID ($197/mo, self-serve)",
               "Bombora — Largest B2B data cooperative, company-level topic surges ($25,000+/yr)",
               "G2 — Review site intent data showing active product evaluations ($15,000+/yr)",
               "6sense — Predictive AI model combining multiple intent sources ($60,000+/yr)",
-              "TrustRadius — Review site intent with buyer-verified data ($15,000+/yr)"
+              "TrustRadius — Review site intent with buyer-verified data ($15,000+/yr)",
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Cursive Pricing">
+            <p className="text-gray-700 mb-3">
+              Self-serve, month-to-month, no setup fee. Cancel anytime.
+            </p>
+            <MachineList items={[
+              "Custom Audience ($197/month) — Intent data turned into a fresh weekly list of in-market buyers built to your ICP, delivered to Google Sheets",
+              "Visitor Pixel ($97/month) — Identify the companies and people visiting your site (first-party intent)",
+              "Pixel + Audience Bundle ($247/month) — Both, in one feed",
             ]} />
           </MachineSection>
 
           <MachineSection title="Related Resources">
             <MachineList items={[
               { label: "Website Visitor Identification Guide", href: "/what-is-website-visitor-identification", description: "First-party intent from identified website visitors" },
-              { label: "Lead Enrichment Guide", href: "/what-is-lead-enrichment", description: "Enrich intent-identified accounts with contact data" },
-              { label: "AI SDR Guide", href: "/what-is-ai-sdr", description: "Automate outreach to intent-surging accounts" },
-              { label: "Account-Based Marketing Guide", href: "/what-is-account-based-marketing", description: "Use intent data for ABM account selection" },
-              { label: "Visitor Deanonymization Guide", href: "/what-is-visitor-deanonymization", description: "Technical methods for resolving anonymous visitors" },
-              { label: "Cursive Platform", href: "/platform", description: "Integrated intent data, visitor ID, and outreach" },
-              { label: "Pricing", href: "/pricing", description: "Cursive pricing and plans" }
+              { label: "Intent Audiences", href: "/intent-audiences", description: "Segment companies by real-time intent level" },
+              { label: "Custom Audiences", href: "/custom-audiences", description: "A fresh weekly list of in-market buyers built to your ICP" },
+              { label: "Cursive Platform", href: "/platform", description: "Integrated intent data and visitor identification" },
+              { label: "Pricing", href: "/pricing", description: "Visitor Pixel $97/mo, Custom Audience $197/mo, Bundle $247/mo" },
             ]} />
           </MachineSection>
 
           <MachineSection title="Get Started">
             <p className="text-gray-700 mb-3">
-              Cursive combines 60B+ behaviors & URLs scanned weekly with website visitor identification and AI-powered outreach to help you reach in-market buyers before your competitors.
+              Cursive turns intent signals into a fresh weekly Custom Audience of in-market buyers, paired with deterministic website visitor identification — so you reach interested accounts before your competitors.
             </p>
             <MachineList items={[
-              { label: "Get Your Free Audit", href: "/free-audit", description: "See which in-market accounts are visiting your site" },
-              { label: "Talk to an Expert", href: "/contact", description: "Discuss intent data strategy for your team" }
+              { label: "Get Started", href: "https://leads.meetcursive.com/get-leads", description: "Pick a plan and you are live in minutes" },
+              { label: "Free Audit", href: "https://www.meetcursive.com/free-audit", description: "See which in-market accounts are visiting your site" },
+              { label: "Book a Call", href: "https://cal.com/cursiveteam/30min", description: "Talk to the team before you buy" },
             ]} />
           </MachineSection>
         </MachineContent>
       </MachineView>
-    </main>
+    </>
   )
 }
