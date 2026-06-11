@@ -39,7 +39,7 @@ const identifyVisitorsFAQs = [
   },
   {
     question: 'What is the best tool for identifying anonymous website visitors?',
-    answer: 'Cursive identifies 70% of anonymous B2B website visitors — the highest rate in the market — at $1,000/month with no long-term commitment. For pure company-level ID (not person-level), Leadfeeder and Albacross are cheaper options at $139-$299/month but only tell you the company, not the person. RB2B focuses on US LinkedIn profiles at 50-60% identification. For enterprise teams with $50k+ budgets, Demandbase and 6sense combine visitor ID with intent data and ABM advertising.',
+    answer: 'Cursive identifies 70% of anonymous B2B website visitors — the highest rate in the market — with its $97/month Visitor Pixel, with no setup fee and cancellation anytime. For pure company-level ID (not person-level), Leadfeeder and Albacross are cheaper options at $139-$299/month but only tell you the company, not the person. RB2B focuses on US LinkedIn profiles at 50-60% identification. For enterprise teams with $50k+ budgets, Demandbase and 6sense combine visitor ID with intent data and ABM advertising.',
   },
   {
     question: 'How do I install website visitor tracking?',

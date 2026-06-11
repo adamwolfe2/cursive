@@ -34,7 +34,7 @@ const faqs = [
   },
   {
     question: "How much does it cost to switch from RB2B to an alternative?",
-    answer: "Switching costs are minimal for most tools. Cursive offers a free audit to show you exactly what you are missing, and setup takes about 5 minutes with a simple pixel installation. Most teams see results within the first 24 hours. Pricing starts at $1,000 per month for Cursive, which includes visitor identification, AI outreach, and intent data, compared to paying separately for each capability with RB2B plus additional tools."
+    answer: "Switching costs are minimal for most tools. Cursive's Visitor Pixel takes about 5 minutes to install. Plans are month-to-month with no setup fee and can be canceled anytime: Visitor Pixel is $97/month, Custom Audience is $197/month, and the Pixel + Audience Bundle is $247/month."
   },
   {
     question: "Do I need separate tools for visitor identification and outreach?",
@@ -135,7 +135,7 @@ export default function BlogPost() {
                     <td className="border border-gray-300 p-3 font-bold">Cursive</td>
                     <td className="border border-gray-300 p-3">Full-stack visitor ID + AI outreach</td>
                     <td className="border border-gray-300 p-3 text-green-600 font-bold">~70% person-level</td>
-                    <td className="border border-gray-300 p-3">$1,000/mo</td>
+                    <td className="border border-gray-300 p-3">$97-$247/mo</td>
                     <td className="border border-gray-300 p-3">AI SDR + multi-channel</td>
                   </tr>
                   <tr>
@@ -261,7 +261,7 @@ export default function BlogPost() {
                 which pages visitors view, how often they return, and what content they engage with, then scores
                 and routes them to the right outreach sequence. The <Link href="/audience-builder" className="text-blue-600 hover:underline">audience builder</Link> lets
                 you create precise segments based on firmographic data, visit behavior, and technographic signals. You can also
-                explore additional capabilities through the <Link href="/marketplace" className="text-blue-600 hover:underline">Cursive marketplace</Link>.
+                choose the <Link href="/marketplace" className="text-blue-600 hover:underline">Cursive self-serve plan</Link> that fits your needs.
               </p>
 
               <div className="grid md:grid-cols-2 gap-6 mb-4">
@@ -295,7 +295,7 @@ export default function BlogPost() {
                   <ul className="space-y-1 text-sm">
                     <li className="flex items-center gap-2">
                       <X className="w-4 h-4 text-red-400" />
-                      No free tier (starts at $1,000/mo)
+                      No free tier (plans start at $97/mo)
                     </li>
                     <li className="flex items-center gap-2">
                       <X className="w-4 h-4 text-red-400" />
@@ -308,7 +308,7 @@ export default function BlogPost() {
               <div className="bg-white rounded-lg p-4">
                 <div className="flex justify-between items-center mb-2">
                   <span className="font-bold">Pricing:</span>
-                  <span className="text-lg font-bold text-blue-600">Starting at $1,000/mo</span>
+                  <span className="text-lg font-bold text-blue-600">$97/mo Pixel | $197/mo Audience | $247/mo Bundle</span>
                 </div>
                 <p className="text-sm text-gray-600">
                   <strong>Best for:</strong> B2B companies generating 5,000+ monthly website visitors that want to convert
@@ -842,10 +842,9 @@ export default function BlogPost() {
             </p>
 
             <p>
-              <strong>Cursive all-in-one:</strong> Starting at $1,000/mo, you get visitor identification, AI SDR, multi-channel outreach,
-              intent data, and <Link href="/what-is-lead-enrichment">lead enrichment</Link> in a single platform. No integrations to manage, no data
-              silos, and typically higher conversion rates due to faster follow-up. Visit our <Link href="/pricing">pricing page</Link> for
-              detailed plan breakdowns.
+              <strong>Cursive self-serve:</strong> Visitor Pixel is $97/mo, Custom Audience is $197/mo, and the Pixel + Audience
+              Bundle is $247/mo. All plans are month-to-month with no setup fee and can be canceled anytime. Visit our{" "}
+              <Link href="/pricing">pricing page</Link> for detailed plan breakdowns.
             </p>
 
             <p>
@@ -943,7 +942,7 @@ export default function BlogPost() {
               high match rates with automated, personalized outreach triggered
               by <Link href="/what-is-b2b-intent-data">intent signals</Link>. That is exactly what we built
               Cursive to do. Explore our <Link href="/platform">full platform</Link> to see how the pieces fit together,
-              or check out our <Link href="/services">managed services</Link> if you want white-glove onboarding.
+              or review the <Link href="/services">self-serve plan options</Link> to choose the right fit.
             </p>
 
             <h2>About the Author</h2>
@@ -1058,7 +1057,7 @@ export default function BlogPost() {
                 <p className="font-bold text-gray-900 mb-2">1. Cursive - Best for full-stack visitor ID + AI outreach</p>
                 <MachineList items={[
                   "Match Rate: ~70% person-level identification (names, emails, LinkedIn profiles)",
-                  "Pricing: Starting at $1,000/mo (includes visitor ID, AI SDR, multi-channel outreach, intent data)",
+                  "Pricing: $97/mo Visitor Pixel, $197/mo Custom Audience, or $247/mo Bundle",
                   "Key Features: AI SDR automation, email + LinkedIn + direct mail, intent audiences, lead scoring",
                   "Best For: B2B companies with 5,000+ monthly visitors who want complete visitor-to-meeting workflow",
                   "Strengths: Highest match rates, built-in automation, multi-channel, 5-min pixel setup",
@@ -1180,7 +1179,7 @@ export default function BlogPost() {
                 <p className="font-bold text-gray-900 mb-2">Total Cost of Ownership:</p>
                 <MachineList items={[
                   "RB2B Stack: Base ($300/mo) + email tool ($200/mo) + LinkedIn automation ($150/mo) + enrichment ($200/mo) = ~$850/mo fragmented",
-                  "Cursive All-in-One: $1,000/mo includes visitor ID, AI SDR, multi-channel outreach, intent data, enrichment",
+                  "Cursive: $97/mo Visitor Pixel, $197/mo Custom Audience, or $247/mo Bundle",
                   "Cursive eliminates data silos and integration overhead"
                 ]} />
               </div>
@@ -1256,15 +1255,15 @@ export default function BlogPost() {
             </p>
             <MachineList items={[
               { label: "Platform Overview", href: "/platform", description: "Complete lead generation platform with visitor ID, AI SDR, intent data" },
-              { label: "Pricing", href: "/pricing", description: "Starting at $1,000/mo - replaces RB2B + email tool + LinkedIn automation + enrichment" },
+              { label: "Pricing", href: "/pricing", description: "Self-serve plans at $97, $197, or $247 per month" },
               { label: "Visitor Identification", href: "/visitor-identification", description: "70% person-level match rate with names, emails, LinkedIn profiles" },
               { label: "AI SDR", href: "/what-is-ai-sdr", description: "Automated personalized outreach based on visitor behavior" },
               { label: "Intent Audiences", href: "/intent-audiences", description: "Track pages viewed, return visits, content engagement" },
               { label: "Direct Mail", href: "/direct-mail", description: "Multi-channel outreach including physical mail" },
-              { label: "Marketplace", href: "/marketplace", description: "Additional capabilities and integrations" },
+              { label: "Self-Serve Plans", href: "/marketplace", description: "Visitor identification, in-market audiences, or both" },
               { label: "Free AI Audit", href: "/free-audit", description: "See exactly which visitors you're missing and potential pipeline" },
               { label: "Book a Demo", href: "/book", description: "See Cursive in real-time with your traffic" },
-              { label: "Managed Services", href: "/services", description: "White-glove onboarding and management" }
+              { label: "Plan Options", href: "/services", description: "Compare Cursive's three month-to-month plans" }
             ]} />
           </MachineSection>
 
@@ -1292,7 +1291,7 @@ export default function BlogPost() {
               </div>
               <div>
                 <p className="font-bold text-gray-900 mb-1">How much does it cost to switch from RB2B to an alternative?</p>
-                <p className="text-gray-700 text-sm">Switching costs are minimal. Cursive offers a free audit to show what you're missing, and setup takes about 5 minutes with simple pixel installation. Most teams see results within first 24 hours. Pricing starts at $1,000/mo including visitor identification, AI outreach, and intent data.</p>
+                <p className="text-gray-700 text-sm">Switching costs are minimal, and Visitor Pixel setup takes about 5 minutes. Cursive offers month-to-month self-serve plans at $97, $197, and $247 per month, with no setup fee and cancel-anytime terms.</p>
               </div>
               <div>
                 <p className="font-bold text-gray-900 mb-1">Do I need separate tools for visitor identification and outreach?</p>

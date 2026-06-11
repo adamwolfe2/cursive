@@ -192,7 +192,7 @@ export default function BlogPost() {
                       <td className="border border-gray-300 p-3 text-green-600 font-bold">Person</td>
                       <td className="border border-gray-300 p-3">Name, email, title, company, LinkedIn, phone</td>
                       <td className="border border-gray-300 p-3 text-green-600"><Check className="w-4 h-4 inline" /> AI SDR (email, LI, SMS, DM)</td>
-                      <td className="border border-gray-300 p-3">$1,000/mo or $0.60/lead</td>
+                      <td className="border border-gray-300 p-3">From $97/mo</td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-3 font-bold">RB2B</td>
@@ -241,7 +241,7 @@ export default function BlogPost() {
               <p>
                 The 70% vs 40% identification rate difference is significant in practice. If you receive 2,000 unique
                 B2B visitors per month: Cursive identifies ~1,400 with full contact data; Warmly identifies ~800 with
-                company name only; traditional reverse IP identifies ~500 with company name only. At $0.60/lead self-serve,
+                company name only; traditional reverse IP identifies ~500 with company name only. With Visitor Pixel at $97/mo,
                 that means Cursive delivers 1,400 warm, identified leads per month from your existing traffic.
               </p>
 
@@ -285,7 +285,7 @@ export default function BlogPost() {
                   <div className="w-7 h-7 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm shrink-0 mt-0.5">1</div>
                   <div>
                     <p className="font-bold">Choose your provider</p>
-                    <p className="text-sm text-gray-600">For person-level B2B identification with outreach automation, evaluate Cursive (70% ID, $1,000/mo or $0.60/lead) and RB2B (50-60% ID, free tier). For company-level only, evaluate Warmly or Leadfeeder.</p>
+                    <p className="text-sm text-gray-600">For person-level B2B identification, evaluate Cursive (70% ID, Visitor Pixel at $97/mo) and RB2B (50-60% ID, free tier). For company-level only, evaluate Warmly or Leadfeeder.</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3 p-4 bg-white rounded-lg border border-gray-200">
@@ -397,8 +397,8 @@ export default function BlogPost() {
               <p>
                 To see your actual identification rate against your real traffic before making any commitment,
                 <Link href="https://cal.com/cursiveteam/30min"> book a demo</Link>. Or explore the
-                <Link href="https://leads.meetcursive.com/get-leads"> Cursive self-serve marketplace</Link> to purchase
-                identified leads at $0.60 each with no monthly commitment.
+                <Link href="https://leads.meetcursive.com/get-leads"> Cursive self-serve plans</Link> to choose Visitor Pixel
+                at $97/mo, Custom Audience at $197/mo, or the Pixel + Audience Bundle at $247/mo.
               </p>
 
               <h2>About the Author</h2>
@@ -502,7 +502,7 @@ export default function BlogPost() {
 
           <MachineSection title="Identification Rate Comparison">
             <MachineList items={[
-              "Cursive: 70% person-level — name, email, title, company, LinkedIn, phone | $1,000/mo or $0.60/lead | AI SDR outreach included",
+              "Cursive: 70% person-level — name, email, title, company, LinkedIn, phone | Visitor Pixel from $97/mo",
               "RB2B: 50-60% person-level — name, LinkedIn URL | Free tier available, $149+/mo | No built-in outreach",
               "Warmly: ~40% company-level — company name, CRM routing | $3,500/mo | No built-in outreach",
               "Clearbit/HubSpot: 30-40% company-level — requires HubSpot plan | No standalone outreach",
@@ -514,7 +514,7 @@ export default function BlogPost() {
           <MachineSection title="Practical Impact of ID Rate">
             <MachineList items={[
               "2,000 monthly visitors: Cursive identifies ~1,400 with full contact data vs Warmly ~800 company-only vs reverse IP ~500 company-only",
-              "At $0.60/lead self-serve: Cursive delivers ~1,400 identified leads/month from existing traffic",
+              "With Visitor Pixel at $97/mo: Cursive identifies companies and people visiting your site",
               "Identified visitors convert at 3-5x higher rates than cold prospects"
             ]} />
           </MachineSection>
@@ -532,7 +532,7 @@ export default function BlogPost() {
 
           <MachineSection title="Implementation Steps">
             <MachineList items={[
-              "Step 1: Choose provider — Cursive (70% person-level, $1,000/mo) for person-level + outreach automation",
+              "Step 1: Choose provider — Cursive (70% person-level, Visitor Pixel at $97/mo) for person-level visitor identification",
               "Step 2: Install pixel — one-line JavaScript in <head> or via Google Tag Manager",
               "Step 3: Configure ICP filters — job title, company size, industry, geography criteria",
               "Step 4: Connect CRM — 200+ integrations with Cursive, auto-create/update records",
@@ -562,7 +562,7 @@ export default function BlogPost() {
           <MachineSection title="Get Started with Cursive">
             <MachineList items={[
               { label: "Book a Demo", href: "https://cal.com/cursiveteam/30min", description: "See your actual identification rate against your real traffic" },
-              { label: "Marketplace (Self-Serve)", href: "https://leads.meetcursive.com/get-leads", description: "Buy identified leads at $0.60 each, no monthly commitment" },
+              { label: "Self-Serve Plans", href: "https://leads.meetcursive.com/get-leads", description: "Visitor Pixel $97/mo, Custom Audience $197/mo, or Pixel + Audience Bundle $247/mo" },
               { label: "Free AI Audit", href: "/free-audit", description: "See which visitors you are missing and the pipeline you could generate" },
               { label: "Visitor Identification Feature", href: "/visitor-identification", description: "Learn how Cursive's 70% person-level identification works" }
             ]} />

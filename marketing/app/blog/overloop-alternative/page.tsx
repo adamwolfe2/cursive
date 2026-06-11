@@ -22,7 +22,7 @@ const faqs = [
   },
   {
     question: "How does Cursive compare to Overloop for outbound?",
-    answer: "Cursive takes a fundamentally different approach than Overloop. While Overloop starts with cold contact lists and runs templated sequences, Cursive identifies people who have already visited your website — warm leads who have shown real buying intent. Cursive then uses AI to write personalized emails based on the visitor's company, role, and behavior, and delivers outreach via email, LinkedIn, and direct mail. At $1,000/month flat (not per-user), Cursive typically costs less than Overloop for teams of two or more people while generating significantly better reply rates from warm, intent-driven outreach."
+    answer: "Cursive takes a fundamentally different approach than Overloop. While Overloop starts with cold contact lists and runs templated sequences, Cursive identifies people who have already visited your website and delivers fresh weekly lists of in-market buyers. Cursive offers Visitor Pixel at $97/month, Custom Audience at $197/month, and the Pixel + Audience Bundle at $247/month, all month-to-month with no setup fee."
   },
   {
     question: "Does Cursive have LinkedIn automation like Overloop?",
@@ -30,7 +30,7 @@ const faqs = [
   },
   {
     question: "Is Cursive better than Overloop for small teams?",
-    answer: "For small B2B sales teams, Cursive often delivers better ROI than Overloop. Overloop's per-seat pricing means two reps cost $200-300/month before you add data costs. Cursive's $1,000/month flat rate covers your entire team with visitor identification, AI-written personalized outreach, intent data, and multi-channel sequences included. More importantly, Cursive works warm leads from your own website traffic rather than cold lists, which typically produces 3-5x higher reply rates — making every outreach dollar go further for small teams."
+    answer: "For small B2B sales teams, Cursive offers transparent self-serve pricing without per-seat fees. Visitor Pixel identifies companies and people visiting your site for $97/month, Custom Audience delivers a fresh weekly list of in-market buyers for $197/month, and the $247/month Bundle includes both. Every plan is month-to-month with no setup fee and can be canceled anytime."
   }
 ]
 
@@ -44,7 +44,7 @@ export default function BlogPost() {
   return (
     <main>
       <StructuredData data={generateFAQSchema({ faqs })} />
-      <StructuredData data={generateBlogPostSchema({ title: "Best Overloop Alternatives: Cold Email Tools vs $1k/mo AI-Powered Outreach (2026)", description: "Compare top Overloop alternatives for sales automation and cold email. See why B2B teams are switching from Overloop's $99-$149/user/month per-seat pricing to Cursive's warm-lead AI outreach platform.", author: "Cursive Team", publishDate: "2026-02-19", image: "https://www.meetcursive.com/cursive-logo.png" })} />
+      <StructuredData data={generateBlogPostSchema({ title: "Best Overloop Alternatives: Cold Email Tools vs Cursive Self-Serve Plans (2026)", description: "Compare top Overloop alternatives for sales automation and cold email. See why B2B teams are switching from Overloop's $99-$149/user/month per-seat pricing to Cursive's self-serve visitor identification and audience plans.", author: "Cursive Team", publishDate: "2026-02-19", image: "https://www.meetcursive.com/cursive-logo.png" })} />
 
       <HumanView>
         {/* Header */}
@@ -59,7 +59,7 @@ export default function BlogPost() {
                 Comparisons
               </div>
               <h1 className="text-5xl font-bold mb-6">
-                Best Overloop Alternatives: Cold Email Tools vs $1k/mo AI-Powered Outreach (2026)
+                Best Overloop Alternatives: Cold Email Tools vs Cursive Self-Serve Plans (2026)
               </h1>
               <p className="text-xl text-gray-600 mb-6">
                 Overloop (formerly Prospect.io) charges $99–$149 per seat per month for email sequences and LinkedIn
@@ -122,9 +122,9 @@ export default function BlogPost() {
                   <tbody className="bg-white">
                     <tr className="bg-blue-50 border-2 border-blue-500">
                       <td className="border border-gray-300 p-3 font-bold">Cursive</td>
-                      <td className="border border-gray-300 p-3">Warm inbound leads + AI outreach</td>
+                      <td className="border border-gray-300 p-3">Visitor ID + in-market audiences</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold">Warm (visitor ID)</td>
-                      <td className="border border-gray-300 p-3">$1,000/mo flat</td>
+                      <td className="border border-gray-300 p-3">$97-$247/mo</td>
                       <td className="border border-gray-300 p-3">AI SDR + visitor ID + intent data</td>
                     </tr>
                     <tr>
@@ -251,7 +251,7 @@ export default function BlogPost() {
                   which pages visitors view, how often they return, and what content they engage with — then scores and routes
                   them to the most relevant outreach sequence. The <Link href="/audience-builder" className="text-blue-600 hover:underline">audience
                   builder</Link> lets you create precise ICP segments so your AI SDR only contacts the right people.
-                  Explore additional capabilities via the <Link href="/marketplace" className="text-blue-600 hover:underline">Cursive marketplace</Link>.
+                  Choose the <Link href="/marketplace" className="text-blue-600 hover:underline">Cursive self-serve plan</Link> that fits your needs.
                 </p>
 
                 <div className="grid md:grid-cols-2 gap-6 mb-4">
@@ -276,7 +276,7 @@ export default function BlogPost() {
                       </li>
                       <li className="flex items-center gap-2">
                         <Check className="w-4 h-4 text-green-600" />
-                        Flat pricing — no per-seat fees
+                        Month-to-month pricing — no per-seat fees
                       </li>
                     </ul>
                   </div>
@@ -289,7 +289,7 @@ export default function BlogPost() {
                       </li>
                       <li className="flex items-center gap-2">
                         <X className="w-4 h-4 text-red-400" />
-                        Starts at $1,000/mo (higher entry than Overloop for 1 user)
+                        Starts at $97/mo with no setup fee
                       </li>
                     </ul>
                   </div>
@@ -298,7 +298,7 @@ export default function BlogPost() {
                 <div className="bg-white rounded-lg p-4">
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-bold">Pricing:</span>
-                    <span className="text-lg font-bold text-blue-600">Starting at $1,000/mo (flat)</span>
+                    <span className="text-lg font-bold text-blue-600">$97/mo Pixel | $197/mo Audience | $247/mo Bundle</span>
                   </div>
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> B2B companies generating 5,000+ monthly website visitors that want
@@ -775,10 +775,9 @@ export default function BlogPost() {
               </p>
 
               <p>
-                <strong>Cursive (whole team):</strong> $1,000/mo flat covers your entire team — no per-seat fees. Includes
-                visitor identification, AI-written personalized outreach, intent data, and multi-channel delivery. The
-                key difference: Cursive works warm inbound leads, not cold lists, so the revenue generated per dollar
-                spent is typically much higher. Visit our <Link href="/pricing">pricing page</Link> for full details.
+                <strong>Cursive (whole team):</strong> Choose Visitor Pixel at $97/mo, Custom Audience at $197/mo, or the
+                Pixel + Audience Bundle at $247/mo. Every plan is month-to-month, has no setup fee, covers your entire
+                team, and can be canceled anytime. Visit our <Link href="/pricing">pricing page</Link> for full details.
               </p>
 
               <p>
@@ -900,7 +899,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">Best Overloop Alternatives: Cold Email Tools vs $1k/mo AI-Powered Outreach (2026)</h1>
+          <h1 className="text-2xl font-bold mb-4">Best Overloop Alternatives: Cold Email Tools vs Cursive Self-Serve Plans (2026)</h1>
 
           <p className="text-gray-700 mb-6">
             Compare the top Overloop (formerly Prospect.io) alternatives for sales automation and cold email outreach. Overloop charges $99-$149/user/month for email sequences and LinkedIn automation with no visitor identification or AI personalization. Published: February 19, 2026.
@@ -910,8 +909,8 @@ export default function BlogPost() {
             <MachineList items={[
               "Overloop pricing: $99-$149/user/month for multi-channel cold sequences (email + LinkedIn) with built-in CRM",
               "Top pain points: Per-seat pricing escalates fast, cold-list-only approach, no AI personalization, no visitor identification, no intent data",
-              "Cursive: Starts with warm leads (website visitors with buying intent), AI-written personalized emails, multi-channel (email + LinkedIn + direct mail), $1,000/mo flat",
-              "For 3+ person teams: Cursive flat pricing often equals or beats Overloop per-seat total cost",
+              "Cursive: Visitor Pixel at $97/mo, Custom Audience at $197/mo, or the Pixel + Audience Bundle at $247/mo",
+              "Cursive plans are month-to-month with no setup fee, no per-seat fees, and cancel-anytime terms",
               "Cold email alternatives: Apollo ($49/user/mo) or Instantly ($37/mo) for teams keeping cold approach"
             ]} />
           </MachineSection>
@@ -922,10 +921,10 @@ export default function BlogPost() {
                 <p className="font-bold text-gray-900 mb-2">1. Cursive - Best for warm inbound leads + AI outreach (Our Pick)</p>
                 <MachineList items={[
                   "Approach: Identifies website visitors with real buying intent (not cold lists)",
-                  "Pricing: $1,000/mo flat (no per-seat fees)",
+                  "Pricing: $97/mo Visitor Pixel, $197/mo Custom Audience, or $247/mo Bundle",
                   "Key Features: Website visitor ID (70% person-level match rate), AI SDR writes personalized emails, multi-channel (email + LinkedIn + direct mail), intent data and lead scoring",
                   "Best For: B2B companies with 5,000+ monthly visitors wanting warm lead outreach",
-                  "Strengths: Starts warm, AI-written personalization (not templates), multi-channel, flat pricing",
+                  "Strengths: Person-level visitor ID, fresh weekly in-market buyer lists, month-to-month pricing",
                   "Limitations: Requires website traffic, higher entry price than Overloop for single user"
                 ]} />
               </div>
@@ -1016,9 +1015,9 @@ export default function BlogPost() {
                 <p className="font-bold text-gray-900 mb-2">Pricing Model:</p>
                 <MachineList items={[
                   "Overloop: $99-$149/user/month (3 reps = $297-$447/mo just for sequences)",
-                  "Cursive: $1,000/mo flat (covers entire team, no per-seat fees)",
+                  "Cursive: $97-$247/mo self-serve plans (covers entire team, no per-seat fees)",
                   "Add data + enrichment to Overloop: total stack $500-$650+/mo for cold outreach",
-                  "Cursive includes visitor ID, AI outreach, intent data, enrichment in flat price"
+                  "Cursive offers visitor ID, weekly in-market buyer lists, or both"
                 ]} />
               </div>
 
@@ -1091,11 +1090,11 @@ export default function BlogPost() {
 
           <MachineSection title="Get Started with Cursive">
             <p className="text-gray-700 mb-3">
-              Cursive replaces cold outreach with warm lead conversion — identifying website visitors with real buying intent and using AI to write personalized outreach across email, LinkedIn, and direct mail. Flat $1,000/mo pricing covers your entire team.
+              Cursive identifies companies and people visiting your site and delivers fresh weekly lists of in-market buyers. Choose from three month-to-month self-serve plans priced at $97, $197, or $247 per month.
             </p>
             <MachineList items={[
               { label: "Platform Overview", href: "/platform", description: "Complete lead generation platform" },
-              { label: "Pricing", href: "/pricing", description: "Starting at $1,000/mo flat — no per-seat fees" },
+              { label: "Pricing", href: "/pricing", description: "Self-serve plans at $97, $197, or $247 per month" },
               { label: "Visitor Identification", href: "/visitor-identification", description: "70% person-level match rate for your site visitors" },
               { label: "AI SDR", href: "/what-is-ai-sdr", description: "AI-written personalized outreach based on visitor behavior" },
               { label: "Direct Mail", href: "/direct-mail", description: "Multi-channel outreach including physical mail" },

@@ -30,11 +30,11 @@ const faqs = [
   },
   {
     question: "How does Cursive compare to Outreach.io?",
-    answer: "Outreach.io and Cursive solve fundamentally different problems. Outreach helps you manage and execute sequences for contacts you already have in your system. Cursive identifies who you should be reaching in the first place — capturing 70% of anonymous visitors and surfacing in-market buyers via 60B+ weekly behavioral signals across 30,000+ categories — and then automates personalized outreach automatically. Cursive also costs $1,000/month flat versus Outreach's $100-$150 per user per month, making it dramatically more cost-effective for teams of 7 or more reps even before counting the separate contact data provider Outreach requires."
+    answer: "Outreach.io and Cursive solve fundamentally different problems. Outreach helps you manage and execute sequences for contacts you already have in your system. Cursive identifies who you should be reaching in the first place — capturing anonymous visitors and surfacing in-market buyers via weekly behavioral signals. Cursive offers Visitor Pixel at $97/month, Custom Audience at $197/month, and the Pixel + Audience Bundle at $247/month, all month-to-month with no setup fee."
   },
   {
     question: "Is there a cheaper alternative to Outreach.io for small and mid-market teams?",
-    answer: "Yes. Apollo.io offers sequencing plus a 275M+ contact database for $49-$99/user/month. Reply.io provides multi-channel sequences (email, LinkedIn, SMS, WhatsApp) for $59-$99/user/month. For teams that want to completely replace the Outreach + data provider stack with a warm-lead, intent-driven approach, Cursive at $1,000/month flat is actually cheaper than Outreach alone for any team with 7+ reps, and replaces the separate contact data subscription too."
+    answer: "Yes. Apollo.io offers sequencing plus a 275M+ contact database for $49-$99/user/month. Reply.io provides multi-channel sequences (email, LinkedIn, SMS, WhatsApp) for $59-$99/user/month. For teams that want visitor identification, fresh weekly in-market buyer lists, or both, Cursive offers self-serve plans at $97, $197, and $247 per month."
   },
   {
     question: "Can I replace Outreach.io without losing sequencing capability?",
@@ -138,7 +138,7 @@ export default function BlogPost() {
                       <td className="border border-gray-300 p-3">Warm visitor leads + AI multi-channel outreach</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold"><Check className="w-4 h-4 inline" /> 70% person-level</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold"><Check className="w-4 h-4 inline" /> 280M profiles</td>
-                      <td className="border border-gray-300 p-3">$1,000/mo or $0.60/lead</td>
+                      <td className="border border-gray-300 p-3">$97-$247/mo</td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-3 font-bold">Salesloft</td>
@@ -273,7 +273,7 @@ export default function BlogPost() {
                   The platform also includes an <Link href="/intent-audiences" className="text-blue-600 hover:underline">intent audience engine</Link> that
                   scans 60B+ behaviors and URLs weekly across 30,000+ categories to surface companies actively in-market for your category.
                   Combined with a database of 280M US consumer and 140M+ business profiles, Cursive replaces the three-tool stack most
-                  Outreach users maintain (sequencer + data provider + intent signal tool) at a flat $1,000/month — versus Outreach&apos;s
+                  Outreach users maintain (sequencer + data provider + intent signal tool) with self-serve plans from $97-$247/month — versus Outreach&apos;s
                   $100-$150/user/month before data costs.
                 </p>
 
@@ -299,7 +299,7 @@ export default function BlogPost() {
                       </li>
                       <li className="flex items-center gap-2">
                         <Check className="w-4 h-4 text-green-600" />
-                        $1,000/mo flat replaces Outreach + data + intent stack
+                        Plans from $97-$247/mo for visitor ID and in-market buyer lists
                       </li>
                       <li className="flex items-center gap-2">
                         <Check className="w-4 h-4 text-green-600" />
@@ -316,7 +316,7 @@ export default function BlogPost() {
                       </li>
                       <li className="flex items-center gap-2">
                         <X className="w-4 h-4 text-red-400" />
-                        No free tier (managed starts at $1,000/mo)
+                        No free tier (plans start at $97/mo)
                       </li>
                       <li className="flex items-center gap-2">
                         <X className="w-4 h-4 text-red-400" />
@@ -329,13 +329,13 @@ export default function BlogPost() {
                 <div className="bg-white rounded-lg p-4">
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-bold">Pricing:</span>
-                    <span className="text-lg font-bold text-blue-600">$1,000/mo managed | $0.60/lead self-serve</span>
+                    <span className="text-lg font-bold text-blue-600">$97/mo Pixel | $197/mo Audience | $247/mo Bundle</span>
                   </div>
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> B2B teams that want to replace cold list prospecting with intent-driven,
                     warm visitor pipeline. One platform replaces Outreach, your contact data subscription, and your
                     intent data tool. See <Link href="/pricing" className="text-blue-600 hover:underline">full pricing</Link> or
-                    explore the <Link href="/marketplace" className="text-blue-600 hover:underline">self-serve marketplace</Link>.
+                    choose the <Link href="/marketplace" className="text-blue-600 hover:underline">self-serve plan</Link> that fits your needs.
                   </p>
                 </div>
               </div>
@@ -851,7 +851,7 @@ export default function BlogPost() {
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-3 font-medium">Price/User/Mo</td>
-                      <td className="border border-gray-300 p-3 text-center text-green-700 font-bold">$1k flat</td>
+                      <td className="border border-gray-300 p-3 text-center text-green-700 font-bold">$97-$247</td>
                       <td className="border border-gray-300 p-3 text-center">$100-$150</td>
                       <td className="border border-gray-300 p-3 text-center">$49-$99</td>
                       <td className="border border-gray-300 p-3 text-center">$59-$99</td>
@@ -870,7 +870,7 @@ export default function BlogPost() {
                 <div className="space-y-4 text-sm">
                   <div className="border-b border-gray-200 pb-3">
                     <p className="font-bold text-blue-700 mb-1">You want visitor identification + intent data + automated outreach (replace Outreach + data stack):</p>
-                    <p className="text-gray-700"><strong>Choose Cursive.</strong> The only platform that identifies warm visitors, surfaces in-market buyers, and automates multi-channel outreach at $1,000/month flat — cheaper than Outreach alone for teams with 7+ reps, with contact data and intent included.</p>
+                    <p className="text-gray-700"><strong>Choose Cursive.</strong> Identify warm visitors for $97/month, receive fresh weekly in-market buyer lists for $197/month, or get both for $247/month.</p>
                   </div>
                   <div className="border-b border-gray-200 pb-3">
                     <p className="font-bold text-blue-700 mb-1">You want affordable sequencing + bundled contact data:</p>
@@ -993,7 +993,7 @@ export default function BlogPost() {
             <div className="max-w-3xl mx-auto text-center">
               <h2 className="text-3xl font-bold mb-4">Ready for a Better Outreach.io Alternative?</h2>
               <p className="text-xl mb-8 text-white/90">
-                Stop paying $100-$150 per user for cold sequence management. See how Cursive identifies 70% of your anonymous visitors and surfaces active buyers — at $1,000/month flat.
+                Stop paying $100-$150 per user for cold sequence management. See how Cursive identifies anonymous visitors and surfaces active buyers with self-serve plans from $97-$247/month.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button size="lg" variant="default" asChild>
@@ -1023,7 +1023,7 @@ export default function BlogPost() {
               "No built-in contact database — requires separate data subscription ($50-$200/user/mo additional)",
               "No website visitor identification — warm, high-intent visitors remain invisible",
               "No intent data layer — cold list-based outreach only",
-              "Cursive pricing: $1,000/mo flat replaces Outreach + contact data + intent data subscription",
+              "Cursive pricing: $97/mo Visitor Pixel, $197/mo Custom Audience, or $247/mo Bundle",
               "Cursive visitor ID: 70% person-level match rate, identifies name, email, phone, company, LinkedIn"
             ]} />
           </MachineSection>
@@ -1037,7 +1037,7 @@ export default function BlogPost() {
                   "Database: 280M consumer profiles, 140M+ business profiles (included in plan)",
                   "Intent Data: 60B+ behaviors & URLs scanned weekly across 30,000+ categories",
                   "Outreach: AI SDR with email, LinkedIn, SMS, and direct mail automation",
-                  "Pricing: $1,000/mo managed or $0.60/lead self-serve",
+                  "Pricing: $97/mo Visitor Pixel, $197/mo Custom Audience, or $247/mo Bundle",
                   "Best For: Teams replacing Outreach + data stack with intent-driven warm lead platform",
                   "Break-even vs Outreach: Cursive is cheaper than Outreach alone for teams with 7+ reps"
                 ]} />
@@ -1125,7 +1125,7 @@ export default function BlogPost() {
                   "Plus data provider: $5,000-$20,000/yr additional",
                   "Plus intent data: $5,000-$25,000/yr additional",
                   "Total Outreach stack: $22,000-$63,000/yr for 10 reps",
-                  "Cursive: $12,000/yr flat (includes sequencing + 280M profiles + intent data + visitor ID)"
+                  "Cursive: $97-$247/mo self-serve plans for visitor identification and in-market buyer lists"
                 ]} />
               </div>
             </div>
@@ -1133,7 +1133,7 @@ export default function BlogPost() {
 
           <MachineSection title="Decision Guide: Which Alternative to Choose">
             <MachineList items={[
-              "Warm visitor identification + intent data + multi-channel AI outreach → Cursive ($1,000/mo flat)",
+              "Website visitor identification + fresh weekly in-market buyer lists → Cursive ($97-$247/mo)",
               "Affordable sequencing + bundled contact database → Apollo ($49/mo per user)",
               "Enterprise SEP with comparable features at lower price → Salesloft ($75-$125/user/mo)",
               "Multi-channel sequences without enterprise minimums → Reply.io ($59/mo per user)",

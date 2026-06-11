@@ -166,7 +166,7 @@ export default function BlogPost() {
                       <td className="border border-gray-300 p-3 text-green-600 font-bold">70% person-level</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold">Built-in AI SDR</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold">60B+ signals</td>
-                      <td className="border border-gray-300 p-3">$0.60/lead</td>
+                      <td className="border border-gray-300 p-3">$97-$247/mo</td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-3 font-bold">Apollo.io</td>
@@ -245,8 +245,8 @@ export default function BlogPost() {
                   <Link href="/visitor-identification" className="text-blue-600 hover:underline">70% person-level identification rate</Link> --
                   and then automates personalized outreach to convert them. With 280M consumer profiles, 140M+ business
                   profiles, phone numbers, and 60B+ weekly behavioral intent signals, Cursive is a complete pipeline
-                  engine compared to Hunter's single-purpose email lookup utility. And at $0.60/lead on the self-serve
-                  marketplace, it is accessible to teams of any size.
+                  engine compared to Hunter's single-purpose email lookup utility. And with self-serve plans
+                  starting at $97/month, it is accessible to teams of any size.
                 </p>
 
                 <div className="grid md:grid-cols-2 gap-6 mb-4">
@@ -279,7 +279,7 @@ export default function BlogPost() {
                       </li>
                       <li className="flex items-center gap-2">
                         <Check className="w-4 h-4 text-green-600" />
-                        Self-serve at $0.60/lead with no monthly minimum
+                        Self-serve plans start at $97/mo, with no setup fee
                       </li>
                     </ul>
                   </div>
@@ -296,7 +296,7 @@ export default function BlogPost() {
                       </li>
                       <li className="flex items-center gap-2">
                         <X className="w-4 h-4 text-red-600" />
-                        Managed plans start at $1k/mo (overkill for solo freelancers)
+                        Plans are month-to-month, but may be overkill for solo freelancers
                       </li>
                     </ul>
                   </div>
@@ -305,7 +305,7 @@ export default function BlogPost() {
                 <div className="bg-white rounded-lg p-4">
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-bold">Pricing:</span>
-                    <span className="text-lg font-bold text-blue-600">$0.60/lead (self-serve) / $1k/mo (managed)</span>
+                    <span className="text-lg font-bold text-blue-600">$97/mo Pixel | $197/mo Audience | $247/mo Bundle</span>
                   </div>
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> B2B companies that have outgrown Hunter.io's email-only lookup model
@@ -321,7 +321,7 @@ export default function BlogPost() {
                 <h3 className="text-2xl font-bold mb-3">Hunter.io Finds Emails. Cursive Finds Your Next Customers.</h3>
                 <p className="text-blue-100 mb-6 max-w-xl mx-auto">
                   Identify 70% of anonymous website visitors in real time, enrich with phone + email + 60B+ intent
-                  signals, and automate personalized multi-channel outreach. Self-serve from $0.60/lead.
+                  signals, and automate personalized multi-channel outreach. Self-serve plans start at $97/month.
                 </p>
                 <Link
                   href="https://www.meetcursive.com/platform"
@@ -878,7 +878,7 @@ export default function BlogPost() {
                   <div className="space-y-3">
                     <div>
                       <h4 className="font-bold mb-1">How Much Volume Do You Need?</h4>
-                      <p className="text-gray-600">Hunter's credits run out fast at scale. Apollo's 200M+ database and monthly plans, or Cursive's per-lead self-serve model, are better suited for teams prospecting hundreds of contacts per month.</p>
+                      <p className="text-gray-600">Hunter's credits run out fast at scale. Apollo's 200M+ database and monthly plans, or Cursive's self-serve audience plans, are better suited for teams prospecting hundreds of contacts per month.</p>
                     </div>
                     <div>
                       <h4 className="font-bold mb-1">Do You Need Intent Data?</h4>
@@ -954,7 +954,7 @@ export default function BlogPost() {
         <DashboardCTA
           headline="Ready to Go Beyond"
           subheadline="Email Finding?"
-          description="Cursive identifies 70% of your anonymous website visitors by name, enriches them with phone, email, and 60B+ behaviors & URLs scanned weekly, and automates personalized multi-channel outreach. Self-serve from $0.60/lead. No annual lock-in."
+          description="Cursive identifies 70% of your anonymous website visitors by name, enriches them with phone, email, and 60B+ behaviors & URLs scanned weekly, and automates personalized multi-channel outreach. Self-serve plans start at $97/month. No annual lock-in."
         />
 
         {/* Related Posts */}
@@ -1024,7 +1024,7 @@ export default function BlogPost() {
 
           <MachineSection title="Key Takeaways">
             <MachineList items={[
-              "Cursive - Best full-stack pick: visitor identification + phone + email + AI outreach ($0.60/lead self-serve / $1k/mo managed)",
+              "Cursive - Best full-stack pick: visitor identification + fresh weekly in-market buyer lists ($97-$247/mo self-serve)",
               "Apollo.io - Best budget pick for email + phone + sequencing (free tier / $49/user/mo)",
               "Lusha - Best for LinkedIn-focused prospecting with direct dial phone numbers ($29-$79/user/mo)",
               "Snov.io - Best Hunter-like alternative with built-in email drip automation (free / $39/mo)",
@@ -1062,7 +1062,7 @@ export default function BlogPost() {
               <strong>Best for:</strong> Full-stack B2B prospecting with visitor identification, intent data, phone + email, and AI outreach in one platform
             </p>
             <p className="text-gray-700 mb-3">
-              Combines 70% person-level visitor identification (industry-leading), 280M consumer profiles, 140M+ business profiles, phone and email data, 60B+ behavioral intent signals across 30,000+ categories, and AI-powered multi-channel outreach (email, LinkedIn, SMS, direct mail). Self-serve at $0.60/lead with no monthly minimum.
+              Combines 70% person-level visitor identification (industry-leading), 280M consumer profiles, 140M+ business profiles, phone and email data, 60B+ behavioral intent signals across 30,000+ categories, and AI-powered multi-channel outreach (email, LinkedIn, SMS, direct mail). Self-serve plans start at $97/month with no setup fee.
             </p>
             <div className="mb-3">
               <p className="font-bold text-gray-900 mb-2">Strengths:</p>
@@ -1074,7 +1074,7 @@ export default function BlogPost() {
                 "AI SDR: automated multi-channel outreach (email, LinkedIn, SMS, direct mail)",
                 "200+ native CRM integrations (Salesforce, HubSpot, Pipedrive)",
                 "95%+ email deliverability with real-time identification",
-                "Self-serve at $0.60/lead, no monthly minimum commitment"
+                "Self-serve plans from $97/month, with no setup fee and cancel anytime"
               ]} />
             </div>
             <div className="mb-3">
@@ -1082,11 +1082,11 @@ export default function BlogPost() {
               <MachineList items={[
                 "Visitor identification requires website traffic to function",
                 "Not a simple domain-search email lookup tool like Hunter",
-                "Managed plans start at $1k/mo (overkill for solo freelancers)"
+                "Monthly plans may be overkill for solo freelancers"
               ]} />
             </div>
             <p className="text-gray-700">
-              <strong>Pricing:</strong> $0.60/lead (self-serve marketplace) / $1k/month (managed)
+              <strong>Pricing:</strong> $97/month Visitor Pixel / $197/month Custom Audience / $247/month Bundle
             </p>
           </MachineSection>
 
@@ -1196,8 +1196,8 @@ export default function BlogPost() {
               { label: "Visitor Identification", href: "/visitor-identification", description: "70% person-level identification rate, industry-leading" },
               { label: "Intent Audiences", href: "/intent-audiences", description: "60B+ behaviors & URLs scanned weekly across 30,000+ categories" },
               { label: "Platform Overview", href: "/platform", description: "AI SDR: email + LinkedIn + SMS + direct mail outreach" },
-              { label: "Pricing", href: "/pricing", description: "$0.60/lead self-serve or $1k/month managed, month-to-month" },
-              { label: "Self-Serve Marketplace", href: "https://leads.meetcursive.com/get-leads", description: "Buy leads at $0.60/lead with no monthly minimum" }
+              { label: "Pricing", href: "/pricing", description: "$97/mo Pixel, $197/mo Audience, or $247/mo Bundle; month-to-month" },
+              { label: "Self-Serve Plans", href: "https://leads.meetcursive.com/get-leads", description: "Choose a plan with no setup fee and cancel anytime" }
             ]} />
           </MachineSection>
 

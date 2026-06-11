@@ -30,11 +30,11 @@ const faqs = [
   },
   {
     question: "How does Cursive compare to Salesloft?",
-    answer: "Cursive and Salesloft address fundamentally different problems. Salesloft is a cadence and engagement management tool — it helps you organize and execute outreach to contacts you already have. Cursive is an inbound-intent lead generation platform — it identifies who is already visiting your site, surfaces active buyers based on 60B+ weekly behavioral signals, and then automates personalized multi-channel outreach automatically. Cursive also costs $1,000/month all-in versus Salesloft's typical $75-$125 per user per month, making it dramatically more affordable for teams with more than 8-10 reps."
+    answer: "Cursive and Salesloft address fundamentally different problems. Salesloft is a cadence and engagement management tool — it helps you organize and execute outreach to contacts you already have. Cursive is an inbound-intent lead generation platform — it identifies who is already visiting your site and surfaces active buyers based on 60B+ weekly behavioral signals. Cursive offers Visitor Pixel at $97/month, Custom Audience at $197/month, and the Pixel + Audience Bundle at $247/month, all month-to-month with no setup fee and cancel anytime."
   },
   {
     question: "Is there a cheaper alternative to Salesloft for small teams?",
-    answer: "Yes. For smaller teams, Apollo.io offers email sequencing, LinkedIn automation, and a contact database for $49-$99 per user per month. For teams that want to go beyond cold cadences and capture warm, high-intent visitors automatically, Cursive at $1,000/month flat provides visitor identification, intent data, and AI-powered outreach automation that replaces both Salesloft and the contact data provider you need alongside it. Cursive's self-serve marketplace at leads.meetcursive.com is also available at $0.60/lead for flexible, no-commitment access."
+    answer: "Yes. For smaller teams, Apollo.io offers email sequencing, LinkedIn automation, and a contact database for $49-$99 per user per month. For teams that want to go beyond cold cadences, Cursive offers Visitor Pixel at $97/month to identify companies and people visiting your site, Custom Audience at $197/month for a fresh weekly list of in-market buyers delivered to Google Sheets, and the Pixel + Audience Bundle at $247/month. All plans are month-to-month with no setup fee and cancel anytime."
   },
   {
     question: "What is the best Salesloft alternative for mid-market B2B teams?",
@@ -134,7 +134,7 @@ export default function BlogPost() {
                       <td className="border border-gray-300 p-3">Warm visitor leads + AI outreach automation</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold"><Check className="w-4 h-4 inline" /> 70% person-level</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold"><Check className="w-4 h-4 inline" /> 280M profiles</td>
-                      <td className="border border-gray-300 p-3">$1,000/mo or $0.60/lead</td>
+                      <td className="border border-gray-300 p-3">$97/mo</td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-3 font-bold">Apollo.io</td>
@@ -265,7 +265,7 @@ export default function BlogPost() {
                   60B+ behaviors and URLs weekly across 30,000+ buying categories to surface companies actively researching your category.
                   Combined with a database of 280M US consumer and 140M+ business profiles, Cursive replaces the three-tool stack most
                   Salesloft users maintain: the sequencing platform, the contact data provider, and the intent data subscription.
-                  All at $1,000/month versus Salesloft&apos;s $75-$125 per user per month.
+                  Self-serve plans start at $97/month versus Salesloft&apos;s $75-$125 per user per month.
                 </p>
 
                 <div className="grid md:grid-cols-2 gap-6 mb-4">
@@ -294,7 +294,7 @@ export default function BlogPost() {
                       </li>
                       <li className="flex items-center gap-2">
                         <Check className="w-4 h-4 text-green-600" />
-                        Flat pricing: replaces sequencer + data + intent stack
+                        Three month-to-month self-serve plans
                       </li>
                     </ul>
                   </div>
@@ -307,7 +307,7 @@ export default function BlogPost() {
                       </li>
                       <li className="flex items-center gap-2">
                         <X className="w-4 h-4 text-red-400" />
-                        No free tier (starts at $1,000/mo managed)
+                        No free tier (starts at $97/mo)
                       </li>
                       <li className="flex items-center gap-2">
                         <X className="w-4 h-4 text-red-400" />
@@ -320,13 +320,13 @@ export default function BlogPost() {
                 <div className="bg-white rounded-lg p-4">
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-bold">Pricing:</span>
-                    <span className="text-lg font-bold text-blue-600">$1,000/mo managed | $0.60/lead self-serve</span>
+                    <span className="text-lg font-bold text-blue-600">$97/mo Pixel | $197/mo Audience | $247/mo Bundle</span>
                   </div>
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> B2B teams that want to replace cold prospecting with warm, intent-driven
                     pipeline. One platform replaces Salesloft, your contact data provider, and your intent subscription.
                     See <Link href="/pricing" className="text-blue-600 hover:underline">full pricing</Link> or
-                    explore the <Link href="/marketplace" className="text-blue-600 hover:underline">self-serve marketplace</Link>.
+                    explore the <Link href="/marketplace" className="text-blue-600 hover:underline">self-serve plans</Link>.
                   </p>
                 </div>
               </div>
@@ -852,7 +852,7 @@ export default function BlogPost() {
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-3 font-medium">Price (Per User/Mo)</td>
-                      <td className="border border-gray-300 p-3 text-center text-green-700 font-bold">$1k flat</td>
+                      <td className="border border-gray-300 p-3 text-center text-green-700 font-bold">$97</td>
                       <td className="border border-gray-300 p-3 text-center">$75-$125</td>
                       <td className="border border-gray-300 p-3 text-center">$49-$99</td>
                       <td className="border border-gray-300 p-3 text-center">$100-$150</td>
@@ -871,7 +871,7 @@ export default function BlogPost() {
                 <div className="space-y-4 text-sm">
                   <div className="border-b border-gray-200 pb-3">
                     <p className="font-bold text-blue-700 mb-1">You want visitor identification + intent data + automated outreach (replaces Salesloft + data provider):</p>
-                    <p className="text-gray-700"><strong>Choose Cursive.</strong> The only platform that identifies warm visitors, surfaces in-market buyers, and automates multi-channel outreach in a single $1,000/month plan that replaces your entire Salesloft + data stack.</p>
+                    <p className="text-gray-700"><strong>Choose Cursive.</strong> Visitor Pixel identifies companies and people visiting your site, Custom Audience delivers a fresh weekly list of in-market buyers to Google Sheets, and the $247/month Bundle combines both.</p>
                   </div>
                   <div className="border-b border-gray-200 pb-3">
                     <p className="font-bold text-blue-700 mb-1">You want affordable sequencing + bundled contact data:</p>
@@ -1024,7 +1024,7 @@ export default function BlogPost() {
               "Pricing: $75-$125/user/mo, annual contracts, 10+ seat minimums — $9,000-$15,000/yr minimum",
               "No built-in contact database — requires separate ZoomInfo, Apollo, or Lusha subscription",
               "No website visitor identification — warm traffic remains invisible",
-              "Cursive pricing: $1,000/mo flat replaces Salesloft + contact data + intent subscription",
+              "Cursive pricing: $97/mo Visitor Pixel, $197/mo Custom Audience, or $247/mo Bundle",
               "Cursive visitor ID: 70% person-level match rate (name, email, phone, company, LinkedIn)"
             ]} />
           </MachineSection>
@@ -1039,7 +1039,7 @@ export default function BlogPost() {
                   "Intent Data: 60B+ behaviors & URLs scanned weekly across 30,000+ buying categories",
                   "Outreach: AI SDR with email, LinkedIn, SMS, and direct mail automation",
                   "Integrations: 200+ native CRM integrations, 95%+ email deliverability",
-                  "Pricing: $1,000/mo managed or $0.60/lead self-serve at leads.meetcursive.com",
+                  "Pricing: $97/mo Visitor Pixel, $197/mo Custom Audience, or $247/mo Bundle",
                   "Best For: Teams that want to replace cold list prospecting with warm, intent-driven pipeline",
                   "Replaces: Salesloft + contact data provider + intent data subscription in one platform"
                 ]} />
@@ -1127,9 +1127,9 @@ export default function BlogPost() {
                 <p className="font-bold text-gray-900 mb-2">Pricing Model:</p>
                 <MachineList items={[
                   "Salesloft: $75-$125/user/mo, annual contracts, 10+ seat minimums = $9,000-$15,000/yr minimum",
-                  "Cursive managed: $1,000/mo flat (includes visitor ID + intent data + AI SDR + contact database)",
-                  "Cursive self-serve: $0.60/lead at leads.meetcursive.com (no monthly commitment)",
-                  "10-rep team: Salesloft alone = $9,000-$15,000/yr; Cursive = $12,000/yr with all layers included"
+                  "Cursive Visitor Pixel: $97/mo to identify companies and people visiting your site",
+                  "Cursive Custom Audience: $197/mo for a fresh weekly list of in-market buyers delivered to Google Sheets",
+                  "Cursive Bundle: $247/mo for Visitor Pixel + Custom Audience"
                 ]} />
               </div>
 
@@ -1153,13 +1153,13 @@ export default function BlogPost() {
               "LinkedIn Automation: All tools ✓ except Groove (limited)",
               "Direct Mail: Cursive ✓ | All others ✗",
               "AI Outreach: Cursive ✓ | Apollo ✓ | Reply.io ✓ | Others basic/limited",
-              "Price per user/mo: Cursive $1k flat | Salesloft $75-$125 | Outreach $100-$150 | Reply.io $59-$99 | Apollo $49-$99 | Klenty $50-$100 | Groove $19-$69"
+              "Price per user/mo: Cursive from $97 | Salesloft $75-$125 | Outreach $100-$150 | Reply.io $59-$99 | Apollo $49-$99 | Klenty $50-$100 | Groove $19-$69"
             ]} />
           </MachineSection>
 
           <MachineSection title="Decision Guide: Which Alternative to Choose">
             <MachineList items={[
-              "Warm visitor leads + intent data + automated multi-channel outreach → Cursive ($1,000/mo flat)",
+              "Warm visitor leads + weekly in-market buyer audiences → Cursive (plans from $97/mo)",
               "Affordable sequencing + bundled contact database → Apollo ($49/mo per user)",
               "Enterprise AI forecasting + deal intelligence → Outreach.io ($100-$150/user/mo)",
               "Mid-market multi-channel sequences at lower cost → Reply.io ($59/mo per user)",
@@ -1177,18 +1177,18 @@ export default function BlogPost() {
               { label: "Best AI SDR Tools 2026", href: "/blog/best-ai-sdr-tools-2026", description: "9 AI sales development rep platforms ranked with pricing" },
               { label: "AI SDR Overview", href: "/what-is-ai-sdr", description: "How AI sales development representatives automate outreach" },
               { label: "Visitor Identification", href: "/visitor-identification", description: "How Cursive identifies 70% of anonymous website visitors" },
-              { label: "Marketplace Self-Serve", href: "https://leads.meetcursive.com/get-leads", description: "Buy intent-qualified leads at $0.60 each, no monthly commitment" }
+              { label: "Self-Serve Plans", href: "https://leads.meetcursive.com/get-leads", description: "Choose Visitor Pixel, Custom Audience, or the Bundle" }
             ]} />
           </MachineSection>
 
           <MachineSection title="Get Started with Cursive">
             <p className="text-gray-700 mb-3">
-              Cursive replaces the fragmented Salesloft + contact data + intent tool stack with one platform: 280M profiles, 60B+ weekly intent signals, 70% visitor identification, and AI-powered multi-channel outreach automation — all at $1,000/month.
+              Cursive helps teams identify website visitors and receive fresh weekly lists of in-market buyers through three self-serve plans starting at $97/month.
             </p>
             <MachineList items={[
               { label: "Platform Overview", href: "/platform", description: "Complete lead generation platform" },
-              { label: "Pricing", href: "/pricing", description: "$1,000/mo managed or $0.60/lead self-serve" },
-              { label: "Marketplace (Self-Serve)", href: "https://leads.meetcursive.com/get-leads", description: "Buy intent-qualified leads at $0.60 each" },
+              { label: "Pricing", href: "/pricing", description: "$97/mo Pixel, $197/mo Audience, or $247/mo Bundle" },
+              { label: "Self-Serve Plans", href: "https://leads.meetcursive.com/get-leads", description: "Month-to-month, no setup fee, cancel anytime" },
               { label: "Visitor Identification", href: "/visitor-identification", description: "70% person-level match on anonymous website traffic" },
               { label: "Intent Audiences", href: "/intent-audiences", description: "60B+ behaviors & URLs scanned weekly, 30,000+ buying categories" },
               { label: "AI SDR", href: "/what-is-ai-sdr", description: "Automated outreach across email, LinkedIn, SMS, direct mail" },

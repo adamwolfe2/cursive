@@ -22,7 +22,7 @@ const faqs = [
   },
   {
     question: "What is the most affordable Warmly alternative?",
-    answer: "Leadfeeder by Dealfront offers company-level visitor tracking starting at around $99 per month, making it the most budget-friendly option. RB2B offers a free tier for basic person-level identification. Cursive offers self-serve credits starting at $99 that include person-level identification plus AI-powered outreach, providing more complete functionality at an accessible entry point."
+    answer: "Leadfeeder by Dealfront offers company-level visitor tracking starting at around $99 per month. RB2B offers a free tier for basic person-level identification. Cursive's Visitor Pixel identifies companies and people visiting your site for $97 per month, with no setup fee and the flexibility to cancel anytime."
   },
   {
     question: "Is Cursive a good Warmly alternative?",
@@ -147,7 +147,7 @@ export default function BlogPost() {
                     <td className="border border-gray-300 p-3 text-green-600 font-bold">AI intent scoring</td>
                     <td className="border border-gray-300 p-3 text-green-600 font-bold">AI SDR + multi-channel</td>
                     <td className="border border-gray-300 p-3">Salesforce, HubSpot</td>
-                    <td className="border border-gray-300 p-3">From $99 credits</td>
+                    <td className="border border-gray-300 p-3">From $97/mo</td>
                     <td className="border border-gray-300 p-3">Full identify-to-engage</td>
                   </tr>
                   <tr>
@@ -299,7 +299,8 @@ export default function BlogPost() {
                 you define your ICP so you only engage the visitors that match your target profile, and the{" "}
                 <Link href="/visitor-identification" className="text-blue-600 hover:underline">visitor identification</Link> engine
                 provides real-time intent signals based on pages visited, time on site, and engagement depth.
-                Self-serve credits start at $99, or opt for done-for-you managed campaigns starting at $1,000 per month.
+                Choose Visitor Pixel at $97/mo, Custom Audience at $197/mo, or the Pixel + Audience Bundle at $247/mo.
+                Every plan is month-to-month with no setup fee, and you can cancel anytime.
               </p>
 
               <div className="grid md:grid-cols-2 gap-6 mb-4">
@@ -324,7 +325,7 @@ export default function BlogPost() {
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="w-4 h-4 text-green-600" />
-                      Self-serve from $99 credits; no enterprise contract
+                      Self-serve from $97/mo; no setup fee
                     </li>
                   </ul>
                 </div>
@@ -350,7 +351,7 @@ export default function BlogPost() {
               <div className="bg-white rounded-lg p-4">
                 <div className="flex justify-between items-center mb-2">
                   <span className="font-bold">Pricing:</span>
-                  <span className="text-lg font-bold text-blue-600">From $99 credits / $1,000/mo managed</span>
+                  <span className="text-lg font-bold text-blue-600">From $97/mo, cancel anytime</span>
                 </div>
                 <p className="text-sm text-gray-600">
                   <strong>Best for:</strong> B2B companies that want to close the gap between visitor identification
@@ -928,7 +929,7 @@ export default function BlogPost() {
                     <strong>You want visitor ID + intent + outreach in one platform:</strong> Choose{" "}
                     <Link href="/" className="text-blue-600 hover:underline">Cursive</Link>. It closes the gap between
                     knowing who visits and engaging them. Person-level ID plus AI-powered multi-channel outreach from
-                    $99 in self-serve credits or $1,000/mo for done-for-you managed campaigns.
+                    $97/mo for Visitor Pixel, $197/mo for Custom Audience, or $247/mo for both.
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
@@ -995,8 +996,8 @@ export default function BlogPost() {
             <p>
               For teams that want the full identify-to-engage workflow in one platform,{" "}
               <Link href="/">Cursive</Link> combines person-level visitor identification, intent scoring, and
-              AI-powered multi-channel outreach starting with self-serve credits at $99 or managed done-for-you
-              campaigns at $1,000/mo. It replaces Warmly plus your outreach tool with a single integrated
+              AI-powered multi-channel outreach with self-serve plans at $97/mo, $197/mo, or $247/mo.
+              It replaces Warmly plus your outreach tool with a single integrated
               solution at better value.
             </p>
 
@@ -1130,7 +1131,7 @@ export default function BlogPost() {
           <MachineSection title="Key Takeaways">
             <MachineList items={[
               "Warmly: $700-$1,400+/mo for visitor identification, limited outbound capabilities",
-              "Cursive: $99 credits or $1,000/mo managed - combines visitor ID + intent + AI outreach",
+              "Cursive: $97/mo Visitor Pixel, $197/mo Custom Audience, or $247/mo bundle - combines visitor ID + intent + AI outreach",
               "RB2B: Free tier available, person-level ID, simplest option",
               "Leadfeeder: $99/mo, company-level tracking, strong CRM integrations",
               "Most alternatives offer company-level ID only; Cursive and RB2B provide person-level",
@@ -1165,7 +1166,7 @@ export default function BlogPost() {
                     <td className="border border-gray-300 p-2 font-bold">Cursive</td>
                     <td className="border border-gray-300 p-2">Person-level (70%)</td>
                     <td className="border border-gray-300 p-2">AI SDR + multi-channel</td>
-                    <td className="border border-gray-300 p-2">$99+ credits</td>
+                    <td className="border border-gray-300 p-2">From $97/mo</td>
                   </tr>
                   <tr>
                     <td className="border border-gray-300 p-2 font-bold">RB2B</td>
@@ -1221,7 +1222,7 @@ export default function BlogPost() {
               "Person-level identification (70% match rate)",
               "AI SDR automates personalized multi-channel outreach",
               "Email, LinkedIn, and direct mail in one workflow",
-              "Self-serve from $99 credits; no enterprise contract"
+              "Self-serve from $97/mo; no setup fee; cancel anytime"
             ]} />
             <p className="font-bold mt-3 mb-2">Limitations:</p>
             <MachineList items={[
@@ -1230,7 +1231,7 @@ export default function BlogPost() {
               "B2B focused (not suitable for B2C)"
             ]} />
             <p className="text-gray-700 mt-3">
-              <strong>Pricing:</strong> From $99 credits / $1,000/mo managed. Replaces Warmly + outreach tool.
+              <strong>Pricing:</strong> Visitor Pixel $97/mo, Custom Audience $197/mo, or Pixel + Audience Bundle $247/mo. Replaces Warmly + outreach tool.
             </p>
           </MachineSection>
 
@@ -1416,7 +1417,7 @@ export default function BlogPost() {
               <div>
                 <p className="font-bold mb-2">Pricing:</p>
                 <MachineList items={[
-                  "Cursive: $99 credits (self-serve) or $1,000/mo (done-for-you managed)",
+                  "Cursive: Visitor Pixel $97/mo, Custom Audience $197/mo, or Pixel + Audience Bundle $247/mo",
                   "Warmly: $700/mo Business plan, $1,400+/mo Enterprise"
                 ]} />
               </div>
@@ -1461,7 +1462,7 @@ export default function BlogPost() {
             </p>
             <MachineList items={[
               { label: "Platform Overview", href: "/platform", description: "Visitor identification, intent data, AI outreach" },
-              { label: "Pricing", href: "/pricing", description: "Self-serve credits from $99, managed from $1,000/mo" },
+              { label: "Pricing", href: "/pricing", description: "Self-serve plans at $97/mo, $197/mo, or $247/mo" },
               { label: "Visitor Identification", href: "/visitor-identification", description: "70% person-level identification rate" },
               { label: "Intent Audiences", href: "/intent-audiences", description: "AI intent scoring and audience builder" },
               { label: "AI SDR", href: "/what-is-ai-sdr", description: "Automated multi-channel outreach" },
@@ -1483,7 +1484,7 @@ export default function BlogPost() {
               </div>
               <div>
                 <p className="font-bold mb-1">What is the most affordable Warmly alternative?</p>
-                <p className="text-gray-700 text-sm">Leadfeeder offers company-level tracking from $99/mo. RB2B offers free tier for basic person-level identification. Cursive offers self-serve credits from $99 with person-level ID plus AI-powered outreach.</p>
+                <p className="text-gray-700 text-sm">Leadfeeder offers company-level tracking from $99/mo. RB2B offers free tier for basic person-level identification. Cursive offers Visitor Pixel at $97/mo for company- and person-level visitor identification.</p>
               </div>
               <div>
                 <p className="font-bold mb-1">Is Cursive a good Warmly alternative?</p>

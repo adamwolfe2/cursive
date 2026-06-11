@@ -103,7 +103,7 @@ export default function BlogPost() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  <tr><td className="p-3 font-medium">Cursive</td><td className="p-3">Visitor ID + automated outreach</td><td className="p-3">Identifies anonymous traffic, triggers AI outreach in hours</td><td className="p-3">$1,000/mo</td></tr>
+                  <tr><td className="p-3 font-medium">Cursive</td><td className="p-3">Visitor ID + in-market audiences</td><td className="p-3">Identifies site visitors and delivers fresh weekly buyer lists</td><td className="p-3">$97/mo</td></tr>
                   <tr><td className="p-3 font-medium">Apollo.io</td><td className="p-3">Prospecting and B2B database</td><td className="p-3">275M+ contacts with built-in sequencing</td><td className="p-3">Free tier</td></tr>
                   <tr><td className="p-3 font-medium">HubSpot Sales Hub</td><td className="p-3">All-in-one CRM</td><td className="p-3">Pipeline management, email sequences, lead scoring</td><td className="p-3">Free tier</td></tr>
                   <tr><td className="p-3 font-medium">Salesforce Sales Cloud</td><td className="p-3">Enterprise customization</td><td className="p-3">Deep workflow automation, extensive integrations</td><td className="p-3">$25/user/mo</td></tr>
@@ -129,7 +129,7 @@ export default function BlogPost() {
               Cursive combines visitor identification with AI-powered outreach. When someone visits your website, Cursive identifies up to 70% of that anonymous traffic, enriches records with verified contact data, and triggers personalized email, LinkedIn, and SMS sequences within hours.
             </p>
             <p>
-              The platform includes 200+ native integrations, so identified visitors flow directly into your CRM. For teams that want hands-off execution, Cursive also offers done-for-you services where their team runs campaigns and books meetings on your behalf.
+              Cursive offers three self-serve plans: Visitor Pixel identifies companies and people visiting your site, Custom Audience delivers a fresh weekly list of in-market buyers to Google Sheets, and the Pixel + Audience Bundle includes both.
             </p>
             <p><strong>Best for:</strong> Teams losing pipeline to anonymous website visitors who never fill out forms.</p>
 
@@ -360,7 +360,7 @@ export default function BlogPost() {
 
           <MachineSection title="Top 15 Tools Quick Comparison">
             <MachineList items={[
-              "Cursive ($1,000/mo) - Visitor ID + automated outreach, identifies anonymous traffic and triggers AI outreach",
+              "Cursive ($97/mo) - Visitor Pixel identifies companies and people visiting your website",
               "Apollo.io (Free tier) - 275M+ contacts with built-in sequencing for prospecting and outreach",
               "HubSpot Sales Hub (Free tier) - All-in-one CRM with pipeline management, sequences, lead scoring",
               "Salesforce Sales Cloud ($25/user/mo) - Enterprise customization with deep workflow automation",
@@ -407,7 +407,7 @@ export default function BlogPost() {
               "AI-powered personalization - research prospects and write relevant messaging at scale",
               "Multi-channel sequences - email, LinkedIn, SMS, and direct mail automation",
               "200+ native CRM integrations - identified visitors flow directly into your CRM",
-              "Done-for-you services - Cursive's team runs campaigns and books meetings on your behalf"
+              "Three self-serve plans - Visitor Pixel, Custom Audience, and the Pixel + Audience Bundle"
             ]} />
           </MachineSection>
 
@@ -425,7 +425,7 @@ export default function BlogPost() {
             </p>
             <MachineList items={[
               { label: "Platform Overview", href: "/platform", description: "Visitor identification, intent data, AI outreach" },
-              { label: "Pricing", href: "/pricing", description: "Self-serve marketplace + done-for-you services" },
+              { label: "Pricing", href: "/pricing", description: "Three self-serve plans from $97/mo" },
               { label: "Visitor Identification", href: "/visitor-identification", description: "70% identification rate for B2B traffic" },
               { label: "Book a Demo", href: "/book", description: "See Cursive in real-time" }
             ]} />

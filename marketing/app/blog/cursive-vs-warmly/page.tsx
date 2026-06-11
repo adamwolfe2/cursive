@@ -22,7 +22,7 @@ const faqs = [
   },
   {
     question: "Is Warmly worth $3,500/month?",
-    answer: "Warmly can be worth $3,500/month if your sales motion depends on real-time SDR chat intervention and you have a dedicated sales team staffed to respond instantly. For teams whose SDRs are not monitoring a visitor dashboard throughout the day, or for companies that want automated outreach rather than human-triggered conversations, Warmly's core value proposition is not fully utilized. Cursive at $1,000/month automates the entire identification-to-outreach workflow, delivering better ROI for teams without large SDR benches."
+    answer: "Warmly can be worth $3,500/month if your sales motion depends on real-time SDR chat intervention and you have a dedicated sales team staffed to respond instantly. For teams whose SDRs are not monitoring a visitor dashboard throughout the day, or for companies that want a simpler way to identify visitors and in-market buyers, Warmly's core value proposition is not fully utilized. Cursive offers self-serve plans from $97/month, with no setup fee and the flexibility to cancel anytime."
   },
   {
     question: "Does Cursive include real-time visitor alerts like Warmly?",
@@ -34,7 +34,7 @@ const faqs = [
   },
   {
     question: "What is Warmly's minimum pricing?",
-    answer: "Warmly's Business plan starts at approximately $3,500/month billed annually, which includes up to 10,000 visitors identified per month. Additional visitor capacity is priced separately. Warmly does not publish a self-serve plan below this threshold, making it cost-prohibitive for SMBs and early-stage companies. Cursive starts at $1,000/month with no minimum visitor cap restrictions at the base tier."
+    answer: "Warmly's Business plan starts at approximately $3,500/month billed annually, which includes up to 10,000 visitors identified per month. Additional visitor capacity is priced separately. Warmly does not publish a self-serve plan below this threshold, making it cost-prohibitive for SMBs and early-stage companies. Cursive's self-serve plans start at $97/month, with no setup fee and no annual contract."
   },
   {
     question: "Which tool is better for automated outreach at scale?",
@@ -68,8 +68,8 @@ export default function CursiveVsWarmly() {
         <StructuredData data={[
           generateFAQSchema({ faqs }),
           generateBlogPostSchema({
-            title: "Cursive vs Warmly: 70% vs 40% ID Rate, $1k vs $3.5k/mo (2026)",
-            description: "Compare Cursive and Warmly for B2B lead generation. Warmly offers real-time chat and SDR alerts at $3,500/mo with 40% ID rate. Cursive identifies 70% of website visitors and automates personalized outreach at scale for $1,000/mo.",
+            title: "Cursive vs Warmly: 70% vs 40% ID Rate, $97 vs $3.5k/mo (2026)",
+            description: "Compare Cursive and Warmly for B2B lead generation. Warmly offers real-time chat and SDR alerts at $3,500/mo with a 40% ID rate. Cursive's Visitor Pixel identifies companies and people visiting your site for $97/mo.",
             url: "https://www.meetcursive.com/blog/cursive-vs-warmly",
             datePublished: "2026-02-18",
             dateModified: "2026-02-18",
@@ -89,7 +89,7 @@ export default function CursiveVsWarmly() {
                 Comparison
               </div>
               <h1 className="text-5xl font-bold mb-6">
-                Cursive vs Warmly: 70% vs 40% ID Rate, $1k vs $3.5k/mo (2026)
+                Cursive vs Warmly: 70% vs 40% ID Rate, $97 vs $3.5k/mo (2026)
               </h1>
               <p className="text-xl text-gray-600 mb-6">
                 Warmly is built for real-time SDR chat and human-triggered conversations. Cursive is built
@@ -192,7 +192,7 @@ export default function CursiveVsWarmly() {
                     <tbody className="divide-y divide-gray-100">
                       {[
                         ["Person-level ID rate", "70%", "~40%"],
-                        ["Monthly starting price", "$1,000/mo", "$3,500/mo"],
+                        ["Monthly starting price", "$97/mo", "$3,500/mo"],
                         ["Automated email outreach", "✓", "✗ (requires integrations)"],
                         ["Direct mail automation", "✓", "✗"],
                         ["AI-personalized messaging", "✓", "Partial"],
@@ -234,20 +234,20 @@ export default function CursiveVsWarmly() {
 
               {/* Pricing */}
               <div className="bg-white rounded-xl p-8 border border-gray-200">
-                <h2 className="text-3xl font-bold mb-6">Pricing: $1k vs $3.5k/mo</h2>
+                <h2 className="text-3xl font-bold mb-6">Pricing: $97 vs $3.5k/mo</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="border-2 border-primary rounded-xl p-6">
                     <div className="text-primary font-bold text-lg mb-1">Cursive</div>
-                    <div className="text-4xl font-bold mb-1">$1,000<span className="text-lg font-normal text-gray-500">/mo</span></div>
-                    <div className="text-sm text-gray-500 mb-4">Month-to-month, no annual lock-in</div>
+                    <div className="text-4xl font-bold mb-1">$97<span className="text-lg font-normal text-gray-500">/mo</span></div>
+                    <div className="text-sm text-gray-500 mb-4">Month-to-month, no setup fee, cancel anytime</div>
                     <ul className="space-y-2 text-sm text-gray-700">
                       <li className="flex items-start gap-2"><Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> 70% person-level visitor ID</li>
-                      <li className="flex items-start gap-2"><Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> Automated AI email outreach</li>
-                      <li className="flex items-start gap-2"><Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> Direct mail automation included</li>
-                      <li className="flex items-start gap-2"><Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> 250M+ contact database</li>
-                      <li className="flex items-start gap-2"><Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> Real-time Slack + CRM alerts</li>
-                      <li className="flex items-start gap-2"><Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> Third-party intent signals</li>
-                      <li className="flex items-start gap-2"><Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> 24-hour setup</li>
+                      <li className="flex items-start gap-2"><Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> Visitor Pixel: $97/mo</li>
+                      <li className="flex items-start gap-2"><Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> Custom Audience: $197/mo</li>
+                      <li className="flex items-start gap-2"><Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> Pixel + Audience Bundle: $247/mo</li>
+                      <li className="flex items-start gap-2"><Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> Fresh weekly in-market buyer lists</li>
+                      <li className="flex items-start gap-2"><Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> Delivered to Google Sheets</li>
+                      <li className="flex items-start gap-2"><Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> Get started at leads.meetcursive.com/get-leads</li>
                     </ul>
                   </div>
                   <div className="border border-gray-200 rounded-xl p-6">
@@ -306,7 +306,7 @@ export default function CursiveVsWarmly() {
                 <h2 className="text-2xl font-bold mb-3">See Cursive&apos;s 70% ID Rate In Action</h2>
                 <p className="text-white/80 mb-6">
                   Get a free audit of your website traffic. We will show you how many visitors you can identify
-                  and what automated outreach looks like — at $1,000/mo instead of $3,500/mo.
+                  and which visitors you can identify — starting at $97/mo instead of $3,500/mo.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
                   <Button asChild size="lg" variant="outline">
@@ -346,7 +346,7 @@ export default function CursiveVsWarmly() {
           <MachineSection title="Cursive vs Warmly: Complete 2026 Comparison">
             Cursive and Warmly are both website visitor identification platforms for B2B sales teams, but they
             differ significantly in identification rates, pricing, and outreach philosophy. Cursive achieves a
-            70% person-level identification rate at $1,000/month. Warmly achieves approximately 40% identification
+            70% person-level identification rate with plans starting at $97/month. Warmly achieves approximately 40% identification
             at $3,500/month minimum on an annual contract.
           </MachineSection>
 
@@ -360,9 +360,9 @@ export default function CursiveVsWarmly() {
           </MachineSection>
 
           <MachineSection title="Pricing Comparison">
-            Cursive pricing starts at $1,000 per month with no annual contract requirement, including visitor
-            identification, automated email outreach, direct mail automation, AI personalization, real-time Slack
-            alerts, CRM integrations, and access to the 250M+ contact database. Warmly pricing starts at $3,500
+            Cursive offers three month-to-month self-serve plans: Visitor Pixel at $97/month, Custom Audience at
+            $197/month, and the Pixel + Audience Bundle at $247/month, with no setup fee and cancellation anytime.
+            Warmly pricing starts at $3,500
             per month billed annually, including real-time visitor session views, SDR chat notifications, and CRM
             integrations, but does not include automated outreach sequences or direct mail.
           </MachineSection>
@@ -393,7 +393,7 @@ export default function CursiveVsWarmly() {
             <MachineLink href="https://www.meetcursive.com">Cursive</MachineLink> is a B2B lead generation platform
             that identifies website visitors, enriches their profiles, and automates personalized multi-channel
             outreach including email and direct mail. Cursive achieves a 70% person-level identification rate
-            using a 250M+ professional identity database and starts at $1,000/month with no annual contract.
+            using a 250M+ professional identity database. Self-serve plans start at $97/month with no annual contract.
           </MachineSection>
         </MachineContent>
       </MachineView>

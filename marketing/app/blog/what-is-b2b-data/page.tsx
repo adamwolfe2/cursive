@@ -384,8 +384,8 @@ export default function BlogPost() {
 
               <p>
                 To see how real-time B2B data could change your pipeline, <Link href="https://cal.com/cursiveteam/30min">book
-                a demo</Link> or explore the <Link href="https://leads.meetcursive.com/get-leads">Cursive lead marketplace</Link> at
-                $0.60/lead with no monthly commitment.
+                a demo</Link> or explore <Link href="https://leads.meetcursive.com/get-leads">Cursive&apos;s self-serve plans</Link>:
+                Visitor Pixel at $97/mo, Custom Audience at $197/mo, or the Pixel + Audience Bundle at $247/mo.
               </p>
 
               <h2>About the Author</h2>
@@ -557,7 +557,7 @@ export default function BlogPost() {
               "70% person-level visitor identification for real-time behavioral data",
               "60B+ behaviors & URLs scanned weekly across 30,000+ categories for intent data",
               "Real-time target account alerts when known accounts visit your website",
-              "Pricing: $1,000/mo managed or $0.60/lead self-serve at leads.meetcursive.com",
+              "Pricing: Visitor Pixel $97/mo, Custom Audience $197/mo, or Pixel + Audience Bundle $247/mo at leads.meetcursive.com/get-leads",
               "Advantage: surfaces right people at moment of buying signal, not from static historical database"
             ]} />
           </MachineSection>

@@ -3,12 +3,12 @@ import { StructuredData } from '@/components/seo/structured-data'
 import { generateBreadcrumbSchema, generateBlogPostSchema } from '@/lib/seo/structured-data'
 
 export const metadata: Metadata = {
-  title: "Best LeadIQ Alternatives: B2B Prospecting Tools Compared — $75/user vs $1k/mo All-In (2026)",
+  title: "Best LeadIQ Alternatives: B2B Prospecting Tools Compared (2026)",
   description: "Compare the top LeadIQ alternatives for B2B prospecting. Find tools with visitor identification, unlimited contacts, AI outreach automation, and better value than LeadIQ's credit-based model.",
   keywords: "leadiq alternative, leadiq alternatives, leadiq competitors, better than leadiq, leadiq vs cursive, leadiq replacement, b2b prospecting tools, sales intelligence tools, linkedin prospecting alternative",
 
   openGraph: {
-    title: "Best LeadIQ Alternatives: B2B Prospecting Tools Compared — $75/user vs $1k/mo All-In (2026) | Cursive",
+    title: "Best LeadIQ Alternatives: B2B Prospecting Tools Compared (2026) | Cursive",
     description: "Compare the top LeadIQ alternatives for B2B prospecting. Find tools with visitor identification, unlimited contacts, AI outreach automation, and better value than LeadIQ's credit-based model.",
     type: "article",
     url: "https://www.meetcursive.com/blog/leadiq-alternative",
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
 
   twitter: {
     card: "summary_large_image",
-    title: "Best LeadIQ Alternatives: B2B Prospecting Tools Compared — $75/user vs $1k/mo All-In (2026) | Cursive",
+    title: "Best LeadIQ Alternatives: B2B Prospecting Tools Compared (2026) | Cursive",
     description: "Compare the top LeadIQ alternatives for B2B prospecting. Find tools with visitor identification, unlimited contacts, AI outreach automation, and better value than LeadIQ's credit-based model.",
     images: ["https://www.meetcursive.com/og-image.png"],
     creator: "@meetcursive",
@@ -50,7 +50,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           { name: 'Best LeadIQ Alternatives: B2B Prospecting Tools Compared (2026)', url: 'https://www.meetcursive.com/blog/leadiq-alternative' },
         ]),
         generateBlogPostSchema({
-          title: 'Best LeadIQ Alternatives: B2B Prospecting Tools Compared — $75/user vs $1k/mo All-In (2026)',
+          title: 'Best LeadIQ Alternatives: B2B Prospecting Tools Compared (2026)',
           description: 'Compare the top LeadIQ alternatives for B2B prospecting. Find tools with visitor identification, unlimited contacts, AI outreach automation, and better value than LeadIQ\'s credit-based model.',
           url: 'https://www.meetcursive.com/blog/leadiq-alternative',
           datePublished: '2026-02-19',

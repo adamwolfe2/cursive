@@ -34,7 +34,7 @@ const faqs = [
   },
   {
     question: "What is the best Lusha alternative for agencies?",
-    answer: "For agencies managing outbound for multiple clients, Cursive is the best Lusha alternative because it offers a self-serve marketplace at leads.meetcursive.com where you can purchase leads at $0.60 per lead with no monthly commitment. This per-lead pricing model is much more flexible than Lusha's per-user, per-credit model when you are managing variable volume across multiple client accounts. Cursive also supports multi-tenant workflows with 200+ CRM integrations."
+    answer: "For agencies managing outbound for multiple clients, Cursive is a strong Lusha alternative because it offers three self-serve, month-to-month plans at leads.meetcursive.com. The $97/month Visitor Pixel identifies companies and people visiting your site, the $197/month Custom Audience delivers a fresh weekly list of in-market buyers to Google Sheets, and the $247/month Pixel + Audience Bundle includes both. There is no setup fee, and agencies can cancel anytime."
   },
   {
     question: "Can I use a Lusha alternative for automated outreach?",
@@ -133,7 +133,7 @@ export default function BlogPost() {
                       <td className="border border-gray-300 p-3">Full-stack data + visitor ID + AI SDR</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold"><Check className="w-4 h-4 inline" /> 70% person-level</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold"><Check className="w-4 h-4 inline" /> AI multi-channel</td>
-                      <td className="border border-gray-300 p-3">$1,000/mo or $0.60/lead</td>
+                      <td className="border border-gray-300 p-3">From $97/mo</td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-3 font-bold">Apollo</td>
@@ -263,8 +263,8 @@ export default function BlogPost() {
                   based on intent signals and visitor behavior automatically. The <Link href="/intent-audiences" className="text-blue-600 hover:underline">intent audience engine</Link> identifies
                   companies actively researching solutions like yours, and the visitor identification pixel reveals which of
                   your existing website visitors are ready to talk. For agencies and teams managing multiple outbound campaigns,
-                  the <Link href="/marketplace" className="text-blue-600 hover:underline">self-serve marketplace</Link> at leads.meetcursive.com
-                  offers a flexible $0.60/lead model with no monthly commitment.
+                  the <Link href="/marketplace" className="text-blue-600 hover:underline">self-serve plans</Link> at leads.meetcursive.com
+                  start at $97/mo with no setup fee and cancel-anytime flexibility.
                 </p>
 
                 <div className="grid md:grid-cols-2 gap-6 mb-4">
@@ -302,7 +302,7 @@ export default function BlogPost() {
                       </li>
                       <li className="flex items-center gap-2">
                         <X className="w-4 h-4 text-red-400" />
-                        No free tier (managed starts at $1,000/mo)
+                        No free tier
                       </li>
                       <li className="flex items-center gap-2">
                         <X className="w-4 h-4 text-red-400" />
@@ -315,7 +315,7 @@ export default function BlogPost() {
                 <div className="bg-white rounded-lg p-4">
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-bold">Pricing:</span>
-                    <span className="text-lg font-bold text-blue-600">$1,000/mo managed | $0.60/lead self-serve</span>
+                    <span className="text-lg font-bold text-blue-600">$97/mo | $197/mo | $247/mo</span>
                   </div>
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> B2B teams that want to stop manually searching for contacts and start
@@ -876,7 +876,7 @@ export default function BlogPost() {
                   </div>
                   <div className="border-b border-gray-200 pb-3">
                     <p className="font-bold text-blue-700 mb-1">You are an agency managing variable outbound volume:</p>
-                    <p className="text-gray-700"><strong>Choose Cursive self-serve.</strong> The $0.60/lead marketplace model at leads.meetcursive.com is more flexible than per-user, per-credit models when volume fluctuates across clients.</p>
+                    <p className="text-gray-700"><strong>Choose Cursive self-serve.</strong> The month-to-month plans at leads.meetcursive.com cover visitor identification, fresh weekly in-market audiences, or both, with no setup fee and cancel-anytime flexibility.</p>
                   </div>
                   <div>
                     <p className="font-bold text-blue-700 mb-1">You primarily do PR, link building, or marketing email finding:</p>
@@ -904,8 +904,8 @@ export default function BlogPost() {
               <p>
                 To see exactly how many warm, intent-ready prospects you are currently missing, <Link href="/free-audit">request a free
                 AI audit</Link>. We will analyze your existing traffic and show you the pipeline you could be generating
-                with visitor identification and intent data. Or explore the <Link href="/marketplace">Cursive marketplace</Link> to
-                try the self-serve $0.60/lead model before committing to a monthly plan.
+                with visitor identification and intent data. Or explore the <Link href="/marketplace">Cursive self-serve plans</Link>,
+                starting at $97/mo with no setup fee and the flexibility to cancel anytime.
               </p>
 
               <h2>About the Author</h2>
@@ -1010,7 +1010,7 @@ export default function BlogPost() {
               "Top pain points: credit limits (50 free, 960 max/mo), expensive per-user pricing at scale, no visitor ID, no intent data, no outreach automation",
               "Cursive offers 280M consumer + 140M+ business profiles, 70% person-level visitor ID, 60B+ behaviors & URLs scanned weekly, AI SDR automation",
               "Lusha free tier: 50 credits/month | Paid: $29-$79/user/mo | Teams: $129+/user/mo",
-              "Cursive pricing: $1,000/mo managed or $0.60/lead self-serve at leads.meetcursive.com"
+              "Cursive pricing: Visitor Pixel $97/mo, Custom Audience $197/mo, or Pixel + Audience Bundle $247/mo"
             ]} />
           </MachineSection>
 
@@ -1024,7 +1024,7 @@ export default function BlogPost() {
                   "Intent Data: 60B+ behaviors & URLs scanned weekly across 30,000+ buying categories",
                   "Outreach: AI SDR with email, LinkedIn, SMS, and direct mail automation",
                   "Integrations: 200+ native CRM integrations, 95%+ email deliverability",
-                  "Pricing: $1,000/mo managed or $0.60/lead self-serve at leads.meetcursive.com",
+                  "Pricing: $97/mo Visitor Pixel, $197/mo Custom Audience, or $247/mo bundle at leads.meetcursive.com",
                   "Best For: Teams that want intent-qualified warm leads instead of manual contact lookup",
                   "Limitations: No Chrome extension for manual lookup, no free tier, B2B-focused"
                 ]} />
@@ -1127,8 +1127,8 @@ export default function BlogPost() {
                 <p className="font-bold text-gray-900 mb-2">Pricing Model:</p>
                 <MachineList items={[
                   "Lusha: Per-user, per-credit model (50 free, 480-960 credits/mo on paid plans, $29-$79/user/mo)",
-                  "Cursive managed: $1,000/mo flat (unlimited workflow, includes visitor ID + AI SDR)",
-                  "Cursive self-serve: $0.60/lead at leads.meetcursive.com (flexible for agencies, variable volume)"
+                  "Cursive Visitor Pixel: $97/mo (identifies companies and people visiting your site)",
+                  "Cursive Custom Audience: $197/mo, or bundle both plans for $247/mo"
                 ]} />
               </div>
 
@@ -1155,12 +1155,12 @@ export default function BlogPost() {
 
           <MachineSection title="Decision Guide: Which Alternative to Choose">
             <MachineList items={[
-              "Visitor ID + intent data + automated multi-channel outreach → Cursive ($1,000/mo or $0.60/lead)",
+              "Visitor ID + fresh weekly in-market audiences → Cursive ($247/mo bundle)",
               "Affordable data + email sequencing for small team → Apollo (free or $49/mo per user)",
               "European markets + GDPR compliance + verified direct dials → Cognism ($1,000+/mo)",
               "Largest database + bulk enrichment for known lists → RocketReach ($53/mo per user)",
               "Enterprise data coverage, large budget → ZoomInfo ($15,000+/yr)",
-              "Agency with variable volume, flexible per-lead model → Cursive self-serve at $0.60/lead",
+              "Agency needing flexible month-to-month lead generation → Cursive self-serve at $97-$247/mo",
               "Domain-based email finding for PR/marketing → Hunter.io (free or $49/mo)"
             ]} />
           </MachineSection>
@@ -1187,7 +1187,7 @@ export default function BlogPost() {
               { label: "What Is B2B Intent Data", href: "/what-is-b2b-intent-data", description: "Guide to intent signals and buyer behavior tracking" },
               { label: "Visitor Identification", href: "/visitor-identification", description: "How Cursive identifies 70% of anonymous website visitors" },
               { label: "AI SDR", href: "/what-is-ai-sdr", description: "How AI sales development representatives automate outreach" },
-              { label: "Marketplace Self-Serve", href: "https://leads.meetcursive.com/get-leads", description: "Buy leads at $0.60 each, no monthly commitment" }
+              { label: "Self-Serve Plans", href: "https://leads.meetcursive.com/get-leads", description: "Choose Visitor Pixel, Custom Audience, or the bundle" }
             ]} />
           </MachineSection>
 
@@ -1197,8 +1197,8 @@ export default function BlogPost() {
             </p>
             <MachineList items={[
               { label: "Platform Overview", href: "/platform", description: "Complete lead generation platform" },
-              { label: "Pricing", href: "/pricing", description: "$1,000/mo managed or $0.60/lead self-serve" },
-              { label: "Marketplace (Self-Serve)", href: "https://leads.meetcursive.com/get-leads", description: "Buy intent-qualified leads at $0.60 each" },
+              { label: "Pricing", href: "/pricing", description: "Visitor Pixel $97/mo, Custom Audience $197/mo, or both for $247/mo" },
+              { label: "Self-Serve Plans", href: "https://leads.meetcursive.com/get-leads", description: "Month-to-month plans with no setup fee, cancel anytime" },
               { label: "Visitor Identification", href: "/visitor-identification", description: "70% person-level match on anonymous website traffic" },
               { label: "Intent Audiences", href: "/intent-audiences", description: "60B+ behaviors & URLs scanned weekly, 30,000+ buying categories" },
               { label: "AI SDR", href: "/what-is-ai-sdr", description: "Automated outreach across email, LinkedIn, SMS, direct mail" },

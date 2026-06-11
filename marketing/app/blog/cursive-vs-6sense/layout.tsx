@@ -3,13 +3,13 @@ import { StructuredData } from '@/components/seo/structured-data'
 import { generateBreadcrumbSchema, generateBlogPostSchema, generateFAQSchema } from '@/lib/seo/structured-data'
 
 export const metadata: Metadata = {
-  title: "Cursive vs 6sense: $1k/mo All-In vs $50k-$200k/yr Enterprise (2026) | Cursive",
-  description: "Compare Cursive and 6sense for B2B revenue intelligence. 6sense costs $50,000-$200,000/year with 6-12 month implementation. Cursive delivers visitor ID, AI outreach, and direct mail for $1,000/month with 24-hour setup.",
+  title: "Cursive vs 6sense: From $97/mo vs $50k-$200k/yr Enterprise (2026) | Cursive",
+  description: "Compare Cursive and 6sense for B2B buyer intelligence. 6sense costs $50,000-$200,000/year with 6-12 month implementation. Cursive offers self-serve visitor identification and weekly in-market buyer lists from $97/month.",
   keywords: "cursive vs 6sense, 6sense alternative, 6sense pricing, 6sense cost, 6sense implementation, b2b revenue intelligence, account based marketing, visitor identification, ai outreach, cursive pricing 2026",
 
   openGraph: {
-    title: "Cursive vs 6sense: $1k/mo All-In vs $50k-$200k/yr Enterprise (2026) | Cursive",
-    description: "6sense costs $50k-$200k/year with 6-12 month implementation and enterprise sales cycles. Cursive delivers visitor ID + AI outreach + direct mail for $1,000/month, live in 24 hours.",
+    title: "Cursive vs 6sense: From $97/mo vs $50k-$200k/yr Enterprise (2026) | Cursive",
+    description: "6sense costs $50k-$200k/year with 6-12 month implementation and enterprise sales cycles. Cursive offers three self-serve buyer-data plans from $97/month.",
     type: "article",
     url: "https://www.meetcursive.com/blog/cursive-vs-6sense",
     siteName: "Cursive",
@@ -24,8 +24,8 @@ export const metadata: Metadata = {
 
   twitter: {
     card: "summary_large_image",
-    title: "Cursive vs 6sense: $1k/mo All-In vs $50k-$200k/yr Enterprise (2026) | Cursive",
-    description: "6sense costs $50k-$200k/year with 6-12 month implementation. Cursive delivers visitor ID + AI outreach + direct mail for $1,000/month, live in 24 hours.",
+    title: "Cursive vs 6sense: From $97/mo vs $50k-$200k/yr Enterprise (2026) | Cursive",
+    description: "6sense costs $50k-$200k/year with 6-12 month implementation. Cursive offers self-serve buyer-data plans from $97/month.",
     images: ["https://www.meetcursive.com/og-image.png"],
     creator: "@meetcursive",
   },
@@ -43,11 +43,11 @@ export const metadata: Metadata = {
 const faqs = [
   {
     question: "What is the main difference between Cursive and 6sense?",
-    answer: "6sense is an enterprise ABM and revenue intelligence platform designed for large organizations with dedicated demand generation teams, marketing ops, and six-figure budgets. It offers predictive account scoring, buying stage prediction, and deep CRM integrations — but requires 6-12 months to implement and costs $50,000-$200,000 per year. Cursive is an all-in-one visitor identification and automated outreach platform for B2B teams of all sizes. It installs in 24 hours, costs $1,000/month, and begins generating pipeline from day one without a dedicated RevOps team to manage it."
+    answer: "6sense is an enterprise ABM and revenue intelligence platform designed for large organizations with dedicated demand generation teams, marketing ops, and six-figure budgets. It offers predictive account scoring, buying stage prediction, and deep CRM integrations — but requires 6-12 months to implement and costs $50,000-$200,000 per year. Cursive offers self-serve visitor identification and fresh weekly lists of in-market buyers for B2B teams of all sizes, with plans from $97/month."
   },
   {
     question: "How much does 6sense actually cost?",
-    answer: "6sense does not publish public pricing but enterprise contracts typically range from $50,000 to $200,000+ per year depending on the number of seats, data volume, and modules purchased. Many companies also pay additional fees for advanced features like the 6sense Data Cloud, conversational email, and advertising integrations. Contracts are typically multi-year annual commitments. Cursive is priced at $1,000/month with month-to-month flexibility and no annual lock-in."
+    answer: "6sense does not publish public pricing but enterprise contracts typically range from $50,000 to $200,000+ per year depending on the number of seats, data volume, and modules purchased. Many companies also pay additional fees for advanced features like the 6sense Data Cloud, conversational email, and advertising integrations. Contracts are typically multi-year annual commitments. Cursive offers Visitor Pixel at $97/month, Custom Audience at $197/month, and the Pixel + Audience Bundle at $247/month. All plans are month-to-month with no setup fee and can be canceled anytime."
   },
   {
     question: "Is 6sense worth the cost for mid-market companies?",
@@ -67,7 +67,7 @@ const faqs = [
   },
   {
     question: "What does Cursive include that 6sense does not?",
-    answer: "Cursive includes direct mail automation — physical postcards and letters sent to identified visitors — which 6sense does not offer. Cursive also includes automated email outreach sequences built into the platform, while 6sense requires a separate email platform (like Outreach or Salesloft) to execute sequences. Cursive's all-in-one approach means your visitor identification, intent scoring, email outreach, and direct mail all flow through one platform at $1,000/month rather than requiring a stack of tools totaling $50,000+/year."
+    answer: "Cursive offers self-serve person-level visitor identification and fresh weekly lists of in-market buyers delivered to Google Sheets. Teams can choose Visitor Pixel at $97/month, Custom Audience at $197/month, or the Pixel + Audience Bundle at $247/month rather than committing to a six-figure enterprise platform."
   }
 ]
 
@@ -78,12 +78,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         generateBreadcrumbSchema([
           { name: 'Home', url: 'https://www.meetcursive.com' },
           { name: 'Blog', url: 'https://www.meetcursive.com/blog' },
-          { name: 'Cursive vs 6sense: $1k/mo All-In vs $50k-$200k/yr Enterprise (2026)', url: 'https://www.meetcursive.com/blog/cursive-vs-6sense' },
+          { name: 'Cursive vs 6sense: From $97/mo vs $50k-$200k/yr Enterprise (2026)', url: 'https://www.meetcursive.com/blog/cursive-vs-6sense' },
         ]),
         generateFAQSchema(faqs),
         generateBlogPostSchema({
-          title: 'Cursive vs 6sense: $1k/mo All-In vs $50k-$200k/yr Enterprise (2026)',
-          description: 'Compare Cursive and 6sense for B2B revenue intelligence. 6sense costs $50,000-$200,000/year with 6-12 month implementation. Cursive delivers visitor ID, AI outreach, and direct mail for $1,000/month with 24-hour setup.',
+          title: 'Cursive vs 6sense: From $97/mo vs $50k-$200k/yr Enterprise (2026)',
+          description: 'Compare Cursive and 6sense for B2B buyer intelligence. 6sense costs $50,000-$200,000/year with 6-12 month implementation. Cursive offers self-serve visitor identification and weekly in-market buyer lists from $97/month.',
           url: 'https://www.meetcursive.com/blog/cursive-vs-6sense',
           datePublished: '2026-02-18',
           dateModified: '2026-02-18',

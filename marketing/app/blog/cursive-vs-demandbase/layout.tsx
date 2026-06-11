@@ -3,13 +3,13 @@ import { StructuredData } from '@/components/seo/structured-data'
 import { generateBreadcrumbSchema, generateBlogPostSchema, generateFAQSchema } from '@/lib/seo/structured-data'
 
 export const metadata: Metadata = {
-  title: "Cursive vs Demandbase: $1k/mo Person-Level ID vs $50k-$150k/yr Account ABM (2026) | Cursive",
-  description: "Compare Cursive and Demandbase for B2B lead generation. Demandbase costs $50,000-$150,000/year with complex implementation. Cursive delivers 70% person-level visitor ID, AI outreach, and direct mail for $1,000/month with 24-hour setup.",
+  title: "Cursive vs Demandbase: $97/mo Person-Level ID vs $50k-$150k/yr Account ABM (2026) | Cursive",
+  description: "Compare Cursive and Demandbase for B2B lead generation. Demandbase costs $50,000-$150,000/year with complex implementation. Cursive offers self-serve person-level visitor identification from $97/month.",
   keywords: "cursive vs demandbase, demandbase alternative, demandbase pricing, demandbase cost, account based marketing alternative, visitor identification, b2b lead generation 2026",
 
   openGraph: {
-    title: "Cursive vs Demandbase: $1k/mo Person-Level ID vs $50k-$150k/yr Account ABM (2026) | Cursive",
-    description: "Demandbase costs $50k-$150k/year and identifies companies, not people. Cursive delivers 70% person-level visitor ID + AI outreach + direct mail for $1,000/month, live in 24 hours.",
+    title: "Cursive vs Demandbase: $97/mo Person-Level ID vs $50k-$150k/yr Account ABM (2026) | Cursive",
+    description: "Demandbase costs $50k-$150k/year and identifies companies, not people. Cursive offers self-serve person-level visitor identification from $97/month.",
     type: "article",
     url: "https://www.meetcursive.com/blog/cursive-vs-demandbase",
     siteName: "Cursive",
@@ -24,8 +24,8 @@ export const metadata: Metadata = {
 
   twitter: {
     card: "summary_large_image",
-    title: "Cursive vs Demandbase: $1k/mo Person-Level ID vs $50k-$150k/yr Account ABM (2026) | Cursive",
-    description: "Demandbase costs $50k-$150k/year and only identifies companies. Cursive identifies the actual people visiting your site for $1,000/month.",
+    title: "Cursive vs Demandbase: $97/mo Person-Level ID vs $50k-$150k/yr Account ABM (2026) | Cursive",
+    description: "Demandbase costs $50k-$150k/year and only identifies companies. Cursive identifies the actual people visiting your site from $97/month.",
     images: ["https://www.meetcursive.com/og-image.png"],
     creator: "@meetcursive",
   },
@@ -43,11 +43,11 @@ export const metadata: Metadata = {
 const faqs = [
   {
     question: "What is the main difference between Cursive and Demandbase?",
-    answer: "The most important difference is what each platform actually identifies. Demandbase identifies companies visiting your website — you learn that 'Acme Corp' visited, but not who from Acme Corp. Cursive identifies individual people: you learn that John Smith, VP of Sales at Acme Corp, visited your pricing page at 2:14pm on Tuesday, and you can reach him directly with a personalized email within hours. Demandbase also costs $50,000-$150,000 per year with a complex multi-month implementation. Cursive costs $1,000/month and goes live in 24 hours."
+    answer: "The most important difference is what each platform actually identifies. Demandbase identifies companies visiting your website — you learn that 'Acme Corp' visited, but not who from Acme Corp. Cursive's Visitor Pixel identifies individual people visiting your site for $97/month. Demandbase also costs $50,000-$150,000 per year with a complex multi-month implementation."
   },
   {
     question: "How much does Demandbase actually cost?",
-    answer: "Demandbase does not publish public pricing. Based on customer reports and industry analysis, Demandbase contracts typically range from $50,000 to $150,000+ per year depending on the modules purchased, number of seats, and account volume. Enterprise deployments with advertising activation, full ABM capabilities, and advanced analytics commonly exceed $100,000 annually. Annual contracts are required. Cursive is $1,000/month with no annual commitment."
+    answer: "Demandbase does not publish public pricing. Based on customer reports and industry analysis, Demandbase contracts typically range from $50,000 to $150,000+ per year depending on the modules purchased, number of seats, and account volume. Enterprise deployments with advertising activation, full ABM capabilities, and advanced analytics commonly exceed $100,000 annually. Annual contracts are required. Cursive offers Visitor Pixel at $97/month, Custom Audience at $197/month, and the Pixel + Audience Bundle at $247/month. All plans are month-to-month with no setup fee and can be canceled anytime."
   },
   {
     question: "Does Demandbase show you individual person names or just company names?",
@@ -67,7 +67,7 @@ const faqs = [
   },
   {
     question: "What does Cursive offer that Demandbase does not?",
-    answer: "Cursive offers person-level identification (vs company-level), built-in AI email outreach sequences, direct mail automation (physical postcards and letters to identified visitors), and month-to-month pricing — all of which Demandbase does not include at comparable pricing. Cursive's all-in-one approach means visitor identification, AI outreach, and direct mail flow through one platform. With Demandbase, you pay separately for the identification layer, then need additional tools like Outreach, Salesloft, or HubSpot to execute any outreach."
+    answer: "Cursive offers self-serve person-level visitor identification and fresh weekly lists of in-market buyers delivered to Google Sheets. Teams can choose Visitor Pixel at $97/month, Custom Audience at $197/month, or the Pixel + Audience Bundle at $247/month. All plans are month-to-month with no setup fee and can be canceled anytime."
   }
 ]
 
@@ -78,12 +78,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         generateBreadcrumbSchema([
           { name: 'Home', url: 'https://www.meetcursive.com' },
           { name: 'Blog', url: 'https://www.meetcursive.com/blog' },
-          { name: 'Cursive vs Demandbase: $1k/mo Person-Level ID vs $50k-$150k/yr Account ABM (2026)', url: 'https://www.meetcursive.com/blog/cursive-vs-demandbase' },
+          { name: 'Cursive vs Demandbase: $97/mo Person-Level ID vs $50k-$150k/yr Account ABM (2026)', url: 'https://www.meetcursive.com/blog/cursive-vs-demandbase' },
         ]),
         generateFAQSchema(faqs),
         generateBlogPostSchema({
-          title: 'Cursive vs Demandbase: $1k/mo Person-Level ID vs $50k-$150k/yr Account ABM (2026)',
-          description: 'Compare Cursive and Demandbase for B2B lead generation. Demandbase costs $50,000-$150,000/year with complex implementation. Cursive delivers 70% person-level visitor ID, AI outreach, and direct mail for $1,000/month with 24-hour setup.',
+          title: 'Cursive vs Demandbase: $97/mo Person-Level ID vs $50k-$150k/yr Account ABM (2026)',
+          description: 'Compare Cursive and Demandbase for B2B lead generation. Demandbase costs $50,000-$150,000/year with complex implementation. Cursive offers self-serve person-level visitor identification from $97/month.',
           url: 'https://www.meetcursive.com/blog/cursive-vs-demandbase',
           datePublished: '2026-02-18',
           dateModified: '2026-02-18',

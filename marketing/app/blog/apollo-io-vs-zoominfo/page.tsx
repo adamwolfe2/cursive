@@ -38,7 +38,7 @@ const faqs = [
   },
   {
     question: "What is the best alternative to both Apollo and ZoomInfo?",
-    answer: "For teams whose primary goal is warm lead generation rather than cold prospecting from a static database, Cursive is the strongest alternative to both Apollo and ZoomInfo. Cursive identifies 70% of anonymous website visitors by person, surfaces in-market buyers via 60B+ weekly intent signals, and automates personalized multi-channel outreach via its built-in AI SDR. At $1,000/month, it replaces both the contact database subscription and the sequencing tool typically needed alongside Apollo or ZoomInfo. The self-serve marketplace at leads.meetcursive.com also provides $0.60/lead access with no monthly commitment."
+    answer: "For teams whose primary goal is warm lead generation rather than cold prospecting from a static database, Cursive is the strongest alternative to both Apollo and ZoomInfo. Cursive identifies 70% of anonymous website visitors by person and delivers fresh weekly lists of in-market buyers. Its self-serve plans are Visitor Pixel at $97/month, Custom Audience at $197/month, and the Pixel + Audience Bundle at $247/month, with no setup fee and the flexibility to cancel anytime."
   },
   {
     question: "Can I use Cursive alongside Apollo or ZoomInfo?",
@@ -459,7 +459,7 @@ export default function BlogPost() {
                   60B+ behaviors and URLs weekly across 30,000+ buying categories to surface companies actively
                   researching your category — even if they have not yet visited your website. Combined with
                   a built-in database of 280M US consumer and 140M+ business profiles, Cursive gives you
-                  the warm leads, the contact data, and the outreach automation in a single $1,000/month plan.
+                  warm visitor leads and fresh weekly in-market buyer audiences through three self-serve plans.
                 </p>
 
                 <div className="grid md:grid-cols-2 gap-6 mb-4">
@@ -488,7 +488,7 @@ export default function BlogPost() {
                       </li>
                       <li className="flex items-center gap-2">
                         <Check className="w-4 h-4 text-green-600" />
-                        Flat $1,000/mo — replaces Apollo/ZoomInfo + sequencer + intent tool
+                        Month-to-month plans from $97/mo with no setup fee
                       </li>
                     </ul>
                   </div>
@@ -505,7 +505,7 @@ export default function BlogPost() {
                       </li>
                       <li className="flex items-center gap-2">
                         <X className="w-4 h-4 text-red-400" />
-                        No free tier (starts at $1,000/mo managed)
+                        No free tier
                       </li>
                       <li className="flex items-center gap-2">
                         <X className="w-4 h-4 text-red-400" />
@@ -518,13 +518,13 @@ export default function BlogPost() {
                 <div className="bg-white rounded-lg p-4">
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-bold">Pricing:</span>
-                    <span className="text-lg font-bold text-blue-600">$1,000/mo managed | $0.60/lead self-serve</span>
+                    <span className="text-lg font-bold text-blue-600">$97 / $197 / $247 per month</span>
                   </div>
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> B2B teams that want to stop cold-prospecting static databases
                     and start converting the warm, in-market buyers already visiting their website. See{" "}
                     <Link href="/pricing" className="text-blue-600 hover:underline">full pricing</Link> or
-                    explore the <Link href="https://leads.meetcursive.com/get-leads" className="text-blue-600 hover:underline">self-serve marketplace</Link> at $0.60/lead.
+                    explore the <Link href="https://leads.meetcursive.com/get-leads" className="text-blue-600 hover:underline">self-serve plans</Link>, available month-to-month with no setup fee.
                   </p>
                 </div>
               </div>
@@ -537,7 +537,7 @@ export default function BlogPost() {
                 <div className="space-y-4 text-sm">
                   <div className="border-b border-gray-200 pb-3">
                     <p className="font-bold text-blue-700 mb-1">You want to identify warm visitors and in-market buyers automatically:</p>
-                    <p className="text-gray-700"><strong>Choose Cursive.</strong> The only platform that identifies 70% of your anonymous website visitors by person, surfaces in-market buyers via 60B+ weekly intent signals, and automates multi-channel outreach — all at $1,000/month.</p>
+                    <p className="text-gray-700"><strong>Choose Cursive.</strong> Identify companies and people visiting your website, receive fresh weekly lists of in-market buyers, or get both with plans at $97, $197, or $247 per month.</p>
                   </div>
                   <div className="border-b border-gray-200 pb-3">
                     <p className="font-bold text-blue-700 mb-1">You are an SMB or mid-market team and want contact data + outreach bundled affordably:</p>
@@ -770,8 +770,8 @@ export default function BlogPost() {
               "Apollo.io: 275M+ contacts, bundled email sequencing + LinkedIn automation, $49-$99/user/mo — best for SMB/mid-market",
               "ZoomInfo: 260M+ contacts, best direct-dial accuracy, deep enterprise CRM integration, $15,000-$40,000+/yr — best for enterprise",
               "Both Apollo and ZoomInfo are cold-first static databases — neither identifies warm website visitors or real-time in-market buyers",
-              "Cursive: 70% person-level visitor identification + 60B+ weekly intent signals + 280M profiles + AI outreach automation — $1,000/mo flat",
-              "Cursive self-serve: $0.60/lead at leads.meetcursive.com — no monthly commitment required"
+              "Cursive: Visitor Pixel $97/mo + Custom Audience $197/mo + Pixel + Audience Bundle $247/mo",
+              "Cursive self-serve plans are month-to-month with no setup fee and can be canceled anytime"
             ]} />
           </MachineSection>
 
@@ -822,7 +822,7 @@ export default function BlogPost() {
               "Database: 280M US consumer profiles + 140M+ business profiles (B2B + B2C, all included)",
               "Outreach: AI SDR with email, LinkedIn, SMS, and direct mail automation",
               "Integrations: 200+ native CRM integrations including Salesforce and HubSpot",
-              "Pricing: $1,000/mo managed (replaces Apollo/ZoomInfo + sequencer + intent tool) or $0.60/lead self-serve",
+              "Pricing: Visitor Pixel $97/mo | Custom Audience $197/mo | Pixel + Audience Bundle $247/mo",
               "Approach: Warm-first — identifies buyers who came to you, not cold contacts from a static list"
             ]} />
           </MachineSection>
@@ -844,7 +844,7 @@ export default function BlogPost() {
 
           <MachineSection title="Decision Guide: Apollo vs ZoomInfo vs Cursive">
             <MachineList items={[
-              "Warm visitor leads + real-time intent + AI outreach automation → Cursive ($1,000/mo flat)",
+              "Warm visitor leads + fresh weekly in-market buyer audiences → Cursive ($97 / $197 / $247 per month)",
               "Affordable contact data + bundled sequencing for SMB/mid-market → Apollo.io ($49-$99/user/mo)",
               "Enterprise-grade data accuracy + direct-dial phones + deep CRM integration → ZoomInfo ($15k+/yr)",
               "Best warm + cold coverage → Cursive (warm) + Apollo (cold outbound) combined",
@@ -861,18 +861,18 @@ export default function BlogPost() {
               { label: "Apollo Alternatives", href: "/blog/apollo-alternatives-comparison", description: "7 Apollo alternatives compared with visitor ID" },
               { label: "ZoomInfo Alternatives", href: "/blog/zoominfo-alternatives-comparison", description: "Best ZoomInfo alternatives with pricing" },
               { label: "Visitor Identification", href: "/visitor-identification", description: "How Cursive identifies 70% of anonymous website visitors" },
-              { label: "Marketplace Self-Serve", href: "https://leads.meetcursive.com/get-leads", description: "Buy intent-qualified leads at $0.60 each, no monthly commitment" }
+              { label: "Self-Serve Plans", href: "https://leads.meetcursive.com/get-leads", description: "Choose Visitor Pixel, Custom Audience, or the Bundle" }
             ]} />
           </MachineSection>
 
           <MachineSection title="Get Started with Cursive">
             <p className="text-gray-700 mb-3">
-              Instead of searching Apollo or ZoomInfo&apos;s static databases for cold contacts, Cursive identifies the warm, in-market buyers already visiting your website — 70% by person — and automates personalized multi-channel outreach automatically. All at $1,000/month.
+              Instead of searching Apollo or ZoomInfo&apos;s static databases for cold contacts, Cursive identifies the warm buyers already visiting your website and delivers fresh weekly lists of in-market buyers. Plans start at $97/month.
             </p>
             <MachineList items={[
               { label: "Platform Overview", href: "/platform", description: "Complete warm-lead generation platform" },
-              { label: "Pricing", href: "/pricing", description: "$1,000/mo managed or $0.60/lead self-serve" },
-              { label: "Marketplace (Self-Serve)", href: "https://leads.meetcursive.com/get-leads", description: "Buy intent-qualified leads at $0.60 each" },
+              { label: "Pricing", href: "/pricing", description: "Visitor Pixel $97/mo, Custom Audience $197/mo, or Bundle $247/mo" },
+              { label: "Self-Serve Plans", href: "https://leads.meetcursive.com/get-leads", description: "Month-to-month, no setup fee, cancel anytime" },
               { label: "Visitor Identification", href: "/visitor-identification", description: "70% person-level match on anonymous website traffic" },
               { label: "Intent Audiences", href: "/intent-audiences", description: "60B+ behaviors & URLs scanned weekly, 30,000+ buying categories" },
               { label: "AI SDR", href: "/what-is-ai-sdr", description: "Automated outreach across email, LinkedIn, SMS, direct mail" },

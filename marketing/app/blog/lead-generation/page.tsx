@@ -911,7 +911,7 @@ export default function LeadGenerationPage() {
             </p>
             <MachineList items={[
               { label: "Platform Overview", href: "/platform", description: "Complete lead generation engine" },
-              { label: "Pricing", href: "/pricing", description: "Self-serve + done-for-you options" },
+              { label: "Pricing", href: "/pricing", description: "Visitor Pixel $97/mo, Custom Audience $197/mo, or both for $247/mo" },
               { label: "Book Demo", href: "/book", description: "See Cursive in real-time" }
             ]} />
           </MachineSection>

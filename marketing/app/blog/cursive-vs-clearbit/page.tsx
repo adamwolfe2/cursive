@@ -30,7 +30,7 @@ const faqs = [
   },
   {
     question: "How much did Clearbit cost compared to Cursive?",
-    answer: "Clearbit's pricing was opaque and varied widely. Most teams paid $12,000-50,000+ per year depending on API volume, products used, and contract negotiation. Cursive's pricing starts at approximately $1,000 per month with transparent, published pricing. For most teams, Cursive provides more capabilities at a lower price point than what they were paying Clearbit."
+    answer: "Clearbit's pricing was opaque and varied widely. Most teams paid $12,000-50,000+ per year depending on API volume, products used, and contract negotiation. Cursive's transparent, published self-serve plans are Visitor Pixel at $97/month, Custom Audience at $197/month, and the Pixel + Audience Bundle at $247/month. All plans are month-to-month with no setup fee and can be canceled anytime."
   },
   {
     question: "Can I use Cursive if I am not a HubSpot customer?",
@@ -147,7 +147,7 @@ export default function BlogPost() {
                   </tr>
                   <tr>
                     <td className="border border-gray-300 p-3 font-medium">Pricing</td>
-                    <td className="border border-gray-300 p-3 font-bold text-blue-600">~$1,000/mo (transparent)</td>
+                    <td className="border border-gray-300 p-3 font-bold text-blue-600">$97-$247/mo (transparent)</td>
                     <td className="border border-gray-300 p-3">$12k-50k+/year (opaque, increasing)</td>
                   </tr>
                 </tbody>
@@ -304,7 +304,7 @@ export default function BlogPost() {
               <strong>Clearbit</strong> never published pricing. Costs varied widely based on which products you used, your API volume, company size, and negotiation skills. Typical annual contracts ranged from $12,000 to $50,000 or more. Since the HubSpot acquisition, existing customers have reported 30-50% price increases at renewal, and new standalone Clearbit contracts are increasingly difficult to secure. The trend is clearly toward bundling Clearbit capabilities into HubSpot's (already expensive) premium tiers.
             </p>
             <p>
-              <strong>Cursive</strong> offers transparent, published <Link href="/pricing">pricing</Link> starting at approximately $1,000/month. All core capabilities are included in the platform: visitor identification, enrichment, intent data, AI SDR, audience builder, multi-channel outreach, and CRM integration. There are no hidden costs for individual features and no opaque enterprise pricing negotiations. You know what you are paying before you sign.
+              <strong>Cursive</strong> offers transparent, published <Link href="/pricing">pricing</Link>: Visitor Pixel is $97/month, Custom Audience is $197/month, and the Pixel + Audience Bundle is $247/month. Every plan is self-serve and month-to-month, with no setup fee and the flexibility to cancel anytime.
             </p>
 
             <div className="not-prose bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-8 my-8 border-2 border-blue-500">
@@ -319,7 +319,7 @@ export default function BlogPost() {
                     <li className="flex justify-between"><span>Intent data</span><span className="font-medium">Included</span></li>
                     <li className="flex justify-between"><span>Audience segmentation</span><span className="font-medium">Included</span></li>
                     <li className="flex justify-between"><span>CRM integration</span><span className="font-medium">Included</span></li>
-                    <li className="border-t pt-2 flex justify-between font-bold text-blue-600"><span>Total</span><span>~$1,000/mo</span></li>
+                    <li className="border-t pt-2 flex justify-between font-bold text-blue-600"><span>Cursive plans</span><span>$97-$247/mo</span></li>
                   </ul>
                 </div>
                 <div className="bg-white rounded-lg p-6 border border-gray-200">
@@ -419,7 +419,7 @@ export default function BlogPost() {
               <strong>Cursive integrations</strong> include Salesforce, HubSpot, Slack, and a growing <Link href="/marketplace">marketplace</Link> of third-party connections. The integrations are bidirectional and designed to push rich, person-level data rather than just company records. While Cursive's integration catalog is not as extensive as Clearbit's mature ecosystem, the integrations that exist are deeper and more action-oriented, pushing complete contact records with intent scores and triggering workflows automatically.
             </p>
             <p>
-              For teams using <Link href="/services">Cursive's managed services</Link>, the integration setup is handled by the Cursive team, reducing the engineering burden of migration.
+              Cursive's self-serve plans have no setup fee, so teams can choose Visitor Pixel, Custom Audience, or the Pixel + Audience Bundle and get started month-to-month.
             </p>
 
             <h2>Migration Guide: Switching from Clearbit to Cursive</h2>
@@ -545,7 +545,7 @@ export default function BlogPost() {
               "AI SDR / Outreach: Clearbit never offered vs Cursive built-in multi-channel",
               "Intent Data: Clearbit not included vs Cursive native scoring + signals",
               "CRM Dependency: Clearbit increasingly HubSpot-only vs Cursive CRM-agnostic",
-              "Pricing: Clearbit $12k-50k+/year (opaque) vs Cursive ~$1,000/mo (transparent)"
+              "Pricing: Clearbit $12k-50k+/year (opaque) vs Cursive $97-$247/mo (transparent)"
             ]} />
           </MachineSection>
 
@@ -583,7 +583,7 @@ export default function BlogPost() {
           <MachineSection title="Related Resources">
             <MachineList items={[
               { label: "Cursive Platform", href: "/platform", description: "Full-stack visitor identification and pipeline generation" },
-              { label: "Pricing", href: "/pricing", description: "Transparent pricing starting at ~$1,000/month" },
+              { label: "Pricing", href: "/pricing", description: "Transparent self-serve pricing from $97/month" },
               { label: "Visitor Identification", href: "/visitor-identification", description: "70% person-level match rate" },
               { label: "Free Audit", href: "/free-audit", description: "See how many visitors Clearbit was missing" },
               { label: "Clearbit Alternatives Comparison", href: "/blog/clearbit-alternatives-comparison", description: "10 tools compared" },

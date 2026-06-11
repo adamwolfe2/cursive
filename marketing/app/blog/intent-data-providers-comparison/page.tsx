@@ -13,7 +13,7 @@ const providers = [
     rank: 1,
     name: "Cursive",
     tagline: "Best for: SMB/mid-market teams that want immediate pipeline from existing traffic",
-    price: "$1,000/mo",
+    price: "$97-$247/mo",
     contract: "Month-to-month",
     dataType: "First-party (website visitors)",
     idLevel: "Person-level (70% rate)",
@@ -108,7 +108,7 @@ const faqs = [
   },
   {
     question: "How much does intent data cost?",
-    answer: "Intent data pricing varies widely: Cursive starts at $1,000/month for first-party visitor identification plus outreach automation. Bombora ranges from $20,000 to $50,000+ per year. 6sense costs $50,000-$200,000 per year. Demandbase runs $50,000-$150,000 per year. G2 Buyer Intent ranges from $5,000-$20,000 per year. TechTarget Priority Engine is $15,000-$40,000+ per year."
+    answer: "Intent data pricing varies widely: Cursive offers Visitor Pixel for $97/month, Custom Audience for $197/month, and the Pixel + Audience Bundle for $247/month. Bombora ranges from $20,000 to $50,000+ per year. 6sense costs $50,000-$200,000 per year. Demandbase runs $50,000-$150,000 per year. G2 Buyer Intent ranges from $5,000-$20,000 per year. TechTarget Priority Engine is $15,000-$40,000+ per year."
   },
   {
     question: "Can I use multiple intent data providers together?",
@@ -123,7 +123,7 @@ const relatedPosts = [
     description: "Everything you need to know about buyer intent signals, data types, and how to use them.",
   },
   {
-    title: "Cursive vs 6sense: $1k/mo vs $50k-$200k/yr",
+    title: "Cursive vs 6sense: $97-$247/mo vs $50k-$200k/yr",
     href: "/blog/cursive-vs-6sense",
     description: "Deep comparison of Cursive and 6sense for mid-market B2B teams.",
   },
@@ -177,7 +177,7 @@ export default function IntentDataProvidersComparison() {
               <h2 className="text-lg font-bold mb-4">Quick Picks by Use Case</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {[
-                  { label: "Best for SMB/mid-market", winner: "Cursive", reason: "$1k/mo, person-level, 24hr setup" },
+                  { label: "Best for SMB/mid-market", winner: "Cursive", reason: "$97-$247/mo, person-level, no setup fee" },
                   { label: "Best bottom-funnel intent", winner: "G2 Buyer Intent", reason: "Vendor comparison signals" },
                   { label: "Best off-site co-op data", winner: "Bombora", reason: "1,000+ publisher network" },
                   { label: "Best enterprise ABM platform", winner: "6sense", reason: "Predictive AI, Dark Funnel" },
@@ -290,7 +290,7 @@ export default function IntentDataProvidersComparison() {
                     </thead>
                     <tbody className="divide-y divide-gray-100">
                       {[
-                        ["Starting price", "$1k/mo", "$5k/yr", "$20k/yr", "$50k/yr", "$50k/yr"],
+                        ["Starting price", "$97/mo", "$5k/yr", "$20k/yr", "$50k/yr", "$50k/yr"],
                         ["Contract", "Monthly", "Annual", "Annual", "Multi-yr", "Annual"],
                         ["Person-level ID", "✓ 70%", "✗", "✗", "✗", "✗"],
                         ["Off-site intent", "✗", "Review only", "✓", "✓", "✓"],
@@ -397,7 +397,7 @@ export default function IntentDataProvidersComparison() {
             This guide compares the six leading B2B intent data providers: Cursive, G2 Buyer Intent, Bombora, 6sense, Demandbase, and TechTarget Priority Engine. Intent data identifies which companies or individuals are actively researching a product category or vendor. Providers differ significantly in data type (first-party vs third-party), identification level (person vs company), pricing, and required organizational infrastructure.
           </MachineSection>
           <MachineSection title="Provider Rankings and Pricing">
-            Cursive ($1,000/month, person-level first-party) is best for SMB and mid-market teams. G2 Buyer Intent ($5,000-$20,000/year) is best for bottom-funnel vendor comparison signals. Bombora ($20,000-$50,000/year) is best for broad off-site co-op intent. 6sense ($50,000-$200,000/year) and Demandbase ($50,000-$150,000/year) are enterprise ABM platforms requiring dedicated RevOps. TechTarget Priority Engine ($15,000-$40,000/year) is specialized for technology vendors.
+            Cursive ($97-$247/month, person-level first-party and custom audiences) is best for SMB and mid-market teams. G2 Buyer Intent ($5,000-$20,000/year) is best for bottom-funnel vendor comparison signals. Bombora ($20,000-$50,000/year) is best for broad off-site co-op intent. 6sense ($50,000-$200,000/year) and Demandbase ($50,000-$150,000/year) are enterprise ABM platforms requiring dedicated RevOps. TechTarget Priority Engine ($15,000-$40,000/year) is specialized for technology vendors.
           </MachineSection>
           <MachineSection title="First-Party vs Third-Party Intent Data">
             First-party intent data (from your own website) is the highest-quality signal because it reflects direct brand engagement. Cursive provides first-party visitor identification at 70% person-level accuracy — identifying individual decision-makers by name, email, and job title. Third-party intent data (Bombora, 6sense, G2) reveals off-site research signals but only at the company level.
@@ -406,7 +406,7 @@ export default function IntentDataProvidersComparison() {
             For B2B teams under 200 employees, the recommended approach is: start with Cursive for first-party visitor identification and automated outreach, add G2 Buyer Intent if you have significant review presence, and consider Bombora only if you have dedicated RevOps to operationalize account-level signals.
           </MachineSection>
           <MachineSection title="About Cursive">
-            <MachineLink href="https://www.meetcursive.com">Cursive</MachineLink> is a B2B lead generation platform providing first-party website visitor identification at 70% person-level accuracy with automated AI outreach and direct mail. Starts at $1,000/month, month-to-month, live in 24 hours.
+            <MachineLink href="https://www.meetcursive.com">Cursive</MachineLink> is a B2B lead generation platform providing first-party website visitor identification and fresh weekly lists of in-market buyers. Plans start at $97/month, with no setup fee and cancel anytime.
           </MachineSection>
         </MachineContent>
       </MachineView>

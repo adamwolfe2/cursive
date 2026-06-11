@@ -333,7 +333,7 @@ export default function BlogPost() {
             <h2>Best Lead Generation Software for Small Business</h2>
 
             <p>
-              Small businesses face different constraints than enterprise teams: tighter budgets, limited technical resources, and the need for quick time-to-value. Look for platforms with free tiers or pay-as-you-go pricing that let you start small and scale with results. Apollo.io, Hunter, and HubSpot all offer meaningful free functionality. For visitor identification without long contracts, credit-based marketplaces let you purchase verified B2B leads starting around $0.60 per lead with no subscription required.
+              Small businesses face different constraints than enterprise teams: tighter budgets, limited technical resources, and the need for quick time-to-value. Look for platforms with free tiers or month-to-month pricing that let you start small and scale with results. Apollo.io, Hunter, and HubSpot all offer meaningful free functionality. Cursive offers a Visitor Pixel for $97/mo, a fresh weekly Custom Audience delivered to Google Sheets for $197/mo, or both for $247/mo, with no setup fee and the flexibility to cancel anytime.
             </p>
 
             <h2>FAQs About Lead Generation Software</h2>
@@ -480,7 +480,7 @@ export default function BlogPost() {
             </p>
             <MachineList items={[
               { label: "Platform Overview", href: "/platform", description: "Visitor identification, intent data, AI outreach" },
-              { label: "Pricing", href: "/pricing", description: "Self-serve marketplace + done-for-you services" },
+              { label: "Pricing", href: "/pricing", description: "Three self-serve plans from $97/mo, no setup fee, cancel anytime" },
               { label: "Book a Demo", href: "/book", description: "See Cursive in real-time" }
             ]} />
           </MachineSection>

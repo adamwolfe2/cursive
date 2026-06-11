@@ -489,7 +489,7 @@ export default function BlogPost() {
 
           <MachineSection title="Platform Comparison Summary">
             <MachineList items={[
-              "Cursive - Intent-driven sales, AI SDRs + Visitor ID, Custom pricing",
+              "Cursive - Visitor identification + in-market audiences, self-serve plans from $97/mo",
               "Outreach - Enterprise teams, End-to-end automation, Custom pricing",
               "Salesloft - Mid-market/Enterprise, Revenue orchestration, Custom pricing",
               "Apollo.io - Prospecting + outreach, Integrated database, Free tier available",
@@ -540,7 +540,7 @@ export default function BlogPost() {
             </p>
             <MachineList items={[
               { label: "Platform Overview", href: "/platform", description: "Visitor identification, intent data, AI outreach" },
-              { label: "Pricing", href: "/pricing", description: "Self-serve marketplace + done-for-you services" },
+              { label: "Pricing", href: "/pricing", description: "Three self-serve plans from $97/mo" },
               { label: "Book a Demo", href: "/book", description: "See Cursive in real-time" }
             ]} />
           </MachineSection>

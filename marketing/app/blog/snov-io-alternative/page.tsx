@@ -122,7 +122,7 @@ export default function BlogPost() {
                       <td className="border border-gray-300 p-3 font-bold">Cursive</td>
                       <td className="border border-gray-300 p-3">Warm visitors + AI-written outreach</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold">Live website visitors</td>
-                      <td className="border border-gray-300 p-3">$1,000/mo flat</td>
+                      <td className="border border-gray-300 p-3">From $97/mo</td>
                       <td className="border border-gray-300 p-3">Visitor ID + AI SDR + 95%+ deliverability</td>
                     </tr>
                     <tr>
@@ -255,7 +255,7 @@ export default function BlogPost() {
                   and firmographic data. This is not merge-field personalization — it is genuinely unique email content
                   per recipient. Outreach goes via email, LinkedIn, and <Link href="/direct-mail" className="text-blue-600 hover:underline">direct mail</Link>,
                   triggered automatically by <Link href="/intent-audiences" className="text-blue-600 hover:underline">intent signals</Link>.
-                  Explore additional capabilities on the <Link href="/marketplace" className="text-blue-600 hover:underline">Cursive marketplace</Link>.
+                  Explore Cursive&apos;s self-serve plans on the <Link href="/marketplace" className="text-blue-600 hover:underline">Cursive plans page</Link>.
                 </p>
 
                 <div className="grid md:grid-cols-2 gap-6 mb-4">
@@ -297,7 +297,7 @@ export default function BlogPost() {
                       </li>
                       <li className="flex items-center gap-2">
                         <X className="w-4 h-4 text-red-400" />
-                        Higher entry price than Snov.io ($1,000/mo vs. $39/mo)
+                        Requires website traffic to get the most value
                       </li>
                     </ul>
                   </div>
@@ -306,7 +306,7 @@ export default function BlogPost() {
                 <div className="bg-white rounded-lg p-4">
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-bold">Pricing:</span>
-                    <span className="text-lg font-bold text-blue-600">Starting at $1,000/mo (flat)</span>
+                    <span className="text-lg font-bold text-blue-600">Starting at $97/mo</span>
                   </div>
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> B2B companies generating 5,000+ monthly website visitors that want
@@ -796,7 +796,8 @@ export default function BlogPost() {
               </p>
 
               <p>
-                <strong>Cursive all-in-one:</strong> At $1,000/mo flat, Cursive includes visitor identification,
+                <strong>Cursive self-serve plans:</strong> Visitor Pixel is $97/mo, Custom Audience is $197/mo, and
+                the Pixel + Audience Bundle is $247/mo. Cursive includes visitor identification,
                 AI-personalized outreach, multi-channel delivery, and intent data. The key difference is lead quality:
                 because Cursive starts with warm visitors who have already shown buying intent, the reply rates — and
                 resulting pipeline — are dramatically better than cold email. Visit our <Link href="/pricing">pricing page</Link> for details.
@@ -956,7 +957,7 @@ export default function BlogPost() {
             <MachineList items={[
               "Snov.io pricing: $39-$738/month credit-based for email finding, verification, drip campaigns, LinkedIn prospector",
               "Top pain points: Data quality + bounce rates (10-15%+), cold-list-only approach, no AI personalization, no visitor ID, no intent data, no direct mail",
-              "Cursive: Identifies website visitors (warm inbound leads), AI-written unique emails per recipient, 95%+ deliverability, multi-channel (email + LinkedIn + direct mail), $1,000/mo flat",
+              "Cursive: Identifies website visitors (warm inbound leads), AI-written unique emails per recipient, 95%+ deliverability, multi-channel (email + LinkedIn + direct mail), with self-serve plans from $97/mo",
               "For pure email finding: Hunter.io (cleaner data) or Apollo (bigger database with sequences)",
               "For highest data quality: ZoomInfo (enterprise) or Cognism (GDPR/phone-verified)"
             ]} />
@@ -968,7 +969,7 @@ export default function BlogPost() {
                 <p className="font-bold text-gray-900 mb-2">1. Cursive - Best for 95%+ deliverability + warm inbound leads (Our Pick)</p>
                 <MachineList items={[
                   "Approach: Identifies website visitors with real buying intent (not cold found emails)",
-                  "Pricing: $1,000/mo flat (no credits, no per-seat)",
+                  "Pricing: Visitor Pixel $97/mo, Custom Audience $197/mo, or Pixel + Audience Bundle $247/mo",
                   "Deliverability: 95%+ (vs. 85-90% for cold email tools) — because contacts are from live website visits",
                   "Key Features: Website visitor ID (70% person-level match), AI SDR writes unique personalized emails, email + LinkedIn + direct mail, intent data and scoring",
                   "Best For: B2B companies with 5,000+ monthly visitors wanting warm lead conversion with high deliverability",
@@ -1090,7 +1091,7 @@ export default function BlogPost() {
                 <p className="font-bold text-gray-900 mb-2">Pricing:</p>
                 <MachineList items={[
                   "Snov.io: $39-$738/mo credit-based (500+ contacts/mo = $99-$299/mo range quickly)",
-                  "Cursive: $1,000/mo flat — entire team, no credits, includes visitor ID + AI outreach + intent data",
+                  "Cursive: Visitor Pixel $97/mo, Custom Audience $197/mo, or Pixel + Audience Bundle $247/mo — month-to-month, no setup fee, cancel anytime",
                   "Snov.io requires separate sequencing tool for multi-channel; Cursive is all-in-one"
                 ]} />
               </div>
@@ -1161,7 +1162,7 @@ export default function BlogPost() {
             </p>
             <MachineList items={[
               { label: "Platform Overview", href: "/platform", description: "Complete warm-lead generation platform" },
-              { label: "Pricing", href: "/pricing", description: "Starting at $1,000/mo flat — no credits, no per-seat fees" },
+              { label: "Pricing", href: "/pricing", description: "Self-serve plans at $97/mo, $197/mo, or $247/mo — no setup fee, cancel anytime" },
               { label: "Visitor Identification", href: "/visitor-identification", description: "70% person-level match rate from website visits" },
               { label: "AI SDR", href: "/what-is-ai-sdr", description: "AI-written unique emails based on visitor behavior" },
               { label: "Intent Audiences", href: "/intent-audiences", description: "Score and prioritize visitors by buying intent" },

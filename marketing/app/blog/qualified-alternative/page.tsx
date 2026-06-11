@@ -42,7 +42,7 @@ const faqs = [
   },
   {
     question: "How does pricing compare between Qualified and Cursive?",
-    answer: "Qualified starts at $3,500/month and scales to $7,500+/month depending on traffic volume and features. Cursive's managed plan is $1,000/month all-in, including visitor identification, intent data, AI SDR outreach, and 200+ CRM integrations. Cursive also offers a self-serve option at leads.meetcursive.com where you can purchase leads at $0.60 each with no monthly commitment. The price difference is significant: Qualified's entry plan costs 3.5x Cursive's managed plan."
+    answer: "Qualified starts at $3,500/month and scales to $7,500+/month depending on traffic volume and features. Cursive offers three month-to-month self-serve plans: Visitor Pixel at $97/month, Custom Audience at $197/month, and Pixel + Audience Bundle at $247/month. All three have no setup fee and can be canceled anytime."
   }
 ]
 
@@ -158,7 +158,7 @@ export default function BlogPost() {
                       <td className="border border-gray-300 p-3 text-green-600 font-bold">70%</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold">Person-level</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold"><Check className="w-4 h-4 inline" /> Email, LinkedIn, SMS, DM</td>
-                      <td className="border border-gray-300 p-3">$1,000 or $0.60/lead</td>
+                      <td className="border border-gray-300 p-3">$97-$247/mo</td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-3 font-bold">Qualified</td>
@@ -267,7 +267,7 @@ export default function BlogPost() {
                       </li>
                       <li className="flex items-center gap-2">
                         <X className="w-4 h-4 text-red-400" />
-                        No free tier (managed starts at $1,000/mo)
+                        No free tier (plans start at $97/mo)
                       </li>
                       <li className="flex items-center gap-2">
                         <X className="w-4 h-4 text-red-400" />
@@ -280,7 +280,7 @@ export default function BlogPost() {
                 <div className="bg-white rounded-lg p-4">
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-bold">Pricing:</span>
-                    <span className="text-lg font-bold text-blue-600">$1,000/mo managed | $0.60/lead self-serve</span>
+                    <span className="text-lg font-bold text-blue-600">$97/mo Pixel | $197/mo Audience | $247/mo Bundle</span>
                   </div>
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> B2B teams that want to identify and engage all anonymous visitors — not just
@@ -479,7 +479,7 @@ export default function BlogPost() {
                 <div className="space-y-4 text-sm">
                   <div className="border-b border-gray-200 pb-3">
                     <p className="font-bold text-blue-700 mb-1">You want to identify ALL visitors (name + email) and trigger automated outreach:</p>
-                    <p className="text-gray-700"><strong>Choose Cursive.</strong> 70% person-level ID, automated AI outreach across email/LinkedIn/SMS/direct mail, $1,000/mo vs Qualified&apos;s $3,500-$7,500+/mo.</p>
+                    <p className="text-gray-700"><strong>Choose Cursive.</strong> Identify website visitors from $97/mo, receive fresh weekly in-market buyer lists from $197/mo, or get both for $247/mo vs Qualified&apos;s $3,500-$7,500+/mo.</p>
                   </div>
                   <div className="border-b border-gray-200 pb-3">
                     <p className="font-bold text-blue-700 mb-1">You need company-level routing with Slack alerts and have a large budget:</p>
@@ -580,7 +580,7 @@ export default function BlogPost() {
             <div className="max-w-3xl mx-auto text-center">
               <h2 className="text-3xl font-bold mb-4">Identify All Your Visitors — Not Just the Ones Who Chat</h2>
               <p className="text-xl mb-8 text-white/90">
-                Qualified sees 1-5% of your visitors. Cursive identifies up to 70% — by name and email — and triggers outreach automatically at $3,500/mo less than Qualified&apos;s entry price.
+                Qualified sees 1-5% of your visitors. Cursive identifies companies and people visiting your site with plans starting at $97/mo, well below Qualified&apos;s entry price.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button size="lg" variant="default" asChild>
@@ -608,7 +608,7 @@ export default function BlogPost() {
             <MachineList items={[
               "Qualified: website visitor routing via live chat, requires visitor to initiate interaction, reverse IP company-level ID at 20-30% match rate, $3,500-$7,500+/mo, Salesforce-dependent",
               "Core gap: Qualified cannot identify visitors who view pages without engaging — typically 95-99% of all traffic",
-              "Cursive: 70% person-level ID (name, email, job title, LinkedIn, company) without requiring engagement, AI SDR outreach across email/LinkedIn/SMS/direct mail, $1,000/mo",
+              "Cursive: person-level website visitor identification from $97/mo, fresh weekly in-market buyer lists from $197/mo, or both for $247/mo",
               "Match rate comparison: Cursive 70% person-level vs Warmly 40% company-level vs RB2B 50-60% person-level vs Qualified 20-30% company-level"
             ]} />
           </MachineSection>
@@ -624,7 +624,7 @@ export default function BlogPost() {
                   "Outreach: AI SDR covering email, LinkedIn, SMS, and direct mail automatically",
                   "Real-time alerts when target accounts visit",
                   "200+ CRM integrations (not Salesforce-only)",
-                  "Pricing: $1,000/mo managed ($3,500-$6,500 less than Qualified) or $0.60/lead self-serve",
+                  "Pricing: $97/mo Visitor Pixel, $197/mo Custom Audience, or $247/mo Bundle",
                   "Key advantage: identifies the 95-99% of visitors Qualified cannot see"
                 ]} />
               </div>
@@ -688,13 +688,13 @@ export default function BlogPost() {
               "Qualified: routes to live sales rep for chat conversation",
               "Cursive: triggers AI SDR outreach automatically via email, LinkedIn, SMS, direct mail",
               "Qualified: $3,500-$7,500+/mo, Salesforce-required",
-              "Cursive: $1,000/mo managed, 200+ CRM integrations"
+              "Cursive: three month-to-month self-serve plans from $97-$247/mo"
             ]} />
           </MachineSection>
 
           <MachineSection title="Decision Guide">
             <MachineList items={[
-              "Person-level ID for all visitors + automated outreach → Cursive ($1,000/mo)",
+              "Person-level visitor ID or fresh weekly in-market buyer lists → Cursive ($97-$247/mo)",
               "Company-level routing + Slack alerts + large budget → Warmly ($3,500/mo)",
               "Test person-level ID for free → RB2B (free tier)",
               "HubSpot customer needing basic visitor intelligence → Clearbit via HubSpot",

@@ -30,7 +30,7 @@ const faqs = [
   },
   {
     question: "How does Cursive compare to Instantly AI?",
-    answer: "Cursive and Instantly AI solve fundamentally different problems. Instantly AI is a cold email volume tool — it helps you send large numbers of emails to purchased or scraped contact lists, with deliverability infrastructure to keep them out of spam. Cursive is a warm-lead generation platform — it identifies who is already visiting your site, surfaces active buyers based on 60B+ weekly behavioral signals, and then automates personalized multi-channel outreach automatically. Cursive starts at $1,000/month versus Instantly AI's $37-$77/month, but Cursive replaces the entire stack: visitor ID, contact data, intent data, and outreach automation."
+    answer: "Cursive and Instantly AI solve fundamentally different problems. Instantly AI is a cold email volume tool — it helps you send large numbers of emails to purchased or scraped contact lists, with deliverability infrastructure to keep them out of spam. Cursive identifies the companies and people visiting your site and delivers fresh weekly lists of in-market buyers. Cursive plans range from $97-$247/month versus Instantly AI's $37-$77/month."
   },
   {
     question: "Is Instantly AI good for B2B outbound?",
@@ -38,11 +38,11 @@ const faqs = [
   },
   {
     question: "What is the best Instantly AI alternative for warm lead generation?",
-    answer: "Cursive is the strongest Instantly AI alternative for teams that want to shift from cold-blast email to warm-lead generation. Instead of sending thousands of emails to cold lists, Cursive identifies the 70% of your website visitors that are already in-market, surfaces companies actively researching your category via its intent audience engine, and automates personalized outreach across email, LinkedIn, SMS, and direct mail. The self-serve marketplace at leads.meetcursive.com lets teams start with $0.60/lead on a flexible, no-commitment basis."
+    answer: "Cursive is the strongest Instantly AI alternative for teams that want to shift from cold-blast email to warm-lead generation. Instead of sending thousands of emails to cold lists, Cursive identifies the companies and people visiting your website and delivers fresh weekly lists of in-market buyers. Self-serve plans at leads.meetcursive.com start at $97/month, with no setup fee and cancel anytime."
   },
   {
     question: "Can I use Cursive alongside Instantly AI?",
-    answer: "Yes. Many teams use Cursive for warm, intent-driven outreach (identified website visitors and in-market buyers) and keep a cold email tool like Instantly AI for broader prospecting campaigns. However, most teams find that the warm leads Cursive generates convert at dramatically higher rates than cold email lists, and they gradually shift more budget toward the warm channel. Cursive's $0.60/lead self-serve marketplace at leads.meetcursive.com makes it easy to test warm-lead performance before committing to the full managed plan."
+    answer: "Yes. Many teams use Cursive for warm, intent-driven prospecting (identified website visitors and in-market buyers) and keep a cold email tool like Instantly AI for broader prospecting campaigns. Cursive's month-to-month self-serve plans at leads.meetcursive.com make it easy to add Visitor Pixel, Custom Audience, or both, with no setup fee and cancel anytime."
   }
 ]
 
@@ -141,7 +141,7 @@ export default function BlogPost() {
                       <td className="border border-gray-300 p-3">Warm visitor leads + AI outreach automation</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold"><Check className="w-4 h-4 inline" /> 70% person-level</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold"><Check className="w-4 h-4 inline" /> 280M profiles</td>
-                      <td className="border border-gray-300 p-3">$1,000/mo or $0.60/lead</td>
+                      <td className="border border-gray-300 p-3">$97-$247/mo</td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-3 font-bold">Instantly AI</td>
@@ -273,8 +273,8 @@ export default function BlogPost() {
                   60B+ behaviors and URLs weekly across 30,000+ buying categories to surface companies actively
                   researching your category — giving you a warm pipeline that Instantly AI simply cannot generate.
                   With a built-in database of 280M US consumer and 140M+ business profiles, Cursive eliminates
-                  the need to source contact lists separately. All at $1,000/month versus managing Instantly AI
-                  plus a contact data provider plus an intent tool separately.
+                  the need to source contact lists separately. Plans range from $97-$247/month, depending on
+                  whether you need visitor identification, weekly in-market buyer lists, or both.
                 </p>
 
                 <div className="grid md:grid-cols-2 gap-6 mb-4">
@@ -316,7 +316,7 @@ export default function BlogPost() {
                       </li>
                       <li className="flex items-center gap-2">
                         <X className="w-4 h-4 text-red-400" />
-                        No free tier (starts at $1,000/mo managed)
+                        No free tier (plans start at $97/mo)
                       </li>
                       <li className="flex items-center gap-2">
                         <X className="w-4 h-4 text-red-400" />
@@ -329,13 +329,13 @@ export default function BlogPost() {
                 <div className="bg-white rounded-lg p-4">
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-bold">Pricing:</span>
-                    <span className="text-lg font-bold text-blue-600">$1,000/mo managed | $0.60/lead self-serve</span>
+                    <span className="text-lg font-bold text-blue-600">$97/mo Pixel | $197/mo Audience | $247/mo Bundle</span>
                   </div>
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> B2B teams that want to move from cold email blasts to warm,
                     intent-driven pipeline. One platform replaces Instantly AI, your contact data provider,
                     and your intent subscription. See <Link href="/pricing" className="text-blue-600 hover:underline">full pricing</Link> or
-                    explore the <Link href="https://leads.meetcursive.com/get-leads" className="text-blue-600 hover:underline">self-serve marketplace</Link>.
+                    explore the <Link href="https://leads.meetcursive.com/get-leads" className="text-blue-600 hover:underline">self-serve plans</Link>.
                   </p>
                 </div>
               </div>
@@ -843,7 +843,7 @@ export default function BlogPost() {
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-3 font-medium">Email Warmup</td>
-                      <td className="border border-gray-300 p-3 text-center text-xs text-gray-500">Managed</td>
+                      <td className="border border-gray-300 p-3 text-center text-xs text-gray-500">Self-serve</td>
                       <td className="border border-gray-300 p-3 text-center"><Check className="w-4 h-4 text-green-600 inline" /></td>
                       <td className="border border-gray-300 p-3 text-center"><Check className="w-4 h-4 text-green-600 inline" /></td>
                       <td className="border border-gray-300 p-3 text-center"><Check className="w-4 h-4 text-green-600 inline" /></td>
@@ -851,7 +851,7 @@ export default function BlogPost() {
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-3 font-medium">Starting Price</td>
-                      <td className="border border-gray-300 p-3 text-center text-green-700 font-bold">$1k flat</td>
+                      <td className="border border-gray-300 p-3 text-center text-green-700 font-bold">$97-$247</td>
                       <td className="border border-gray-300 p-3 text-center">$37/mo</td>
                       <td className="border border-gray-300 p-3 text-center">$59/mo</td>
                       <td className="border border-gray-300 p-3 text-center">$59/user</td>
@@ -869,7 +869,7 @@ export default function BlogPost() {
                 <div className="space-y-4 text-sm">
                   <div className="border-b border-gray-200 pb-3">
                     <p className="font-bold text-blue-700 mb-1">You want visitor identification + intent data + automated warm outreach:</p>
-                    <p className="text-gray-700"><strong>Choose Cursive.</strong> The only platform that identifies warm visitors, surfaces in-market buyers, and automates multi-channel outreach in a single $1,000/month plan. Replaces Instantly AI + contact data + intent tool.</p>
+                    <p className="text-gray-700"><strong>Choose Cursive.</strong> Identify warm visitors, receive fresh weekly lists of in-market buyers, or get both with the $247/month bundle.</p>
                   </div>
                   <div className="border-b border-gray-200 pb-3">
                     <p className="font-bold text-blue-700 mb-1">You want Instantly AI&apos;s model with better deliverability controls for agency use:</p>
@@ -1021,9 +1021,9 @@ export default function BlogPost() {
               "Pricing: $37/mo Growth (1,000 active leads) | $77/mo Hypergrowth (25,000 leads) — no contact data included",
               "No built-in contact database — you must source and import your own contact lists separately",
               "No website visitor identification — warm traffic remains completely invisible",
-              "Cursive pricing: $1,000/mo flat replaces Instantly AI + contact data + intent subscription",
+              "Cursive pricing: $97/mo Visitor Pixel | $197/mo Custom Audience | $247/mo Bundle",
               "Cursive visitor ID: 70% person-level match rate (name, email, phone, company, LinkedIn)",
-              "Cursive self-serve: $0.60/lead at leads.meetcursive.com — no monthly commitment"
+              "Cursive self-serve: month-to-month at leads.meetcursive.com — no setup fee, cancel anytime"
             ]} />
           </MachineSection>
 
@@ -1037,7 +1037,7 @@ export default function BlogPost() {
                   "Intent Data: 60B+ behaviors & URLs scanned weekly across 30,000+ buying categories",
                   "Outreach: AI SDR with email, LinkedIn, SMS, and direct mail automation",
                   "Integrations: 200+ native CRM integrations, 95%+ email deliverability",
-                  "Pricing: $1,000/mo managed or $0.60/lead self-serve at leads.meetcursive.com",
+                  "Pricing: $97/mo Visitor Pixel | $197/mo Custom Audience | $247/mo Bundle",
                   "Best For: Teams that want to identify warm prospects before sending any outreach",
                   "Replaces: Instantly AI + contact data provider + intent data subscription in one platform"
                 ]} />
@@ -1126,8 +1126,8 @@ export default function BlogPost() {
                 <p className="font-bold text-gray-900 mb-2">Pricing Model:</p>
                 <MachineList items={[
                   "Instantly AI: $37/mo Growth (1,000 leads) | $77/mo Hypergrowth (25,000 leads) — contact data NOT included",
-                  "Cursive managed: $1,000/mo flat (includes visitor ID + intent data + AI SDR + contact database)",
-                  "Cursive self-serve: $0.60/lead at leads.meetcursive.com (no monthly commitment)"
+                  "Cursive Visitor Pixel: $97/mo (identifies companies and people visiting your site)",
+                  "Cursive Custom Audience: $197/mo; Pixel + Audience Bundle: $247/mo"
                 ]} />
               </div>
 
@@ -1150,14 +1150,14 @@ export default function BlogPost() {
               "Email Sequences: All tools ✓",
               "LinkedIn Automation: Cursive ✓ | lemlist ✓ | Reply.io ✓ | Mailshake ✓ | Instantly/Smartlead limited",
               "Direct Mail: Cursive ✓ | All others ✗",
-              "Email Warmup: Instantly AI ✓ | Smartlead ✓ | lemlist ✓ | Cursive managed | Reply.io add-on",
-              "Price: Cursive $1k flat | Instantly AI $37-$77 | Smartlead $59-$174 | lemlist/Reply.io/Mailshake $59-$99/user | Woodpecker $29/slot | Apollo $49-$99/user"
+              "Email Warmup: Instantly AI ✓ | Smartlead ✓ | lemlist ✓ | Cursive ✗ | Reply.io add-on",
+              "Price: Cursive $97-$247 | Instantly AI $37-$77 | Smartlead $59-$174 | lemlist/Reply.io/Mailshake $59-$99/user | Woodpecker $29/slot | Apollo $49-$99/user"
             ]} />
           </MachineSection>
 
           <MachineSection title="Decision Guide: Which Alternative to Choose">
             <MachineList items={[
-              "Warm visitor leads + intent data + multi-channel outreach → Cursive ($1,000/mo flat)",
+              "Warm visitor identification + fresh weekly in-market buyer lists → Cursive ($97-$247/mo)",
               "High-volume cold email with advanced agency deliverability → Smartlead ($59-$174/mo)",
               "Cold email + bundled contact database → Apollo.io ($49/mo per user)",
               "True multi-channel sequences (email, LinkedIn, SMS, WhatsApp) → Reply.io ($59/mo per user)",
@@ -1175,18 +1175,18 @@ export default function BlogPost() {
               { label: "Best AI SDR Tools 2026", href: "/blog/best-ai-sdr-tools-2026", description: "9 AI sales development rep platforms ranked with pricing" },
               { label: "AI SDR Overview", href: "/what-is-ai-sdr", description: "How AI sales development representatives automate outreach" },
               { label: "Visitor Identification", href: "/visitor-identification", description: "How Cursive identifies 70% of anonymous website visitors" },
-              { label: "Marketplace Self-Serve", href: "https://leads.meetcursive.com/get-leads", description: "Buy intent-qualified leads at $0.60 each, no monthly commitment" }
+              { label: "Self-Serve Plans", href: "https://leads.meetcursive.com/get-leads", description: "Choose Visitor Pixel, Custom Audience, or both; cancel anytime" }
             ]} />
           </MachineSection>
 
           <MachineSection title="Get Started with Cursive">
             <p className="text-gray-700 mb-3">
-              Cursive replaces the fragmented Instantly AI + contact data + intent tool stack with one platform: 280M profiles, 60B+ weekly intent signals, 70% visitor identification, and AI-powered multi-channel outreach automation — all at $1,000/month.
+              Cursive helps teams identify website visitors and receive fresh weekly lists of in-market buyers through three self-serve, month-to-month plans.
             </p>
             <MachineList items={[
               { label: "Platform Overview", href: "/platform", description: "Complete warm-lead generation platform" },
-              { label: "Pricing", href: "/pricing", description: "$1,000/mo managed or $0.60/lead self-serve" },
-              { label: "Marketplace (Self-Serve)", href: "https://leads.meetcursive.com/get-leads", description: "Buy intent-qualified leads at $0.60 each" },
+              { label: "Pricing", href: "/pricing", description: "$97/mo Pixel, $197/mo Audience, or $247/mo Bundle" },
+              { label: "Self-Serve Plans", href: "https://leads.meetcursive.com/get-leads", description: "No setup fee, month-to-month, cancel anytime" },
               { label: "Visitor Identification", href: "/visitor-identification", description: "70% person-level match on anonymous website traffic" },
               { label: "Intent Audiences", href: "/intent-audiences", description: "60B+ behaviors & URLs scanned weekly, 30,000+ buying categories" },
               { label: "AI SDR", href: "/what-is-ai-sdr", description: "Automated outreach across email, LinkedIn, SMS, direct mail" },

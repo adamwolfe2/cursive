@@ -397,13 +397,13 @@ export default function WhatIsBuyerIntent() {
                 </div>
 
                 <p className="text-gray-700 mb-4">
-                  At $1,000/month with no long-term commitment, Cursive is accessible for teams at Series A and beyond —
-                  not just enterprises with six-figure data budgets.
+                  Cursive offers month-to-month self-serve plans: Visitor Pixel for $97/month, Custom Audience
+                  for $197/month, or both in the Pixel + Audience Bundle for $247/month, with no setup fee.
                 </p>
 
                 <div className="flex gap-4">
                   <Link href="https://leads.meetcursive.com/get-leads">
-                    <Button>Start Free Trial</Button>
+                    <Button>Get Leads</Button>
                   </Link>
                   <Link href="/blog/intent-data-providers-comparison" className="inline-flex items-center text-primary hover:underline font-medium">
                     Compare intent data providers →
@@ -416,7 +416,7 @@ export default function WhatIsBuyerIntent() {
               <DashboardCTA
                 headline="Act on Buyer Intent Before Competitors Do"
                 description="Cursive combines website visitor identification (70% ID rate) with 60B+ behaviors & URLs scanned weekly refreshed weekly. See which prospects are actively in-market right now — and reach them before they book a demo with a competitor."
-                ctaText="Start Free Trial"
+                ctaText="Get Leads"
                 ctaUrl="https://leads.meetcursive.com/get-leads"
               />
 
@@ -474,7 +474,7 @@ export default function WhatIsBuyerIntent() {
           </MachineSection>
 
           <MachineSection title="Cursive Intent Data Platform">
-            <MachineLink href="https://www.meetcursive.com">Cursive</MachineLink> delivers buyer intent data through first-party website visitor identification (70% ID rate, 250M+ professional profiles) and third-party intent signals (60B+ signals refreshed weekly). Priced at $1,000/month with no long-term commitment, Cursive integrates with Salesforce, HubSpot, Pipedrive, and Close CRM for automated intent-to-pipeline routing. It is positioned as the most cost-effective full-stack intent data solution for growing B2B teams.
+            <MachineLink href="https://www.meetcursive.com">Cursive</MachineLink> delivers buyer intent data through first-party website visitor identification and fresh weekly lists of in-market buyers. Self-serve plans are Visitor Pixel at $97/month, Custom Audience at $197/month, and the Pixel + Audience Bundle at $247/month. All plans are month-to-month with no setup fee and can be canceled anytime.
           </MachineSection>
 
           <MachineSection title="Related Topics">

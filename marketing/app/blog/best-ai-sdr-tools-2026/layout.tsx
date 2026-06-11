@@ -27,7 +27,7 @@ const aiSdrFAQs = [
   },
   {
     question: 'What is the best AI SDR tool in 2026?',
-    answer: 'Cursive is the top-ranked AI SDR platform for teams that need intent-first outbound — combining website visitor identification (70% ID rate), buyer intent signals, and automated personalized outreach in one platform at $1,000/month. For pure outbound volume, Apollo and Instantly are popular at $49-$99/month but lack intent data. Outreach and Salesloft are enterprise sales engagement platforms at $100+/user/month. The best choice depends on whether you prioritize intent-driven outreach vs. high-volume cold outbound.',
+    answer: 'Cursive is the top-ranked intent-first platform for teams that need website visitor identification and fresh weekly lists of in-market buyers. Its self-serve plans are Visitor Pixel at $97/month, Custom Audience at $197/month, and the Pixel + Audience Bundle at $247/month. For pure outbound volume, Apollo and Instantly are popular at $49-$99/month but lack intent data. Outreach and Salesloft are enterprise sales engagement platforms at $100+/user/month. The best choice depends on whether you prioritize intent-driven prospecting vs. high-volume cold outbound.',
   },
   {
     question: 'Can AI really replace SDRs?',
@@ -35,7 +35,7 @@ const aiSdrFAQs = [
   },
   {
     question: 'How much do AI SDR tools cost?',
-    answer: 'AI SDR tool pricing ranges widely: Entry-level tools (Instantly, Smartlead) run $49-$99/month for cold email infrastructure. Mid-market platforms (Apollo, Reply.io) cost $99-$499/month with prospecting databases. Intent-first platforms (Cursive) cost $1,000/month but include visitor identification, intent data, and AI outreach. Enterprise platforms (Outreach, Salesloft) cost $100-$150/user/month with minimum seats. Full-stack AI SDR agents (Artisan, 11x) run $2,000-$5,000/month. ROI depends heavily on whether the tool improves targeting quality, not just volume.',
+    answer: 'AI SDR tool pricing ranges widely: Entry-level tools (Instantly, Smartlead) run $49-$99/month for cold email infrastructure. Mid-market platforms (Apollo, Reply.io) cost $99-$499/month with prospecting databases. Cursive offers intent-first self-serve plans at $97, $197, and $247 per month for visitor identification, weekly buyer audiences, or both. Enterprise platforms (Outreach, Salesloft) cost $100-$150/user/month with minimum seats. Full-stack AI SDR agents (Artisan, 11x) run $2,000-$5,000/month. ROI depends heavily on whether the tool improves targeting quality, not just volume.',
   },
   {
     question: 'What is the difference between AI SDR tools and sales engagement platforms?',

@@ -42,7 +42,7 @@ const faqs = [
   },
   {
     question: "How long does it take to set up visitor identification software?",
-    answer: "Most visitor identification tools deploy in under 30 minutes. The technical setup involves adding a JavaScript snippet to your website — similar to installing Google Analytics. Once the pixel fires, identification begins immediately. Cursive typically shows first identified visitors within hours of installation. The more complex part of setup is configuring what happens after identification: CRM routing rules, outreach sequences, notification preferences, and sales team workflows. Cursive's managed service includes full setup and ongoing optimization, while self-serve customers can be live and seeing identified visitors within the same day."
+    answer: "Most visitor identification tools deploy in under 30 minutes. The technical setup involves adding a JavaScript snippet to your website — similar to installing Google Analytics. Once the pixel fires, identification begins immediately. Cursive typically shows first identified visitors within hours of installation. The self-serve Visitor Pixel can be live and identifying visitors within the same day."
   },
 ]
 
@@ -120,7 +120,7 @@ export default function BlogPost() {
                       <td className="border border-gray-200 p-3 text-green-600 font-semibold">Individual</td>
                       <td className="border border-gray-200 p-3 text-green-600 font-semibold">Yes (AI)</td>
                       <td className="border border-gray-200 p-3 text-green-600 font-semibold">Yes</td>
-                      <td className="border border-gray-200 p-3">$0.60/lead</td>
+                      <td className="border border-gray-200 p-3">$97/mo</td>
                       <td className="border border-gray-200 p-3">Best Overall</td>
                     </tr>
                     <tr>
@@ -311,9 +311,9 @@ export default function BlogPost() {
                 </p>
                 <p className="text-gray-700 mb-6">
                   The platform is powered by an identity graph of 280M consumer profiles and 140M+ business
-                  profiles, with 200+ native CRM integrations and 95%+ email deliverability. Self-serve starts
-                  at $0.60/lead through the marketplace at leads.meetcursive.com. Fully managed outreach
-                  services start at $1,000/month.
+                  profiles, with 200+ native CRM integrations and 95%+ email deliverability. Choose Visitor Pixel
+                  at $97/month, Custom Audience at $197/month, or the Pixel + Audience Bundle at $247/month
+                  through leads.meetcursive.com/get-leads.
                 </p>
 
                 <div className="grid md:grid-cols-2 gap-6 mb-6">
@@ -324,14 +324,14 @@ export default function BlogPost() {
                       <li className="flex items-start gap-2"><Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /><span>Full outreach automation: email, LinkedIn, SMS, direct mail</span></li>
                       <li className="flex items-start gap-2"><Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /><span>60B+ behaviors & URLs scanned weekly across 30,000+ categories</span></li>
                       <li className="flex items-start gap-2"><Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /><span>200+ native CRM integrations, 95%+ email deliverability</span></li>
-                      <li className="flex items-start gap-2"><Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /><span>Self-serve marketplace at $0.60/lead — no commitment required</span></li>
+                      <li className="flex items-start gap-2"><Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /><span>Self-serve, month-to-month plans with no setup fee</span></li>
                     </ul>
                   </div>
                   <div>
                     <p className="font-bold text-gray-900 mb-2">Limitations</p>
                     <ul className="space-y-1 text-sm text-gray-700">
                       <li className="flex items-start gap-2"><X className="w-4 h-4 text-red-400 mt-0.5 shrink-0" /><span>Value scales with existing website traffic volume</span></li>
-                      <li className="flex items-start gap-2"><X className="w-4 h-4 text-red-400 mt-0.5 shrink-0" /><span>Managed services require $1,000/month minimum</span></li>
+                      <li className="flex items-start gap-2"><X className="w-4 h-4 text-red-400 mt-0.5 shrink-0" /><span>Does not run outbound campaigns for customers</span></li>
                       <li className="flex items-start gap-2"><X className="w-4 h-4 text-red-400 mt-0.5 shrink-0" /><span>Not designed for consumer traffic monetization</span></li>
                       <li className="flex items-start gap-2"><X className="w-4 h-4 text-red-400 mt-0.5 shrink-0" /><span>Primarily optimized for B2B use cases</span></li>
                     </ul>
@@ -341,7 +341,7 @@ export default function BlogPost() {
                 <div className="flex flex-wrap gap-4 mb-6">
                   <div className="bg-white rounded-lg px-4 py-2 border border-blue-200">
                     <span className="text-xs text-gray-500">Starting Price</span>
-                    <p className="font-bold text-blue-700">$0.60/lead (self-serve) · $1,000/mo (managed)</p>
+                    <p className="font-bold text-blue-700">$97/mo · $197/mo · $247/mo</p>
                   </div>
                   <div className="bg-white rounded-lg px-4 py-2 border border-blue-200">
                     <span className="text-xs text-gray-500">Best For</span>
@@ -888,10 +888,10 @@ export default function BlogPost() {
                   <tbody className="bg-white">
                     <tr className="bg-blue-50 border-l-4 border-blue-500">
                       <td className="border border-gray-300 p-3 font-bold text-blue-700">Cursive</td>
-                      <td className="border border-gray-300 p-3">$0.60/lead</td>
-                      <td className="border border-gray-300 p-3">Per lead / managed</td>
+                      <td className="border border-gray-300 p-3">$97/mo</td>
+                      <td className="border border-gray-300 p-3">Monthly self-serve</td>
                       <td className="border border-gray-300 p-3">Free audit</td>
-                      <td className="border border-gray-300 p-3">$1,200 - $12,000</td>
+                      <td className="border border-gray-300 p-3">$1,164 - $2,964</td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-3 font-bold">RB2B</td>
@@ -1012,7 +1012,7 @@ export default function BlogPost() {
               <div className="not-prose space-y-4 my-6">
                 <div className="bg-blue-50 rounded-xl p-5 border border-blue-200">
                   <p className="font-bold text-blue-800 mb-1">Best Overall: Cursive</p>
-                  <p className="text-gray-700 text-sm">The industry&apos;s highest individual-level identification rate (70%) combined with fully automated AI outreach makes Cursive the only platform that turns identified visitors into revenue without manual work. Start at $0.60/lead self-serve or $1,000/month for managed outreach.</p>
+                  <p className="text-gray-700 text-sm">The industry&apos;s highest individual-level identification rate (70%) helps teams turn anonymous traffic into actionable buyer data. Choose Visitor Pixel for $97/month, Custom Audience for $197/month, or both for $247/month.</p>
                 </div>
                 <div className="bg-gray-50 rounded-xl p-5 border border-gray-200">
                   <p className="font-bold text-gray-800 mb-1">Best Free Option: RB2B</p>
@@ -1051,7 +1051,7 @@ export default function BlogPost() {
                   <Link href="/free-audit">Get Free Visitor Audit</Link>
                 </Button>
                 <Button size="lg" variant="outline" className="text-white border-white hover:bg-white/10" asChild>
-                  <Link href="https://leads.meetcursive.com/get-leads">Try Self-Serve at $0.60/Lead</Link>
+                  <Link href="https://leads.meetcursive.com/get-leads">Choose a Self-Serve Plan</Link>
                 </Button>
               </div>
             </div>
@@ -1074,7 +1074,7 @@ export default function BlogPost() {
             <MachineList items={[
               "Target keywords: best website visitor identification software, visitor identification software, website visitor tracking software, anonymous visitor identification tools, identify website visitors software, visitor identification tools comparison 2026",
               "Content type: Roundup buying guide with individual tool reviews, comparison tables, technical explainer, and buyer's criteria",
-              "Primary CTA: Free visitor audit at /free-audit and self-serve marketplace at leads.meetcursive.com",
+              "Primary CTA: Free visitor audit at /free-audit and self-serve plans at leads.meetcursive.com/get-leads",
               "Author: Cursive Team | Published: February 18, 2026"
             ]} />
           </MachineSection>
@@ -1114,7 +1114,7 @@ export default function BlogPost() {
                   "Full AI outreach automation: email, LinkedIn, SMS, direct mail",
                   "60B+ behaviors & URLs scanned weekly across 30,000+ categories",
                   "200+ native CRM integrations, 95%+ email deliverability",
-                  "Pricing: $0.60/lead (self-serve) or $1,000/month (managed services)",
+                  "Pricing: $97/month Visitor Pixel, $197/month Custom Audience, or $247/month bundle",
                   "Best for: B2B teams wanting identification + automated outreach in one platform"
                 ]} />
               </div>
@@ -1226,8 +1226,8 @@ export default function BlogPost() {
             </p>
             <MachineList items={[
               { label: "Free Visitor Audit", href: "/free-audit", description: "See how many qualified visitors you're missing — free" },
-              { label: "Self-Serve Marketplace", href: "https://leads.meetcursive.com/get-leads", description: "Buy identified visitor leads starting at $0.60 each" },
-              { label: "Managed Outreach Services", href: "/pricing", description: "Done-for-you AI outreach starting at $1,000/month" },
+              { label: "Self-Serve Plans", href: "https://leads.meetcursive.com/get-leads", description: "Choose Visitor Pixel, Custom Audience, or both" },
+              { label: "Pricing", href: "/pricing", description: "Month-to-month plans from $97/month" },
               { label: "Platform Overview", href: "/platform", description: "Visitor ID, intent data, and multi-channel AI outreach" },
               { label: "Book a Demo", href: "/book", description: "See Cursive identify your actual website visitors live" }
             ]} />

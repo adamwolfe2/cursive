@@ -18,7 +18,7 @@ const faqs = [
   },
   {
     question: "What is the best free alternative to Apollo.io?",
-    answer: "For a completely free option, Lusha offers a limited free tier with 5 credits per month. However, most serious teams find free tiers too limiting. Cursive offers self-serve credits starting at $99 which provides significantly more value for teams that need intent data and visitor identification alongside their prospecting."
+    answer: "For a completely free option, Lusha offers a limited free tier with 5 credits per month. However, most serious teams find free tiers too limiting. Cursive offers three self-serve plans: Visitor Pixel at $97/month, Custom Audience at $197/month, and the Pixel + Audience Bundle at $247/month."
   },
   {
     question: "Is Apollo.io good for email outreach?",
@@ -30,7 +30,7 @@ const faqs = [
   },
   {
     question: "What's the best Apollo alternative for small teams?",
-    answer: "For small teams, Cursive is the best alternative because it combines visitor identification, intent data, and automated outreach in one platform with transparent pricing. Unlike Apollo's per-seat model, Cursive's done-for-you service starting at $1k/month or self-serve credits from $99 make it predictable and affordable for lean teams."
+    answer: "For small teams, Cursive is the best alternative because it combines visitor identification and fresh weekly in-market buyer lists with transparent pricing. Unlike Apollo's per-seat model, Cursive's three self-serve plans cost $97, $197, or $247 per month, with no setup fee and the flexibility to cancel anytime."
   },
   {
     question: "Can I export my data from Apollo to another tool?",
@@ -142,7 +142,7 @@ export default function BlogPost() {
                     <td className="border border-gray-300 p-3 text-green-600 font-bold">Yes (1st party)</td>
                     <td className="border border-gray-300 p-3 text-green-600 font-bold">Built-in</td>
                     <td className="border border-gray-300 p-3 text-green-600 font-bold">Email + LinkedIn + Direct Mail</td>
-                    <td className="border border-gray-300 p-3">$99 credits / $1k DFY</td>
+                    <td className="border border-gray-300 p-3">$97 / $197 / $247/mo</td>
                     <td className="border border-gray-300 p-3">Demo</td>
                   </tr>
                   <tr>
@@ -210,7 +210,7 @@ export default function BlogPost() {
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <h3 className="text-2xl font-bold mb-2">1. Cursive</h3>
-                  <p className="text-sm text-gray-600">Best for: AI-powered visitor identification + done-for-you outbound</p>
+                  <p className="text-sm text-gray-600">Best for: Website visitor identification + weekly in-market buyer audiences</p>
                 </div>
                 <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-bold">Top Pick</span>
               </div>
@@ -246,7 +246,7 @@ export default function BlogPost() {
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="w-4 h-4 text-green-600" />
-                      Done-for-you service or self-serve credits
+                      Three month-to-month self-serve plans
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="w-4 h-4 text-green-600" />
@@ -267,7 +267,7 @@ export default function BlogPost() {
                     </li>
                     <li className="flex items-center gap-2">
                       <X className="w-4 h-4 text-red-600" />
-                      Done-for-you plans start at $1k/mo (premium for solopreneurs)
+                      Best fit depends on whether you need visitor identification, buyer audiences, or both
                     </li>
                   </ul>
                 </div>
@@ -276,7 +276,7 @@ export default function BlogPost() {
               <div className="bg-white rounded-lg p-4">
                 <div className="flex justify-between items-center mb-2">
                   <span className="font-bold">Pricing:</span>
-                  <span className="text-lg font-bold text-blue-600">$99 credits (self-serve) / $1k/mo (done-for-you)</span>
+                  <span className="text-lg font-bold text-blue-600">$97 / $197 / $247 per month</span>
                 </div>
                 <p className="text-sm text-gray-600">
                   <strong>Best for:</strong> B2B companies that want to stop spraying cold emails at purchased lists and instead
@@ -782,8 +782,8 @@ export default function BlogPost() {
               Choose <strong>Lead411</strong> for Bombora intent data included in the base price, or{" "}
               <strong><Link href="/" className="text-blue-600 hover:underline">Cursive</Link></strong>{" "}
               for first-party website intent with automated outreach. Both provide intent signals that Apollo simply
-              doesn't offer. Combine with <Link href="/marketplace" className="text-blue-600 hover:underline">Cursive's
-              marketplace</Link> for additional data enrichment.
+              doesn't offer. Use <Link href="/marketplace" className="text-blue-600 hover:underline">Cursive&apos;s
+              Custom Audience plan</Link> for a fresh weekly list of in-market buyers.
             </p>
 
             <h3>If You Need Unlimited Lookups:</h3>
@@ -939,7 +939,7 @@ export default function BlogPost() {
 
           <MachineSection title="Key Takeaways">
             <MachineList items={[
-              "Cursive - Best for AI-powered visitor identification + done-for-you outbound ($99 credits / $1k DFY)",
+              "Cursive - Best for visitor identification + weekly in-market buyer audiences ($97 / $197 / $247 per month)",
               "ZoomInfo - Best for enterprise teams needing the largest B2B database ($15k-$50k/year)",
               "Lusha - Best for SMBs that need simple, accurate contact data ($29-$79/user/mo)",
               "RocketReach - Best for affordable email/phone lookups with high accuracy ($39-$249/mo)",
@@ -974,7 +974,7 @@ export default function BlogPost() {
 
           <MachineSection title="1. Cursive">
             <p className="text-gray-700 mb-3">
-              <strong>Best for:</strong> AI-powered visitor identification + done-for-you outbound
+              <strong>Best for:</strong> Website visitor identification + weekly in-market buyer audiences
             </p>
             <p className="text-gray-700 mb-3">
               <strong>What makes it different:</strong> Combines visitor identification, intent data, and multi-channel outreach (email, LinkedIn, direct mail) in one platform. Identifies companies showing buying intent and automates personalized outreach instead of manual database prospecting.
@@ -986,7 +986,7 @@ export default function BlogPost() {
                 "First-party intent data from your own website",
                 "AI-written, hyper-personalized outreach at scale",
                 "Multi-channel: email + LinkedIn + direct mail",
-                "Done-for-you service or self-serve credits",
+                "Three month-to-month self-serve plans",
                 "Managed email infrastructure for better deliverability"
               ]} />
             </div>
@@ -995,11 +995,11 @@ export default function BlogPost() {
               <MachineList items={[
                 "Focused on website visitor use case (not cold list building)",
                 "No standalone database search like Apollo",
-                "Done-for-you plans start at $1k/mo (premium for solopreneurs)"
+                "Choose visitor identification, weekly buyer audiences, or both"
               ]} />
             </div>
             <p className="text-gray-700">
-              <strong>Pricing:</strong> $99 credits (self-serve) / $1k/mo (done-for-you)
+              <strong>Pricing:</strong> Visitor Pixel $97/mo | Custom Audience $197/mo | Bundle $247/mo
             </p>
           </MachineSection>
 
@@ -1223,7 +1223,7 @@ export default function BlogPost() {
               { label: "Visitor Identification", href: "/visitor-identification", description: "85%+ match rate for real-time company identification" },
               { label: "Intent Audiences", href: "/intent-audiences", description: "Build audiences based on website behavior and buying signals" },
               { label: "Platform Overview", href: "/platform", description: "Multi-channel outreach: email + LinkedIn + direct mail" },
-              { label: "Pricing", href: "/pricing", description: "$99 self-serve credits or $1k/mo done-for-you service" }
+              { label: "Pricing", href: "/pricing", description: "Visitor Pixel $97/mo, Custom Audience $197/mo, or Bundle $247/mo" }
             ]} />
           </MachineSection>
 
@@ -1245,8 +1245,8 @@ export default function BlogPost() {
             <MachineList items={[
               { label: "Book a Demo", href: "/book", description: "See Cursive in real-time" },
               { label: "Platform Overview", href: "/platform", description: "Visitor identification, intent data, AI outreach" },
-              { label: "Pricing", href: "/pricing", description: "Self-serve credits from $99 or done-for-you from $1k/mo" },
-              { label: "Marketplace", href: "/marketplace", description: "Additional data enrichment options" }
+              { label: "Pricing", href: "/pricing", description: "Three self-serve plans from $97/mo, cancel anytime" },
+              { label: "Custom Audience", href: "/marketplace", description: "Fresh weekly lists of in-market buyers" }
             ]} />
           </MachineSection>
         </MachineContent>

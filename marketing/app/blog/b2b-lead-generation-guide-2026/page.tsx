@@ -18,7 +18,7 @@ const faqs = [
   },
   {
     question: "What is the most effective B2B lead generation strategy in 2026?",
-    answer: "The highest-performing B2B lead generation strategy in 2026 combines website visitor identification with intent data and automated outreach. Instead of sending cold emails to prospects who may not be in a buying cycle, teams using visitor identification (identifying 70% of anonymous website visitors by name and email) can reach out to warm prospects at exactly the right moment — when they are actively researching solutions. Combining this with third-party intent data (60B+ behaviors scanned weekly) creates a layer of timing intelligence that cold outreach alone cannot match. Cursive combines all of these into a single $1,000/mo platform."
+    answer: "The highest-performing B2B lead generation strategy in 2026 combines website visitor identification with intent data and timely outreach. Instead of sending cold emails to prospects who may not be in a buying cycle, teams using visitor identification (identifying 70% of anonymous website visitors by name and email) can reach out to warm prospects at exactly the right moment — when they are actively researching solutions. Combining this with third-party intent data (60B+ behaviors scanned weekly) creates a layer of timing intelligence that cold outreach alone cannot match. Cursive offers self-serve plans for visitor identification, fresh weekly in-market buyer lists, or both at $97, $197, and $247 per month."
   },
   {
     question: "What is the difference between inbound and outbound B2B lead generation?",
@@ -38,7 +38,7 @@ const faqs = [
   },
   {
     question: "What is the cost of B2B lead generation?",
-    answer: "B2B lead generation costs vary significantly by channel and approach. Content marketing and SEO have high upfront costs (agency fees $3,000-$15,000/mo, content creation $2,000-$8,000/mo) but generate compounding returns over time. Paid advertising (Google, LinkedIn) runs $50-$200+ per lead in competitive B2B categories. Cold outreach tools range from free tiers to $1,000-$5,000+/mo for full-platform solutions. Cursive's approach delivers leads at $0.60 per lead in the self-serve marketplace or $1,000/mo for the fully managed platform including visitor identification, intent data, and AI SDR outreach — significantly lower than most alternatives when total stack cost is considered."
+    answer: "B2B lead generation costs vary significantly by channel and approach. Content marketing and SEO have high upfront costs (agency fees $3,000-$15,000/mo, content creation $2,000-$8,000/mo) but generate compounding returns over time. Paid advertising (Google, LinkedIn) runs $50-$200+ per lead in competitive B2B categories. Cold outreach tools range from free tiers to $1,000-$5,000+/mo for full-platform solutions. Cursive's self-serve plans cost $97/month for Visitor Pixel, $197/month for Custom Audience, or $247/month for the Pixel + Audience Bundle, with no setup fee and the flexibility to cancel anytime."
   },
   {
     question: "How many leads does a B2B company need per month?",
@@ -192,7 +192,7 @@ export default function BlogPost() {
               </div>
 
               <p>
-                Key tools for visitor identification: <Link href="/" className="text-blue-600 hover:underline">Cursive</Link> (70% person-level, $1,000/mo),
+                Key tools for visitor identification: <Link href="/" className="text-blue-600 hover:underline">Cursive</Link> (70% person-level, $97/mo),
                 RB2B (50-60% person-level, free tier available), Warmly (40% company-level, $3,500/mo),
                 Clearbit/HubSpot (30-40% company-level, HubSpot plan required).
               </p>
@@ -372,7 +372,7 @@ export default function BlogPost() {
                     <p className="font-bold text-lg">Cursive — Visitor ID + Intent + AI SDR</p>
                     <span className="bg-blue-600 text-white px-2 py-0.5 rounded text-xs font-bold">Our Pick</span>
                   </div>
-                  <p className="text-sm text-gray-700 mb-2">70% person-level visitor identification, 60B+ weekly intent signals, 280M+ profile database, AI SDR automation across email/LinkedIn/SMS/direct mail. Replaces your data provider + intent platform + sequencing tool in a single $1,000/mo platform. Self-serve at $0.60/lead.</p>
+                  <p className="text-sm text-gray-700 mb-2">70% person-level visitor identification and fresh weekly lists of in-market buyers. Choose Visitor Pixel at $97/mo, Custom Audience at $197/mo, or the Pixel + Audience Bundle at $247/mo.</p>
                   <Link href="/" className="text-blue-600 text-sm hover:underline font-medium">Learn more about Cursive →</Link>
                 </div>
 
@@ -413,8 +413,8 @@ export default function BlogPost() {
 
               <p>
                 To see how many warm leads you are currently missing, <Link href="https://cal.com/cursiveteam/30min">book
-                a demo</Link> or start with the <Link href="https://leads.meetcursive.com/get-leads">Cursive self-serve
-                marketplace</Link> at $0.60/lead with no monthly commitment.
+                a demo</Link> or start with a <Link href="https://leads.meetcursive.com/get-leads">Cursive self-serve
+                plan</Link>, available month-to-month with no setup fee.
               </p>
 
               <h2>About the Author</h2>
@@ -477,7 +477,7 @@ export default function BlogPost() {
             <div className="max-w-3xl mx-auto text-center">
               <h2 className="text-3xl font-bold mb-4">Start Capturing Your Warm Website Traffic</h2>
               <p className="text-xl mb-8 text-white/90">
-                Most B2B companies&apos; best leads are already visiting their website. Cursive identifies 70% of them by name and email and triggers outreach automatically — all for $1,000/mo.
+                Most B2B companies&apos; best leads are already visiting their website. Cursive identifies companies and people visiting your site with the Visitor Pixel plan at $97/mo.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button size="lg" variant="default" asChild>
@@ -505,7 +505,7 @@ export default function BlogPost() {
             <MachineList items={[
               "Most effective 2026 strategy: website visitor identification + intent data + automated multi-channel outreach",
               "Visitor ID converts at highest rates because prospects are already researching your solution",
-              "Cursive: 70% person-level visitor ID, 60B+ intent signals weekly, AI SDR, $1,000/mo or $0.60/lead",
+              "Cursive: 70% person-level visitor ID + weekly in-market buyer audiences, $97 / $197 / $247 per month",
               "Inbound builds awareness; outbound drives pipeline; visitor ID converts warm inbound traffic that forms but never converts",
               "AI enables personalization at scale, automated SDRs, and intent signal processing without human bottlenecks"
             ]} />
@@ -524,7 +524,7 @@ export default function BlogPost() {
               "Identifies anonymous website visitors by name, email, job title, company, LinkedIn",
               "Highest-ROI lead source: visitors are already interested in your solution",
               "Cursive: 70% person-level match rate | RB2B: 50-60% | Warmly: 40% company-level | Clearbit: 30-40%",
-              "Pricing: Cursive $1,000/mo | Warmly $3,500/mo | RB2B free tier | Clearbit via HubSpot",
+              "Pricing: Cursive Visitor Pixel $97/mo | Warmly $3,500/mo | RB2B free tier | Clearbit via HubSpot",
               "Cursive triggers AI SDR outreach immediately when visitors are identified"
             ]} />
           </MachineSection>
@@ -571,7 +571,7 @@ export default function BlogPost() {
 
           <MachineSection title="Recommended Tools 2026">
             <MachineList items={[
-              "Cursive: visitor ID + intent + AI SDR — $1,000/mo or $0.60/lead self-serve (leads.meetcursive.com)",
+              "Cursive: visitor ID + weekly in-market buyer audiences — $97 / $197 / $247 per month (leads.meetcursive.com)",
               "Apollo.io: data + sequencing — free to $99/user/mo, no visitor ID",
               "ZoomInfo: enterprise data + Bombora intent — $15,000-$40,000+/yr",
               "HubSpot: inbound CRM + marketing automation — various plans",

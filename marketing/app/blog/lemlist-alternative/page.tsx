@@ -38,7 +38,7 @@ const faqs = [
   },
   {
     question: "What is the best lemlist alternative for agencies?",
-    answer: "For agencies managing outbound for multiple clients, Cursive is the strongest lemlist alternative because of its flexible pricing model. The self-serve marketplace at leads.meetcursive.com lets agencies purchase leads at $0.60 per lead with no monthly commitment, making it easy to manage variable volume across different client accounts. The managed plan at $1,000/month includes full visitor identification, intent data, AI SDR automation, and 200+ CRM integrations — replacing both lemlist and the separate data provider agencies need to source contacts."
+    answer: "For agencies managing outbound for multiple clients, Cursive is a strong lemlist alternative because it offers three self-serve, month-to-month plans. The $97/month Visitor Pixel identifies companies and people visiting your site, the $197/month Custom Audience delivers a fresh weekly list of in-market buyers to Google Sheets, and the $247/month Pixel + Audience Bundle includes both. There is no setup fee, and agencies can cancel anytime."
   }
 ]
 
@@ -138,7 +138,7 @@ export default function BlogPost() {
                       <td className="border border-gray-300 p-3">Warm visitor leads + AI multi-channel outreach</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold"><Check className="w-4 h-4 inline" /> 70% person-level</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold"><Check className="w-4 h-4 inline" /> 280M profiles</td>
-                      <td className="border border-gray-300 p-3">$1,000/mo or $0.60/lead</td>
+                      <td className="border border-gray-300 p-3">From $97/mo</td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-3 font-bold">Apollo.io</td>
@@ -273,8 +273,8 @@ export default function BlogPost() {
                   60B+ behaviors and URLs weekly across 30,000+ categories to surface companies actively researching your solution category.
                   With a database of 280M US consumer and 140M+ business profiles, Cursive eliminates the need to manually source contacts
                   before running outreach — a step that consumes significant time in any lemlist workflow. For agencies managing
-                  campaigns for multiple clients, the self-serve <Link href="/marketplace" className="text-blue-600 hover:underline">marketplace</Link> at
-                  leads.meetcursive.com offers $0.60/lead with no monthly commitment.
+                  campaigns for multiple clients, the self-serve <Link href="/marketplace" className="text-blue-600 hover:underline">plans</Link> at
+                  leads.meetcursive.com start at $97/mo with no setup fee and cancel-anytime flexibility.
                 </p>
 
                 <div className="grid md:grid-cols-2 gap-6 mb-4">
@@ -303,7 +303,7 @@ export default function BlogPost() {
                       </li>
                       <li className="flex items-center gap-2">
                         <Check className="w-4 h-4 text-green-600" />
-                        Self-serve marketplace: $0.60/lead, no commitment
+                        Three self-serve plans, starting at $97/mo
                       </li>
                     </ul>
                   </div>
@@ -316,7 +316,7 @@ export default function BlogPost() {
                       </li>
                       <li className="flex items-center gap-2">
                         <X className="w-4 h-4 text-red-400" />
-                        No free tier (managed starts at $1,000/mo)
+                        No free tier
                       </li>
                       <li className="flex items-center gap-2">
                         <X className="w-4 h-4 text-red-400" />
@@ -329,13 +329,13 @@ export default function BlogPost() {
                 <div className="bg-white rounded-lg p-4">
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-bold">Pricing:</span>
-                    <span className="text-lg font-bold text-blue-600">$1,000/mo managed | $0.60/lead self-serve</span>
+                    <span className="text-lg font-bold text-blue-600">$97/mo | $197/mo | $247/mo</span>
                   </div>
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> B2B teams ready to graduate from cold list prospecting to warm,
                     intent-driven pipeline. Replaces lemlist + data source + intent subscription in one platform.
                     See <Link href="/pricing" className="text-blue-600 hover:underline">full pricing</Link> or
-                    the <Link href="/marketplace" className="text-blue-600 hover:underline">self-serve marketplace</Link>.
+                    the <Link href="/marketplace" className="text-blue-600 hover:underline">self-serve plans</Link>.
                   </p>
                 </div>
               </div>
@@ -842,7 +842,7 @@ export default function BlogPost() {
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-3 font-medium">Inbox Warming</td>
-                      <td className="border border-gray-300 p-3 text-center text-xs text-gray-500">Managed</td>
+                      <td className="border border-gray-300 p-3 text-center text-xs text-gray-500">Self-serve</td>
                       <td className="border border-gray-300 p-3 text-center"><Check className="w-4 h-4 text-green-600 inline" /></td>
                       <td className="border border-gray-300 p-3 text-center"><X className="w-4 h-4 text-red-400 inline" /></td>
                       <td className="border border-gray-300 p-3 text-center"><Check className="w-4 h-4 text-green-600 inline" /></td>
@@ -860,7 +860,7 @@ export default function BlogPost() {
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-3 font-medium">Price/User/Mo</td>
-                      <td className="border border-gray-300 p-3 text-center text-green-700 font-bold">$1k flat</td>
+                      <td className="border border-gray-300 p-3 text-center text-green-700 font-bold">From $97/mo</td>
                       <td className="border border-gray-300 p-3 text-center">$59-$99</td>
                       <td className="border border-gray-300 p-3 text-center">$49-$99</td>
                       <td className="border border-gray-300 p-3 text-center">$37-$97</td>
@@ -898,8 +898,8 @@ export default function BlogPost() {
                     <p className="text-gray-700"><strong>Choose Klenty.</strong> Superior bidirectional CRM integration (Salesforce, HubSpot, Pipedrive) at comparable pricing. Best for teams where CRM data quality is the primary pain point.</p>
                   </div>
                   <div>
-                    <p className="font-bold text-blue-700 mb-1">You are a flexible agency that wants per-lead pricing instead of monthly subscriptions:</p>
-                    <p className="text-gray-700"><strong>Choose Cursive self-serve.</strong> The $0.60/lead marketplace at leads.meetcursive.com is more flexible than per-user tools for managing variable volume across multiple clients.</p>
+                    <p className="font-bold text-blue-700 mb-1">You are an agency that wants flexible month-to-month plans:</p>
+                    <p className="text-gray-700"><strong>Choose Cursive self-serve.</strong> Plans at leads.meetcursive.com cover visitor identification, fresh weekly in-market audiences, or both, with no setup fee and the flexibility to cancel anytime.</p>
                   </div>
                 </div>
               </div>
@@ -1032,7 +1032,7 @@ export default function BlogPost() {
               "No website visitor identification capability — warm visitors invisible",
               "No real-time intent data — outreach not prioritized by buyer timing",
               "Total cost for lemlist + data source: $140-$250+/user/mo before LinkedIn Navigator",
-              "Cursive pricing: $1,000/mo flat replaces lemlist + data source + intent subscription"
+              "Cursive pricing: Visitor Pixel $97/mo, Custom Audience $197/mo, or Pixel + Audience Bundle $247/mo"
             ]} />
           </MachineSection>
 
@@ -1045,7 +1045,7 @@ export default function BlogPost() {
                   "Database: 280M consumer profiles, 140M+ business profiles (included — no separate data source needed)",
                   "Intent Data: 60B+ behaviors & URLs scanned weekly across 30,000+ categories",
                   "Outreach: AI SDR with email, LinkedIn, SMS, direct mail automation",
-                  "Pricing: $1,000/mo managed or $0.60/lead self-serve at leads.meetcursive.com",
+                  "Pricing: $97/mo Visitor Pixel, $197/mo Custom Audience, or $247/mo bundle at leads.meetcursive.com",
                   "Best For: Teams moving from cold list prospecting to warm, intent-driven lead generation",
                   "Replaces: lemlist + contact data provider + intent data subscription"
                 ]} />
@@ -1133,7 +1133,7 @@ export default function BlogPost() {
                   "Plus data source (Apollo/Lusha): $50-$100/user/mo",
                   "Plus LinkedIn Sales Navigator: $80/user/mo",
                   "Total lemlist stack: $190-$280/user/mo to run fully equipped",
-                  "Cursive: $1,000/mo flat for entire team (includes data + intent + AI outreach)"
+                  "Cursive: $97/mo Visitor Pixel, $197/mo Custom Audience, or $247/mo bundle"
                 ]} />
               </div>
 
@@ -1150,13 +1150,13 @@ export default function BlogPost() {
 
           <MachineSection title="Decision Guide: Which Alternative to Choose">
             <MachineList items={[
-              "Warm visitor ID + intent data + automated multi-channel → Cursive ($1,000/mo flat)",
+              "Visitor identification + fresh weekly in-market audiences → Cursive ($247/mo bundle)",
               "Bundled contact data + sequencing, eliminate separate sourcing → Apollo ($49/mo per user)",
               "Lowest cost cold email volume, unlimited mailboxes → Instantly ($37/mo)",
               "Best inbox management for agency-scale cold email → Smartlead ($39/mo)",
               "More channels (SMS, WhatsApp, calls) at same price → Reply.io ($59/mo per user)",
               "Better CRM sync than lemlist → Klenty ($50/mo per user)",
-              "Agency with variable volume, per-lead pricing → Cursive self-serve ($0.60/lead)"
+              "Agency needing flexible month-to-month lead generation → Cursive self-serve ($97-$247/mo)"
             ]} />
           </MachineSection>
 

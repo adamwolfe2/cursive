@@ -35,7 +35,7 @@ const revenueIntelFAQs = [
   },
   {
     question: 'What tools are used for revenue intelligence?',
-    answer: 'Leading revenue intelligence tools include: Gong (conversation and deal intelligence), Clari (pipeline and forecast intelligence), People.ai (activity intelligence and CRM automation), Chorus.ai (conversation intelligence, acquired by ZoomInfo), Salesforce Einstein (native CRM intelligence), and Cursive (market and visitor intelligence — identifying website visitors and triggering automated outreach based on intent signals). Most enterprise revenue teams use a combination of 2-3 tools covering different intelligence layers.',
+    answer: 'Leading revenue intelligence tools include: Gong (conversation and deal intelligence), Clari (pipeline and forecast intelligence), People.ai (activity intelligence and CRM automation), Chorus.ai (conversation intelligence, acquired by ZoomInfo), Salesforce Einstein (native CRM intelligence), and Cursive (market and visitor intelligence — identifying website visitors and delivering fresh weekly lists of in-market buyers). Most enterprise revenue teams use a combination of 2-3 tools covering different intelligence layers.',
   },
   {
     question: 'How does visitor identification fit into revenue intelligence?',
@@ -43,7 +43,7 @@ const revenueIntelFAQs = [
   },
   {
     question: 'How much do revenue intelligence platforms cost?',
-    answer: 'Revenue intelligence pricing varies widely by capability and scale. Gong pricing starts at approximately $1,200/user/year for conversation intelligence. Clari starts at around $1,500/user/year for pipeline intelligence. Full enterprise revenue intelligence stacks can cost $50,000-$200,000+ per year. Cursive adds the market and visitor intelligence layer starting at $1,000/month — giving teams intent data and visitor identification to complement their conversation and deal intelligence tools.',
+    answer: 'Revenue intelligence pricing varies widely by capability and scale. Gong pricing starts at approximately $1,200/user/year for conversation intelligence. Clari starts at around $1,500/user/year for pipeline intelligence. Full enterprise revenue intelligence stacks can cost $50,000-$200,000+ per year. Cursive adds Visitor Pixel for $97/month, Custom Audience for $197/month, or both in the Pixel + Audience Bundle for $247/month to complement conversation and deal intelligence tools.',
   },
   {
     question: 'Do I need a revenue intelligence platform if I have a CRM?',

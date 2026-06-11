@@ -26,7 +26,7 @@ const faqs = [
   },
   {
     question: "Is Cursive cheaper than Bombora?",
-    answer: "Significantly cheaper. Bombora's Company Surge product starts at approximately $25,000/year and scales to $150,000+/year for enterprise plans, sold through a lengthy sales process with 6+ month contracts. Cursive starts at $1,000/month ($12,000/year) and is available self-serve — no sales call required to get started. Cursive's pricing also includes visitor identification, AI SDR outreach automation, multi-channel sequences, and lead scoring all in one platform, while Bombora delivers only intent data, requiring additional tools for activation."
+    answer: "Significantly cheaper. Bombora's Company Surge product starts at approximately $25,000/year and scales to $150,000+/year for enterprise plans, sold through a lengthy sales process with 6+ month contracts. Cursive offers Visitor Pixel at $97/month, Custom Audience at $197/month, or both for $247/month. Every Cursive plan is self-serve, month-to-month, and available with no setup fee."
   },
   {
     question: "Can Cursive replace Bombora for B2B prospecting?",
@@ -44,7 +44,7 @@ export default function BlogPost() {
   return (
     <main>
       <StructuredData data={generateFAQSchema({ faqs })} />
-      <StructuredData data={generateBlogPostSchema({ title: "Best Bombora Alternatives: Intent Data Tools Compared — $1k/mo vs $25k+/yr (2026)", description: "Compare the top Bombora alternatives for B2B intent data. Find tools with person-level identification, self-serve pricing, and built-in outreach automation — without Bombora's $25k+ enterprise contracts.", author: "Cursive Team", publishDate: "2026-02-19", image: "https://www.meetcursive.com/cursive-logo.png" })} />
+      <StructuredData data={generateBlogPostSchema({ title: "Best Bombora Alternatives: Intent Data Tools Compared — $97/mo vs $25k+/yr (2026)", description: "Compare the top Bombora alternatives for B2B intent data. Find tools with person-level identification and self-serve pricing — without Bombora's $25k+ enterprise contracts.", author: "Cursive Team", publishDate: "2026-02-19", image: "https://www.meetcursive.com/cursive-logo.png" })} />
 
       <HumanView>
         {/* Header */}
@@ -127,7 +127,7 @@ export default function BlogPost() {
                       <td className="border border-gray-300 p-3 font-bold">Cursive</td>
                       <td className="border border-gray-300 p-3">First-party (your site)</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold">Person-level (~70%)</td>
-                      <td className="border border-gray-300 p-3">$1,000/mo</td>
+                      <td className="border border-gray-300 p-3">$97/mo</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold">Yes</td>
                     </tr>
                     <tr>
@@ -282,7 +282,7 @@ export default function BlogPost() {
                       </li>
                       <li className="flex items-center gap-2">
                         <Check className="w-4 h-4 text-green-600" />
-                        Self-serve, starts at $1,000/mo — no enterprise contract
+                        Self-serve, starts at $97/mo — no enterprise contract
                       </li>
                       <li className="flex items-center gap-2">
                         <Check className="w-4 h-4 text-green-600" />
@@ -295,7 +295,7 @@ export default function BlogPost() {
                     <ul className="space-y-1 text-sm">
                       <li className="flex items-center gap-2">
                         <X className="w-4 h-4 text-red-400" />
-                        No free tier (starts at $1,000/mo)
+                        No free tier (starts at $97/mo)
                       </li>
                       <li className="flex items-center gap-2">
                         <X className="w-4 h-4 text-red-400" />
@@ -312,7 +312,7 @@ export default function BlogPost() {
                 <div className="bg-white rounded-lg p-4">
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-bold">Pricing:</span>
-                    <span className="text-lg font-bold text-blue-600">Starting at $1,000/mo</span>
+                    <span className="text-lg font-bold text-blue-600">Starting at $97/mo</span>
                   </div>
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> B2B companies generating 5,000+ monthly website visitors who want to convert
@@ -776,11 +776,10 @@ export default function BlogPost() {
               </p>
 
               <p>
-                <strong>Cursive all-in-one:</strong> Starting at $1,000/month ($12,000/year), you get first-party
-                visitor identification at the person level, AI SDR automation, multi-channel outreach (email,
-                LinkedIn, <Link href="/direct-mail">direct mail</Link>), intent scoring, and{" "}
-                <Link href="/what-is-lead-enrichment">lead enrichment</Link> — all in a single platform with
-                no enterprise sales process required. Visit our <Link href="/pricing">pricing page</Link> for details.
+                <strong>Cursive self-serve plans:</strong> Visitor Pixel starts at $97/month for first-party
+                visitor identification at the person level. Custom Audience delivers a fresh weekly list of in-market
+                buyers to Google Sheets for $197/month, or choose both for $247/month. Visit our{" "}
+                <Link href="/pricing">pricing page</Link> for details.
               </p>
 
               <p>
@@ -807,7 +806,7 @@ export default function BlogPost() {
                 your site. That is what{" "}
                 <Link href="/">Cursive</Link> is built to do — person-level
                 identification, <Link href="/intent-audiences">intent scoring</Link>, and AI-powered outreach in one
-                platform at $1,000/month.
+                self-serve plans starting at $97/month.
               </p>
 
               <p>
@@ -890,7 +889,7 @@ export default function BlogPost() {
               <h2 className="text-3xl font-bold mb-4">Ready to Try the Best Bombora Alternative?</h2>
               <p className="text-xl mb-8 text-white/90">
                 See how Cursive identifies the warm prospects already on your site and converts them into booked meetings —
-                at $1,000/mo vs. Bombora&apos;s $25,000+/yr.
+                from $97/mo vs. Bombora&apos;s $25,000+/yr.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button size="lg" variant="default" asChild>
@@ -919,7 +918,7 @@ export default function BlogPost() {
               "Bombora tracks third-party intent signals from 5,000+ B2B publisher sites — company-level only, no person identification",
               "Bombora pricing: $25,000–$150,000/year, enterprise-only, 6+ month contracts required",
               "Top pain points: No self-serve, no person-level data, no visitor ID for your own site, no outreach automation, high cost",
-              "Cursive alternative: First-party visitor ID at person-level (~70% match), AI SDR automation, multi-channel outreach, $1,000/mo self-serve",
+              "Cursive alternative: First-party visitor ID at person-level (~70% match) and fresh weekly in-market buyer audiences, from $97/mo self-serve",
               "Cursive covers the warmest intent signal (visitors already on your site) vs. Bombora's cold third-party topic research signals"
             ]} />
           </MachineSection>
@@ -931,7 +930,7 @@ export default function BlogPost() {
                 <MachineList items={[
                   "Intent Type: First-party (visitors to your own website) — warmest possible signal",
                   "ID Level: Person-level (~70% match rate) — names, emails, job titles, LinkedIn profiles",
-                  "Pricing: Starting at $1,000/mo — self-serve, no enterprise contract required",
+                  "Pricing: $97/mo Visitor Pixel, $197/mo Custom Audience, or $247/mo bundle",
                   "Key Features: AI SDR automation, multi-channel outreach (email + LinkedIn + direct mail), intent scoring, lead enrichment",
                   "Best For: B2B companies with 5,000+ monthly visitors who want to turn warm traffic into booked meetings",
                   "Strengths: Person-level ID, first-party signals, self-serve, built-in outreach, 5-min pixel setup",
@@ -1023,7 +1022,7 @@ export default function BlogPost() {
                 <p className="font-bold text-gray-900 mb-2">Pricing:</p>
                 <MachineList items={[
                   "Bombora: $25,000–$150,000/year, enterprise sales process, 6+ month contracts, no self-serve",
-                  "Cursive: $1,000/month ($12,000/year), self-serve, no minimum contract required",
+                  "Cursive: $97, $197, or $247/month, self-serve with no minimum contract",
                   "Bombora + activation tools (sequencing, LinkedIn, visitor ID): $34,000–$65,000+/yr total stack"
                 ]} />
               </div>
@@ -1087,11 +1086,11 @@ export default function BlogPost() {
 
           <MachineSection title="Get Started with Cursive">
             <p className="text-gray-700 mb-3">
-              Cursive combines person-level visitor identification (~70% match rate) with AI-powered outreach automation across email, LinkedIn, and direct mail. Replace Bombora&apos;s expensive third-party intent data with warm first-party signals from prospects already visiting your site — at $1,000/mo with no enterprise contract required.
+              Cursive combines person-level visitor identification (~70% match rate) with fresh weekly audiences of in-market buyers. Replace Bombora&apos;s expensive third-party intent data with actionable buyer signals — from $97/mo with no enterprise contract required.
             </p>
             <MachineList items={[
               { label: "Platform Overview", href: "/platform", description: "Complete lead generation platform with visitor ID, AI SDR, intent data" },
-              { label: "Pricing", href: "/pricing", description: "Starting at $1,000/mo — self-serve, no enterprise contract" },
+              { label: "Pricing", href: "/pricing", description: "$97, $197, or $247/month — self-serve, no enterprise contract" },
               { label: "Visitor Identification", href: "/visitor-identification", description: "70% person-level match rate with names, emails, LinkedIn profiles" },
               { label: "AI SDR", href: "/what-is-ai-sdr", description: "Automated personalized outreach based on visitor behavior" },
               { label: "Intent Audiences", href: "/intent-audiences", description: "Track pages viewed, return visits, content engagement" },
@@ -1117,7 +1116,7 @@ export default function BlogPost() {
               </div>
               <div>
                 <p className="font-bold text-gray-900 mb-1">Is Cursive cheaper than Bombora?</p>
-                <p className="text-gray-700 text-sm">Significantly cheaper. Bombora starts at $25,000/year (no self-serve, 6+ month contracts). Cursive starts at $1,000/month ($12,000/year), self-serve with no minimum contract. Cursive also includes visitor identification, AI SDR automation, multi-channel outreach, and lead scoring in one platform — vs. Bombora delivering only intent data with no activation mechanism.</p>
+                <p className="text-gray-700 text-sm">Significantly cheaper. Bombora starts at $25,000/year (no self-serve, 6+ month contracts). Cursive offers Visitor Pixel at $97/month, Custom Audience at $197/month, or both for $247/month. Every Cursive plan is self-serve and month-to-month with no setup fee.</p>
               </div>
               <div>
                 <p className="font-bold text-gray-900 mb-1">Can Cursive replace Bombora for B2B prospecting?</p>

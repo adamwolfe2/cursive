@@ -30,7 +30,7 @@ const faqs = [
   },
   {
     question: "What's the ROI difference between Cursive and Klenty?",
-    answer: "The ROI comparison comes down to lead quality and conversion rate. Klenty helps you reach cold contacts more efficiently. Cursive helps you reach warm contacts — people who have already visited your site — more efficiently. Warm leads convert to booked meetings at a significantly higher rate than cold outreach. A team paying $600/month for five Klenty seats plus a separate data provider often finds that Cursive's $1,000/month flat service generates more pipeline because the underlying lead quality is fundamentally higher."
+    answer: "The ROI comparison comes down to lead quality and conversion rate. Klenty helps you reach cold contacts more efficiently. Cursive helps you find warm contacts — people who have already visited your site or are actively in-market. Cursive offers Visitor Pixel for $97/month, Custom Audience for $197/month, and both for $247/month, so teams can choose the buyer signals they need."
   }
 ]
 
@@ -157,10 +157,10 @@ export default function BlogPost() {
                   <tr>
                     <td className="border border-gray-300 p-3 font-medium">Pricing model</td>
                     <td className="border border-gray-300 p-3 text-center">$60–$125/user/mo</td>
-                    <td className="border border-gray-300 p-3 text-center">$1,000/mo flat</td>
+                    <td className="border border-gray-300 p-3 text-center">$97-$247/mo</td>
                   </tr>
                   <tr>
-                    <td className="border border-gray-300 p-3 font-medium">Done-for-you service</td>
+                    <td className="border border-gray-300 p-3 font-medium">Self-serve plans</td>
                     <td className="border border-gray-300 p-3 text-center"><X className="w-4 h-4 text-red-400 inline" /></td>
                     <td className="border border-gray-300 p-3 text-center"><Check className="w-4 h-4 text-green-600 inline" /></td>
                   </tr>
@@ -255,8 +255,8 @@ export default function BlogPost() {
 
               <p className="text-gray-700 mb-4">
                 For companies that want to supplement visitor-based leads with list-based outreach, the <Link href="/audience-builder" className="text-blue-600 hover:underline">audience builder</Link> pulls
-                from 280M+ US consumer profiles and 140M+ business profiles. The <Link href="/marketplace" className="text-blue-600 hover:underline">marketplace</Link> offers
-                self-serve access to verified B2B contacts starting at $0.60/lead.
+                from 280M+ US consumer profiles and 140M+ business profiles. The <Link href="/marketplace" className="text-blue-600 hover:underline">self-serve plans</Link> offer
+                visitor identification, fresh weekly in-market buyer lists, or both, starting at $97/month.
               </p>
 
               <div className="grid md:grid-cols-2 gap-6 mb-4">
@@ -273,7 +273,7 @@ export default function BlogPost() {
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="w-4 h-4 text-green-600" />
-                      Flat $1,000/mo pricing (scales with no per-seat fees)
+                      Plans from $97-$247/mo with no per-seat fees
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="w-4 h-4 text-green-600" />
@@ -281,7 +281,7 @@ export default function BlogPost() {
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="w-4 h-4 text-green-600" />
-                      Done-for-you — managed service option available
+                      Month-to-month with no setup fee
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="w-4 h-4 text-green-600" />
@@ -294,7 +294,7 @@ export default function BlogPost() {
                   <ul className="space-y-1 text-sm">
                     <li className="flex items-center gap-2">
                       <X className="w-4 h-4 text-red-400" />
-                      Starts at $1,000/mo (no free tier)
+                      Starts at $97/mo (no free tier)
                     </li>
                     <li className="flex items-center gap-2">
                       <X className="w-4 h-4 text-red-400" />
@@ -311,7 +311,7 @@ export default function BlogPost() {
               <div className="bg-white rounded-lg p-4">
                 <div className="flex justify-between items-center mb-2">
                   <span className="font-bold">Pricing:</span>
-                  <span className="text-lg font-bold text-blue-600">Starting at $1,000/mo</span>
+                  <span className="text-lg font-bold text-blue-600">Starting at $97/mo</span>
                 </div>
                 <p className="text-sm text-gray-600">
                   <strong>Best for:</strong> B2B companies generating 3,000+ monthly website visitors that want to
@@ -426,7 +426,7 @@ export default function BlogPost() {
                     <td className="border border-gray-300 p-3 text-center"><X className="w-4 h-4 text-red-400 inline" /></td>
                   </tr>
                   <tr>
-                    <td className="border border-gray-300 p-3 font-medium">Done-for-you option</td>
+                    <td className="border border-gray-300 p-3 font-medium">Self-serve plans</td>
                     <td className="border border-gray-300 p-3 text-center"><Check className="w-4 h-4 text-green-600 inline" /></td>
                     <td className="border border-gray-300 p-3 text-center"><X className="w-4 h-4 text-red-400 inline" /></td>
                     <td className="border border-gray-300 p-3 text-center"><X className="w-4 h-4 text-red-400 inline" /></td>
@@ -452,11 +452,9 @@ export default function BlogPost() {
             </p>
 
             <p>
-              <strong>Cursive cost and lead quality:</strong> Cursive starts at $1,000/month flat and includes
-              visitor identification, AI SDR outreach, multi-channel campaigns, and enrichment. More importantly,
-              the leads Cursive sources from your website are warm — they have already shown buying intent.
-              A warm lead that converts to a meeting 3–5x more often than a cold contact delivers substantially
-              better pipeline per dollar spent, even at the same or slightly higher monthly cost.
+              <strong>Cursive cost and lead quality:</strong> Cursive offers Visitor Pixel for $97/month,
+              Custom Audience for $197/month, and the Pixel + Audience Bundle for $247/month. All plans are
+              month-to-month with no setup fee and no per-seat fees.
             </p>
 
             <p>
@@ -598,7 +596,7 @@ export default function BlogPost() {
               "Klenty has no website visitor identification — every campaign starts from a cold imported list",
               "Klenty has no AI email writing — reps must write all copy, leading to generic templates at scale",
               "Cursive identifies 70% of B2B website visitors at person level and triggers AI-written outreach on intent signals",
-              "Cursive flat pricing: $1,000/mo done-for-you vs Klenty per-seat model that grows with headcount",
+              "Cursive pricing: $97/mo Pixel, $197/mo Audience, or $247/mo Bundle vs Klenty's per-seat model",
               "Cursive includes direct mail channel and 200+ CRM integrations including Salesforce, HubSpot, Pipedrive"
             ]} />
           </MachineSection>
@@ -648,7 +646,7 @@ export default function BlogPost() {
                 <p className="font-bold text-gray-900 mb-2">Pricing Model:</p>
                 <MachineList items={[
                   "Klenty: $60–$125/user/month (per-seat)",
-                  "Cursive: $1,000/month flat — includes visitor ID, AI outreach, email + LinkedIn + direct mail, enrichment"
+                  "Cursive: $97-$247/month — choose visitor ID, fresh weekly in-market buyer lists, or both"
                 ]} />
               </div>
             </div>
@@ -664,14 +662,14 @@ export default function BlogPost() {
               "Direct mail: Cursive ✓ | All others ✗",
               "CRM integrations: All tools ✓ (Cursive has 200+ including Salesforce/HubSpot/Pipedrive)",
               "Flat pricing (no per-seat): Cursive ✓ | All others ✗",
-              "Done-for-you option: Cursive ✓ | All others ✗"
+              "Fresh weekly in-market buyer lists: Cursive ✓ | All others ✗"
             ]} />
           </MachineSection>
 
           <MachineSection title="ROI Comparison: Klenty vs Cursive">
             <MachineList items={[
               "Klenty full stack cost: $300–$625/mo seats + data provider ($200–$500/mo) + deliverability tools ($100–$200/mo) + enrichment ($100–$200/mo) = $700–$1,500/mo",
-              "Cursive: $1,000/mo flat — visitor ID + AI SDR + email + LinkedIn + direct mail + enrichment all included",
+              "Cursive: $97-$247/mo — visitor ID, fresh weekly in-market buyer lists, or both",
               "Lead quality difference: Klenty contacts = cold; Cursive contacts = warm visitors who already showed intent",
               "Warm leads convert to meetings 3–5x more often than equivalent cold outreach",
               "Example: 500 cold contacts at 1% = 5 meetings (Klenty) vs 200 warm visitors at 5% = 10 meetings (Cursive) at similar cost"
@@ -700,14 +698,14 @@ export default function BlogPost() {
 
           <MachineSection title="Get Started with Cursive">
             <p className="text-gray-700 mb-3">
-              Cursive identifies 70% of anonymous B2B website visitors, scores them by intent, and triggers personalized AI outreach across email, LinkedIn, and direct mail — all at $1,000/month flat with no per-seat fees.
+              Cursive identifies anonymous B2B website visitors and delivers fresh weekly lists of in-market buyers through self-serve plans ranging from $97-$247/month with no per-seat fees.
             </p>
             <MachineList items={[
               { label: "Free AI Audit", href: "/free-audit", description: "See which visitors you are missing and your potential pipeline" },
               { label: "Platform Overview", href: "/platform", description: "Visitor ID + AI SDR + intent data + direct mail in one platform" },
-              { label: "Pricing", href: "/pricing", description: "Starting at $1,000/mo — replaces Klenty + data provider + enrichment at flat rate" },
+              { label: "Pricing", href: "/pricing", description: "$97/mo Pixel, $197/mo Audience, or $247/mo Bundle" },
               { label: "Book a Demo", href: "https://cal.com/cursiveteam/30min", description: "30-minute walkthrough of Cursive with your traffic data" },
-              { label: "Managed Services", href: "/services", description: "Done-for-you outbound — no internal team required" },
+              { label: "Self-Serve Plans", href: "/services", description: "Month-to-month with no setup fee and cancel anytime" },
               { label: "Integrations", href: "/integrations", description: "200+ integrations including Salesforce, HubSpot, Pipedrive" }
             ]} />
           </MachineSection>
