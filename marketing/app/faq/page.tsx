@@ -1,13 +1,41 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
 import { Container } from "@/components/ui/container"
 import { motion } from "framer-motion"
-import { ArrowRight, HelpCircle, Search } from "lucide-react"
+import { ChevronDown, Search, Eye, Users, Layers } from "lucide-react"
 import { useState } from "react"
 import { DashboardCTA } from "@/components/dashboard-cta"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
 import { FAQSchema } from "@/components/schema/SchemaMarkup"
+import { Button } from "@/components/ui/button"
+import { GET_LEADS_URL, BOOKING_URL } from "@/lib/cta"
+
+const EASE = [0.22, 1, 0.36, 1] as const
+
+function SectionHeading({ plain, script, sub }: { plain: string; script?: string; sub?: string }) {
+  return (
+    <div className="text-center mb-14">
+      <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light text-gray-900">
+        {plain}
+        {script && (
+          <span className="block font-cursive text-4xl sm:text-5xl lg:text-6xl text-gray-500 mt-1">
+            {script}
+          </span>
+        )}
+      </h2>
+      {sub && (
+        <p className="mt-5 text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">{sub}</p>
+      )}
+    </div>
+  )
+}
+
+// Quick-look plan cards above the accordion.
+const plans = [
+  { icon: Eye, name: "Visitor Pixel", price: "$97", desc: "Identify the companies and people on your site." },
+  { icon: Users, name: "Custom Audience", price: "$197", desc: "A fresh weekly in-market list to Google Sheets." },
+  { icon: Layers, name: "Pixel + Audience", price: "$247", desc: "Both, in one feed. Best value." },
+]
 
 export default function FAQPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null)
@@ -29,259 +57,243 @@ export default function FAQPage() {
       {/* Human View */}
       <HumanView>
         <main className="overflow-hidden">
-      {/* Hero Section */}
-      <section className="relative py-24 bg-white">
-        <Container>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center max-w-4xl mx-auto"
-          >
-            <h1 className="text-5xl lg:text-6xl font-light text-gray-900 mb-6">
-              Frequently Asked
-              <span className="block font-cursive text-6xl lg:text-7xl text-gray-500 mt-2">
-                Questions
-              </span>
-            </h1>
-            <p className="text-xl text-gray-600 mb-8">
-              Everything you need to know about <span className="font-cursive text-2xl text-gray-500">Cursive</span>. Can't find what you're looking for?{" "}
-              <a href="/contact" className="text-primary hover:underline">Contact us</a>.
-            </p>
-
-            {/* Search */}
-            <div className="max-w-2xl mx-auto relative">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search for answers..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent text-lg"
-              />
-            </div>
-          </motion.div>
-        </Container>
-      </section>
-
-      {/* FAQ Content */}
-      <section className="py-24 bg-white">
-        <Container>
-          {/* Category Tabs */}
-          <div className="flex flex-wrap gap-3 justify-center mb-12">
-            {categories.map((category) => (
-              <button
-                key={category.value}
-                onClick={() => setActiveCategory(category.value)}
-                className={`px-6 py-3 rounded-lg transition-all ${
-                  activeCategory === category.value
-                    ? "bg-primary text-white shadow-lg"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                }`}
+          {/* Hero */}
+          <section className="relative pt-16 pb-12 sm:pt-20 sm:pb-16 bg-white">
+            <Container>
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, ease: EASE }}
+                className="text-center max-w-3xl mx-auto"
               >
-                {category.label}
-              </button>
-            ))}
-          </div>
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-light text-gray-900 leading-[1.1]">
+                  Frequently Asked
+                  <span className="block font-cursive text-4xl sm:text-5xl lg:text-6xl text-gray-500 mt-2">
+                    Questions
+                  </span>
+                </h1>
+                <p className="mt-6 text-lg sm:text-xl text-gray-600 leading-relaxed">
+                  Everything about Cursive&apos;s self-serve plans — pixel, audiences, data, and
+                  privacy. Can&apos;t find it?{" "}
+                  <a href="/contact" className="text-primary hover:underline">Contact us</a>.
+                </p>
 
-          {/* FAQ List */}
-          <div className="max-w-4xl mx-auto space-y-4">
-            {filteredFaqs.length === 0 ? (
-              <div className="text-center py-12">
-                <p className="text-gray-600 mb-4">No results found for "{searchQuery}"</p>
-                <button
-                  onClick={() => setSearchQuery("")}
-                  className="text-primary hover:underline"
-                >
-                  Clear search
-                </button>
-              </div>
-            ) : (
-              filteredFaqs.map((faq, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                  className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow"
-                >
-                  <button
-                    onClick={() => setOpenFaq(openFaq === index ? null : index)}
-                    className="w-full px-6 py-5 flex items-start justify-between text-left hover:bg-gray-50 transition-colors"
+                {/* Search */}
+                <div className="mt-8 max-w-xl mx-auto relative">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Search for answers..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-12 pr-4 py-3.5 rounded-2xl border border-gray-200 focus:ring-2 focus:ring-primary focus:border-transparent text-base"
+                  />
+                </div>
+              </motion.div>
+            </Container>
+          </section>
+
+          {/* Plan snapshot */}
+          <section className="pb-4 bg-white">
+            <Container>
+              <div className="grid sm:grid-cols-3 gap-4 max-w-4xl mx-auto">
+                {plans.map((p, i) => (
+                  <motion.div
+                    key={p.name}
+                    initial={{ opacity: 0, y: 16 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-60px" }}
+                    transition={{ delay: i * 0.06, duration: 0.4, ease: EASE }}
+                    className="rounded-2xl border border-gray-200 p-5 sm:p-6 text-center"
                   >
-                    <div className="flex items-start gap-4 flex-1">
-                      <div className="w-1.5 h-1.5 bg-primary rounded-full flex-shrink-0 mt-3" />
-                      <span className="text-lg text-gray-900">{faq.question}</span>
+                    <div className="w-11 h-11 mx-auto rounded-xl bg-blue-50 flex items-center justify-center">
+                      <p.icon className="w-5 h-5 text-primary" />
                     </div>
-                    <div className="text-gray-400 ml-4 text-2xl">
-                      {openFaq === index ? "−" : "+"}
+                    <div className="mt-4 flex items-baseline justify-center gap-1">
+                      <span className="text-2xl font-light text-gray-900">{p.price}</span>
+                      <span className="text-sm text-gray-500">/mo</span>
                     </div>
+                    <h3 className="mt-1 text-sm font-medium text-gray-900">{p.name}</h3>
+                    <p className="mt-1.5 text-xs text-gray-500 leading-relaxed">{p.desc}</p>
+                  </motion.div>
+                ))}
+              </div>
+            </Container>
+          </section>
+
+          {/* FAQ Content */}
+          <section className="py-16 sm:py-20 bg-white">
+            <Container>
+              {/* Category tabs */}
+              <div className="flex flex-wrap gap-2.5 justify-center mb-10">
+                {categories.map((category) => (
+                  <button
+                    key={category.value}
+                    onClick={() => setActiveCategory(category.value)}
+                    className={`px-5 py-2.5 rounded-full text-sm font-medium transition-colors ${
+                      activeCategory === category.value
+                        ? "bg-primary text-white"
+                        : "border border-gray-200 text-gray-700 hover:bg-gray-50"
+                    }`}
+                  >
+                    {category.label}
                   </button>
-                  {openFaq === index && (
-                    <div className="px-6 pb-5 pl-12">
-                      <p className="text-gray-600 leading-relaxed whitespace-pre-line">{faq.answer}</p>
-                    </div>
-                  )}
-                </motion.div>
-              ))
-            )}
-          </div>
-        </Container>
-      </section>
+                ))}
+              </div>
 
-      {/* Dashboard CTA */}
-      <DashboardCTA
-        headline="Still Have"
-        subheadline="Questions?"
-        description="We're here to help. Book a call or send us a message and we'll answer everything."
-      />
-    </main>
-  </HumanView>
+              {/* FAQ list */}
+              <div className="max-w-3xl mx-auto space-y-3">
+                {filteredFaqs.length === 0 ? (
+                  <div className="text-center py-12">
+                    <p className="text-gray-600 mb-4">No results found for &ldquo;{searchQuery}&rdquo;</p>
+                    <button
+                      onClick={() => setSearchQuery("")}
+                      className="text-primary hover:underline"
+                    >
+                      Clear search
+                    </button>
+                  </div>
+                ) : (
+                  filteredFaqs.map((faq, index) => {
+                    const isOpen = openFaq === index
+                    return (
+                      <motion.div
+                        key={faq.question}
+                        initial={{ opacity: 0, y: 16 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: "-40px" }}
+                        transition={{ delay: Math.min(index, 6) * 0.04, duration: 0.4, ease: EASE }}
+                        className="rounded-2xl border border-gray-200 overflow-hidden"
+                      >
+                        <button
+                          onClick={() => setOpenFaq(isOpen ? null : index)}
+                          className="w-full px-6 py-5 flex items-center justify-between gap-4 text-left hover:bg-gray-50 transition-colors"
+                          aria-expanded={isOpen}
+                        >
+                          <span className="text-base font-medium text-gray-900">{faq.question}</span>
+                          <ChevronDown
+                            className={`w-5 h-5 text-gray-400 flex-shrink-0 transition-transform ${isOpen ? "rotate-180" : ""}`}
+                          />
+                        </button>
+                        {isOpen && (
+                          <div className="px-6 pb-5">
+                            <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-line">{faq.answer}</p>
+                          </div>
+                        )}
+                      </motion.div>
+                    )
+                  })
+                )}
+              </div>
 
-  {/* Machine View - AEO-Optimized */}
-  <MachineView>
-    <MachineContent>
-      {/* Header */}
-      <div className="mb-12 pb-6 border-b border-gray-200">
-        <h1 className="text-2xl text-gray-900 font-bold mb-4">FREQUENTLY ASKED QUESTIONS</h1>
-        <p className="text-gray-700 leading-relaxed">
-          Common questions about Cursive lead generation platform, pricing, data quality, integrations, and support.
-        </p>
-      </div>
+              {/* Inline CTAs */}
+              <div className="mt-12 flex flex-col sm:flex-row gap-3 justify-center items-center">
+                <Button size="lg" href={GET_LEADS_URL} target="_blank" rel="noopener noreferrer">
+                  Get Started
+                </Button>
+                <Button size="lg" variant="outline" href={BOOKING_URL} target="_blank" rel="noopener noreferrer">
+                  Book a Call
+                </Button>
+              </div>
+            </Container>
+          </section>
 
-      {/* Getting Started FAQs */}
-      <MachineSection title="Getting Started">
-        <div className="space-y-6">
-          <div>
-            <p className="text-white mb-2">How do I get started with Cursive?</p>
-            <p className="text-gray-400">
-              Three ways: (1) Book a 15-minute strategy call to discuss your needs, (2) Purchase directly and we'll reach out within 24 hours to start onboarding, (3) Sign up for free to explore People Search before committing.
-            </p>
-          </div>
-          <div>
-            <p className="text-white mb-2">Which plan is right for me?</p>
-            <p className="text-gray-400">
-              Cursive Data: You have an outbound process and need better lead lists. Cursive Outbound: You want done-for-you campaigns. Cursive Pipeline: You need full-stack AI SDR automation. Not sure? Book a call for recommendations.
-            </p>
-          </div>
-          <div>
-            <p className="text-white mb-2">How fast can we get started?</p>
-            <p className="text-gray-400">
-              Cursive Data: Instant access, first list in 5-7 days. Cursive Outbound: 1-2 weeks for full setup. Cursive Pipeline: 2-3 weeks for onboarding and AI training.
-            </p>
-          </div>
-        </div>
-      </MachineSection>
+          {/* Dashboard CTA */}
+          <DashboardCTA
+            headline="Still Have"
+            subheadline="Questions?"
+            description="Pick a plan and you're live in minutes, or book a call and we'll answer everything first."
+          />
+        </main>
+      </HumanView>
 
-      {/* Pricing FAQs */}
-      <MachineSection title="Pricing & Billing">
-        <div className="space-y-6">
-          <div>
-            <p className="text-white mb-2">Can I cancel anytime?</p>
-            <p className="text-gray-400">
-              Yes. All plans are month-to-month with no long-term contracts. Give 30 days notice to cancel. Monthly fees are prorated if you cancel mid-month.
+      {/* Machine View - AEO-Optimized */}
+      <MachineView>
+        <MachineContent>
+          <div className="mb-12 pb-6 border-b border-gray-200">
+            <h1 className="text-2xl text-gray-900 font-bold mb-4">FREQUENTLY ASKED QUESTIONS</h1>
+            <p className="text-gray-700 leading-relaxed">
+              Common questions about Cursive&apos;s self-serve plans: the Visitor Pixel ($97/month),
+              Custom Audience ($197/month), and the Pixel + Audience Bundle ($247/month). Covers how
+              each works, data accuracy, integrations, privacy, getting started, and cancellation.
             </p>
           </div>
-          <div>
-            <p className="text-white mb-2">Is there a setup fee?</p>
-            <p className="text-gray-400">
-              No setup fees — ever. Your first month includes complimentary white-glove onboarding from our team to get your pixel installed, integrations connected, and first leads flowing — at no additional cost.
-            </p>
-          </div>
-          <div>
-            <p className="text-white mb-2">Do you offer volume discounts?</p>
-            <p className="text-gray-400">
-              Yes. 6-month commitment: 10% discount. Annual commitment: 20% discount. Multiple services: Custom bundled pricing. Enterprise needs: Contact us for custom quotes.
-            </p>
-          </div>
-        </div>
-      </MachineSection>
 
-      {/* Features FAQs */}
-      <MachineSection title="Features">
-        <div className="space-y-6">
-          <div>
-            <p className="text-white mb-2">How do you ensure data quality?</p>
-            <p className="text-gray-400">
-              We guarantee 95%+ email deliverability through multi-source verification, real-time validation, bounce protection, and continuous enrichment. We replace any bounced emails at no charge.
+          <MachineSection title="Plans & Pricing">
+            <p className="text-gray-700 mb-4">
+              Every plan is self-serve and month-to-month with no setup fee. Install the pixel in
+              about 60 seconds, get your first Custom Audience within 24 hours, and cancel anytime.
             </p>
-          </div>
-          <div>
-            <p className="text-white mb-2">Can I use my own lead lists?</p>
-            <p className="text-gray-400">
-              Yes. With Outbound and Pipeline tiers, you can upload existing lists or combine them with ours. We'll enrich and verify them before sending.
-            </p>
-          </div>
-          <div>
-            <p className="text-white mb-2">What integrations do you support?</p>
-            <p className="text-gray-400">
-              CRMs: Salesforce, HubSpot, Pipedrive, Close, Copper. Email: Gmail, Outlook, Office 365. Calendar: Google Calendar, Outlook Calendar. Communication: Slack, Microsoft Teams. API access (Pipeline tier) allows custom integrations.
-            </p>
-          </div>
-        </div>
-      </MachineSection>
+            <MachineList items={[
+              "Visitor Pixel ($97/month) - Identify the companies and people visiting your site",
+              "Custom Audience ($197/month) - A fresh weekly list of in-market buyers, delivered to Google Sheets",
+              "Pixel + Audience Bundle ($247/month) - Both, in one feed",
+            ]} />
+          </MachineSection>
 
-      {/* Technical FAQs */}
-      <MachineSection title="Technical">
-        <div className="space-y-6">
-          <div>
-            <p className="text-white mb-2">How does website visitor tracking work?</p>
-            <p className="text-gray-400">
-              We install a JavaScript pixel that identifies companies visiting your site via IP address, matches them to our database, extracts decision-maker contact info, tracks pages visited, and scores intent. Visitor tracking is included with all Cursive service plans at flat monthly pricing.
-            </p>
-          </div>
-          <div>
-            <p className="text-white mb-2">Is my data secure?</p>
-            <p className="text-gray-400">
-              Yes. SOC 2 Type II compliant, end-to-end encryption, regular security audits, GDPR and CCPA compliant, role-based access controls, SSO available for enterprise. Your data is never shared or used to train AI models.
-            </p>
-          </div>
-          <div>
-            <p className="text-white mb-2">Can I export my data?</p>
-            <p className="text-gray-400">
-              Yes. Lead lists via CSV export, campaign analytics via CSV or PDF reports, contact data via bulk API export, historical data available upon request. No lock-in - your data is yours.
-            </p>
-          </div>
-        </div>
-      </MachineSection>
+          <MachineSection title="How It Works">
+            <MachineList items={[
+              "Visitor Pixel: a single JavaScript snippet resolves your anonymous traffic to real companies and people the moment they land",
+              "Custom Audience: tell us your ICP and each week we deliver a fresh list of people actively searching for what you sell, to Google Sheets",
+              "Pixel + Audience Bundle: site traffic plus in-market intent combined in one feed",
+            ]} />
+          </MachineSection>
 
-      {/* Support FAQs */}
-      <MachineSection title="Support">
-        <div className="space-y-6">
-          <div>
-            <p className="text-white mb-2">What support do you offer?</p>
-            <p className="text-gray-400">
-              All tiers: Dedicated account manager, email support (24-hour response), live chat (M-F 9am-6pm EST), help center. Pipeline tier: Dedicated success manager, weekly strategy calls, priority support (4-hour response), direct Slack channel.
-            </p>
-          </div>
-          <div>
-            <p className="text-white mb-2">Do you offer refunds?</p>
-            <p className="text-gray-400">
-              Setup fees are non-refundable. Monthly subscriptions: Prorated refunds if you cancel mid-month. First month guarantee: If you're not satisfied in first 30 days, we'll work with you to make it right or provide prorated refund.
-            </p>
-          </div>
-        </div>
-      </MachineSection>
+          <MachineSection title="Data Accuracy">
+            <MachineList items={[
+              "40–60% deterministic pixel match rate on US B2B traffic (not modeled). Cookie-sync averages 2–5%, IP-only 10–15%",
+              "60–80% accuracy on a matched record, driven by geo-framing and an offline-rooted identity graph",
+              "280M+ verified consumer and 140M+ business profiles, refreshed every 30 days against NCOA",
+              "Deep Verify, our in-house email validation engine, processes ~20 million records per day",
+            ]} />
+          </MachineSection>
 
-      {/* Getting Started */}
-      <MachineSection title="Get Help">
-        <MachineList items={[
-          {
-            label: "Book a Call",
-            href: "https://cal.com/cursiveteam/30min",
-            description: "Schedule 15-minute call to ask questions"
-          },
-          {
-            label: "Contact Support",
-            href: "https://www.meetcursive.com/contact",
-            description: "Send us a message and we'll respond within 24 hours"
-          }
-        ]} />
-      </MachineSection>
+          <MachineSection title="Integrations">
+            <MachineList items={[
+              "Custom Audiences are delivered straight to Google Sheets",
+              "Identified visitors sync to HubSpot, Salesforce, Pipedrive, Close, and Zapier (5,000+ tools)",
+              "Webhook-based custom integrations to CRMs, sequencers (Outreach, Salesloft), or Slack",
+            ]} />
+          </MachineSection>
 
-    </MachineContent>
-  </MachineView>
-</>
+          <MachineSection title="Privacy & Compliance">
+            <p className="text-gray-700">
+              Cursive complies with GDPR, CCPA, and CAN-SPAM under a legitimate-interest and B2B
+              commercial-use framework. We honor all opt-outs, maintain suppression lists, store
+              hashed identifiers, and process data deletion requests within 30 days.
+            </p>
+          </MachineSection>
+
+          <MachineSection title="Getting Started & Billing">
+            <MachineList items={[
+              "Pick a plan at leads.meetcursive.com/get-leads and you are dropped straight into your portal",
+              "The Visitor Pixel installs in about 60 seconds; Custom Audience delivers its first list within 24 hours",
+              "Month-to-month, no setup fee, cancel anytime from your portal",
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Get Help">
+            <MachineList items={[
+              {
+                label: "Get Started",
+                href: "https://leads.meetcursive.com/get-leads",
+                description: "Pick a plan and you are live in minutes",
+              },
+              {
+                label: "Book a Call",
+                href: "https://cal.com/cursiveteam/30min",
+                description: "Talk to the team before you buy",
+              },
+              {
+                label: "Contact Support",
+                href: "https://www.meetcursive.com/contact",
+                description: "Send us a message and we'll respond within 24 hours",
+              },
+            ]} />
+          </MachineSection>
+        </MachineContent>
+      </MachineView>
+    </>
   )
 }
 
@@ -289,309 +301,131 @@ export default function FAQPage() {
 const categories = [
   { value: "all", label: "All Questions" },
   { value: "getting-started", label: "Getting Started" },
-  { value: "pricing", label: "Pricing & Billing" },
-  { value: "features", label: "Features" },
-  { value: "technical", label: "Technical" },
-  { value: "support", label: "Support" },
+  { value: "plans", label: "Plans & Pricing" },
+  { value: "data", label: "Data & Accuracy" },
+  { value: "privacy", label: "Privacy & Integrations" },
 ]
 
-// FAQ Data
+// FAQ Data — self-serve plans only ($97 / $197 / $247)
 const faqs = [
   // Getting Started
   {
     category: "getting-started",
-    question: "How do I get started with Cursive?",
-    answer: `There are three ways to start:
+    question: "What is Cursive and what does it do?",
+    answer: `Cursive is the identity layer for B2B outbound. Two self-serve products run on the same verified data:
 
-1. Book a call: Schedule a 15-minute intro where we'll understand your needs and recommend the right tier.
+The Visitor Pixel ($97/mo) identifies the companies and people already visiting your site.
 
-2. Purchase directly: Choose Cursive Data, Outbound, or Pipeline and complete checkout. We'll reach out within 24 hours to start onboarding.
+The Custom Audience ($197/mo) delivers a fresh weekly list of people actively searching for what you sell.
 
-3. Try the platform: Sign up for free to explore People Search and the Marketplace before committing to a subscription.`,
+Get both in one feed with the Pixel + Audience Bundle ($247/mo).`,
   },
   {
     category: "getting-started",
-    question: "Which plan is right for me?",
-    answer: `It depends on your current setup:
+    question: "How do I get started?",
+    answer: `Pick a plan at leads.meetcursive.com/get-leads and you're dropped straight into your portal.
 
-Cursive Data: You have an outbound process and just need better lead lists.
+The Visitor Pixel installs in about 60 seconds with a single snippet. Custom Audience plans deliver your first list within 24 hours.
 
-Cursive Outbound: You want us to run campaigns for you (done-for-you).
-
-Cursive Pipeline: You need a full-stack solution with AI SDR agents handling everything.
-
-Not sure? Book a call and we'll walk you through it.`,
+Prefer to talk first? Book a 30-minute call and we'll walk you through it.`,
   },
   {
     category: "getting-started",
-    question: "How fast can we get started?",
-    answer: `Cursive Data: Instant access. First list delivered within 5-7 business days.
+    question: "How fast can I be up and running?",
+    answer: `Fast. The pixel goes live the moment you paste the snippet — usually under 60 seconds — and starts identifying visitors right away.
 
-Cursive Outbound: 1-2 weeks for full setup (email domains, infrastructure, campaign launch).
-
-Cursive Pipeline: 2-3 weeks for onboarding, AI training, and workflow configuration.`,
+For Custom Audiences, you tell us your ICP at checkout and your first list lands within 24 hours.`,
   },
   {
     category: "getting-started",
-    question: "Do you offer a free trial?",
-    answer: `We don't offer free trials for managed services (Data, Outbound, Pipeline) because they require significant setup and customization.
-
-However, you can:
-- Use our free platform tools (People Search with daily limits)
-- Purchase credits in the Marketplace to test lead quality
-- Book a demo to see the platform in action
-
-We're confident you'll see ROI within the first month.`,
-  },
-
-  // Pricing & Billing
-  {
-    category: "pricing",
     question: "Can I cancel anytime?",
-    answer: `Yes. All plans are month-to-month with no long-term contracts. Simply give us 30 days notice and we'll cancel your subscription.
-
-Setup fees are non-refundable (we invest significant time in onboarding), but monthly fees are prorated if you cancel mid-month.`,
-  },
-  {
-    category: "pricing",
-    question: "What's included in the setup fee?",
-    answer: `For Cursive Outbound ($2,500 setup):
-- Email domain setup and configuration
-- Inbox warmup and deliverability optimization
-- Campaign strategy session
-- Brand voice AI training
-- Copy generation and approval process
-
-For Cursive Pipeline ($5,000 setup):
-- Everything in Outbound, plus:
-- API integration with your CRM
-- AI SDR agent configuration
-- Custom workflow design
-- Multi-channel setup (email + LinkedIn)
-- White-glove onboarding (2-3 week process)`,
-  },
-  {
-    category: "pricing",
-    question: "Do you offer volume discounts?",
-    answer: `Yes. For larger commitments or multiple services, we offer custom pricing:
-
-- 6-month commitment: 10% discount
-- Annual commitment: 20% discount
-- Multiple services: Custom bundled pricing
-- Enterprise needs: Contact us for custom quotes
-
-Book a call to discuss your specific requirements.`,
-  },
-  {
-    category: "pricing",
-    question: "What payment methods do you accept?",
-    answer: `We accept all major credit cards (Visa, Mastercard, Amex, Discover) via Stripe.
-
-For annual commitments or enterprise plans over $50k, we can accommodate:
-- ACH/wire transfer
-- Net-30 invoicing
-- Purchase orders
-
-Contact us to arrange alternative payment methods.`,
-  },
-  {
-    category: "pricing",
-    question: "Are there any hidden fees?",
-    answer: `No hidden fees. What you see is what you pay.
-
-The only additional costs are:
-- Add-ons (Website Visitor Tracking, Retargeting, White Label) if you choose them
-- Extra lead volume beyond your plan limits (charged per-lead)
-
-We believe in transparent pricing.`,
+    answer: `Yes. Every plan is month-to-month with no setup fee and no long-term contract. Cancel anytime from your portal — no calls, no clawbacks.`,
   },
 
-  // Features
+  // Plans & Pricing
   {
-    category: "features",
-    question: "How do you ensure data quality?",
-    answer: `We guarantee 95%+ email deliverability through:
+    category: "plans",
+    question: "What's the difference between the Visitor Pixel and the Custom Audience?",
+    answer: `The Visitor Pixel ($97/mo) is reactive: it turns the anonymous traffic already on your site into named companies and people, synced to your portal.
 
-1. Multi-source verification: Every contact is verified through 3+ data sources
-2. Real-time validation: Emails are validated before export
-3. Bounce protection: We replace any bounced emails
-4. Continuous enrichment: Data is refreshed monthly
+The Custom Audience ($197/mo) is proactive: each week we deliver a fresh list of people actively searching for what you sell, whether or not they've visited your site.
 
-We stand behind our data quality with a replacement guarantee.`,
+The Pixel + Audience Bundle ($247/mo) combines both into one feed — the best value if you want site traffic and in-market intent together.`,
   },
   {
-    category: "features",
-    question: "Can I use my own lead lists?",
-    answer: `Yes! With Cursive Outbound and Pipeline tiers, you can:
-- Upload your existing lists
-- Combine our lists with yours
-- We'll enrich and verify them before sending
+    category: "plans",
+    question: "How much does Cursive cost?",
+    answer: `Flat monthly pricing, no per-visitor or per-lead fees:
 
-We recommend using our verified data, but you're welcome to bring your own.`,
+Visitor Pixel — $97/mo
+Custom Audience — $197/mo
+Pixel + Audience Bundle — $247/mo
+
+All self-serve, month-to-month, no setup fee, cancel anytime.`,
   },
   {
-    category: "features",
-    question: "What's AI Studio?",
-    answer: `AI Studio trains AI on your brand voice, tone, and messaging to generate on-brand content.
-
-You upload:
-- Brand guidelines
-- Example copy
-- Voice & tone preferences
-- Target audience info
-
-The AI then generates:
-- Email sequences
-- Landing page copy
-- Campaign messaging
-- Social content
-
-All sounding like you wrote it.`,
+    category: "plans",
+    question: "Is there a setup fee or contract?",
+    answer: `No. There's no setup fee, no onboarding fee, and no contract. You pay one flat monthly price and can cancel whenever you like.`,
   },
   {
-    category: "features",
-    question: "How does the AI SDR work?",
-    answer: `Our AI SDR (available in Pipeline tier) handles the entire outbound process:
+    category: "plans",
+    question: "Which plan is right for me?",
+    answer: `If you already get meaningful website traffic and want to know who's there, start with the Visitor Pixel.
 
-1. Research: Identifies and qualifies prospects based on your ICP
-2. Personalization: Writes custom emails for each prospect
-3. Outreach: Sends emails and LinkedIn messages
-4. Follow-ups: Manages multi-touch sequences automatically
-5. Meeting booking: Books meetings directly on your calendar
+If you want net-new buyers searching for what you sell, start with the Custom Audience.
 
-It works 24/7 and learns from every interaction to improve performance.`,
-  },
-  {
-    category: "features",
-    question: "What integrations do you support?",
-    answer: `We integrate with most major tools:
-
-CRMs: Salesforce, HubSpot, Pipedrive, Close, Copper
-Email: Gmail, Outlook, Office 365
-Calendar: Google Calendar, Outlook Calendar
-Communication: Slack, Microsoft Teams
-Analytics: Google Analytics, Mixpanel
-
-API access (Pipeline tier) allows custom integrations with any tool.`,
-  },
-  {
-    category: "features",
-    question: "Do you offer white labeling?",
-    answer: `Yes. Our White Label Platform add-on ($2,000/mo) includes:
-- Custom domain (leads.yourbrand.com)
-- Your logo, colors, and branding
-- Full platform access for your team or clients
-- Up to 10 user seats
-
-Perfect for agencies reselling lead gen services or enterprises wanting branded solutions.`,
+If you want both pipelines feeding you at once, the Bundle gives you everything for $247/mo.`,
   },
 
-  // Technical
+  // Data & Accuracy
   {
-    category: "technical",
-    question: "How does website visitor tracking work?",
-    answer: `We install a lightweight JavaScript pixel on your website that:
+    category: "data",
+    question: "How accurate is visitor identification?",
+    answer: `The pixel achieves a 40–60% match rate on US B2B traffic — deterministic, not modeled. For comparison, cookie-sync tools resolve 2–5% and IP databases 10–15%.
 
-1. Identifies companies visiting your site (via IP address)
-2. Matches companies to our database
-3. Extracts decision-maker contact info
-4. Tracks pages visited and time on site
-5. Scores intent based on behavior
-
-You get a list of identified visitors with contact info, ready for outreach.
-
-Visitor tracking is included with all Cursive service plans. No per-visitor fees. Plans start at $1,000/month.`,
+Accuracy on a matched record is 60–80%, driven by our geo-framing methodology and an offline-rooted identity graph of 280M+ verified consumer and 140M+ business profiles, refreshed every 30 days against NCOA.`,
   },
   {
-    category: "technical",
-    question: "Is my data secure?",
-    answer: `Yes. We take security seriously:
+    category: "data",
+    question: "How do you keep emails and records fresh?",
+    answer: `Every contact carries a verified work email. Deep Verify, our in-house validation engine, processes roughly 20 million records per day, and the full identity graph refreshes every 30 days against NCOA.
 
-- SOC 2 Type II compliant
-- End-to-end encryption for all data
-- Regular security audits
-- GDPR and CCPA compliant
-- Role-based access controls
-- SSO available for enterprise
-
-Your data is never shared with third parties or used to train AI models.`,
+A closed feedback loop maps signals back to source URLs and validates against real conversions, so targeting gets sharper over time.`,
   },
   {
-    category: "technical",
-    question: "What's your uptime guarantee?",
-    answer: `We maintain 99.9% uptime with:
-- Redundant infrastructure across multiple regions
-- Automatic failover
-- Real-time monitoring
-- 24/7 engineering support
+    category: "data",
+    question: "What data do I get per contact?",
+    answer: `Company name, industry, size, location, and technologies — plus, where available, the individual's job title, seniority, department, and verified work email.
 
-In the rare event of downtime, we provide prorated credits.`,
+Custom Audiences arrive built to your exact ICP, ready to load into outreach.`,
   },
   {
-    category: "technical",
-    question: "Can I export my data?",
-    answer: `Yes. You own your data and can export anytime:
-
-- Lead lists: CSV export
-- Campaign analytics: CSV or PDF reports
-- Contact data: Bulk export via API
-- Historical data: Available upon request
-
-No lock-in. Your data is yours.`,
+    category: "data",
+    question: "How are Custom Audiences delivered?",
+    answer: `Straight to Google Sheets, refreshed weekly. No exports to chase or dashboards to log into — your latest in-market list is always waiting in the same sheet.`,
   },
 
-  // Support
+  // Privacy & Integrations
   {
-    category: "support",
-    question: "What support do you offer?",
-    answer: `All tiers include:
-- Dedicated account manager
-- Email support (24-hour response time)
-- Live chat (Monday-Friday, 9am-6pm EST)
-- Help center with guides and tutorials
+    category: "privacy",
+    question: "What does Cursive integrate with?",
+    answer: `Custom Audiences are delivered directly to Google Sheets.
 
-Pipeline tier includes:
-- Dedicated success manager
-- Weekly strategy calls
-- Priority support (4-hour response time)
-- Direct Slack channel`,
+Identified visitors sync natively to HubSpot, Salesforce, Pipedrive, Close, and Zapier — which connects you to 5,000+ more tools. Webhook-based custom integrations push contacts to your CRM, sequencers like Outreach and Salesloft, or Slack.`,
   },
   {
-    category: "support",
-    question: "Do you offer training?",
-    answer: `Yes. All tiers include:
-- Onboarding training (platform walkthrough)
-- Documentation and video tutorials
-- Monthly webinars on best practices
+    category: "privacy",
+    question: "Is Cursive GDPR and CCPA compliant?",
+    answer: `Yes. Cursive operates under a legitimate-interest and B2B commercial-use framework. All profiles are sourced through consent-appropriate channels.
 
-Pipeline tier includes:
-- Custom training sessions
-- Quarterly business reviews
-- Dedicated success manager
-
-We ensure your team knows how to get the most out of Cursive.`,
+We honor all opt-outs, maintain suppression lists, store hashed identifiers, and process data deletion requests within 30 days. Our practices comply with GDPR, CCPA, and CAN-SPAM.`,
   },
   {
-    category: "support",
-    question: "What if I need custom features?",
-    answer: `We build custom solutions for enterprise clients:
+    category: "privacy",
+    question: "What kind of companies use Cursive?",
+    answer: `Mostly B2B SaaS companies, professional services firms, and sales teams with 5–500 employees. Ideal fit: at least 500 monthly website visitors and an average contract value of $5,000+.
 
-- Custom integrations
-- Dedicated infrastructure
-- White-glove service
-- Volume pricing
-
-Contact us to discuss your specific requirements and we'll create a custom plan.`,
-  },
-  {
-    category: "support",
-    question: "Do you offer refunds?",
-    answer: `Setup fees are non-refundable (we invest significant time in onboarding).
-
-Monthly subscriptions:
-- Prorated refunds if you cancel mid-month
-- First month guarantee: If you're not satisfied in the first 30 days, we'll work with you to make it right or provide a prorated refund
-
-We stand behind our work.`,
+Cursive is used across technology, financial services, healthcare services, and real estate.`,
   },
 ]

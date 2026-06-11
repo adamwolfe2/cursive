@@ -1,365 +1,356 @@
-import { Container } from "@/components/ui/container"
-import { Button } from "@/components/ui/button"
-import { CheckCircle, Clock, Target, Mail, Calendar, TrendingUp } from "lucide-react"
-import { FreeAuditForm } from "@/components/free-audit-form"
-import { Breadcrumbs } from "@/components/Breadcrumbs"
-import Link from "next/link"
+"use client"
 
-const benefits = [
-  {
-    icon: Target,
-    title: "Last 100 Identified Visitors",
-    description: "Complete profiles with names, job titles, and verified work emails of companies visiting your site",
-  },
-  {
-    icon: TrendingUp,
-    title: "Pages Viewed & Time Spent",
-    description: "See exactly which pages they visited and how long they engaged with your content",
-  },
-  {
-    icon: CheckCircle,
-    title: "Intent Scores",
-    description: "AI-powered intent scoring shows you who's ready to buy right now",
-  },
-  {
-    icon: Mail,
-    title: "Personalized Outreach Templates",
-    description: "Get customized email templates based on their actual browsing behavior",
-  },
-  {
-    icon: Calendar,
-    title: "30-Minute Strategy Call",
-    description: "Free consultation to walk through your results and discuss how to convert these visitors",
-  },
-  {
-    icon: Clock,
-    title: "Results in 24 Hours",
-    description: "No waiting around. Get your complete visitor audit delivered within one business day",
-  },
+import { Button } from "@/components/ui/button"
+import { Container } from "@/components/ui/container"
+import { motion } from "framer-motion"
+import {
+  Eye, Users, BarChart3, Mail, Clock, ShieldCheck,
+  ArrowRight, Zap, type LucideIcon,
+} from "lucide-react"
+import { FreeAuditForm } from "@/components/free-audit-form"
+import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
+import { Breadcrumbs } from "@/components/Breadcrumbs"
+import { GET_LEADS_URL, BOOKING_URL } from "@/lib/cta"
+
+const EASE = [0.22, 1, 0.36, 1] as const
+
+function SectionHeading({ plain, script, sub }: { plain: string; script?: string; sub?: string }) {
+  return (
+    <div className="text-center mb-14">
+      <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light text-gray-900">
+        {plain}
+        {script && (
+          <span className="block font-cursive text-4xl sm:text-5xl lg:text-6xl text-gray-500 mt-1">
+            {script}
+          </span>
+        )}
+      </h2>
+      {sub && (
+        <p className="mt-5 text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">{sub}</p>
+      )}
+    </div>
+  )
+}
+
+function IconChip({ Icon }: { Icon: LucideIcon }) {
+  return (
+    <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center">
+      <Icon className="w-6 h-6 text-primary" />
+    </div>
+  )
+}
+
+const deliverables: Array<{ icon: LucideIcon; title: string; body: string }> = [
+  { icon: Users, title: "Your last 100 visitors", body: "Real names, job titles, and verified work emails — the people behind your anonymous traffic." },
+  { icon: BarChart3, title: "Pages viewed & intent", body: "What each visitor looked at, how long they stayed, and who's showing buying signals right now." },
+  { icon: Mail, title: "Ready-to-send outreach", body: "Personalized email templates built from each visitor's actual browsing behavior." },
+]
+
+const steps = [
+  { icon: Eye, title: "Tell us your site", body: "Drop your URL and work email below. No pixel, no install for the audit." },
+  { icon: Zap, title: "We run the analysis", body: "We resolve your recent traffic to companies and people, then score intent." },
+  { icon: Clock, title: "Results in 24 hours", body: "A clear report lands in your inbox — visitors, intent, and how to reach them." },
 ]
 
 export default function FreeAuditPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white via-blue-50/30 to-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <Breadcrumbs items={[
-          { name: "Home", href: "/" },
-          { name: "Free Audit", href: "/free-audit" },
-        ]} />
-      </div>
-      {/* Hero Section */}
-      <section className="pt-20 pb-16 md:pt-32 md:pb-24">
-        <Container>
-          <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-light text-gray-900 mb-6 leading-tight">
-              See Who's Visiting Your Site{" "}
-              <span className="text-primary">Right Now</span>
-            </h1>
-            <p className="text-xl md:text-2xl text-gray-600 mb-4 font-light">
-              Get a Free Audit of Your Last 100 Website Visitors
-            </p>
-            <p className="text-lg text-gray-500 max-w-2xl mx-auto">
-              Most of your website visitors leave without converting. We'll show you exactly who they are, what they viewed, and how to reach them.
-            </p>
+    <>
+      <HumanView>
+        <main className="overflow-hidden">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <Breadcrumbs items={[
+              { name: "Home", href: "/" },
+              { name: "Free Audit", href: "/free-audit" },
+            ]} />
           </div>
-        </Container>
-      </section>
 
-      {/* Value Proposition Section */}
-      <section className="py-16 bg-white">
-        <Container>
-          <div className="max-w-5xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-light text-gray-900 text-center mb-12">
-              What You'll Get in Your Free Audit
-            </h2>
-            <div className="grid md:grid-cols-2 gap-8 mb-16">
-              {benefits.map((benefit) => {
-                const Icon = benefit.icon
-                return (
-                  <div key={benefit.title} className="flex gap-4 p-6 rounded-xl hover:bg-gray-50 transition-colors">
-                    <div className="flex-shrink-0">
-                      <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center">
-                        <Icon className="w-6 h-6 text-primary" />
-                      </div>
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-medium text-gray-900 mb-2">
-                        {benefit.title}
-                      </h3>
-                      <p className="text-gray-600 leading-relaxed">
-                        {benefit.description}
-                      </p>
-                    </div>
+          {/* Hero + form */}
+          <section className="relative pt-16 pb-20 sm:pt-20 sm:pb-24 bg-white">
+            <Container>
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, ease: EASE }}
+                className="text-center max-w-3xl mx-auto"
+              >
+                <span className="text-xs font-semibold tracking-[0.25em] text-primary uppercase">
+                  Free Visitor Audit
+                </span>
+                <h1 className="mt-4 text-4xl sm:text-5xl lg:text-6xl font-light text-gray-900 leading-[1.1]">
+                  See who&apos;s visiting your site
+                  <span className="block font-cursive text-4xl sm:text-5xl lg:text-6xl text-gray-500 mt-2">
+                    right now
+                  </span>
+                </h1>
+                <p className="mt-6 text-lg sm:text-xl text-gray-600 leading-relaxed">
+                  98% of your visitors leave without a trace. We&apos;ll show you the last 100 —
+                  who they are, what they viewed, and how to reach them. Free, in 24 hours.
+                </p>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.1, ease: EASE }}
+                className="mt-12 max-w-xl mx-auto"
+                id="form"
+              >
+                <div className="rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-lg">
+                  <div className="text-center mb-6">
+                    <h2 className="text-xl font-medium text-gray-900">Get your free audit</h2>
+                    <p className="mt-2 text-sm text-gray-600">
+                      Enter your site and work email — your report is on the way.
+                    </p>
                   </div>
-                )
-              })}
-            </div>
-          </div>
-        </Container>
-      </section>
 
-      {/* Form Section */}
-      <section id="form" className="py-16 bg-gradient-to-b from-gray-50 to-white">
-        <Container>
-          <div className="max-w-2xl mx-auto">
-            <div className="bg-white rounded-2xl shadow-xl border border-gray-200 p-8 md:p-12">
-              <div className="text-center mb-8">
-                <h2 className="text-3xl font-light text-gray-900 mb-4">
-                  Get Your Free Visitor Audit
+                  <FreeAuditForm />
+
+                  <div className="mt-6 pt-6 border-t border-gray-200 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-gray-500">
+                    {["No card required", "Results in 24h", "100% free"].map((item) => (
+                      <span key={item} className="flex items-center gap-2">
+                        <ShieldCheck className="w-4 h-4 text-primary" />
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            </Container>
+          </section>
+
+          {/* What you get */}
+          <section className="py-20 sm:py-24 bg-[#F7F9FB]">
+            <Container>
+              <SectionHeading
+                plain="What's In"
+                script="Your Audit"
+                sub="Not a generic overview. A real read on the people behind your traffic."
+              />
+              <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                {deliverables.map((d, i) => (
+                  <motion.div
+                    key={d.title}
+                    initial={{ opacity: 0, y: 16 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-60px" }}
+                    transition={{ delay: i * 0.06, duration: 0.4, ease: EASE }}
+                    className="rounded-2xl border border-gray-200 bg-white p-6 sm:p-8 hover:shadow-lg transition-shadow"
+                  >
+                    <IconChip Icon={d.icon} />
+                    <h3 className="mt-5 text-lg font-medium text-gray-900">{d.title}</h3>
+                    <p className="mt-3 text-sm text-gray-600 leading-relaxed">{d.body}</p>
+                  </motion.div>
+                ))}
+              </div>
+            </Container>
+          </section>
+
+          {/* How it works */}
+          <section className="py-20 sm:py-24 bg-white">
+            <Container>
+              <SectionHeading
+                plain="How It"
+                script="Works"
+                sub="Three steps from anonymous traffic to a list of real, reachable people."
+              />
+              <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                {steps.map((s, i) => (
+                  <motion.div
+                    key={s.title}
+                    initial={{ opacity: 0, y: 16 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-60px" }}
+                    transition={{ delay: i * 0.06, duration: 0.4, ease: EASE }}
+                    className="rounded-2xl border border-gray-200 p-6 sm:p-8 hover:shadow-lg transition-shadow"
+                  >
+                    <div className="flex items-center gap-3">
+                      <IconChip Icon={s.icon} />
+                      <span className="text-sm font-semibold text-gray-300">0{i + 1}</span>
+                    </div>
+                    <h3 className="mt-5 text-lg font-medium text-gray-900">{s.title}</h3>
+                    <p className="mt-3 text-sm text-gray-600 leading-relaxed">{s.body}</p>
+                  </motion.div>
+                ))}
+              </div>
+            </Container>
+          </section>
+
+          {/* From audit to always-on */}
+          <section className="py-20 sm:py-24 bg-[#F7F9FB]">
+            <Container>
+              <SectionHeading
+                plain="Like What"
+                script="You See?"
+                sub="The audit is a one-time snapshot. The Visitor Pixel makes it live — every visitor, every day."
+              />
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, ease: EASE }}
+                className="max-w-4xl mx-auto rounded-2xl border border-gray-200 bg-white p-8 sm:p-10 text-center"
+              >
+                <div className="flex items-baseline justify-center gap-1">
+                  <span className="text-4xl sm:text-5xl font-light text-gray-900">$97</span>
+                  <span className="text-sm text-gray-500">/mo</span>
+                </div>
+                <h3 className="mt-3 text-lg font-medium text-gray-900">Install the Visitor Pixel</h3>
+                <p className="mt-3 text-sm text-gray-600 leading-relaxed max-w-xl mx-auto">
+                  One snippet, 60 seconds. Resolve 40–60% of your traffic to real companies and people
+                  in real time. Self-serve, month-to-month, cancel anytime — add a weekly Custom Audience
+                  ($197/mo) or take the Bundle ($247/mo) when you&apos;re ready.
+                </p>
+                <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center">
+                  <Button size="lg" href={GET_LEADS_URL} target="_blank" rel="noopener noreferrer">
+                    Install the Pixel
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                  <Button size="lg" variant="outline" href={BOOKING_URL} target="_blank" rel="noopener noreferrer">
+                    Book a Call
+                  </Button>
+                </div>
+              </motion.div>
+            </Container>
+          </section>
+
+          {/* FAQ */}
+          <section className="py-20 sm:py-24 bg-white">
+            <Container>
+              <SectionHeading plain="Free Audit" script="Questions" />
+              <div className="max-w-3xl mx-auto space-y-4">
+                {[
+                  {
+                    q: "Is it really free?",
+                    a: "Yes — 100% free, no card, no obligation. We run the audit because it shows what our visitor identification can do better than any sales deck.",
+                  },
+                  {
+                    q: "Do I need to install anything?",
+                    a: "Not for the audit. We identify recent visitors from your URL. If you want live, ongoing identification, that's the $97/mo Visitor Pixel — one 60-second snippet.",
+                  },
+                  {
+                    q: "How fast do I get it?",
+                    a: "Most audits land within 24 hours of submitting the form. High-traffic or multi-domain sites can take up to 48.",
+                  },
+                  {
+                    q: "How is this different from Google Analytics?",
+                    a: "Analytics shows aggregate traffic. The audit names the actual people — names, work emails, companies, and titles — and turns them into reachable leads.",
+                  },
+                ].map((faq, i) => (
+                  <motion.div
+                    key={faq.q}
+                    initial={{ opacity: 0, y: 16 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.04, duration: 0.4, ease: EASE }}
+                    className="rounded-2xl border border-gray-200 p-6 sm:p-7"
+                  >
+                    <h3 className="text-base font-medium text-gray-900">{faq.q}</h3>
+                    <p className="mt-2 text-sm text-gray-600 leading-relaxed">{faq.a}</p>
+                  </motion.div>
+                ))}
+              </div>
+            </Container>
+          </section>
+
+          {/* Final CTA */}
+          <section className="py-20 sm:py-28 bg-[#F7F9FB]">
+            <Container>
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, ease: EASE }}
+                className="text-center max-w-2xl mx-auto"
+              >
+                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light text-gray-900">
+                  Stop letting visitors
+                  <span className="block font-cursive text-4xl sm:text-5xl lg:text-6xl text-gray-500 mt-1">
+                    slip away
+                  </span>
                 </h2>
-                <p className="text-gray-600">
-                  Enter your website URL and work email to receive your complete visitor analysis
+                <p className="mt-5 text-lg text-gray-600 leading-relaxed">
+                  See who&apos;s on your site right now — free, in 24 hours. Or go live today with the pixel.
                 </p>
-              </div>
-
-              <FreeAuditForm />
-
-              <div className="mt-6 pt-6 border-t border-gray-200">
-                <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
-                  <CheckCircle className="w-4 h-4 text-green-500" />
-                  <span>No credit card required</span>
-                  <span className="text-gray-300">•</span>
-                  <span>Results in 24 hours</span>
-                  <span className="text-gray-300">•</span>
-                  <span>100% free</span>
+                <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center">
+                  <Button size="lg" href="#form">
+                    Get My Free Audit
+                  </Button>
+                  <Button size="lg" variant="outline" href={GET_LEADS_URL} target="_blank" rel="noopener noreferrer">
+                    Install the Pixel
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
                 </div>
-              </div>
-            </div>
+              </motion.div>
+            </Container>
+          </section>
+        </main>
+      </HumanView>
 
-            {/* Trust Indicators */}
-            <div className="mt-12 text-center">
-              <p className="text-sm text-gray-500 mb-4">
-                Trusted by 200+ B2B teams to identify and convert website visitors
-              </p>
-            </div>
-          </div>
-        </Container>
-      </section>
-
-      {/* Social Proof Section */}
-      <section className="py-16 bg-white">
-        <Container>
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-light text-gray-900 text-center mb-12">
-              What Happens Next?
-            </h2>
-            <div className="space-y-8">
-              <div className="flex gap-6 items-start">
-                <div className="flex-shrink-0 w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center text-xl font-medium">
-                  1
-                </div>
-                <div>
-                  <h3 className="text-xl font-medium text-gray-900 mb-2">
-                    We Analyze Your Visitors
-                  </h3>
-                  <p className="text-gray-600 leading-relaxed">
-                    Our AI scans your website traffic and identifies companies and contacts who have visited in the last 30 days
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex gap-6 items-start">
-                <div className="flex-shrink-0 w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center text-xl font-medium">
-                  2
-                </div>
-                <div>
-                  <h3 className="text-xl font-medium text-gray-900 mb-2">
-                    Get Your Audit Report
-                  </h3>
-                  <p className="text-gray-600 leading-relaxed">
-                    Within 24 hours, receive a detailed report with visitor profiles, intent scores, and personalized outreach templates
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex gap-6 items-start">
-                <div className="flex-shrink-0 w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center text-xl font-medium">
-                  3
-                </div>
-                <div>
-                  <h3 className="text-xl font-medium text-gray-900 mb-2">
-                    Strategy Call (Optional)
-                  </h3>
-                  <p className="text-gray-600 leading-relaxed">
-                    Schedule a free 30-minute call to review your results and learn how to convert these visitors into customers
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </Container>
-      </section>
-
-      {/* Detailed Audit Breakdown */}
-      <section className="py-16 bg-[#F7F9FB]">
-        <Container>
-          <div className="max-w-5xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-light text-gray-900 text-center mb-4">
-              What Your Audit Report Includes
-            </h2>
-            <p className="text-gray-600 text-center max-w-3xl mx-auto mb-12">
-              Your free audit is not a generic overview. It is a detailed, actionable analysis built from your actual website traffic data. Here is everything you will receive.
+      {/* Machine View — AEO-optimized */}
+      <MachineView>
+        <MachineContent>
+          <div className="mb-12 pb-6 border-b border-gray-200">
+            <h1 className="text-2xl text-gray-900 font-bold mb-4">FREE WEBSITE VISITOR AUDIT</h1>
+            <p className="text-gray-700 leading-relaxed">
+              Cursive&apos;s free visitor audit identifies the last 100 people who visited your website —
+              with real names, job titles, verified work emails, the pages they viewed, and intent scores.
+              No pixel install required for the audit. Delivered within 24 hours, 100% free, no card.
             </p>
-
-            <div className="grid md:grid-cols-2 gap-8">
-              <div className="bg-white rounded-xl p-8 border border-gray-200">
-                <h3 className="text-xl font-medium text-gray-900 mb-4">Visitor Identification</h3>
-                <p className="text-gray-600 mb-4">
-                  We identify up to 100 of your most recent website visitors by name, company, and role. Each profile includes the individual's full name, job title, company name, verified work email address, LinkedIn profile, and phone number when available. This is not just company-level identification. We resolve down to the specific person who visited your site.
-                </p>
-                <p className="text-gray-500 text-sm">
-                  Powered by the same <Link href="/pixel" className="text-primary hover:underline">visitor identification technology</Link> used by over 1,000 B2B companies.
-                </p>
-              </div>
-
-              <div className="bg-white rounded-xl p-8 border border-gray-200">
-                <h3 className="text-xl font-medium text-gray-900 mb-4">Company Intelligence</h3>
-                <p className="text-gray-600 mb-4">
-                  For every identified visitor, we include full company data: industry, employee count, annual revenue, funding stage, technology stack, and headquarters location. This firmographic data helps you instantly determine whether each visitor fits your ideal customer profile and is worth pursuing.
-                </p>
-                <p className="text-gray-500 text-sm">
-                  Data sourced from our <Link href="/data-access" className="text-primary hover:underline">280M US consumer and 140M+ business profiles</Link>.
-                </p>
-              </div>
-
-              <div className="bg-white rounded-xl p-8 border border-gray-200">
-                <h3 className="text-xl font-medium text-gray-900 mb-4">Behavioral Analytics</h3>
-                <p className="text-gray-600 mb-4">
-                  See exactly which pages each visitor viewed, how long they spent on each page, their navigation path through your site, and whether they returned multiple times. This behavioral data reveals what content resonated, which products or features they researched, and where they dropped off. It turns anonymous traffic into a readable story of buyer intent.
-                </p>
-              </div>
-
-              <div className="bg-white rounded-xl p-8 border border-gray-200">
-                <h3 className="text-xl font-medium text-gray-900 mb-4">AI Intent Scores</h3>
-                <p className="text-gray-600 mb-4">
-                  Our AI analyzes each visitor's behavior against patterns from thousands of successful B2B deals to assign an intent score from 0 to 100. High-intent visitors, those who viewed pricing pages, spent extended time on product pages, or returned multiple times, are flagged as priority outreach targets. The intent score helps you focus your time on the visitors most likely to convert.
-                </p>
-              </div>
-
-              <div className="bg-white rounded-xl p-8 border border-gray-200">
-                <h3 className="text-xl font-medium text-gray-900 mb-4">Personalized Outreach Templates</h3>
-                <p className="text-gray-600 mb-4">
-                  We do not just tell you who visited. We give you ready-to-send outreach templates for your highest-intent visitors. Each template references the specific pages they viewed, the problems they were researching, and a relevant value proposition from your site. These are not generic cold emails. They are personalized messages built from real behavior data.
-                </p>
-                <p className="text-gray-500 text-sm">
-                  See how our AI personalization compares to <Link href="/blog/ai-sdr-vs-human-bdr" className="text-primary hover:underline">traditional BDR outreach</Link>.
-                </p>
-              </div>
-
-              <div className="bg-white rounded-xl p-8 border border-gray-200">
-                <h3 className="text-xl font-medium text-gray-900 mb-4">30-Minute Strategy Call</h3>
-                <p className="text-gray-600 mb-4">
-                  After you review your report, schedule an optional 30-minute strategy call with a Cursive growth specialist. We will walk through your top visitors together, discuss which ones to prioritize, review the outreach templates, and recommend next steps. We will also explain how Cursive can automate this entire process on an ongoing basis with our <Link href="/pricing" className="text-primary hover:underline">managed service plans</Link>.
-                </p>
-              </div>
-            </div>
           </div>
-        </Container>
-      </section>
 
-      {/* Metrics Section */}
-      <section className="py-16 bg-white">
-        <Container>
-          <div className="max-w-5xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-light text-gray-900 text-center mb-4">
-              Why Companies Request the Free Audit
-            </h2>
-            <p className="text-gray-600 text-center max-w-3xl mx-auto mb-12">
-              The data speaks for itself. Here is what our audit recipients typically discover about their website traffic.
+          <MachineSection title="What the Free Audit Includes">
+            <MachineList items={[
+              "Your last 100 identified visitors — name, job title, company, verified work email",
+              "Pages viewed, time on page, and return-visit behavior per visitor",
+              "AI intent scores flagging the visitors most ready to buy",
+              "Personalized outreach email templates built from each visitor's browsing behavior",
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="How the Free Audit Works">
+            <MachineList items={[
+              "Step 1: Submit your website URL and work email — no pixel install needed",
+              "Step 2: Cursive resolves your recent traffic to companies and people",
+              "Step 3: We score intent and draft outreach templates",
+              "Step 4: Your report is delivered by email within 24 hours",
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="From Audit to Always-On">
+            <p className="text-gray-700 mb-4">
+              The audit is a one-time snapshot. To identify every visitor in real time, install the
+              Visitor Pixel — one 60-second snippet that resolves 40–60% of US B2B traffic
+              deterministically.
             </p>
-            <div className="grid md:grid-cols-4 gap-6">
-              <div className="text-center bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-8 border border-blue-200">
-                <div className="text-4xl text-primary mb-2">97%</div>
-                <p className="text-gray-600 text-sm">Of website visitors leave without converting or filling out a form</p>
-              </div>
-              <div className="text-center bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-8 border border-blue-200">
-                <div className="text-4xl text-primary mb-2">40&ndash;60%</div>
-                <p className="text-gray-600 text-sm">Deterministic pixel match rate &mdash; vs 2&ndash;5% for cookies and 10&ndash;15% for IP databases</p>
-              </div>
-              <div className="text-center bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-8 border border-blue-200">
-                <div className="text-4xl text-primary mb-2">3-5x</div>
-                <p className="text-gray-600 text-sm">Higher response rates when outreach references actual browsing behavior</p>
-              </div>
-              <div className="text-center bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-8 border border-blue-200">
-                <div className="text-4xl text-primary mb-2">24hr</div>
-                <p className="text-gray-600 text-sm">Average turnaround time from form submission to completed audit report</p>
-              </div>
-            </div>
-          </div>
-        </Container>
-      </section>
-
-      {/* FAQ Section */}
-      <section className="py-16 bg-[#F7F9FB]">
-        <Container>
-          <div className="max-w-3xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-light text-gray-900 text-center mb-12">
-              Free Audit FAQ
-            </h2>
-
-            <div className="space-y-6">
-              <div className="bg-white rounded-xl p-6 border border-gray-200">
-                <h3 className="text-gray-900 font-medium mb-2">Is the audit really free? What is the catch?</h3>
-                <p className="text-gray-600 text-sm leading-relaxed">
-                  The audit is 100% free with no obligation to purchase anything. There is no credit card required and no automatic enrollment in any plan. We offer the audit because it demonstrates the value of our visitor identification technology better than any sales deck could. If you like what you see, we will discuss how Cursive can automate the process. If not, you keep the report and the insights at no cost.
-                </p>
-              </div>
-
-              <div className="bg-white rounded-xl p-6 border border-gray-200">
-                <h3 className="text-gray-900 font-medium mb-2">How long does it take to receive my audit?</h3>
-                <p className="text-gray-600 text-sm leading-relaxed">
-                  Most audits are delivered within 24 hours of form submission. For websites with very high traffic volumes or complex multi-domain setups, it may take up to 48 hours. You will receive an email notification as soon as your report is ready to view.
-                </p>
-              </div>
-
-              <div className="bg-white rounded-xl p-6 border border-gray-200">
-                <h3 className="text-gray-900 font-medium mb-2">Do I need to install anything on my website?</h3>
-                <p className="text-gray-600 text-sm leading-relaxed">
-                  No installation is required for the initial free audit. We use our existing data network to identify visitors based on your website URL. If you decide to continue with Cursive after the audit, we will help you install our lightweight <Link href="/pixel" className="text-primary hover:underline">visitor identification pixel</Link> for real-time, ongoing identification.
-                </p>
-              </div>
-
-              <div className="bg-white rounded-xl p-6 border border-gray-200">
-                <h3 className="text-gray-900 font-medium mb-2">What types of websites work best with the audit?</h3>
-                <p className="text-gray-600 text-sm leading-relaxed">
-                  The audit works best for B2B websites that receive at least a few hundred visitors per month. This includes SaaS product sites, professional services firms, agencies, consulting practices, and B2B eCommerce stores. If your site gets primarily B2C consumer traffic, we can still run the audit but the results may be less actionable for sales outreach. We serve companies across <Link href="/industries/b2b-software" className="text-primary hover:underline">B2B software</Link>, <Link href="/industries/agencies" className="text-primary hover:underline">agencies</Link>, <Link href="/industries/financial-services" className="text-primary hover:underline">financial services</Link>, and more.
-                </p>
-              </div>
-
-              <div className="bg-white rounded-xl p-6 border border-gray-200">
-                <h3 className="text-gray-900 font-medium mb-2">Is the strategy call mandatory?</h3>
-                <p className="text-gray-600 text-sm leading-relaxed">
-                  No, the strategy call is completely optional. You will receive the full audit report regardless of whether you schedule a call. However, most recipients find the call valuable because our growth specialists can help interpret the data, prioritize outreach targets, and suggest specific messaging strategies based on the visitor behavior patterns we see.
-                </p>
-              </div>
-
-              <div className="bg-white rounded-xl p-6 border border-gray-200">
-                <h3 className="text-gray-900 font-medium mb-2">How is this different from Google Analytics?</h3>
-                <p className="text-gray-600 text-sm leading-relaxed">
-                  Google Analytics shows you aggregate traffic data, things like page views, bounce rates, and geographic regions. It does not tell you who specifically visited your site. The Cursive audit identifies the actual people behind your traffic: their names, email addresses, companies, and job titles. It turns anonymous analytics data into actionable sales leads. Read our <Link href="/blog/visitor-tracking" className="text-primary hover:underline">complete guide to website visitor tracking</Link> for a deeper comparison.
-                </p>
-              </div>
-            </div>
-          </div>
-        </Container>
-      </section>
-
-      {/* Final CTA Section */}
-      <section className="py-20 bg-gradient-to-b from-blue-50 to-white">
-        <Container>
-          <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-light text-gray-900 mb-6">
-              Stop Letting Qualified Visitors Slip Away
-            </h2>
-            <p className="text-xl text-gray-600 mb-8">
-              97% of website visitors leave without converting. See who they are and win them back.
+            <MachineList items={[
+              "Visitor Pixel ($97/month) — identify the companies and people visiting your site, live",
+              "Custom Audience ($197/month) — a fresh weekly list of in-market buyers, delivered to Google Sheets",
+              "Pixel + Audience Bundle ($247/month) — both, in one feed",
+            ]} />
+            <p className="text-gray-700 mt-4">
+              All plans are self-serve, month-to-month, no setup fee. Cancel anytime.
             </p>
-            <Button size="lg" href="#form" className="text-lg px-10">
-              Get My Free Audit Now
-            </Button>
-          </div>
-        </Container>
-      </section>
-    </div>
+          </MachineSection>
+
+          <MachineSection title="Free Audit FAQ">
+            <MachineList items={[
+              "Is it free? Yes — 100% free, no card, no obligation.",
+              "Do I need to install anything? Not for the audit. Live identification uses the $97/mo Visitor Pixel.",
+              "How fast? Most audits arrive within 24 hours (up to 48 for high-traffic or multi-domain sites).",
+              "How is it different from Google Analytics? Analytics shows aggregate traffic; the audit names the actual people and makes them reachable.",
+            ]} />
+          </MachineSection>
+
+          <MachineSection title="Get Started">
+            <MachineList items={[
+              { label: "Request Free Audit", href: "https://www.meetcursive.com/free-audit", description: "Submit your URL and work email — report in 24 hours" },
+              { label: "Install the Visitor Pixel", href: "https://leads.meetcursive.com/get-leads", description: "Go live in 60 seconds, plans from $97/mo" },
+              { label: "Pricing", href: "https://www.meetcursive.com/pricing", description: "Visitor Pixel $97/mo, Custom Audience $197/mo, or both for $247/mo" },
+              { label: "Book a Call", href: "https://cal.com/cursiveteam/30min", description: "Talk to the team before you buy" },
+            ]} />
+          </MachineSection>
+        </MachineContent>
+      </MachineView>
+    </>
   )
 }
