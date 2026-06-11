@@ -24,34 +24,26 @@ const faqs = [
   },
   {
     question: "What does Cursive do that RB2B doesn't?",
-    answer: "Cursive adds an intelligence layer on top of identification: LinkedIn work history, social profiles, news mentions, tech-stack detection, and an AI research brief with a personalized outreach angle. RB2B delivers a name and a LinkedIn URL. Cursive delivers a complete sales dossier, plus an email sequence builder, a campaign builder, and natural-language data querying — none of which RB2B offers."
+    answer: "Cursive enriches every identified visitor with a verified work email plus LinkedIn work history, social profiles, news mentions, and tech-stack detection. RB2B delivers a name and a LinkedIn URL. Cursive delivers a complete, contactable record — and adds a weekly in-market Custom Audience built to your ICP, which RB2B has no equivalent of."
   },
   {
     question: "How does pricing compare?",
-    answer: "RB2B has a free tier for up to 100 identified visitors per month and paid plans based on volume. Cursive is flat, self-serve, and month-to-month: the Visitor Pixel is $97/mo, a weekly Custom Audience is $197/mo, and the Pixel + Audience Bundle is $247/mo. The intelligence layer is included — no per-record metering, no surprises."
+    answer: "RB2B has a free tier for up to 100 identified visitors per month and paid plans based on volume. Cursive is flat, self-serve, and month-to-month: the Visitor Pixel is $97/mo, a weekly Custom Audience is $197/mo, and the Pixel + Audience Bundle is $247/mo. Enrichment is included on every record — no per-record metering, no surprises."
   },
   {
     question: "Can I migrate from RB2B to Cursive?",
-    answer: "Yes — the Cursive SuperPixel replaces the RB2B pixel. Installation takes under 2 minutes and covers the same identity-resolution capability, plus you immediately get the intelligence layer on every newly identified visitor."
-  },
-  {
-    question: "What is the Ask Your Data feature?",
-    answer: "Ask Your Data lets you query your entire visitor database in plain English — no SQL required. Type 'Which VPs of Engineering from Series B SaaS companies visited my pricing page in the last 30 days?' and get an instant answer. RB2B has no equivalent data-querying capability."
+    answer: "Yes — the Cursive Visitor Pixel replaces the RB2B pixel. Installation takes under 2 minutes and covers the same identity-resolution capability, plus you immediately get a verified work email and full enrichment on every newly identified visitor."
   },
 ]
 
 const comparisonRows = [
   { feature: "Website visitor identification", cursive: true, rb2b: true },
-  { feature: "Slack-native delivery", cursive: true, rb2b: true },
+  { feature: "Slack + CRM integrations", cursive: true, rb2b: true },
+  { feature: "Verified work email on every record", cursive: true, rb2b: false },
   { feature: "LinkedIn profile enrichment", cursive: true, rb2b: false },
   { feature: "Social profile data", cursive: true, rb2b: false },
   { feature: "Tech stack detection", cursive: true, rb2b: false },
   { feature: "News & press mention tracking", cursive: true, rb2b: false },
-  { feature: "AI research brief per lead", cursive: true, rb2b: false },
-  { feature: "Personalized outreach angle (AI-written)", cursive: true, rb2b: false },
-  { feature: "Natural language data querying", cursive: true, rb2b: false },
-  { feature: "Email sequence builder", cursive: true, rb2b: false },
-  { feature: "Campaign builder with A/B testing", cursive: true, rb2b: false },
   { feature: "Weekly in-market Custom Audience", cursive: true, rb2b: false },
   { feature: "Flat self-serve pricing", cursive: true, rb2b: false },
 ]
@@ -69,8 +61,8 @@ const layers: Array<{ icon: LucideIcon; title: string; body: string }> = [
   },
   {
     icon: Newspaper,
-    title: "AI brief + outreach angle",
-    body: "A three-paragraph research brief and one AI-written sentence explaining the most compelling reason to reach out to this specific person today.",
+    title: "News & press signals",
+    body: "Recent news and press mentions tied to each person and their company — natural conversation hooks RB2B's name-and-LinkedIn-URL output can't give you.",
   },
 ]
 
@@ -128,12 +120,12 @@ export default function CursiveVsRb2bPage() {
               <h1 className="mt-4 text-4xl sm:text-5xl lg:text-6xl font-light text-gray-900 leading-[1.1]">
                 Cursive vs. RB2B
                 <span className="block font-cursive text-4xl sm:text-5xl lg:text-6xl text-gray-500 mt-2">
-                  identification vs. intelligence
+                  identification vs. enrichment
                 </span>
               </h1>
               <p className="mt-6 text-lg sm:text-xl text-gray-600 leading-relaxed">
-                RB2B tells you who was on your site. Cursive tells you who was on your site — then
-                builds a complete intelligence dossier on each one, so you actually know what to say.
+                RB2B tells you who was on your site. Cursive tells you who was on your site — then gives
+                you a verified work email and a full profile on each one, so you can actually reach them.
               </p>
               <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center">
                 <Button size="lg" href={GET_LEADS_URL} target="_blank" rel="noopener noreferrer">
@@ -154,7 +146,7 @@ export default function CursiveVsRb2bPage() {
             <SectionHeading
               plain="Feature"
               script="Comparison"
-              sub="Thirteen capabilities side by side. RB2B starts the conversation. Cursive finishes it."
+              sub="The capabilities that matter, side by side. RB2B starts the conversation. Cursive makes every record contactable."
             />
             <div className="max-w-4xl mx-auto">
               <div className="overflow-x-auto rounded-2xl border border-gray-200 bg-white">
@@ -193,13 +185,13 @@ export default function CursiveVsRb2bPage() {
           </Container>
         </section>
 
-        {/* The Intelligence Layer */}
+        {/* The Enrichment Layer */}
         <section className="py-20 sm:py-24 bg-white">
           <Container>
             <SectionHeading
-              plain="The Intelligence Layer,"
+              plain="The Enrichment Layer,"
               script="explained"
-              sub="RB2B delivers a name, title, company, and LinkedIn URL — and that is the end of the product. Cursive treats the same identification event as the start of a research process. Included on every plan."
+              sub="RB2B delivers a name, title, company, and LinkedIn URL — and that is the end of the product. Cursive enriches the same identification event with a verified work email and a full profile on every record. Included on every plan."
             />
             <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
               {layers.map((layer, i) => (
@@ -218,7 +210,7 @@ export default function CursiveVsRb2bPage() {
               ))}
             </div>
 
-            {/* Ask Your Data */}
+            {/* Custom Audience */}
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -227,12 +219,12 @@ export default function CursiveVsRb2bPage() {
               className="mt-10 max-w-5xl mx-auto rounded-2xl border border-gray-200 p-6 sm:p-8 hover:shadow-lg transition-shadow"
             >
               <IconChip Icon={MessageSquareText} />
-              <h3 className="mt-5 text-lg font-medium text-gray-900">The &quot;Ask Your Data&quot; advantage</h3>
+              <h3 className="mt-5 text-lg font-medium text-gray-900">The weekly in-market Custom Audience</h3>
               <p className="mt-3 text-sm text-gray-600 leading-relaxed">
-                RB2B shows you a list. Cursive lets you interrogate your entire visitor database in
-                plain English. Ask &quot;Which VP-level visitors from SaaS companies with 50–500
-                employees hit my pricing page in the last 7 days and have not been contacted yet?&quot;
-                and get an instant answer. No SQL, no analyst, no waiting — RB2B has no equivalent.
+                Visitor identification only covers people who already found your site. Cursive adds a
+                fresh weekly list of in-market buyers matched to your ICP — verified work email and
+                full enrichment on every record, delivered to Google Sheets. RB2B has no equivalent:
+                it only reports on traffic you already have.
               </p>
             </motion.div>
           </Container>
@@ -244,11 +236,11 @@ export default function CursiveVsRb2bPage() {
             <SectionHeading
               plain="Simple, Flat"
               script="Pricing"
-              sub="Self-serve, month-to-month, cancel anytime. The intelligence layer is included on every plan."
+              sub="Self-serve, month-to-month, cancel anytime. Verified work email and full enrichment included on every plan."
             />
             <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
               {[
-                { name: "Visitor Pixel", price: "$97", desc: "Identify the companies and people visiting your site, with the intelligence layer on every lead." },
+                { name: "Visitor Pixel", price: "$97", desc: "Identify the companies and people visiting your site, with a verified work email and full enrichment on every lead." },
                 { name: "Custom Audience", price: "$197", desc: "A fresh weekly list of in-market buyers built to your ICP, delivered to Google Sheets." },
                 { name: "Pixel + Audience Bundle", price: "$247", desc: "Site traffic and in-market intent in one feed. Best value vs. buying separately." },
               ].map((plan, i) => (
@@ -307,7 +299,7 @@ export default function CursiveVsRb2bPage() {
             <SectionHeading plain="Keep" script="Exploring" />
             <div className="grid sm:grid-cols-2 gap-4 max-w-3xl mx-auto">
               {[
-                { title: "How SuperPixel works", href: "/superpixel" },
+                { title: "How the Visitor Pixel works", href: "/visitor-identification" },
                 { title: "Full RB2B alternative guide", href: "/blog/rb2b-alternative" },
               ].map((link) => (
                 <Link
@@ -328,59 +320,54 @@ export default function CursiveVsRb2bPage() {
         <DashboardCTA
           headline="Move Beyond"
           subheadline="identification"
-          description="Install the SuperPixel in under 2 minutes and get the intelligence layer on every visitor automatically. Plans from $97/mo, month-to-month."
+          description="Install the Visitor Pixel in under 2 minutes and get a verified work email plus full enrichment on every visitor automatically. Plans from $97/mo, month-to-month."
           ctaText="Get Started"
         />
       </HumanView>
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">Cursive vs. RB2B: Visitor Identification vs. AI Intelligence (2026)</h1>
+          <h1 className="text-2xl font-bold mb-4">Cursive vs. RB2B: Visitor Identification vs. Enrichment (2026)</h1>
 
           <p className="text-gray-700 mb-6">
-            RB2B identifies website visitors and delivers their name and LinkedIn URL to Slack. Cursive identifies the same visitors and builds a complete intelligence dossier — LinkedIn history, tech stack, news mentions, and an AI-written outreach angle — included on every plan. This page compares the two tools across 13 features.
+            RB2B identifies website visitors and delivers their name and LinkedIn URL to Slack. Cursive identifies the same visitors and enriches every record with a verified work email plus LinkedIn history, social profiles, tech stack, and news mentions — and adds a weekly in-market Custom Audience matched to your ICP. Enrichment is included on every plan. This page compares the two tools.
           </p>
 
-          <MachineSection title="Feature Comparison (13 rows)">
+          <MachineSection title="Feature Comparison">
             <MachineList items={[
               "Website visitor identification: Cursive YES, RB2B YES",
-              "Slack-native delivery: Cursive YES, RB2B YES",
+              "Slack + CRM integrations: Cursive YES, RB2B YES",
+              "Verified work email on every record: Cursive YES, RB2B NO",
               "LinkedIn profile enrichment: Cursive YES, RB2B NO",
               "Social profile data: Cursive YES, RB2B NO",
               "Tech stack detection: Cursive YES, RB2B NO",
               "News & press mention tracking: Cursive YES, RB2B NO",
-              "AI research brief per lead: Cursive YES, RB2B NO",
-              "Personalized outreach angle (AI-written): Cursive YES, RB2B NO",
-              "Natural language data querying: Cursive YES, RB2B NO",
-              "Email sequence builder: Cursive YES, RB2B NO",
-              "Campaign builder with A/B testing: Cursive YES, RB2B NO",
               "Weekly in-market Custom Audience: Cursive YES, RB2B NO",
               "Flat self-serve pricing: Cursive YES, RB2B NO",
             ]} />
           </MachineSection>
 
-          <MachineSection title="Cursive Intelligence Layer (included on every plan)">
+          <MachineSection title="Cursive Enrichment Layer (included on every plan)">
             <MachineList items={[
-              "Tech stack + email quality: runs automatically on every identified visitor",
+              "Verified work email on every identified record",
+              "Tech stack + email deliverability: runs automatically on every identified visitor",
               "LinkedIn work history + social profiles + recent news mentions",
-              "AI research brief (3 paragraphs) + personalized outreach angle",
-              "Ask Your Data: query your entire visitor database in plain English, no SQL",
             ]} />
           </MachineSection>
 
           <MachineSection title="Key Differentiators">
             <MachineList items={[
-              "RB2B delivers identification data to Slack. Cursive delivers identification plus an actionable intelligence dossier on every lead.",
-              "RB2B has no natural language querying. Cursive Ask Your Data answers plain-English questions about your visitor database.",
-              "RB2B has no email sequences, campaigns, or weekly in-market audiences. Cursive includes all three.",
-              "Cursive SuperPixel replaces the RB2B pixel. Installation takes under 2 minutes.",
+              "RB2B delivers a name and LinkedIn URL to Slack. Cursive delivers a verified work email plus full enrichment on every identified record.",
+              "RB2B only reports on traffic you already have. Cursive adds a weekly in-market Custom Audience matched to your ICP, delivered to Google Sheets.",
+              "Both integrate with Slack and CRMs; Cursive pricing is flat, self-serve, and month-to-month.",
+              "Cursive Visitor Pixel replaces the RB2B pixel. Installation takes under 2 minutes.",
             ]} />
           </MachineSection>
 
           <MachineSection title="Pricing">
             <MachineList items={[
               "RB2B: Free tier up to 100 identified visitors/month. Paid plans based on volume.",
-              "Cursive Visitor Pixel ($97/month): identify the companies and people visiting your site, intelligence layer included.",
+              "Cursive Visitor Pixel ($97/month): identify the companies and people visiting your site, verified work email and full enrichment included.",
               "Cursive Custom Audience ($197/month): a fresh weekly list of in-market buyers, delivered to Google Sheets.",
               "Cursive Pixel + Audience Bundle ($247/month): both, in one feed. Self-serve, month-to-month, cancel anytime.",
             ]} />
@@ -388,7 +375,7 @@ export default function CursiveVsRb2bPage() {
 
           <MachineSection title="Related Pages">
             <MachineList items={[
-              { label: "SuperPixel Installation", href: "/superpixel", description: "Replaces RB2B pixel in under 2 minutes" },
+              { label: "Visitor Pixel Installation", href: "/visitor-identification", description: "Replaces RB2B pixel in under 2 minutes" },
               { label: "RB2B Alternative", href: "/blog/rb2b-alternative", description: "Full guide to switching from RB2B" },
               { label: "Pricing", href: "https://www.meetcursive.com/pricing", description: "Visitor Pixel $97/mo, Custom Audience $197/mo, or both for $247/mo" },
               { label: "Get Started", href: "https://leads.meetcursive.com/get-leads", description: "Pick a plan and you are live in minutes" },
