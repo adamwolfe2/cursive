@@ -67,6 +67,21 @@ const nextConfig: NextConfig = {
 
   // Explicit non-www → www redirect (belt-and-suspenders alongside Vercel domain settings)
   async redirects() {
+    // Legacy offer pages — we now sell only the self-serve Visitor Pixel ($97),
+    // Custom Audience ($197), and Pixel + Audience Bundle ($247). These pages
+    // described retired models (marketplace credit packs, Cursive
+    // Data/Outbound/Pipeline managed tiers, Venture Studio, standalone data
+    // products). 301 them to /pricing so the funnel is the single source of
+    // truth and the inbound SEO/link equity consolidates onto the live offer.
+    const RETIRED_OFFER_PAGES = [
+      '/marketplace',
+      '/services',
+      '/venture-studio',
+      '/data-access',
+      '/clean-room',
+      '/demos',
+    ]
+
     return [
       {
         source: '/:path*',
@@ -74,6 +89,10 @@ const nextConfig: NextConfig = {
         destination: 'https://www.meetcursive.com/:path*',
         permanent: true,
       },
+      ...RETIRED_OFFER_PAGES.flatMap((path) => [
+        { source: path, destination: '/pricing', permanent: true },
+        { source: `${path}/:slug*`, destination: '/pricing', permanent: true },
+      ]),
     ]
   },
 };

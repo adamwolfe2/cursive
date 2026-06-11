@@ -35,7 +35,7 @@ export function Footer() {
         </div>
 
         {/* Main Links - 6-column layout */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
           {/* Product */}
           <div>
             <h3 className="text-gray-900 font-medium mb-4">Product</h3>
@@ -43,11 +43,6 @@ export function Footer() {
               <li>
                 <Link href="/platform" className="hover:text-primary transition-colors">
                   Platform Overview
-                </Link>
-              </li>
-              <li>
-                <Link href="/marketplace" className="hover:text-primary transition-colors">
-                  Lead Marketplace
                 </Link>
               </li>
               <li>
@@ -86,50 +81,8 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/data-access" className="hover:text-primary transition-colors">
-                  Data Access
-                </Link>
-              </li>
-              <li>
-                <Link href="/data-partnerships" className="hover:text-primary transition-colors">
-                  Data Partnerships
-                </Link>
-              </li>
-              <li>
                 <Link href="/pricing" className="hover:text-primary transition-colors">
                   Pricing
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Services */}
-          <div>
-            <h3 className="text-gray-900 font-medium mb-4">Services</h3>
-            <ul className="space-y-2 text-sm text-gray-600">
-              <li>
-                <Link href="/services#data" className="hover:text-primary transition-colors">
-                  Cursive Data
-                </Link>
-              </li>
-              <li>
-                <Link href="/services#outbound" className="hover:text-primary transition-colors">
-                  Cursive Outbound
-                </Link>
-              </li>
-              <li>
-                <Link href="/services#pipeline" className="hover:text-primary transition-colors">
-                  Cursive Pipeline
-                </Link>
-              </li>
-              <li>
-                <Link href="/venture-studio" className="hover:text-primary transition-colors">
-                  Venture Studio
-                </Link>
-              </li>
-              <li>
-                <Link href="/free-audit" className="hover:text-primary transition-colors">
-                  Free AI Audit
                 </Link>
               </li>
             </ul>
@@ -296,8 +249,8 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/services" className="hover:text-primary transition-colors">
-                  Services
+                <Link href="/pricing" className="hover:text-primary transition-colors">
+                  Pricing
                 </Link>
               </li>
               <li>
