@@ -25,7 +25,7 @@ const faqs: FAQ[] = [
   },
   {
     question: "What pricing plans are available?",
-    answer: "Cursive offers three tiers. The self-serve marketplace starts at $0.60/lead. Managed services start at $1,000/month and are done-for-you across email, LinkedIn, SMS, and direct mail. Committed-tier data partnerships start at $15K/month and give enterprise teams direct access to the underlying identity infrastructure — pixel, taxonomy of ~50,000 intent segments, ~20M/day email validation, and the full closed-feedback-loop dataset. Book a call to find the right fit."
+    answer: "Three self-serve plans, all month-to-month. The Visitor Pixel is $97/month and identifies the companies and people visiting your site. The Custom Audience is $197/month and delivers a fresh weekly list of people actively searching for your product. The Pixel + Audience Bundle is $247/month and includes both. No setup fee, no long-term contract, cancel anytime. Enterprise teams that need direct API access to the underlying identity infrastructure can reach out about a committed data partnership."
   },
   {
     question: "What integrations does Cursive support?",
@@ -53,7 +53,7 @@ const faqs: FAQ[] = [
   },
   {
     question: "How is Cursive different from competitors?",
-    answer: "Unlike traditional visitor ID tools that just deliver data, Cursive combines identification with AI-powered activation—we don't just tell you who's visiting, we automatically reach out and book meetings. Compared to data providers like Clearbit or ZoomInfo, Cursive includes 60B+ behaviors & URLs scanned weekly, real-time identification, and multi-channel campaigns out of the box. Unlike marketing automation tools, Cursive works on anonymous traffic and uses AI agents instead of manual workflows. You get visitor identification, intent data, AI outreach, and CRM integration in one unified platform."
+    answer: "Unlike traditional visitor ID tools that resolve 2–5% of visitors, Cursive's deterministic pixel resolves 40–60% with person-level detail. Compared to data providers like Clearbit or ZoomInfo, Cursive adds anonymous visitor identification plus a fresh weekly audience of people actively searching for your product, drawn from 60B+ behaviors and URLs scanned weekly. Every identified visitor and audience record comes with a verified work email, ready to export to your CRM or sequencer. You get visitor identification, in-market audiences, and verified contact data in one place, starting at $97/month."
   }
 ]
 
