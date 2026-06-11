@@ -12,7 +12,7 @@ export const metadata = generateMetadata({
 const faqPageFAQs = [
   {
     question: 'What is Cursive and what does it do?',
-    answer: 'Cursive is the identity layer for outbound, intent, and enrichment. We combine deterministic visitor identification (40–60% pixel match rate, not modeled), 280M+ verified consumer and 140M+ business profiles refreshed every 30 days via NCOA, and a closed feedback loop that maps signals back to source URLs and validates against real conversions. Self-serve marketplace from $0.60/lead, managed services from $1,000/month, committed-tier data partnerships from $15K/month.',
+    answer: 'Cursive is the identity layer for outbound, intent, and enrichment. We combine deterministic visitor identification (40–60% pixel match rate, not modeled), 280M+ verified consumer and 140M+ business profiles refreshed every 30 days via NCOA, and a closed feedback loop that maps signals back to source URLs and validates against real conversions. Self-serve plans start at $97/month for the Visitor Pixel, $197/month for a weekly Custom Audience, or $247/month for both.',
   },
   {
     question: 'How does Cursive identify anonymous website visitors?',
@@ -31,12 +31,12 @@ const faqPageFAQs = [
     answer: 'Cursive delivers a 40–60% deterministic pixel match rate with 60–80% pixel-level accuracy — not modeled or probabilistic. For comparison, cookie-based tools resolve 2–5% of visitors and IP databases resolve 10–15%. Accuracy is reinforced by Deep Verify, our in-house email validation engine processing ~20 million records per day, plus a closed feedback loop that validates signals against real conversions.',
   },
   {
-    question: 'What is the difference between the self-serve marketplace, managed services, and committed data partnerships?',
-    answer: 'Self-serve marketplace (from $0.60/lead) lets you buy verified leads on demand from our identity graph — you run your own campaigns. Managed services (from $1,000/month) are done-for-you: Cursive builds and runs your outreach, handles deliverability, and books meetings. Committed data partnerships (from $15K/month) give enterprise teams direct access to the underlying identity infrastructure — pixel, taxonomy of ~50,000 intent segments, ~20M/day email validation, and the full closed-feedback-loop dataset.',
+    question: 'What is the difference between the Visitor Pixel and the Custom Audience?',
+    answer: 'The Visitor Pixel ($97/month) identifies the companies and people already visiting your website — it turns anonymous traffic into named contacts synced to your portal. The Custom Audience ($197/month) is proactive: each week we deliver a fresh list of people actively searching for what you sell, whether or not they have visited your site. The Pixel + Audience Bundle ($247/month) combines both into one feed. Enterprise teams that need direct access to the underlying identity infrastructure — pixel, ~50,000 intent segments, ~20M/day email validation, and the full closed-feedback-loop dataset — can reach out about a committed data partnership.',
   },
   {
     question: 'How do I get started with Cursive?',
-    answer: 'You can start with a free trial at leads.meetcursive.com/get-leads — no credit card required. The free tier includes 100 lead credits and 7 days of visitor identification data. For managed services, book a 30-minute strategy call at cal.com/cursiveteam/30min. Most accounts are fully set up and running within one week.',
+    answer: 'Pick a plan at leads.meetcursive.com/get-leads and you are dropped straight into your portal. The Visitor Pixel installs in about 60 seconds with a single snippet, and Custom Audience plans deliver your first list within 24 hours. Every plan is month-to-month with no setup fee. If you would rather talk first, book a 30-minute call at cal.com/cursiveteam/30min.',
   },
   {
     question: 'What kind of companies use Cursive?',
