@@ -3,752 +3,493 @@
 import { Button } from "@/components/ui/button"
 import { Container } from "@/components/ui/container"
 import { motion } from "framer-motion"
-import { ArrowRight } from "lucide-react"
+import {
+  Eye, Users, ShieldCheck, Zap, Target, Gauge,
+  RefreshCw, Search, Database, Sparkles, ArrowRight,
+} from "lucide-react"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
 import { DashboardCTA } from "@/components/dashboard-cta"
 import { Breadcrumbs } from "@/components/Breadcrumbs"
-import Link from "next/link"
+import { GET_LEADS_URL } from "@/lib/cta"
+
+const EASE = [0.22, 1, 0.36, 1] as const
+
+// What we sell, framed as capabilities for the About narrative.
+const capabilities = [
+  {
+    icon: Eye,
+    title: "Identify your visitors",
+    body: "The Visitor Pixel resolves 40–60% of anonymous traffic to real companies and people, deterministically, the moment they land.",
+  },
+  {
+    icon: Search,
+    title: "Surface in-market buyers",
+    body: "A fresh weekly Custom Audience of people actively searching for what you sell, built to your ICP and delivered to your sheet.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Trust every record",
+    body: "Every contact carries a verified work email, validated continuously through Deep Verify at roughly 20 million records a day.",
+  },
+]
+
+const cycle = [
+  { step: "Identify", desc: "High-intent visitors and engagement signals" },
+  { step: "Enrich", desc: "Turn signals into actionable data and lookalikes" },
+  { step: "Reach", desc: "Export verified contacts to your CRM or sequencer" },
+  { step: "Convert", desc: "Close deals with messaging that already worked" },
+  { step: "Learn", desc: "Feed every outcome back into targeting" },
+]
+
+const values = [
+  {
+    icon: Zap,
+    title: "Speed Over Perfection",
+    body: "We ship fast, test fast, and iterate fast. Your pipeline can't wait for perfect.",
+  },
+  {
+    icon: Target,
+    title: "Quality Over Quantity",
+    body: "We'd rather send you a hundred perfect prospects than ten thousand garbage contacts.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Transparency Always",
+    body: "Flat monthly pricing, month-to-month, cancel anytime. No hidden fees, no nonsense.",
+  },
+]
+
+const culture = [
+  { icon: RefreshCw, title: "Async by Default", body: "Clear docs, recorded walkthroughs, and tight briefs keep everyone aligned without constant meetings." },
+  { icon: Gauge, title: "Outcome-Driven", body: "We measure ourselves by results delivered, for customers and for each other. No busywork, no vanity metrics." },
+  { icon: Sparkles, title: "Always Learning", body: "The data and AI landscape moves fast. We stay at the edge and ship improvements every week." },
+]
+
+const metrics = [
+  { metric: "40–60%", label: "Of anonymous visitors identified, deterministically" },
+  { metric: "95%+", label: "Email deliverability across every record" },
+  { metric: "30 days", label: "Full identity-graph refresh cycle via NCOA" },
+  { metric: "60s", label: "To install the pixel and go live" },
+]
+
+function SectionHeading({ plain, script, sub }: { plain: string; script?: string; sub?: string }) {
+  return (
+    <div className="text-center mb-14">
+      <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light text-gray-900">
+        {plain}
+        {script && (
+          <span className="block font-cursive text-4xl sm:text-5xl lg:text-6xl text-gray-500 mt-1">
+            {script}
+          </span>
+        )}
+      </h2>
+      {sub && (
+        <p className="mt-5 text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">{sub}</p>
+      )}
+    </div>
+  )
+}
+
+function IconChip({ Icon }: { Icon: typeof Eye }) {
+  return (
+    <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center">
+      <Icon className="w-6 h-6 text-primary" />
+    </div>
+  )
+}
 
 export default function AboutPage() {
   return (
     <>
-      {/* Human View */}
       <HumanView>
         <main className="overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <Breadcrumbs items={[
-          { name: "Home", href: "/" },
-          { name: "About", href: "/about" },
-        ]} />
-      </div>
-      {/* Hero Section */}
-      <section className="relative py-24 bg-white">
-        <Container>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center max-w-4xl mx-auto"
-          >
-            <h1 className="text-5xl lg:text-7xl font-light text-gray-900 mb-6">
-              We Got Tired of Bad Lead Data
-              <span className="block font-cursive text-6xl lg:text-7xl text-gray-500 mt-2">
-                So We Built Something Better
-              </span>
-            </h1>
-            <p className="text-xl text-gray-600 leading-relaxed">
-              <span className="font-cursive text-2xl text-gray-500">Cursive</span> started because we were tired of paying for lead lists that didn't convert.
-              Outdated contacts. Generic emails. No personalization. No results.
-            </p>
-          </motion.div>
-        </Container>
-      </section>
-
-      {/* Story Section */}
-      <section className="py-24 bg-[#F7F9FB]">
-        <Container>
-          <div className="max-w-4xl mx-auto">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="space-y-6"
-            >
-              <p className="text-xl text-gray-700 leading-relaxed">
-                So we built what we wished existed: verified data, AI-powered outreach, and done-for-you campaigns that actually work.
-              </p>
-
-              <p className="text-xl text-gray-700 leading-relaxed">
-                Today, <span className="font-cursive text-2xl text-gray-500">Cursive</span> powers pipeline for hundreds of B2B companies—from bootstrapped startups
-                to growth-stage companies scaling fast.
-              </p>
-
-              <p className="text-xl text-gray-700 leading-relaxed">
-                We don't sell software. We sell results.
-              </p>
-            </motion.div>
-          </div>
-        </Container>
-      </section>
-
-      {/* Mission Section */}
-      <section className="py-24 bg-white">
-        <Container>
-          <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
-              Our Mission
-              <span className="block font-cursive text-6xl lg:text-7xl text-gray-500 mt-2">
-                Make Lead Gen Effortless
-              </span>
-            </h2>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <Breadcrumbs items={[
+              { name: "Home", href: "/" },
+              { name: "About", href: "/about" },
+            ]} />
           </div>
 
-          <div className="max-w-4xl mx-auto">
-            <p className="text-xl text-gray-700 text-center leading-relaxed mb-12">
-              Every company deserves access to high-quality leads without hiring an army of BDRs
-              or stitching together 10 tools.
-            </p>
-
-            <div className="grid md:grid-cols-3 gap-8">
+          {/* Hero */}
+          <section className="relative pt-16 pb-20 sm:pt-20 sm:pb-24 bg-white">
+            <Container>
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="bg-white rounded-2xl p-8 text-center border border-gray-200"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, ease: EASE }}
+                className="text-center max-w-3xl mx-auto"
               >
-                <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-6">
-                  <span className="text-white text-2xl font-light">1</span>
-                </div>
-                <h3 className="text-xl font-light text-gray-900 mb-3">Buy the Data</h3>
-                <p className="text-gray-600">
-                  Get verified lead lists and run campaigns yourself
-                </p>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.1 }}
-                className="bg-white rounded-2xl p-8 text-center border border-gray-200"
-              >
-                <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-6">
-                  <span className="text-white text-2xl font-light">2</span>
-                </div>
-                <h3 className="text-xl font-light text-gray-900 mb-3">Let Us Run It</h3>
-                <p className="text-gray-600">
-                  Done-for-you campaigns, managed end-to-end
-                </p>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.2 }}
-                className="bg-white rounded-2xl p-8 text-center border border-gray-200"
-              >
-                <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-6">
-                  <span className="text-white text-2xl font-light">3</span>
-                </div>
-                <h3 className="text-xl font-light text-gray-900 mb-3">Full Pipeline</h3>
-                <p className="text-gray-600">
-                  We build your entire pipeline, AI-powered and automated
-                </p>
-              </motion.div>
-            </div>
-
-            <p className="text-center text-xl text-gray-700 mt-12">
-              Whatever stage you're at, we meet you there.
-            </p>
-          </div>
-        </Container>
-      </section>
-
-      {/* Recursive Intelligence Philosophy */}
-      <section className="py-24 bg-white">
-        <Container>
-          <div className="max-w-5xl mx-auto">
-            <div className="grid lg:grid-cols-2 gap-12 items-start">
-              {/* Left: Philosophy Content */}
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                className="space-y-8"
-              >
-                {/* Definition block */}
-                <div className="border-l-4 border-primary pl-6">
-                  <p className="text-sm tracking-widest text-gray-400 mb-1">re·cur·sive</p>
-                  <p className="text-gray-600 italic">/rəˈkərsiv/ — relating to or involving a process that calls itself, using its own output as its next input.</p>
-                </div>
-
-                <h2 className="text-4xl lg:text-5xl font-light text-gray-900">
-                  Our Philosophy
-                  <span className="block font-cursive text-6xl lg:text-7xl text-gray-500 mt-2">
-                    Recursive Intelligence
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-light text-gray-900 leading-[1.1]">
+                  We got tired of bad lead data
+                  <span className="block font-cursive text-4xl sm:text-5xl lg:text-6xl text-gray-500 mt-2">
+                    so we built something better
                   </span>
-                </h2>
-
-                <div className="space-y-4 text-lg text-gray-700 leading-relaxed">
-                  <p>
-                    We&apos;re betting everything on a simple premise: <strong className="text-gray-900">the companies that learn from their own growth data will outrun the ones that don&apos;t.</strong>
-                  </p>
-                  <p>
-                    Most growth tools give you a static database and say &ldquo;go find leads.&rdquo; That&apos;s a library card. Cursive is different. We built a system that gets smarter every time you use it. Every visitor identified, every audience built, every campaign sent, every deal closed — it all feeds back into the system.
-                  </p>
-                  <p>
-                    The AI doesn&apos;t start from scratch each month. It picks up where last month left off. It remembers which subject lines converted, which industries responded, which signals predicted a deal. Then it compounds.
-                  </p>
-                </div>
-
-                {/* The Cycle That Compounds */}
-                <div>
-                  <h3 className="text-xl font-medium text-gray-900 mb-4">The Cycle That Compounds</h3>
-                  <div className="space-y-3">
-                    {[
-                      { step: "Identify", desc: "High-intent visitors & engagement signals" },
-                      { step: "Enrich", desc: "Turn signals into actionable data & lookalikes" },
-                      { step: "Reach", desc: "Multi-channel outreach informed by past wins" },
-                      { step: "Convert", desc: "Close deals with messaging that already worked" },
-                      { step: "Learn", desc: "Feed insights back into targeting" },
-                    ].map((item, i) => (
-                      <motion.div
-                        key={i}
-                        initial={{ opacity: 0, x: -10 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: i * 0.1 }}
-                        className="flex items-start gap-3"
-                      >
-                        <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                          <span className="text-xs text-white font-bold">{i + 1}</span>
-                        </div>
-                        <div>
-                          <span className="font-semibold text-gray-900">{item.step}</span>
-                          <span className="text-gray-600"> — {item.desc}</span>
-                        </div>
-                      </motion.div>
-                    ))}
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      whileInView={{ opacity: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: 0.6 }}
-                      className="flex items-center gap-3 pt-2"
-                    >
-                      <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
-                        <span className="text-xs text-white">↻</span>
-                      </div>
-                      <span className="text-primary font-semibold italic">REPEAT SMARTER</span>
-                    </motion.div>
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* Right: Contrast Grid */}
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                className="space-y-6"
-              >
-                {/* Most Businesses vs Cursive */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-gray-100 rounded-xl p-6">
-                    <h4 className="text-sm font-semibold text-gray-400 tracking-widest mb-4">MOST BUSINESSES</h4>
-                    <ul className="space-y-3 text-sm text-gray-600">
-                      <li>Buy a lead list</li>
-                      <li>Blast generic emails</li>
-                      <li>Wonder why nothing converts</li>
-                      <li>Buy another list</li>
-                      <li>Repeat (without learning)</li>
-                    </ul>
-                  </div>
-                  <div className="bg-primary/8 border border-primary/20 rounded-xl p-6">
-                    <h4 className="text-sm font-semibold text-primary tracking-widest mb-4">CURSIVE BUSINESSES</h4>
-                    <ul className="space-y-3 text-sm text-gray-700">
-                      <li>Identify who&apos;s already interested</li>
-                      <li>Enrich with real-time context</li>
-                      <li>Reach through channels that work</li>
-                      <li>Convert with proven messaging</li>
-                      <li>Learn and compound every cycle</li>
-                    </ul>
-                  </div>
-                </div>
-
-                {/* Quote */}
-                <div className="bg-white border border-primary/20 rounded-xl p-6">
-                  <p className="text-lg font-light text-gray-800 leading-relaxed">
-                    &ldquo;While your competitors treat every lead like the first lead they&apos;ve ever gotten, Cursive treats every lead like the thousandth. <em className="text-primary">Because it is.</em>&rdquo;
-                  </p>
-                  <p className="text-sm text-gray-500 mt-3">The result: your CAC drops, your LTV rises, your growth compounds instead of plateaus.</p>
-                </div>
-
-                {/* Caption */}
-                <p className="text-sm text-gray-500 text-center leading-relaxed italic">
-                  Each cycle through the Cursive system makes the next cycle more efficient. Your first month identifies patterns. Your third month exploits them. Your sixth month? You&apos;re targeting prospects your competitors can&apos;t even see.
+                </h1>
+                <p className="mt-6 text-lg sm:text-xl text-gray-600 leading-relaxed">
+                  Cursive started because we were tired of paying for lead lists that didn&apos;t
+                  convert. Outdated contacts, generic blasts, no results. So we built the data layer
+                  we wished existed.
                 </p>
               </motion.div>
-            </div>
-          </div>
-        </Container>
-      </section>
+            </Container>
+          </section>
 
-      {/* Values Section */}
-      <section className="py-24 bg-[#F7F9FB]">
-        <Container>
-          <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
-              Our
-              <span className="block font-cursive text-6xl lg:text-7xl text-gray-500 mt-2">
-                Values
-              </span>
-            </h2>
-          </div>
+          {/* Story */}
+          <section className="py-20 sm:py-24 bg-[#F7F9FB]">
+            <Container>
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, ease: EASE }}
+                className="max-w-2xl mx-auto space-y-6 text-lg sm:text-xl text-gray-700 leading-relaxed text-center"
+              >
+                <p>
+                  Instead of another static database, we built two things that actually move
+                  pipeline: a pixel that tells you which companies and people are on your site, and
+                  a weekly audience of buyers already searching for what you sell.
+                </p>
+                <p>
+                  Today Cursive powers pipeline for B2B teams from bootstrapped startups to
+                  growth-stage companies scaling fast. Self-serve, month-to-month, live in minutes.
+                </p>
+              </motion.div>
+            </Container>
+          </section>
 
-          <div className="grid md:grid-cols-3 gap-12 max-w-5xl mx-auto">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-center"
-            >
-              <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-6 border border-gray-200">
-                <div className="w-3 h-3 bg-primary rounded-full" />
+          {/* What We Do */}
+          <section className="py-20 sm:py-24 bg-white">
+            <Container>
+              <SectionHeading
+                plain="What We"
+                script="Actually Do"
+                sub="No army of BDRs, no stitching together ten tools. Two products and the verified data behind them."
+              />
+              <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                {capabilities.map((c, i) => (
+                  <motion.div
+                    key={c.title}
+                    initial={{ opacity: 0, y: 16 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-60px" }}
+                    transition={{ delay: i * 0.06, duration: 0.4, ease: EASE }}
+                    className="rounded-2xl border border-gray-200 p-6 sm:p-8 hover:shadow-lg transition-shadow"
+                  >
+                    <IconChip Icon={c.icon} />
+                    <h3 className="mt-5 text-lg font-medium text-gray-900">{c.title}</h3>
+                    <p className="mt-3 text-sm text-gray-600 leading-relaxed">{c.body}</p>
+                  </motion.div>
+                ))}
               </div>
-              <h3 className="text-2xl font-light text-gray-900 mb-3">Speed Over Perfection</h3>
-              <p className="text-gray-600 leading-relaxed">
-                We ship fast, test fast, and iterate fast. Your pipeline can't wait for perfect.
-              </p>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-              className="text-center"
-            >
-              <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-6 border border-gray-200">
-                <div className="w-3 h-3 bg-primary rounded-full" />
+              <div className="mt-10 text-center">
+                <Button href={GET_LEADS_URL} target="_blank" size="lg">
+                  See plans &amp; get started
+                  <ArrowRight className="w-5 h-5" />
+                </Button>
               </div>
-              <h3 className="text-2xl font-light text-gray-900 mb-3">Quality Over Quantity</h3>
-              <p className="text-gray-600 leading-relaxed">
-                We'd rather send you 100 perfect leads than 10,000 garbage contacts.
-              </p>
-            </motion.div>
+            </Container>
+          </section>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-              className="text-center"
-            >
-              <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-6 border border-gray-200">
-                <div className="w-3 h-3 bg-primary rounded-full" />
+          {/* Philosophy — Recursive Intelligence */}
+          <section className="py-20 sm:py-24 bg-[#F7F9FB]">
+            <Container>
+              <div className="max-w-5xl mx-auto grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+                <motion.div
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, ease: EASE }}
+                  className="space-y-8"
+                >
+                  <div className="rounded-xl bg-white border border-gray-200 p-5">
+                    <p className="text-xs font-semibold tracking-[0.2em] text-primary uppercase mb-1">re·cur·sive</p>
+                    <p className="text-sm text-gray-600 italic leading-relaxed">
+                      /rəˈkərsiv/ — a process that calls itself, using its own output as its next input.
+                    </p>
+                  </div>
+
+                  <h2 className="text-3xl sm:text-4xl lg:text-5xl font-light text-gray-900">
+                    Our philosophy
+                    <span className="block font-cursive text-4xl sm:text-5xl lg:text-6xl text-gray-500 mt-1">
+                      Recursive Intelligence
+                    </span>
+                  </h2>
+
+                  <div className="space-y-4 text-base sm:text-lg text-gray-700 leading-relaxed">
+                    <p>
+                      We&apos;re betting on one premise:{" "}
+                      <strong className="text-gray-900 font-medium">the companies that learn from their own growth data will outrun the ones that don&apos;t.</strong>
+                    </p>
+                    <p>
+                      Most tools hand you a static database and say &ldquo;go find leads.&rdquo; That&apos;s a
+                      library card. Cursive gets smarter every time you use it: every visitor identified,
+                      every audience built, every deal closed feeds back into the system.
+                    </p>
+                  </div>
+
+                  <div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-4">The cycle that compounds</h3>
+                    <ol className="space-y-3">
+                      {cycle.map((item, i) => (
+                        <motion.li
+                          key={item.step}
+                          initial={{ opacity: 0, x: -8 }}
+                          whileInView={{ opacity: 1, x: 0 }}
+                          viewport={{ once: true }}
+                          transition={{ delay: i * 0.06, ease: EASE }}
+                          className="flex items-start gap-3"
+                        >
+                          <span className="flex-shrink-0 mt-0.5 w-6 h-6 rounded-full bg-primary text-white text-xs font-semibold flex items-center justify-center">
+                            {i + 1}
+                          </span>
+                          <span className="text-sm sm:text-base text-gray-700">
+                            <span className="font-medium text-gray-900">{item.step}</span> — {item.desc}
+                          </span>
+                        </motion.li>
+                      ))}
+                      <li className="flex items-center gap-3 pt-1">
+                        <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center">
+                          <RefreshCw className="w-3.5 h-3.5" />
+                        </span>
+                        <span className="text-sm font-medium text-primary italic">Repeat, smarter</span>
+                      </li>
+                    </ol>
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: 0.1, ease: EASE }}
+                  className="space-y-6"
+                >
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="rounded-2xl bg-white border border-gray-200 p-6">
+                      <h4 className="text-xs font-semibold text-gray-400 tracking-widest mb-4 uppercase">Most teams</h4>
+                      <ul className="space-y-3 text-sm text-gray-500">
+                        <li>Buy a lead list</li>
+                        <li>Blast generic emails</li>
+                        <li>Wonder why nothing converts</li>
+                        <li>Buy another list</li>
+                        <li>Repeat, no learning</li>
+                      </ul>
+                    </div>
+                    <div className="rounded-2xl bg-primary/[0.06] border border-primary/20 p-6">
+                      <h4 className="text-xs font-semibold text-primary tracking-widest mb-4 uppercase">With Cursive</h4>
+                      <ul className="space-y-3 text-sm text-gray-700">
+                        <li>Identify who&apos;s already interested</li>
+                        <li>Enrich with real-time context</li>
+                        <li>Reach through channels that work</li>
+                        <li>Convert with proven messaging</li>
+                        <li>Compound every cycle</li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  <figure className="rounded-2xl bg-white border border-gray-200 p-6">
+                    <blockquote className="text-base sm:text-lg font-light text-gray-800 leading-relaxed">
+                      &ldquo;While your competitors treat every lead like the first one they&apos;ve ever
+                      gotten, Cursive treats every lead like the thousandth.{" "}
+                      <em className="text-primary not-italic font-medium">Because it is.</em>&rdquo;
+                    </blockquote>
+                    <figcaption className="mt-3 text-sm text-gray-500">
+                      Your CAC drops, your LTV rises, your growth compounds instead of plateaus.
+                    </figcaption>
+                  </figure>
+                </motion.div>
               </div>
-              <h3 className="text-2xl font-light text-gray-900 mb-3">Transparency Always</h3>
-              <p className="text-gray-600 leading-relaxed">
-                No hidden fees. No long contracts. No nonsense.
-              </p>
-            </motion.div>
-          </div>
-        </Container>
-      </section>
+            </Container>
+          </section>
 
-      {/* Team Section */}
-      <section className="py-24 bg-white">
-        <Container>
-          <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
-              Who
-              <span className="block font-cursive text-6xl lg:text-7xl text-gray-500 mt-2">
-                We Are
-              </span>
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              We're a team of growth operators, data engineers, and AI builders who've lived
-              the pain of bad lead gen.
-            </p>
-          </div>
-
-          <div className="bg-white rounded-2xl shadow-sm p-12 max-w-4xl mx-auto border border-gray-200 text-center">
-            <p className="text-xl text-gray-700 leading-relaxed mb-8">
-              Started by founders who were tired of wasting money on bad data and ineffective outbound tools.
-              We built <span className="font-cursive text-2xl text-gray-500">Cursive</span> to solve our own problem—then realized every B2B company faces the same challenges.
-            </p>
-            <p className="text-xl text-gray-700 leading-relaxed">
-              Now we're on a mission to make high-quality lead generation accessible to every company,
-              regardless of size or budget.
-            </p>
-          </div>
-        </Container>
-      </section>
-
-      {/* Technology Approach */}
-      <section className="py-24 bg-[#F7F9FB]">
-        <Container>
-          <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
-              Our Technology
-              <span className="block font-cursive text-6xl lg:text-7xl text-gray-500 mt-2">
-                Approach
-              </span>
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Cursive combines best-in-class data infrastructure with AI-powered automation to deliver results that traditional tools simply cannot match.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="bg-white rounded-2xl p-8 border border-gray-200"
-            >
-              <h3 className="text-xl font-light text-gray-900 mb-3">AI-Powered Personalization</h3>
-              <p className="text-gray-600 leading-relaxed">
-                Our AI models analyze thousands of data points per contact to generate hyper-personalized outreach. Every email, subject line, and call-to-action is tailored to the recipient's role, company, recent activity, and buying intent. This is not template-based mail merge. It is genuine one-to-one personalization at scale, which is why our clients see 3 to 5 times higher response rates compared to traditional cold email. Learn more about our <Link href="/services" className="text-primary hover:underline">outbound services</Link>.
-              </p>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-              className="bg-white rounded-2xl p-8 border border-gray-200"
-            >
-              <h3 className="text-xl font-light text-gray-900 mb-3">Real-Time Data Verification</h3>
-              <p className="text-gray-600 leading-relaxed">
-                Unlike legacy data providers who batch-process records monthly, Cursive verifies every contact at the point of delivery. We cross-reference data from over 200 sources to ensure 95%+ accuracy on every email, phone number, and company record. If anything bounces, we replace it for free. Explore our <Link href="/data-access" className="text-primary hover:underline">data access platform</Link> to see the full scope of available data.
-              </p>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-              className="bg-white rounded-2xl p-8 border border-gray-200"
-            >
-              <h3 className="text-xl font-light text-gray-900 mb-3">Website Visitor Intelligence</h3>
-              <p className="text-gray-600 leading-relaxed">
-                Our proprietary <Link href="/pixel" className="text-primary hover:underline">visitor identification pixel</Link> delivers a 40&ndash;60% deterministic match rate&mdash;not modeled, not probabilistic&mdash;rooted in a graph of 280M+ verified consumer and 140M+ business profiles refreshed every 30 days via NCOA. For context, cookie-based tools resolve 2&ndash;5% and IP databases resolve 10&ndash;15%. Combined with intent scoring and page-level behavior tracking, you know exactly which accounts are in-market and how to reach them.
-              </p>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.3 }}
-              className="bg-white rounded-2xl p-8 border border-gray-200"
-            >
-              <h3 className="text-xl font-light text-gray-900 mb-3">Multi-Channel Orchestration</h3>
-              <p className="text-gray-600 leading-relaxed">
-                Cursive does not limit you to a single channel. Our platform orchestrates coordinated campaigns across email, LinkedIn, SMS, and direct mail. AI determines the optimal channel mix, timing, and message for each prospect, ensuring your outreach meets buyers wherever they are. See our full <Link href="/platform" className="text-primary hover:underline">platform capabilities</Link>.
-              </p>
-            </motion.div>
-          </div>
-        </Container>
-      </section>
-
-      {/* Remote-First Culture */}
-      <section className="py-24 bg-white">
-        <Container>
-          <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
-              Remote-First
-              <span className="block font-cursive text-6xl lg:text-7xl text-gray-500 mt-2">
-                Culture
-              </span>
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Cursive is a fully remote company. Our team spans the United States, working from home offices, coffee shops, and co-working spaces. We believe that the best talent is not confined to a single zip code, and we have built our company culture around that principle.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                <div className="w-3 h-3 bg-primary rounded-full" />
+          {/* Values */}
+          <section className="py-20 sm:py-24 bg-white">
+            <Container>
+              <SectionHeading plain="What We" script="Stand For" />
+              <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                {values.map((v, i) => (
+                  <motion.div
+                    key={v.title}
+                    initial={{ opacity: 0, y: 16 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-60px" }}
+                    transition={{ delay: i * 0.06, duration: 0.4, ease: EASE }}
+                    className="rounded-2xl border border-gray-200 p-6 sm:p-8 hover:shadow-lg transition-shadow"
+                  >
+                    <IconChip Icon={v.icon} />
+                    <h3 className="mt-5 text-lg font-medium text-gray-900">{v.title}</h3>
+                    <p className="mt-3 text-sm text-gray-600 leading-relaxed">{v.body}</p>
+                  </motion.div>
+                ))}
               </div>
-              <h3 className="text-lg font-light text-gray-900 mb-2">Async by Default</h3>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                We work asynchronously whenever possible. Clear documentation, recorded walkthroughs, and well-written briefs keep everyone aligned without requiring constant meetings.
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                <div className="w-3 h-3 bg-primary rounded-full" />
-              </div>
-              <h3 className="text-lg font-light text-gray-900 mb-2">Outcome-Driven</h3>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                We measure ourselves by the results we deliver, both for our customers and our team. No busywork, no vanity metrics. Everything we build is tied to tangible outcomes.
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                <div className="w-3 h-3 bg-primary rounded-full" />
-              </div>
-              <h3 className="text-lg font-light text-gray-900 mb-2">Continuous Learning</h3>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                The data and AI landscape moves fast. Our team invests in staying at the cutting edge, sharing knowledge internally, and applying new techniques to improve the platform every week.
-              </p>
-            </div>
-          </div>
-        </Container>
-      </section>
+            </Container>
+          </section>
 
-      {/* Customer Success Metrics */}
-      <section className="py-24 bg-[#F7F9FB]">
-        <Container>
-          <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
-              Customer
-              <span className="block font-cursive text-6xl lg:text-7xl text-gray-500 mt-2">
-                Success
-              </span>
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              We measure our success by the results our clients achieve. Here is what Cursive customers experience on average.
+          {/* Team & Culture */}
+          <section className="py-20 sm:py-24 bg-[#F7F9FB]">
+            <Container>
+              <SectionHeading
+                plain="Who"
+                script="We Are"
+                sub="A remote team of growth operators, data engineers, and AI builders who have lived the pain of bad lead gen, and built Cursive to end it."
+              />
+              <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                {culture.map((c, i) => (
+                  <motion.div
+                    key={c.title}
+                    initial={{ opacity: 0, y: 16 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-60px" }}
+                    transition={{ delay: i * 0.06, duration: 0.4, ease: EASE }}
+                    className="rounded-2xl bg-white border border-gray-200 p-6 sm:p-8"
+                  >
+                    <IconChip Icon={c.icon} />
+                    <h3 className="mt-5 text-lg font-medium text-gray-900">{c.title}</h3>
+                    <p className="mt-3 text-sm text-gray-600 leading-relaxed">{c.body}</p>
+                  </motion.div>
+                ))}
+              </div>
+            </Container>
+          </section>
+
+          {/* Results */}
+          <section className="py-20 sm:py-24 bg-white">
+            <Container>
+              <SectionHeading
+                plain="Results That"
+                script="Speak"
+                sub="What teams running on Cursive see, on average."
+              />
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-5xl mx-auto">
+                {metrics.map((m, i) => (
+                  <motion.div
+                    key={m.label}
+                    initial={{ opacity: 0, y: 16 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.06, duration: 0.4, ease: EASE }}
+                    className="rounded-2xl bg-[#F7F9FB] border border-gray-200 p-6 text-center"
+                  >
+                    <div className="text-3xl sm:text-4xl font-light text-primary">{m.metric}</div>
+                    <p className="mt-2 text-sm text-gray-600 leading-snug">{m.label}</p>
+                  </motion.div>
+                ))}
+              </div>
+              <div className="mt-10 text-center">
+                <Button size="lg" href="/case-studies" variant="outline">
+                  View case studies
+                </Button>
+              </div>
+            </Container>
+          </section>
+
+          <DashboardCTA
+            headline="Let's Build Your"
+            subheadline="Pipeline"
+            description="Install the pixel in 60 seconds, or get your first audience within 24 hours. Plans from $97/mo, month-to-month."
+            ctaText="Get Started"
+          />
+        </main>
+      </HumanView>
+
+      {/* Machine View — AEO-optimized */}
+      <MachineView>
+        <MachineContent>
+          <div className="mb-12 pb-6 border-b border-gray-200">
+            <h1 className="text-2xl text-gray-900 font-bold mb-4">ABOUT CURSIVE</h1>
+            <p className="text-gray-700 leading-relaxed">
+              Cursive is a self-serve identity and intent data layer for B2B teams. We identify the
+              companies and people visiting your website and deliver a weekly audience of in-market
+              buyers, each with a verified work email. Built by founders frustrated with static lead
+              lists that never converted.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-4 gap-8 max-w-5xl mx-auto mb-12">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              className="text-center bg-white rounded-xl p-8 border border-gray-200"
-            >
-              <div className="text-4xl text-primary mb-2">3x</div>
-              <p className="text-gray-600 text-sm">Average pipeline increase within 90 days</p>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-              className="text-center bg-white rounded-xl p-8 border border-gray-200"
-            >
-              <div className="text-4xl text-primary mb-2">95%+</div>
-              <p className="text-gray-600 text-sm">Email deliverability rate across all data</p>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-              className="text-center bg-white rounded-xl p-8 border border-gray-200"
-            >
-              <div className="text-4xl text-primary mb-2">67%</div>
-              <p className="text-gray-600 text-sm">Average cost-per-lead reduction vs. traditional methods</p>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.3 }}
-              className="text-center bg-white rounded-xl p-8 border border-gray-200"
-            >
-              <div className="text-4xl text-primary mb-2">$2</div>
-              <p className="text-gray-600 text-sm">Average cost per lead vs $50 industry average</p>
-            </motion.div>
-          </div>
-
-          <div className="text-center">
-            <p className="text-gray-600 mb-6">
-              See detailed results from real Cursive clients across SaaS, agencies, financial services, and eCommerce.
+          <MachineSection title="Company Overview">
+            <p className="text-gray-700 mb-4">
+              Cursive started because we were tired of paying for lead lists that didn&apos;t convert.
+              Instead of another static database, we built two products that move pipeline: the
+              Visitor Pixel, which resolves 40–60% of anonymous website traffic to real companies and
+              people, and Custom Audiences, a fresh weekly list of buyers actively searching for your
+              product. Every record carries a verified work email.
             </p>
-            <Button size="lg" href="/case-studies" variant="outline">
-              View Case Studies
-            </Button>
-          </div>
-        </Container>
-      </section>
+            <p className="text-gray-700">
+              Today Cursive powers pipeline for B2B teams from bootstrapped startups to growth-stage
+              companies. Self-serve, month-to-month, live in minutes.
+            </p>
+          </MachineSection>
 
-      {/* Dashboard CTA */}
-      <DashboardCTA
-        headline="Let's Build Your Pipeline"
-        subheadline="Together"
-        description="Book a call and we'll show you exactly how Cursive can transform your lead generation."
-      />
-    </main>
-  </HumanView>
+          <MachineSection title="What We Sell">
+            <MachineList items={[
+              "Visitor Pixel ($97/month) — identify the companies and people visiting your site",
+              "Custom Audience ($197/month) — a fresh weekly list of in-market buyers, delivered to Google Sheets",
+              "Pixel + Audience Bundle ($247/month) — both, in one feed",
+            ]} />
+            <p className="text-gray-700 mt-4">
+              Every plan is self-serve and month-to-month with no setup fee. Cancel anytime.
+            </p>
+          </MachineSection>
 
-  {/* Machine View - AEO-Optimized */}
-  <MachineView>
-    <MachineContent>
-      {/* Header */}
-      <div className="mb-12 pb-6 border-b border-gray-200">
-        <h1 className="text-2xl text-gray-900 font-bold mb-4">ABOUT CURSIVE</h1>
-        <p className="text-gray-700 leading-relaxed">
-          B2B lead generation platform built by founders frustrated with bad data and ineffective outbound tools. We create AI-powered systems that identify website visitors, build targeted audiences, and automate multi-channel outreach.
-        </p>
-      </div>
+          <MachineSection title="Our Philosophy: Recursive Intelligence">
+            <p className="text-gray-700 mb-4">
+              Recursive (adjective): a process that calls itself, using its own output as its next
+              input. Cursive is built on the premise that the companies that learn from their own
+              growth data will outrun the ones that don&apos;t. Most tools give you a static database;
+              Cursive gets smarter every time you use it. Every visitor identified and every audience
+              built feeds back into the system, so targeting compounds month over month.
+            </p>
+            <MachineList items={[
+              "Identify — High-intent visitors and engagement signals",
+              "Enrich — Turn signals into actionable data and lookalikes",
+              "Reach — Export verified contacts to your CRM or sequencer",
+              "Convert — Close deals with messaging that already worked",
+              "Learn — Feed every outcome back into targeting",
+              "Repeat Smarter — Each cycle compounds on the last",
+            ]} />
+          </MachineSection>
 
-      {/* Company Overview */}
-      <MachineSection title="Company Overview">
-        <p className="text-gray-700 mb-4">
-          Cursive started because we were tired of paying for lead lists that didn't convert. Outdated contacts, generic emails, no personalization, no results. So we built what we wished existed: verified data, AI-powered outreach, and done-for-you campaigns that actually work.
-        </p>
-        <p className="text-gray-700">
-          Today, Cursive powers pipeline for hundreds of B2B companies—from bootstrapped startups to growth-stage companies scaling fast. We don't sell software. We sell results.
-        </p>
-      </MachineSection>
+          <MachineSection title="Core Values">
+            <MachineList items={[
+              "Speed Over Perfection: We ship fast, test fast, and iterate fast.",
+              "Quality Over Quantity: A hundred perfect prospects beats ten thousand garbage contacts.",
+              "Transparency Always: Flat monthly pricing, month-to-month, no hidden fees.",
+            ]} />
+          </MachineSection>
 
-      {/* Mission */}
-      <MachineSection title="Our Mission">
-        <p className="text-gray-700 mb-4">
-          Make lead generation effortless for every company. Every business deserves access to high-quality leads without hiring an army of BDRs or stitching together 10 tools.
-        </p>
-        <MachineList items={[
-          "Buy the Data - Get verified lead lists and run campaigns yourself",
-          "Let Us Run It - Done-for-you campaigns, managed end-to-end",
-          "Full Pipeline - We build your entire pipeline, AI-powered and automated"
-        ]} />
-        <p className="text-gray-700 mt-4">
-          Whatever stage you're at, we meet you there.
-        </p>
-      </MachineSection>
+          <MachineSection title="Who We Are">
+            <p className="text-gray-700">
+              A fully remote team of growth operators, data engineers, and AI builders across the
+              United States, built on three principles: async by default, outcome-driven, and always
+              learning.
+            </p>
+          </MachineSection>
 
-      {/* Recursive Intelligence Philosophy */}
-      <MachineSection title="Our Philosophy: Recursive Intelligence">
-        <p className="text-gray-700 mb-4">
-          Recursive (adjective): relating to or involving a process that calls itself, using its own output as its next input. Cursive is built on the premise that the companies that learn from their own growth data will outrun the ones that don't.
-        </p>
-        <p className="text-gray-700 mb-4">
-          Most growth tools give you a static database and say "go find leads." That's a library card. Cursive built a system that gets smarter every time you use it. Every visitor identified, every audience built, every campaign sent, every deal closed feeds back into the system. The AI doesn't start from scratch each month — it picks up where last month left off, remembering which subject lines converted, which industries responded, which signals predicted a deal. Then it compounds.
-        </p>
-        <p className="text-gray-700 mb-4">The Cursive recursive cycle:</p>
-        <MachineList items={[
-          "Identify — High-intent visitors and engagement signals",
-          "Enrich — Turn signals into actionable data and lookalikes",
-          "Reach — Multi-channel outreach informed by past wins",
-          "Convert — Close deals with messaging that already worked",
-          "Learn — Feed insights back into targeting",
-          "Repeat Smarter — Each cycle compounds on the last"
-        ]} />
-        <p className="text-gray-700 mt-4">
-          Each cycle through the Cursive system makes the next cycle more efficient. Your first month identifies patterns. Your third month exploits them. Your sixth month, you're targeting prospects your competitors can't even see.
-        </p>
-        <p className="text-gray-700 mt-4">
-          While most businesses buy a lead list, blast generic emails, wonder why nothing converts, and repeat without learning — Cursive businesses identify who's already interested, enrich with real-time context, reach through channels that work, convert with proven messaging, and learn and compound every cycle.
-        </p>
-      </MachineSection>
+          <MachineSection title="Results">
+            <MachineList items={[
+              "40–60% of anonymous website visitors identified, deterministically",
+              "95%+ email deliverability across every record",
+              "30-day full identity-graph refresh cycle via NCOA",
+              "60 seconds to install the pixel and go live",
+            ]} />
+          </MachineSection>
 
-      {/* Core Values */}
-      <MachineSection title="Core Values">
-        <div className="space-y-4">
-          <div>
-            <p className="text-white mb-2">Speed Over Perfection:</p>
-            <p className="text-gray-400">We ship fast, test fast, and iterate fast. Your pipeline can't wait for perfect.</p>
-          </div>
-          <div>
-            <p className="text-white mb-2">Quality Over Quantity:</p>
-            <p className="text-gray-400">We'd rather send you 100 perfect leads than 10,000 garbage contacts.</p>
-          </div>
-          <div>
-            <p className="text-white mb-2">Transparency Always:</p>
-            <p className="text-gray-400">No hidden fees. No long contracts. No nonsense.</p>
-          </div>
-        </div>
-      </MachineSection>
+          <MachineSection title="Learn More About Cursive">
+            <MachineList items={[
+              { label: "Pricing", href: "https://www.meetcursive.com/pricing", description: "Visitor Pixel $97/mo, Custom Audience $197/mo, or both for $247/mo" },
+              { label: "Case Studies", href: "https://www.meetcursive.com/case-studies", description: "Real results from Cursive clients across SaaS, agencies, financial services, and eCommerce" },
+              { label: "Platform Overview", href: "https://www.meetcursive.com/platform", description: "Explore the full Cursive platform and its capabilities" },
+            ]} />
+          </MachineSection>
 
-      {/* Team */}
-      <MachineSection title="Who We Are">
-        <p className="text-gray-700 mb-4">
-          We're a team of growth operators, data engineers, and AI builders who've lived the pain of bad lead gen. Started by founders who were tired of wasting money on bad data and ineffective outbound tools.
-        </p>
-        <p className="text-gray-700">
-          We built Cursive to solve our own problem—then realized every B2B company faces the same challenges. Now we're on a mission to make high-quality lead generation accessible to every company, regardless of size or budget.
-        </p>
-      </MachineSection>
-
-      {/* Technology Approach */}
-      <MachineSection title="Technology Approach">
-        <p className="text-gray-700 mb-4">
-          Cursive combines best-in-class data infrastructure with AI-powered automation to deliver results that traditional lead generation tools cannot match.
-        </p>
-        <div className="space-y-4">
-          <div>
-            <p className="text-gray-900 mb-2">AI-Powered Personalization:</p>
-            <p className="text-gray-600">AI models analyze thousands of data points per contact to generate hyper-personalized outreach. Every email, subject line, and call-to-action is tailored to the recipient's role, company, recent activity, and buying intent. Clients see 3-5x higher response rates compared to traditional cold email.</p>
-          </div>
-          <div>
-            <p className="text-gray-900 mb-2">Real-Time Data Verification:</p>
-            <p className="text-gray-600">Unlike legacy data providers who batch-process records monthly, Cursive verifies every contact at the point of delivery. Data is cross-referenced from over 200 sources to ensure 95%+ accuracy. Bounced emails are replaced for free.</p>
-          </div>
-          <div>
-            <p className="text-gray-900 mb-2">Website Visitor Intelligence:</p>
-            <p className="text-gray-600">Proprietary visitor identification pixel delivers a 40&ndash;60% deterministic match rate (vs 2&ndash;5% for cookies, 10&ndash;15% for IP databases), backed by 280M+ verified consumer and 140M+ business profiles refreshed every 30 days via NCOA. Combined with intent scoring and page-level behavior tracking.</p>
-          </div>
-          <div>
-            <p className="text-gray-900 mb-2">Multi-Channel Orchestration:</p>
-            <p className="text-gray-600">Coordinated campaigns across email, LinkedIn, SMS, and direct mail. AI determines the optimal channel mix, timing, and message for each prospect.</p>
-          </div>
-        </div>
-      </MachineSection>
-
-      {/* Remote-First Culture */}
-      <MachineSection title="Company Culture">
-        <p className="text-gray-700 mb-4">
-          Cursive is a fully remote company headquartered in San Francisco, CA with team members across the United States. We operate on three core cultural principles.
-        </p>
-        <MachineList items={[
-          "Async by Default: Clear documentation, recorded walkthroughs, and well-written briefs keep everyone aligned without constant meetings",
-          "Outcome-Driven: We measure ourselves by the results we deliver for customers and team. No busywork, no vanity metrics",
-          "Continuous Learning: The data and AI landscape moves fast. The team invests in staying at the cutting edge, sharing knowledge internally, and applying new techniques weekly"
-        ]} />
-      </MachineSection>
-
-      {/* Customer Success Metrics */}
-      <MachineSection title="Customer Success Metrics">
-        <p className="text-gray-700 mb-4">
-          Cursive measures success by the results clients achieve. Average outcomes across the customer base include:
-        </p>
-        <MachineList items={[
-          "3x average pipeline increase within 90 days",
-          "95%+ email deliverability rate across all data",
-          "67% average cost-per-lead reduction vs traditional methods",
-          "Powering lead generation for B2B sales teams across multiple verticals",
-          "4.2x ROAS on visitor retargeting campaigns",
-          "$2 per lead vs $50 industry average"
-        ]} />
-      </MachineSection>
-
-      {/* Related Pages */}
-      <MachineSection title="Learn More About Cursive">
-        <MachineList items={[
-          {
-            label: "Case Studies",
-            href: "https://www.meetcursive.com/case-studies",
-            description: "See real, anonymized results from Cursive clients across SaaS, agencies, financial services, and eCommerce"
-          },
-          {
-            label: "Platform Overview",
-            href: "https://www.meetcursive.com/platform",
-            description: "Explore the full Cursive platform and its capabilities"
-          },
-          {
-            label: "Data Access",
-            href: "https://www.meetcursive.com/data-access",
-            description: "Learn about our 280M US consumer profiles and 140M+ business profiles"
-          },
-          {
-            label: "Pricing",
-            href: "https://www.meetcursive.com/pricing",
-            description: "View transparent pricing for all plans and services"
-          }
-        ]} />
-      </MachineSection>
-
-      {/* Contact */}
-      <MachineSection title="Contact">
-        <MachineList items={[
-          {
-            label: "Schedule a Call",
-            href: "https://cal.com/cursiveteam/30min",
-            description: "Book a personalized demo to see how Cursive can transform your lead generation"
-          },
-          {
-            label: "Website",
-            href: "https://www.meetcursive.com"
-          },
-          {
-            label: "Email",
-            href: "mailto:hey@meetcursive.com"
-          }
-        ]} />
-      </MachineSection>
-
-    </MachineContent>
-  </MachineView>
-</>
+          <MachineSection title="Contact">
+            <MachineList items={[
+              { label: "Get Started", href: "https://leads.meetcursive.com/get-leads", description: "Pick a plan and you are live in minutes" },
+              { label: "Website", href: "https://www.meetcursive.com" },
+              { label: "Email", href: "mailto:hey@meetcursive.com" },
+            ]} />
+          </MachineSection>
+        </MachineContent>
+      </MachineView>
+    </>
   )
 }
