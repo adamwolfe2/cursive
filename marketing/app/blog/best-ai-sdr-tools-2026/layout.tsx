@@ -39,15 +39,15 @@ const aiSdrFAQs = [
   },
   {
     question: 'What is the difference between AI SDR tools and sales engagement platforms?',
-    answer: 'Sales engagement platforms (Outreach, Salesloft, Apollo Sequences) manage and automate sequences for contacts your team manually identifies and imports. AI SDR tools go one step further by automating the identification and targeting step — finding who to reach out to based on intent signals, website behavior, or ICP criteria, then triggering outreach automatically. Cursive is an AI SDR tool: it identifies anonymous website visitors or intent-matched prospects, builds personalized emails automatically, and sends them within minutes of identifying a prospect.',
+    answer: 'Sales engagement platforms (Outreach, Salesloft, Apollo Sequences) manage and automate sequences for contacts your team manually identifies and imports. AI SDR tools go one step further by automating the identification and targeting step — finding who to reach out to based on intent signals, website behavior, or ICP criteria, then triggering outreach automatically. Cursive focuses on the buyer-identification step through its Visitor Pixel and fresh weekly Custom Audience lists, which teams can use with their preferred sales engagement platform.',
   },
   {
     question: 'What data do AI SDR tools use for personalization?',
-    answer: 'Top AI SDR tools personalize outreach using: job title and company data from LinkedIn/ZoomInfo; recent company news and press releases; technology stack signals (what software the company uses); intent data (topics being actively researched); website visit behavior (what pages the prospect viewed); LinkedIn activity (posts, comments, job changes); and funding announcements. Cursive uses actual website behavior — personalized emails referencing the specific pages a prospect visited — which produces significantly higher reply rates than generic data points.',
+    answer: 'Top AI SDR tools personalize outreach using: job title and company data from LinkedIn/ZoomInfo; recent company news and press releases; technology stack signals (what software the company uses); intent data (topics being actively researched); website visit behavior (what pages the prospect viewed); LinkedIn activity (posts, comments, job changes); and funding announcements. Cursive provides company and person-level website visitor data plus fresh weekly in-market audiences that teams can use to personalize outreach in their preferred engagement tools.',
   },
   {
     question: 'How do I measure AI SDR tool ROI?',
-    answer: 'Measure AI SDR ROI by tracking: (1) Cost per qualified meeting — total tool cost divided by meetings booked; (2) Pipeline generated per dollar spent; (3) Human SDR time saved per week; (4) Reply rate vs. your previous cold outreach baseline; (5) Conversion rate from AI-sourced leads to closed deals. Cursive customers typically see cost per qualified meeting of $50-$200 versus $500-$2,000 for fully-loaded human SDR costs. Track a 90-day window before comparing ROI across tools.',
+    answer: 'Measure AI SDR ROI by tracking: (1) Cost per qualified meeting — total tool cost divided by meetings booked; (2) Pipeline generated per dollar spent; (3) Human SDR time saved per week; (4) Reply rate vs. your previous cold outreach baseline; (5) Conversion rate from AI-sourced leads to closed deals. For Cursive, measure how many identified visitors and weekly in-market audience contacts become qualified opportunities relative to the selected $97, $197, or $247 monthly plan. Track a 90-day window before comparing ROI across tools.',
   },
 ]
 

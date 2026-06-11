@@ -32,7 +32,7 @@ const educationFAQs = [
   },
   {
     question: 'What results do education companies typically see with Cursive?',
-    answer: 'Education and EdTech companies using Cursive consistently report a meaningful increase in qualified pipeline from their existing website traffic, with many attributing new enterprise training contracts directly to Cursive-identified visitors. Starting at $1,000/month, Cursive enables EdTech companies to maximize the return on their content marketing and SEO investments by converting anonymous traffic into sales conversations.',
+    answer: 'Education and EdTech companies using Cursive consistently report a meaningful increase in qualified pipeline from their existing website traffic, with many attributing new enterprise training contracts directly to Cursive-identified visitors. The Visitor Pixel identifies companies and people on your site for $97/month. All plans are month-to-month with no setup fee, and you can cancel anytime at leads.meetcursive.com/get-leads.',
   },
 ]
 

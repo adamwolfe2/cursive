@@ -47,7 +47,7 @@ const intentDataFAQs = [
   },
   {
     question: 'How much does B2B intent data cost?',
-    answer: 'Intent data pricing varies widely by provider and scale. Enterprise platforms like Bombora and 6sense can cost $50,000-$200,000/year. Mid-market solutions range from $1,000-$5,000/month. Cursive\'s intent audiences are included in the $1,000/month platform plan, covering 280M+ US profiles with 60B+ behaviors & URLs scanned weekly across 30,000+ categories — no separate contract required.',
+    answer: 'Intent data pricing varies widely by provider and scale. Enterprise platforms like Bombora and 6sense can cost $50,000-$200,000/year. Mid-market solutions range from $1,000-$5,000/month. Cursive\'s Custom Audience plan delivers a fresh weekly in-market list to Google Sheets for $197/month, or you can combine it with the Visitor Pixel for $247/month. Plans are month-to-month with no setup fee, and you can cancel anytime at leads.meetcursive.com/get-leads.',
   },
 ]
 

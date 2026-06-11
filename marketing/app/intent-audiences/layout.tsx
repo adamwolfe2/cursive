@@ -43,7 +43,7 @@ const intentFAQs = [
   },
   {
     question: 'How does Cursive intent data compare to Bombora or 6sense?',
-    answer: 'Bombora and 6sense pull from the same ~40,000 signal-source publisher domains (out of ~700,000 SSP sites) that the rest of the industry uses. Cursive layers a proprietary 15M+ domain organic network on top of those SSP feeds \u2014 the actual moat. Updates run every 7 days vs monthly snapshots from many providers. Unlike 6sense (which requires $50k-$200k/year enterprise contracts), Cursive self-serve marketplace starts at $0.60/lead, managed services from $1,000/month, and committed-tier pricing from $15K/month.',
+    answer: 'Bombora and 6sense pull from the same ~40,000 signal-source publisher domains (out of ~700,000 SSP sites) that the rest of the industry uses. Cursive layers a proprietary 15M+ domain organic network on top of those SSP feeds \u2014 the actual moat. Updates run every 7 days vs monthly snapshots from many providers. Unlike 6sense (which requires $50k-$200k/year enterprise contracts), Cursive\'s Custom Audience plan delivers a fresh weekly in-market list to Google Sheets for $197/month, or you can combine it with the Visitor Pixel for $247/month. Plans are month-to-month with no setup fee, and you can cancel anytime at leads.meetcursive.com/get-leads.',
   },
   {
     question: 'Can I combine intent data with my own CRM data?',
