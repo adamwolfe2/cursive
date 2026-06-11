@@ -45,8 +45,8 @@ merge. Never drive paid traffic until the green-light gate is fully checked.
 | **S1** | Account-takeover containment | `fix/funnel-s1-account-takeover` | ✅ shipped (pushed, dual-reviewed) |
 | **S2** | Canonical attribution contract + migration | `fix/funnel-s2-pixel-attribution` | ✅ shipped; **migration APPLIED to prod** |
 | **S3** | Stamp `pixel_row_id` in producer (webhook) | `fix/funnel-s3-stamp-pixel-row` | ✅ shipped (pushed, Claude-reviewed SAFE) |
-| **S4** | Wire consumers + V4 install signal | `fix/funnel-s4-canonical-consumers` | ✅ shipped (pushed, dual-reviewed); source-CHECK migration **applied to prod**. Buyer-facing acceptance proven at S9 (needs deploy + S5 backfill). |
-| **S5** | Backfill + enforce attribution | _pending_ | ⬜ |
+| **S4** | Wire consumers + V4 install signal | `fix/funnel-s4-canonical-consumers` | ✅ shipped (pushed, dual-reviewed); source-CHECK migration **applied to prod**. Buyer-facing acceptance proven at S9 (needs deploy). |
+| **S5** | Backfill + enforce attribution | `fix/funnel-s5-backfill-attribution` | ✅ shipped + **applied to prod**: 97/98 attributed, **0 conflicts, 91%→1% unattributed**. Monitor/alert deferred to S9. |
 | **S6** | Signed per-pixel webhook credential | _pending_ | ⬜ |
 | **S7** | Atomic pixel↔workspace binding | _pending_ | ⬜ |
 | **S8** | Workspace-scoped identity/lead dedup | _pending_ | ⬜ |
