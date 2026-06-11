@@ -114,7 +114,7 @@ export default function BlogPost() {
                     <td className="border border-gray-300 p-3 font-bold">Cursive</td>
                     <td className="border border-gray-300 p-3">Enrichment + Visitor ID + Outreach</td>
                     <td className="border border-gray-300 p-3">85%+ visitor match rate</td>
-                    <td className="border border-gray-300 p-3">$99/mo</td>
+                    <td className="border border-gray-300 p-3">$97/mo</td>
                     <td className="border border-gray-300 p-3">All-in-one simplicity</td>
                   </tr>
                   <tr>
@@ -253,7 +253,7 @@ export default function BlogPost() {
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="w-4 h-4 text-green-600" />
-                      Predictable pricing from $99/mo
+                      Predictable pricing from $97/mo
                     </li>
                   </ul>
                 </div>
@@ -279,7 +279,7 @@ export default function BlogPost() {
               <div className="bg-white rounded-lg p-4">
                 <div className="flex justify-between items-center mb-2">
                   <span className="font-bold">Pricing:</span>
-                  <span className="text-lg font-bold text-blue-600">$99 - $999/mo</span>
+                  <span className="text-lg font-bold text-blue-600">$97 - $247/mo</span>
                 </div>
                 <p className="text-sm text-gray-600">
                   <strong>Best for:</strong> Teams that want enrichment as part of a complete lead generation workflow, not as a separate project. Replaces Clay + outreach tool + visitor ID tool. See <Link href="/pricing" className="text-blue-600 hover:underline">pricing details</Link>.
@@ -838,10 +838,10 @@ export default function BlogPost() {
                 </div>
                 <div className="bg-blue-50 rounded-lg p-4 border-2 border-blue-500">
                   <div className="flex justify-between items-center mb-2">
-                    <span className="font-bold">Cursive (All-in-One)</span>
-                    <span className="text-lg font-bold text-blue-600">$99 - $999/mo</span>
+                    <span className="font-bold">Cursive Pixel + Audience Bundle</span>
+                    <span className="text-lg font-bold text-blue-600">$97 - $247/mo</span>
                   </div>
-                  <p className="text-sm text-gray-600">Enrichment + Visitor ID + Intent data + Multi-channel outreach + AI SDR = Everything included. See <Link href="/pricing" className="text-blue-600 hover:underline">pricing</Link>.</p>
+                  <p className="text-sm text-gray-600">Visitor Pixel + a fresh weekly Custom Audience = both self-serve plans bundled. See <Link href="/pricing" className="text-blue-600 hover:underline">pricing</Link>.</p>
                 </div>
                 <div className="bg-white rounded-lg p-4 border border-gray-200">
                   <div className="flex justify-between items-center mb-2">
@@ -1074,7 +1074,7 @@ export default function BlogPost() {
                   <tr className="bg-blue-50">
                     <td className="border p-2 font-bold">Cursive</td>
                     <td className="border p-2">Enrichment + Visitor ID + Outreach</td>
-                    <td className="border p-2">$99/mo</td>
+                    <td className="border p-2">$97/mo</td>
                     <td className="border p-2">All-in-one simplicity, 85%+ visitor match rate</td>
                   </tr>
                   <tr>
@@ -1184,7 +1184,7 @@ export default function BlogPost() {
           <MachineSection title="Pricing Comparison (10,000 Leads/Month)">
             <MachineList items={[
               "Clay + Outreach Tool: $500-$1,200/mo (Clay $149-349 + data credits $100-300 + outreach $60-200 + visitor ID $99+)",
-              "Cursive (All-in-One): $99-$999/mo (enrichment + visitor ID + intent + outreach + AI SDR included)",
+              "Cursive: $97-$247/mo (Visitor Pixel, Custom Audience, or both)",
               "Apollo (Data + Outreach): $49-$149/user/mo (database + email sequencing, no visitor ID)",
               "ZoomInfo (Enterprise): $1,250-$4,167/mo ($15k-50k/year annual contracts, no outreach)",
               "Lusha (Contact Data): $29-$79/user/mo (phone/email only, limited company data)"
@@ -1256,7 +1256,7 @@ export default function BlogPost() {
             </p>
             <MachineList items={[
               { label: "Platform Overview", href: "/platform", description: "Visitor identification, intent data, AI outreach" },
-              { label: "Pricing", href: "/pricing", description: "Self-serve marketplace + done-for-you services" },
+              { label: "Pricing", href: "/pricing", description: "Three self-serve, month-to-month plans" },
               { label: "Visitor Identification", href: "/visitor-identification", description: "85%+ identification rate for B2B traffic" },
               { label: "Free AI Audit", href: "/free-audit", description: "See hidden pipeline from unidentified visitors" },
               { label: "Book a Demo", href: "https://cal.com/cursiveteam/30min", description: "30-minute consultation and product walkthrough" }

@@ -22,7 +22,7 @@ const faqs = [
   },
   {
     question: "How much does it really cost to replace Cursive's features with RB2B plus other tools?",
-    answer: "RB2B costs around $500/month for visitor ID alone. To replicate Cursive's full functionality, you would add Outreach or SalesLoft ($100-150/user/month), a LinkedIn automation tool ($80-200/month), an intent data provider ($500+/month), and a data enrichment tool ($100-300/month). The total cost of ownership typically reaches $1,500-2,500/month compared to Cursive's all-in-one price of $1,000/month."
+    answer: "RB2B costs around $500/month for visitor ID alone. Cursive's Visitor Pixel is $97/month, Custom Audience is $197/month, and the Pixel + Audience Bundle is $247/month. Every Cursive plan is self-serve and month-to-month, with no setup fee and the flexibility to cancel anytime."
   },
   {
     question: "Does RB2B offer intent data like Cursive?",
@@ -34,7 +34,7 @@ const faqs = [
   },
   {
     question: "Which tool is better for small teams with limited budget?",
-    answer: "It depends on what you need. If you only need raw visitor data and already have outreach tools in place, RB2B at $500/month is cheaper upfront. However, if you factor in the cost of separate outreach, enrichment, and intent tools, Cursive at $1,000/month is more cost-effective and eliminates tool sprawl. For teams under $500/month budget, Cursive also offers a free audit to show what is possible before you commit."
+    answer: "It depends on what you need. For person-level visitor identification, Cursive's Visitor Pixel is $97/month. For a fresh weekly list of in-market buyers delivered to Google Sheets, Custom Audience is $197/month. Teams that need both can choose the $247/month Pixel + Audience Bundle. All plans are month-to-month with no setup fee and can be canceled anytime."
   },
   {
     question: "Does Cursive work with my existing CRM and sales tools?",
@@ -142,12 +142,12 @@ export default function BlogPost() {
                   </tr>
                   <tr className="bg-gray-50">
                     <td className="border border-gray-300 p-3 font-medium">Pricing</td>
-                    <td className="border border-gray-300 p-3 font-bold text-blue-600">~$1,000/mo (all-in-one)</td>
+                    <td className="border border-gray-300 p-3 font-bold text-blue-600">$97-$247/mo (self-serve)</td>
                     <td className="border border-gray-300 p-3">~$500/mo (ID only)</td>
                   </tr>
                   <tr>
                     <td className="border border-gray-300 p-3 font-medium">True Cost of Ownership</td>
-                    <td className="border border-gray-300 p-3 font-bold text-blue-600">~$1,000/mo</td>
+                    <td className="border border-gray-300 p-3 font-bold text-blue-600">$97-$247/mo</td>
                     <td className="border border-gray-300 p-3">~$1,500-2,500/mo with add-ons</td>
                   </tr>
                 </tbody>
@@ -285,7 +285,7 @@ export default function BlogPost() {
               <h4 className="font-bold text-lg mb-4">Total Cost of Ownership Comparison</h4>
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="bg-white rounded-lg p-6 border border-blue-200">
-                  <h5 className="font-bold text-blue-600 mb-3">Cursive (All-in-One)</h5>
+                  <h5 className="font-bold text-blue-600 mb-3">Cursive Self-Serve Plans</h5>
                   <ul className="space-y-2 text-sm">
                     <li className="flex justify-between"><span>Visitor identification</span><span className="font-medium">Included</span></li>
                     <li className="flex justify-between"><span>AI SDR + outreach</span><span className="font-medium">Included</span></li>
@@ -293,7 +293,7 @@ export default function BlogPost() {
                     <li className="flex justify-between"><span>Lead enrichment</span><span className="font-medium">Included</span></li>
                     <li className="flex justify-between"><span>Audience segmentation</span><span className="font-medium">Included</span></li>
                     <li className="flex justify-between"><span>CRM integration</span><span className="font-medium">Included</span></li>
-                    <li className="border-t pt-2 flex justify-between font-bold text-blue-600"><span>Total</span><span>~$1,000/mo</span></li>
+                    <li className="border-t pt-2 flex justify-between font-bold text-blue-600"><span>Cursive plans</span><span>$97-$247/mo</span></li>
                   </ul>
                 </div>
                 <div className="bg-white rounded-lg p-6 border border-gray-200">
@@ -325,7 +325,7 @@ export default function BlogPost() {
               <ul className="space-y-3 text-sm">
                 <li className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-green-600 mt-0.5 shrink-0" />
-                  <span>You want an all-in-one platform that goes from identification to booked meetings without extra tools</span>
+                  <span>You want person-level visitor identification, weekly in-market buyer lists, or both</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-green-600 mt-0.5 shrink-0" />
@@ -422,7 +422,7 @@ export default function BlogPost() {
               <strong>RB2B is a solid choice</strong> if you genuinely only need raw visitor identification data, you already have a well-oiled outreach machine with tools like Outreach or SalesLoft, and you have SDRs who are disciplined about following up on Slack notifications within minutes. In that scenario, RB2B's $500/month price point delivers real value as a focused point solution.
             </p>
             <p>
-              <strong>Cursive is the better choice</strong> for most B2B teams because it eliminates the gap between identification and engagement. The higher match rate, built-in AI SDR, multi-channel outreach, native intent data, and CRM integration mean you get more pipeline from the same traffic without managing a Frankenstein stack of point solutions. At $1,000/month, it costs less than the RB2B-plus-tools equivalent while delivering a more cohesive experience.
+              <strong>Cursive is the better choice</strong> for B2B teams that want person-level visitor identification, fresh weekly lists of in-market buyers, or both. Visitor Pixel costs $97/month, Custom Audience costs $197/month, and the Pixel + Audience Bundle costs $247/month. Every plan is month-to-month with no setup fee and can be canceled anytime.
             </p>
             <p>
               If you are evaluating visitor identification tools, we strongly recommend starting with a <Link href="/free-audit">free Cursive audit</Link> to see exactly how many visitors you are missing and what the revenue impact would be. The audit is free, takes five minutes to set up, and gives you hard data to base your decision on.
@@ -514,14 +514,14 @@ export default function BlogPost() {
               "Intent Data: RB2B basic page views. Cursive native scoring with behavioral + third-party signals",
               "Audience Builder: RB2B no. Cursive yes, dynamic multi-dimensional segments",
               "CRM Integration: RB2B basic push. Cursive bidirectional sync with AI scoring",
-              "Pricing: RB2B $199-399/mo (ID only). Cursive ~$1,000/mo (full stack)"
+              "Pricing: RB2B $199-399/mo (ID only). Cursive $97-$247/mo across three self-serve plans"
             ]} />
           </MachineSection>
 
           <MachineSection title="Total Cost of Ownership">
             <MachineList items={[
               "RB2B stack: RB2B ($199-399/mo) + email tool ($150/user/mo) + LinkedIn tool ($100-200/mo) + intent data ($500+/mo) + enrichment ($100-300/mo) = $1,050-2,500+/mo",
-              "Cursive: single platform (~$1,000/mo) includes identification + enrichment + intent + multi-channel outreach + audience builder",
+              "Cursive: Visitor Pixel ($97/mo), Custom Audience ($197/mo), or Pixel + Audience Bundle ($247/mo)",
               "Cursive eliminates tool fragmentation: one login, one dashboard, no integration maintenance"
             ]} />
           </MachineSection>

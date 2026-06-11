@@ -110,7 +110,7 @@ export default function BlogPost() {
 
             <h3>Cursive</h3>
             <p>
-              Cursive identifies anonymous website visitors and converts them into qualified pipeline using AI-powered outreach. The platform combines visitor identification (up to 70% match rates), real-time enrichment against 420M+ profiles, and autonomous AI agents that handle personalized email, LinkedIn, and SMS outreach within hours of a visit. For teams without SDR capacity, Cursive also offers done-for-you services where their team runs campaigns and books meetings on your behalf.
+              Cursive identifies anonymous website visitors and helps teams reach in-market buyers. Visitor Pixel identifies companies and people visiting your site, Custom Audience delivers a fresh weekly list of in-market buyers to Google Sheets, and the Pixel + Audience Bundle combines both.
             </p>
             <p><strong>Limitation:</strong> Primarily focused on converting inbound web traffic rather than pure cold outbound campaigns.</p>
 
@@ -211,7 +211,7 @@ export default function BlogPost() {
                 </tr>
               </thead>
               <tbody>
-                <tr><td>Cursive</td><td>Converting anonymous web visitors</td><td>Custom</td><td>AI-powered visitor outreach</td><td>No</td></tr>
+                <tr><td>Cursive</td><td>Converting anonymous web visitors</td><td>$97/mo</td><td>AI-powered visitor outreach</td><td>No</td></tr>
                 <tr><td>Apollo.io</td><td>All-in-one data and outreach</td><td>$49/user/mo</td><td>Large database + engagement</td><td>Yes</td></tr>
                 <tr><td>ZoomInfo</td><td>Enterprise data accuracy</td><td>~$15k/yr</td><td>Premium verified data</td><td>No</td></tr>
                 <tr><td>LinkedIn Sales Nav</td><td>Relationship-based selling</td><td>$99/user/mo</td><td>LinkedIn network access</td><td>Trial only</td></tr>
@@ -430,7 +430,7 @@ export default function BlogPost() {
 
           <MachineSection title="Top 15 Tools Overview">
             <MachineList items={[
-              "Cursive -- visitor ID + AI outreach, up to 70% match rates, 420M+ profiles, custom pricing",
+              "Cursive -- visitor ID + in-market buyer audiences, up to 70% match rates, plans from $97/mo",
               "Apollo.io -- 275M+ database + email sequencing, $49/user/mo, generous free tier",
               "ZoomInfo Sales -- enterprise data accuracy with org charts and intent signals, ~$15K/yr",
               "LinkedIn Sales Navigator -- advanced LinkedIn search and InMail, $99/user/mo",
@@ -495,7 +495,7 @@ export default function BlogPost() {
             </p>
             <MachineList items={[
               { label: "Platform Overview", href: "/platform", description: "Visitor identification, intent data, AI outreach" },
-              { label: "Pricing", href: "/pricing", description: "Self-serve marketplace + done-for-you services" },
+              { label: "Pricing", href: "/pricing", description: "Three self-serve plans from $97/month" },
               { label: "Book a Demo", href: "/book", description: "See Cursive in real-time" }
             ]} />
           </MachineSection>

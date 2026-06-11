@@ -138,7 +138,7 @@ export default function BlogPost() {
                   <td>Cursive</td>
                   <td>Visitor ID + AI outreach</td>
                   <td>70% match rate, real-time enrichment</td>
-                  <td>Platform + credits</td>
+                  <td>Self-serve plans from $97/mo</td>
                 </tr>
                 <tr>
                   <td>Apollo.io</td>
@@ -240,7 +240,7 @@ export default function BlogPost() {
               <li><strong>200+ native integrations:</strong> Real-time sync to Salesforce, HubSpot, and your entire stack</li>
             </ul>
             <p>
-              Two paths to get started: self-serve through the Lead Marketplace or done-for-you services where Cursive's team runs campaigns and books meetings on your behalf.
+              Cursive offers three month-to-month self-serve plans: Visitor Pixel at $97/mo, Custom Audience at $197/mo, and Pixel + Audience Bundle at $247/mo. There is no setup fee, and you can cancel anytime.
             </p>
 
             <h3>Apollo.io</h3>
@@ -494,7 +494,7 @@ export default function BlogPost() {
 
           <MachineSection title="15 Tools Compared">
             <MachineList items={[
-              "Cursive - Visitor ID + AI outreach, 70% match rate, real-time enrichment, platform + credits pricing",
+              "Cursive - Visitor ID + AI outreach, 70% match rate, real-time enrichment, self-serve plans from $97/mo",
               "Apollo.io - Prospecting + engagement, 275M+ contact database, per-seat + credits",
               "Gong - Conversation intelligence, AI-driven call analytics, per-seat enterprise",
               "Outreach - Enterprise sales engagement, multi-channel sequences, per-seat enterprise",
@@ -557,7 +557,7 @@ export default function BlogPost() {
             </p>
             <MachineList items={[
               { label: "Platform Overview", href: "/platform", description: "Visitor identification, intent data, AI outreach" },
-              { label: "Pricing", href: "/pricing", description: "Self-serve marketplace + done-for-you services" },
+              { label: "Pricing", href: "/pricing", description: "Self-serve plans at $97, $197, or $247 per month" },
               { label: "Book a Demo", href: "/book", description: "See Cursive in action" }
             ]} />
           </MachineSection>

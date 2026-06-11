@@ -176,7 +176,7 @@ export default function BlogPost() {
             </p>
 
             <p>
-              <strong><code>getCursivePricing</code></strong> returns structured pricing for both our self-serve marketplace (credit packages from $0.60/lead) and managed <a href="/services">service tiers</a> (Data at $1,000/mo, Outbound at $2,500/mo, Pipeline at $5,000/mo), including annual discounts, feature lists, and signup URLs.
+              <strong><code>getCursivePricing</code></strong> returns structured pricing for our three month-to-month self-serve plans: Visitor Pixel at $97/mo, Custom Audience at $197/mo, and the Pixel + Audience Bundle at $247/mo, including feature lists and signup URLs.
             </p>
 
             <p>
@@ -188,7 +188,7 @@ export default function BlogPost() {
             </p>
 
             <p>
-              <strong><code>bookCursiveDemo</code></strong> returns a cal.com booking URL with context about what to expect on the call, plus alternative actions like the free audit and marketplace signup.
+              <strong><code>bookCursiveDemo</code></strong> returns a cal.com booking URL with context about what to expect on the call, plus alternative actions like the free audit and self-serve plan signup.
             </p>
 
             <p>
@@ -220,7 +220,7 @@ export default function BlogPost() {
   execute: async (params) => {
     // Returns structured comparison data as JSON
     return {
-      cursive: { visitor_id_rate: "70%", starting_price: "$1,000/mo", ... },
+      cursive: { visitor_id_rate: "70%", starting_price: "$97/mo", ... },
       competitor: { name: params.competitor, visitor_id_rate: "~30-40%", ... },
       full_comparison_url: "https://www.meetcursive.com/blog/..."
     }

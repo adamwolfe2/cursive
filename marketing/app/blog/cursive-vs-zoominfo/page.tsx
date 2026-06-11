@@ -18,7 +18,7 @@ const faqs = [
   },
   {
     question: "Is ZoomInfo worth the price? Are there cheaper alternatives?",
-    answer: "ZoomInfo costs $15,000-$50,000+/year and delivers genuine value for enterprise sales teams that need deep US B2B database coverage, technographic data, and org chart intelligence. For most startups, SMBs, and even many mid-market companies, the cost is difficult to justify -- especially when tools like Cursive (starting at $1,000/month managed) combine visitor identification, intent data, and AI-powered outreach in one platform at a fraction of the price. Apollo.io offers a free tier for teams just starting out."
+    answer: "ZoomInfo costs $15,000-$50,000+/year and delivers genuine value for enterprise sales teams that need deep US B2B database coverage, technographic data, and org chart intelligence. For most startups, SMBs, and even many mid-market companies, the cost is difficult to justify -- especially when Cursive offers self-serve visitor identification and in-market buyer audiences starting at $97/month. Apollo.io offers a free tier for teams just starting out."
   },
   {
     question: "Does ZoomInfo include visitor identification?",
@@ -30,7 +30,7 @@ const faqs = [
   },
   {
     question: "Can small businesses afford ZoomInfo? What is the alternative?",
-    answer: "ZoomInfo is not designed for small businesses. With minimum contracts often starting at $15,000/year and complex onboarding, it is built for enterprise sales teams with dedicated RevOps and large data budgets. For small businesses, Cursive's self-serve marketplace at $0.60/lead or managed plans from $1,000/month offer far more flexibility and proportional value. Apollo.io's free tier is another option for teams just getting started. Both provide substantially more pricing flexibility than ZoomInfo's annual contracts."
+    answer: "ZoomInfo is not designed for small businesses. With minimum contracts often starting at $15,000/year and complex onboarding, it is built for enterprise sales teams with dedicated RevOps and large data budgets. For small businesses, Cursive's three self-serve plans range from $97 to $247 per month, with no setup fee and cancellation anytime. Apollo.io's free tier is another option for teams just getting started. Both provide substantially more pricing flexibility than ZoomInfo's annual contracts."
   },
   {
     question: "What do ZoomInfo vs Cursive customers say?",
@@ -127,7 +127,7 @@ export default function BlogPost() {
                   <tbody className="bg-white">
                     <tr>
                       <td className="border border-gray-300 p-3 font-bold">Starting Price</td>
-                      <td className="border border-gray-300 p-3 text-green-600 font-bold">$0.60/lead or $1k/mo managed</td>
+                      <td className="border border-gray-300 p-3 text-green-600 font-bold">$97/mo</td>
                       <td className="border border-gray-300 p-3 text-red-600">$15,000-$50,000+/year</td>
                     </tr>
                     <tr className="bg-gray-50">
@@ -201,10 +201,10 @@ export default function BlogPost() {
                 difficult.
               </p>
               <p>
-                Cursive offers two models: a self-serve marketplace at $0.60/lead where you pay only for what you
-                use, or managed plans starting at $1,000/month for done-for-you pipeline generation including
-                visitor identification, enrichment, and AI-powered outreach. There are no annual contracts and no
-                hidden add-on fees -- visitor identification, intent data, and multi-channel outreach are included.
+                Cursive offers three self-serve plans: Visitor Pixel at $97/month to identify companies and people
+                visiting your site, Custom Audience at $197/month for a fresh weekly list of in-market buyers delivered
+                to Google Sheets, and the Pixel + Audience Bundle at $247/month. Every plan is month-to-month, has no
+                setup fee, and can be canceled anytime.
               </p>
 
               <div className="not-prose bg-gradient-to-br from-green-50 to-blue-50 rounded-xl p-8 my-8 border-2 border-green-500">
@@ -239,11 +239,11 @@ export default function BlogPost() {
                     </div>
                   </div>
                   <div className="bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg p-6">
-                    <h5 className="font-bold text-lg mb-4 text-blue-900">Cursive (Managed, first year)</h5>
+                    <h5 className="font-bold text-lg mb-4 text-blue-900">Cursive (Self-Serve, first year)</h5>
                     <div className="space-y-3 text-sm">
                       <div className="flex justify-between">
-                        <span>Managed plan:</span>
-                        <span className="font-bold">$1,000-5,000/mo</span>
+                        <span>Self-serve plans:</span>
+                        <span className="font-bold">$97-247/mo</span>
                       </div>
                       <div className="flex justify-between">
                         <span>Visitor identification:</span>
@@ -259,7 +259,7 @@ export default function BlogPost() {
                       </div>
                       <div className="border-t pt-3 flex justify-between text-lg">
                         <span className="font-bold">Typical first year:</span>
-                        <span className="font-bold text-green-600">$12,000-60,000</span>
+                        <span className="font-bold text-green-600">$1,164-2,964</span>
                       </div>
                       <p className="text-xs text-blue-800 mt-2">
                         Month-to-month. Cancel anytime. All capabilities included.
@@ -351,7 +351,7 @@ export default function BlogPost() {
                     </li>
                     <li className="flex items-start gap-2">
                       <Check className="w-4 h-4 text-green-600 mt-1 flex-shrink-0" />
-                      <span>Core product feature, included in all plans</span>
+                      <span>Included with Visitor Pixel and the Pixel + Audience Bundle</span>
                     </li>
                   </ul>
                 </div>
@@ -616,7 +616,7 @@ export default function BlogPost() {
                     </li>
                     <li className="flex items-start gap-2">
                       <Check className="w-4 h-4 text-green-600 mt-1 flex-shrink-0" />
-                      <span>Self-serve marketplace at $0.60/lead (pay per use)</span>
+                      <span>Three self-serve plans from $97-$247/month</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <Check className="w-4 h-4 text-green-600 mt-1 flex-shrink-0" />
@@ -792,7 +792,7 @@ export default function BlogPost() {
                 60B+ behaviors & URLs scanned weekly,{" "}
                 <Link href="/platform" className="text-blue-600 hover:underline">AI-powered multi-channel outreach</Link>,
                 95%+ email deliverability, 200+ CRM integrations, and month-to-month pricing starting at
-                $1,000/month -- Cursive delivers more actionable pipeline per dollar than any database-first
+                $97/month -- Cursive delivers more actionable pipeline per dollar than any database-first
                 platform at any price point.
               </p>
               <p>
@@ -874,7 +874,7 @@ export default function BlogPost() {
 
           <MachineSection title="Quick Comparison">
             <MachineList items={[
-              "Cursive starting price: $0.60/lead (self-serve) or $1k/month managed. ZoomInfo: $15,000-$50,000+/year",
+              "Cursive starting price: $97/month self-serve. ZoomInfo: $15,000-$50,000+/year",
               "Cursive contract: Month-to-month. ZoomInfo: Annual (multi-year common)",
               "Cursive visitor ID: 70% person-level. ZoomInfo WebSights: Company-level only",
               "Cursive intent data: 60B+ signals (1st party + 3rd party). ZoomInfo: Bombora 3rd-party only",
@@ -895,7 +895,7 @@ export default function BlogPost() {
               "Primary function: ZoomInfo = cold database search + export. Cursive = warm visitor identification + AI outreach",
               "Visitor identification: ZoomInfo company-level only (WebSights). Cursive 70% person-level (name, email, title, LinkedIn, behavior)",
               "Intent data: ZoomInfo uses Bombora (3rd-party only). Cursive uses 60B+ signals including 1st-party website behavioral data",
-              "Outreach: ZoomInfo offers Engage as expensive add-on. Cursive has built-in AI SDR included in all plans",
+              "Plan focus: ZoomInfo sells enterprise data and add-ons. Cursive offers visitor identification and in-market buyer audiences",
               "Response rates: Cold ZoomInfo outbound 1-3%. Cursive warm visitor outreach 20-30%",
               "Pricing flexibility: ZoomInfo annual contracts, hard to exit. Cursive month-to-month, cancel anytime"
             ]} />
@@ -905,8 +905,8 @@ export default function BlogPost() {
             <MachineList items={[
               "ZoomInfo SalesOS (5 seats): $18,000-25,000/yr base, plus add-ons for Engage/WebSights/Intent",
               "ZoomInfo typical first year (5 seats, with add-ons): $20,000-35,000+",
-              "Cursive managed plan: $1,000-5,000/month (all capabilities included)",
-              "Cursive self-serve: $0.60/lead marketplace pricing",
+              "Cursive Visitor Pixel: $97/month to identify companies and people visiting your site",
+              "Cursive Custom Audience: $197/month; Pixel + Audience Bundle: $247/month",
               "Cursive contract: Month-to-month, no annual lock-in",
               "ZoomInfo contract: Annual required, multi-year common, cancellation difficult"
             ]} />
@@ -980,7 +980,7 @@ export default function BlogPost() {
               { label: "Visitor Identification", href: "/visitor-identification", description: "70% person-level identification rate, industry-leading" },
               { label: "Intent Audiences", href: "/intent-audiences", description: "60B+ behaviors & URLs scanned weekly across 30,000+ categories" },
               { label: "Platform Overview", href: "/platform", description: "AI SDR: email + LinkedIn + SMS + direct mail outreach, 95%+ deliverability" },
-              { label: "Pricing", href: "/pricing", description: "$0.60/lead self-serve or $1k/month managed, month-to-month" },
+              { label: "Pricing", href: "/pricing", description: "$97, $197, or $247/month self-serve; no setup fee; cancel anytime" },
               { label: "CRM Integrations", href: "/integrations", description: "200+ native integrations including Salesforce, HubSpot, Pipedrive" }
             ]} />
           </MachineSection>

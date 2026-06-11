@@ -256,7 +256,7 @@ export default function BlogPost() {
                     <td>Cursive</td>
                     <td>Website visitor conversion</td>
                     <td>Email, LinkedIn, SMS</td>
-                    <td>$1,000/mo</td>
+                    <td>$97/mo</td>
                     <td>200+ native integrations</td>
                   </tr>
                 </tbody>
@@ -320,7 +320,7 @@ export default function BlogPost() {
 
               <h3>Credit-based and pay-per-lead pricing</h3>
               <p>
-                Some platforms like Apollo and Cursive's Lead Marketplace use credits for contact unlocks or enrichments. This model works well for teams with variable prospecting volumes.
+                Some platforms like Apollo use credits for contact unlocks or enrichments. Cursive instead offers three month-to-month self-serve plans: Visitor Pixel at $97/month, Custom Audience at $197/month, and the Pixel + Audience Bundle at $247/month.
               </p>
 
               <h3>How to calculate ROI on your investment</h3>
@@ -494,7 +494,7 @@ export default function BlogPost() {
               "Instantly - High-volume email only, $37/mo, unlimited sending accounts",
               "Reply.io - SMB multichannel, $60/user/mo, AI email writing",
               "Mixmax - Gmail-native teams, $29/user/mo, one-click scheduling",
-              "Cursive - Website visitor conversion, $1,000/mo, AI SDRs + visitor identification + 200+ integrations"
+              "Cursive - Visitor identification + in-market audiences, self-serve plans from $97/mo"
             ]} />
           </MachineSection>
 
@@ -523,7 +523,7 @@ export default function BlogPost() {
             </p>
             <MachineList items={[
               { label: "Platform Overview", href: "/platform", description: "Visitor identification, intent data, AI outreach" },
-              { label: "Pricing", href: "/pricing", description: "Self-serve marketplace + done-for-you services" },
+              { label: "Pricing", href: "/pricing", description: "Three self-serve plans from $97/mo" },
               { label: "Book a Demo", href: "/book", description: "See Cursive in real-time" }
             ]} />
           </MachineSection>

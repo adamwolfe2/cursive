@@ -23,11 +23,11 @@ const faqs = [
   },
   {
     question: "What is the most affordable 6sense alternative?",
-    answer: "Cursive offers the most accessible entry point for intent data and visitor identification, with self-serve credits starting at $99 and done-for-you managed campaigns starting at $1,000 per month. For pure intent data, Bombora offers data licensing that can be more affordable than 6sense depending on volume. Leadfeeder by Dealfront provides website visitor tracking starting around $99 per month for basic company-level identification."
+    answer: "Cursive offers an accessible entry point for intent data and visitor identification through three month-to-month self-serve plans: Visitor Pixel at $97/mo, Custom Audience at $197/mo, and Pixel + Audience Bundle at $247/mo. There is no setup fee, and you can cancel anytime. For pure intent data, Bombora offers data licensing that can be more affordable than 6sense depending on volume. Leadfeeder by Dealfront provides website visitor tracking starting around $99 per month for basic company-level identification."
   },
   {
     question: "Can I get intent data without paying enterprise prices?",
-    answer: "Yes. While 6sense bundles intent data with a full ABM suite at enterprise prices, several alternatives offer intent data as a standalone capability. Cursive provides real-time first-party intent signals from website visitor behavior combined with person-level identification starting at $99 in self-serve credits. Bombora offers third-party intent data through Company Surge that can be purchased separately. ZoomInfo includes buyer intent in its higher-tier plans. The key is deciding whether you need third-party research intent data or first-party website engagement intent, as they serve different purposes."
+    answer: "Yes. While 6sense bundles intent data with a full ABM suite at enterprise prices, several alternatives offer intent data as a standalone capability. Cursive offers Visitor Pixel at $97/mo, Custom Audience at $197/mo, and Pixel + Audience Bundle at $247/mo, all month-to-month with no setup fee and the option to cancel anytime. Bombora offers third-party intent data through Company Surge that can be purchased separately. ZoomInfo includes buyer intent in its higher-tier plans. The key is deciding whether you need third-party research intent data or first-party website engagement intent, as they serve different purposes."
   },
   {
     question: "Is Cursive a good 6sense alternative?",
@@ -40,7 +40,7 @@ const faqs = [
 ]
 
 const relatedPosts = [
-  { title: "Cursive vs 6sense: $1k/mo vs $50k-$200k/yr", description: "Full comparison of Cursive and 6sense for B2B revenue intelligence.", href: "/blog/cursive-vs-6sense" },
+  { title: "Cursive vs 6sense: Self-Serve vs Enterprise", description: "Full comparison of Cursive and 6sense for B2B revenue intelligence.", href: "/blog/cursive-vs-6sense" },
   { title: "6sense vs Cursive: Intent Data Compared", description: "The 6sense-first perspective on this head-to-head comparison.", href: "/blog/6sense-vs-cursive-comparison" },
   { title: "Intent Data Providers Compared", description: "8 intent data platforms ranked by signal volume and pricing.", href: "/blog/intent-data-providers-comparison" },
 ]
@@ -156,7 +156,7 @@ export default function BlogPost() {
                     <td className="border border-gray-300 p-3 text-green-600 font-bold">First-party + AI</td>
                     <td className="border border-gray-300 p-3 text-green-600 font-bold">Person-level (70%)</td>
                     <td className="border border-gray-300 p-3">Intent scoring</td>
-                    <td className="border border-gray-300 p-3">From $99 credits</td>
+                    <td className="border border-gray-300 p-3">$97-$247/mo</td>
                     <td className="border border-gray-300 p-3">Same day</td>
                     <td className="border border-gray-300 p-3">SMB/Mid-market</td>
                   </tr>
@@ -313,8 +313,8 @@ export default function BlogPost() {
                 <Link href="/audience-builder" className="text-blue-600 hover:underline">audience builder</Link> lets
                 you define ICP filters, and the{" "}
                 <Link href="/visitor-identification" className="text-blue-600 hover:underline">visitor identification</Link> engine
-                tells you exactly when those accounts show up. No enterprise contract needed. Self-serve credits start
-                at $99, or opt for done-for-you managed campaigns starting at $1,000 per month.
+                tells you exactly when those accounts show up. No enterprise contract needed. Choose Visitor Pixel at
+                $97/mo, Custom Audience at $197/mo, or the Pixel + Audience Bundle at $247/mo.
               </p>
 
               <div className="grid md:grid-cols-2 gap-6 mb-4">
@@ -339,7 +339,7 @@ export default function BlogPost() {
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="w-4 h-4 text-green-600" />
-                      Self-serve from $99 credits; no enterprise contract
+                      Month-to-month self-serve plans from $97/mo; no setup fee
                     </li>
                   </ul>
                 </div>
@@ -365,7 +365,7 @@ export default function BlogPost() {
               <div className="bg-white rounded-lg p-4">
                 <div className="flex justify-between items-center mb-2">
                   <span className="font-bold">Pricing:</span>
-                  <span className="text-lg font-bold text-blue-600">From $99 credits / $1,000/mo managed</span>
+                  <span className="text-lg font-bold text-blue-600">$97 / $197 / $247 per month</span>
                 </div>
                 <p className="text-sm text-gray-600">
                   <strong>Best for:</strong> B2B companies that want to identify website visitors showing intent and
@@ -937,8 +937,8 @@ export default function BlogPost() {
                   <div>
                     <strong>You want to identify website visitors and engage them automatically:</strong> Choose{" "}
                     <Link href="/" className="text-blue-600 hover:underline">Cursive</Link>. It combines person-level
-                    visitor identification with AI-powered outreach in one platform. Self-serve credits from $99 or
-                    done-for-you from $1,000/mo.
+                    visitor identification with AI-powered outreach in one platform. Self-serve plans are $97, $197,
+                    or $247 per month, with no setup fee and the option to cancel anytime.
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
@@ -1013,8 +1013,8 @@ export default function BlogPost() {
             <p>
               For SMBs and mid-market companies that want the highest-ROI intent-based selling motion,{" "}
               <Link href="/">Cursive</Link> delivers person-level visitor identification, real-time intent signals,
-              and AI-powered multi-channel outreach starting with self-serve credits at $99 or managed done-for-you
-              campaigns at $1,000/mo. If you need enterprise ABM with advertising, Demandbase is the closest lateral
+              and AI-powered multi-channel outreach through month-to-month self-serve plans at $97, $197, or $247
+              per month. If you need enterprise ABM with advertising, Demandbase is the closest lateral
               move. If you need standalone intent data, Bombora is the industry standard. And if budget is the primary
               constraint, Leadfeeder gives you basic visitor tracking for under $100/mo.
             </p>
@@ -1142,7 +1142,7 @@ export default function BlogPost() {
           <MachineSection title="Key Takeaways">
             <MachineList items={[
               "6sense enterprise pricing: $50k-$100k+ annually with 6-12 week implementation",
-              "Top alternative: Cursive ($99 credits / $1k/mo managed) for person-level ID + AI outreach",
+              "Top alternative: Cursive ($97/$197/$247 per month, self-serve) for person-level ID + AI outreach",
               "Demandbase: Enterprise ABM with strong display advertising ($50k-$150k+/year)",
               "Bombora: Pure third-party intent data source ($25k-$80k+/year)",
               "ZoomInfo: Contact database + buyer intent add-on ($15k-$50k+/year)",
@@ -1169,7 +1169,7 @@ export default function BlogPost() {
                     <td className="border border-gray-300 p-2 font-bold">Cursive</td>
                     <td className="border border-gray-300 p-2">First-party + AI</td>
                     <td className="border border-gray-300 p-2">Person-level (70%)</td>
-                    <td className="border border-gray-300 p-2">From $99 credits</td>
+                    <td className="border border-gray-300 p-2">$97-$247/mo</td>
                     <td className="border border-gray-300 p-2">SMB/Mid-market</td>
                   </tr>
                   <tr>
@@ -1246,7 +1246,7 @@ export default function BlogPost() {
                   <strong>Key differentiator:</strong> Identifies specific people (not just companies) visiting your website and automatically engages them with personalized sequences. No enterprise contract required.
                 </p>
                 <p className="text-gray-700 mb-2">
-                  <strong>Pricing:</strong> Self-serve credits from $99 / Done-for-you managed campaigns from $1,000/mo
+                  <strong>Pricing:</strong> $97 / $197 / $247 per month, self-serve, no setup fee, cancel anytime
                 </p>
                 <p className="text-gray-700 mb-2">
                   <strong>Best for:</strong> B2B companies wanting identify-and-engage workflow without $50k+ enterprise contracts
@@ -1445,7 +1445,7 @@ export default function BlogPost() {
                   <tr>
                     <td className="border border-gray-300 p-2">Pricing</td>
                     <td className="border border-gray-300 p-2 text-center">$50k-$100k+/yr</td>
-                    <td className="border border-gray-300 p-2 text-center">From $99 credits / $1k/mo managed</td>
+                    <td className="border border-gray-300 p-2 text-center">$97 / $197 / $247 per month</td>
                   </tr>
                   <tr>
                     <td className="border border-gray-300 p-2">Implementation time</td>
@@ -1470,7 +1470,7 @@ export default function BlogPost() {
               Choose the right alternative based on your primary need:
             </p>
             <MachineList items={[
-              { label: "Want visitor ID + automatic engagement", description: "Choose Cursive. Person-level identification with AI-powered multi-channel outreach. From $99 credits or $1k/mo managed." },
+              { label: "Want visitor ID + automatic engagement", description: "Choose Cursive. Person-level identification with AI-powered multi-channel outreach. Self-serve plans are $97, $197, or $247 per month." },
               { label: "Need full enterprise ABM with advertising", description: "Choose Demandbase. Closest equivalent to 6sense with stronger display ad capabilities. $50k+ enterprise pricing." },
               { label: "Need pure third-party intent data source", description: "Choose Bombora. Industry standard Company Surge data to feed into existing tools. $25k+/year." },
               { label: "Primarily need contact database + intent", description: "Choose ZoomInfo. 100M+ contacts with buyer intent add-on. $15k-$50k+/year." },
@@ -1483,7 +1483,7 @@ export default function BlogPost() {
           <MachineSection title="Related Resources">
             <MachineList items={[
               { label: "Cursive Platform Overview", href: "/platform", description: "Visitor identification, intent data, AI outreach" },
-              { label: "Cursive Pricing", href: "/pricing", description: "Self-serve credits and managed campaigns" },
+              { label: "Cursive Pricing", href: "/pricing", description: "Three month-to-month self-serve plans: $97, $197, or $247 per month" },
               { label: "Visitor Identification", href: "/visitor-identification", description: "70% person-level match rates for B2B traffic" },
               { label: "What is B2B Intent Data", href: "/what-is-b2b-intent-data", description: "Complete guide to intent data types and use cases" },
               { label: "Apollo Alternatives", href: "/blog/apollo-alternatives-comparison", description: "7 best Apollo.io alternatives for B2B prospecting" },
@@ -1502,7 +1502,7 @@ export default function BlogPost() {
             <MachineList items={[
               { label: "Book a Demo", href: "https://cal.com/cursiveteam/30min", description: "See Cursive in action (30-minute call)" },
               { label: "Get Free AI Audit", href: "/free-audit", description: "Analyze your current setup and see what's missing" },
-              { label: "View Pricing", href: "/pricing", description: "Self-serve credits from $99 or managed campaigns from $1k/mo" },
+              { label: "View Pricing", href: "/pricing", description: "Self-serve plans at $97, $197, or $247 per month; no setup fee, cancel anytime" },
               { label: "Try Cursive Platform", href: "/platform", description: "Person-level visitor ID + intent scoring + AI SDR outreach" }
             ]} />
           </MachineSection>

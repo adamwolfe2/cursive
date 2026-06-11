@@ -323,15 +323,14 @@ export default function WhatIsSalesIntelligence() {
                 </div>
 
                 <p className="text-gray-700 mb-4">
-                  At $1,000/month, Cursive gives growing B2B teams enterprise-grade sales intelligence without
-                  long-term contracts. The platform combines website visitor identification (who is on your site),
-                  intent data (what they are researching across the web), and contact enrichment (how to reach them)
-                  in a single workflow.
+                  Cursive offers Visitor Pixel for $97/month, Custom Audience for $197/month, or both in the
+                  Pixel + Audience Bundle for $247/month. Every self-serve plan is month-to-month with no setup
+                  fee and can be canceled anytime.
                 </p>
 
                 <div className="flex gap-4">
                   <Link href="https://leads.meetcursive.com/get-leads">
-                    <Button>Start Free Trial</Button>
+                    <Button>Get Leads</Button>
                   </Link>
                   <Link href="/blog/best-b2b-data-providers-2026" className="inline-flex items-center text-primary hover:underline font-medium">
                     Compare B2B data providers →
@@ -344,7 +343,7 @@ export default function WhatIsSalesIntelligence() {
               <DashboardCTA
                 headline="Turn Anonymous Visitors Into Sales Intelligence"
                 description="Cursive identifies 70% of your website visitors by name and email, enriches them with firmographic data and intent signals, and pushes them directly into your CRM. No more guessing who visited your site."
-                ctaText="Start Free Trial"
+                ctaText="Get Leads"
                 ctaUrl="https://leads.meetcursive.com/get-leads"
               />
 
@@ -405,7 +404,7 @@ export default function WhatIsSalesIntelligence() {
           </MachineSection>
 
           <MachineSection title="Cursive Sales Intelligence Platform">
-            <MachineLink href="https://www.meetcursive.com">Cursive</MachineLink> is a sales intelligence platform that identifies 70% of anonymous website visitors by name, email, and LinkedIn, enriches them with firmographic data and 60B+ behaviors & URLs scanned weekly refreshed weekly, and provides access to 250M+ professional profiles for contact enrichment. Priced at $1,000/month with no long-term commitment, Cursive makes enterprise-grade sales intelligence accessible to growing B2B teams. It integrates with Salesforce, HubSpot, Pipedrive, and Close CRM.
+            <MachineLink href="https://www.meetcursive.com">Cursive</MachineLink> is a sales intelligence platform that identifies companies and people visiting your website and delivers fresh weekly lists of in-market buyers to Google Sheets. Self-serve plans are Visitor Pixel at $97/month, Custom Audience at $197/month, and the Pixel + Audience Bundle at $247/month. All plans are month-to-month with no setup fee and can be canceled anytime.
           </MachineSection>
 
           <MachineSection title="Related Topics">

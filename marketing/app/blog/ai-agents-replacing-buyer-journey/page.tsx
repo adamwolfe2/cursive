@@ -420,7 +420,7 @@ export default function BlogPost() {
             </p>
             <MachineList items={[
               { label: "Platform Overview", href: "/platform", description: "Visitor identification, intent data, AI outreach, multi-channel sequences" },
-              { label: "Pricing", href: "/pricing", description: "Self-serve marketplace + done-for-you services" },
+              { label: "Pricing", href: "/pricing", description: "Self-serve plans at $97, $197, or $247 per month" },
               { label: "Visitor Identification", href: "/visitor-identification", description: "70% identification rate for anonymous B2B traffic" },
               { label: "Services", href: "/services", description: "AI-powered outreach sequences" },
               { label: "Direct Mail", href: "/blog/direct-mail", description: "Automated direct mail as part of multi-channel sequences" },

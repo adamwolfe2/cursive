@@ -18,7 +18,7 @@ const faqs = [
   },
   {
     question: "Why are sales teams looking for Amplemarket alternatives?",
-    answer: "The most common reasons teams look for Amplemarket alternatives include: high monthly cost for what is essentially cold outreach automation, no real-time website visitor identification (meaning you are only reaching cold prospects, never warm visitors), no intent data to know who is actively researching your category, no lead marketplace for flexible per-lead purchasing, and limited channels outside of email and LinkedIn. Teams that want to go beyond cold outreach and capture warm, already-interested visitors are the primary movers."
+    answer: "The most common reasons teams look for Amplemarket alternatives include: high monthly cost for what is essentially cold outreach automation, no real-time website visitor identification (meaning you are only reaching cold prospects, never warm visitors), no intent data to know who is actively researching your category, and limited channels outside of email and LinkedIn. Teams that want to go beyond cold outreach and capture warm, already-interested visitors are the primary movers."
   },
   {
     question: "Does Amplemarket have website visitor identification?",
@@ -30,7 +30,7 @@ const faqs = [
   },
   {
     question: "What is the pricing difference between Amplemarket and Cursive?",
-    answer: "Amplemarket pricing typically starts around $1,000-$2,000+ per month depending on team size, seat count, and usage volume. Cursive's managed plan is $1,000/month all-in and includes visitor identification, intent data, AI SDR outreach across four channels, and 200+ CRM integrations. For teams that want flexible purchasing without a monthly commitment, Cursive also offers a self-serve marketplace at leads.meetcursive.com where you can buy leads at $0.60 each."
+    answer: "Amplemarket pricing typically starts around $1,000-$2,000+ per month depending on team size, seat count, and usage volume. Cursive offers three month-to-month self-serve plans: Visitor Pixel at $97/mo, Custom Audience at $197/mo, and Pixel + Audience Bundle at $247/mo. There is no setup fee, and you can cancel anytime."
   },
   {
     question: "What Amplemarket alternative is best for capturing warm website traffic?",
@@ -41,8 +41,8 @@ const faqs = [
     answer: "Yes, and in most cases Cursive replaces both Amplemarket and your data provider in a single platform. Amplemarket requires you to bring your own prospect lists or use its built-in prospecting. Cursive surfaces warm prospects automatically from your own website traffic, supplements with intent audiences (people researching your category across 30,000+ topics), and includes the outreach automation to reach them across email, LinkedIn, SMS, and direct mail. Most teams replacing Amplemarket with Cursive also eliminate one or two other tools from their stack."
   },
   {
-    question: "Does Cursive have a free trial or a lower-commitment option?",
-    answer: "Cursive does not offer a traditional free trial for the managed plan, but the self-serve marketplace at leads.meetcursive.com lets you purchase leads at $0.60 each with no monthly commitment. This is a good way to evaluate data quality and fit before committing to the full platform. You can also book a demo at cal.com/cursiveteam/30min to see visitor identification and intent data against your actual website traffic before making any commitment."
+    question: "Does Cursive have a lower-commitment option?",
+    answer: "Cursive offers three month-to-month self-serve plans with no setup fee and the option to cancel anytime: Visitor Pixel at $97/mo, Custom Audience at $197/mo, and Pixel + Audience Bundle at $247/mo. You can also book a demo at cal.com/cursiveteam/30min to see visitor identification and intent data against your actual website traffic before making any commitment."
   }
 ]
 
@@ -137,7 +137,7 @@ export default function BlogPost() {
                       <td className="border border-gray-300 p-3">Warm visitor ID + intent + AI outreach</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold"><Check className="w-4 h-4 inline" /> 70% person-level</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold"><Check className="w-4 h-4 inline" /> 60B+ signals/wk</td>
-                      <td className="border border-gray-300 p-3">$1,000/mo or $0.60/lead</td>
+                      <td className="border border-gray-300 p-3">$97 / $197 / $247 per month</td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-3 font-bold">Amplemarket</td>
@@ -215,7 +215,7 @@ export default function BlogPost() {
                     <span className="text-red-600 font-bold text-lg leading-none mt-0.5">3.</span>
                     <span><strong>Cost without warm-signal ROI:</strong> At $1,000-$2,000+/mo for cold outreach
                     automation, Amplemarket competes directly with tools like Cursive that include visitor identification,
-                    intent data, and multi-channel outreach for $1,000/mo. If you are paying Amplemarket prices
+                    intent data, and multi-channel outreach through plans starting at $97/mo. If you are paying Amplemarket prices
                     and still missing your warm website traffic, the ROI math does not work.</span>
                   </li>
                   <li className="flex items-start gap-3">
@@ -293,7 +293,7 @@ export default function BlogPost() {
                     <ul className="space-y-1 text-sm">
                       <li className="flex items-center gap-2">
                         <X className="w-4 h-4 text-red-400" />
-                        No free tier (managed starts at $1,000/mo)
+                        Month-to-month plans start at $97/mo
                       </li>
                       <li className="flex items-center gap-2">
                         <X className="w-4 h-4 text-red-400" />
@@ -310,7 +310,7 @@ export default function BlogPost() {
                 <div className="bg-white rounded-lg p-4">
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-bold">Pricing:</span>
-                    <span className="text-lg font-bold text-blue-600">$1,000/mo managed | $0.60/lead self-serve</span>
+                    <span className="text-lg font-bold text-blue-600">$97 / $197 / $247 per month</span>
                   </div>
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> B2B teams paying Amplemarket-level pricing for cold outreach who want to
@@ -376,7 +376,7 @@ export default function BlogPost() {
                   combined with Salesforce and HubSpot routing. Warmly is often used alongside cold outreach tools like
                   Amplemarket as a warm-signal layer. However, at $3,500/mo and with only company-level (not person-level)
                   identification, Warmly is expensive for what it provides compared to Cursive&apos;s 70% person-level match
-                  at $1,000/mo.
+                  with plans starting at $97/mo.
                 </p>
 
                 <div className="grid md:grid-cols-2 gap-6 mb-4">
@@ -606,7 +606,7 @@ export default function BlogPost() {
                 <div className="space-y-4 text-sm">
                   <div className="border-b border-gray-200 pb-3">
                     <p className="font-bold text-blue-700 mb-1">You want to capture warm website visitors + run outreach + use intent data:</p>
-                    <p className="text-gray-700"><strong>Choose Cursive.</strong> The only tool in this comparison that combines 70% person-level visitor identification with real-time intent signals and AI-powered multi-channel outreach. At $1,000/mo, it replaces Amplemarket while adding the warm-signal layer Amplemarket lacks entirely.</p>
+                    <p className="text-gray-700"><strong>Choose Cursive.</strong> The only tool in this comparison that combines 70% person-level visitor identification with real-time intent signals and AI-powered multi-channel outreach. Plans start at $97/mo, adding the warm-signal layer Amplemarket lacks entirely.</p>
                   </div>
                   <div className="border-b border-gray-200 pb-3">
                     <p className="font-bold text-blue-700 mb-1">You want to cut costs while keeping cold outreach automation:</p>
@@ -618,7 +618,7 @@ export default function BlogPost() {
                   </div>
                   <div className="border-b border-gray-200 pb-3">
                     <p className="font-bold text-blue-700 mb-1">You want to add visitor identification to your existing Amplemarket stack:</p>
-                    <p className="text-gray-700"><strong>Choose Cursive.</strong> At $1,000/mo it replaces Amplemarket entirely and adds the visitor ID layer, rather than paying Amplemarket + Warmly ($1,000-$2,000 + $3,500).</p>
+                    <p className="text-gray-700"><strong>Choose Cursive.</strong> Its month-to-month self-serve plans start at $97/mo and add the visitor ID layer, rather than paying Amplemarket + Warmly ($1,000-$2,000 + $3,500).</p>
                   </div>
                   <div>
                     <p className="font-bold text-blue-700 mb-1">You are a small team looking for affordable multichannel sequencing:</p>
@@ -644,8 +644,8 @@ export default function BlogPost() {
 
               <p>
                 To see how many warm leads you are currently missing, <Link href="https://cal.com/cursiveteam/30min">book a
-                demo</Link> or explore the <Link href="https://leads.meetcursive.com/get-leads">Cursive self-serve marketplace</Link> at
-                $0.60/lead with no monthly commitment.
+                demo</Link> or explore <Link href="https://leads.meetcursive.com/get-leads">Cursive&apos;s self-serve plans</Link> at
+                $97, $197, or $247 per month, with no setup fee and the option to cancel anytime.
               </p>
 
               <h2>About the Author</h2>
@@ -734,10 +734,10 @@ export default function BlogPost() {
 
           <MachineSection title="Key Takeaways">
             <MachineList items={[
-              "Amplemarket: AI-powered cold outreach platform covering email + LinkedIn, $1,000-$2,000+/mo, no visitor ID, no intent data, no marketplace",
+              "Amplemarket: AI-powered cold outreach platform covering email + LinkedIn, $1,000-$2,000+/mo, no visitor ID, no intent data",
               "Primary gap: all outreach starts cold — warm website visitors remain invisible to Amplemarket users",
               "Cursive: 70% person-level visitor ID, 60B+ behaviors & URLs scanned weekly across 30,000+ categories, 280M consumer + 140M+ business profiles, AI SDR across email/LinkedIn/SMS/direct mail",
-              "Cursive pricing: $1,000/mo managed (same or less than Amplemarket) or $0.60/lead at leads.meetcursive.com"
+              "Cursive pricing: $97, $197, or $247 per month, self-serve, with no setup fee and the option to cancel anytime"
             ]} />
           </MachineSection>
 
@@ -752,7 +752,7 @@ export default function BlogPost() {
                   "Outreach: AI SDR covering email, LinkedIn, SMS, and direct mail",
                   "Real-time alerts when target accounts visit your website",
                   "200+ CRM integrations, 95%+ email deliverability",
-                  "Pricing: $1,000/mo managed or $0.60/lead self-serve at leads.meetcursive.com",
+                  "Pricing: $97, $197, or $247 per month, self-serve at leads.meetcursive.com",
                   "Key advantage over Amplemarket: captures warm website traffic that is invisible to Amplemarket"
                 ]} />
               </div>
@@ -773,7 +773,7 @@ export default function BlogPost() {
                   "Company-level visitor de-anonymization, ~40% match rate (vs Cursive 70%)",
                   "Strong Slack/CRM routing, real-time alerts",
                   "No outreach automation, requires separate sequencing tool",
-                  "Pricing: $3,500/mo (3.5x Cursive's managed price)"
+                  "Pricing: $3,500/mo"
                 ]} />
               </div>
 
@@ -830,7 +830,7 @@ export default function BlogPost() {
 
           <MachineSection title="Decision Guide">
             <MachineList items={[
-              "Warm visitor ID + intent data + AI multi-channel outreach → Cursive ($1,000/mo or $0.60/lead)",
+              "Warm visitor ID + intent data + AI multi-channel outreach → Cursive ($97, $197, or $247 per month)",
               "Cut costs, keep cold outreach automation → Apollo (free-$49/mo) or Reply.io ($49/mo)",
               "Add visitor ID to existing stack → Cursive (replaces Amplemarket + Warmly combined)",
               "Enterprise sequencing + deal intelligence → Outreach or Salesloft ($100-125+/user/mo)",
@@ -841,9 +841,9 @@ export default function BlogPost() {
           <MachineSection title="Get Started with Cursive">
             <MachineList items={[
               { label: "Book a Demo", href: "https://cal.com/cursiveteam/30min", description: "See Cursive visitor ID and intent data against your actual traffic" },
-              { label: "Marketplace (Self-Serve)", href: "https://leads.meetcursive.com/get-leads", description: "Buy leads at $0.60 each, no monthly commitment" },
+              { label: "Plans (Self-Serve)", href: "https://leads.meetcursive.com/get-leads", description: "Choose Visitor Pixel, Custom Audience, or the Pixel + Audience Bundle" },
               { label: "Free AI Audit", href: "/free-audit", description: "See which visitors you are missing and the pipeline you could generate" },
-              { label: "Pricing", href: "/pricing", description: "$1,000/mo managed or $0.60/lead self-serve" }
+              { label: "Pricing", href: "/pricing", description: "$97, $197, or $247 per month; no setup fee, cancel anytime" }
             ]} />
           </MachineSection>
 

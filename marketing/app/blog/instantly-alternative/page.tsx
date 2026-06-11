@@ -34,7 +34,7 @@ const faqs = [
   },
   {
     question: "What does Instantly cost compared to alternatives?",
-    answer: "Instantly starts at $30/month for basic email sending, but a complete outbound stack with Instantly typically costs $200-500/month when you add data enrichment, visitor tracking, and intent tools separately. Cursive starts at $99/month and includes all of these capabilities in one platform."
+    answer: "Instantly starts at $30/month for basic email sending, but a complete outbound stack with Instantly typically costs $200-500/month when you add data enrichment, visitor tracking, and intent tools separately. Cursive offers Visitor Pixel for $97/month, Custom Audience for $197/month, and both together for $247/month."
   },
   {
     question: "Can I migrate from Instantly to Cursive easily?",
@@ -108,7 +108,7 @@ export default function BlogPost() {
                     <td className="border border-gray-300 p-3 font-bold">Cursive</td>
                     <td className="border border-gray-300 p-3">Visitor ID + Email + Multi-Channel</td>
                     <td className="border border-gray-300 p-3">85%+ visitor match rate</td>
-                    <td className="border border-gray-300 p-3">$99/mo</td>
+                    <td className="border border-gray-300 p-3">$97-$247/mo</td>
                     <td className="border border-gray-300 p-3">Intent-based outreach</td>
                   </tr>
                   <tr>
@@ -247,7 +247,7 @@ export default function BlogPost() {
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="w-4 h-4 text-green-600" />
-                      Transparent pricing starting at $99/mo
+                      Transparent pricing starting at $97/mo
                     </li>
                   </ul>
                 </div>
@@ -269,7 +269,7 @@ export default function BlogPost() {
               <div className="bg-white rounded-lg p-4">
                 <div className="flex justify-between items-center mb-2">
                   <span className="font-bold">Pricing:</span>
-                  <span className="text-lg font-bold text-blue-600">$99 - $999/mo</span>
+                  <span className="text-lg font-bold text-blue-600">$97 - $247/mo</span>
                 </div>
                 <p className="text-sm text-gray-600">
                   <strong>Best for:</strong> B2B companies that want to stop sending blind cold emails and start reaching out to prospects who are already showing buying intent on their website. Replaces Instantly + data provider + visitor ID tool. See <Link href="/pricing" className="text-blue-600 hover:underline">full pricing details</Link>.
@@ -825,7 +825,7 @@ export default function BlogPost() {
                 <div className="bg-blue-50 rounded-lg p-4 border-2 border-blue-500">
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-bold">Cursive (All-in-One)</span>
-                    <span className="text-lg font-bold text-blue-600">$99 - $999/mo</span>
+                    <span className="text-lg font-bold text-blue-600">$97 - $247/mo</span>
                   </div>
                   <p className="text-sm text-gray-600">Visitor ID + Intent data + Enrichment + Multi-channel outreach + AI SDR = One unified workflow. Check <Link href="/pricing" className="text-blue-600 hover:underline">our pricing page</Link> for details.</p>
                 </div>
@@ -936,7 +936,7 @@ export default function BlogPost() {
 
             <h3>If You Are an Agency:</h3>
             <p>
-              Choose <strong>Woodpecker</strong> for its purpose-built agency panel, or explore <Link href="/services">Cursive&apos;s services</Link> for intent-based campaigns you can offer to clients. Visit our <Link href="/marketplace">marketplace</Link> for agency partnership opportunities.
+              Choose <strong>Woodpecker</strong> for its purpose-built agency panel, or explore <Link href="/services">Cursive&apos;s self-serve plans</Link> for intent-based campaigns you can offer to clients. Visit our <Link href="/marketplace">plan selector</Link> to choose Visitor Pixel, Custom Audience, or both.
             </p>
 
             <h2>The Bottom Line</h2>
@@ -1031,7 +1031,7 @@ export default function BlogPost() {
 
           <MachineSection title="Quick Comparison">
             <MachineList items={[
-              "Cursive: Best for visitor ID + email + multi-channel outreach (85%+ visitor match, $99-999/mo)",
+              "Cursive: Best for visitor ID + fresh weekly in-market buyer lists ($97-$247/mo)",
               "Smartlead: High-volume email with unlimited mailboxes ($39-94/mo)",
               "Lemlist: Personalized sequences with built-in lead database ($59-99/user/mo)",
               "Woodpecker: Agency-friendly prospect-based pricing ($29-59/mo per slot)",
@@ -1067,7 +1067,7 @@ export default function BlogPost() {
                   "Multi-channel outreach (email, LinkedIn, direct mail)",
                   "AI SDR for personalized messaging based on visitor behavior",
                   "Built-in lead enrichment (no separate data tool needed)",
-                  "Pricing: $99-999/mo (replaces Instantly + 3-4 other tools)"
+                  "Pricing: $97/mo Visitor Pixel | $197/mo Custom Audience | $247/mo Bundle"
                 ]} />
               </div>
               <div>
@@ -1175,7 +1175,7 @@ export default function BlogPost() {
             </p>
             <MachineList items={[
               "Instantly + Separate Tools: $250-500/mo (Instantly $30 + data provider $100-200 + visitor ID $99+ + intent data $50+ = fragmented workflow)",
-              "Cursive All-in-One: $99-999/mo (visitor ID + intent + enrichment + multi-channel + AI SDR = unified workflow)",
+              "Cursive: $97-$247/mo (visitor identification, fresh weekly in-market buyer lists, or both)",
               "Smartlead: $39-94/mo (email only, add $200+ for data/visitor ID/intent separately)",
               "Reply.io: $60-90/user/mo (multi-channel but no visitor ID or intent, costs scale with team size)",
               "Salesloft: $100+/user/mo (enterprise pricing, annual contracts, dedicated admin required)"
@@ -1224,7 +1224,7 @@ export default function BlogPost() {
               { label: "Why are teams switching from Instantly to all-in-one platforms?", description: "Running Instantly alongside separate tools for data enrichment, visitor tracking, and intent signals creates workflow fragmentation and higher costs ($250-500/mo). All-in-one platforms consolidate these functions, reducing tool sprawl from 4-5 tools to one" },
               { label: "Can Instantly identify website visitors?", description: "No. Instantly is email-only. For visitor identification, you need separate tools like Cursive, RB2B, or Leadfeeder" },
               { label: "How does Cursive compare to Instantly for cold email?", description: "Cursive offers cold email plus visitor identification, intent data, AI SDR personalization, and multi-channel outreach. While Instantly may send higher raw volume, Cursive delivers better reply rates by targeting prospects showing buying intent" },
-              { label: "What does Instantly cost compared to alternatives?", description: "Instantly starts at $30/mo but a complete outbound stack typically costs $200-500/mo with additional tools. Cursive starts at $99/mo and includes all capabilities in one platform" },
+              { label: "What does Instantly cost compared to alternatives?", description: "Instantly starts at $30/mo but a complete outbound stack typically costs $200-500/mo with additional tools. Cursive plans range from $97-$247/mo for visitor identification, fresh weekly in-market buyer lists, or both" },
               { label: "Can I migrate from Instantly to Cursive easily?", description: "Yes. Cursive supports CSV import, integrates with major CRMs, and can have your first intent-based campaign running within 24 hours. Most teams complete migration in under a week" }
             ]} />
           </MachineSection>
@@ -1232,7 +1232,7 @@ export default function BlogPost() {
           <MachineSection title="Related Resources">
             <MachineList items={[
               { label: "Cursive Platform", href: "/platform", description: "Visitor identification, intent data, AI outreach" },
-              { label: "Cursive Pricing", href: "/pricing", description: "Self-serve marketplace + done-for-you services" },
+              { label: "Cursive Pricing", href: "/pricing", description: "$97/mo Pixel, $197/mo Audience, or $247/mo Bundle" },
               { label: "Visitor Identification", href: "/visitor-identification", description: "70%+ identification rate for B2B traffic" },
               { label: "Intent Audiences", href: "/intent-audiences", description: "Intent-based audience segmentation" },
               { label: "AI SDR", href: "/what-is-ai-sdr", description: "AI-powered sales development representative" },

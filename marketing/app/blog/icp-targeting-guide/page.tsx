@@ -526,7 +526,7 @@ export default function BlogPost() {
             </p>
 
             <p>
-              If you are not sure where to start, Cursive can help. Our platform identifies your website visitors and shows you exactly who is engaging with your content—giving you real data to validate and refine your ICP. Combined with our done-for-you outreach services, we help you go from ICP definition to booked meetings in weeks, not months.
+              If you are not sure where to start, Cursive can help. Our Visitor Pixel identifies the companies and people visiting your website, while Custom Audience delivers a fresh weekly list of in-market buyers to Google Sheets—giving you real data to validate and refine your ICP.
             </p>
 
 
@@ -820,7 +820,7 @@ export default function BlogPost() {
               "Visitor identification: See which companies/titles visit your site in real-time",
               "Intent data: Identify high-intent visitors (pricing pages, product pages, case studies)",
               "Pattern analysis: Compare visitor attributes to current ICP, discover new segments",
-              "Done-for-you outreach: From ICP definition to booked meetings in weeks",
+              "Custom Audience: Fresh weekly in-market buyer lists delivered to Google Sheets",
               "Free ICP workshop: Crystal clear definition of who you're built for"
             ]} />
           </MachineSection>
@@ -835,11 +835,11 @@ export default function BlogPost() {
 
           <MachineSection title="Get Started with Cursive">
             <p className="text-gray-700 mb-3">
-              Cursive provides visitor identification, intent data, and done-for-you outbound services to help B2B companies define their ICP and convert high-fit prospects.
+              Cursive provides visitor identification and fresh weekly in-market buyer lists to help B2B companies define their ICP and find high-fit prospects.
             </p>
             <MachineList items={[
               { label: "Platform Overview", href: "/platform", description: "Visitor identification, intent data, AI outreach" },
-              { label: "Pricing", href: "/pricing", description: "Self-serve marketplace + done-for-you services" },
+              { label: "Pricing", href: "/pricing", description: "$97/mo Pixel, $197/mo Audience, or $247/mo Bundle" },
               { label: "Visitor Identification", href: "/visitor-identification", description: "70% identification rate for B2B traffic" },
               { label: "Book a Demo", href: "/book", description: "Free ICP workshop and targeted list building" }
             ]} />

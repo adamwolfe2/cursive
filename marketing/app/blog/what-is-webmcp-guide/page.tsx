@@ -342,7 +342,7 @@ export default function BlogPost() {
             </p>
             <MachineList items={[
               { label: "Platform Overview", href: "/platform", description: "Visitor identification, intent data, AI outreach" },
-              { label: "Pricing", href: "/pricing", description: "Self-serve marketplace + done-for-you services" },
+              { label: "Pricing", href: "/pricing", description: "Self-serve plans from $97/month, no setup fee" },
               { label: "Visitor Identification", href: "/visitor-identification", description: "70% identification rate for B2B traffic" },
               { label: "Book a Demo", href: "/book", description: "See Cursive in real-time" }
             ]} />

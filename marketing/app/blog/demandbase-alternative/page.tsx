@@ -22,11 +22,11 @@ const faqs = [
   },
   {
     question: "Can small businesses do account-based marketing without Demandbase?",
-    answer: "Absolutely. ABM is a strategy, not a software requirement. Small businesses can execute effective ABM using a combination of visitor identification, intent data, and personalized outreach tools at a fraction of Demandbase's cost. Cursive, for example, provides visitor identification, intent scoring, and AI-powered multi-channel outreach starting at $1,000 per month, delivering core ABM capabilities without enterprise complexity."
+    answer: "Absolutely. ABM is a strategy, not a software requirement. Small businesses can execute effective ABM using a combination of visitor identification, intent data, and personalized outreach tools at a fraction of Demandbase's cost. Cursive, for example, offers visitor identification and fresh weekly in-market buyer lists through self-serve plans starting at $97 per month."
   },
   {
     question: "What is the most affordable Demandbase alternative?",
-    answer: "For pure ABM execution, Apollo offers plans starting under $100 per month with account targeting and multi-channel outreach capabilities. For visitor identification and intent-based outreach (core ABM components), Cursive starts at $1,000 per month. For enterprise-grade ABM with full advertising capabilities, RollWorks starts around $10,000 per year, which is still 5x cheaper than Demandbase."
+    answer: "For pure ABM execution, Apollo offers plans starting under $100 per month with account targeting and multi-channel outreach capabilities. For visitor identification and fresh weekly in-market buyer lists, Cursive starts at $97 per month. For enterprise-grade ABM with full advertising capabilities, RollWorks starts around $10,000 per year, which is still 5x cheaper than Demandbase."
   },
   {
     question: "Is Cursive a good Demandbase alternative for ABM?",
@@ -48,7 +48,7 @@ const faqs = [
 
 const relatedPosts = [
   { title: "Best 6sense Alternatives", description: "7 ABM platforms compared at a fraction of the enterprise cost.", href: "/blog/6sense-alternatives-comparison" },
-  { title: "Cursive vs Demandbase: $1k/mo vs $50k+/yr", description: "Full ABM stack comparison — features, pricing, and use cases.", href: "/blog/cursive-vs-demandbase" },
+  { title: "Cursive vs Demandbase: $97/mo vs $50k+/yr", description: "Full ABM stack comparison — features, pricing, and use cases.", href: "/blog/cursive-vs-demandbase" },
   { title: "Intent Data Providers Compared", description: "8 platforms ranked by signal volume, update frequency, and pricing.", href: "/blog/intent-data-providers-comparison" },
 ]
 
@@ -138,7 +138,7 @@ export default function BlogPost() {
                     <td className="border border-gray-300 p-3 font-bold">Cursive</td>
                     <td className="border border-gray-300 p-3">SMB/Mid-market ABM with AI outreach</td>
                     <td className="border border-gray-300 p-3 text-green-600 font-bold">Identify + Engage</td>
-                    <td className="border border-gray-300 p-3">$1,000/mo</td>
+                    <td className="border border-gray-300 p-3">$97/mo</td>
                     <td className="border border-gray-300 p-3">AI SDR + 70% match rate</td>
                   </tr>
                   <tr>
@@ -324,7 +324,7 @@ export default function BlogPost() {
               <div className="bg-white rounded-lg p-4">
                 <div className="flex justify-between items-center mb-2">
                   <span className="font-bold">Pricing:</span>
-                  <span className="text-lg font-bold text-blue-600">Starting at $1,000/mo</span>
+                  <span className="text-lg font-bold text-blue-600">Starting at $97/mo</span>
                 </div>
                 <p className="text-sm text-gray-600">
                   <strong>Best for:</strong> B2B companies with 50-500 target accounts that want to identify when those accounts
@@ -879,10 +879,9 @@ export default function BlogPost() {
             </p>
 
             <p>
-              <strong>Cursive ABM approach:</strong> Starting at $1,000/mo ($12,000/year), Cursive delivers the
-              identify-and-engage portion of ABM. You get person-level visitor identification, intent scoring, and
-              automated multi-channel outreach. While it lacks display advertising, the direct outreach approach often
-              generates higher ROI for companies with fewer than 500 target accounts. Visit
+              <strong>Cursive ABM approach:</strong> Cursive offers Visitor Pixel at $97/month, Custom Audience at
+              $197/month, and the Pixel + Audience Bundle at $247/month. These self-serve plans identify website visitors
+              and deliver fresh weekly lists of in-market buyers without a setup fee or annual contract. Visit
               our <Link href="/pricing">pricing page</Link> for detailed breakdowns.
             </p>
 
@@ -890,8 +889,8 @@ export default function BlogPost() {
               <strong>Budget ABM stack:</strong> Apollo ($49/user/mo for outreach) + RollWorks ($800/mo for advertising) =
               approximately $1,000/mo ($12,000/year) for a lightweight ABM stack with both outreach and advertising. You
               will not get visitor identification, but you will have account targeting, contact data, outreach sequences,
-              and display ads. Add Cursive&apos;s <Link href="/visitor-identification">visitor identification</Link> to this stack
-              and you have enterprise-grade ABM capabilities for under $25,000/year.
+              and display ads. Add Cursive&apos;s $97/month <Link href="/visitor-identification">visitor identification</Link> to this stack
+              and you have enterprise-grade ABM capabilities for under $15,000/year.
             </p>
 
             <p>
@@ -986,7 +985,7 @@ export default function BlogPost() {
             <p>
               For SMBs and mid-market companies that want the highest-ROI ABM execution,{" "}
               <Link href="/">Cursive</Link> delivers the core capabilities that drive pipeline: person-level visitor
-              identification, intent scoring, and AI-powered multi-channel outreach, starting at $1,000/mo.
+              identification and fresh weekly in-market buyer lists, starting at $97/mo.
               If you need enterprise ABM with advertising, 6sense or Terminus provide comparable alternatives at
               somewhat lower price points. And if budget is the primary constraint, combining Apollo with RollWorks
               gives you a functional ABM stack for under $1,500/mo.
@@ -996,9 +995,8 @@ export default function BlogPost() {
               The most important thing is to match your tools to your actual ABM motion. If you are running
               outbound-driven ABM (which most growth-stage companies are), you need identification and outreach
               more than you need display advertising. Explore the <Link href="/platform">Cursive platform</Link> to
-              see how the pieces connect, browse our <Link href="/marketplace">marketplace</Link> for additional
-              integrations, or explore our <Link href="/services">managed services</Link> for teams that want
-              expert-guided ABM implementation.
+              see how the pieces connect, browse our <Link href="/marketplace">self-serve plans</Link>, or explore our
+              <Link href="/services"> plan options</Link> to compare Visitor Pixel, Custom Audience, and the bundle.
             </p>
 
             <h2>About the Author</h2>
@@ -1100,7 +1098,7 @@ export default function BlogPost() {
 
           <MachineSection title="Quick Comparison: Best Demandbase Alternatives">
             <MachineList items={[
-              { label: "Cursive", description: "SMB/Mid-market ABM with AI outreach. Person-level ID (70% match), AI SDR, multi-channel outreach. Starting at $1,000/mo. Best for identify + engage ABM." },
+              { label: "Cursive", description: "SMB/Mid-market ABM with person-level visitor ID and weekly in-market buyer lists. Starting at $97/mo." },
               { label: "6sense", description: "Enterprise predictive ABM. Industry-leading intent analytics, buying stage prediction. $60k+/year. Best for large teams prioritizing predictive intelligence." },
               { label: "Terminus", description: "ABM advertising + engagement. Multi-channel ABM ads, campaign orchestration. $24k+/year. Best for advertising-focused teams." },
               { label: "RollWorks", description: "Mid-market ABM advertising. Most affordable ABM advertising platform. $10k+/year. Best for mid-market teams wanting ABM ads." },
@@ -1131,7 +1129,7 @@ export default function BlogPost() {
                   "Person-level identification (70% match rate) - not just company-level",
                   "AI SDR automates personalized outreach across email, LinkedIn, direct mail",
                   "Setup in hours, not weeks (pixel install: 5 min, ICP config: 1 hour)",
-                  "95% cheaper than Demandbase ($1,000/mo vs $50k+/year)",
+                  "More affordable than Demandbase ($97/mo starting price vs $50k+/year)",
                   "Multi-channel outreach included"
                 ]} />
               </div>
@@ -1145,7 +1143,7 @@ export default function BlogPost() {
               </div>
               <div>
                 <p className="font-bold text-gray-900 mb-2">Pricing:</p>
-                <p className="text-gray-700">Starting at $1,000/mo. Best for B2B companies with 50-500 target accounts wanting person-level ID + intent + automated outreach.</p>
+                <p className="text-gray-700">Starting at $97/mo. Best for B2B companies wanting person-level visitor ID, fresh weekly in-market buyer lists, or both.</p>
               </div>
             </div>
           </MachineSection>
@@ -1228,12 +1226,12 @@ export default function BlogPost() {
           <MachineSection title="Pricing Comparison">
             <MachineList items={[
               { label: "Demandbase", description: "$50k-$150k+/year. Full ABM suite with advertising, intent, analytics. 4-8 week implementation." },
-              { label: "Cursive", description: "$1,000/mo ($12k/year). Person-level ID + intent + AI outreach. Setup in hours." },
+              { label: "Cursive", description: "$97-$247/mo. Person-level visitor ID, weekly in-market buyer lists, or both." },
               { label: "6sense", description: "$60k-$150k+/year. Enterprise predictive ABM with strong intent analytics." },
               { label: "Terminus", description: "$24k-$80k+/year. Multi-channel ABM advertising platform." },
               { label: "RollWorks", description: "$10k-$50k/year. Most affordable ABM advertising option." },
               { label: "Apollo", description: "$49-$149/user/mo. Sales engagement + account targeting." },
-              { label: "Budget ABM Stack", description: "Apollo ($49/mo) + RollWorks ($800/mo) + Cursive ($1k/mo) = <$25k/year for full ABM capabilities" }
+              { label: "Budget ABM Stack", description: "Apollo ($49/mo) + RollWorks ($800/mo) + Cursive Visitor Pixel ($97/mo) = <$12k/year" }
             ]} />
           </MachineSection>
 
@@ -1252,7 +1250,7 @@ export default function BlogPost() {
             <MachineList items={[
               "Demandbase is excellent for Fortune 500 enterprises with $100k+ ABM budgets and dedicated teams",
               "Most B2B companies can achieve 80% of Demandbase outcomes at 20% of cost with specialized alternatives",
-              "Cursive delivers highest-ROI ABM components (identify + score + engage) at $1k/mo vs Demandbase's $50k+/year",
+              "Cursive self-serve plans deliver visitor identification and in-market buyer lists from $97/mo vs Demandbase's $50k+/year",
               "For advertising-focused ABM: RollWorks ($10k/year) or Terminus ($24k/year) are more affordable alternatives",
               "For sales-led ABM: Apollo ($49/user/mo) + Cursive visitor ID creates complete affordable stack",
               "ABM is a strategy, not a software requirement - match tools to your actual ABM motion"
@@ -1273,11 +1271,11 @@ export default function BlogPost() {
 
           <MachineSection title="About Cursive">
             <p className="text-gray-700 mb-3">
-              Cursive delivers ABM capabilities that actually drive pipeline: person-level visitor identification (70% match rate), intent scoring, and AI-powered multi-channel outreach. Starting at $1,000/mo.
+              Cursive delivers person-level visitor identification and fresh weekly in-market buyer lists through three self-serve plans starting at $97/mo.
             </p>
             <MachineList items={[
               { label: "Platform Overview", href: "/platform", description: "Visitor identification, intent data, AI outreach" },
-              { label: "Pricing", href: "/pricing", description: "Transparent pricing starting at $1,000/mo" },
+              { label: "Pricing", href: "/pricing", description: "$97, $197, or $247/month self-serve; no setup fee; cancel anytime" },
               { label: "Visitor Identification", href: "/visitor-identification", description: "70% person-level match rates" },
               { label: "AI SDR", href: "/what-is-ai-sdr", description: "Automated personalized outreach" },
               { label: "Audience Builder", href: "/audience-builder", description: "Define target account lists" },

@@ -415,7 +415,7 @@ export default function BlogPost() {
               "Data enrichment - 280M+ consumer profiles, 140M+ business profiles in real-time",
               "AI personalization - research prospects and generate relevant messaging at scale",
               "Multi-channel outreach - email, LinkedIn, SMS, direct mail automation",
-              "Done-for-you services - Cursive's team builds lists, writes copy, runs campaigns, books meetings"
+              "Self-serve plans - Cursive identifies website visitors and delivers fresh weekly lists of in-market buyers"
             ]} />
           </MachineSection>
 
@@ -433,7 +433,7 @@ export default function BlogPost() {
             </p>
             <MachineList items={[
               { label: "Platform Overview", href: "/platform", description: "Visitor identification, intent data, AI outreach" },
-              { label: "Pricing", href: "/pricing", description: "Self-serve marketplace + done-for-you services" },
+              { label: "Pricing", href: "/pricing", description: "Three month-to-month self-serve plans from $97/mo" },
               { label: "Visitor Identification", href: "/visitor-identification", description: "70% identification rate for B2B traffic" },
               { label: "Book a Demo", href: "/book", description: "See Cursive in real-time" }
             ]} />

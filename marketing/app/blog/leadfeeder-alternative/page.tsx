@@ -34,7 +34,7 @@ const faqs = [
   },
   {
     question: "What is the cheapest Leadfeeder alternative?",
-    answer: "VisitorQueue offers plans starting at $39 per month for basic company-level identification. However, for person-level identification (which Leadfeeder cannot do at all), Cursive starts at $1,000 per month but includes outreach automation that would otherwise require $500-800 per month in additional tools on top of Leadfeeder."
+    answer: "VisitorQueue offers plans starting at $39 per month for basic company-level identification. For person-level identification, Cursive offers the Visitor Pixel for $97 per month. Teams that also want a fresh weekly list of in-market buyers can choose the $247 per month Pixel + Audience Bundle."
   },
   {
     question: "Does Leadfeeder work without Google Analytics?",
@@ -133,7 +133,7 @@ export default function BlogPost() {
                     <td className="border border-gray-300 p-3 font-bold">Cursive</td>
                     <td className="border border-gray-300 p-3">Person-level ID + AI outreach</td>
                     <td className="border border-gray-300 p-3 text-green-600 font-bold">Person (~70%)</td>
-                    <td className="border border-gray-300 p-3">$1,000/mo</td>
+                    <td className="border border-gray-300 p-3">$97/mo</td>
                     <td className="border border-gray-300 p-3">AI SDR + multi-channel</td>
                   </tr>
                   <tr>
@@ -304,7 +304,7 @@ export default function BlogPost() {
                   <ul className="space-y-1 text-sm">
                     <li className="flex items-center gap-2">
                       <X className="w-4 h-4 text-red-400" />
-                      Higher starting price ($1,000/mo)
+                      Primarily focused on US B2B traffic
                     </li>
                     <li className="flex items-center gap-2">
                       <X className="w-4 h-4 text-red-400" />
@@ -317,7 +317,7 @@ export default function BlogPost() {
               <div className="bg-white rounded-lg p-4">
                 <div className="flex justify-between items-center mb-2">
                   <span className="font-bold">Pricing:</span>
-                  <span className="text-lg font-bold text-blue-600">Starting at $1,000/mo</span>
+                  <span className="text-lg font-bold text-blue-600">$97/mo | $197/mo | $247/mo</span>
                 </div>
                 <p className="text-sm text-gray-600">
                   <strong>Best for:</strong> B2B companies with 5,000+ monthly visitors that want to replace Leadfeeder +
@@ -881,10 +881,10 @@ export default function BlogPost() {
             </p>
 
             <p>
-              <strong>Cursive all-in-one:</strong> Starting at $1,000/mo, Cursive includes person-level identification, AI outreach,
-              multi-channel capabilities, <Link href="/what-is-lead-enrichment">lead enrichment</Link>, and intent scoring.
-              The premium over the Leadfeeder stack is roughly $250/mo, but you get person-level data (which Leadfeeder
-              cannot provide at any price) plus automated outreach. See our <Link href="/pricing">pricing page</Link> for details.
+              <strong>Cursive self-serve:</strong> The $97/mo Visitor Pixel identifies companies and people visiting your site.
+              The $197/mo Custom Audience delivers a fresh weekly list of in-market buyers to Google Sheets, and the
+              $247/mo Pixel + Audience Bundle includes both. All plans are month-to-month with no setup fee and cancel-anytime
+              flexibility. See our <Link href="/pricing">pricing page</Link> for details.
             </p>
 
             <p>
@@ -976,8 +976,8 @@ export default function BlogPost() {
               The key question to ask yourself: are you satisfied with knowing which companies visit your site, or do
               you need to know which people visit and have a system that automatically reaches out to them? If it is
               the latter, you have outgrown Leadfeeder. Explore our <Link href="/platform">full platform</Link> to
-              see how Cursive bridges every gap, or check out our <Link href="/services">managed services</Link> for
-              teams that want white-glove onboarding support.
+              see how Cursive bridges every gap, or visit <Link href="/services">our services page</Link> to
+              learn more about the platform.
             </p>
 
             <h2>About the Author</h2>
@@ -1080,11 +1080,11 @@ export default function BlogPost() {
             <MachineList items={[
               "Leadfeeder (now Dealfront) provides company-level identification only (~30-40% match rates)",
               "Main limitations: no person data, declining match rates, GA dependency, no outreach automation",
-              "Cursive: Best complete replacement - person-level ID (~70%), AI SDR, multi-channel outreach ($1,000/mo)",
+              "Cursive: Person-level visitor identification starts with the $97/mo Visitor Pixel",
               "RB2B: Budget person-level ID (~55%) without automation ($199-$499/mo)",
               "Warmly: Real-time chat engagement + company ID ($700-$1,500/mo)",
               "VisitorQueue: Cheapest basic company ID ($39/mo), Albacross: GDPR-compliant EU focus ($79/mo)",
-              "Total cost of ownership: Leadfeeder + add-ons = $749/mo for company-only data vs Cursive all-in-one at $1,000/mo with person data"
+              "Cursive plans: Visitor Pixel $97/mo, Custom Audience $197/mo, or Pixel + Audience Bundle $247/mo"
             ]} />
           </MachineSection>
 
@@ -1097,7 +1097,7 @@ export default function BlogPost() {
                   "AI SDR: Automated personalized outreach across email, LinkedIn, direct mail",
                   "Intent scoring + audience builder for precise targeting",
                   "No Google Analytics dependency, works standalone",
-                  "Pricing: $1,000/mo starting - replaces Leadfeeder + enrichment + sequencing + automation",
+                  "Pricing: Visitor Pixel $97/mo, Custom Audience $197/mo, or both for $247/mo",
                   "Best for: B2B companies with 5,000+ monthly visitors needing complete workflow"
                 ]} />
               </div>
@@ -1203,7 +1203,7 @@ export default function BlogPost() {
                 <span className="font-bold">Data quality:</span> Cursive surfaces 2-3x more actionable leads from same traffic
               </p>
               <p className="text-gray-700">
-                <span className="font-bold">Total cost:</span> Leadfeeder ($199) + enrichment ($200) + sequencing ($200) + LinkedIn automation ($150) = $749 for company data vs Cursive $1,000 all-in-one with person data
+                <span className="font-bold">Total cost:</span> Leadfeeder ($199) + enrichment ($200) + sequencing ($200) + LinkedIn automation ($150) = $749 for company data vs Cursive plans at $97, $197, or $247 per month
               </p>
               <p className="text-gray-700">
                 <span className="font-bold">ROI calculation:</span> If Cursive helps close 1 additional deal/month, pays for itself many times over
@@ -1214,7 +1214,7 @@ export default function BlogPost() {
           <MachineSection title="Pricing Comparison (Total Cost of Ownership)">
             <MachineList items={[
               "Leadfeeder fragmented stack: $749/mo (Leadfeeder $199 + enrichment $200 + sequencing $200 + LinkedIn $150) - still company-level only",
-              "Cursive all-in-one: $1,000/mo (person-level ID + AI outreach + multi-channel + enrichment + intent) - premium is only $251/mo for vastly superior data",
+              "Cursive self-serve: Visitor Pixel $97/mo, Custom Audience $197/mo, or Pixel + Audience Bundle $247/mo",
               "RB2B mid-range: $199-$499/mo for person data, but still need separate outreach tools",
               "Budget option: VisitorQueue $39/mo (similar limitations to Leadfeeder, lower match rates)"
             ]} />
@@ -1250,7 +1250,7 @@ export default function BlogPost() {
             </p>
             <MachineList items={[
               { label: "Platform Overview", href: "/platform", description: "Person-level visitor ID, intent data, AI SDR automation" },
-              { label: "Pricing", href: "/pricing", description: "Starting at $1,000/mo - replaces Leadfeeder + 3-4 additional tools" },
+              { label: "Pricing", href: "/pricing", description: "Visitor Pixel $97/mo, Custom Audience $197/mo, or both for $247/mo" },
               { label: "Visitor Identification", href: "/visitor-identification", description: "70% person-level identification rate for B2B traffic" },
               { label: "AI SDR", href: "/what-is-ai-sdr", description: "Automated personalized outreach based on visit behavior" },
               { label: "Intent Audiences", href: "/intent-audiences", description: "Score visitors by buying intent, prioritize hottest prospects" },
@@ -1258,7 +1258,7 @@ export default function BlogPost() {
               { label: "Direct Mail", href: "/direct-mail", description: "Physical outreach for high-value accounts" },
               { label: "Free AI Audit", href: "/free-audit", description: "See what Leadfeeder is missing - identify gaps in your current data" },
               { label: "Book a Demo", href: "https://cal.com/cursiveteam/30min", description: "30-minute live demo of Cursive platform" },
-              { label: "Services", href: "/services", description: "Managed white-glove onboarding support" }
+              { label: "Services", href: "/services", description: "Learn more about Cursive's lead generation platform" }
             ]} />
           </MachineSection>
 

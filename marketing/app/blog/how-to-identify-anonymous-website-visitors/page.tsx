@@ -287,7 +287,7 @@ export default function HowToIdentifyAnonymousVisitors() {
               <p>
                 Select a visitor identification platform based on: identification rate (target 60%+),
                 data quality (person-level vs. company-only), CRM integrations, and pricing.
-                Cursive identifies 70% of B2B visitors at $1,000/month with direct CRM sync.
+                Cursive identifies 70% of B2B visitors with its $97/month Visitor Pixel.
               </p>
 
               <h3>Step 2: Install the Tracking Snippet</h3>
@@ -410,7 +410,7 @@ export default function HowToIdentifyAnonymousVisitors() {
                   </thead>
                   <tbody>
                     {[
-                      ['Cursive', 'Person + Company', '70%', '$1,000/mo', 'Intent-first B2B teams'],
+                      ['Cursive', 'Person + Company', '70%', '$97/mo', 'Intent-first B2B teams'],
                       ['RB2B', 'Person (LinkedIn)', '50–60%', '$79/mo', 'LinkedIn-first outreach'],
                       ['Warmly', 'Person + Company', '50–60%', '$700/mo', 'Signal-based routing'],
                       ['Leadfeeder', 'Company only', '~70%', '$139/mo', 'Company-level ABM'],
@@ -468,7 +468,7 @@ export default function HowToIdentifyAnonymousVisitors() {
                 sends personalized outreach automatically. Install in 5 minutes.
               </p>
               <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50 font-semibold px-8">
-                Start Free Trial
+                Get Started
               </Button>
             </div>
           </Container>
@@ -507,7 +507,7 @@ export default function HowToIdentifyAnonymousVisitors() {
 
             <MachineSection title="Top Tools Compared">
               <MachineList items={[
-                "Cursive: Person + Company, 70% ID rate, $1,000/month — best for intent-first B2B teams",
+                "Cursive: Person + Company, 70% ID rate, $97/month — best for intent-first B2B teams",
                 "RB2B: Person (LinkedIn), 50-60% ID rate, $79/month — best for LinkedIn-first outreach",
                 "Warmly: Person + Company, 50-60% ID rate, $700/month — best for signal-based routing",
                 "Leadfeeder: Company only, ~70% ID rate, $139/month — best for company-level ABM",

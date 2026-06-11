@@ -97,7 +97,7 @@ export default function BlogPost() {
               Cursive combines website visitor identification with AI-powered outreach in a single platform. The system identifies up to 70% of anonymous B2B website traffic, enriches those visitors against 420M+ profiles, and triggers personalized outreach across email, LinkedIn, and SMS within hours.
             </p>
             <p>
-              What makes Cursive different is the closed loop from identification to booked meeting. Most tools handle one piece of the puzzle; Cursive handles the entire workflow. Pricing starts at $1,000/month with no long-term contracts, and the platform includes 200+ native integrations with major CRMs.
+              What makes Cursive different is the ability to identify website visitors and deliver fresh weekly lists of in-market buyers. Choose Visitor Pixel at $97/month, Custom Audience at $197/month, or the Pixel + Audience Bundle at $247/month. All plans are month-to-month with no setup fee.
             </p>
 
             <h3>Artisan</h3>
@@ -170,7 +170,7 @@ export default function BlogPost() {
                 <tr>
                   <td>Cursive</td>
                   <td>Visitor ID + AI outreach</td>
-                  <td>$1,000/mo</td>
+                  <td>$97/mo</td>
                   <td>Anonymous traffic to booked meetings</td>
                 </tr>
                 <tr>
@@ -481,7 +481,7 @@ export default function BlogPost() {
 
           <MachineSection title="12 Tools Compared">
             <MachineList items={[
-              "Cursive - Visitor ID + AI outreach, $1,000/mo, anonymous traffic to booked meetings",
+              "Cursive - Visitor ID + weekly in-market buyer audiences, plans from $97/mo",
               "Artisan - Autonomous outbound, custom pricing, end-to-end AI SDR",
               "Clay - Data enrichment, $149/mo, 75+ data provider waterfall",
               "Apollo.io - All-in-one prospecting, free tier available, large contact database",
@@ -556,7 +556,7 @@ export default function BlogPost() {
             </p>
             <MachineList items={[
               { label: "Platform Overview", href: "/platform", description: "Visitor identification, intent data, AI outreach" },
-              { label: "Pricing", href: "/pricing", description: "Self-serve marketplace + done-for-you services" },
+              { label: "Pricing", href: "/pricing", description: "Three month-to-month self-serve plans from $97/mo" },
               { label: "Book a Demo", href: "/book", description: "See Cursive in action" }
             ]} />
           </MachineSection>

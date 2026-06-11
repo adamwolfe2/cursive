@@ -104,7 +104,7 @@ export default function BlogPost() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  <tr><td className="p-3 font-medium">Cursive</td><td className="p-3">Visitor ID + outreach</td><td className="p-3">$1,000/mo</td><td className="p-3">Identifies anonymous traffic, triggers outreach in hours</td><td className="p-3">Email, LinkedIn, SMS, Direct Mail</td></tr>
+                  <tr><td className="p-3 font-medium">Cursive</td><td className="p-3">Visitor ID + audiences</td><td className="p-3">$97/mo</td><td className="p-3">Identifies anonymous traffic and delivers in-market buyers</td><td className="p-3">Pixel, Google Sheets</td></tr>
                   <tr><td className="p-3 font-medium">Outreach</td><td className="p-3">Enterprise sales teams</td><td className="p-3">Custom (~$100+/user/mo)</td><td className="p-3">AI Revenue Agents, conversation intelligence</td><td className="p-3">Email, Phone, LinkedIn</td></tr>
                   <tr><td className="p-3 font-medium">Apollo.io</td><td className="p-3">All-in-one prospecting</td><td className="p-3">Free tier; $49/mo</td><td className="p-3">275M+ contact database included</td><td className="p-3">Email, Phone, LinkedIn</td></tr>
                   <tr><td className="p-3 font-medium">Salesloft</td><td className="p-3">Revenue teams</td><td className="p-3">Custom</td><td className="p-3">Rhythm AI for action prioritization</td><td className="p-3">Email, Phone, LinkedIn</td></tr>
@@ -127,10 +127,10 @@ export default function BlogPost() {
               Cursive combines website visitor identification with AI-powered outreach automation. The platform identifies up to 70% of anonymous B2B website traffic, enriches visitors into complete contact records, and triggers personalized sequences within hours of a visit.
             </p>
             <p>
-              <strong>Key features:</strong> Real-time visitor identification using IP intelligence and device fingerprinting, AI agents that automate outreach across email, LinkedIn, SMS, and direct mail, 200+ native CRM integrations, and done-for-you services where Cursive's team runs campaigns on your behalf.
+              <strong>Key features:</strong> Real-time visitor identification using IP intelligence and device fingerprinting, plus fresh weekly lists of in-market buyers delivered to Google Sheets.
             </p>
             <p>
-              <strong>Pros:</strong> Closes the gap between traffic and pipeline that other tools miss; no long-term contracts; includes enrichment data across 280M+ profiles. <strong>Cons:</strong> Primarily focused on B2B; requires meaningful website traffic to maximize value. <strong>Pricing:</strong> Plans start at $1,000/month; self-serve Lead Marketplace available from $0.60/lead.
+              <strong>Pros:</strong> Closes the gap between traffic and pipeline that other tools miss; no long-term contracts; includes enrichment data across 280M+ profiles. <strong>Cons:</strong> Primarily focused on B2B; requires meaningful website traffic to maximize value. <strong>Pricing:</strong> Visitor Pixel is $97/month, Custom Audience is $197/month, and the bundle is $247/month; all plans are self-serve and month-to-month.
             </p>
 
             <h3>Outreach</h3>
@@ -325,7 +325,7 @@ export default function BlogPost() {
 
             <h3>Do any outreach platforms offer done-for-you managed services?</h3>
             <p>
-              Yes. Vendors like Cursive, Belkins, and CIENCE offer managed outbound where their team builds lists, writes sequences, runs campaigns, and books meetings on your behalf.
+              Yes. Vendors like Belkins and CIENCE offer managed outbound where their team builds lists, writes sequences, runs campaigns, and books meetings on your behalf. Cursive instead offers self-serve visitor identification and weekly in-market buyer audiences.
             </p>
 
             <h3>How long does it typically take to launch an outreach platform?</h3>
@@ -352,7 +352,7 @@ export default function BlogPost() {
       <DashboardCTA
         headline="See How Cursive Compares to"
         subheadline="Every Platform on This List"
-        description="Cursive is the only platform that combines visitor identification, AI-powered outreach, and done-for-you services. Book a demo to see the difference."
+        description="Cursive combines visitor identification with fresh weekly audiences of in-market buyers. Book a demo to see the difference."
       />
       </HumanView>
 
@@ -376,7 +376,7 @@ export default function BlogPost() {
 
           <MachineSection title="12 Platforms Quick Comparison">
             <MachineList items={[
-              "Cursive ($1,000/mo) - Visitor ID + AI outreach across email, LinkedIn, SMS, direct mail; 280M+ enrichment profiles",
+              "Cursive ($97/mo) - Visitor identification plus fresh weekly audiences of in-market buyers; 280M+ enrichment profiles",
               "Outreach (Custom ~$100+/user/mo) - Enterprise sales engagement with AI Revenue Agents, conversation intelligence",
               "Apollo.io (Free tier; $49/mo) - 275M+ contact database with built-in sequencing",
               "Salesloft (Custom) - Revenue orchestration with Rhythm AI action prioritization",
@@ -437,8 +437,8 @@ export default function BlogPost() {
               "Visitor identification - IP intelligence + device fingerprinting for anonymous traffic",
               "AI outreach agents - automate email, LinkedIn, SMS, direct mail sequences",
               "200+ native CRM integrations - identified visitors flow directly into your CRM",
-              "Done-for-you services - Cursive's team runs campaigns and books meetings on your behalf",
-              "No long-term contracts - month-to-month flexibility, self-serve from $0.60/lead"
+              "Three self-serve plans - Visitor Pixel, Custom Audience, or both",
+              "No long-term contracts - month-to-month flexibility from $97/month"
             ]} />
           </MachineSection>
 
@@ -456,7 +456,7 @@ export default function BlogPost() {
             </p>
             <MachineList items={[
               { label: "Platform Overview", href: "/platform", description: "Visitor identification, intent data, AI outreach" },
-              { label: "Pricing", href: "/pricing", description: "Self-serve marketplace + done-for-you services" },
+              { label: "Pricing", href: "/pricing", description: "Three self-serve, month-to-month plans" },
               { label: "Visitor Identification", href: "/visitor-identification", description: "70% identification rate for B2B traffic" },
               { label: "Book a Demo", href: "/book", description: "See Cursive in real-time" }
             ]} />

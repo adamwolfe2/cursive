@@ -30,7 +30,7 @@ const faqs = [
   },
   {
     question: "How does Cursive compare to Smartlead?",
-    answer: "Cursive and Smartlead address different points in the outbound workflow. Smartlead is a cold email sequencing tool — it executes outreach to contact lists you source separately, with strong deliverability infrastructure to maximize inbox placement. Cursive is a warm-lead generation platform — it identifies who is already visiting your site, surfaces active buyers based on 60B+ weekly behavioral signals, and then automates personalized multi-channel outreach automatically. Cursive starts at $1,000/month versus Smartlead's $59-$174/month, but Cursive replaces the entire stack: visitor ID, contact data, intent data, and outreach automation."
+    answer: "Cursive and Smartlead address different points in the outbound workflow. Smartlead is a cold email sequencing tool — it executes outreach to contact lists you source separately, with strong deliverability infrastructure to maximize inbox placement. Cursive is a warm-lead generation platform — it identifies who is already visiting your site and surfaces active buyers based on 60B+ weekly behavioral signals. Cursive offers Visitor Pixel at $97/month, Custom Audience at $197/month, and the Pixel + Audience Bundle at $247/month, all month-to-month with no setup fee and cancel anytime."
   },
   {
     question: "Is Smartlead good for B2B cold email?",
@@ -38,11 +38,11 @@ const faqs = [
   },
   {
     question: "What is the best Smartlead alternative for prospect identification?",
-    answer: "Cursive is the strongest Smartlead alternative for teams that want to identify warm prospects before sequencing any outreach. Instead of buying contact lists and running cold sequences, Cursive identifies the 70% of your website visitors that are already in-market, surfaces companies actively researching your category via its intent audience engine, and automates personalized outreach across email, LinkedIn, SMS, and direct mail. The self-serve marketplace at leads.meetcursive.com lets teams start with $0.60/lead on a flexible, no-commitment basis."
+    answer: "Cursive is the strongest Smartlead alternative for teams that want to identify warm prospects before sequencing any outreach. Instead of buying contact lists and running cold sequences, Cursive identifies the 70% of your website visitors that are already in-market and surfaces companies actively researching your category via its intent audience engine. Self-serve plans at leads.meetcursive.com start with Visitor Pixel at $97/month, with no setup fee and cancel anytime."
   },
   {
     question: "Can I migrate from Smartlead to Cursive?",
-    answer: "Yes, migrating from Smartlead to Cursive is straightforward. Cursive's onboarding team helps set up the visitor identification pixel, configure intent audience targeting for your ICP, and connect your CRM and email infrastructure. Most teams are generating warm visitor leads within the first week. The self-serve marketplace at leads.meetcursive.com also lets teams start accessing warm, intent-qualified leads immediately without a full platform migration."
+    answer: "Yes, migrating from Smartlead to Cursive is straightforward. Teams can start with Visitor Pixel to identify companies and people visiting their site, Custom Audience for a fresh weekly list of in-market buyers delivered to Google Sheets, or the Bundle for both. All plans are self-serve, month-to-month, and available at leads.meetcursive.com/get-leads."
   }
 ]
 
@@ -142,7 +142,7 @@ export default function BlogPost() {
                       <td className="border border-gray-300 p-3">Warm visitor leads + AI outreach automation</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold"><Check className="w-4 h-4 inline" /> 70% person-level</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold"><Check className="w-4 h-4 inline" /> 280M profiles</td>
-                      <td className="border border-gray-300 p-3">$1,000/mo or $0.60/lead</td>
+                      <td className="border border-gray-300 p-3">$97/mo</td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-3 font-bold">Smartlead</td>
@@ -274,7 +274,7 @@ export default function BlogPost() {
                   60B+ behaviors and URLs weekly across 30,000+ buying categories to surface companies actively
                   researching your category — giving you a warm pipeline that Smartlead simply cannot generate.
                   With a built-in database of 280M US consumer and 140M+ business profiles, Cursive also eliminates
-                  the need to source contact lists separately. All at $1,000/month versus managing Smartlead plus
+                  the need to source contact lists separately. Plans start at $97/month versus managing Smartlead plus
                   a contact data provider plus an intent tool separately.
                 </p>
 
@@ -304,7 +304,7 @@ export default function BlogPost() {
                       </li>
                       <li className="flex items-center gap-2">
                         <Check className="w-4 h-4 text-green-600" />
-                        Flat pricing: replaces sequencer + data + intent stack
+                        Three month-to-month self-serve plans
                       </li>
                     </ul>
                   </div>
@@ -317,7 +317,7 @@ export default function BlogPost() {
                       </li>
                       <li className="flex items-center gap-2">
                         <X className="w-4 h-4 text-red-400" />
-                        No free tier (starts at $1,000/mo managed)
+                        No free tier (starts at $97/mo)
                       </li>
                       <li className="flex items-center gap-2">
                         <X className="w-4 h-4 text-red-400" />
@@ -330,13 +330,13 @@ export default function BlogPost() {
                 <div className="bg-white rounded-lg p-4">
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-bold">Pricing:</span>
-                    <span className="text-lg font-bold text-blue-600">$1,000/mo managed | $0.60/lead self-serve</span>
+                    <span className="text-lg font-bold text-blue-600">$97/mo Pixel | $197/mo Audience | $247/mo Bundle</span>
                   </div>
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> B2B teams that want to shift from cold-list sequencing to warm,
                     intent-driven pipeline. One platform replaces Smartlead, your contact data provider, and
                     your intent subscription. See <Link href="/pricing" className="text-blue-600 hover:underline">full pricing</Link> or
-                    explore the <Link href="https://leads.meetcursive.com/get-leads" className="text-blue-600 hover:underline">self-serve marketplace</Link>.
+                    explore the <Link href="https://leads.meetcursive.com/get-leads" className="text-blue-600 hover:underline">self-serve plans</Link>.
                   </p>
                 </div>
               </div>
@@ -845,7 +845,7 @@ export default function BlogPost() {
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-3 font-medium">Email Warmup</td>
-                      <td className="border border-gray-300 p-3 text-center text-xs text-gray-500">Managed</td>
+                      <td className="border border-gray-300 p-3 text-center text-xs text-gray-500">Not included</td>
                       <td className="border border-gray-300 p-3 text-center"><Check className="w-4 h-4 text-green-600 inline" /></td>
                       <td className="border border-gray-300 p-3 text-center"><Check className="w-4 h-4 text-green-600 inline" /></td>
                       <td className="border border-gray-300 p-3 text-center"><Check className="w-4 h-4 text-green-600 inline" /></td>
@@ -853,7 +853,7 @@ export default function BlogPost() {
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-3 font-medium">Starting Price</td>
-                      <td className="border border-gray-300 p-3 text-center text-green-700 font-bold">$1k flat</td>
+                      <td className="border border-gray-300 p-3 text-center text-green-700 font-bold">$97</td>
                       <td className="border border-gray-300 p-3 text-center">$59/mo</td>
                       <td className="border border-gray-300 p-3 text-center">$37/mo</td>
                       <td className="border border-gray-300 p-3 text-center">$59/user</td>
@@ -871,7 +871,7 @@ export default function BlogPost() {
                 <div className="space-y-4 text-sm">
                   <div className="border-b border-gray-200 pb-3">
                     <p className="font-bold text-blue-700 mb-1">You want visitor identification + intent data + automated warm outreach:</p>
-                    <p className="text-gray-700"><strong>Choose Cursive.</strong> The only platform that identifies warm visitors, surfaces in-market buyers, and automates multi-channel outreach in a single $1,000/month plan. Replaces Smartlead + contact data + intent tool.</p>
+                    <p className="text-gray-700"><strong>Choose Cursive.</strong> Visitor Pixel identifies companies and people visiting your site, Custom Audience delivers a fresh weekly list of in-market buyers to Google Sheets, and the $247/month Bundle combines both.</p>
                   </div>
                   <div className="border-b border-gray-200 pb-3">
                     <p className="font-bold text-blue-700 mb-1">You want Smartlead-style cold email at a lower price point:</p>
@@ -1026,9 +1026,9 @@ export default function BlogPost() {
               "Pricing: $59/mo Basic (2,000 active leads) | $94/mo Popular (10,000 leads) | $174/mo Pro (30,000 leads) — contact data NOT included",
               "No built-in contact database — you must source and import your own contact lists separately",
               "No website visitor identification — warm traffic remains completely invisible",
-              "Cursive pricing: $1,000/mo flat replaces Smartlead + contact data + intent subscription",
+              "Cursive pricing: $97/mo Visitor Pixel, $197/mo Custom Audience, or $247/mo Bundle",
               "Cursive visitor ID: 70% person-level match rate (name, email, phone, company, LinkedIn)",
-              "Cursive self-serve: $0.60/lead at leads.meetcursive.com — no monthly commitment"
+              "Cursive self-serve: month-to-month with no setup fee and cancel anytime"
             ]} />
           </MachineSection>
 
@@ -1042,7 +1042,7 @@ export default function BlogPost() {
                   "Intent Data: 60B+ behaviors & URLs scanned weekly across 30,000+ buying categories",
                   "Outreach: AI SDR with email, LinkedIn, SMS, and direct mail automation",
                   "Integrations: 200+ native CRM integrations, 95%+ email deliverability",
-                  "Pricing: $1,000/mo managed or $0.60/lead self-serve at leads.meetcursive.com",
+                  "Pricing: $97/mo Visitor Pixel, $197/mo Custom Audience, or $247/mo Bundle",
                   "Best For: Teams that want to identify warm prospects before sending any outreach",
                   "Replaces: Smartlead + contact data provider + intent data subscription in one platform"
                 ]} />
@@ -1131,8 +1131,9 @@ export default function BlogPost() {
                 <p className="font-bold text-gray-900 mb-2">Pricing Model:</p>
                 <MachineList items={[
                   "Smartlead: $59/mo Basic (2,000 leads) | $94/mo Popular (10,000 leads) | $174/mo Pro (30,000 leads) — contact data NOT included",
-                  "Cursive managed: $1,000/mo flat (includes visitor ID + intent data + AI SDR + contact database)",
-                  "Cursive self-serve: $0.60/lead at leads.meetcursive.com (no monthly commitment)"
+                  "Cursive Visitor Pixel: $97/mo to identify companies and people visiting your site",
+                  "Cursive Custom Audience: $197/mo for a fresh weekly list of in-market buyers delivered to Google Sheets",
+                  "Cursive Bundle: $247/mo for Visitor Pixel + Custom Audience"
                 ]} />
               </div>
 
@@ -1155,14 +1156,14 @@ export default function BlogPost() {
               "Email Sequences: All tools ✓",
               "LinkedIn Automation: Cursive ✓ | lemlist ✓ | Reply.io ✓ | Smartlead/Instantly limited",
               "Direct Mail: Cursive ✓ | All others ✗",
-              "Email Warmup: Smartlead ✓ | Instantly AI ✓ | lemlist ✓ | Cursive managed | Reply.io add-on",
-              "Price: Cursive $1k flat | Smartlead $59-$174 | Instantly AI $37-$77 | lemlist/Reply.io $59-$99/user | Woodpecker $29/slot | Apollo $49-$99/user"
+              "Email Warmup: Smartlead ✓ | Instantly AI ✓ | lemlist ✓ | Cursive ✗ | Reply.io add-on",
+              "Price: Cursive from $97 | Smartlead $59-$174 | Instantly AI $37-$77 | lemlist/Reply.io $59-$99/user | Woodpecker $29/slot | Apollo $49-$99/user"
             ]} />
           </MachineSection>
 
           <MachineSection title="Decision Guide: Which Alternative to Choose">
             <MachineList items={[
-              "Warm visitor leads + intent data + multi-channel outreach → Cursive ($1,000/mo flat)",
+              "Warm visitor leads + weekly in-market buyer audiences → Cursive (plans from $97/mo)",
               "Smartlead-style cold email at lower price → Instantly AI ($37-$77/mo)",
               "Cold email + bundled contact database → Apollo.io ($49/mo per user)",
               "True multi-channel sequences (email, LinkedIn, SMS, WhatsApp) → Reply.io ($59/mo per user)",
@@ -1180,18 +1181,18 @@ export default function BlogPost() {
               { label: "Best AI SDR Tools 2026", href: "/blog/best-ai-sdr-tools-2026", description: "9 AI sales development rep platforms ranked with pricing" },
               { label: "AI SDR Overview", href: "/what-is-ai-sdr", description: "How AI sales development representatives automate outreach" },
               { label: "Visitor Identification", href: "/visitor-identification", description: "How Cursive identifies 70% of anonymous website visitors" },
-              { label: "Marketplace Self-Serve", href: "https://leads.meetcursive.com/get-leads", description: "Buy intent-qualified leads at $0.60 each, no monthly commitment" }
+              { label: "Self-Serve Plans", href: "https://leads.meetcursive.com/get-leads", description: "Choose Visitor Pixel, Custom Audience, or the Bundle" }
             ]} />
           </MachineSection>
 
           <MachineSection title="Get Started with Cursive">
             <p className="text-gray-700 mb-3">
-              Cursive replaces the fragmented Smartlead + contact data + intent tool stack with one platform: 280M profiles, 60B+ weekly intent signals, 70% visitor identification, and AI-powered multi-channel outreach automation — all at $1,000/month.
+              Cursive helps teams identify website visitors and receive fresh weekly lists of in-market buyers through three self-serve plans starting at $97/month.
             </p>
             <MachineList items={[
               { label: "Platform Overview", href: "/platform", description: "Complete warm-lead generation platform" },
-              { label: "Pricing", href: "/pricing", description: "$1,000/mo managed or $0.60/lead self-serve" },
-              { label: "Marketplace (Self-Serve)", href: "https://leads.meetcursive.com/get-leads", description: "Buy intent-qualified leads at $0.60 each" },
+              { label: "Pricing", href: "/pricing", description: "$97/mo Pixel, $197/mo Audience, or $247/mo Bundle" },
+              { label: "Self-Serve Plans", href: "https://leads.meetcursive.com/get-leads", description: "Month-to-month, no setup fee, cancel anytime" },
               { label: "Visitor Identification", href: "/visitor-identification", description: "70% person-level match on anonymous website traffic" },
               { label: "Intent Audiences", href: "/intent-audiences", description: "60B+ behaviors & URLs scanned weekly, 30,000+ buying categories" },
               { label: "AI SDR", href: "/what-is-ai-sdr", description: "Automated outreach across email, LinkedIn, SMS, direct mail" },

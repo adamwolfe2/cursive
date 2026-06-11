@@ -59,7 +59,7 @@ const faqs = [
   },
   {
     question: "How much does intent data cost?",
-    answer: "Intent data pricing varies widely: Cursive starts at $1,000/month for first-party visitor identification plus outreach automation. Bombora ranges from $20,000 to $50,000+ per year. 6sense costs $50,000-$200,000 per year. Demandbase runs $50,000-$150,000 per year. G2 Buyer Intent ranges from $5,000-$20,000 per year. TechTarget Priority Engine is $15,000-$40,000+ per year. Enterprise packages from any provider require annual contracts."
+    answer: "Intent data pricing varies widely: Cursive offers Visitor Pixel for $97/month, Custom Audience for $197/month, and the Pixel + Audience Bundle for $247/month. Bombora ranges from $20,000 to $50,000+ per year. 6sense costs $50,000-$200,000 per year. Demandbase runs $50,000-$150,000 per year. G2 Buyer Intent ranges from $5,000-$20,000 per year. TechTarget Priority Engine is $15,000-$40,000+ per year. Cursive plans are month-to-month with no setup fee; enterprise packages from other providers typically require annual contracts."
   },
   {
     question: "Can I use multiple intent data providers together?",

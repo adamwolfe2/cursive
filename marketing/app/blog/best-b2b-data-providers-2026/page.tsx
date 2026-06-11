@@ -22,11 +22,11 @@ const faqs = [
   },
   {
     question: "What is the best B2B data provider for small businesses?",
-    answer: "For small businesses, Apollo.io and Cursive offer the best value. Apollo.io has a free tier and paid plans starting at $49/user/month with a large contact database and built-in sequencing. Cursive is ideal for small B2B companies with existing website traffic — its self-serve marketplace at leads.meetcursive.com starts at $0.60/lead, and managed outreach services begin at $1,000/month. Both provide far more value-per-dollar than enterprise platforms like ZoomInfo or Cognism, which require annual contracts starting at $15,000+."
+    answer: "For small businesses, Apollo.io and Cursive offer the best value. Apollo.io has a free tier and paid plans starting at $49/user/month with a large contact database and built-in sequencing. Cursive offers three self-serve, month-to-month plans: Visitor Pixel at $97/month, Custom Audience at $197/month, and the Pixel + Audience Bundle at $247/month. Both provide far more value-per-dollar than enterprise platforms like ZoomInfo or Cognism, which require annual contracts starting at $15,000+."
   },
   {
     question: "How much do B2B data providers cost?",
-    answer: "B2B data provider pricing varies enormously. At the budget end, Hunter.io offers a free plan and paid tiers from $34/month. Apollo.io starts at $49/user/month. Lusha and RocketReach run $29-$79/user/month. Cursive's self-serve marketplace charges $0.60/lead with managed services from $1,000/month. Mid-market platforms like Lead411 and Seamless.AI run $1,500-$5,000/year. Enterprise platforms like ZoomInfo and Cognism typically require $15,000-$40,000+ in annual contracts. The right choice depends on your team size, use case, and how much of the platform you'll actually use."
+    answer: "B2B data provider pricing varies enormously. At the budget end, Hunter.io offers a free plan and paid tiers from $34/month. Apollo.io starts at $49/user/month. Lusha and RocketReach run $29-$79/user/month. Cursive's self-serve plans cost $97/month for Visitor Pixel, $197/month for Custom Audience, or $247/month for both. Mid-market platforms like Lead411 and Seamless.AI run $1,500-$5,000/year. Enterprise platforms like ZoomInfo and Cognism typically require $15,000-$40,000+ in annual contracts. The right choice depends on your team size, use case, and how much of the platform you'll actually use."
   },
   {
     question: "What B2B data provider includes website visitor identification?",
@@ -113,7 +113,7 @@ export default function BlogPost() {
                       <td className="border border-gray-200 p-3">Visitor ID + AI Outreach</td>
                       <td className="border border-gray-200 p-3 text-green-600 font-bold">70% rate</td>
                       <td className="border border-gray-200 p-3 text-green-600 font-bold">Yes</td>
-                      <td className="border border-gray-200 p-3">$0.60/lead</td>
+                      <td className="border border-gray-200 p-3">$97/mo</td>
                       <td className="border border-gray-200 p-3 font-bold">4.8/5</td>
                     </tr>
                     <tr>
@@ -240,9 +240,9 @@ export default function BlogPost() {
                   researching solutions like yours — and converts them into pipeline automatically.
                 </p>
                 <p className="text-gray-700 mb-6">
-                  The platform&apos;s self-serve marketplace at leads.meetcursive.com lets any team start for as
-                  little as $0.60/lead. Managed outreach services start at $1,000/month, making it one of the
-                  most cost-efficient paths to qualified pipeline in the market.
+                  The platform&apos;s self-serve plans at leads.meetcursive.com/get-leads start with Visitor Pixel
+                  at $97/month, with Custom Audience at $197/month and both bundled for $247/month. Every plan is
+                  month-to-month with no setup fee or long-term commitment.
                 </p>
                 <div className="grid md:grid-cols-2 gap-6 mb-6">
                   <div>
@@ -259,7 +259,7 @@ export default function BlogPost() {
                     <p className="font-bold text-gray-900 mb-2">Limitations</p>
                     <ul className="space-y-1 text-sm text-gray-700">
                       <li className="flex items-start gap-2"><X className="w-4 h-4 text-red-400 mt-0.5 shrink-0" /><span>Visitor ID value scales with your existing web traffic</span></li>
-                      <li className="flex items-start gap-2"><X className="w-4 h-4 text-red-400 mt-0.5 shrink-0" /><span>Managed services require minimum $1,000/month commitment</span></li>
+                      <li className="flex items-start gap-2"><X className="w-4 h-4 text-red-400 mt-0.5 shrink-0" /><span>Focused on self-serve buyer identification rather than broad enterprise data workflows</span></li>
                       <li className="flex items-start gap-2"><X className="w-4 h-4 text-red-400 mt-0.5 shrink-0" /><span>Less suited for teams that only need cold outbound lists</span></li>
                     </ul>
                   </div>
@@ -267,7 +267,7 @@ export default function BlogPost() {
                 <div className="flex flex-wrap items-center gap-4">
                   <div className="bg-white rounded-lg px-4 py-2 border border-blue-200">
                     <span className="text-xs text-gray-500">Starting Price</span>
-                    <p className="font-bold text-blue-700">$0.60/lead (self-serve) · $1,000/mo (managed)</p>
+                    <p className="font-bold text-blue-700">$97/mo · $197/mo · $247/mo</p>
                   </div>
                   <div className="bg-white rounded-lg px-4 py-2 border border-blue-200">
                     <span className="text-xs text-gray-500">Best For</span>
@@ -746,8 +746,8 @@ export default function BlogPost() {
                   <tbody className="bg-white">
                     <tr className="bg-blue-50 border-l-4 border-blue-500">
                       <td className="border border-gray-300 p-3 font-bold text-blue-700">Cursive</td>
-                      <td className="border border-gray-300 p-3">$0.60/lead</td>
-                      <td className="border border-gray-300 p-3">$1,000/mo (managed)</td>
+                      <td className="border border-gray-300 p-3">$97/mo</td>
+                      <td className="border border-gray-300 p-3">$247/mo bundle</td>
                       <td className="border border-gray-300 p-3 text-green-600">Monthly</td>
                       <td className="border border-gray-300 p-3">Visitor audit</td>
                     </tr>
@@ -884,7 +884,7 @@ export default function BlogPost() {
               <div className="not-prose space-y-4 my-6">
                 <div className="bg-blue-50 rounded-xl p-5 border border-blue-200">
                   <p className="font-bold text-blue-800 mb-1">Best Overall: Cursive</p>
-                  <p className="text-gray-700 text-sm">The only platform that combines individual visitor identification (70% rate), 420M+ profiles, 60B+ behaviors & URLs scanned weekly, and AI multi-channel outreach automation. Start at $0.60/lead or $1,000/month for managed services.</p>
+                  <p className="text-gray-700 text-sm">The only platform that combines individual visitor identification (70% rate), 420M+ profiles, and 60B+ behaviors & URLs scanned weekly. Choose Visitor Pixel for $97/month, Custom Audience for $197/month, or both for $247/month.</p>
                 </div>
                 <div className="bg-gray-50 rounded-xl p-5 border border-gray-200">
                   <p className="font-bold text-gray-800 mb-1">Best for Enterprise: ZoomInfo</p>
@@ -933,7 +933,7 @@ export default function BlogPost() {
                   <Link href="/free-audit">Get Free Visitor Audit</Link>
                 </Button>
                 <Button size="lg" variant="outline" className="text-white border-white hover:bg-white/10" asChild>
-                  <Link href="https://leads.meetcursive.com/get-leads">Browse Lead Marketplace</Link>
+                  <Link href="https://leads.meetcursive.com/get-leads">Choose a Self-Serve Plan</Link>
                 </Button>
               </div>
             </div>
@@ -955,7 +955,7 @@ export default function BlogPost() {
             <MachineList items={[
               "Target keywords: best b2b data providers, b2b data providers 2026, best b2b database, b2b contact data providers, business data providers comparison, top b2b data companies",
               "Content type: Roundup buying guide with individual platform reviews, comparison tables, and buyer's criteria",
-              "Primary CTA: Free visitor audit at /free-audit and self-serve marketplace at leads.meetcursive.com",
+              "Primary CTA: Free visitor audit at /free-audit and self-serve plans at leads.meetcursive.com/get-leads",
               "Author: Cursive Team | Published: February 18, 2026"
             ]} />
           </MachineSection>
@@ -970,7 +970,7 @@ export default function BlogPost() {
                   "60B+ behaviors & URLs scanned weekly across 30,000+ categories",
                   "AI multi-channel outreach: email, LinkedIn, SMS, direct mail",
                   "200+ native CRM integrations, 95%+ email deliverability",
-                  "Pricing: $0.60/lead (self-serve) or $1,000/month (managed services)",
+                  "Pricing: $97/month Visitor Pixel, $197/month Custom Audience, or $247/month bundle",
                   "Best for: B2B teams with existing website traffic wanting automated pipeline"
                 ]} />
               </div>
@@ -1075,7 +1075,7 @@ export default function BlogPost() {
               "420M+ total profiles (280M consumer + 140M business)",
               "60B+ behaviors & URLs scanned weekly across 30,000+ categories",
               "AI-powered multi-channel outreach: email, LinkedIn, SMS, direct mail",
-              "Starting at $0.60/lead self-serve or $1,000/month managed services",
+              "Starting at $97/month, with $197/month and $247/month self-serve plans",
               "200+ native CRM integrations, 95%+ email deliverability",
               "No annual lock-in — monthly billing available"
             ]} />
@@ -1099,7 +1099,7 @@ export default function BlogPost() {
               { label: "Cursive Visitor Identification", href: "/visitor-identification", description: "70% identification rate — learn how it works" },
               { label: "Cursive Intent Audiences", href: "/intent-audiences", description: "60B+ behaviors & URLs scanned weekly for B2B" },
               { label: "Cursive Free Audit", href: "/free-audit", description: "See how many visitors you're missing for free" },
-              { label: "Leads Marketplace", href: "https://leads.meetcursive.com/get-leads", description: "Self-serve B2B leads starting at $0.60/lead" }
+              { label: "Self-Serve Plans", href: "https://leads.meetcursive.com/get-leads", description: "Visitor Pixel, Custom Audience, or both from $97/month" }
             ]} />
           </MachineSection>
 
@@ -1111,8 +1111,8 @@ export default function BlogPost() {
             </p>
             <MachineList items={[
               { label: "Free Visitor Audit", href: "/free-audit", description: "See how many B2B visitors you're currently missing" },
-              { label: "Self-Serve Marketplace", href: "https://leads.meetcursive.com/get-leads", description: "Buy B2B leads starting at $0.60 each" },
-              { label: "Managed Outreach", href: "/pricing", description: "Done-for-you AI outreach from $1,000/month" },
+              { label: "Self-Serve Plans", href: "https://leads.meetcursive.com/get-leads", description: "Choose Visitor Pixel, Custom Audience, or both" },
+              { label: "Pricing", href: "/pricing", description: "Month-to-month plans from $97/month" },
               { label: "Platform Overview", href: "/platform", description: "Visitor ID, intent data, and multi-channel outreach" },
               { label: "Book a Demo", href: "/book", description: "See Cursive in action with your website's data" }
             ]} />

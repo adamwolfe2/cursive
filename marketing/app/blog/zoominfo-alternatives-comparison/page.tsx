@@ -18,11 +18,11 @@ const faqs = [
   },
   {
     question: "What is the cheapest alternative to ZoomInfo?",
-    answer: "Apollo.io offers the most affordable entry point with a free tier (60 credits/month) and paid plans starting at $49/user/month. For teams that want intent data and outbound automation, Cursive offers self-serve credits starting at $99 or done-for-you outbound from $1k/month -- still a fraction of ZoomInfo's $15k+ minimum."
+    answer: "Apollo.io offers the most affordable entry point with a free tier (60 credits/month) and paid plans starting at $49/user/month. For teams that want visitor identification or fresh weekly lists of in-market buyers, Cursive offers self-serve plans at $97, $197, or $247 per month -- still a fraction of ZoomInfo's $15k+ minimum."
   },
   {
     question: "Is ZoomInfo worth the cost for small businesses?",
-    answer: "For most small businesses, ZoomInfo is not worth the cost. The minimum contract starts around $15k/year, which is difficult to justify when you're only using basic contact lookup features. Alternatives like Cursive, Lusha, or RocketReach provide the data most small teams need at a much lower price point, often with more relevant features like intent data and automated outreach."
+    answer: "For most small businesses, ZoomInfo is not worth the cost. The minimum contract starts around $15k/year, which is difficult to justify when you're only using basic contact lookup features. Alternatives like Cursive, Lusha, or RocketReach provide the data most small teams need at a much lower price point, often with more relevant features like intent data and visitor identification."
   },
   {
     question: "Can I get out of a ZoomInfo contract?",
@@ -34,7 +34,7 @@ const faqs = [
   },
   {
     question: "How does Cursive compare to ZoomInfo?",
-    answer: "Cursive and ZoomInfo take fundamentally different approaches. ZoomInfo is a database-first platform where you search and export contacts. Cursive identifies companies already visiting your website, enriches them with intent data, and automates personalized outreach across email, LinkedIn, and direct mail. Cursive starts at $99 for self-serve credits versus ZoomInfo's $15k+ minimum, making it dramatically more accessible for growth-stage companies."
+    answer: "Cursive and ZoomInfo take fundamentally different approaches. ZoomInfo is a database-first platform where you search and export contacts. Cursive identifies companies and people already visiting your website and delivers fresh weekly lists of in-market buyers to Google Sheets. Cursive plans are $97, $197, or $247 per month versus ZoomInfo's $15k+ minimum, making it dramatically more accessible for growth-stage companies."
   }
 ]
 
@@ -146,8 +146,8 @@ export default function BlogPost() {
                   </tr>
                   <tr className="bg-blue-50 border-2 border-blue-500">
                     <td className="border border-gray-300 p-3 font-bold">Cursive</td>
-                    <td className="border border-gray-300 p-3">$1,188 - $12,000</td>
-                    <td className="border border-gray-300 p-3">$12,000 - $24,000</td>
+                    <td className="border border-gray-300 p-3">$1,164 - $2,964</td>
+                    <td className="border border-gray-300 p-3">$1,164 - $2,964</td>
                     <td className="border border-gray-300 p-3">Monthly</td>
                     <td className="border border-gray-300 p-3 text-green-600 font-bold">Up to 92% savings</td>
                   </tr>
@@ -225,8 +225,8 @@ export default function BlogPost() {
                     <td className="border border-gray-300 p-3">200M+ contacts</td>
                     <td className="border border-gray-300 p-3 text-green-600 font-bold">1st party website</td>
                     <td className="border border-gray-300 p-3">Verified</td>
-                    <td className="border border-gray-300 p-3">$99 - $2k/mo</td>
-                    <td className="border border-gray-300 p-3">Intent + outbound</td>
+                    <td className="border border-gray-300 p-3">$97 - $247/mo</td>
+                    <td className="border border-gray-300 p-3">Visitor ID + audiences</td>
                   </tr>
                   <tr>
                     <td className="border border-gray-300 p-3 font-bold">Apollo.io</td>
@@ -295,7 +295,7 @@ export default function BlogPost() {
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <h3 className="text-2xl font-bold mb-2">1. Cursive</h3>
-                  <p className="text-sm text-gray-600">Best for: AI-powered visitor identification + outbound at a fraction of ZoomInfo's cost</p>
+                  <p className="text-sm text-gray-600">Best for: Visitor identification + fresh in-market buyer lists at a fraction of ZoomInfo's cost</p>
                 </div>
                 <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-bold">Top Pick</span>
               </div>
@@ -305,8 +305,8 @@ export default function BlogPost() {
                 ZoomInfo. Instead of selling you access to a database and letting you figure out who to contact, Cursive{" "}
                 <Link href="/visitor-identification" className="text-blue-600 hover:underline">identifies companies already visiting your website</Link>,
                 enriches them with <Link href="/intent-audiences" className="text-blue-600 hover:underline">intent data</Link>,
-                and automates personalized multi-channel outreach. You're not cold prospecting -- you're reaching companies
-                that are already researching solutions like yours.
+                and delivers fresh weekly lists of in-market buyers to Google Sheets. You're not cold prospecting -- you're
+                focusing on companies and people already showing intent.
               </p>
 
               <p className="text-gray-700 mb-4">
@@ -329,11 +329,11 @@ export default function BlogPost() {
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="w-4 h-4 text-green-600" />
-                      AI-powered personalized outreach automation
+                      Fresh weekly in-market buyer lists
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="w-4 h-4 text-green-600" />
-                      Multi-channel: email + LinkedIn + direct mail
+                      Delivered directly to Google Sheets
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="w-4 h-4 text-green-600" />
@@ -345,7 +345,7 @@ export default function BlogPost() {
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="w-4 h-4 text-green-600" />
-                      Done-for-you option (managed outbound service)
+                      No setup fee and cancel anytime
                     </li>
                   </ul>
                 </div>
@@ -375,11 +375,11 @@ export default function BlogPost() {
               <div className="bg-white rounded-lg p-4">
                 <div className="flex justify-between items-center mb-2">
                   <span className="font-bold">Pricing:</span>
-                  <span className="text-lg font-bold text-blue-600">$99 credits (self-serve) / $1k-$2k/mo (done-for-you)</span>
+                  <span className="text-lg font-bold text-blue-600">$97 Visitor Pixel / $197 Custom Audience / $247 Bundle</span>
                 </div>
                 <p className="text-sm text-gray-600">
                   <strong>Best for:</strong> Growth-stage B2B companies spending $15k+ on ZoomInfo when they really need intent-based
-                  outbound, not a massive database. If you're paying for ZoomInfo but only using it for basic contact lookups and list
+                  buyer data, not a massive database. If you're paying for ZoomInfo but only using it for basic contact lookups and list
                   building, Cursive will likely generate more pipeline at a lower cost. See our{" "}
                   <Link href="/pricing" className="text-blue-600 hover:underline">pricing page</Link> for full details.
                 </p>
@@ -391,7 +391,7 @@ export default function BlogPost() {
               <h3 className="text-2xl font-bold mb-3">Spending $15k+ on ZoomInfo?</h3>
               <p className="text-blue-100 mb-6 max-w-xl mx-auto">
                 Most teams switching from ZoomInfo to Cursive save 80-90% while generating more pipeline.
-                Cursive identifies your website visitors and automates outreach -- no massive database contract required.
+                Cursive identifies your website visitors and delivers fresh weekly lists of in-market buyers -- no massive database contract required.
               </p>
               <Link
                 href="https://www.meetcursive.com/platform"
@@ -928,9 +928,9 @@ export default function BlogPost() {
             <p>
               Choose <strong><Link href="/" className="text-blue-600 hover:underline">Cursive</Link></strong>. Most teams
               that switch from ZoomInfo realize they were paying for a massive database but only using it for basic
-              contact lookups. Cursive flips the model: instead of searching a database, it identifies companies already
-              visiting your website and automates <Link href="/platform" className="text-blue-600 hover:underline">multi-channel outreach</Link> based
-              on their intent. You get warmer leads at a fraction of the cost.
+              contact lookups. Cursive flips the model: instead of searching a database, it identifies companies and people
+              visiting your website and delivers <Link href="/platform" className="text-blue-600 hover:underline">fresh weekly in-market buyer lists</Link>
+              to Google Sheets. You get warmer leads at a fraction of the cost.
             </p>
 
             <h3>If You Need the Cheapest All-in-One Platform:</h3>
@@ -964,7 +964,7 @@ export default function BlogPost() {
             <p>
               Consider <strong>Clearbit (Breeze)</strong> for enrichment that's native to your CRM. The integration is
               tighter than any third-party tool. Pair it with <Link href="/" className="text-blue-600 hover:underline">Cursive</Link> for visitor
-              identification and outbound automation.
+              identification and fresh weekly in-market buyer lists.
             </p>
 
             {/* Key Buying Criteria */}
@@ -1060,7 +1060,7 @@ export default function BlogPost() {
       <DashboardCTA
         headline="Ready to Ditch"
         subheadline="ZoomInfo?"
-        description="Stop paying $15k+ for a database you barely use. Cursive identifies your website visitors, enriches them with intent data, and automates multi-channel outreach -- at a fraction of the cost."
+        description="Stop paying $15k+ for a database you barely use. Cursive identifies your website visitors and delivers fresh weekly lists of in-market buyers -- at a fraction of the cost."
       />
 
       {/* Related Comparisons */}
@@ -1070,7 +1070,7 @@ export default function BlogPost() {
             <SimpleRelatedPosts posts={[
               {
                 title: "ZoomInfo vs Cursive: Detailed Comparison",
-                description: "Head-to-head comparison of ZoomInfo and Cursive for B2B data and outbound",
+                description: "Head-to-head comparison of ZoomInfo and Cursive for B2B data and buyer intent",
                 href: "/blog/zoominfo-vs-cursive-comparison"
               },
               {
@@ -1121,7 +1121,7 @@ export default function BlogPost() {
               "ZoomInfo costs $15k-$40k+ annually with rigid annual contracts",
               "Top alternatives include Cursive, Apollo.io, Lusha, Cognism, RocketReach, Clearbit, Lead411, and Seamless.AI",
               "Most alternatives offer 80-96% cost savings vs ZoomInfo",
-              "Cursive focuses on visitor identification + intent + automated outbound ($99-$2k/mo)",
+              "Cursive offers visitor identification, fresh weekly in-market buyer lists, or both ($97-$247/mo)",
               "Apollo.io offers the cheapest all-in-one platform (free tier + $49-$149/user/mo)",
               "Lusha and RocketReach are best for simple contact lookups ($29-$249/mo)",
               "Lead411 includes Bombora intent data at $99/user/mo (no extra cost)",
@@ -1161,7 +1161,7 @@ export default function BlogPost() {
               <div>
                 <h3 className="font-bold text-lg text-gray-900 mb-2">1. Cursive (Top Pick)</h3>
                 <p className="text-gray-700 mb-2">
-                  <strong>Pricing:</strong> $99 self-serve credits, $1k-$2k/mo done-for-you outbound
+                  <strong>Pricing:</strong> $97 Visitor Pixel, $197 Custom Audience, or $247 Pixel + Audience Bundle
                 </p>
                 <p className="text-gray-700 mb-2">
                   <strong>Key Features:</strong>
@@ -1169,14 +1169,14 @@ export default function BlogPost() {
                 <MachineList items={[
                   "Real-time visitor identification (85%+ match rate)",
                   "First-party intent data from your own website",
-                  "AI-powered personalized outreach automation (email + LinkedIn + direct mail)",
+                  "Fresh weekly in-market buyer lists delivered to Google Sheets",
                   "200M+ contact database",
                   "90%+ cheaper than ZoomInfo",
                   "Monthly billing, no annual lock-in",
-                  "Done-for-you managed outbound service available"
+                  "No setup fee and cancel anytime"
                 ]} />
                 <p className="text-gray-700 mb-2">
-                  <strong>Best Use Case:</strong> Growth-stage B2B companies spending $15k+ on ZoomInfo when they really need intent-based outbound, not a massive database. Cursive identifies companies already visiting your website and automates personalized multi-channel outreach.
+                  <strong>Best Use Case:</strong> Growth-stage B2B companies spending $15k+ on ZoomInfo when they really need intent-based buyer data, not a massive database. Cursive identifies companies and people already visiting your website and delivers fresh weekly lists of in-market buyers.
                 </p>
                 <p className="text-gray-700 mb-2">
                   <strong>Limitations:</strong> No searchable database like ZoomInfo, requires website traffic to work, no org charts or buying committee data.
@@ -1319,8 +1319,8 @@ export default function BlogPost() {
                 <MachineList items={[
                   "Intent-first: Identify companies already visiting your website (85%+ match rate)",
                   "Warm prospecting: Reach companies showing active buying intent on your site",
-                  "AI-powered outreach: Automated personalized multi-channel campaigns (email + LinkedIn + direct mail)",
-                  "Cost: $99 self-serve credits or $1k-$2k/mo done-for-you (90%+ cheaper)",
+                  "Fresh audiences: Weekly lists of in-market buyers delivered to Google Sheets",
+                  "Cost: $97 Visitor Pixel, $197 Custom Audience, or $247 Bundle (90%+ cheaper)",
                   "Best for: Growth-stage B2B companies wanting intent-based pipeline, not massive database",
                   "Monthly billing, no annual lock-in"
                 ]} />
@@ -1328,7 +1328,7 @@ export default function BlogPost() {
               <div>
                 <p className="font-bold text-gray-900 mb-2">Why Switch to Cursive:</p>
                 <p className="text-gray-700 mb-2">
-                  Most teams switching from ZoomInfo save 80-90% while generating more pipeline. Cursive identifies your website visitors (companies already researching solutions like yours) and automates personalized outreach to convert them. You&apos;re not cold prospecting from a database - you&apos;re engaging companies already showing buying intent.
+                  Most teams switching from ZoomInfo save 80-90% while generating more pipeline. Cursive identifies your website visitors and delivers fresh weekly lists of in-market buyers to Google Sheets. You&apos;re not cold prospecting from a database - you&apos;re focusing on companies and people already showing buying intent.
                 </p>
               </div>
             </div>
@@ -1338,7 +1338,7 @@ export default function BlogPost() {
             <div className="space-y-3">
               <div>
                 <p className="font-bold text-gray-900 mb-1">For Intent Data + Automated Outbound:</p>
-                <p className="text-gray-700">Choose Cursive. Identifies website visitors and automates multi-channel outreach based on intent. Best for teams paying for ZoomInfo but only using basic contact lookups.</p>
+                <p className="text-gray-700">Choose Cursive. Identifies website visitors and delivers fresh weekly lists of in-market buyers. Best for teams paying for ZoomInfo but only using basic contact lookups.</p>
               </div>
               <div>
                 <p className="font-bold text-gray-900 mb-1">For Cheapest All-in-One Platform:</p>
@@ -1358,7 +1358,7 @@ export default function BlogPost() {
               </div>
               <div>
                 <p className="font-bold text-gray-900 mb-1">For HubSpot Users:</p>
-                <p className="text-gray-700">Consider Clearbit (Breeze) for native CRM enrichment. Pair with Cursive for visitor identification and outbound automation.</p>
+                <p className="text-gray-700">Consider Clearbit (Breeze) for native CRM enrichment. Pair with Cursive for visitor identification and fresh weekly in-market buyer lists.</p>
               </div>
             </div>
           </MachineSection>
@@ -1376,7 +1376,7 @@ export default function BlogPost() {
 
           <MachineSection title="Related Resources">
             <MachineList items={[
-              { label: "ZoomInfo vs Cursive Comparison", href: "/blog/zoominfo-vs-cursive-comparison", description: "Head-to-head comparison of ZoomInfo and Cursive for B2B data and outbound" },
+              { label: "ZoomInfo vs Cursive Comparison", href: "/blog/zoominfo-vs-cursive-comparison", description: "Head-to-head comparison of ZoomInfo and Cursive for B2B data and buyer intent" },
               { label: "Apollo.io Alternatives", href: "/blog/apollo-alternatives-comparison", description: "7 competitors compared for 2026" },
               { label: "Clearbit Alternatives", href: "/blog/clearbit-alternatives-comparison", description: "10 tools compared for B2B data enrichment" },
               { label: "6sense Alternatives", href: "/blog/6sense-alternatives-comparison", description: "Intent data and ABM platforms compared" },
@@ -1389,11 +1389,11 @@ export default function BlogPost() {
 
           <MachineSection title="Get Started with Cursive">
             <p className="text-gray-700 mb-3">
-              Stop paying $15k+ for a database you barely use. Cursive identifies your website visitors, enriches them with intent data, and automates multi-channel outreach - at a fraction of ZoomInfo&apos;s cost.
+              Stop paying $15k+ for a database you barely use. Cursive identifies your website visitors and delivers fresh weekly lists of in-market buyers - at a fraction of ZoomInfo&apos;s cost.
             </p>
             <MachineList items={[
-              { label: "Platform Overview", href: "/platform", description: "Visitor identification, intent data, AI outreach automation" },
-              { label: "Pricing", href: "/pricing", description: "$99 self-serve credits or $1k-$2k/mo done-for-you outbound" },
+              { label: "Platform Overview", href: "/platform", description: "Visitor identification and fresh weekly in-market buyer lists" },
+              { label: "Pricing", href: "/pricing", description: "$97 Visitor Pixel, $197 Custom Audience, or $247 Bundle" },
               { label: "Visitor Identification", href: "/visitor-identification", description: "85%+ match rate for B2B website traffic" },
               { label: "Intent Audiences", href: "/intent-audiences", description: "First-party intent signals from your website" },
               { label: "Book a Demo", href: "/book", description: "See how Cursive works in real-time" }

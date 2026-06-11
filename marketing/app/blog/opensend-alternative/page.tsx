@@ -30,7 +30,7 @@ const faqs = [
   },
   {
     question: "What is the pricing difference between Opensend and Cursive?",
-    answer: "Opensend pricing varies based on traffic volume and features. Cursive offers two transparent pricing models: $0.60 per identified lead for self-serve teams that want pay-as-you-go access, or $1,000/month for a fully managed platform that includes visitor identification, intent data, and AI-powered multi-channel outreach with no annual commitment. For teams that want more pipeline from their website traffic without juggling multiple tools, Cursive typically delivers better ROI."
+    answer: "Opensend pricing varies based on traffic volume and features. Cursive offers three transparent, month-to-month self-serve plans with no setup fee and cancel-anytime terms: Visitor Pixel at $97/month, Custom Audience at $197/month, and Pixel + Audience Bundle at $247/month. For teams that want to identify website visitors, receive fresh weekly lists of in-market buyers, or combine both capabilities, Cursive provides a clear option."
   },
   {
     question: "What is the best Opensend alternative for B2B SaaS companies?",
@@ -154,7 +154,7 @@ export default function BlogPost() {
                       <td className="border border-gray-300 p-3 text-green-600 font-bold">60B+ signals</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold">Yes</td>
                       <td className="border border-gray-300 p-3 text-green-600">280M consumer / 140M+ biz</td>
-                      <td className="border border-gray-300 p-3">$1k/mo managed</td>
+                      <td className="border border-gray-300 p-3">$97-$247/mo</td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-3 font-bold">Warmly</td>
@@ -267,7 +267,7 @@ export default function BlogPost() {
                       </li>
                       <li className="flex items-center gap-2">
                         <Check className="w-4 h-4 text-green-600" />
-                        $0.60/lead or $1k/mo -- no annual contract
+                        $97-$247/mo -- no setup fee, cancel anytime
                       </li>
                     </ul>
                   </div>
@@ -280,7 +280,7 @@ export default function BlogPost() {
                       </li>
                       <li className="flex items-center gap-2">
                         <X className="w-4 h-4 text-red-600" />
-                        No free tier (starts at $0.60/lead)
+                        No free tier (starts at $97/mo)
                       </li>
                       <li className="flex items-center gap-2">
                         <X className="w-4 h-4 text-red-600" />
@@ -293,7 +293,7 @@ export default function BlogPost() {
                 <div className="bg-white rounded-lg p-4">
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-bold">Pricing:</span>
-                    <span className="text-lg font-bold text-blue-600">$0.60/lead (self-serve) / $1k/mo (managed)</span>
+                    <span className="text-lg font-bold text-blue-600">$97/mo Pixel | $197/mo Audience | $247/mo Bundle</span>
                   </div>
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> B2B companies and e-commerce brands that want to convert more
@@ -785,7 +785,7 @@ export default function BlogPost() {
 
           <MachineSection title="Alternatives Compared">
             <MachineList items={[
-              "1. Cursive -- 70% visitor ID, 60B+ behaviors & URLs scanned weekly, AI SDR, direct mail, $0.60/lead or $1k/mo",
+              "1. Cursive -- Visitor Pixel at $97/mo, Custom Audience at $197/mo, or both in the $247/mo Bundle",
               "2. Warmly -- ~40% visitor ID, real-time CRM alerts, $3,500/mo minimum (annual)",
               "3. RB2B -- 50-60% visitor ID, LinkedIn-focused, free tier available",
               "4. Apollo.io -- company-level visitor ID, 200M+ contacts, $49-$99/user/mo",
@@ -803,7 +803,7 @@ export default function BlogPost() {
               "Direct mail channel -- unique among visitor ID platforms",
               "95%+ email deliverability guaranteed",
               "280M consumer + 140M+ business profiles for full enrichment",
-              "Month-to-month pricing: $0.60/lead or $1,000/month managed",
+              "Month-to-month pricing: $97/mo Visitor Pixel, $197/mo Custom Audience, or $247/mo Bundle",
             ]} />
           </MachineSection>
 

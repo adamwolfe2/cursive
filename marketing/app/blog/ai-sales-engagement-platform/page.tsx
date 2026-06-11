@@ -296,7 +296,7 @@ export default function BlogPost() {
 
             <h3>Per-Lead and Credit-Based Pricing</h3>
             <p>
-              Pay-as-you-go models charge per identified visitor, per enriched record, or per contact unlocked. This model offers flexibility with no long-term commitment--you pay for what you use. Cursive's Lead Marketplace, for example, starts at $0.60 per lead with credits that never expire.
+              Cursive offers three month-to-month self-serve plans: Visitor Pixel at $97/mo, Custom Audience at $197/mo, and Pixel + Audience Bundle at $247/mo. There is no setup fee, and you can cancel anytime.
             </p>
 
             <h3>Tiered Subscription Plans</h3>
@@ -460,7 +460,7 @@ export default function BlogPost() {
 
           <MachineSection title="Pricing Models">
             <MachineList items={[
-              "Per-lead/credit-based: pay per identified visitor or enriched record (Cursive starts at $0.60/lead)",
+              "Cursive self-serve plans: Visitor Pixel at $97/mo, Custom Audience at $197/mo, or Pixel + Audience Bundle at $247/mo",
               "Tiered subscription: $500-1,000+/month based on volume (visitors, emails, contacts, seats)",
               "Done-for-you managed services: base fee + per-meeting charges, vendor runs campaigns"
             ]} />
@@ -480,7 +480,7 @@ export default function BlogPost() {
             </p>
             <MachineList items={[
               { label: "Platform Overview", href: "/platform", description: "Visitor identification, intent data, AI outreach" },
-              { label: "Pricing", href: "/pricing", description: "Self-serve marketplace + done-for-you services" },
+              { label: "Pricing", href: "/pricing", description: "Month-to-month self-serve plans at $97, $197, or $247 per month" },
               { label: "Book a Demo", href: "/book", description: "See Cursive in action" }
             ]} />
           </MachineSection>

@@ -35,11 +35,11 @@ const salesIntelligenceFAQs = [
   },
   {
     question: 'What are the best sales intelligence tools?',
-    answer: 'The leading sales intelligence tools in 2026 are: Cursive ($1,000/month) — combines website visitor identification (70% ID rate), 60B+ behaviors & URLs scanned weekly, and 250M+ contact profiles in one platform; ZoomInfo ($15,000-$50,000/year) — largest contact database with technographic data, best for large enterprise teams; Apollo.io ($99-$499/month) — affordable contact database with email sequences, popular with SMB sales teams; Demandbase — intent data and ABM platform for enterprise accounts; 6sense — AI-powered intent and account engagement platform at enterprise pricing. The right tool depends on team size, budget, and whether you need person-level or account-level intelligence.',
+    answer: 'The leading sales intelligence tools in 2026 are: Cursive — offers Visitor Pixel at $97/month, Custom Audience at $197/month, and the Pixel + Audience Bundle at $247/month; ZoomInfo ($15,000-$50,000/year) — largest contact database with technographic data, best for large enterprise teams; Apollo.io ($99-$499/month) — affordable contact database with email sequences, popular with SMB sales teams; Demandbase — intent data and ABM platform for enterprise accounts; 6sense — AI-powered intent and account engagement platform at enterprise pricing. The right tool depends on team size, budget, and whether you need person-level or account-level intelligence.',
   },
   {
     question: 'How much does sales intelligence cost?',
-    answer: 'Sales intelligence pricing ranges from $99/month for basic contact databases to $50,000+/year for enterprise intent platforms. ZoomInfo contracts typically run $15,000-$50,000/year for mid-market teams. Apollo.io starts at $99/month per user for contact data and sequences. 6sense and Demandbase are priced for enterprise teams at $50,000-$200,000/year. Cursive provides website visitor identification, intent data, and 250M+ contact profiles for $1,000/month — making it one of the most cost-effective full-stack sales intelligence solutions for growing B2B teams.',
+    answer: 'Sales intelligence pricing ranges from $99/month for basic contact databases to $50,000+/year for enterprise intent platforms. ZoomInfo contracts typically run $15,000-$50,000/year for mid-market teams. Apollo.io starts at $99/month per user for contact data and sequences. 6sense and Demandbase are priced for enterprise teams at $50,000-$200,000/year. Cursive offers website visitor identification for $97/month, fresh weekly in-market buyer lists for $197/month, or both for $247/month.',
   },
   {
     question: 'What is technographic data in sales intelligence?',

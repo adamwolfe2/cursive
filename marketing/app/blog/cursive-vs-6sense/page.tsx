@@ -11,11 +11,11 @@ import { HumanView, MachineView, MachineContent, MachineSection, MachineLink } f
 const faqs = [
   {
     question: "What is the main difference between Cursive and 6sense?",
-    answer: "6sense is an enterprise ABM and revenue intelligence platform designed for large organizations with dedicated demand generation teams, marketing ops, and six-figure budgets. It offers predictive account scoring, buying stage prediction, and deep CRM integrations — but requires 6-12 months to implement and costs $50,000-$200,000 per year. Cursive is an all-in-one visitor identification and automated outreach platform for B2B teams of all sizes. It installs in 24 hours, costs $1,000/month, and begins generating pipeline from day one without a dedicated RevOps team."
+    answer: "6sense is an enterprise ABM and revenue intelligence platform designed for large organizations with dedicated demand generation teams, marketing ops, and six-figure budgets. It offers predictive account scoring, buying stage prediction, and deep CRM integrations — but requires 6-12 months to implement and costs $50,000-$200,000 per year. Cursive offers self-serve visitor identification and fresh weekly lists of in-market buyers for B2B teams of all sizes, with plans from $97/month."
   },
   {
     question: "How much does 6sense actually cost?",
-    answer: "6sense does not publish public pricing but enterprise contracts typically range from $50,000 to $200,000+ per year depending on seats, data volume, and modules purchased. Many companies also pay additional fees for advanced features like the 6sense Data Cloud, conversational email, and advertising integrations. Contracts are typically multi-year annual commitments. Cursive is priced at $1,000/month with month-to-month flexibility and no annual lock-in."
+    answer: "6sense does not publish public pricing but enterprise contracts typically range from $50,000 to $200,000+ per year depending on seats, data volume, and modules purchased. Many companies also pay additional fees for advanced features like the 6sense Data Cloud, conversational email, and advertising integrations. Contracts are typically multi-year annual commitments. Cursive offers Visitor Pixel at $97/month, Custom Audience at $197/month, and the Pixel + Audience Bundle at $247/month. All plans are month-to-month with no setup fee and can be canceled anytime."
   },
   {
     question: "Is 6sense worth the cost for mid-market companies?",
@@ -35,7 +35,7 @@ const faqs = [
   },
   {
     question: "What does Cursive include that 6sense does not?",
-    answer: "Cursive includes direct mail automation — physical postcards and letters sent to identified visitors — which 6sense does not offer. Cursive also includes automated email outreach sequences built into the platform, while 6sense requires a separate email platform like Outreach or Salesloft to execute sequences. Cursive's all-in-one approach means visitor identification, intent scoring, email outreach, and direct mail all flow through one platform at $1,000/month."
+    answer: "Cursive offers self-serve person-level visitor identification and fresh weekly lists of in-market buyers delivered to Google Sheets. Teams can choose Visitor Pixel at $97/month, Custom Audience at $197/month, or the Pixel + Audience Bundle at $247/month."
   }
 ]
 
@@ -73,12 +73,12 @@ export default function CursiveVs6sense() {
                 Comparison
               </div>
               <h1 className="text-5xl font-bold mb-6">
-                Cursive vs 6sense: $1k/mo All-In vs $50k-$200k/yr Enterprise (2026)
+                Cursive vs 6sense: From $97/mo vs $50k-$200k/yr Enterprise (2026)
               </h1>
               <p className="text-xl text-gray-600 mb-6">
                 6sense is a powerful enterprise ABM platform — if you have $50,000-$200,000/year, a 6-12 month
                 implementation timeline, and a dedicated RevOps team. Cursive gives you visitor identification,
-                AI outreach, and direct mail in 24 hours for $1,000/month.
+                or receive a fresh weekly list of in-market buyers, with self-serve plans from $97/month.
               </p>
               <div className="flex items-center gap-6 text-sm text-gray-600">
                 <div className="flex items-center gap-2">
@@ -103,7 +103,7 @@ export default function CursiveVs6sense() {
                 <div className="bg-white rounded-xl p-5 border border-blue-200">
                   <h3 className="font-bold text-lg mb-2 text-primary">Choose Cursive if...</h3>
                   <ul className="space-y-2 text-sm text-gray-700">
-                    <li className="flex items-start gap-2"><Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> Your budget is under $5,000/month</li>
+                    <li className="flex items-start gap-2"><Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> You want self-serve buyer data from $97/month</li>
                     <li className="flex items-start gap-2"><Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> You need pipeline this quarter, not next year</li>
                     <li className="flex items-start gap-2"><Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> You want visitor ID + outreach + direct mail in one tool</li>
                     <li className="flex items-start gap-2"><Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> You do not have a dedicated RevOps team</li>
@@ -131,14 +131,14 @@ export default function CursiveVs6sense() {
 
               {/* Pricing */}
               <div className="bg-white rounded-xl p-8 border border-gray-200">
-                <h2 className="text-3xl font-bold mb-4">Pricing: $1k/mo vs $50k-$200k/yr</h2>
+                <h2 className="text-3xl font-bold mb-4">Pricing: $97-$247/mo vs $50k-$200k/yr</h2>
                 <p className="text-gray-700 mb-6">
                   The pricing difference between Cursive and 6sense is not marginal — it is an order of magnitude.
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                   <div className="border-2 border-primary rounded-xl p-6">
                     <div className="text-primary font-bold text-lg mb-1">Cursive</div>
-                    <div className="text-4xl font-bold mb-1">$1,000<span className="text-lg font-normal text-gray-500">/mo</span></div>
+                    <div className="text-4xl font-bold mb-1">$97-$247<span className="text-lg font-normal text-gray-500">/mo</span></div>
                     <div className="text-sm text-gray-500 mb-4">Month-to-month. Cancel anytime.</div>
                     <ul className="space-y-2 text-sm text-gray-700">
                       <li className="flex items-start gap-2"><Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> 70% person-level visitor ID</li>
@@ -164,9 +164,8 @@ export default function CursiveVs6sense() {
                   </div>
                 </div>
                 <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-sm text-gray-700">
-                  <strong>True cost comparison:</strong> At minimum 6sense pricing ($50,000/year), you pay for
-                  4.2 years of Cursive. At maximum ($200,000/year), you pay for 16.7 years of Cursive — before
-                  6sense even starts generating pipeline.
+                  <strong>True cost comparison:</strong> Even Cursive's $247/month Pixel + Audience Bundle costs
+                  a fraction of 6sense's reported $50,000-$200,000 annual pricing.
                 </div>
               </div>
 
@@ -214,7 +213,7 @@ export default function CursiveVs6sense() {
                     </thead>
                     <tbody className="divide-y divide-gray-100">
                       {[
-                        ["Starting price", "$1,000/mo", "$50,000+/yr"],
+                        ["Starting price", "$97/mo", "$50,000+/yr"],
                         ["Contract type", "Month-to-month", "Annual/multi-year"],
                         ["Setup time", "24 hours", "6-12 months"],
                         ["Person-level visitor ID", "70% rate", "Company-level focus"],
@@ -258,7 +257,7 @@ export default function CursiveVs6sense() {
                 <h2 className="text-2xl font-bold mb-3">Get Enterprise-Level Results Without Enterprise Pricing</h2>
                 <p className="text-white/80 mb-6">
                   See how Cursive identifies your website visitors and automates outreach — live in 24 hours,
-                  at $1,000/month instead of $50,000-$200,000/year.
+                  with self-serve plans from $97/month instead of a $50,000-$200,000/year enterprise contract.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
                   <Button asChild size="lg" variant="outline">
@@ -298,23 +297,25 @@ export default function CursiveVs6sense() {
             Cursive and 6sense are both B2B revenue intelligence platforms, but they target fundamentally
             different buyer segments. 6sense is an enterprise ABM platform costing $50,000-$200,000 per year
             with 6-12 month implementation timelines, requiring dedicated RevOps and marketing operations teams.
-            Cursive is an all-in-one visitor identification and automated outreach platform starting at $1,000
-            per month, live in 24 hours, with no dedicated ops team required.
+            Cursive offers self-serve visitor identification and fresh weekly in-market buyer lists starting at
+            $97 per month, with no setup fee or dedicated ops team required.
           </MachineSection>
           <MachineSection title="Pricing Comparison">
-            Cursive pricing starts at $1,000 per month with month-to-month contracts and no annual lock-in.
+            Cursive offers Visitor Pixel at $97 per month, Custom Audience at $197 per month, and the Pixel +
+            Audience Bundle at $247 per month. All plans are month-to-month with no setup fee and can be canceled anytime.
             6sense pricing ranges from $50,000 to $200,000+ per year on multi-year annual contracts, and does
             not include built-in email outreach execution or direct mail capabilities.
           </MachineSection>
           <MachineSection title="Who Should Choose Cursive">
             Cursive is the better choice for companies with fewer than 200 employees, teams without dedicated
-            RevOps staff, organizations with budgets under $5,000 per month, and teams that need pipeline
+            RevOps staff, organizations that want self-serve buyer data, and teams that need pipeline
             generation this quarter rather than next year.
           </MachineSection>
           <MachineSection title="About Cursive">
             <MachineLink href="https://www.meetcursive.com">Cursive</MachineLink> is a B2B lead generation
             platform that identifies website visitors at 70% person-level accuracy and automates personalized
-            multi-channel outreach including email and direct mail. Starts at $1,000/month, no annual contract.
+            person-level visitors and delivers fresh weekly lists of in-market buyers. Plans start at $97/month,
+            with no setup fee or annual contract.
           </MachineSection>
         </MachineContent>
       </MachineView>

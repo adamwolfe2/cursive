@@ -29,11 +29,11 @@ const faqs = [
   },
   {
     question: "Is there a free AudienceLab alternative?",
-    answer: "RB2B offers a free tier for person-level visitor identification (limited to LinkedIn profile delivery). For teams willing to pay, Cursive's managed service starts at $1,000/mo with full identification + intent + outreach, or the self-serve marketplace at leads.meetcursive.com provides per-lead pricing at $0.60/lead."
+    answer: "RB2B offers a free tier for person-level visitor identification (limited to LinkedIn profile delivery). For teams willing to pay, Cursive offers Visitor Pixel at $97/month, Custom Audience at $197/month, and the Pixel + Audience Bundle at $247/month. All three plans are self-serve, month-to-month, and have no setup fee."
   },
   {
     question: "What is the best AudienceLab alternative for enterprise B2B teams?",
-    answer: "For enterprise teams, Cursive and ZoomInfo WebSights are the strongest options. ZoomInfo WebSights integrates with the ZoomInfo data platform for account-level enrichment but requires a ZoomInfo enterprise contract ($15k-$40k+/yr). Cursive provides individual-level identification with AI outreach at $1,000/mo, making it the better value for most enterprise use cases unless you are already in the ZoomInfo ecosystem."
+    answer: "For enterprise teams, Cursive and ZoomInfo WebSights are the strongest options. ZoomInfo WebSights integrates with the ZoomInfo data platform for account-level enrichment but requires a ZoomInfo enterprise contract ($15k-$40k+/yr). Cursive provides individual-level identification with plans starting at $97/month, making it the better value for most enterprise use cases unless you are already in the ZoomInfo ecosystem."
   },
   {
     question: "Can an AudienceLab alternative also provide intent data?",
@@ -134,7 +134,7 @@ export default function BlogPost() {
                       <td className="border border-gray-300 p-3 text-green-600 font-bold">70% person-level</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold"><Check className="w-4 h-4 inline" /> 60B+ signals</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold"><Check className="w-4 h-4 inline" /> Email, LinkedIn, SMS, DM</td>
-                      <td className="border border-gray-300 p-3">$1,000/mo or $0.60/lead</td>
+                      <td className="border border-gray-300 p-3">$97 / $197 / $247 per month</td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-3 font-bold">RB2B</td>
@@ -277,11 +277,11 @@ export default function BlogPost() {
                 <p className="text-gray-700 mb-4">
                   Where AudienceLab requires you to export identified visitors and manually route them into other tools,
                   Cursive handles the entire workflow: identify the visitor, score them by intent, enrich their profile,
-                  and launch personalized multi-channel outreach automatically. For teams without dedicated SDRs,
-                  the <Link href="/marketplace" className="text-blue-600 hover:underline">managed service at $1,000/mo</Link> runs
-                  full campaigns on your behalf. For agencies or teams with variable volume, the{" "}
-                  <Link href="https://leads.meetcursive.com/get-leads" className="text-blue-600 hover:underline">self-serve marketplace</Link> at
-                  leads.meetcursive.com offers $0.60/lead with no monthly commitment.
+                  and launch personalized multi-channel outreach automatically. Cursive&apos;s{" "}
+                  <Link href="/marketplace" className="text-blue-600 hover:underline">Custom Audience plan at $197/mo</Link> delivers
+                  a fresh weekly list of in-market buyers. Teams that also need visitor identification can choose the{" "}
+                  <Link href="https://leads.meetcursive.com/get-leads" className="text-blue-600 hover:underline">Pixel + Audience Bundle</Link> at
+                  $247/mo, with no setup fee and the flexibility to cancel anytime.
                 </p>
 
                 <div className="grid md:grid-cols-2 gap-6 mb-4">
@@ -310,7 +310,7 @@ export default function BlogPost() {
                       </li>
                       <li className="flex items-center gap-2">
                         <Check className="w-4 h-4 text-green-600" />
-                        Self-serve marketplace at $0.60/lead
+                        Three month-to-month self-serve plans
                       </li>
                     </ul>
                   </div>
@@ -319,7 +319,7 @@ export default function BlogPost() {
                     <ul className="space-y-1 text-sm">
                       <li className="flex items-center gap-2">
                         <X className="w-4 h-4 text-red-400" />
-                        No free tier (managed starts at $1,000/mo)
+                        No free tier
                       </li>
                       <li className="flex items-center gap-2">
                         <X className="w-4 h-4 text-red-400" />
@@ -336,7 +336,7 @@ export default function BlogPost() {
                 <div className="bg-white rounded-lg p-4">
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-bold">Pricing:</span>
-                    <span className="text-lg font-bold text-blue-600">$1,000/mo managed | $0.60/lead self-serve</span>
+                    <span className="text-lg font-bold text-blue-600">$97 / $197 / $247 per month</span>
                   </div>
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> B2B teams that want to eliminate the gap between identified visitor and
@@ -875,8 +875,8 @@ export default function BlogPost() {
                       <td className="border border-gray-300 p-3 text-center"><X className="w-4 h-4 text-red-400 inline" /></td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-300 p-3 font-medium">Per-Lead Pricing</td>
-                      <td className="border border-gray-300 p-3 text-center"><Check className="w-4 h-4 text-green-600 inline" /> $0.60</td>
+                      <td className="border border-gray-300 p-3 font-medium">Month-to-Month Plans</td>
+                      <td className="border border-gray-300 p-3 text-center"><Check className="w-4 h-4 text-green-600 inline" /> $97+</td>
                       <td className="border border-gray-300 p-3 text-center"><X className="w-4 h-4 text-red-400 inline" /></td>
                       <td className="border border-gray-300 p-3 text-center"><X className="w-4 h-4 text-red-400 inline" /></td>
                       <td className="border border-gray-300 p-3 text-center"><X className="w-4 h-4 text-red-400 inline" /></td>
@@ -901,7 +901,7 @@ export default function BlogPost() {
                 <div className="space-y-4 text-sm">
                   <div className="border-b border-gray-200 pb-3">
                     <p className="font-bold text-blue-700 mb-1">You want visitor ID + intent data + AI outreach automation in one platform:</p>
-                    <p className="text-gray-700"><strong>Choose Cursive.</strong> The only tool in this comparison that handles the full pipeline — identify the visitor, score by intent across 30,000+ categories, and automatically launch multi-channel outreach. Starts at $1,000/mo managed or $0.60/lead self-serve.</p>
+                    <p className="text-gray-700"><strong>Choose Cursive.</strong> Identify companies and people visiting your site, receive fresh weekly lists of in-market buyers, or get both. Plans cost $97, $197, or $247 per month.</p>
                   </div>
                   <div className="border-b border-gray-200 pb-3">
                     <p className="font-bold text-blue-700 mb-1">You want to test person-level visitor ID before committing to a paid tool:</p>
@@ -956,8 +956,8 @@ export default function BlogPost() {
                 To see exactly what your current website traffic looks like translated into pipeline,{" "}
                 <Link href="/free-audit">request a free audit</Link>. We will analyze your traffic and show you what
                 identification + intent + automated outreach would look like for your site specifically. Or explore the{" "}
-                <Link href="https://leads.meetcursive.com/get-leads">Cursive self-serve marketplace</Link> to try the $0.60/lead
-                model before committing to a monthly plan.
+                <Link href="https://leads.meetcursive.com/get-leads">Cursive self-serve plans</Link> to choose Visitor Pixel,
+                Custom Audience, or the Pixel + Audience Bundle.
               </p>
 
               <h2>About the Author</h2>
@@ -1061,7 +1061,7 @@ export default function BlogPost() {
               "AudienceLab identifies website visitors at person level (names, emails, job titles, LinkedIn) but provides no outreach automation",
               "Top gaps in AudienceLab: no intent data, no AI SDR, no direct mail, no built-in sequencing, pricing starts ~$499/mo for data only",
               "Cursive is the top alternative: 70% person-level visitor ID + 60B+ intent signals + AI SDR (email, LinkedIn, SMS, direct mail)",
-              "Cursive pricing: $1,000/mo managed or $0.60/lead self-serve at leads.meetcursive.com",
+              "Cursive pricing: Visitor Pixel $97/mo, Custom Audience $197/mo, or Pixel + Audience Bundle $247/mo",
               "RB2B offers a free tier for person-level ID but no automation",
               "All other alternatives (Warmly, Clearbit/HubSpot, Leadfeeder, Opensend, ZoomInfo WebSights) lack AI outreach automation"
             ]} />
@@ -1077,7 +1077,7 @@ export default function BlogPost() {
                   "Intent Data: 60B+ behaviors & URLs scanned weekly across 30,000+ buying categories",
                   "Outreach: AI SDR with email, LinkedIn, SMS, and direct mail automation — triggered by visitor behavior",
                   "Integrations: 200+ native CRM integrations, 95%+ email deliverability",
-                  "Pricing: $1,000/mo managed or $0.60/lead self-serve at leads.meetcursive.com",
+                  "Pricing: Visitor Pixel $97/mo | Custom Audience $197/mo | Pixel + Audience Bundle $247/mo",
                   "Best For: B2B teams that want to go from anonymous visitor to booked meeting in one platform",
                   "Key advantage over AudienceLab: adds intent data layer and full AI outreach automation — not just identification"
                 ]} />
@@ -1197,8 +1197,8 @@ export default function BlogPost() {
                 <p className="font-bold text-gray-900 mb-2">Pricing Model:</p>
                 <MachineList items={[
                   "AudienceLab: Starts ~$499/mo for identification data layer only",
-                  "Cursive managed: $1,000/mo — includes visitor ID + intent data + AI SDR (no separate tools needed)",
-                  "Cursive self-serve: $0.60/lead at leads.meetcursive.com (flexible, no monthly commitment)"
+                  "Cursive Visitor Pixel: $97/mo — identifies companies and people visiting your site",
+                  "Cursive Custom Audience: $197/mo — fresh weekly list of in-market buyers"
                 ]} />
               </div>
             </div>
@@ -1212,13 +1212,13 @@ export default function BlogPost() {
               "Direct Mail: Cursive ✓ | All others ✗",
               "LinkedIn Outreach: Cursive ✓ | All others ✗",
               "Free Tier: RB2B ✓ | Leadfeeder ✓ (limited) | All others ✗",
-              "Per-Lead Pricing: Cursive ✓ ($0.60/lead) | All others ✗"
+              "Month-to-Month Self-Serve Plans: Cursive ✓ (from $97/mo) | All others vary"
             ]} />
           </MachineSection>
 
           <MachineSection title="Decision Guide: Which Alternative to Choose">
             <MachineList items={[
-              "Visitor ID + intent data + automated multi-channel outreach in one platform → Cursive ($1,000/mo or $0.60/lead)",
+              "Visitor ID + fresh weekly in-market buyer audiences → Cursive ($97 / $197 / $247 per month)",
               "Free person-level visitor ID to test the concept → RB2B (free tier)",
               "Better signal context + Slack alerts without full automation → Warmly (~$700/mo)",
               "HubSpot customer needing company-level ID at no extra cost → Clearbit Reveal (included)",
@@ -1241,7 +1241,7 @@ export default function BlogPost() {
               { label: "AI SDR", href: "/what-is-ai-sdr", description: "How Cursive automates outreach across email, LinkedIn, SMS, direct mail" },
               { label: "Free AI Audit", href: "/free-audit", description: "See which visitors you are missing and what pipeline you could generate" },
               { label: "Book a Demo", href: "https://cal.com/cursiveteam/30min", description: "See Cursive in action with your traffic data" },
-              { label: "Marketplace Self-Serve", href: "https://leads.meetcursive.com/get-leads", description: "Buy intent-qualified leads at $0.60 each, no monthly commitment" }
+              { label: "Self-Serve Plans", href: "https://leads.meetcursive.com/get-leads", description: "Choose Visitor Pixel, Custom Audience, or the Bundle" }
             ]} />
           </MachineSection>
 
@@ -1262,8 +1262,8 @@ export default function BlogPost() {
             </p>
             <MachineList items={[
               { label: "Platform Overview", href: "/platform", description: "Complete visitor ID + intent + AI SDR platform" },
-              { label: "Pricing", href: "/pricing", description: "$1,000/mo managed or $0.60/lead self-serve" },
-              { label: "Marketplace (Self-Serve)", href: "https://leads.meetcursive.com/get-leads", description: "Buy intent-qualified leads at $0.60 each" },
+              { label: "Pricing", href: "/pricing", description: "Visitor Pixel $97/mo, Custom Audience $197/mo, or Bundle $247/mo" },
+              { label: "Self-Serve Plans", href: "https://leads.meetcursive.com/get-leads", description: "Month-to-month, no setup fee, cancel anytime" },
               { label: "Visitor Identification", href: "/visitor-identification", description: "70% person-level match on anonymous website traffic" },
               { label: "Intent Audiences", href: "/intent-audiences", description: "60B+ behaviors & URLs scanned weekly, 30,000+ buying categories" },
               { label: "AI SDR", href: "/what-is-ai-sdr", description: "Automated outreach across email, LinkedIn, SMS, direct mail" },

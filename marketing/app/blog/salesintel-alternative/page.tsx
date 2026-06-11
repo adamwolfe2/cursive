@@ -18,7 +18,7 @@ const faqs = [
   },
   {
     question: "How much does SalesIntel cost? Is there a cheaper alternative?",
-    answer: "SalesIntel's self-serve plans range from approximately $69 to $199 per user per month depending on features and data access, with enterprise plans at custom pricing. The per-seat model makes it expensive for larger teams. Cursive offers a fundamentally different pricing model starting at $0.60 per lead on a self-serve basis with no monthly commitment, or managed plans from $1,000 per month covering a full pipeline generation workflow. Apollo.io is the most budget-friendly alternative with a free tier and paid plans from $49 per user per month including a built-in sequencing platform. Lead411 offers Bombora intent data included from $99 per user per month."
+    answer: "SalesIntel's self-serve plans range from approximately $69 to $199 per user per month depending on features and data access, with enterprise plans at custom pricing. The per-seat model makes it expensive for larger teams. Cursive offers three self-serve plans: Visitor Pixel at $97 per month, Custom Audience at $197 per month, and the Pixel + Audience Bundle at $247 per month. All are month-to-month with no setup fee and cancel anytime. Apollo.io is the most budget-friendly alternative with a free tier and paid plans from $49 per user per month including a built-in sequencing platform. Lead411 offers Bombora intent data included from $99 per user per month."
   },
   {
     question: "What SalesIntel alternative includes visitor identification?",
@@ -30,7 +30,7 @@ const faqs = [
   },
   {
     question: "What is the best SalesIntel alternative for small businesses?",
-    answer: "For small businesses, Cursive's self-serve marketplace at leads.meetcursive.com is the most flexible option at $0.60 per lead with no minimum commitment. You pay only for the leads you need. Apollo.io's free tier is also a strong starting point for very small teams -- it includes 10,000 records and basic sequencing at no cost. Lusha offers a free tier with 50 monthly credits for solo prospectors. SalesIntel's minimum pricing of $69 per user per month with annual contracts makes it one of the less accessible options for small businesses operating with tight budgets."
+    answer: "For small businesses, Cursive offers flexible month-to-month self-serve plans starting with Visitor Pixel at $97 per month. Custom Audience is $197 per month, and the Pixel + Audience Bundle is $247 per month, with no setup fee and cancel anytime. Apollo.io's free tier is also a strong starting point for very small teams -- it includes 10,000 records and basic sequencing at no cost. Lusha offers a free tier with 50 monthly credits for solo prospectors. SalesIntel's minimum pricing of $69 per user per month with annual contracts makes it one of the less accessible options for small businesses operating with tight budgets."
   },
   {
     question: "Does SalesIntel include AI outreach automation?",
@@ -137,7 +137,7 @@ export default function BlogPost() {
               <p>
                 If any of these limitations apply, the good news is that the B2B data market has excellent
                 alternatives -- whether you need{" "}
-                <Link href="/visitor-identification">visitor identification</Link>, more affordable per-lead pricing,
+                <Link href="/visitor-identification">visitor identification</Link>, affordable month-to-month plans,
                 a larger database, or an all-in-one platform that combines data with{" "}
                 <Link href="/platform">AI-powered outreach</Link>.
               </p>
@@ -165,7 +165,7 @@ export default function BlogPost() {
                       <td className="border border-gray-300 p-3 text-green-600 font-bold">70% person-level</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold">Built-in AI SDR</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold">60B+ signals</td>
-                      <td className="border border-gray-300 p-3">$0.60/lead self-serve</td>
+                      <td className="border border-gray-300 p-3">$97/mo self-serve</td>
                       <td className="border border-gray-300 p-3">Real-time ID</td>
                     </tr>
                     <tr>
@@ -278,7 +278,7 @@ export default function BlogPost() {
                       </li>
                       <li className="flex items-center gap-2">
                         <Check className="w-4 h-4 text-green-600" />
-                        Self-serve at $0.60/lead with no monthly minimum
+                        Three self-serve plans from $97/mo
                       </li>
                     </ul>
                   </div>
@@ -295,7 +295,7 @@ export default function BlogPost() {
                       </li>
                       <li className="flex items-center gap-2">
                         <X className="w-4 h-4 text-red-600" />
-                        Managed plans start at $1k/mo (no free tier for managed)
+                        No free tier (plans start at $97/mo)
                       </li>
                     </ul>
                   </div>
@@ -304,7 +304,7 @@ export default function BlogPost() {
                 <div className="bg-white rounded-lg p-4">
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-bold">Pricing:</span>
-                    <span className="text-lg font-bold text-blue-600">$0.60/lead (self-serve) / $1k/mo (managed)</span>
+                    <span className="text-lg font-bold text-blue-600">$97/mo Pixel | $197/mo Audience | $247/mo Bundle</span>
                   </div>
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> B2B companies that want to go beyond manual database prospecting and
@@ -321,7 +321,7 @@ export default function BlogPost() {
                 <p className="text-blue-100 mb-6 max-w-xl mx-auto">
                   Cursive identifies companies and people visiting your website at 70% match rate, enriches them
                   with 60B+ behaviors & URLs scanned weekly, and automates personalized outreach across email, LinkedIn, and direct mail.
-                  Self-serve from $0.60/lead. No annual contracts.
+                  Self-serve plans start at $97/month. No setup fee, cancel anytime.
                 </p>
                 <Link
                   href="https://www.meetcursive.com/platform"
@@ -797,7 +797,7 @@ export default function BlogPost() {
               <h3>If Cost Is the Primary Concern:</h3>
               <p>
                 Choose <strong>Apollo.io</strong> for a free tier or $49/user/month with built-in sequencing,
-                or use <strong>Cursive's self-serve marketplace</strong> at $0.60/lead with no monthly minimum.
+                or use <strong>Cursive&apos;s Visitor Pixel</strong> at $97/month with no setup fee and cancel anytime.
                 Both are dramatically cheaper than SalesIntel's $69-$199/user/month per-seat model.
               </p>
 
@@ -848,7 +848,7 @@ export default function BlogPost() {
                   <div className="space-y-3">
                     <div>
                       <h4 className="font-bold mb-1">Team Size and Budget</h4>
-                      <p className="text-gray-600">SalesIntel's per-seat model becomes expensive at 5+ users. Cursive's per-lead pricing or Apollo's team plans may offer better value for growing teams.</p>
+                      <p className="text-gray-600">SalesIntel's per-seat model becomes expensive at 5+ users. Cursive's month-to-month self-serve plans or Apollo's team plans may offer better value for growing teams.</p>
                     </div>
                     <div>
                       <h4 className="font-bold mb-1">Intent Data Requirements</h4>
@@ -922,7 +922,7 @@ export default function BlogPost() {
         <DashboardCTA
           headline="Ready to Replace"
           subheadline="SalesIntel?"
-          description="Cursive identifies your website visitors at 70% person-level match rate, enriches them with 60B+ behaviors & URLs scanned weekly, and automates personalized outreach across email, LinkedIn, and direct mail. Self-serve from $0.60/lead. No annual lock-in."
+          description="Cursive identifies your website visitors at 70% person-level match rate, enriches them with 60B+ behaviors & URLs scanned weekly, and automates personalized outreach across email, LinkedIn, and direct mail. Self-serve plans start at $97/month. No setup fee, cancel anytime."
         />
 
         {/* Related Posts */}
@@ -992,7 +992,7 @@ export default function BlogPost() {
 
           <MachineSection title="Key Takeaways">
             <MachineList items={[
-              "Cursive - Best for AI-powered pipeline generation with visitor identification + intent-driven outreach ($0.60/lead self-serve / $1k/mo managed)",
+              "Cursive - Best for AI-powered pipeline generation with visitor identification + intent-driven outreach (self-serve plans from $97/mo)",
               "ZoomInfo - Best for enterprise US data depth with org chart and technographic data ($15k-$50k/yr)",
               "Apollo.io - Best budget alternative with 200M+ database + built-in sequencing (free tier / $49/user/mo)",
               "Lusha - Best for affordable direct dials and emails for small teams ($29-$79/user/mo)",
@@ -1030,7 +1030,7 @@ export default function BlogPost() {
               <strong>Best for:</strong> AI-powered pipeline generation with visitor identification and intent-driven outreach
             </p>
             <p className="text-gray-700 mb-3">
-              Combines 70% person-level visitor identification (industry-leading), 280M consumer profiles, 140M+ business profiles, 60B+ behavioral intent signals across 30,000+ categories, and AI-powered multi-channel outreach (email, LinkedIn, SMS, direct mail) in one platform. Self-serve at $0.60/lead with no monthly minimum.
+              Combines 70% person-level visitor identification (industry-leading), 280M consumer profiles, 140M+ business profiles, 60B+ behavioral intent signals across 30,000+ categories, and AI-powered multi-channel outreach (email, LinkedIn, SMS, direct mail) in one platform. Self-serve plans start at $97/month.
             </p>
             <div className="mb-3">
               <p className="font-bold text-gray-900 mb-2">Strengths:</p>
@@ -1041,7 +1041,7 @@ export default function BlogPost() {
                 "AI SDR: automated multi-channel outreach (email, LinkedIn, SMS, direct mail)",
                 "200+ native CRM integrations (Salesforce, HubSpot, Pipedrive)",
                 "95%+ email deliverability with real-time identification",
-                "Self-serve at $0.60/lead, no monthly minimum commitment"
+                "Three self-serve plans from $97/month, with no setup fee and cancel anytime"
               ]} />
             </div>
             <div className="mb-3">
@@ -1049,11 +1049,11 @@ export default function BlogPost() {
               <MachineList items={[
                 "Data not human-verified like SalesIntel's 95%+ accuracy model",
                 "Visitor identification requires website traffic to function",
-                "Managed plans start at $1k/mo (no free managed tier)"
+                "No free tier; self-serve plans start at $97/month"
               ]} />
             </div>
             <p className="text-gray-700">
-              <strong>Pricing:</strong> $0.60/lead (self-serve marketplace) / $1k/month (managed)
+              <strong>Pricing:</strong> $97/month Visitor Pixel / $197/month Custom Audience / $247/month Bundle
             </p>
           </MachineSection>
 
@@ -1144,7 +1144,7 @@ export default function BlogPost() {
           <MachineSection title="Decision Framework">
             <MachineList items={[
               "Want to go beyond cold database prospecting → Cursive (70% visitor ID + AI outreach + 60B+ signals)",
-              "Primary concern is cost → Apollo.io (free tier / $49/user/mo) or Cursive self-serve ($0.60/lead)",
+              "Primary concern is cost → Apollo.io (free tier / $49/user/mo) or Cursive Visitor Pixel ($97/mo)",
               "Data accuracy still top priority, US focus → ZoomInfo ($15k-$50k/yr)",
               "Data accuracy still top priority, EMEA focus → Cognism ($15k-$40k/yr)",
               "Simple affordable contact lookups → Lusha ($29-$79/user/mo)",
@@ -1158,7 +1158,7 @@ export default function BlogPost() {
               { label: "Visitor Identification", href: "/visitor-identification", description: "70% person-level identification rate, industry-leading" },
               { label: "Intent Audiences", href: "/intent-audiences", description: "60B+ behaviors & URLs scanned weekly across 30,000+ categories" },
               { label: "Platform Overview", href: "/platform", description: "AI SDR: email + LinkedIn + SMS + direct mail outreach" },
-              { label: "Pricing", href: "/pricing", description: "$0.60/lead self-serve or $1k/month managed, month-to-month" },
+              { label: "Pricing", href: "/pricing", description: "$97/mo Pixel, $197/mo Audience, or $247/mo Bundle" },
               { label: "CRM Integrations", href: "/integrations", description: "200+ native integrations including Salesforce, HubSpot, Pipedrive" }
             ]} />
           </MachineSection>

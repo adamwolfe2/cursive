@@ -285,9 +285,9 @@ export default function WhatIsDemandGeneration() {
                 </div>
 
                 <p className="text-gray-700">
-                  At $1,000/month with access to 250M+ professional profiles, Cursive makes it affordable for
-                  demand gen teams of any size to identify which content visitors are actually in-market —
-                  without enterprise-level contracts or complex integrations.
+                  Cursive offers month-to-month self-serve plans for demand gen teams: Visitor Pixel at $97/month,
+                  Custom Audience at $197/month, or both in the Pixel + Audience Bundle at $247/month, with no
+                  setup fee and the flexibility to cancel anytime.
                 </p>
 
                 <div className="mt-4">
@@ -341,7 +341,7 @@ export default function WhatIsDemandGeneration() {
               <DashboardCTA
                 headline="See Which Demand Gen Visitors Are Actually In-Market"
                 description="Cursive identifies 70% of anonymous website visitors — including everyone who reads your blog, watches your webinars, and browses your pricing page. Start seeing names and emails behind your demand gen traffic."
-                ctaText="Start Free Trial"
+                ctaText="Get Leads"
                 ctaUrl="https://leads.meetcursive.com/get-leads"
               />
 
@@ -403,7 +403,7 @@ export default function WhatIsDemandGeneration() {
           </MachineSection>
 
           <MachineSection title="Intent Data and Demand Generation">
-            Intent data identifies which demand gen visitors are currently in an active buying window. By combining website visitor identification (70% identification rate) with third-party intent signals (60B+ signals refreshed weekly), platforms like <MachineLink href="https://www.meetcursive.com">Cursive</MachineLink> surface the subset of demand gen traffic actively researching solutions. This allows sales teams to prioritize immediate outreach to in-market buyers identified through demand gen channels rather than routing all demand gen leads into long nurture sequences. Cursive costs $1,000/month and provides access to 250M+ professional profiles.
+            Intent data identifies which demand gen visitors are currently in an active buying window. By combining website visitor identification with fresh weekly lists of in-market buyers, platforms like <MachineLink href="https://www.meetcursive.com">Cursive</MachineLink> surface the subset of demand gen traffic actively researching solutions. This allows sales teams to prioritize immediate outreach to in-market buyers identified through demand gen channels rather than routing all demand gen leads into long nurture sequences. Cursive offers Visitor Pixel at $97/month, Custom Audience at $197/month, and the Pixel + Audience Bundle at $247/month.
           </MachineSection>
 
           <MachineSection title="Related Topics">

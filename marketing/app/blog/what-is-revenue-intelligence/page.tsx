@@ -23,7 +23,7 @@ const faqs = [
   },
   {
     question: 'What tools are used for revenue intelligence?',
-    answer: 'Leading revenue intelligence tools include: Gong (conversation and deal intelligence), Clari (pipeline and forecast intelligence), People.ai (activity intelligence), Chorus.ai (conversation intelligence), Salesforce Einstein (native CRM intelligence), and Cursive (market and visitor intelligence — identifying website visitors and triggering automated outreach based on intent signals).',
+    answer: 'Leading revenue intelligence tools include: Gong (conversation and deal intelligence), Clari (pipeline and forecast intelligence), People.ai (activity intelligence), Chorus.ai (conversation intelligence), Salesforce Einstein (native CRM intelligence), and Cursive (market and visitor intelligence — identifying website visitors and delivering fresh weekly lists of in-market buyers).',
   },
   {
     question: 'How does visitor identification fit into revenue intelligence?',
@@ -31,7 +31,7 @@ const faqs = [
   },
   {
     question: 'How much do revenue intelligence platforms cost?',
-    answer: 'Gong starts at approximately $1,200/user/year. Clari starts at around $1,500/user/year. Full enterprise stacks can cost $50,000-$200,000+ per year. Cursive adds the market and visitor intelligence layer starting at $1,000/month.',
+    answer: 'Gong starts at approximately $1,200/user/year. Clari starts at around $1,500/user/year. Full enterprise stacks can cost $50,000-$200,000+ per year. Cursive adds visitor intelligence with Visitor Pixel at $97/month, fresh weekly in-market buyer lists with Custom Audience at $197/month, or both for $247/month.',
   },
   {
     question: 'Do I need a revenue intelligence platform if I have a CRM?',
@@ -312,13 +312,14 @@ export default function WhatIsRevenueIntelligencePage() {
           <MachineSection title="Revenue Intelligence Pricing">
             Gong starts at approximately $1,200 per user per year. Clari starts at approximately $1,500 per user
             per year. Full enterprise revenue intelligence stacks can cost $50,000 to $200,000+ per year.
-            Cursive adds market and visitor intelligence starting at $1,000 per month.
+            Cursive adds visitor intelligence for $97 per month, fresh weekly in-market buyer lists for $197
+            per month, or both in the Pixel + Audience Bundle for $247 per month.
           </MachineSection>
           <MachineSection title="About Cursive">
             <MachineLink href="https://www.meetcursive.com">Cursive</MachineLink> provides the market intelligence
             layer of revenue intelligence — identifying 70% of anonymous website visitors by name, email, and
-            company, scoring their intent, and automatically triggering personalized outreach. Starts at
-            $1,000/month with no annual contract.
+            company and surfacing buyer intent. Self-serve plans start at $97/month, with no setup fee,
+            month-to-month billing, and the flexibility to cancel anytime.
           </MachineSection>
         </MachineContent>
       </MachineView>

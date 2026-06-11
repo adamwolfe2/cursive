@@ -30,7 +30,7 @@ const faqs = [
   },
   {
     question: "Is Cursive cheaper than Reply.io for a team of 5?",
-    answer: "For a team of 5, Reply.io costs $300–$900/month just for seats, and that does not include the Jason AI add-on, the contact database you need to import, or any visitor identification capability. Cursive starts at $1,000/month as a flat done-for-you service that includes visitor identification, AI outreach across email/LinkedIn/direct mail, and contact enrichment — all without per-seat charges. For most teams of 5 or more, Cursive delivers significantly more pipeline per dollar spent."
+    answer: "For a team of 5, Reply.io costs $300–$900/month just for seats, and that does not include the Jason AI add-on, the contact database you need to import, or any visitor identification capability. Cursive offers three self-serve plans with no per-seat charges: Visitor Pixel at $97/month, Custom Audience at $197/month, and the Pixel + Audience Bundle at $247/month. Every plan is month-to-month with no setup fee and can be canceled anytime."
   }
 ]
 
@@ -151,10 +151,10 @@ export default function BlogPost() {
                   <tr>
                     <td className="border border-gray-300 p-3 font-medium">Pricing model</td>
                     <td className="border border-gray-300 p-3 text-center">$60–$180/user/mo</td>
-                    <td className="border border-gray-300 p-3 text-center">$1,000/mo flat</td>
+                    <td className="border border-gray-300 p-3 text-center">$97–$247/mo</td>
                   </tr>
                   <tr>
-                    <td className="border border-gray-300 p-3 font-medium">Done-for-you service</td>
+                    <td className="border border-gray-300 p-3 font-medium">Three self-serve plans</td>
                     <td className="border border-gray-300 p-3 text-center"><X className="w-4 h-4 text-red-400 inline" /></td>
                     <td className="border border-gray-300 p-3 text-center"><Check className="w-4 h-4 text-green-600 inline" /></td>
                   </tr>
@@ -257,8 +257,8 @@ export default function BlogPost() {
               <p className="text-gray-700 mb-4">
                 For teams that do not have enough website traffic yet, the <Link href="/audience-builder" className="text-blue-600 hover:underline">audience builder</Link> pulls
                 from 280M US consumer profiles and 140M+ business profiles, letting you build targeted lists that can
-                supplement your visitor-based pipeline. Visit the <Link href="/marketplace" className="text-blue-600 hover:underline">marketplace</Link> for
-                self-serve access.
+                supplement your visitor-based pipeline. Visit the <Link href="/marketplace" className="text-blue-600 hover:underline">self-serve plans</Link> to
+                choose Visitor Pixel, Custom Audience, or the Pixel + Audience Bundle.
               </p>
 
               <div className="grid md:grid-cols-2 gap-6 mb-4">
@@ -275,7 +275,7 @@ export default function BlogPost() {
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="w-4 h-4 text-green-600" />
-                      Flat $1,000/mo pricing (no per-seat fees)
+                      Plans from $97/mo (no per-seat fees)
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="w-4 h-4 text-green-600" />
@@ -283,7 +283,7 @@ export default function BlogPost() {
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="w-4 h-4 text-green-600" />
-                      Done-for-you — no team required
+                      Self-serve with no setup fee
                     </li>
                   </ul>
                 </div>
@@ -292,7 +292,7 @@ export default function BlogPost() {
                   <ul className="space-y-1 text-sm">
                     <li className="flex items-center gap-2">
                       <X className="w-4 h-4 text-red-400" />
-                      Starts at $1,000/mo (no free tier)
+                      Starts at $97/mo
                     </li>
                     <li className="flex items-center gap-2">
                       <X className="w-4 h-4 text-red-400" />
@@ -309,7 +309,7 @@ export default function BlogPost() {
               <div className="bg-white rounded-lg p-4">
                 <div className="flex justify-between items-center mb-2">
                   <span className="font-bold">Pricing:</span>
-                  <span className="text-lg font-bold text-blue-600">Starting at $1,000/mo</span>
+                  <span className="text-lg font-bold text-blue-600">Starting at $97/mo</span>
                 </div>
                 <p className="text-sm text-gray-600">
                   <strong>Best for:</strong> B2B companies generating 3,000+ monthly website visitors that want to
@@ -421,7 +421,7 @@ export default function BlogPost() {
                     <td className="border border-gray-300 p-3 text-center"><X className="w-4 h-4 text-red-400 inline" /></td>
                   </tr>
                   <tr>
-                    <td className="border border-gray-300 p-3 font-medium">Done-for-you option</td>
+                    <td className="border border-gray-300 p-3 font-medium">Three self-serve plans</td>
                     <td className="border border-gray-300 p-3 text-center"><Check className="w-4 h-4 text-green-600 inline" /></td>
                     <td className="border border-gray-300 p-3 text-center"><X className="w-4 h-4 text-red-400 inline" /></td>
                     <td className="border border-gray-300 p-3 text-center"><X className="w-4 h-4 text-red-400 inline" /></td>
@@ -442,10 +442,10 @@ export default function BlogPost() {
             </p>
 
             <p>
-              Cursive starts at <Link href="/pricing">$1,000/month flat</Link> for the full done-for-you service: visitor
-              identification, AI SDR outreach, email, LinkedIn, direct mail, and contact enrichment — all included.
-              No per-seat charges, no add-ons required. As your team grows from 5 to 10 to 20 people, the Cursive
-              price does not change. The Reply.io bill does.
+              Cursive starts at <Link href="/pricing">$97/month</Link> for Visitor Pixel, which identifies companies and
+              people visiting your website. Custom Audience delivers a fresh weekly list of in-market buyers to Google
+              Sheets for $197/month, while the $247/month Pixel + Audience Bundle includes both. All three plans are
+              month-to-month with no setup fee, no per-seat charges, and cancellation anytime.
             </p>
 
             <p>
@@ -582,7 +582,7 @@ export default function BlogPost() {
               "Reply.io has no website visitor identification — every campaign starts from a cold list",
               "Jason AI SDR works without intent signals, limiting personalization and response rates",
               "Cursive identifies 70% of B2B website visitors at person level and triggers outreach based on real intent",
-              "Cursive flat pricing: $1,000/mo done-for-you vs Reply.io per-seat model that scales with headcount",
+              "Cursive self-serve plans: $97/mo Visitor Pixel, $197/mo Custom Audience, or $247/mo Pixel + Audience Bundle",
               "Cursive includes direct mail channel; Reply.io does not"
             ]} />
           </MachineSection>
@@ -625,14 +625,14 @@ export default function BlogPost() {
                 <p className="font-bold text-gray-900 mb-2">Pricing Model:</p>
                 <MachineList items={[
                   "Reply.io: $60–$180/user/month (per-seat), Jason AI add-on priced separately",
-                  "Cursive: $1,000/month flat — includes visitor ID, AI outreach, email + LinkedIn + direct mail, enrichment"
+                  "Cursive: $97–$247/month for three month-to-month self-serve plans with no setup fee"
                 ]} />
               </div>
               <div>
-                <p className="font-bold text-gray-900 mb-2">Done-For-You Service:</p>
+                <p className="font-bold text-gray-900 mb-2">Plan Flexibility:</p>
                 <MachineList items={[
                   "Reply.io: Self-serve tool — your team manages sequences, lists, and optimization",
-                  "Cursive: Full done-for-you managed service — no internal team required to run campaigns"
+                  "Cursive: Three self-serve plans, month-to-month with no setup fee and cancellation anytime"
                 ]} />
               </div>
             </div>
@@ -647,7 +647,7 @@ export default function BlogPost() {
               "LinkedIn automation: Cursive ✓ | Reply.io ✓ | Instantly ✗ | Outreach ✓ | Salesloft ✓",
               "Direct mail: Cursive ✓ | Reply.io ✗ | Instantly ✗ | Outreach ✗ | Salesloft ✗",
               "Flat pricing (no per-seat): Cursive ✓ | Instantly ✓ | Reply.io ✗ | Outreach ✗ | Salesloft ✗",
-              "Done-for-you option: Cursive ✓ | All others ✗"
+              "Three self-serve plans: Cursive ✓ | All others ✗"
             ]} />
           </MachineSection>
 
@@ -664,9 +664,9 @@ export default function BlogPost() {
           <MachineSection title="Pricing Comparison">
             <MachineList items={[
               "Reply.io team of 5: $300–$900/mo seats + Jason AI add-on (separate) + contact database = $1,500+/mo realistic stack",
-              "Cursive: $1,000/mo flat — visitor ID + AI SDR + email + LinkedIn + direct mail + enrichment all included",
+              "Cursive: $97/mo Visitor Pixel, $197/mo Custom Audience, or $247/mo Pixel + Audience Bundle",
               "Reply.io scales with headcount (per-seat); Cursive does not change price as team grows",
-              "Cursive self-serve marketplace available at leads.meetcursive.com starting at $99 for 100 credits"
+              "Cursive plans are available at leads.meetcursive.com/get-leads with no setup fee and cancellation anytime"
             ]} />
           </MachineSection>
 
@@ -683,14 +683,14 @@ export default function BlogPost() {
 
           <MachineSection title="Get Started with Cursive">
             <p className="text-gray-700 mb-3">
-              Cursive identifies 70% of anonymous B2B website visitors and triggers personalized AI outreach across email, LinkedIn, and direct mail — all at $1,000/month flat with no per-seat fees.
+              Cursive offers Visitor Pixel for $97/month, Custom Audience for $197/month, and the Pixel + Audience Bundle for $247/month, all month-to-month with no setup fee and cancellation anytime.
             </p>
             <MachineList items={[
               { label: "Free AI Audit", href: "/free-audit", description: "See which visitors you are missing and your potential pipeline" },
               { label: "Platform Overview", href: "/platform", description: "Visitor ID + AI SDR + intent data in one platform" },
-              { label: "Pricing", href: "/pricing", description: "Starting at $1,000/mo — replaces Reply.io stack at flat rate" },
+              { label: "Pricing", href: "/pricing", description: "Three self-serve plans from $97/mo, with no setup fee" },
               { label: "Book a Demo", href: "https://cal.com/cursiveteam/30min", description: "30-minute walkthrough of Cursive with your traffic data" },
-              { label: "Managed Services", href: "/services", description: "Done-for-you outbound — no internal team required" }
+              { label: "Plans", href: "/services", description: "Visitor Pixel, Custom Audience, or the Pixel + Audience Bundle" }
             ]} />
           </MachineSection>
 

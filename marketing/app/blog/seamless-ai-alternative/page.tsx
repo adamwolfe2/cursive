@@ -22,7 +22,7 @@ const faqs = [
   },
   {
     question: "How much does Seamless.AI cost?",
-    answer: "Seamless.AI pricing starts at approximately $147/month for a Basic plan with limited credits, but meaningful usage typically requires the Pro plan at around $397/user/month or higher, billed annually. Enterprise pricing is negotiated separately. Cursive offers a more flexible alternative starting at $0.60 per lead (self-serve) or $1,000/month for a fully managed platform -- with no annual commitment and 95%+ email deliverability versus Seamless.AI's reported bounce rates."
+    answer: "Seamless.AI pricing starts at approximately $147/month for a Basic plan with limited credits, but meaningful usage typically requires the Pro plan at around $397/user/month or higher, billed annually. Enterprise pricing is negotiated separately. Cursive offers three self-serve plans: Visitor Pixel at $97/month, Custom Audience at $197/month, and the Pixel + Audience Bundle at $247/month. All are month-to-month with no setup fee and cancel anytime."
   },
   {
     question: "Does Seamless.AI have website visitor identification?",
@@ -34,7 +34,7 @@ const faqs = [
   },
   {
     question: "What is the best Seamless.AI alternative for small businesses?",
-    answer: "For small businesses and startups, Apollo.io is the most budget-friendly alternative with a free tier and paid plans from $49/user/month. Cursive is excellent for small teams that want more pipeline from their existing website traffic -- at $0.60/lead, you only pay for results. RB2B offers a free tier for LinkedIn-focused visitor identification. Lusha starts at $29/user/month for contact data lookups. All of these are significantly more cost-effective than Seamless.AI for small teams."
+    answer: "For small businesses and startups, Apollo.io is the most budget-friendly alternative with a free tier and paid plans from $49/user/month. Cursive is excellent for small teams that want more pipeline from their existing website traffic, with Visitor Pixel starting at $97/month. RB2B offers a free tier for LinkedIn-focused visitor identification. Lusha starts at $29/user/month for contact data lookups. All of these are significantly more cost-effective than Seamless.AI for small teams."
   },
   {
     question: "How does Cursive compare to Seamless.AI?",
@@ -154,7 +154,7 @@ export default function BlogPost() {
                       <td className="border border-gray-300 p-3 text-green-600 font-bold">70% person-level</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold">Built-in AI SDR</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold">60B+ signals</td>
-                      <td className="border border-gray-300 p-3">$1k/mo managed</td>
+                      <td className="border border-gray-300 p-3">$97/mo</td>
                       <td className="border border-gray-300 p-3 text-green-600">Month-to-month</td>
                     </tr>
                     <tr>
@@ -268,7 +268,7 @@ export default function BlogPost() {
                       </li>
                       <li className="flex items-center gap-2">
                         <Check className="w-4 h-4 text-green-600" />
-                        Month-to-month billing at $0.60/lead or $1k/mo managed
+                        Three month-to-month self-serve plans from $97/mo
                       </li>
                     </ul>
                   </div>
@@ -281,7 +281,7 @@ export default function BlogPost() {
                       </li>
                       <li className="flex items-center gap-2">
                         <X className="w-4 h-4 text-red-600" />
-                        No free tier (starts at $0.60/lead self-serve)
+                        No free tier (starts at $97/mo)
                       </li>
                       <li className="flex items-center gap-2">
                         <X className="w-4 h-4 text-red-600" />
@@ -294,7 +294,7 @@ export default function BlogPost() {
                 <div className="bg-white rounded-lg p-4">
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-bold">Pricing:</span>
-                    <span className="text-lg font-bold text-blue-600">$0.60/lead (self-serve) / $1k/mo (managed)</span>
+                    <span className="text-lg font-bold text-blue-600">$97/mo Pixel | $197/mo Audience | $247/mo Bundle</span>
                   </div>
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> B2B companies that want clean, deliverable contact data combined with
@@ -804,7 +804,7 @@ export default function BlogPost() {
 
           <MachineSection title="Alternatives Compared">
             <MachineList items={[
-              "1. Cursive -- 70% visitor ID, 95%+ deliverability, AI SDR, $0.60/lead or $1k/mo",
+              "1. Cursive -- 70% visitor ID, 95%+ deliverability, AI SDR, plans from $97/mo",
               "2. Apollo.io -- 200M+ contacts, free tier, $49-$99/user/mo, built-in sequences",
               "3. ZoomInfo -- 260M+ profiles, $15k-$50k/yr, deepest data coverage",
               "4. Warmly -- ~40% visitor ID, $3,500/mo minimum, real-time alerts",
@@ -823,7 +823,7 @@ export default function BlogPost() {
               "AI SDR: email, LinkedIn, SMS, and direct mail outreach",
               "200+ CRM integrations including Salesforce, HubSpot, Pipedrive",
               "Month-to-month billing -- no annual lock-in",
-              "Pricing: $0.60/lead self-serve or $1,000/month managed",
+              "Pricing: $97/mo Visitor Pixel, $197/mo Custom Audience, or $247/mo Bundle",
             ]} />
           </MachineSection>
 

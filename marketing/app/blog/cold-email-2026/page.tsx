@@ -11,7 +11,7 @@ import { SimpleRelatedPosts } from "@/components/blog/simple-related-posts"
 
 const relatedPosts = [
   { title: "Best AI SDR Tools for 2026", description: "9 AI SDR platforms ranked and compared with pricing.", href: "/blog/best-ai-sdr-tools-2026" },
-  { title: "Cursive vs Instantly: $1k/mo Full Stack vs Email-Only", description: "Compare AI outreach platforms for cold email in 2026.", href: "/blog/cursive-vs-instantly" },
+  { title: "Cursive vs Instantly: Buyer Data vs Email-Only", description: "Compare AI outreach platforms for cold email in 2026.", href: "/blog/cursive-vs-instantly" },
   { title: "AI SDR vs Human BDR: Which Drives More Pipeline?", description: "Cost, speed, and results compared for 2026.", href: "/blog/ai-sdr-vs-human-bdr" },
 ]
 
@@ -664,7 +664,7 @@ export default function BlogPost() {
             </p>
             <MachineList items={[
               { label: "Platform Overview", href: "/platform", description: "Visitor identification, intent data, AI outreach" },
-              { label: "Pricing", href: "/pricing", description: "Self-serve marketplace + done-for-you services" },
+              { label: "Pricing", href: "/pricing", description: "Self-serve plans from $97/month, with no setup fee" },
               { label: "Visitor Identification", href: "/visitor-identification", description: "70% identification rate for B2B traffic" },
               { label: "Book a Demo", href: "/book", description: "See Cursive in real-time" }
             ]} />

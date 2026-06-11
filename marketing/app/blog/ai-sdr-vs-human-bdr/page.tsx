@@ -11,7 +11,7 @@ import { SimpleRelatedPosts } from "@/components/blog/simple-related-posts"
 
 const relatedPosts = [
   { title: "Best AI SDR Tools for 2026", description: "9 platforms ranked for intent data, visitor ID, and AI outreach.", href: "/blog/best-ai-sdr-tools-2026" },
-  { title: "Cursive vs Instantly: $1k/mo Full Stack vs Email-Only", description: "Compare full-stack AI outreach vs email-only infrastructure.", href: "/blog/cursive-vs-instantly" },
+  { title: "Cursive vs Instantly: Full Stack vs Email-Only", description: "Compare full-stack AI outreach vs email-only infrastructure.", href: "/blog/cursive-vs-instantly" },
   { title: "Scaling Outbound Without Scaling Headcount", description: "How to use automation and AI to scale outbound efficiently.", href: "/blog/scaling-outbound" },
 ]
 
@@ -94,7 +94,7 @@ export default function BlogPost() {
               <li>Each rep had 2+ years of outbound experience with documented track records</li>
             </ul>
 
-            <h3>Team AI (Cursive Pipeline)</h3>
+            <h3>Team AI (AI SDR Platform)</h3>
             <ul>
               <li>AI SDR agents (no salary, $10k/month subscription covering all infrastructure)</li>
               <li>24/7 operation (no breaks, no weekends, no sick days)</li>
@@ -404,7 +404,7 @@ export default function BlogPost() {
                 ]} />
               </div>
               <div>
-                <p className="font-bold text-gray-900 mb-2">AI SDR (Cursive Pipeline):</p>
+                <p className="font-bold text-gray-900 mb-2">AI SDR Platform:</p>
                 <MachineList items={[
                   "Subscription: $10k/month = $30k per quarter",
                   "Emails sent: 18,000 (200 per day, consistent)",
@@ -496,7 +496,7 @@ export default function BlogPost() {
               { label: "Perfect ICP Targeting", href: "/blog/icp-targeting-guide", description: "5-step framework for better leads" },
               { label: "Scaling Outbound", href: "/blog/scaling-outbound", description: "10 to 200+ emails without killing quality" },
               { label: "Platform Overview", href: "/platform", description: "Cursive's visitor identification, intent data, AI outreach" },
-              { label: "Pricing", href: "/pricing", description: "Self-serve marketplace + done-for-you services" }
+              { label: "Pricing", href: "/pricing", description: "Self-serve plans at $97, $197, or $247 per month" }
             ]} />
           </MachineSection>
 

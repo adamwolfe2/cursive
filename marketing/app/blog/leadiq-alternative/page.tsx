@@ -30,7 +30,7 @@ const faqs = [
   },
   {
     question: "What's the main difference between LeadIQ and Cursive?",
-    answer: "The fundamental difference is the direction of prospecting. LeadIQ is outbound-first: you find prospects on LinkedIn, capture their data, and cold outreach to them. Cursive is inbound-first: you capture prospects who are already inbound to your website, enrich their contact data automatically, and engage them with personalized AI outreach. Both approaches can work in B2B, but warm inbound prospects who have already visited your site tend to convert into meetings at 3-5x the rate of cold outbound contacts. Cursive also costs $1,000/mo all-in for unlimited usage, whereas LeadIQ costs $75–$140/user/month with credit limitations and requires additional tools for sequencing and automation."
+    answer: "The fundamental difference is the direction of prospecting. LeadIQ is outbound-first: you find prospects on LinkedIn, capture their data, and cold outreach to them. Cursive is inbound-first: you capture prospects who are already inbound to your website and surface fresh audiences of in-market buyers. Both approaches can work in B2B, but warm inbound prospects who have already visited your site tend to convert into meetings at 3-5x the rate of cold outbound contacts. Cursive offers three self-serve plans at $97, $197, and $247 per month, whereas LeadIQ costs $75–$140/user/month with credit limitations and requires additional tools for sequencing and automation."
   },
 ]
 
@@ -44,7 +44,7 @@ export default function BlogPost() {
   return (
     <main>
       <StructuredData data={generateFAQSchema({ faqs })} />
-      <StructuredData data={generateBlogPostSchema({ title: "Best LeadIQ Alternatives: B2B Prospecting Tools Compared — $75/user vs $1k/mo All-In (2026)", description: "Compare the top LeadIQ alternatives for B2B prospecting. Find tools with visitor identification, unlimited contacts, AI outreach automation, and better value than LeadIQ's credit-based model.", author: "Cursive Team", publishDate: "2026-02-19", image: "https://www.meetcursive.com/cursive-logo.png" })} />
+      <StructuredData data={generateBlogPostSchema({ title: "Best LeadIQ Alternatives: B2B Prospecting Tools Compared (2026)", description: "Compare the top LeadIQ alternatives for B2B prospecting. Find tools with visitor identification, unlimited contacts, AI outreach automation, and better value than LeadIQ's credit-based model.", author: "Cursive Team", publishDate: "2026-02-19", image: "https://www.meetcursive.com/cursive-logo.png" })} />
 
       <HumanView>
         {/* Header */}
@@ -125,8 +125,8 @@ export default function BlogPost() {
                     <tr className="bg-blue-50 border-2 border-blue-500">
                       <td className="border border-gray-300 p-3 font-bold">Cursive</td>
                       <td className="border border-gray-300 p-3">Warm lead ID + AI outreach automation</td>
-                      <td className="border border-gray-300 p-3">Flat monthly</td>
-                      <td className="border border-gray-300 p-3">$1,000/mo</td>
+                      <td className="border border-gray-300 p-3">Self-serve monthly</td>
+                      <td className="border border-gray-300 p-3">$97/mo</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold">Yes (~70%)</td>
                     </tr>
                     <tr>
@@ -262,7 +262,7 @@ export default function BlogPost() {
                   you apply firmographic filters (company size, industry, title) on top of behavioral signals to ensure
                   outreach only goes to your ideal customer profile. You can also explore additional data and
                   enrichment capabilities via the{" "}
-                  <Link href="/marketplace" className="text-blue-600 hover:underline">Cursive marketplace</Link>.
+                  <Link href="/marketplace" className="text-blue-600 hover:underline">Cursive self-serve plans</Link>.
                 </p>
 
                 <div className="grid md:grid-cols-2 gap-6 mb-4">
@@ -287,7 +287,7 @@ export default function BlogPost() {
                       </li>
                       <li className="flex items-center gap-2">
                         <Check className="w-4 h-4 text-green-600" />
-                        Flat $1,000/mo pricing — no per-user, no credit limits
+                        Three month-to-month plans starting at $97/mo
                       </li>
                       <li className="flex items-center gap-2">
                         <Check className="w-4 h-4 text-green-600" />
@@ -304,7 +304,7 @@ export default function BlogPost() {
                       </li>
                       <li className="flex items-center gap-2">
                         <X className="w-4 h-4 text-red-400" />
-                        No free tier (starts at $1,000/mo)
+                        No free tier
                       </li>
                       <li className="flex items-center gap-2">
                         <X className="w-4 h-4 text-red-400" />
@@ -317,7 +317,7 @@ export default function BlogPost() {
                 <div className="bg-white rounded-lg p-4">
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-bold">Pricing:</span>
-                    <span className="text-lg font-bold text-blue-600">Starting at $1,000/mo</span>
+                    <span className="text-lg font-bold text-blue-600">$97/mo | $197/mo | $247/mo</span>
                   </div>
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> B2B companies generating 5,000+ monthly website visitors who want to convert
@@ -872,12 +872,10 @@ export default function BlogPost() {
               </p>
 
               <p>
-                <strong>Cursive all-in-one:</strong> Starting at $1,000/month, you get person-level website visitor
-                identification, AI SDR automation, multi-channel outreach across email,
-                LinkedIn, and <Link href="/direct-mail">direct mail</Link>, plus{" "}
-                <Link href="/what-is-lead-enrichment">lead enrichment</Link> — without per-user costs, credit limits,
-                or manual prospecting research. Critically, these are warm leads already on your site, not cold
-                contacts from a database. Visit our <Link href="/pricing">pricing page</Link> for details.
+                <strong>Cursive self-serve:</strong> The $97/month Visitor Pixel identifies companies and people visiting
+                your site. The $197/month Custom Audience delivers a fresh weekly list of in-market buyers to Google Sheets,
+                and the $247/month Pixel + Audience Bundle includes both. Plans are month-to-month with no setup fee and
+                cancel-anytime flexibility. Visit our <Link href="/pricing">pricing page</Link> for details.
               </p>
 
               <p>
@@ -985,7 +983,7 @@ export default function BlogPost() {
               <h2 className="text-3xl font-bold mb-4">Ready to Try the Best LeadIQ Alternative?</h2>
               <p className="text-xl mb-8 text-white/90">
                 See how Cursive identifies your warm website visitors and converts them into booked meetings with AI-powered
-                outreach — $1,000/mo all-in vs. $75+/user with LeadIQ&apos;s credit limits.
+                opportunities — with self-serve plans at $97, $197, and $247/mo instead of LeadIQ&apos;s per-user credit limits.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button size="lg" variant="default" asChild>
@@ -1013,7 +1011,7 @@ export default function BlogPost() {
             <MachineList items={[
               "LeadIQ offers LinkedIn prospecting extension, email/phone lookup, and real-time email verification at $75–$140/user/month",
               "Top pain points: Credits run out fast, no website visitor ID, no outreach automation, data can be outdated, per-user costs scale painfully",
-              "Cursive alternative: Identifies warm visitors already on your site at person-level (~70% match), AI SDR outreach, multi-channel, $1,000/mo flat",
+              "Cursive alternative: Visitor Pixel $97/mo, Custom Audience $197/mo, or Pixel + Audience Bundle $247/mo",
               "Apollo.io is best direct LeadIQ replacement for teams staying in outbound database model (includes sequencing at $49/user/mo)",
               "Key difference: LeadIQ = outbound (you hunt prospects); Cursive = inbound (warm visitors already interested in your product)"
             ]} />
@@ -1026,10 +1024,10 @@ export default function BlogPost() {
                 <MachineList items={[
                   "Approach: Identifies warm prospects already visiting your website (not cold outbound lists)",
                   "ID Level: Person-level (~70% match rate) — names, emails, job titles, LinkedIn profiles",
-                  "Pricing: $1,000/mo flat — no per-user fees, no credit limits",
+                  "Pricing: $97/mo Visitor Pixel, $197/mo Custom Audience, or $247/mo bundle",
                   "Key Features: AI SDR automation, multi-channel outreach (email + LinkedIn + direct mail), intent scoring",
                   "Best For: B2B companies with 5,000+ monthly visitors who want to convert warm traffic without manual prospecting",
-                  "Strengths: Warm leads (already interested), person-level ID, flat pricing, built-in automation, 5-min setup",
+                  "Strengths: Warm leads, person-level ID, fresh weekly audiences, month-to-month plans, 5-min setup",
                   "Limitations: No LinkedIn Chrome extension for manual prospecting, no free tier, B2B-focused"
                 ]} />
               </div>
@@ -1126,7 +1124,7 @@ export default function BlogPost() {
                 <p className="font-bold text-gray-900 mb-2">Pricing Model:</p>
                 <MachineList items={[
                   "LeadIQ: $75–$140/user/month (annual), credit-based — high-performing SDRs hit limits quickly",
-                  "Cursive: $1,000/month flat — no per-user fees, no credits, no limits on identified visitors",
+                  "Cursive: $97/month Visitor Pixel, $197/month Custom Audience, or $247/month bundle",
                   "LeadIQ + sequencing + LinkedIn tool total stack: $650–$910/mo for 4 SDRs, still no visitor ID"
                 ]} />
               </div>
@@ -1159,7 +1157,7 @@ export default function BlogPost() {
               "AI SDR / Outreach Automation: Cursive ✓, Apollo (partial) ✓, ZoomInfo (partial) ✓ | Lusha, Hunter, Cognism ✗",
               "Multi-Channel (email + LinkedIn + direct mail): Cursive ✓ | All others ✗",
               "LinkedIn Chrome Extension: Apollo, Lusha, ZoomInfo, Cognism ✓ | Cursive, Hunter ✗",
-              "Flat-Rate Pricing (no credits): Cursive ✓ | All others ✗",
+              "Month-to-Month Self-Serve Pricing: Cursive ✓ | All others vary",
               "CRM Integration: All tools ✓"
             ]} />
           </MachineSection>
@@ -1190,11 +1188,11 @@ export default function BlogPost() {
 
           <MachineSection title="Get Started with Cursive">
             <p className="text-gray-700 mb-3">
-              Cursive identifies the warm prospects already visiting your website at person-level (~70% match rate) and automatically engages them with personalized AI outreach across email, LinkedIn, and direct mail — $1,000/mo flat, no credits, no per-user fees. Stop hunting cold contacts and start converting warm visitors.
+              Cursive identifies companies and people visiting your website and delivers fresh weekly audiences of in-market buyers. Choose the $97/mo Visitor Pixel, $197/mo Custom Audience, or $247/mo Pixel + Audience Bundle, all month-to-month with no setup fee.
             </p>
             <MachineList items={[
               { label: "Platform Overview", href: "/platform", description: "Complete lead generation platform with visitor ID, AI SDR, intent data" },
-              { label: "Pricing", href: "/pricing", description: "Starting at $1,000/mo — flat rate, no per-user fees, no credit limits" },
+              { label: "Pricing", href: "/pricing", description: "Visitor Pixel $97/mo, Custom Audience $197/mo, or both for $247/mo" },
               { label: "Visitor Identification", href: "/visitor-identification", description: "70% person-level match rate with names, emails, LinkedIn profiles" },
               { label: "AI SDR", href: "/what-is-ai-sdr", description: "Automated personalized outreach based on visitor behavior" },
               { label: "Intent Audiences", href: "/intent-audiences", description: "Track pages viewed, return visits, content engagement" },
@@ -1224,7 +1222,7 @@ export default function BlogPost() {
               </div>
               <div>
                 <p className="font-bold text-gray-900 mb-1">What&apos;s the main difference between LeadIQ and Cursive?</p>
-                <p className="text-gray-700 text-sm">The fundamental difference is prospecting direction. LeadIQ is outbound-first: you find prospects on LinkedIn, capture their data, and cold outreach to them. Cursive is inbound-first: it captures prospects already inbound to your website, enriches contact data automatically, and engages them with personalized AI outreach. Warm inbound prospects convert at 3-5x the rate of cold outbound contacts. Cursive also costs $1,000/mo all-in vs. LeadIQ's $75–$140/user/mo with credit limitations plus additional tools needed for sequencing.</p>
+                <p className="text-gray-700 text-sm">The fundamental difference is prospecting direction. LeadIQ is outbound-first: you find prospects on LinkedIn, capture their data, and cold outreach to them. Cursive identifies companies and people already visiting your website and can deliver fresh weekly audiences of in-market buyers. Warm inbound prospects convert at 3-5x the rate of cold outbound contacts. Cursive offers self-serve plans at $97, $197, and $247 per month vs. LeadIQ's $75–$140/user/mo with credit limitations plus additional tools needed for sequencing.</p>
               </div>
             </div>
           </MachineSection>
