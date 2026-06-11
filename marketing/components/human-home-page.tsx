@@ -14,8 +14,10 @@ import {
   Eye, Bot, TrendingUp, ShoppingCart, Briefcase,
   Users, Database, Mail, Sparkles, ShieldCheck,
   BarChart3, GitBranch, Building2, Search, Flame,
+  Layers, Check,
   type LucideIcon,
 } from "lucide-react"
+import { GET_LEADS_URL } from "@/lib/cta"
 
 // Demo components
 import { DemoVisitorTracking } from "@/components/demos/demo-visitor-tracking"
@@ -242,86 +244,72 @@ export function HumanHomePage() {
         </Container>
       </section>
 
-      {/* Two Ways to Get Started */}
+      {/* Pricing — three self-serve plans */}
       <section id="pricing" className="py-20 bg-[#F7F9FB]">
         <Container>
           <div className="text-center mb-12">
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
-              Two Ways to Get Started
+              Pick Your Plan
             </h2>
-            <p className="text-xl text-gray-600">
-              Whether you prefer self-serve or done-for-you, we&apos;ve got you covered.
+            <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto">
+              Self-serve, month-to-month, cancel anytime. Install in 60 seconds, first audience in 24 hours.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {/* Card 1: Browse & Buy */}
-            <motion.div
-              initial={false}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="bg-white rounded-2xl p-8 border border-gray-200 hover:shadow-lg transition-all"
-            >
-              <div className="w-14 h-14 bg-blue-50 rounded-xl flex items-center justify-center mb-6">
-                <ShoppingCart className="w-7 h-7 text-primary" />
-              </div>
-              <h3 className="text-2xl font-light text-gray-900 mb-3">Browse & Buy Leads</h3>
-              <p className="text-gray-600 mb-6">
-                Self-serve marketplace with 50k+ verified B2B leads. Filter, preview, and purchase with credits. Start with 100 free credits.
-              </p>
-              <ul className="space-y-2 mb-8 text-sm text-gray-600">
-                <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-primary rounded-full" />
-                  Instant access to leads
-                </li>
-                <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-primary rounded-full" />
-                  Credits from $0.60/lead
-                </li>
-                <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-primary rounded-full" />
-                  No commitment required
-                </li>
-              </ul>
-              <Button href="/superpixel" className="w-full">
-                See the Super Pixel
-              </Button>
-            </motion.div>
-
-            {/* Card 2: Let Us Handle It */}
-            <motion.div
-              initial={false}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-              className="bg-white rounded-2xl p-8 border border-gray-200 hover:shadow-lg transition-all"
-            >
-              <div className="w-14 h-14 bg-blue-50 rounded-xl flex items-center justify-center mb-6">
-                <Briefcase className="w-7 h-7 text-primary" />
-              </div>
-              <h3 className="text-2xl font-light text-gray-900 mb-3">Let Us Handle It</h3>
-              <p className="text-gray-600 mb-6">
-                Done-for-you lead generation and outbound. We deliver verified leads, run campaigns, and book meetings on your behalf.
-              </p>
-              <ul className="space-y-2 mb-8 text-sm text-gray-600">
-                <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-primary rounded-full" />
-                  Managed by our team
-                </li>
-                <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-primary rounded-full" />
-                  Starting at $1k/mo
-                </li>
-                <li className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 bg-primary rounded-full" />
-                  Guaranteed results
-                </li>
-              </ul>
-              <Button href="/services" className="w-full">
-                Explore Services
-              </Button>
-            </motion.div>
+          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto items-stretch">
+            {pricingPlans.map((plan, i) => {
+              const Icon = plan.icon
+              return (
+                <motion.div
+                  key={plan.name}
+                  initial={false}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.05, duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                  className={`relative flex flex-col rounded-2xl p-6 sm:p-8 transition-all ${
+                    plan.highlight
+                      ? "bg-white border border-primary shadow-lg ring-1 ring-primary/20"
+                      : "bg-white border border-gray-200 hover:shadow-lg"
+                  }`}
+                >
+                  {plan.highlight && (
+                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white whitespace-nowrap">
+                      Most Popular
+                    </span>
+                  )}
+                  <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center mb-5">
+                    <Icon className="w-6 h-6 text-primary" />
+                  </div>
+                  <h3 className="text-lg font-medium text-gray-900">{plan.name}</h3>
+                  <div className="mt-2 flex items-baseline gap-1">
+                    <span className="text-4xl font-light text-gray-900">{plan.price}</span>
+                    <span className="text-sm text-gray-500">/mo</span>
+                  </div>
+                  <p className="mt-3 text-sm text-gray-600 leading-relaxed">{plan.description}</p>
+                  <ul className="mt-5 space-y-2.5 flex-1">
+                    {plan.items.map((item) => (
+                      <li key={item} className="flex items-start gap-2.5 text-sm text-gray-600">
+                        <Check className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <Button
+                    href={GET_LEADS_URL}
+                    target="_blank"
+                    variant={plan.highlight ? "default" : "outline"}
+                    className="w-full mt-8"
+                  >
+                    {plan.cta}
+                  </Button>
+                </motion.div>
+              )
+            })}
           </div>
+
+          <p className="mt-8 text-center text-sm text-gray-500">
+            No setup fee. No long-term contract. Cancel anytime.
+          </p>
         </Container>
       </section>
 
@@ -371,8 +359,8 @@ export function HumanHomePage() {
             <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-2">
               Everything You Need to
             </h2>
-            <p className="font-cursive text-6xl lg:text-7xl text-gray-500">
-              Scale Outbound
+            <p className="font-cursive text-5xl sm:text-6xl lg:text-7xl text-gray-500">
+              Fill Your Pipeline
             </p>
           </div>
 
@@ -522,12 +510,68 @@ export function HumanHomePage() {
       <DashboardCTA
         headline="Ready to See Who's"
         subheadline="Visiting Your Site?"
-        description="Book a free AI audit. We'll show you exactly which companies are researching your product right now—and how to convert them."
-        ctaText="Book Your Free AI Audit Now"
+        description="Install the pixel in 60 seconds, or get your first audience within 24 hours. Plans from $97/mo, month-to-month."
+        ctaText="Get Started"
       />
     </main>
   )
 }
+
+// Pricing plans — the three self-serve offers (source of truth:
+// src/lib/stripe/funnel-products.ts). All month-to-month, all sold through
+// the get-leads funnel.
+const pricingPlans: Array<{
+  name: string
+  price: string
+  description: string
+  icon: LucideIcon
+  items: string[]
+  cta: string
+  highlight: boolean
+}> = [
+  {
+    name: 'Visitor Pixel',
+    price: '$97',
+    description: 'Identify the companies and people visiting your site. Installs in 60 seconds.',
+    icon: Eye,
+    items: [
+      '40–60% deterministic match rate',
+      'Company + person-level detail',
+      'One-snippet install, no engineering',
+      'Identified visitors synced to your portal',
+    ],
+    cta: 'Get the Pixel',
+    highlight: false,
+  },
+  {
+    name: 'Pixel + Audience Bundle',
+    price: '$247',
+    description: 'Your full top-of-funnel intel layer: site traffic and in-market intent in one feed.',
+    icon: Layers,
+    items: [
+      'Everything in Visitor Pixel',
+      'Everything in Custom Audience',
+      'Priority audience updates within 24h',
+      'Best value vs. buying separately',
+    ],
+    cta: 'Get the Bundle',
+    highlight: true,
+  },
+  {
+    name: 'Custom Audience',
+    price: '$197',
+    description: 'A fresh weekly list of people actively searching for your product, delivered to Sheets.',
+    icon: Users,
+    items: [
+      'Weekly list of in-market prospects',
+      'Built to your exact ICP',
+      'Delivered to Google Sheets',
+      'First audience within 24 hours',
+    ],
+    cta: 'Get an Audience',
+    highlight: false,
+  },
+]
 
 // Benefit-focused pillars
 const benefitPillars: Array<{
@@ -541,14 +585,14 @@ const benefitPillars: Array<{
     description: '40–60% of anonymous visitors identified deterministically — name, company, and verified email — before they ever fill out a form.',
   },
   {
-    icon: Bot,
-    title: 'Reach Them Fast',
-    description: 'AI agents send personalized outreach across email, LinkedIn, and SMS within hours of their visit.',
+    icon: Search,
+    title: 'Catch In-Market Buyers',
+    description: 'A fresh weekly audience of people actively searching for what you sell, delivered straight to your sheet.',
   },
   {
     icon: TrendingUp,
-    title: 'Book More Meetings',
-    description: 'Autonomous follow-ups and meeting scheduling that runs 24/7. No manual work required.',
+    title: 'Reach Them While Hot',
+    description: 'Every contact comes with a verified email, ready to export to your CRM or sequence the moment intent spikes.',
   },
 ]
 
@@ -566,19 +610,19 @@ const coreFeatures = [
     ]
   },
   {
-    title: "AI-Powered Outreach",
-    description: "Your AI SDR that books meetings while you sleep—trained on your best messaging",
-    icon: "M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z",
+    title: "Custom Audiences",
+    description: "A fresh weekly list of people actively searching for your product, delivered to your sheet",
+    icon: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z",
     items: [
-      "Multi-channel campaigns (email, LinkedIn, SMS)",
-      "Personalized at scale",
-      "Autonomous follow-ups",
-      "Automatic meeting booking"
+      "Built to your exact ICP",
+      "Refreshed every week",
+      "Delivered to Google Sheets",
+      "First audience within 24 hours"
     ]
   },
   {
-    title: "Intent Data",
-    description: "Reach prospects actively searching for solutions like yours—right now",
+    title: "Intent Signals",
+    description: "Know which prospects are in-market right now, before your competitors do",
     icon: "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z",
     items: [
       "60B+ behaviors & URLs scanned weekly",
@@ -599,14 +643,14 @@ const coreFeatures = [
     ]
   },
   {
-    title: "Direct Mail Automation",
-    description: "Turn website visits into physical postcards—offline conversion 3-5x higher",
-    icon: "M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z",
+    title: "Verified Contact Data",
+    description: "Every visitor and audience record comes with a verified work email, validated continuously",
+    icon: "M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z",
     items: [
-      "Triggered by website behavior",
-      "Custom design or templates",
-      "Delivered in 48 hours",
-      "Track scan rates + responses"
+      "~20M emails validated per day",
+      "Work email + phone where available",
+      "Company firmographics included",
+      "Export-ready for your CRM or sequencer"
     ]
   },
   {
