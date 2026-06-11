@@ -298,10 +298,24 @@ export async function getOrderVisitors(
   const sinceDays = opts?.sinceDays ?? 90
   const sinceIso = new Date(Date.now() - sinceDays * 24 * 60 * 60 * 1000).toISOString()
 
+  // S4: query events by canonical pixel_row_id. Resolve the managed pixel row
+  // from its (unique) management pixel_id first — the raw upstream pixel_id on
+  // events is unreliable (AL stamps a different id, or null) and must not be
+  // used for attribution.
+  const { data: pixelRow } = await supabase
+    .from('audiencelab_pixels')
+    .select('id')
+    .eq('pixel_id', pixelAudienceLabId)
+    .maybeSingle()
+
+  if (!pixelRow) {
+    return { total: 0, recent: [], last_seen_at: null }
+  }
+
   const { data, error } = await supabase
     .from('audiencelab_events')
     .select('id, received_at, raw, hem_sha256')
-    .eq('pixel_id', pixelAudienceLabId)
+    .eq('pixel_row_id', (pixelRow as { id: string }).id)
     .gte('received_at', sinceIso)
     .order('received_at', { ascending: false })
     .limit(limit * 4) // headroom for dedupe pass

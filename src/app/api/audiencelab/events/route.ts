@@ -16,7 +16,7 @@ import { sanitizeSearchTerm } from '@/lib/utils/sanitize-search'
 const QuerySchema = z.object({
   start: z.string().optional(),
   end: z.string().optional(),
-  source: z.enum(['superpixel', 'audiencesync', 'export']).optional(),
+  source: z.enum(['superpixel', 'audiencesync', 'export', 'pixel_v4_pull']).optional(),
   processed: z.enum(['true', 'false']).optional(),
   q: z.string().optional(),
   page: z.coerce.number().int().min(1).default(1),

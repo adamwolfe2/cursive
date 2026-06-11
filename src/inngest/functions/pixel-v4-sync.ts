@@ -136,6 +136,36 @@ export function buildV4EnrichPatch(
   return patch
 }
 
+/**
+ * Build the canonical install-signal `audiencelab_events` row for a
+ * pull-sourced visitor (S4). Pure + exported for testability.
+ *
+ * Stamped with the canonical `pixel_row_id` so /api/pixel/verify, dashboard
+ * stats, and the token-portal visitor feed treat pull visitors exactly like
+ * webhook events. `processed: true` so the inline edge-processor never
+ * re-creates a lead from it. `pixel_id` is kept as raw/diagnostic only.
+ */
+export function buildInstallSignalEvent(input: {
+  alPixelId: string
+  pixelRowId: string
+  workspaceId: string
+  leadId: string
+  eventTimestamp?: string | null
+  resolution: Record<string, unknown>
+  now: string
+}): Record<string, unknown> {
+  return {
+    source: 'pixel_v4_pull',
+    pixel_id: input.alPixelId,
+    pixel_row_id: input.pixelRowId,
+    workspace_id: input.workspaceId,
+    received_at: input.eventTimestamp || input.now,
+    raw: input.resolution,
+    processed: true,
+    lead_id: input.leadId,
+  }
+}
+
 // =============================================================================
 // Cron — fan out one event per active pixel
 // =============================================================================
@@ -372,6 +402,35 @@ export const pixelV4SyncWorker = inngest.createFunction(
               .from('leads')
               .update(enrichPatch)
               .eq('id', insertResult.leadId)
+
+            // S4: write a canonical install-signal event so /api/pixel/verify,
+            // dashboard stats, and the token-portal visitor feed reflect
+            // pull-sourced visitors exactly like webhook events. Idempotent at
+            // the lead level — this only fires on a NEW lead insert (the shared
+            // inserter dedupes by workspace+email), so reruns never duplicate.
+            const { error: signalErr } = await supabase
+              .from('audiencelab_events')
+              .insert(
+                buildInstallSignalEvent({
+                  alPixelId: al_pixel_id,
+                  pixelRowId: pixel_row_id,
+                  workspaceId: workspace_id,
+                  leadId: insertResult.leadId,
+                  eventTimestamp: event.event_timestamp,
+                  resolution: event.resolution as Record<string, unknown>,
+                  now: new Date().toISOString(),
+                })
+              )
+            // Never silently drop the install signal — a constraint/schema drift
+            // here would otherwise leave pull-only buyers unverified with no
+            // trace. Non-fatal: the lead itself is already saved.
+            if (signalErr) {
+              safeError(
+                `${LOG_PREFIX} install-signal event insert failed (pull-only verify/feed may lag):`,
+                signalErr
+              )
+            }
+
             inserted++
             handledEmails.add(dedupKey)
           }

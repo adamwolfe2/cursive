@@ -51,7 +51,7 @@ export async function GET() {
     const { count, error: countError } = await supabase
       .from('audiencelab_events')
       .select('*', { count: 'exact', head: true })
-      .eq('pixel_id', pixel.pixel_id)
+      .eq('pixel_row_id', pixel.id)
       .gte('received_at', sevenDaysAgo)
 
     if (countError) {
@@ -66,7 +66,7 @@ export async function GET() {
       const { data: latestEvent, error: latestError } = await supabase
         .from('audiencelab_events')
         .select('received_at')
-        .eq('pixel_id', pixel.pixel_id)
+        .eq('pixel_row_id', pixel.id)
         .gte('received_at', sevenDaysAgo)
         .order('received_at', { ascending: false })
         .limit(1)

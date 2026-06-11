@@ -1,5 +1,9 @@
 import { describe, it, expect } from 'vitest'
-import { extractV4Emails, buildV4EnrichPatch } from './pixel-v4-sync'
+import {
+  extractV4Emails,
+  buildV4EnrichPatch,
+  buildInstallSignalEvent,
+} from './pixel-v4-sync'
 
 describe('extractV4Emails', () => {
   it('returns empty for resolution with no email fields', () => {
@@ -114,5 +118,39 @@ describe('buildV4EnrichPatch', () => {
   it('handles missing fields without throwing', () => {
     expect(() => buildV4EnrichPatch({}, null)).not.toThrow()
     expect(() => buildV4EnrichPatch({}, undefined)).not.toThrow()
+  })
+})
+
+describe('buildInstallSignalEvent (S4 canonical pull signal)', () => {
+  const base = {
+    alPixelId: 'mgmt-1',
+    pixelRowId: 'pixrow-1',
+    workspaceId: 'ws-1',
+    leadId: 'lead-1',
+    resolution: { FIRST_NAME: 'Jane', BUSINESS_EMAIL: 'jane@acme.com' },
+    now: '2026-06-10T00:00:00.000Z',
+  }
+
+  it('stamps the canonical pixel_row_id + workspace and marks it processed', () => {
+    const row = buildInstallSignalEvent({ ...base, eventTimestamp: null })
+    expect(row.pixel_row_id).toBe('pixrow-1')
+    expect(row.workspace_id).toBe('ws-1')
+    expect(row.lead_id).toBe('lead-1')
+    expect(row.processed).toBe(true)
+    expect(row.source).toBe('pixel_v4_pull')
+    // raw upstream pixel_id kept only as diagnostic
+    expect(row.pixel_id).toBe('mgmt-1')
+    // raw resolution preserved so the portal feed can render the visitor
+    expect(row.raw).toEqual(base.resolution)
+  })
+
+  it('uses the event timestamp when present, else falls back to now', () => {
+    expect(
+      buildInstallSignalEvent({ ...base, eventTimestamp: '2026-06-09T12:00:00.000Z' })
+        .received_at
+    ).toBe('2026-06-09T12:00:00.000Z')
+    expect(
+      buildInstallSignalEvent({ ...base, eventTimestamp: null }).received_at
+    ).toBe('2026-06-10T00:00:00.000Z')
   })
 })
