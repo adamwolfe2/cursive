@@ -38,11 +38,11 @@ const faqs = [
   },
   {
     question: "What is the best Instantly AI alternative for warm lead generation?",
-    answer: "Cursive is the strongest Instantly AI alternative for teams that want to shift from cold-blast email to warm-lead generation. Instead of sending thousands of emails to cold lists, Cursive identifies the companies and people visiting your website and delivers fresh weekly lists of in-market buyers. Self-serve plans at leads.meetcursive.com start at $97/month, with no setup fee and cancel anytime."
+    answer: "Cursive is the strongest Instantly AI alternative for teams that want to shift from cold-blast email to warm-lead generation. Instead of sending thousands of emails to cold lists, Cursive identifies the companies and people visiting your website and delivers fresh weekly lists of in-market buyers. Self-serve plans at leads.meetcursive.com start at $97/month, with no setup fee and the ability to cancel anytime."
   },
   {
     question: "Can I use Cursive alongside Instantly AI?",
-    answer: "Yes. Many teams use Cursive for warm, intent-driven prospecting (identified website visitors and in-market buyers) and keep a cold email tool like Instantly AI for broader prospecting campaigns. Cursive's month-to-month self-serve plans at leads.meetcursive.com make it easy to add Visitor Pixel, Custom Audience, or both, with no setup fee and cancel anytime."
+    answer: "Yes. Many teams use Cursive for warm, intent-driven prospecting (identified website visitors and in-market buyers) and keep a cold email tool like Instantly AI for broader prospecting campaigns. Cursive's month-to-month self-serve plans at leads.meetcursive.com make it easy to add Visitor Pixel, Custom Audience, or both, with no setup fee and the ability to cancel anytime."
   }
 ]
 

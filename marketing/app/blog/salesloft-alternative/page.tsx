@@ -30,11 +30,11 @@ const faqs = [
   },
   {
     question: "How does Cursive compare to Salesloft?",
-    answer: "Cursive and Salesloft address fundamentally different problems. Salesloft is a cadence and engagement management tool — it helps you organize and execute outreach to contacts you already have. Cursive is an inbound-intent lead generation platform — it identifies who is already visiting your site and surfaces active buyers based on 60B+ weekly behavioral signals. Cursive offers Visitor Pixel at $97/month, Custom Audience at $197/month, and the Pixel + Audience Bundle at $247/month, all month-to-month with no setup fee and cancel anytime."
+    answer: "Cursive and Salesloft address fundamentally different problems. Salesloft is a cadence and engagement management tool — it helps you organize and execute outreach to contacts you already have. Cursive is an inbound-intent lead generation platform — it identifies who is already visiting your site and surfaces active buyers based on 60B+ weekly behavioral signals. Cursive offers Visitor Pixel at $97/month, Custom Audience at $197/month, and the Pixel + Audience Bundle at $247/month, all month-to-month with no setup fee and the ability to cancel anytime."
   },
   {
     question: "Is there a cheaper alternative to Salesloft for small teams?",
-    answer: "Yes. For smaller teams, Apollo.io offers email sequencing, LinkedIn automation, and a contact database for $49-$99 per user per month. For teams that want to go beyond cold cadences, Cursive offers Visitor Pixel at $97/month to identify companies and people visiting your site, Custom Audience at $197/month for a fresh weekly list of in-market buyers delivered to Google Sheets, and the Pixel + Audience Bundle at $247/month. All plans are month-to-month with no setup fee and cancel anytime."
+    answer: "Yes. For smaller teams, Apollo.io offers email sequencing, LinkedIn automation, and a contact database for $49-$99 per user per month. For teams that want to go beyond cold cadences, Cursive offers Visitor Pixel at $97/month to identify companies and people visiting your site, Custom Audience at $197/month for a fresh weekly list of in-market buyers delivered to Google Sheets, and the Pixel + Audience Bundle at $247/month. All plans are month-to-month with no setup fee and the ability to cancel anytime."
   },
   {
     question: "What is the best Salesloft alternative for mid-market B2B teams?",
@@ -852,7 +852,7 @@ export default function BlogPost() {
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-3 font-medium">Price (Per User/Mo)</td>
-                      <td className="border border-gray-300 p-3 text-center text-green-700 font-bold">$97</td>
+                      <td className="border border-gray-300 p-3 text-center text-green-700 font-bold">$97/mo (flat, not per user)</td>
                       <td className="border border-gray-300 p-3 text-center">$75-$125</td>
                       <td className="border border-gray-300 p-3 text-center">$49-$99</td>
                       <td className="border border-gray-300 p-3 text-center">$100-$150</td>
@@ -1153,7 +1153,7 @@ export default function BlogPost() {
               "LinkedIn Automation: All tools ✓ except Groove (limited)",
               "Direct Mail: Cursive ✓ | All others ✗",
               "AI Outreach: Cursive ✓ | Apollo ✓ | Reply.io ✓ | Others basic/limited",
-              "Price per user/mo: Cursive from $97 | Salesloft $75-$125 | Outreach $100-$150 | Reply.io $59-$99 | Apollo $49-$99 | Klenty $50-$100 | Groove $19-$69"
+              "Starting price: Cursive from $97/mo | Salesloft $75-$125 | Outreach $100-$150 | Reply.io $59-$99 | Apollo $49-$99 | Klenty $50-$100 | Groove $19-$69"
             ]} />
           </MachineSection>
 
