@@ -24,118 +24,65 @@ export function WebMCPProvider() {
     mc.registerTool({
       name: "getCursivePricing",
       description:
-        "Get detailed pricing information for Cursive's products and services. Returns self-serve marketplace pricing (credits from $0.60/lead), platform subscription tiers, and done-for-you service packages (Data $1,000/mo, Outbound $2,500/mo, Pipeline $5,000/mo).",
+        "Get pricing for Cursive's three self-serve plans, all month-to-month with no setup fee: Visitor Pixel ($97/mo), Custom Audience ($197/mo), and Pixel + Audience Bundle ($247/mo).",
       inputSchema: {
         type: "object",
         properties: {
           plan_type: {
             type: "string",
-            enum: ["self-serve", "managed-services", "all"],
-            description: "Which pricing tier to retrieve",
+            enum: ["pixel", "audience", "bundle", "all"],
+            description: "Which plan to retrieve (pixel, audience, bundle, or all)",
           },
         },
         required: ["plan_type"],
       },
       annotations: { readOnlyHint: true },
       execute: async (params) => {
+        const billing = "month-to-month, no setup fee, cancel anytime"
+        const url = "https://leads.meetcursive.com/get-leads"
         const pricing = {
-          "self-serve": {
-            name: "Lead Marketplace",
+          pixel: {
+            name: "Visitor Pixel",
+            price: "$97/mo",
+            billing,
             description:
-              "Self-serve B2B lead marketplace with credit-based pricing",
-            packages: [
-              {
-                name: "Starter",
-                credits: 100,
-                price: "$99",
-                per_credit: "$0.99",
-              },
-              {
-                name: "Growth",
-                credits: 500,
-                price: "$399",
-                per_credit: "$0.80",
-                savings: "20%",
-              },
-              {
-                name: "Scale",
-                credits: 1000,
-                price: "$699",
-                per_credit: "$0.70",
-                savings: "30%",
-              },
-              {
-                name: "Enterprise",
-                credits: 5000,
-                price: "$2,999",
-                per_credit: "$0.60",
-                savings: "40%",
-              },
-            ],
-            free_credits: 100,
-            signup_url: "https://leads.meetcursive.com/get-leads",
+              "Identify the companies and people visiting your website, deterministically.",
             includes: [
-              "Verified B2B contacts",
-              "Filter by industry, title, location",
-              "Instant export",
-              "No commitment",
+              "40-60% deterministic visitor match rate",
+              "Company + person-level detail with a verified work email",
+              "60-second pixel install, no engineering",
+              "Identified visitors synced to your portal",
             ],
+            url,
           },
-          "managed-services": {
+          audience: {
+            name: "Custom Audience",
+            price: "$197/mo",
+            billing,
             description:
-              "Done-for-you lead generation services with dedicated support",
-            annual_discount: "20% off with annual billing",
-            tiers: [
-              {
-                name: "Cursive Data",
-                monthly_price: "$1,000/mo",
-                annual_price: "$800/mo",
-                description:
-                  "Verified B2B contacts delivered monthly, custom ICP targeting, 95%+ email deliverability",
-                includes: [
-                  "500-2,000 verified leads/month",
-                  "Custom ICP targeting",
-                  "Monthly list refresh",
-                  "Dedicated account manager",
-                ],
-                url: "https://www.meetcursive.com/services",
-              },
-              {
-                name: "Cursive Outbound",
-                monthly_price: "$2,500/mo",
-                annual_price: "$2,000/mo",
-                label: "Most Popular",
-                description:
-                  "Done-for-you email campaigns with AI personalization, brand voice training, campaign optimization",
-                includes: [
-                  "Everything in Data",
-                  "AI-powered email personalization",
-                  "Email infrastructure setup + warmup",
-                  "500 verified leads included monthly",
-                  "A/B testing + continuous optimization",
-                  "Weekly strategy calls",
-                  "30-day money-back guarantee",
-                ],
-                url: "https://www.meetcursive.com/services",
-              },
-              {
-                name: "Cursive Pipeline",
-                monthly_price: "$5,000/mo",
-                annual_price: "$4,000/mo",
-                description:
-                  "Full-stack AI SDR: research, write, send, follow up, book meetings across email, LinkedIn, SMS",
-                includes: [
-                  "Everything in Outbound",
-                  "AI SDR agents (24/7 automated)",
-                  "Multi-channel campaigns (email, LinkedIn, SMS)",
-                  "Unlimited lead enrichment",
-                  "API access + CRM integrations",
-                  "Dedicated success manager",
-                ],
-                url: "https://www.meetcursive.com/services",
-              },
+              "A fresh weekly list of people actively searching for your product, delivered to Google Sheets.",
+            includes: [
+              "Weekly list of in-market prospects built to your ICP",
+              "Verified work email on every record",
+              "Delivered to Google Sheets",
+              "First audience within 24 hours",
             ],
-            contracts: "No minimum commitment, cancel anytime",
+            url,
+          },
+          bundle: {
+            name: "Pixel + Audience Bundle",
+            price: "$247/mo",
+            billing,
+            label: "Best value",
+            description:
+              "Both the Visitor Pixel and the weekly Custom Audience in one feed.",
+            includes: [
+              "Everything in Visitor Pixel",
+              "Everything in Custom Audience",
+              "Site traffic + in-market intent in one feed",
+              "Priority audience updates within 24 hours",
+            ],
+            url,
           },
         }
 
@@ -143,7 +90,7 @@ export function WebMCPProvider() {
         if (planType === "all") return pricing
         return (
           pricing[planType as keyof typeof pricing] ?? {
-            error: `Unknown plan type "${planType}". Available: self-serve, managed-services, all`,
+            error: `Unknown plan type "${planType}". Available: pixel, audience, bundle, all`,
           }
         )
       },
@@ -168,14 +115,15 @@ export function WebMCPProvider() {
       annotations: { readOnlyHint: true },
       execute: async (params) => {
         const cursiveStats = {
-          visitor_id_rate: "70%",
+          visitor_id_rate: "40-60% (deterministic)",
           database_size: "280M US consumer, 140M+ business profiles",
           real_time: true,
-          starting_price: "$1,000/mo (managed) or $0.60/lead (self-serve)",
+          starting_price:
+            "$97/mo (Visitor Pixel), $197/mo (Custom Audience), $247/mo (Bundle) — self-serve, month-to-month",
           intent_signals: "60B+ weekly across 30,000+ categories",
-          ai_outreach_included: true,
-          channels: ["email", "LinkedIn", "SMS", "direct mail"],
-          contracts: "No minimum commitment",
+          verified_email_included: true,
+          weekly_in_market_audience: true,
+          contracts: "Month-to-month, no setup fee, cancel anytime",
           integrations: "200+ native",
         }
 
@@ -412,7 +360,7 @@ export function WebMCPProvider() {
           alternative_actions: {
             free_audit:
               "https://www.meetcursive.com/free-audit",
-            marketplace_signup:
+            get_started:
               "https://leads.meetcursive.com/get-leads",
             email: "hey@meetcursive.com",
           },
