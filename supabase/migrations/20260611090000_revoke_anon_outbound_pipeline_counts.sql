@@ -1,0 +1,14 @@
+-- Security (P2-10): outbound_pipeline_counts is a SECURITY DEFINER (non-invoker)
+-- view that bypasses RLS, and it was granted to `anon` — so the public anon key
+-- (shipped in the client bundle) could SELECT every workspace's outbound
+-- pipeline counts (cross-tenant leak). No app path queries it unauthenticated,
+-- so revoking anon/public is safe and closes the public exposure.
+--
+-- NOTE (follow-up): authenticated users can still read cross-tenant via the
+-- definer view. Fully closing that requires either security_invoker=true PLUS
+-- authenticated workspace-RLS on agents/campaign_leads/email_sends/
+-- email_replies/outbound_runs (which today have RLS enabled but NO authenticated
+-- policy — flipping security_invoker now would return 0 rows and break the
+-- outbound dashboard), or routing the reads through the service role with an
+-- explicit workspace filter. Tracked separately.
+REVOKE ALL ON public.outbound_pipeline_counts FROM anon;
