@@ -83,11 +83,13 @@ export default function BlogPost() {
         {/* Header */}
         <section className="py-12 bg-white">
           <Container>
-            <Link href="/blog" className="inline-flex items-center gap-2 text-primary hover:underline mb-8">
-              <ArrowLeft className="w-4 h-4" />
-              Back to Blog
-            </Link>
-            <div className="max-w-4xl">
+            <div className="max-w-3xl mx-auto">
+              <Link href="/blog" className="inline-flex items-center gap-2 text-primary hover:underline mb-8">
+                <ArrowLeft className="w-4 h-4" />
+                Back to Blog
+              </Link>
+            </div>
+            <div className="max-w-3xl mx-auto">
               <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
                 Technology
               </div>
@@ -143,32 +145,32 @@ export default function BlogPost() {
                 actionable buying signals.
               </p>
 
-              <div className="not-prose bg-blue-50 rounded-xl p-6 my-8 border border-blue-100">
+              <div className="not-prose bg-primary/5 rounded-xl p-6 my-8 border border-primary/15">
                 <h3 className="font-bold text-lg mb-4">The Four Layers of R4</h3>
                 <div className="space-y-3">
                   <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">R1</div>
+                    <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold flex-shrink-0">R1</div>
                     <div>
                       <p className="font-semibold text-gray-900">Relevance</p>
                       <p className="text-sm text-gray-600">28,000-domain curated signal feed — +28% relevance over co-op data</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">R2</div>
+                    <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold flex-shrink-0">R2</div>
                     <div>
                       <p className="font-semibold text-gray-900">Reasoning</p>
                       <p className="text-sm text-gray-600">URL-level buyer-stage classification at 6x depth of keyword-only models</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">R3</div>
+                    <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold flex-shrink-0">R3</div>
                     <div>
                       <p className="font-semibold text-gray-900">Recognition</p>
                       <p className="text-sm text-gray-600">Industry cohort models — vertical-aware from day one</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">R4</div>
+                    <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold flex-shrink-0">R4</div>
                     <div>
                       <p className="font-semibold text-gray-900">Restrictions</p>
                       <p className="text-sm text-gray-600">Noise suppression — filters 202,000+ irrelevant visit types</p>
@@ -215,11 +217,11 @@ export default function BlogPost() {
                 <p className="text-sm font-semibold text-gray-700 mb-3">R1 by the numbers:</p>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="text-center">
-                    <p className="text-2xl font-bold text-blue-600">28,000</p>
+                    <p className="text-2xl font-bold text-primary">28,000</p>
                     <p className="text-xs text-gray-600">Curated domains in the signal feed</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-2xl font-bold text-blue-600">+28%</p>
+                    <p className="text-2xl font-bold text-primary">+28%</p>
                     <p className="text-xs text-gray-600">Relevance improvement over co-op data</p>
                   </div>
                 </div>
@@ -256,7 +258,7 @@ export default function BlogPost() {
               <div className="not-prose overflow-x-auto my-6">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-blue-600 text-white">
+                    <tr className="bg-primary text-white">
                       <th className="border border-gray-300 p-3 text-left font-bold">Stage</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Signal Characteristics</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Example Content Types</th>
@@ -292,7 +294,7 @@ export default function BlogPost() {
                       <td className="border border-gray-300 p-3 font-medium">5. Decision</td>
                       <td className="border border-gray-300 p-3">Contract, security, compliance research</td>
                       <td className="border border-gray-300 p-3">Security documentation, contract templates, implementation guides</td>
-                      <td className="border border-gray-300 p-3 text-blue-600">Critical</td>
+                      <td className="border border-gray-300 p-3 text-primary">Critical</td>
                     </tr>
                   </tbody>
                 </table>
@@ -464,17 +466,17 @@ export default function BlogPost() {
                     <tr className="bg-gray-50">
                       <td className="border border-gray-300 p-3 font-medium">After R1 Relevance</td>
                       <td className="border border-gray-300 p-3">~72,000 events</td>
-                      <td className="border border-gray-300 p-3 text-blue-700">Irrelevant publisher domains removed</td>
+                      <td className="border border-gray-300 p-3 text-primary">Irrelevant publisher domains removed</td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-3 font-medium">After R2 Reasoning</td>
                       <td className="border border-gray-300 p-3">~28,000 events at Stage 3+</td>
-                      <td className="border border-gray-300 p-3 text-blue-700">Low buyer-stage signals deprioritized</td>
+                      <td className="border border-gray-300 p-3 text-primary">Low buyer-stage signals deprioritized</td>
                     </tr>
                     <tr className="bg-gray-50">
                       <td className="border border-gray-300 p-3 font-medium">After R3 Recognition</td>
                       <td className="border border-gray-300 p-3">~18,000 events matching vertical pattern</td>
-                      <td className="border border-gray-300 p-3 text-blue-700">Non-vertical-match signals removed</td>
+                      <td className="border border-gray-300 p-3 text-primary">Non-vertical-match signals removed</td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-3 font-medium">After R4 Restrictions</td>
@@ -512,19 +514,19 @@ export default function BlogPost() {
                 would otherwise leave as anonymous sessions.
               </p>
 
-              <div className="not-prose bg-blue-50 rounded-xl p-6 my-8 border border-blue-100">
+              <div className="not-prose bg-primary/5 rounded-xl p-6 my-8 border border-primary/15">
                 <h3 className="font-bold text-base mb-3">Convergent Signal Example</h3>
                 <div className="space-y-2 text-sm">
                   <div className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
+                    <Check className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
                     <p className="text-gray-700">R4 detects Acme Corp visiting multiple comparison and pricing pages for your category (Stage 4 — Shortlisting)</p>
                   </div>
                   <div className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
+                    <Check className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
                     <p className="text-gray-700">Super Pixel identifies Sarah Chen, VP of Revenue at Acme Corp, visiting your pricing page the same week</p>
                   </div>
                   <div className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
+                    <Check className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
                     <p className="text-gray-700">Result: a named, person-level lead at a confirmed high-intent account — delivered with email, title, and visit context for immediate outreach</p>
                   </div>
                 </div>
@@ -579,7 +581,7 @@ export default function BlogPost() {
         </section>
 
         {/* CTA */}
-        <section className="py-16 bg-blue-50">
+        <section className="py-16 bg-primary/5">
           <Container>
             <div className="max-w-2xl mx-auto text-center">
               <h2 className="text-3xl font-bold mb-4">See what R4 signal quality looks like on your traffic</h2>

@@ -79,11 +79,13 @@ export default function BlogPost() {
         {/* Header */}
         <section className="py-12 bg-white">
           <Container>
-            <Link href="/blog" className="inline-flex items-center gap-2 text-primary hover:underline mb-8">
-              <ArrowLeft className="w-4 h-4" />
-              Back to Blog
-            </Link>
-            <div className="max-w-4xl">
+            <div className="max-w-3xl mx-auto">
+              <Link href="/blog" className="inline-flex items-center gap-2 text-primary hover:underline mb-8">
+                <ArrowLeft className="w-4 h-4" />
+                Back to Blog
+              </Link>
+            </div>
+            <div className="max-w-3xl mx-auto">
               <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
                 Case Studies
               </div>
@@ -129,27 +131,27 @@ export default function BlogPost() {
                 classification is what moves the needle.
               </p>
 
-              <div className="not-prose bg-blue-50 rounded-xl p-6 my-8 border border-blue-100">
+              <div className="not-prose bg-primary/5 rounded-xl p-6 my-8 border border-primary/15">
                 <h3 className="font-bold text-lg mb-3">Five Case Studies at a Glance</h3>
                 <div className="space-y-2 text-sm">
                   <div className="flex items-start gap-3">
-                    <span className="flex-shrink-0 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold">1</span>
+                    <span className="flex-shrink-0 w-6 h-6 bg-primary text-white rounded-full flex items-center justify-center text-xs font-bold">1</span>
                     <span><strong>B2B SaaS:</strong> Audience accuracy from 12% to 94% using R3 cohorts + R4 suppression + R2 URL scoring</span>
                   </div>
                   <div className="flex items-start gap-3">
-                    <span className="flex-shrink-0 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold">2</span>
+                    <span className="flex-shrink-0 w-6 h-6 bg-primary text-white rounded-full flex items-center justify-center text-xs font-bold">2</span>
                     <span><strong>Automotive:</strong> 22% of audience reclassified as active buyers via URL-stage scoring</span>
                   </div>
                   <div className="flex items-start gap-3">
-                    <span className="flex-shrink-0 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold">3</span>
+                    <span className="flex-shrink-0 w-6 h-6 bg-primary text-white rounded-full flex items-center justify-center text-xs font-bold">3</span>
                     <span><strong>EdTech:</strong> 5.8x audience growth in 6 months via competitor displacement signals</span>
                   </div>
                   <div className="flex items-start gap-3">
-                    <span className="flex-shrink-0 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold">4</span>
+                    <span className="flex-shrink-0 w-6 h-6 bg-primary text-white rounded-full flex items-center justify-center text-xs font-bold">4</span>
                     <span><strong>Event Management:</strong> 34% ad spend efficiency gain by suppressing 187,000 existing-user visits</span>
                   </div>
                   <div className="flex items-start gap-3">
-                    <span className="flex-shrink-0 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs font-bold">5</span>
+                    <span className="flex-shrink-0 w-6 h-6 bg-primary text-white rounded-full flex items-center justify-center text-xs font-bold">5</span>
                     <span><strong>Mass Tort:</strong> 3x outreach conversion rate via qualifying behavior filtering</span>
                   </div>
                 </div>
@@ -165,7 +167,7 @@ export default function BlogPost() {
                   </div>
                   <div className="flex items-center justify-center text-gray-400 text-2xl font-light">→</div>
                   <div>
-                    <div className="text-xl font-bold text-blue-600">94%</div>
+                    <div className="text-xl font-bold text-primary">94%</div>
                     <div className="text-xs text-gray-500 mt-1">After: Audience accuracy</div>
                   </div>
                 </div>
@@ -207,7 +209,7 @@ export default function BlogPost() {
               <div className="not-prose overflow-x-auto my-6">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
+                    <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                       <th className="border border-gray-300 p-3 text-left font-bold">Metric</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Legacy Intent Platform</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Cursive (R3+R4+R2)</th>
@@ -217,17 +219,17 @@ export default function BlogPost() {
                     <tr>
                       <td className="border border-gray-300 p-3 font-medium">Audience accuracy</td>
                       <td className="border border-gray-300 p-3">12%</td>
-                      <td className="border border-gray-300 p-3 font-semibold text-blue-600">94%</td>
+                      <td className="border border-gray-300 p-3 font-semibold text-primary">94%</td>
                     </tr>
                     <tr className="bg-gray-50">
                       <td className="border border-gray-300 p-3 font-medium">Signals at comparison/pricing pages</td>
                       <td className="border border-gray-300 p-3">8%</td>
-                      <td className="border border-gray-300 p-3 font-semibold text-blue-600">73%</td>
+                      <td className="border border-gray-300 p-3 font-semibold text-primary">73%</td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-3 font-medium">Irrelevant signals suppressed</td>
                       <td className="border border-gray-300 p-3">None</td>
-                      <td className="border border-gray-300 p-3 font-semibold text-blue-600">202,000+</td>
+                      <td className="border border-gray-300 p-3 font-semibold text-primary">202,000+</td>
                     </tr>
                   </tbody>
                 </table>
@@ -253,7 +255,7 @@ export default function BlogPost() {
                   </div>
                   <div className="flex items-center justify-center text-gray-400 text-2xl font-light">→</div>
                   <div>
-                    <div className="text-xl font-bold text-blue-600">22%</div>
+                    <div className="text-xl font-bold text-primary">22%</div>
                     <div className="text-xs text-gray-500 mt-1">After: Reclassified as active buyers</div>
                   </div>
                 </div>
@@ -304,7 +306,7 @@ export default function BlogPost() {
                   </div>
                   <div className="flex items-center justify-center text-gray-400 text-2xl font-light">→</div>
                   <div>
-                    <div className="text-xl font-bold text-blue-600">5.8x</div>
+                    <div className="text-xl font-bold text-primary">5.8x</div>
                     <div className="text-xs text-gray-500 mt-1">After: Audience growth in 6 months</div>
                   </div>
                 </div>
@@ -363,7 +365,7 @@ export default function BlogPost() {
                   </div>
                   <div className="flex items-center justify-center text-gray-400 text-2xl font-light">→</div>
                   <div>
-                    <div className="text-xl font-bold text-blue-600">+34%</div>
+                    <div className="text-xl font-bold text-primary">+34%</div>
                     <div className="text-xs text-gray-500 mt-1">After: Ad spend efficiency</div>
                   </div>
                 </div>
@@ -393,7 +395,7 @@ export default function BlogPost() {
                 prospects and existing users.
               </p>
 
-              <div className="not-prose bg-blue-50 rounded-xl p-6 my-6 border border-blue-100">
+              <div className="not-prose bg-primary/5 rounded-xl p-6 my-6 border border-primary/15">
                 <p className="font-semibold text-base mb-3">Why Suppression Is as Valuable as Targeting</p>
                 <p className="text-sm text-gray-600 mb-3">
                   Most identity resolution conversations focus on the targeting side: who should we reach?
@@ -434,7 +436,7 @@ export default function BlogPost() {
                   </div>
                   <div className="flex items-center justify-center text-gray-400 text-2xl font-light">→</div>
                   <div>
-                    <div className="text-xl font-bold text-blue-600">3x</div>
+                    <div className="text-xl font-bold text-primary">3x</div>
                     <div className="text-xs text-gray-500 mt-1">After: Outreach conversion rate</div>
                   </div>
                 </div>
@@ -560,28 +562,28 @@ export default function BlogPost() {
               </p>
 
               <div className="not-prose grid grid-cols-2 md:grid-cols-3 gap-4 my-8">
-                <div className="bg-blue-50 rounded-xl p-4 text-center border border-blue-100">
-                  <div className="text-2xl font-bold text-blue-700">94%</div>
+                <div className="bg-primary/5 rounded-xl p-4 text-center border border-primary/15">
+                  <div className="text-2xl font-bold text-primary">94%</div>
                   <div className="text-sm text-gray-600 mt-1">Audience accuracy after R3+R4+R2</div>
                 </div>
-                <div className="bg-blue-50 rounded-xl p-4 text-center border border-blue-100">
-                  <div className="text-2xl font-bold text-blue-700">34%</div>
+                <div className="bg-primary/5 rounded-xl p-4 text-center border border-primary/15">
+                  <div className="text-2xl font-bold text-primary">34%</div>
                   <div className="text-sm text-gray-600 mt-1">Ad spend efficiency gain via suppression</div>
                 </div>
-                <div className="bg-blue-50 rounded-xl p-4 text-center border border-blue-100">
-                  <div className="text-2xl font-bold text-blue-700">5.8x</div>
+                <div className="bg-primary/5 rounded-xl p-4 text-center border border-primary/15">
+                  <div className="text-2xl font-bold text-primary">5.8x</div>
                   <div className="text-sm text-gray-600 mt-1">Audience growth in 6 months (EdTech)</div>
                 </div>
-                <div className="bg-blue-50 rounded-xl p-4 text-center border border-blue-100">
-                  <div className="text-2xl font-bold text-blue-700">3x</div>
+                <div className="bg-primary/5 rounded-xl p-4 text-center border border-primary/15">
+                  <div className="text-2xl font-bold text-primary">3x</div>
                   <div className="text-sm text-gray-600 mt-1">Outreach conversion improvement</div>
                 </div>
-                <div className="bg-blue-50 rounded-xl p-4 text-center border border-blue-100">
-                  <div className="text-2xl font-bold text-blue-700">22%</div>
+                <div className="bg-primary/5 rounded-xl p-4 text-center border border-primary/15">
+                  <div className="text-2xl font-bold text-primary">22%</div>
                   <div className="text-sm text-gray-600 mt-1">Automotive audience reclassified as buyers</div>
                 </div>
-                <div className="bg-blue-50 rounded-xl p-4 text-center border border-blue-100">
-                  <div className="text-2xl font-bold text-blue-700">202K+</div>
+                <div className="bg-primary/5 rounded-xl p-4 text-center border border-primary/15">
+                  <div className="text-2xl font-bold text-primary">202K+</div>
                   <div className="text-sm text-gray-600 mt-1">Noise signals suppressed (B2B SaaS)</div>
                 </div>
               </div>
@@ -602,7 +604,7 @@ export default function BlogPost() {
         </section>
 
         {/* CTA */}
-        <section className="py-16 bg-blue-50">
+        <section className="py-16 bg-primary/5">
           <Container>
             <div className="max-w-2xl mx-auto text-center">
               <h2 className="text-3xl font-bold mb-4">See Cursive in action on your traffic</h2>

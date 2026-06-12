@@ -79,11 +79,13 @@ export default function BlogPost() {
         {/* Header */}
         <section className="py-12 bg-white">
           <Container>
-            <Link href="/blog" className="inline-flex items-center gap-2 text-primary hover:underline mb-8">
-              <ArrowLeft className="w-4 h-4" />
-              Back to Blog
-            </Link>
-            <div className="max-w-4xl">
+            <div className="max-w-3xl mx-auto">
+              <Link href="/blog" className="inline-flex items-center gap-2 text-primary hover:underline mb-8">
+                <ArrowLeft className="w-4 h-4" />
+                Back to Blog
+              </Link>
+            </div>
+            <div className="max-w-3xl mx-auto">
               <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
                 Sales Playbook
               </div>
@@ -134,9 +136,9 @@ export default function BlogPost() {
                 that has been at 80 for months.
               </p>
 
-              <div className="not-prose bg-blue-50 rounded-xl p-6 my-8 border border-blue-100">
+              <div className="not-prose bg-primary/5 rounded-xl p-6 my-8 border border-primary/15">
                 <h3 className="font-bold text-lg mb-3">What This Playbook Covers</h3>
-                <ol className="space-y-1 text-sm text-blue-800">
+                <ol className="space-y-1 text-sm text-primary">
                   <li>1. Why Score Trend beats absolute score for sales prioritization</li>
                   <li>2. The three acceleration call triggers (WaveState, ABM Workshop, Diagnosis)</li>
                   <li>3. The 15-minute morning routine that pre-builds your call list</li>
@@ -162,7 +164,7 @@ export default function BlogPost() {
               <div className="not-prose overflow-x-auto my-6">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
+                    <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                       <th className="border border-gray-300 p-3 text-left font-bold">Account</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Absolute Score</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Score Trend (7d)</th>
@@ -183,7 +185,7 @@ export default function BlogPost() {
                       <td className="border border-gray-300 p-3">55</td>
                       <td className="border border-gray-300 p-3">+40</td>
                       <td className="border border-gray-300 p-3">Accelerating — just entered active research</td>
-                      <td className="border border-gray-300 p-3 font-semibold text-blue-600">High — call today</td>
+                      <td className="border border-gray-300 p-3 font-semibold text-primary">High — call today</td>
                     </tr>
                   </tbody>
                 </table>
@@ -285,7 +287,7 @@ export default function BlogPost() {
               <div className="not-prose overflow-x-auto my-6">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
+                    <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                       <th className="border border-gray-300 p-3 text-left font-bold">Trigger</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Score Trend Signal</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">URL Signal</th>
@@ -326,35 +328,35 @@ export default function BlogPost() {
                 morning before your first call so your outreach always reflects the freshest signal available.
               </p>
 
-              <div className="not-prose bg-blue-50 rounded-xl p-6 my-8 border border-blue-100">
+              <div className="not-prose bg-primary/5 rounded-xl p-6 my-8 border border-primary/15">
                 <h3 className="font-bold text-lg mb-4">Morning Intent Routine (15 minutes)</h3>
                 <div className="space-y-4">
                   <div className="flex gap-3">
-                    <div className="flex-shrink-0 w-16 text-sm font-bold text-blue-700">7:30 AM</div>
+                    <div className="flex-shrink-0 w-16 text-sm font-bold text-primary">7:30 AM</div>
                     <div className="text-sm text-gray-700">
                       <strong>Open Cursive report.</strong> Sort by Score Trend descending. Do not look at absolute score column yet.
                     </div>
                   </div>
                   <div className="flex gap-3">
-                    <div className="flex-shrink-0 w-16 text-sm font-bold text-blue-700">7:35 AM</div>
+                    <div className="flex-shrink-0 w-16 text-sm font-bold text-primary">7:35 AM</div>
                     <div className="text-sm text-gray-700">
                       <strong>Top 10 accounts:</strong> These are your acceleration accounts. Check each for WaveState, ABM Workshop, or Diagnosis trigger. Tag trigger type. These get same-day outreach — today, not tomorrow.
                     </div>
                   </div>
                   <div className="flex gap-3">
-                    <div className="flex-shrink-0 w-16 text-sm font-bold text-blue-700">7:40 AM</div>
+                    <div className="flex-shrink-0 w-16 text-sm font-bold text-primary">7:40 AM</div>
                     <div className="text-sm text-gray-700">
                       <strong>Positions 11-30:</strong> Warm accounts. Schedule outreach for this week. Note the specific content areas they&apos;ve been researching for personalization.
                     </div>
                   </div>
                   <div className="flex gap-3">
-                    <div className="flex-shrink-0 w-16 text-sm font-bold text-blue-700">7:43 AM</div>
+                    <div className="flex-shrink-0 w-16 text-sm font-bold text-primary">7:43 AM</div>
                     <div className="text-sm text-gray-700">
                       <strong>Below position 30:</strong> Add to nurture sequence. No direct sales outreach. Interrupting these accounts before they reach acceleration typically suppresses future conversion.
                     </div>
                   </div>
                   <div className="flex gap-3">
-                    <div className="flex-shrink-0 w-16 text-sm font-bold text-blue-700">7:45 AM</div>
+                    <div className="flex-shrink-0 w-16 text-sm font-bold text-primary">7:45 AM</div>
                     <div className="text-sm text-gray-700">
                       <strong>First call of the day.</strong> Top Score Trend account with Diagnosis trigger goes first — they are actively deciding right now.
                     </div>
@@ -426,7 +428,7 @@ export default function BlogPost() {
                 beginning of their research phase rather than mid-cycle or after the decision had been made.
               </p>
 
-              <div className="not-prose bg-blue-50 rounded-xl p-6 my-8 border border-blue-100">
+              <div className="not-prose bg-primary/5 rounded-xl p-6 my-8 border border-primary/15">
                 <h3 className="font-bold text-base mb-4">Before vs. After: Score Trend Prioritization</h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -439,7 +441,7 @@ export default function BlogPost() {
                     </ul>
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-blue-700 mb-2">After (Score Trend Sort)</p>
+                    <p className="text-sm font-semibold text-primary mb-2">After (Score Trend Sort)</p>
                     <ul className="text-sm text-gray-600 space-y-1">
                       <li>30 accounts worked per week</li>
                       <li>18 meaningful conversations</li>
@@ -529,20 +531,20 @@ export default function BlogPost() {
               </p>
 
               <div className="not-prose grid grid-cols-2 md:grid-cols-4 gap-4 my-8">
-                <div className="bg-blue-50 rounded-xl p-4 text-center border border-blue-100">
-                  <div className="text-2xl font-bold text-blue-700">70%</div>
+                <div className="bg-primary/5 rounded-xl p-4 text-center border border-primary/15">
+                  <div className="text-2xl font-bold text-primary">70%</div>
                   <div className="text-sm text-gray-600 mt-1">Anonymous visitor identification rate</div>
                 </div>
-                <div className="bg-blue-50 rounded-xl p-4 text-center border border-blue-100">
-                  <div className="text-2xl font-bold text-blue-700">60B+</div>
+                <div className="bg-primary/5 rounded-xl p-4 text-center border border-primary/15">
+                  <div className="text-2xl font-bold text-primary">60B+</div>
                   <div className="text-sm text-gray-600 mt-1">Intent signals processed weekly</div>
                 </div>
-                <div className="bg-blue-50 rounded-xl p-4 text-center border border-blue-100">
-                  <div className="text-2xl font-bold text-blue-700">Daily</div>
+                <div className="bg-primary/5 rounded-xl p-4 text-center border border-primary/15">
+                  <div className="text-2xl font-bold text-primary">Daily</div>
                   <div className="text-sm text-gray-600 mt-1">Score Trend update frequency</div>
                 </div>
-                <div className="bg-blue-50 rounded-xl p-4 text-center border border-blue-100">
-                  <div className="text-2xl font-bold text-blue-700">3-5x</div>
+                <div className="bg-primary/5 rounded-xl p-4 text-center border border-primary/15">
+                  <div className="text-2xl font-bold text-primary">3-5x</div>
                   <div className="text-sm text-gray-600 mt-1">Conversion rate vs. cold outbound</div>
                 </div>
               </div>
@@ -586,7 +588,7 @@ export default function BlogPost() {
         </section>
 
         {/* CTA */}
-        <section className="py-16 bg-blue-50">
+        <section className="py-16 bg-primary/5">
           <Container>
             <div className="max-w-2xl mx-auto text-center">
               <h2 className="text-3xl font-bold mb-4">See Cursive in action on your traffic</h2>

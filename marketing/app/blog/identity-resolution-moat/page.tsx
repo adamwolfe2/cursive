@@ -80,12 +80,13 @@ export default function BlogPost() {
         {/* Header */}
         <section className="py-12 bg-white">
           <Container>
-            <Link href="/blog" className="inline-flex items-center gap-2 text-primary hover:underline mb-8">
-              <ArrowLeft className="w-4 h-4" />
-              Back to Blog
-            </Link>
-
-            <div className="max-w-4xl">
+            <div className="max-w-3xl mx-auto">
+              <Link href="/blog" className="inline-flex items-center gap-2 text-primary hover:underline mb-8">
+                <ArrowLeft className="w-4 h-4" />
+                Back to Blog
+              </Link>
+            </div>
+            <div className="max-w-3xl mx-auto">
               <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
                 Technology
               </div>
@@ -180,7 +181,7 @@ export default function BlogPost() {
                   },
                 ].map((layer) => (
                   <div key={layer.number} className="flex gap-6 mb-6 p-6 bg-white border border-gray-200 rounded-xl">
-                    <div className="text-3xl font-bold text-blue-100 w-12 flex-shrink-0">{layer.number}</div>
+                    <div className="text-3xl font-bold text-primary-light w-12 flex-shrink-0">{layer.number}</div>
                     <div>
                       <h3 className="text-lg font-bold mb-0.5">{layer.title}</h3>
                       <p className="text-sm text-primary font-medium mb-2">{layer.subtitle}</p>
@@ -346,7 +347,7 @@ export default function BlogPost() {
                     { metric: "60B+", label: "Daily intent signals", context: "feeding the scoring model" },
                     { metric: "420M+", label: "US consumer profiles", context: "in the identity graph" },
                   ].map((item) => (
-                    <div key={item.metric} className="bg-blue-50 border border-blue-100 rounded-xl p-5 text-center">
+                    <div key={item.metric} className="bg-primary/5 border border-primary/15 rounded-xl p-5 text-center">
                       <div className="text-4xl font-bold text-primary mb-1">{item.metric}</div>
                       <div className="font-semibold text-gray-800 text-sm mb-1">{item.label}</div>
                       <div className="text-gray-500 text-xs">{item.context}</div>
@@ -442,7 +443,7 @@ export default function BlogPost() {
         </section>
 
         {/* CTA */}
-        <section className="py-16 bg-blue-50">
+        <section className="py-16 bg-primary/5">
           <Container>
             <div className="max-w-2xl mx-auto text-center">
               <h2 className="text-3xl font-bold mb-4">See Cursive in action on your traffic</h2>

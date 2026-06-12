@@ -79,11 +79,13 @@ export default function BlogPost() {
         {/* Header */}
         <section className="py-12 bg-white">
           <Container>
-            <Link href="/blog" className="inline-flex items-center gap-2 text-primary hover:underline mb-8">
-              <ArrowLeft className="w-4 h-4" />
-              Back to Blog
-            </Link>
-            <div className="max-w-4xl">
+            <div className="max-w-3xl mx-auto">
+              <Link href="/blog" className="inline-flex items-center gap-2 text-primary hover:underline mb-8">
+                <ArrowLeft className="w-4 h-4" />
+                Back to Blog
+              </Link>
+            </div>
+            <div className="max-w-3xl mx-auto">
               <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
                 Intent Data
               </div>
@@ -135,9 +137,9 @@ export default function BlogPost() {
                 distinct failure modes. Each has a specific cause — and a specific fix.
               </p>
 
-              <div className="not-prose bg-blue-50 rounded-xl p-6 my-8 border border-blue-100">
+              <div className="not-prose bg-primary/5 rounded-xl p-6 my-8 border border-primary/15">
                 <h3 className="font-bold text-lg mb-3">The Six Failure Modes</h3>
-                <ol className="space-y-1 text-sm text-blue-800">
+                <ol className="space-y-1 text-sm text-primary">
                   <li>1. The Feed Problem — where the signal comes from matters</li>
                   <li>2. The Model Problem — keyword matching is not intent reasoning</li>
                   <li>3. The Feedback Loop Problem — static models that never improve</li>
@@ -205,7 +207,7 @@ export default function BlogPost() {
               <div className="not-prose overflow-x-auto my-6">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
+                    <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                       <th className="border border-gray-300 p-3 text-left font-bold">Signal Type</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Keyword-Level Reading</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">URL-Level Reading</th>
@@ -398,32 +400,32 @@ export default function BlogPost() {
                     <tr>
                       <td className="border border-gray-300 p-3 font-medium">Feed quality</td>
                       <td className="border border-gray-300 p-3">Co-op: thousands of unrelated publishers</td>
-                      <td className="border border-gray-300 p-3 text-blue-700">28,000-domain curated feed, +28% relevance (R1)</td>
+                      <td className="border border-gray-300 p-3 text-primary">28,000-domain curated feed, +28% relevance (R1)</td>
                     </tr>
                     <tr className="bg-gray-50">
                       <td className="border border-gray-300 p-3 font-medium">Model depth</td>
                       <td className="border border-gray-300 p-3">Keyword matching only</td>
-                      <td className="border border-gray-300 p-3 text-blue-700">URL-level buyer-stage classification, 6x depth (R2)</td>
+                      <td className="border border-gray-300 p-3 text-primary">URL-level buyer-stage classification, 6x depth (R2)</td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-3 font-medium">Feedback loop</td>
                       <td className="border border-gray-300 p-3">None — static model</td>
-                      <td className="border border-gray-300 p-3 text-blue-700">Outcomes feed back into signal weights continuously</td>
+                      <td className="border border-gray-300 p-3 text-primary">Outcomes feed back into signal weights continuously</td>
                     </tr>
                     <tr className="bg-gray-50">
                       <td className="border border-gray-300 p-3 font-medium">Resolution</td>
                       <td className="border border-gray-300 p-3">Account-level (company only)</td>
-                      <td className="border border-gray-300 p-3 text-blue-700">Person-level via Super Pixel (name, email, title)</td>
+                      <td className="border border-gray-300 p-3 text-primary">Person-level via Super Pixel (name, email, title)</td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-3 font-medium">Signal latency</td>
                       <td className="border border-gray-300 p-3">Weekly or bi-weekly batches</td>
-                      <td className="border border-gray-300 p-3 text-blue-700">Real-time delivery</td>
+                      <td className="border border-gray-300 p-3 text-primary">Real-time delivery</td>
                     </tr>
                     <tr className="bg-gray-50">
                       <td className="border border-gray-300 p-3 font-medium">Vertical awareness</td>
                       <td className="border border-gray-300 p-3">Aggregate model, no cohort segmentation</td>
-                      <td className="border border-gray-300 p-3 text-blue-700">Industry cohorts per vertical (R3)</td>
+                      <td className="border border-gray-300 p-3 text-primary">Industry cohorts per vertical (R3)</td>
                     </tr>
                   </tbody>
                 </table>
@@ -528,7 +530,7 @@ export default function BlogPost() {
         </section>
 
         {/* CTA */}
-        <section className="py-16 bg-blue-50">
+        <section className="py-16 bg-primary/5">
           <Container>
             <div className="max-w-2xl mx-auto text-center">
               <h2 className="text-3xl font-bold mb-4">See Cursive in action on your traffic</h2>

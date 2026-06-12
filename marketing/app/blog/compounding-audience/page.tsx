@@ -80,12 +80,13 @@ export default function BlogPost() {
         {/* Header */}
         <section className="py-12 bg-white">
           <Container>
-            <Link href="/blog" className="inline-flex items-center gap-2 text-primary hover:underline mb-8">
-              <ArrowLeft className="w-4 h-4" />
-              Back to Blog
-            </Link>
-
-            <div className="max-w-4xl">
+            <div className="max-w-3xl mx-auto">
+              <Link href="/blog" className="inline-flex items-center gap-2 text-primary hover:underline mb-8">
+                <ArrowLeft className="w-4 h-4" />
+                Back to Blog
+              </Link>
+            </div>
+            <div className="max-w-3xl mx-auto">
               <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
                 Strategy
               </div>
@@ -192,9 +193,9 @@ export default function BlogPost() {
                 On day one, your suppression list is thin. You know your current customers because you have their emails in your CRM. Everything else requires inference. After six months of operation, you have identified patterns — specific behavioral signatures that indicate each suppression category with high confidence. After twelve months, your suppression list is a material competitive asset: it prevents your sales team from wasting thousands of hours on non-buyers, improving effective pipeline yield even if raw visitor volume stays constant.
               </p>
 
-              <div className="not-prose bg-blue-50 border border-blue-100 rounded-xl p-6 my-8">
+              <div className="not-prose bg-primary/5 border border-primary/15 rounded-xl p-6 my-8">
                 <h4 className="font-bold text-gray-900 mb-3">The Compounding Formula</h4>
-                <div className="bg-white border border-blue-200 rounded-lg p-4 text-center mb-3">
+                <div className="bg-white border border-primary/20 rounded-lg p-4 text-center mb-3">
                   <code className="text-lg font-mono text-primary">Month N audience value ≈ Month 1 value × N × relevance coefficient</code>
                 </div>
                 <p className="text-sm text-gray-600">
@@ -306,7 +307,7 @@ export default function BlogPost() {
                     <div className="p-5">
                       <h3 className="font-bold text-gray-900 mb-1">{phase.title}</h3>
                       <p className="text-gray-600 text-sm mb-3">{phase.description}</p>
-                      <div className="text-xs font-semibold text-primary bg-blue-50 rounded px-3 py-1 inline-block">{phase.milestone}</div>
+                      <div className="text-xs font-semibold text-primary bg-primary/5 rounded px-3 py-1 inline-block">{phase.milestone}</div>
                     </div>
                   </div>
                 ))}
@@ -485,7 +486,7 @@ export default function BlogPost() {
         </section>
 
         {/* CTA */}
-        <section className="py-16 bg-blue-50">
+        <section className="py-16 bg-primary/5">
           <Container>
             <div className="max-w-2xl mx-auto text-center">
               <h2 className="text-3xl font-bold mb-4">See Cursive in action on your traffic</h2>

@@ -67,11 +67,13 @@ export default function BlogPost() {
         {/* Header */}
         <section className="py-12 bg-white">
           <Container>
-            <Link href="/blog" className="inline-flex items-center gap-2 text-primary hover:underline mb-8">
-              <ArrowLeft className="w-4 h-4" />
-              Back to Blog
-            </Link>
-            <div className="max-w-4xl">
+            <div className="max-w-3xl mx-auto">
+              <Link href="/blog" className="inline-flex items-center gap-2 text-primary hover:underline mb-8">
+                <ArrowLeft className="w-4 h-4" />
+                Back to Blog
+              </Link>
+            </div>
+            <div className="max-w-3xl mx-auto">
               <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
                 Strategy
               </div>
@@ -115,9 +117,9 @@ export default function BlogPost() {
               </p>
 
               {/* Table of Contents */}
-              <div className="not-prose bg-blue-50 rounded-xl p-6 my-8 border border-blue-100">
+              <div className="not-prose bg-primary/5 rounded-xl p-6 my-8 border border-primary/15">
                 <h3 className="font-bold text-lg mb-3">What This Article Covers</h3>
-                <ol className="space-y-1 text-sm text-blue-800">
+                <ol className="space-y-1 text-sm text-primary">
                   <li>1. The four structural forces inflating B2B CPL</li>
                   <li>2. Meta specifically: fraud, fake conversions, and the sales intelligence gap</li>
                   <li>3. Why these problems are not fixable with better creative or targeting</li>
@@ -185,7 +187,7 @@ export default function BlogPost() {
               <div className="not-prose overflow-x-auto my-6">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
+                    <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                       <th className="border border-gray-300 p-3 text-left font-bold">Category</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">2022 Median CPL</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">2026 Median CPL</th>
@@ -329,7 +331,7 @@ export default function BlogPost() {
               <div className="not-prose overflow-x-auto my-6">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
+                    <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                       <th className="border border-gray-300 p-3 text-left font-bold">Signal</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Meta Lead Ad</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Cursive Identified Visitor</th>
@@ -477,21 +479,21 @@ export default function BlogPost() {
                 sites — before they ever reach your domain. These are in-market buyers at the moment of peak intent.
               </p>
 
-              <div className="not-prose bg-blue-50 rounded-xl p-6 my-6 border border-blue-100">
-                <h3 className="font-bold text-lg mb-4 text-blue-900">Case Study: B2B SaaS Audience Accuracy</h3>
+              <div className="not-prose bg-primary/5 rounded-xl p-6 my-6 border border-primary/15">
+                <h3 className="font-bold text-lg mb-4 text-primary">Case Study: B2B SaaS Audience Accuracy</h3>
                 <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div className="bg-white rounded-lg p-4 border border-blue-200">
+                  <div className="bg-white rounded-lg p-4 border border-primary/20">
                     <div className="text-2xl font-bold text-red-600 mb-1">12%</div>
                     <div className="text-gray-600">Audience accuracy with paid ad targeting alone</div>
                     <div className="text-xs text-gray-500 mt-1">Prospects matched to actual ICP</div>
                   </div>
-                  <div className="bg-white rounded-lg p-4 border border-blue-200">
+                  <div className="bg-white rounded-lg p-4 border border-primary/20">
                     <div className="text-2xl font-bold text-green-600 mb-1">94%</div>
                     <div className="text-gray-600">Audience accuracy with Cursive intent data</div>
                     <div className="text-xs text-gray-500 mt-1">Prospects matched to actual ICP</div>
                   </div>
                 </div>
-                <p className="text-sm text-blue-800 mt-4">In automotive: 22% of an intent-matched audience was reclassified as active buyers vs. the broader category researchers — a 7x improvement in targeting precision.</p>
+                <p className="text-sm text-primary mt-4">In automotive: 22% of an intent-matched audience was reclassified as active buyers vs. the broader category researchers — a 7x improvement in targeting precision.</p>
               </div>
 
               <h2>6. Practical Guidance for Agencies and In-House Teams</h2>
@@ -525,7 +527,7 @@ export default function BlogPost() {
               </p>
 
               <p>
-                Cursive&apos;s <Link href="/get-leads" className="text-blue-600 hover:underline">Visitor Pixel plan</Link> starts
+                Cursive&apos;s <Link href="/get-leads" className="text-primary hover:underline">Visitor Pixel plan</Link> starts
                 at $97/month. The Custom Audience plan — weekly lists of in-market buyers in your category — is $197/month.
                 The combined Pixel + Audience Bundle is $247/month. All plans include a free estimate of how many named
                 leads your current site traffic is generating. There is no setup fee and no long-term contract required.
@@ -542,7 +544,7 @@ export default function BlogPost() {
         </section>
 
         {/* CTA Section */}
-        <section className="py-16 bg-blue-50">
+        <section className="py-16 bg-primary/5">
           <Container>
             <div className="max-w-2xl mx-auto text-center">
               <h2 className="text-3xl font-bold mb-4">See Cursive in action on your traffic</h2>

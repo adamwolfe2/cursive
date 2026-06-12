@@ -67,11 +67,13 @@ export default function BlogPost() {
         {/* Header */}
         <section className="py-12 bg-white">
           <Container>
-            <Link href="/blog" className="inline-flex items-center gap-2 text-primary hover:underline mb-8">
-              <ArrowLeft className="w-4 h-4" />
-              Back to Blog
-            </Link>
-            <div className="max-w-4xl">
+            <div className="max-w-3xl mx-auto">
+              <Link href="/blog" className="inline-flex items-center gap-2 text-primary hover:underline mb-8">
+                <ArrowLeft className="w-4 h-4" />
+                Back to Blog
+              </Link>
+            </div>
+            <div className="max-w-3xl mx-auto">
               <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
                 Strategy
               </div>
@@ -116,9 +118,9 @@ export default function BlogPost() {
               </p>
 
               {/* Table of Contents */}
-              <div className="not-prose bg-blue-50 rounded-xl p-6 my-8 border border-blue-100">
+              <div className="not-prose bg-primary/5 rounded-xl p-6 my-8 border border-primary/15">
                 <h3 className="font-bold text-lg mb-3">What This Article Covers</h3>
-                <ol className="space-y-1 text-sm text-blue-800">
+                <ol className="space-y-1 text-sm text-primary">
                   <li>1. What the attribution moat is — and what it is not</li>
                   <li>2. The three layers of moat development</li>
                   <li>3. Why paid ads cannot compound: the reset problem</li>
@@ -163,7 +165,7 @@ export default function BlogPost() {
               <div className="not-prose overflow-x-auto my-6">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
+                    <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                       <th className="border border-gray-300 p-3 text-left font-bold">Month</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Identified Visitors</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Historical Intent Profiles</th>
@@ -187,7 +189,7 @@ export default function BlogPost() {
                       <td className="border border-gray-300 p-3 font-medium">Month 6</td>
                       <td className="border border-gray-300 p-3">1,000/month</td>
                       <td className="border border-gray-300 p-3">6,000 cumulative</td>
-                      <td className="border border-gray-300 p-3 text-blue-600">Improving</td>
+                      <td className="border border-gray-300 p-3 text-primary">Improving</td>
                     </tr>
                     <tr className="bg-gray-50">
                       <td className="border border-gray-300 p-3 font-medium">Month 12</td>
@@ -234,23 +236,23 @@ export default function BlogPost() {
                 intelligence because their buyers behave differently and their sales motions produce different outcomes.
               </p>
 
-              <div className="not-prose bg-blue-50 rounded-xl p-6 my-6 border border-blue-100">
-                <h3 className="font-bold text-lg mb-3 text-blue-900">What the Feedback Loop Produces</h3>
-                <div className="space-y-3 text-sm text-blue-800">
+              <div className="not-prose bg-primary/5 rounded-xl p-6 my-6 border border-primary/15">
+                <h3 className="font-bold text-lg mb-3 text-primary">What the Feedback Loop Produces</h3>
+                <div className="space-y-3 text-sm text-primary">
                   <div className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-blue-600 mt-0.5 shrink-0" />
+                    <Check className="w-4 h-4 text-primary mt-0.5 shrink-0" />
                     <span><strong>Signal-specific conversion rates:</strong> Which intent topics at which visit frequency predict deals in your pipeline</span>
                   </div>
                   <div className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-blue-600 mt-0.5 shrink-0" />
+                    <Check className="w-4 h-4 text-primary mt-0.5 shrink-0" />
                     <span><strong>Firmographic conversion modifiers:</strong> Which company sizes, revenue ranges, and industries convert at what rates for your product specifically</span>
                   </div>
                   <div className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-blue-600 mt-0.5 shrink-0" />
+                    <Check className="w-4 h-4 text-primary mt-0.5 shrink-0" />
                     <span><strong>Timing intelligence:</strong> Which time-to-contact windows produce the highest conversion rates after initial visitor identification</span>
                   </div>
                   <div className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-blue-600 mt-0.5 shrink-0" />
+                    <Check className="w-4 h-4 text-primary mt-0.5 shrink-0" />
                     <span><strong>Sequence effectiveness by segment:</strong> Which outreach sequences perform best for which buyer profiles</span>
                   </div>
                 </div>
@@ -300,7 +302,7 @@ export default function BlogPost() {
               <div className="not-prose overflow-x-auto my-6">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
+                    <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                       <th className="border border-gray-300 p-3 text-left font-bold">Characteristic</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Paid Advertising</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Intent-Driven Outreach</th>
@@ -527,7 +529,7 @@ export default function BlogPost() {
               </p>
 
               <p>
-                Cursive&apos;s <Link href="/visitor-estimate" className="text-blue-600 hover:underline">free visitor estimate</Link> gives
+                Cursive&apos;s <Link href="/visitor-estimate" className="text-primary hover:underline">free visitor estimate</Link> gives
                 an immediate signal of how much identified pipeline is currently leaving your site uncontacted.
                 Most B2B companies with meaningful site traffic find the number is significantly larger than they
                 expected — because anonymous visitor traffic is invisible until you measure it.
@@ -544,7 +546,7 @@ export default function BlogPost() {
         </section>
 
         {/* CTA Section */}
-        <section className="py-16 bg-blue-50">
+        <section className="py-16 bg-primary/5">
           <Container>
             <div className="max-w-2xl mx-auto text-center">
               <h2 className="text-3xl font-bold mb-4">Start building your attribution moat today</h2>
