@@ -105,6 +105,11 @@ export interface PortalSummary {
   activePaying: number
   lifetimePaying: number
   counts: { leads: number; paying: number; churned: number; total: number }
+  clicks: number
+  signups: number
+  conversions: number
+  ctr: number // signups / clicks, %
+  conversionRate: number // paying / signups, %
   mrrDrivenCents: number
   lifetimeEarningsCents: number
   pendingBalanceCents: number
@@ -132,7 +137,7 @@ export async function buildPortalSummary(
 ): Promise<PortalSummary> {
   const admin: AdminClient = createAdminClient()
 
-  const [referralsRes, pendingRes, paidThisMonthRes] = await Promise.all([
+  const [referralsRes, pendingRes, paidThisMonthRes, clicksRes] = await Promise.all([
     admin
       .from('affiliate_referrals')
       .select('status, mrr_amount')
@@ -148,6 +153,10 @@ export async function buildPortalSummary(
       .eq('affiliate_id', affiliate.id)
       .eq('status', 'paid')
       .gte('paid_at', startOfThisMonthISO(now)),
+    admin
+      .from('affiliate_clicks')
+      .select('id', { count: 'exact', head: true })
+      .eq('affiliate_id', affiliate.id),
   ])
 
   const referrals = referralsRes.data || []
@@ -164,6 +173,12 @@ export async function buildPortalSummary(
   const pendingBalanceCents = (pendingRes.data || []).reduce((s, c) => s + (c.commission_amount || 0), 0)
   const paidThisMonthCents = (paidThisMonthRes.data || []).reduce((s, c) => s + (c.commission_amount || 0), 0)
 
+  const clicks = clicksRes.count || 0
+  const signups = counts.total
+  const conversions = counts.paying
+  const ctr = clicks > 0 ? Math.round((signups / clicks) * 1000) / 10 : 0
+  const conversionRate = signups > 0 ? Math.round((conversions / signups) * 1000) / 10 : 0
+
   const activePaying = affiliate.active_paying_referrals || 0
   // Prefer stored rate but reconcile against the ramp (defensive).
   const rate = affiliate.current_commission_rate || rampRate(activePaying)
@@ -176,6 +191,11 @@ export async function buildPortalSummary(
     activePaying,
     lifetimePaying: affiliate.lifetime_paying_referrals || 0,
     counts,
+    clicks,
+    signups,
+    conversions,
+    ctr,
+    conversionRate,
     mrrDrivenCents,
     lifetimeEarningsCents: affiliate.total_earnings || 0,
     pendingBalanceCents,

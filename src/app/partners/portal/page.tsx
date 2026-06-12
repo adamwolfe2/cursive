@@ -24,37 +24,45 @@ export default async function PortalOverview() {
     : 100
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-5">
       {/* Headline stats */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatCard
-          icon={<TrendingUp className="h-5 w-5" />}
+          icon={<TrendingUp className="h-4 w-4" />}
           label="Current rate"
           value={`${s.rate}%`}
-          sub={`${s.tierLabel} tier${s.isMaxTier ? ' · max' : ''}`}
+          sub={`${s.tierLabel}${s.isMaxTier ? ' · max' : ''}`}
         />
         <StatCard
-          icon={<Users className="h-5 w-5" />}
-          label="Active paying referrals"
+          icon={<Users className="h-4 w-4" />}
+          label="Active payers"
           value={String(s.activePaying)}
           sub={`${s.counts.leads} pending · ${s.counts.churned} churned`}
         />
         <StatCard
-          icon={<DollarSign className="h-5 w-5" />}
-          label="MRR you've driven"
+          icon={<DollarSign className="h-4 w-4" />}
+          label="MRR driven"
           value={usd(s.mrrDrivenCents, { cents: false })}
-          sub="recurring, while active"
+          sub="recurring"
         />
         <StatCard
-          icon={<Clock className="h-5 w-5" />}
-          label="Pending balance"
+          icon={<Clock className="h-4 w-4" />}
+          label="Pending"
           value={usd(s.pendingBalanceCents)}
-          sub={`Next payout ${shortDate(s.nextPayoutDateISO)}`}
+          sub={`Pays ${shortDate(s.nextPayoutDateISO)}`}
         />
       </div>
 
+      {/* Funnel metrics */}
+      <div className="grid grid-cols-2 divide-x divide-y divide-gray-100 overflow-hidden rounded-2xl border border-gray-200 bg-white sm:grid-cols-4 sm:divide-y-0">
+        <Metric label="Clicks" value={s.clicks.toLocaleString()} />
+        <Metric label="Signups" value={s.signups.toLocaleString()} />
+        <Metric label="Click → signup" value={`${s.ctr}%`} />
+        <Metric label="Conversions" value={`${s.conversions} · ${s.conversionRate}%`} />
+      </div>
+
       {/* Next tier progress */}
-      <section className="rounded-2xl border border-gray-200 bg-white p-6">
+      <section className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-gray-900">Your commission ramp</h2>
           <span className="text-sm text-gray-500">
@@ -96,7 +104,7 @@ export default async function PortalOverview() {
 
       {/* Setup checklist + quick links */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <section className="rounded-2xl border border-gray-200 bg-white p-6">
+        <section className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6">
           <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-gray-500">
             Payout setup
           </h3>
@@ -115,7 +123,7 @@ export default async function PortalOverview() {
           )}
         </section>
 
-        <section className="rounded-2xl border border-gray-200 bg-white p-6">
+        <section className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6">
           <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-gray-500">
             This month
           </h3>
@@ -148,13 +156,22 @@ function StatCard({
   sub: string
 }) {
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white p-5">
-      <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-primary">
-        {icon}
+    <div className="rounded-xl border border-gray-200 bg-white p-3.5">
+      <div className="mb-2 flex items-center gap-1.5 text-primary">
+        <span className="flex h-6 w-6 items-center justify-center rounded-md bg-blue-50">{icon}</span>
+        <p className="text-[11px] uppercase tracking-wide text-gray-400">{label}</p>
       </div>
-      <p className="text-xs uppercase tracking-wide text-gray-400">{label}</p>
-      <p className="mt-1 text-2xl font-bold text-gray-900">{value}</p>
-      <p className="mt-1 text-xs text-gray-500">{sub}</p>
+      <p className="text-xl font-bold leading-tight text-gray-900">{value}</p>
+      <p className="mt-0.5 text-[11px] text-gray-500">{sub}</p>
+    </div>
+  )
+}
+
+function Metric({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="px-4 py-3 text-center">
+      <p className="text-[11px] uppercase tracking-wide text-gray-400">{label}</p>
+      <p className="mt-0.5 text-sm font-semibold text-gray-900">{value}</p>
     </div>
   )
 }
