@@ -257,6 +257,25 @@ export async function handleAffiliateFunnelInvoice(
       referral = data ?? null
     }
 
+    // Self-sufficient: if checkout-completion attribution hasn't created the
+    // referral yet (event-ordering race), create it now so the payment still
+    // credits the partner. UNIQUE(affiliate_id, referred_email) keeps it safe.
+    if (!referral) {
+      await admin
+        .from('affiliate_referrals')
+        .insert({ affiliate_id: affiliateId, referred_email: email, status: 'lead' })
+        .select('id')
+        .maybeSingle()
+      const { data: again } = await admin
+        .from('affiliate_referrals')
+        .select('id, affiliate_id, status')
+        .eq('affiliate_id', affiliateId)
+        .eq('referred_email', email)
+        .in('status', ['lead', 'activated', 'paying'])
+        .maybeSingle()
+      referral = again ?? null
+    }
+
     if (!referral) return
 
     await recordCommissionForReferral(admin, referral, invoice, {

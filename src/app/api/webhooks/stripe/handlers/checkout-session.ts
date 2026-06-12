@@ -74,6 +74,15 @@ export async function handleCheckoutSessionCompleted(event: Stripe.Event): Promi
         processAffiliateAttribution(affiliateRefCode, userId, userData.email, workspaceId)
           .catch((err) => safeError('[Stripe Webhook] Affiliate attribution fallback failed (non-fatal):', err))
       }
+    } else {
+      // Pay-first orders (funnel) have no account yet — attribute by buyer email.
+      // Creates a 'lead' referral; the funnel invoice handler flips it to paying.
+      const email = session.customer_details?.email || session.customer_email
+      if (email) {
+        const { processAffiliateAttributionByEmail } = await import('@/lib/affiliate/activation')
+        processAffiliateAttributionByEmail(affiliateRefCode, email)
+          .catch((err) => safeError('[Stripe Webhook] Affiliate email attribution failed (non-fatal):', err))
+      }
     }
   }
 }

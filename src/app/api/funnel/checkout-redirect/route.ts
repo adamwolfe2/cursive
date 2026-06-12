@@ -41,6 +41,16 @@ async function handleCheckoutRedirect(req: NextRequest, offerSlug: string): Prom
     return redirectToLandingWithError('rate_limit')
   }
 
+  // Partner attribution: carry the referral code from ?ref= or the cursive_ref
+  // cookie into Stripe metadata so the webhook can credit the partner.
+  const affiliateRef = (
+    req.nextUrl.searchParams.get('ref') ||
+    req.cookies.get('cursive_ref')?.value ||
+    ''
+  )
+    .toUpperCase()
+    .trim()
+
   const offer = getFunnelOffer(offerSlug)
     if (!offer) {
       return redirectToLandingWithError('unknown_offer')
@@ -64,11 +74,13 @@ async function handleCheckoutRedirect(req: NextRequest, offerSlug: string): Prom
         type: 'funnel_order',
         offer_slug: offer.slug,
         monthly_price_cents: String(offer.monthlyPriceCents),
+        ...(affiliateRef ? { affiliate_ref_code: affiliateRef } : {}),
       },
       subscription_data: {
         metadata: {
           type: 'funnel_order',
           offer_slug: offer.slug,
+          ...(affiliateRef ? { affiliate_ref_code: affiliateRef } : {}),
         },
       },
       success_url: successUrl,
