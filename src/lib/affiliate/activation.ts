@@ -21,6 +21,15 @@ const TIER_THRESHOLDS = [
   { tier: 1, activations: 5 },
 ]
 
+/**
+ * Legacy milestone CASH bonuses ($5k–$250k per tier). DISABLED for the outbound
+ * partner program — that model pays via the commission ramp (15%→40%) in
+ * src/lib/affiliate/ramp.ts, not lump-sum tier bonuses. Leaving the plumbing in
+ * place (activation tracking still runs) but gating the money so the two models
+ * can never double-pay. Flip only if the old milestone program is revived.
+ */
+const MILESTONE_CASH_BONUSES_ENABLED = false
+
 const TIER_BONUSES: Record<number, number> = {
   1: 5000,
   2: 15000,
@@ -145,7 +154,7 @@ export async function processAffiliateActivation(
     }
 
     // Milestone bonus for tier change
-    if (tierChanged) {
+    if (tierChanged && MILESTONE_CASH_BONUSES_ENABLED) {
       const bonusAmount = TIER_BONUSES[newTier]
 
       // Insert milestone bonus with onConflictDoNothing — idempotency guard

@@ -87,6 +87,10 @@ export interface FunnelOrder {
   // Auto-provisioned dashboard workspace (Phase 2). Null until provisioned.
   workspace_id: string | null
 
+  // Affiliate partner code stamped at checkout (from cursive_ref). Drives
+  // deterministic commission attribution on renewals/churn. Null = organic.
+  affiliate_partner_code: string | null
+
   created_at: string
   updated_at: string
 }
@@ -178,6 +182,8 @@ export async function createOrderFromCheckoutSession(
       offer_slug: offer.slug,
       monthly_price_cents: offer.monthlyPriceCents,
       status: initialStatus,
+      affiliate_partner_code:
+        (session.metadata?.affiliate_ref_code || '').toUpperCase() || null,
     })
     .select('*')
     .single()

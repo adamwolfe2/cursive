@@ -1,13 +1,35 @@
 /**
- * Affiliate Commission Handler
- * Called from the Stripe webhook handleInvoicePaymentSucceeded
- * Handles: commission creation, clawback, and churn tracking
+ * Affiliate Commission Handler — Outbound Partner Ramp
+ *
+ * Called from the Stripe webhook on invoice.payment_succeeded for both:
+ *   - Service-tier subscriptions ($1k–$5k/mo)  → keyed by workspace_id
+ *   - Funnel VSL offers ($97/$197/$247/mo)      → keyed by customer email
+ *
+ * Commission rate scales with the partner's number of CURRENTLY paying
+ * referrals (see src/lib/affiliate/ramp.ts): 15% → 40%. The first payment for a
+ * referral atomically flips it to "paying" and bumps the partner's tier; every
+ * subsequent renewal pays at the partner's live rate (retroactive whole-book).
+ *
+ * Payouts only auto-transfer once the partner has (a) signed the agreement and
+ * (b) completed Stripe Connect onboarding. Otherwise the commission accrues as
+ * 'pending' and is settled by the monthly payout cron.
+ *
+ * Every handler swallows its own errors — a webhook must never return non-200.
  */
 
 import { createAdminClient } from '@/lib/supabase/admin'
 import Stripe from 'stripe'
 import { sendPartnerCommissionEarned } from '@/lib/email/affiliate-emails'
+import { rampRate } from '@/lib/affiliate/ramp'
 import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
+
+type AdminClient = ReturnType<typeof createAdminClient>
+
+interface ReferralRow {
+  id: string
+  affiliate_id: string
+  status: string
+}
 
 function getStripe(): Stripe {
   const key = process.env.STRIPE_SECRET_KEY
@@ -18,10 +40,135 @@ function getStripe(): Stripe {
 }
 
 /**
- * handleAffiliateInvoicePayment
- * Called after the main subscription logic in handleInvoicePaymentSucceeded
- * workspaceId: the workspace that made the payment
- * invoice: the Stripe invoice object
+ * Shared commission core. Given a matched referral and an invoice, computes the
+ * ramp rate, records an idempotent commission row, and transfers it when the
+ * partner is fully onboarded + signed.
+ */
+async function recordCommissionForReferral(
+  admin: AdminClient,
+  referral: ReferralRow,
+  invoice: Stripe.Invoice,
+  meta: { packageSlug?: string | null; mrrAmount?: number | null }
+): Promise<void> {
+  const invoiceId = invoice.id
+  if (!invoiceId) return
+
+  const invoiceAmount = invoice.amount_paid || 0
+  if (invoiceAmount <= 0) return
+
+  // Load the affiliate — must be active.
+  const { data: affiliate } = await admin
+    .from('affiliates')
+    .select(
+      'id, email, first_name, total_earnings, stripe_connect_account_id, stripe_onboarding_complete, active_paying_referrals, current_commission_rate, agreement_accepted_at, status'
+    )
+    .eq('id', referral.affiliate_id)
+    .eq('status', 'active')
+    .maybeSingle()
+
+  if (!affiliate) return
+
+  // Determine the rate. First payment → atomically flip to 'paying' and bump
+  // the tier (the RPC is idempotent: a webhook retry won't double-count because
+  // the referral is already 'paying'). Recurring → use the partner's live rate.
+  let rate: number
+  if (referral.status !== 'paying') {
+    const { data: rpcRows, error: rpcError } = await admin.rpc('affiliate_mark_paying', {
+      p_referral_id: referral.id,
+      p_package_slug: meta.packageSlug ?? null,
+      p_mrr_amount: meta.mrrAmount ?? null,
+    })
+    const result = Array.isArray(rpcRows) ? rpcRows[0] : rpcRows
+    if (rpcError || !result) {
+      safeError('[affiliate-commission] mark_paying RPC failed — falling back to stored rate:', rpcError)
+      rate = affiliate.current_commission_rate || rampRate(0)
+    } else {
+      rate = result.rate
+      safeLog(
+        `[affiliate-commission] ${affiliate.email} first payment for referral ${referral.id} — active=${result.active_paying}, rate=${result.rate}%`
+      )
+    }
+  } else {
+    // Recurring renewal: compute the rate LIVE from the current active-paying
+    // count (retroactive whole-book) rather than trusting the cached column.
+    rate = rampRate(affiliate.active_paying_referrals ?? 0)
+  }
+
+  const commissionAmount = Math.floor((invoiceAmount * rate) / 100)
+  if (commissionAmount <= 0) return
+
+  // Idempotency guard — UNIQUE(stripe_invoice_id). Null result = webhook retry.
+  const { data: commission } = await admin
+    .from('affiliate_commissions')
+    .insert({
+      affiliate_id: affiliate.id,
+      referral_id: referral.id,
+      stripe_invoice_id: invoiceId,
+      invoice_amount: invoiceAmount,
+      commission_rate: rate,
+      commission_amount: commissionAmount,
+      status: 'pending',
+    })
+    .select('id')
+    .maybeSingle()
+
+  if (!commission) {
+    safeLog(`[affiliate-commission] Invoice ${invoiceId} already processed — skipping (webhook retry)`)
+    return
+  }
+
+  safeLog(
+    `[affiliate-commission] Created $${(commissionAmount / 100).toFixed(2)} (${rate}%) for ${affiliate.email} on invoice ${invoiceId}`
+  )
+
+  // Auto-transfer only when signed AND Stripe-onboarded. Otherwise it accrues
+  // as 'pending' for the monthly cron.
+  const eligibleToTransfer =
+    !!affiliate.agreement_accepted_at &&
+    affiliate.stripe_onboarding_complete &&
+    !!affiliate.stripe_connect_account_id
+
+  if (!eligibleToTransfer) {
+    safeLog(
+      `[affiliate-commission] ${affiliate.email} not payout-eligible yet (signed=${!!affiliate.agreement_accepted_at}, onboarded=${affiliate.stripe_onboarding_complete}) — commission stays pending`
+    )
+    return
+  }
+
+  try {
+    const stripe = getStripe()
+    const transfer = await stripe.transfers.create({
+      amount: commissionAmount,
+      currency: 'usd',
+      destination: affiliate.stripe_connect_account_id as string,
+      metadata: { commissionId: commission.id, affiliateId: affiliate.id, invoiceId },
+    })
+
+    await admin
+      .from('affiliate_commissions')
+      .update({ status: 'paid', stripe_transfer_id: transfer.id, paid_at: new Date().toISOString() })
+      .eq('id', commission.id)
+
+    // Atomic increment — never a JS read-modify-write (concurrent invoices).
+    await admin.rpc('affiliate_add_earnings', { p_affiliate_id: affiliate.id, p_delta: commissionAmount })
+
+    sendPartnerCommissionEarned(
+      affiliate.email,
+      affiliate.first_name,
+      commissionAmount,
+      (affiliate.total_earnings || 0) + commissionAmount
+    ).catch((err) => safeError('[affiliate-commission] Commission earned email failed:', err))
+
+    safeLog(`[affiliate-commission] Transferred $${(commissionAmount / 100).toFixed(2)} to ${affiliate.email}`)
+  } catch (transferErr) {
+    safeError('[affiliate-commission] Transfer failed — commission stays pending:', transferErr)
+    // Commission stays 'pending' — retried in the monthly cron.
+  }
+}
+
+/**
+ * Service-tier path. workspaceId: the workspace that paid. Finds the referral
+ * attributed to that workspace and records commission.
  */
 export async function handleAffiliateInvoicePayment(
   workspaceId: string,
@@ -29,128 +176,102 @@ export async function handleAffiliateInvoicePayment(
 ): Promise<void> {
   try {
     const admin = createAdminClient()
-    const invoiceId = invoice.id
-    if (!invoiceId) return
 
-    const invoiceAmount = invoice.amount_paid || 0
-    if (invoiceAmount <= 0) return
-
-    // Find referral for this workspace — lead or activated
     const { data: referral } = await admin
       .from('affiliate_referrals')
       .select('id, affiliate_id, status')
       .eq('workspace_id', workspaceId)
-      .in('status', ['lead', 'activated'])
+      .in('status', ['lead', 'activated', 'paying'])
       .maybeSingle()
 
     if (!referral) return
 
-    // If still 'lead', first payment converts to 'activated'
-    if (referral.status === 'lead') {
-      await admin
-        .from('affiliate_referrals')
-        .update({ status: 'activated', activated_at: new Date().toISOString() })
-        .eq('id', referral.id)
-    }
+    // Best-effort package slug from the subscription/line metadata.
+    const packageSlug =
+      (invoice.lines?.data?.[0]?.price?.metadata?.service_tier_slug as string | undefined) ?? null
 
-    // Look up affiliate — must be active AND have >= 50 activations (tier 5+)
-    const { data: affiliate } = await admin
-      .from('affiliates')
-      .select('id, email, first_name, total_activations, total_earnings, stripe_connect_account_id, stripe_onboarding_complete, status')
-      .eq('id', referral.affiliate_id)
-      .eq('status', 'active')
-      .maybeSingle()
-
-    if (!affiliate) return
-
-    // Commission only for tier 5+ (50+ activations)
-    if (affiliate.total_activations < 50) {
-      safeLog(`[affiliate-commission] ${affiliate.email} has ${affiliate.total_activations} activations — no commission yet`)
-      return
-    }
-
-    // Determine rate: 100+ activations = 20%, else 10%
-    const commissionRate = affiliate.total_activations >= 100 ? 20 : 10
-    const commissionAmount = Math.floor(invoiceAmount * commissionRate / 100)
-    if (commissionAmount <= 0) return
-
-    // Insert with onConflictDoNothing — critical idempotency guard
-    const { data: commission } = await admin
-      .from('affiliate_commissions')
-      .insert({
-        affiliate_id: affiliate.id,
-        referral_id: referral.id,
-        stripe_invoice_id: invoiceId,
-        invoice_amount: invoiceAmount,
-        commission_rate: commissionRate,
-        commission_amount: commissionAmount,
-        status: 'pending',
-      })
-      .select('id')
-      .maybeSingle()
-
-    // If commission is null — this invoice was already processed (webhook retry)
-    // Exit immediately. Do NOT transfer. Do NOT update anything.
-    if (!commission) {
-      safeLog(`[affiliate-commission] Invoice ${invoiceId} already processed — skipping (webhook retry)`)
-      return
-    }
-
-    safeLog(`[affiliate-commission] Created commission $${commissionAmount / 100} for ${affiliate.email}`)
-
-    // Transfer immediately if Stripe Connect is complete
-    if (affiliate.stripe_onboarding_complete && affiliate.stripe_connect_account_id) {
-      try {
-        const stripe = getStripe()
-        const transfer = await stripe.transfers.create({
-          amount: commissionAmount,
-          currency: 'usd',
-          destination: affiliate.stripe_connect_account_id,
-          metadata: {
-            commissionId: commission.id,
-            affiliateId: affiliate.id,
-            invoiceId,
-          },
-        })
-
-        await admin
-          .from('affiliate_commissions')
-          .update({
-            status: 'paid',
-            stripe_transfer_id: transfer.id,
-            paid_at: new Date().toISOString(),
-          })
-          .eq('id', commission.id)
-
-        // Update total earnings
-        await admin
-          .from('affiliates')
-          .update({ total_earnings: affiliate.total_earnings + commissionAmount })
-          .eq('id', affiliate.id)
-
-        sendPartnerCommissionEarned(
-          affiliate.email,
-          affiliate.first_name,
-          commissionAmount,
-          affiliate.total_earnings + commissionAmount
-        ).catch((err) => safeError('[affiliate-commission] Commission earned email failed:', err))
-
-        safeLog(`[affiliate-commission] Transferred $${commissionAmount / 100} to ${affiliate.email}`)
-      } catch (transferErr) {
-        safeError('[affiliate-commission] Transfer failed — commission stays pending:', transferErr)
-        // Commission stays 'pending' — will be retried in monthly cron
-      }
-    }
+    await recordCommissionForReferral(admin, referral, invoice, {
+      packageSlug,
+      mrrAmount: invoice.amount_paid || null,
+    })
   } catch (error) {
-    safeError('[affiliate-commission] Unexpected error:', error)
-    // Never throw — must not cause webhook to return non-200
+    safeError('[affiliate-commission] Unexpected error (service):', error)
+  }
+}
+
+/**
+ * Funnel path. The funnel buyer has no workspace at purchase time, so we match
+ * the referral by email (and workspace_id once provisioned).
+ */
+export async function handleAffiliateFunnelInvoice(
+  order: {
+    customer_email: string
+    offer_slug: string
+    workspace_id: string | null
+    affiliate_partner_code: string | null
+  },
+  invoice: Stripe.Invoice
+): Promise<void> {
+  try {
+    const admin = createAdminClient()
+    const email = order.customer_email?.toLowerCase()
+    if (!email) return
+
+    // Resolve the partner from the code stamped on the order at checkout. This
+    // is the authoritative attribution — never an ambiguous bare-email match
+    // (the same email can be referred by multiple partners).
+    let affiliateId: string | null = null
+    if (order.affiliate_partner_code) {
+      const { data: aff } = await admin
+        .from('affiliates')
+        .select('id')
+        .eq('partner_code', order.affiliate_partner_code.toUpperCase())
+        .eq('status', 'active')
+        .maybeSingle()
+      affiliateId = aff?.id ?? null
+    }
+    if (!affiliateId) return // organic / no attributable partner
+
+    // Find this partner's referral for the buyer (workspace first, else email —
+    // both scoped to the affiliate, so UNIQUE(affiliate_id, referred_email) makes
+    // the lookup unambiguous).
+    let referral: ReferralRow | null = null
+    if (order.workspace_id) {
+      const { data } = await admin
+        .from('affiliate_referrals')
+        .select('id, affiliate_id, status')
+        .eq('affiliate_id', affiliateId)
+        .eq('workspace_id', order.workspace_id)
+        .in('status', ['lead', 'activated', 'paying'])
+        .maybeSingle()
+      referral = data ?? null
+    }
+    if (!referral) {
+      const { data } = await admin
+        .from('affiliate_referrals')
+        .select('id, affiliate_id, status')
+        .eq('affiliate_id', affiliateId)
+        .eq('referred_email', email)
+        .in('status', ['lead', 'activated', 'paying'])
+        .maybeSingle()
+      referral = data ?? null
+    }
+
+    if (!referral) return
+
+    await recordCommissionForReferral(admin, referral, invoice, {
+      packageSlug: order.offer_slug,
+      mrrAmount: invoice.amount_paid || null,
+    })
+  } catch (error) {
+    safeError('[affiliate-commission] Unexpected error (funnel):', error)
   }
 }
 
 /**
  * handleAffiliateClawback
- * Called from charge.refunded or invoice.voided
- * invoiceId: the Stripe invoice ID that was refunded
+ * Called from charge.refunded or invoice.voided. Nets out the commission for
+ * a refunded invoice. A refund is NOT a churn — tier is unaffected here.
  */
 export async function handleAffiliateClawback(invoiceId: string): Promise<void> {
   try {
@@ -158,27 +279,24 @@ export async function handleAffiliateClawback(invoiceId: string): Promise<void> 
 
     const { data: commission } = await admin
       .from('affiliate_commissions')
-      .select('id, affiliate_id, commission_amount, status')
+      .select('id, affiliate_id, referral_id, commission_amount, status')
       .eq('stripe_invoice_id', invoiceId)
       .maybeSingle()
 
     if (!commission) return
 
     if (commission.status === 'pending') {
-      // Just mark as failed — never paid, no money moved
-      await admin
-        .from('affiliate_commissions')
-        .update({ status: 'failed' })
-        .eq('id', commission.id)
-
+      await admin.from('affiliate_commissions').update({ status: 'failed' }).eq('id', commission.id)
       safeLog(`[affiliate-clawback] Marked pending commission ${commission.id} as failed`)
     } else if (commission.status === 'paid') {
-      // Insert a negative commission to net out in next payout
-      await admin
+      // Negative commission nets out in the next payout run. Idempotent: the
+      // UNIQUE(stripe_invoice_id) on `clawback_<id>` means a duplicate refund
+      // webhook inserts nothing and we must NOT reverse earnings twice.
+      const { data: clawRow } = await admin
         .from('affiliate_commissions')
         .insert({
           affiliate_id: commission.affiliate_id,
-          referral_id: commission.id, // Reference original commission ID (no strict FK needed)
+          referral_id: commission.referral_id,
           stripe_invoice_id: `clawback_${invoiceId}`,
           invoice_amount: 0,
           commission_rate: 0,
@@ -188,7 +306,16 @@ export async function handleAffiliateClawback(invoiceId: string): Promise<void> 
         .select('id')
         .maybeSingle()
 
-      safeLog(`[affiliate-clawback] Created clawback for paid commission ${commission.id}`)
+      if (clawRow) {
+        // Reverse lifetime earnings only on the first (real) clawback insert.
+        await admin.rpc('affiliate_add_earnings', {
+          p_affiliate_id: commission.affiliate_id,
+          p_delta: -commission.commission_amount,
+        })
+        safeLog(`[affiliate-clawback] Created clawback for paid commission ${commission.id}`)
+      } else {
+        safeLog(`[affiliate-clawback] Duplicate refund for invoice ${invoiceId} — already clawed back`)
+      }
     }
   } catch (error) {
     safeError('[affiliate-clawback] Error:', error)
@@ -197,36 +324,72 @@ export async function handleAffiliateClawback(invoiceId: string): Promise<void> 
 
 /**
  * handleAffiliateChurn
- * Called from customer.subscription.deleted
- * workspaceId: the workspace whose subscription was deleted
+ * Called from customer.subscription.deleted (service path). Marks the
+ * workspace's referrals churned and decrements the partner's active-paying
+ * count via RPC (which can demote their rate).
  */
 export async function handleAffiliateChurn(workspaceId: string): Promise<void> {
   try {
     const admin = createAdminClient()
-
-    await admin
-      .from('affiliate_referrals')
-      .update({ status: 'churned' })
-      .eq('workspace_id', workspaceId)
-      .in('status', ['lead', 'activated'])
-
-    safeLog(`[affiliate-churn] Marked referrals churned for workspace ${workspaceId}`)
+    const { error } = await admin.rpc('affiliate_record_churn', { p_workspace_id: workspaceId })
+    if (error) {
+      safeError('[affiliate-churn] RPC failed:', error)
+      return
+    }
+    safeLog(`[affiliate-churn] Recorded churn for workspace ${workspaceId}`)
   } catch (error) {
     safeError('[affiliate-churn] Error:', error)
   }
 }
 
 /**
- * handleAffiliateStripeAccountUpdated
- * Called from account.updated webhook
- * account: the Stripe Connect account
+ * handleAffiliateFunnelChurn
+ * Funnel path churn — matched by email when the buyer has no workspace. Marks
+ * the referral churned and decrements the partner's active-paying count.
  */
-export async function handleAffiliateStripeAccountUpdated(
-  account: Stripe.Account
-): Promise<void> {
+export async function handleAffiliateFunnelChurn(order: {
+  customer_email: string
+  workspace_id: string | null
+  affiliate_partner_code: string | null
+}): Promise<void> {
+  try {
+    const admin = createAdminClient()
+    if (!order.affiliate_partner_code) return
+
+    const { data: affiliate } = await admin
+      .from('affiliates')
+      .select('id')
+      .eq('partner_code', order.affiliate_partner_code.toUpperCase())
+      .maybeSingle()
+    if (!affiliate) return
+
+    const email = order.customer_email?.toLowerCase()
+
+    // Find the specific paying referral for this partner+buyer.
+    let query = admin
+      .from('affiliate_referrals')
+      .select('id')
+      .eq('affiliate_id', affiliate.id)
+      .eq('status', 'paying')
+    query = order.workspace_id ? query.eq('workspace_id', order.workspace_id) : query.eq('referred_email', email)
+    const { data: referral } = await query.maybeSingle()
+    if (!referral) return
+
+    // Atomic single-referral churn (locks affiliate, decrements, recomputes rate).
+    await admin.rpc('affiliate_churn_referral', { p_referral_id: referral.id })
+    safeLog(`[affiliate-churn] Recorded funnel churn for partner ${order.affiliate_partner_code}`)
+  } catch (error) {
+    safeError('[affiliate-churn] Funnel error:', error)
+  }
+}
+
+/**
+ * handleAffiliateStripeAccountUpdated
+ * Called from account.updated webhook — marks onboarding complete.
+ */
+export async function handleAffiliateStripeAccountUpdated(account: Stripe.Account): Promise<void> {
   try {
     if (!account.charges_enabled) return
-
     const admin = createAdminClient()
 
     const { data: affiliate } = await admin
@@ -236,11 +399,7 @@ export async function handleAffiliateStripeAccountUpdated(
       .maybeSingle()
 
     if (affiliate && !affiliate.stripe_onboarding_complete) {
-      await admin
-        .from('affiliates')
-        .update({ stripe_onboarding_complete: true })
-        .eq('id', affiliate.id)
-
+      await admin.from('affiliates').update({ stripe_onboarding_complete: true }).eq('id', affiliate.id)
       safeLog(`[affiliate-stripe] Marked onboarding complete for ${affiliate.id}`)
     }
   } catch (error) {

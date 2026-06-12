@@ -22,6 +22,10 @@ import {
 } from './order.service'
 import { sendFunnelSubscriptionCancelledEmail } from '@/lib/email/templates/funnel-subscription-cancelled'
 import { sendFunnelPaymentFailedEmail } from '@/lib/email/templates/funnel-payment-failed'
+import {
+  handleAffiliateFunnelInvoice,
+  handleAffiliateFunnelChurn,
+} from '@/lib/affiliate/commission'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
 
@@ -80,6 +84,13 @@ async function handleSubscriptionDeleted(sub: Stripe.Subscription): Promise<bool
     safeError('[funnel/sub] cancelAndDisableOrder returned null', { order_id: order.id })
     return true
   }
+
+  // Affiliate churn — decrement the partner's active-paying count (non-fatal).
+  handleAffiliateFunnelChurn({
+    customer_email: cancelled.customer_email,
+    workspace_id: cancelled.workspace_id ?? null,
+    affiliate_partner_code: cancelled.affiliate_partner_code ?? null,
+  }).catch((err) => safeError('[funnel/sub] affiliate churn failed (non-fatal):', err))
 
   // Send the cancellation confirmation — non-fatal if it fails
   try {
@@ -185,6 +196,19 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice): Promise<b
       order_id: order.id,
     })
   }
+
+  // Affiliate commission — every successful funnel invoice (incl. renewals)
+  // pays the attributed partner at their live ramp rate (non-fatal).
+  handleAffiliateFunnelInvoice(
+    {
+      customer_email: order.customer_email,
+      offer_slug: order.offer_slug,
+      workspace_id: order.workspace_id ?? null,
+      affiliate_partner_code: order.affiliate_partner_code ?? null,
+    },
+    invoice
+  ).catch((err) => safeError('[funnel/sub] affiliate commission failed (non-fatal):', err))
+
   return true
 }
 

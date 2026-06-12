@@ -38,6 +38,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     transferred: 0,
     skipped_threshold: 0,
     skipped_no_stripe: 0,
+    skipped_unsigned: 0,
     errors: 0,
   }
 
@@ -97,11 +98,19 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         // Fetch affiliate details
         const { data: affiliate } = await admin
           .from('affiliates')
-          .select('id, email, first_name, stripe_connect_account_id, stripe_onboarding_complete')
+          .select('id, email, first_name, stripe_connect_account_id, stripe_onboarding_complete, agreement_accepted_at, status')
           .eq('id', affiliateId)
           .maybeSingle()
 
         if (!affiliate) continue
+
+        // Never pay out before the partner has signed the agreement, or if their
+        // account isn't active. Commissions stay pending until then.
+        if (!affiliate.agreement_accepted_at || affiliate.status !== 'active') {
+          results.skipped_unsigned++
+          safeLog(`[affiliate-payouts] Skipping ${affiliateId} — unsigned agreement or inactive`)
+          continue
+        }
 
         if (!affiliate.stripe_onboarding_complete || !affiliate.stripe_connect_account_id) {
           // Record pending payout — no transfer yet
@@ -168,12 +177,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
           }
         }
 
-        // Update total earnings (direct update — avoid RPC that may not exist)
+        // Update total earnings atomically (col = col + delta; race-safe).
         try {
-          const { data: currentAffiliate } = await admin.from('affiliates').select('total_earnings').eq('id', affiliateId).single()
-          if (currentAffiliate) {
-            await admin.from('affiliates').update({ total_earnings: (currentAffiliate.total_earnings || 0) + total }).eq('id', affiliateId)
-          }
+          await admin.rpc('affiliate_add_earnings', { p_affiliate_id: affiliateId, p_delta: total })
         } catch (dbErr) {
           dbWritesFailed = true
           safeError(`[affiliate-payouts] CRITICAL: Failed to update total_earnings for ${affiliateId} (transfer ${transfer.id}):`, dbErr)

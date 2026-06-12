@@ -140,8 +140,8 @@ export async function PATCH(
         .update({ status: 'approved', reviewed_at: new Date().toISOString() })
         .eq('id', id)
 
-      const referralUrl = `https://meetcursive.com?ref=${partnerCode}`
-      const dashboardUrl = `${appUrl}/affiliate/dashboard`
+      const referralUrl = `https://leads.meetcursive.com/get-leads?ref=${partnerCode}`
+      const dashboardUrl = `${appUrl}/partners/portal`
 
       sendPartnerApproved(
         application.email,
