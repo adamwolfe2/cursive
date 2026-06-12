@@ -15,9 +15,16 @@
  * COMPANY_LEGAL_NAME and GOVERNING_LAW once finalized.
  */
 
-export const AGREEMENT_VERSION = 'v1.0-2026-06'
+// Bumped v1.0 -> v1.1: the contracting party is now the actual legal entity
+// (AM Collective LLC operating the Cursive program), not the trade name alone.
+// A contracting-party change is material, so the version bump forces partners
+// to re-accept the corrected text (their prior signature was on v1.0).
+export const AGREEMENT_VERSION = 'v1.1-2026-06'
 
-export const COMPANY_LEGAL_NAME = 'Cursive (meetcursive.com)'
+// The legal entity that contracts with and pays partners (matches the Stripe
+// Connect platform account). Defined as "Cursive" throughout the agreement.
+// NOTE: update if/when the program moves to a Cursive LLC entity.
+export const COMPANY_LEGAL_NAME = 'AM Collective LLC (d/b/a Cursive · meetcursive.com)'
 export const GOVERNING_LAW = 'the State of Delaware, USA'
 export const MIN_PAYOUT_USD = 50
 
