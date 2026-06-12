@@ -48,6 +48,21 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       const account = await stripe.accounts.create({
         type: 'express',
         email: (await admin.from('affiliates').select('email').eq('id', affiliate.id).single()).data?.email,
+        // Affiliates RECEIVE payouts; `transfers` is the capability our payout
+        // cron / commission flow needs (stripe.transfers.create -> destination).
+        // Without it, onboarding won't collect bank details and every payout fails.
+        //
+        // We also request `card_payments` because Stripe gates transfers-ONLY
+        // (recipient) accounts behind a manual platform approval. Requesting both
+        // is the standard, no-approval Express setup and unblocks payouts today.
+        // card_payments stays dormant — our app never creates charges on partner
+        // accounts, so there is no merchant/chargeback exposure.
+        // TODO(recipient-only): once Stripe approves transfers-without-card_payments
+        // for this platform, drop card_payments here for the clean payout-only model.
+        capabilities: {
+          transfers: { requested: true },
+          card_payments: { requested: true },
+        },
       })
       accountId = account.id
 

@@ -137,12 +137,18 @@ async function recordCommissionForReferral(
 
   try {
     const stripe = getStripe()
-    const transfer = await stripe.transfers.create({
-      amount: commissionAmount,
-      currency: 'usd',
-      destination: affiliate.stripe_connect_account_id as string,
-      metadata: { commissionId: commission.id, affiliateId: affiliate.id, invoiceId },
-    })
+    const transfer = await stripe.transfers.create(
+      {
+        amount: commissionAmount,
+        currency: 'usd',
+        destination: affiliate.stripe_connect_account_id as string,
+        metadata: { commissionId: commission.id, affiliateId: affiliate.id, invoiceId },
+      },
+      // Idempotency: Stripe dedupes retries of this exact key (24h window), so a
+      // webhook redelivery of the same invoice.paid can never double-pay the
+      // same commission. Stable, derived from the commission id.
+      { idempotencyKey: `comm_transfer_${commission.id}` }
+    )
 
     await admin
       .from('affiliate_commissions')

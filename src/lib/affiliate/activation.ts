@@ -173,17 +173,22 @@ export async function processAffiliateActivation(
         // Transfer milestone bonus immediately
         try {
           const stripe = getStripe()
-          const transfer = await stripe.transfers.create({
-            amount: bonusAmount,
-            currency: 'usd',
-            destination: affiliate.stripe_connect_account_id,
-            metadata: {
-              type: 'milestone_bonus',
-              affiliateId: affiliate.id,
-              tier: String(newTier),
-              milestoneId: milestone.id,
+          const transfer = await stripe.transfers.create(
+            {
+              amount: bonusAmount,
+              currency: 'usd',
+              destination: affiliate.stripe_connect_account_id,
+              metadata: {
+                type: 'milestone_bonus',
+                affiliateId: affiliate.id,
+                tier: String(newTier),
+                milestoneId: milestone.id,
+              },
             },
-          })
+            // Idempotency: one bonus row = one transfer, ever. A retry of this
+            // activation path can't double-pay the same milestone.
+            { idempotencyKey: `milestone_${milestone.id}` }
+          )
 
           await admin
             .from('affiliate_milestone_bonuses')

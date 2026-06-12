@@ -125,18 +125,24 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
           continue
         }
 
-        // Create Stripe transfer
-        const transfer = await stripe.transfers.create({
-          amount: total,
-          currency: 'usd',
-          destination: affiliate.stripe_connect_account_id,
-          metadata: {
-            affiliateId,
-            period: periodLabel,
-            commissionIds: commissionIds.join(','),
-            bonusIds: bonusIds.join(','),
+        // Create Stripe transfer.
+        // Idempotency key is stable per affiliate per payout period (YYYY-MM), so
+        // a cron retry or Vercel re-invocation within the 24h window can never
+        // pay the same affiliate twice for the same period.
+        const transfer = await stripe.transfers.create(
+          {
+            amount: total,
+            currency: 'usd',
+            destination: affiliate.stripe_connect_account_id,
+            metadata: {
+              affiliateId,
+              period: periodLabel,
+              commissionIds: commissionIds.join(','),
+              bonusIds: bonusIds.join(','),
+            },
           },
-        })
+          { idempotencyKey: `payout_${affiliateId}_${periodStart.toISOString().slice(0, 7)}` }
+        )
 
         // SAFETY: Wrap all post-transfer DB writes individually.
         // If any fail, the affiliate has been paid but our records won't reflect it.
