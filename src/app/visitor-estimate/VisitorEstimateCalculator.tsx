@@ -8,7 +8,6 @@ import {
   formatDollar,
 } from '@/lib/superpixel-constants'
 import { formatNumber } from '@/lib/utils'
-import { BookDemoButton } from '@/components/ui/cal-inline-booking'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 const INDUSTRIES = [
@@ -207,10 +206,12 @@ function Results({
 
       {/* CTA */}
       <div className="space-y-4 text-center">
-        <BookDemoButton
-          label="Book a free demo — see it running on your site"
-          className="inline-flex w-full items-center justify-center rounded-lg bg-blue-600 px-8 py-4 text-lg font-semibold text-white shadow-sm transition hover:bg-blue-700 sm:w-auto"
-        />
+        <a
+          href="/get-leads"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-8 py-4 text-lg font-semibold text-white shadow-sm transition hover:bg-blue-700 sm:w-auto"
+        >
+          See how it works <ArrowRight className="h-5 w-5" />
+        </a>
         <EmailReport data={data} results={results} />
       </div>
     </div>
