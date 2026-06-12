@@ -16,9 +16,11 @@ interface Props {
   industry: string
   siteData?: { title?: string; image?: string; favicon?: string } | null
   onReset: () => void
+  /** Capture endpoint passed to the email report form. */
+  captureEndpoint?: string
 }
 
-export function ResultsDashboard({ results, domain, monthlyVisitors, dealSize, industry, siteData, onReset }: Props) {
+export function ResultsDashboard({ results, domain, monthlyVisitors, dealSize, industry, siteData, onReset, captureEndpoint }: Props) {
   return (
     <div className="space-y-8">
       {/* Site info header */}
@@ -69,6 +71,7 @@ export function ResultsDashboard({ results, domain, monthlyVisitors, dealSize, i
             industry={industry}
             revenueLeak={results.revenueLeak}
             cursiveAdvantage={results.cursiveAdvantage}
+            endpoint={captureEndpoint}
           />
         </div>
       </div>

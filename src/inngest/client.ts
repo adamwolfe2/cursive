@@ -700,6 +700,26 @@ export type Events = {
       workspace_id: string
     }
   }
+
+  // Visitor-Estimate Lead Magnet (public VSL calculator → nurture drip)
+  'visitor-estimate/captured': {
+    data: {
+      leadId?: string
+      email: string
+      domain?: string
+      monthlyVisitors?: number
+      dealSize?: number
+      industry?: string
+      revenueLeak?: number
+      cursiveAdvantage?: number
+    }
+  }
+  // Fired when a lead unsubscribes — cancels any in-flight nurture drip.
+  'visitor-estimate/unsubscribed': {
+    data: {
+      email: string
+    }
+  }
 }
 
 // Lazy-load Inngest client to avoid build-time initialization

@@ -47,6 +47,9 @@ export const { GET, POST, PUT } = serve({
     functions.nightlyBalanceAudit,
     functions.refreshEarningsView,
 
+    // Visitor-Estimate Lead Magnet nurture
+    functions.visitorEstimateNurture,
+
     // Lead Routing Retry & Cleanup
     functions.processLeadRoutingRetryQueue,
     functions.triggerLeadRoutingRetry,
