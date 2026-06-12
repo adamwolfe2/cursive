@@ -188,6 +188,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // New compliance + international ID pages (created Feb 24 2026)
     '/blog/gdpr-compliant-visitor-identification',
     '/blog/international-website-visitor-identification',
+    // Intent data + identity resolution content (created June 2026)
+    '/blog/why-intent-data-fails',
+    '/blog/r4-signal-model-explained',
+    '/blog/state-of-digital-ads-2026',
+    '/blog/attribution-moat',
+    '/blog/identity-resolution-moat',
+    '/blog/compounding-audience',
+    '/blog/intent-score-acceleration',
+    '/blog/identity-resolution-case-studies',
   ].map(url => ({
     url,
     priority: 0.7,
