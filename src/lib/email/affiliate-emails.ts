@@ -275,7 +275,7 @@ export async function sendPartnerTierMilestone(
       </p>`
     : `<p style="margin:0 0 16px;font-size:15px;color:#3f3f46;line-height:1.6;">
         Your <strong>$${bonusDollars} bonus</strong> is waiting.
-        <a href="${EMAIL_CONFIG.baseUrl}/affiliate/settings" style="color:#2563eb;">Connect your Stripe account</a>
+        <a href="${EMAIL_CONFIG.baseUrl}/partners/portal/payouts" style="color:#2563eb;">Connect your Stripe account</a>
         in your dashboard to receive it in your next payout.
       </p>`
 

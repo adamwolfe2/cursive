@@ -34,7 +34,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       .maybeSingle()
 
     if (!affiliate?.stripe_connect_account_id) {
-      return NextResponse.redirect(new URL('/affiliate/settings', request.url))
+      return NextResponse.redirect(new URL('/partners/portal/payouts', request.url))
     }
 
     const stripe = getStripe()
@@ -47,9 +47,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         .eq('id', affiliate.id)
     }
 
-    return NextResponse.redirect(new URL('/affiliate/dashboard?stripe=connected', request.url))
+    return NextResponse.redirect(new URL('/partners/portal/payouts?stripe=connected', request.url))
   } catch (error) {
     safeError('[affiliate/stripe-connect/callback] Error:', error)
-    return NextResponse.redirect(new URL('/affiliate/settings?error=stripe_callback_failed', request.url))
+    return NextResponse.redirect(new URL('/partners/portal/payouts?error=stripe_callback_failed', request.url))
   }
 }

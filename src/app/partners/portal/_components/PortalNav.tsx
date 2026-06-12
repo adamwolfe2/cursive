@@ -34,6 +34,7 @@ export function PortalNav() {
             <Link
               key={item.href}
               href={item.href}
+              prefetch={false}
               className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-[13px] font-medium transition-colors ${
                 active
                   ? 'bg-primary text-white'

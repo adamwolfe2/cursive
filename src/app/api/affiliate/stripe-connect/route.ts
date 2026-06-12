@@ -68,6 +68,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     return NextResponse.redirect(accountLink.url)
   } catch (error) {
     safeError('[affiliate/stripe-connect] Error:', error)
-    return NextResponse.redirect(new URL('/affiliate/settings?error=stripe_connect_failed', request.url))
+    return NextResponse.redirect(new URL('/partners/portal/payouts?error=stripe_connect_failed', request.url))
   }
 }
