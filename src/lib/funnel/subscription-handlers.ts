@@ -85,8 +85,8 @@ async function handleSubscriptionDeleted(sub: Stripe.Subscription): Promise<bool
     return true
   }
 
-  // Affiliate churn — decrement the partner's active-paying count (non-fatal).
-  handleAffiliateFunnelChurn({
+  // Affiliate churn — decrement the partner's active-paying count (awaited).
+  await handleAffiliateFunnelChurn({
     customer_email: cancelled.customer_email,
     workspace_id: cancelled.workspace_id ?? null,
     affiliate_partner_code: cancelled.affiliate_partner_code ?? null,
@@ -198,8 +198,10 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice): Promise<b
   }
 
   // Affiliate commission — every successful funnel invoice (incl. renewals)
-  // pays the attributed partner at their live ramp rate (non-fatal).
-  handleAffiliateFunnelInvoice(
+  // pays the attributed partner at their live ramp rate. AWAITED so the
+  // serverless function doesn't freeze before the DB write completes (the
+  // call is internally try/caught, so awaiting never throws here).
+  await handleAffiliateFunnelInvoice(
     {
       customer_email: order.customer_email,
       offer_slug: order.offer_slug,

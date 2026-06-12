@@ -44,7 +44,7 @@ export async function handleServiceSubscriptionEvent(event: Stripe.Event): Promi
         .eq('stripe_customer_id', customerId)
         .maybeSingle()
       if (userData?.workspace_id) {
-        handleAffiliateInvoicePayment(userData.workspace_id, invoice)
+        await handleAffiliateInvoicePayment(userData.workspace_id, invoice)
           .catch((err) => safeError('[Stripe Webhook] Affiliate commission failed (non-fatal):', err))
       }
     }
@@ -62,7 +62,7 @@ export async function handleServiceSubscriptionEvent(event: Stripe.Event): Promi
         .eq('stripe_customer_id', customerId)
         .maybeSingle()
       if (userData?.workspace_id) {
-        handleAffiliateChurn(userData.workspace_id)
+        await handleAffiliateChurn(userData.workspace_id)
           .catch((err) => safeError('[Stripe Webhook] Affiliate churn failed (non-fatal):', err))
       }
     }

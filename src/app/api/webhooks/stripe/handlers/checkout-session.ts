@@ -71,7 +71,9 @@ export async function handleCheckoutSessionCompleted(event: Stripe.Event): Promi
         .maybeSingle()
       if (userData?.email) {
         const { processAffiliateAttribution } = await import('@/lib/affiliate/activation')
-        processAffiliateAttribution(affiliateRefCode, userId, userData.email, workspaceId)
+        // Awaited — serverless freezes after the webhook returns, dropping any
+        // un-awaited promise (the call is internally try/caught).
+        await processAffiliateAttribution(affiliateRefCode, userId, userData.email, workspaceId)
           .catch((err) => safeError('[Stripe Webhook] Affiliate attribution fallback failed (non-fatal):', err))
       }
     } else {
@@ -80,7 +82,7 @@ export async function handleCheckoutSessionCompleted(event: Stripe.Event): Promi
       const email = session.customer_details?.email || session.customer_email
       if (email) {
         const { processAffiliateAttributionByEmail } = await import('@/lib/affiliate/activation')
-        processAffiliateAttributionByEmail(affiliateRefCode, email)
+        await processAffiliateAttributionByEmail(affiliateRefCode, email)
           .catch((err) => safeError('[Stripe Webhook] Affiliate email attribution failed (non-fatal):', err))
       }
     }
