@@ -60,7 +60,7 @@ export default function BlogPost() {
             <ArrowLeft className="w-4 h-4" />
             Back to Blog
           </Link>
-          <div className="max-w-4xl">
+          <div className="max-w-4xl mx-auto">
             <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
               Comparisons
             </div>
@@ -120,7 +120,7 @@ export default function BlogPost() {
             <div className="not-prose overflow-x-auto my-8">
               <table className="w-full text-sm border-collapse">
                 <thead>
-                  <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                  <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                     <th className="border border-gray-300 p-3 text-left font-bold">Tool</th>
                     <th className="border border-gray-300 p-3 text-left font-bold">Best For</th>
                     <th className="border border-gray-300 p-3 text-left font-bold">ID Level</th>
@@ -129,7 +129,7 @@ export default function BlogPost() {
                   </tr>
                 </thead>
                 <tbody className="bg-white">
-                  <tr className="bg-blue-50 border-2 border-blue-500">
+                  <tr className="bg-primary/5 border-2 border-primary">
                     <td className="border border-gray-300 p-3 font-bold">Cursive</td>
                     <td className="border border-gray-300 p-3">Person-level ID + AI outreach</td>
                     <td className="border border-gray-300 p-3 text-green-600 font-bold">Person (~70%)</td>
@@ -246,30 +246,30 @@ export default function BlogPost() {
             {/* Alternative 1: Cursive */}
             <h2>8 Best Leadfeeder Alternatives (Detailed Reviews)</h2>
 
-            <div className="not-prose bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-8 my-8 border-2 border-blue-500">
+            <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-8 my-8 border-2 border-primary">
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <h3 className="text-2xl font-bold mb-2">1. Cursive</h3>
                   <p className="text-sm text-gray-600">Best for: Person-level identification with AI-powered outreach (the complete Leadfeeder replacement)</p>
                 </div>
-                <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-bold">Our Pick</span>
+                <span className="bg-primary text-white px-3 py-1 rounded-full text-sm font-bold">Our Pick</span>
               </div>
 
               <p className="text-gray-700 mb-4">
                 <strong>What makes it different:</strong> Where Leadfeeder stops at telling you which company visited,{" "}
-                <Link href="/" className="text-blue-600 hover:underline">Cursive</Link> identifies the actual person, complete
+                <Link href="/" className="text-primary hover:underline">Cursive</Link> identifies the actual person, complete
                 with name, email, job title, LinkedIn profile, and company details. With approximately 70% person-level match
                 rates, Cursive surfaces 2-3x more actionable leads than Leadfeeder from the same traffic. But identification
                 is just the starting point.
               </p>
 
               <p className="text-gray-700 mb-4">
-                Cursive&apos;s <Link href="/what-is-ai-sdr" className="text-blue-600 hover:underline">AI SDR</Link> automatically crafts
+                Cursive&apos;s <Link href="/what-is-ai-sdr" className="text-primary hover:underline">AI SDR</Link> automatically crafts
                 personalized outreach based on which pages each visitor viewed, their company profile, and their role. Outreach
-                spans email, LinkedIn, and <Link href="/direct-mail" className="text-blue-600 hover:underline">direct mail</Link>, with
-                the AI adapting messaging based on engagement signals. The <Link href="/intent-audiences" className="text-blue-600 hover:underline">intent
+                spans email, LinkedIn, and <Link href="/direct-mail" className="text-primary hover:underline">direct mail</Link>, with
+                the AI adapting messaging based on engagement signals. The <Link href="/intent-audiences" className="text-primary hover:underline">intent
                 audience engine</Link> scores visitors by buying intent, so your team focuses on the hottest prospects first. Combined
-                with the <Link href="/audience-builder" className="text-blue-600 hover:underline">audience builder</Link> for
+                with the <Link href="/audience-builder" className="text-primary hover:underline">audience builder</Link> for
                 precise segmentation, it replaces Leadfeeder plus 3-4 additional tools.
               </p>
 
@@ -317,13 +317,13 @@ export default function BlogPost() {
               <div className="bg-white rounded-lg p-4">
                 <div className="flex justify-between items-center mb-2">
                   <span className="font-bold">Pricing:</span>
-                  <span className="text-lg font-bold text-blue-600">$97/mo | $197/mo | $247/mo</span>
+                  <span className="text-lg font-bold text-primary">$97/mo | $197/mo | $247/mo</span>
                 </div>
                 <p className="text-sm text-gray-600">
                   <strong>Best for:</strong> B2B companies with 5,000+ monthly visitors that want to replace Leadfeeder +
                   enrichment tool + email sequencer + LinkedIn automation with a single platform. The ROI calculation is
                   straightforward: if Cursive helps you close even one additional deal per month, it pays for itself many
-                  times over. See <Link href="/pricing" className="text-blue-600 hover:underline">pricing details</Link>.
+                  times over. See <Link href="/pricing" className="text-primary hover:underline">pricing details</Link>.
                 </p>
               </div>
             </div>
@@ -394,7 +394,7 @@ export default function BlogPost() {
                 <p className="text-sm text-gray-600">
                   <strong>Best for:</strong> Teams that need person-level data at a mid-range price and are comfortable using
                   separate outreach tools. A clear upgrade from Leadfeeder for identification, but you will still need
-                  additional tools for a complete workflow. See our <Link href="/blog/rb2b-alternative" className="text-blue-600 hover:underline">RB2B alternatives guide</Link> for
+                  additional tools for a complete workflow. See our <Link href="/blog/rb2b-alternative" className="text-primary hover:underline">RB2B alternatives guide</Link> for
                   more details.
                 </p>
               </div>
@@ -466,7 +466,7 @@ export default function BlogPost() {
                 </div>
                 <p className="text-sm text-gray-600">
                   <strong>Best for:</strong> High-traffic B2B websites that benefit from real-time visitor engagement. Works
-                  well for companies with inbound-heavy motions. Read our <Link href="/blog/warmly-vs-cursive-comparison" className="text-blue-600 hover:underline">Warmly vs Cursive comparison</Link>.
+                  well for companies with inbound-heavy motions. Read our <Link href="/blog/warmly-vs-cursive-comparison" className="text-primary hover:underline">Warmly vs Cursive comparison</Link>.
                 </p>
               </div>
             </div>
@@ -486,7 +486,7 @@ export default function BlogPost() {
               <div className="bg-gray-50 rounded-lg p-4">
                 <p className="text-sm text-gray-600">
                   <strong>Recommendation:</strong> For a detailed look at what replaced Clearbit, see
-                  our <Link href="/blog/clearbit-alternatives-comparison" className="text-blue-600 hover:underline">Clearbit alternatives comparison</Link>.
+                  our <Link href="/blog/clearbit-alternatives-comparison" className="text-primary hover:underline">Clearbit alternatives comparison</Link>.
                   Cursive is the most direct replacement for Clearbit Reveal&apos;s visitor identification capabilities.
                 </p>
               </div>
@@ -787,7 +787,7 @@ export default function BlogPost() {
             <div className="not-prose overflow-x-auto my-8">
               <table className="w-full text-sm border-collapse">
                 <thead>
-                  <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                  <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                     <th className="border border-gray-300 p-3 text-left font-bold">Feature</th>
                     <th className="border border-gray-300 p-3 text-center font-bold">Cursive</th>
                     <th className="border border-gray-300 p-3 text-center font-bold">RB2B</th>
@@ -901,11 +901,11 @@ export default function BlogPost() {
               plan that minimizes disruption to your team&apos;s workflow.
             </p>
 
-            <div className="not-prose bg-gradient-to-br from-gray-50 to-blue-50 rounded-xl p-6 my-8 border border-gray-200">
+            <div className="not-prose bg-gradient-to-br from-gray-50 to-primary/5 rounded-xl p-6 my-8 border border-gray-200">
               <h3 className="font-bold text-lg mb-4">5-Step Migration Plan</h3>
               <ol className="space-y-4 text-sm">
                 <li className="flex items-start gap-3">
-                  <span className="bg-blue-600 text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">1</span>
+                  <span className="bg-primary text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">1</span>
                   <div>
                     <strong>Export your Leadfeeder data and baselines.</strong> Download your visitor data, lead lists,
                     and integration configurations. Document your current match rates, most-identified companies, and any
@@ -913,25 +913,25 @@ export default function BlogPost() {
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="bg-blue-600 text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">2</span>
+                  <span className="bg-primary text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">2</span>
                   <div>
                     <strong>Install the new tracking pixel.</strong> For Cursive, add a single JavaScript snippet to your
                     site header. This works independently of Google Analytics, so there is no GA dependency to worry about.
-                    The <Link href="/pixel" className="text-blue-600 hover:underline">pixel setup</Link> takes about 5 minutes
+                    The <Link href="/pixel" className="text-primary hover:underline">pixel setup</Link> takes about 5 minutes
                     and starts collecting data immediately.
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="bg-blue-600 text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">3</span>
+                  <span className="bg-primary text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">3</span>
                   <div>
                     <strong>Configure ICP filters and audience segments.</strong> Recreate your Leadfeeder custom feeds
                     using the new platform&apos;s filtering capabilities. In Cursive, use
-                    the <Link href="/audience-builder" className="text-blue-600 hover:underline">audience builder</Link> to set
+                    the <Link href="/audience-builder" className="text-primary hover:underline">audience builder</Link> to set
                     up firmographic, behavioral, and technographic filters that match your ideal customer profile.
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="bg-blue-600 text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">4</span>
+                  <span className="bg-primary text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">4</span>
                   <div>
                     <strong>Run both tools in parallel for 2 weeks.</strong> Compare match rates, data quality, and the
                     actionability of the leads generated. Pay attention to how many more contacts you can identify at
@@ -939,7 +939,7 @@ export default function BlogPost() {
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="bg-blue-600 text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">5</span>
+                  <span className="bg-primary text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">5</span>
                   <div>
                     <strong>Decommission Leadfeeder and consolidate.</strong> Once the new tool has proven its value, remove
                     the Leadfeeder tracker (or GA integration), cancel the subscription, and retire any supplementary tools

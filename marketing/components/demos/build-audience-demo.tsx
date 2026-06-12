@@ -54,7 +54,7 @@ export default function BuildAudienceDemo() {
           transition={{ delay: 0.1 }}
           className="bg-white rounded-xl p-8 border border-gray-200 text-center"
         >
-          <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center mx-auto mb-4">
+          <div className="w-12 h-12 bg-primary/5 rounded-lg flex items-center justify-center mx-auto mb-4">
             <Users className="w-6 h-6 text-primary" />
           </div>
           <div className="text-4xl font-light text-gray-900 mb-2">280M+</div>
@@ -68,7 +68,7 @@ export default function BuildAudienceDemo() {
           transition={{ delay: 0.2 }}
           className="bg-white rounded-xl p-8 border border-gray-200 text-center"
         >
-          <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center mx-auto mb-4">
+          <div className="w-12 h-12 bg-primary/5 rounded-lg flex items-center justify-center mx-auto mb-4">
             <Filter className="w-6 h-6 text-primary" />
           </div>
           <div className="text-4xl font-light text-gray-900 mb-2">30,000+</div>
@@ -82,7 +82,7 @@ export default function BuildAudienceDemo() {
           transition={{ delay: 0.3 }}
           className="bg-white rounded-xl p-8 border border-gray-200 text-center"
         >
-          <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center mx-auto mb-4">
+          <div className="w-12 h-12 bg-primary/5 rounded-lg flex items-center justify-center mx-auto mb-4">
             <Zap className="w-6 h-6 text-primary" />
           </div>
           <div className="text-4xl font-light text-gray-900 mb-2">Instant</div>

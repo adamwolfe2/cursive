@@ -48,7 +48,7 @@ export default function DirectMailPage() {
               Back to Blog
             </Link>
 
-            <div className="max-w-4xl">
+            <div className="max-w-4xl mx-auto">
               <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
                 Direct Mail
               </div>
@@ -113,25 +113,25 @@ export default function DirectMailPage() {
                 feed simply cannot.
               </p>
 
-              <div className="not-prose bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 my-8 border border-blue-200">
+              <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-6 my-8 border border-primary/20">
                 <h3 className="font-bold text-lg mb-3">Direct Mail vs. Digital: By the Numbers</h3>
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="bg-white rounded-lg p-4">
-                    <div className="text-3xl font-bold text-blue-600 mb-1">4.4%</div>
+                    <div className="text-3xl font-bold text-primary mb-1">4.4%</div>
                     <p className="text-sm text-gray-600">Direct mail average response rate</p>
                     <p className="text-xs text-gray-400 mt-1">vs. 0.12% for email (DMA)</p>
                   </div>
                   <div className="bg-white rounded-lg p-4">
-                    <div className="text-3xl font-bold text-blue-600 mb-1">70%</div>
+                    <div className="text-3xl font-bold text-primary mb-1">70%</div>
                     <p className="text-sm text-gray-600">of consumers say direct mail is more personal than digital</p>
                   </div>
                   <div className="bg-white rounded-lg p-4">
-                    <div className="text-3xl font-bold text-blue-600 mb-1">5-9 days</div>
+                    <div className="text-3xl font-bold text-primary mb-1">5-9 days</div>
                     <p className="text-sm text-gray-600">average lifespan of direct mail in a home/office</p>
                     <p className="text-xs text-gray-400 mt-1">vs. 2 seconds for a digital ad</p>
                   </div>
                   <div className="bg-white rounded-lg p-4">
-                    <div className="text-3xl font-bold text-blue-600 mb-1">3-5x</div>
+                    <div className="text-3xl font-bold text-primary mb-1">3-5x</div>
                     <p className="text-sm text-gray-600">higher conversion when direct mail is paired with digital campaigns</p>
                   </div>
                 </div>
@@ -154,38 +154,38 @@ export default function DirectMailPage() {
 
               <h3>The Automation Pipeline</h3>
 
-              <div className="not-prose bg-gradient-to-br from-gray-50 to-blue-50 rounded-xl p-6 my-8 border border-gray-200">
+              <div className="not-prose bg-gradient-to-br from-gray-50 to-primary/5 rounded-xl p-6 my-8 border border-gray-200">
                 <div className="space-y-4">
                   <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm flex-shrink-0">1</div>
+                    <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm flex-shrink-0">1</div>
                     <div className="bg-white rounded-lg p-4 flex-1">
                       <h4 className="font-bold text-sm mb-1">Digital Trigger Fires</h4>
-                      <p className="text-xs text-gray-600">A prospect visits your pricing page, opens an email, or matches a <Link href="/blog/audience-targeting" className="text-blue-600 hover:underline">target audience segment</Link>. The trigger event is captured by your marketing platform.</p>
+                      <p className="text-xs text-gray-600">A prospect visits your pricing page, opens an email, or matches a <Link href="/blog/audience-targeting" className="text-primary hover:underline">target audience segment</Link>. The trigger event is captured by your marketing platform.</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm flex-shrink-0">2</div>
+                    <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm flex-shrink-0">2</div>
                     <div className="bg-white rounded-lg p-4 flex-1">
                       <h4 className="font-bold text-sm mb-1">Address Resolution</h4>
-                      <p className="text-xs text-gray-600">The system resolves the prospect&apos;s mailing address using enrichment data. This may come from <Link href="/blog/visitor-tracking" className="text-blue-600 hover:underline">visitor identification</Link>, CRM records, or address verification APIs. Invalid addresses are filtered out.</p>
+                      <p className="text-xs text-gray-600">The system resolves the prospect&apos;s mailing address using enrichment data. This may come from <Link href="/blog/visitor-tracking" className="text-primary hover:underline">visitor identification</Link>, CRM records, or address verification APIs. Invalid addresses are filtered out.</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm flex-shrink-0">3</div>
+                    <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm flex-shrink-0">3</div>
                     <div className="bg-white rounded-lg p-4 flex-1">
                       <h4 className="font-bold text-sm mb-1">Personalization and Design</h4>
                       <p className="text-xs text-gray-600">A pre-designed mail template is populated with personalized fields: recipient name, company, relevant product information, custom offer, and a unique tracking URL or QR code.</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm flex-shrink-0">4</div>
+                    <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm flex-shrink-0">4</div>
                     <div className="bg-white rounded-lg p-4 flex-1">
                       <h4 className="font-bold text-sm mb-1">Print and Fulfillment</h4>
                       <p className="text-xs text-gray-600">The personalized piece is sent to a print partner via API. Print-on-demand means no minimum orders. The piece is printed, addressed, and entered into the postal system.</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm flex-shrink-0">5</div>
+                    <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm flex-shrink-0">5</div>
                     <div className="bg-white rounded-lg p-4 flex-1">
                       <h4 className="font-bold text-sm mb-1">Delivery and Tracking</h4>
                       <p className="text-xs text-gray-600">Delivery is tracked via USPS Intelligent Mail barcode. When the piece is delivered, the system logs it and can trigger follow-up actions: a sales call, an email sequence, or a digital ad retarget.</p>
@@ -339,17 +339,17 @@ export default function DirectMailPage() {
                 multi-sensory experience that dramatically increases conversion:
               </p>
 
-              <div className="not-prose bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 my-8 border border-blue-200">
+              <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-6 my-8 border border-primary/20">
                 <h3 className="font-bold text-lg mb-4">7-Day Surround-Sound Sequence</h3>
                 <div className="space-y-3">
                   <div className="flex items-center gap-4">
-                    <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded text-xs font-bold flex-shrink-0">Day 1</span>
+                    <span className="bg-primary/10 text-primary px-3 py-1 rounded text-xs font-bold flex-shrink-0">Day 1</span>
                     <div className="bg-white rounded-lg p-3 flex-1">
                       <p className="text-sm"><strong>LinkedIn connection request</strong> with a personalized note referencing their company</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
-                    <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded text-xs font-bold flex-shrink-0">Day 2</span>
+                    <span className="bg-primary/10 text-primary px-3 py-1 rounded text-xs font-bold flex-shrink-0">Day 2</span>
                     <div className="bg-white rounded-lg p-3 flex-1">
                       <p className="text-sm"><strong>Retargeting ads</strong> begin showing to the prospect across LinkedIn and Google Display</p>
                     </div>
@@ -361,7 +361,7 @@ export default function DirectMailPage() {
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
-                    <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded text-xs font-bold flex-shrink-0">Day 4</span>
+                    <span className="bg-primary/10 text-primary px-3 py-1 rounded text-xs font-bold flex-shrink-0">Day 4</span>
                     <div className="bg-white rounded-lg p-3 flex-1">
                       <p className="text-sm"><strong>Email #1</strong> sent: Value-add content relevant to their browsing behavior</p>
                     </div>
@@ -373,7 +373,7 @@ export default function DirectMailPage() {
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
-                    <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded text-xs font-bold flex-shrink-0">Day 7</span>
+                    <span className="bg-primary/10 text-primary px-3 py-1 rounded text-xs font-bold flex-shrink-0">Day 7</span>
                     <div className="bg-white rounded-lg p-3 flex-1">
                       <p className="text-sm"><strong>Email #2</strong> sent: Reference the postcard and offer a meeting booking link</p>
                     </div>
@@ -482,8 +482,8 @@ export default function DirectMailPage() {
 
               <div className="not-prose grid md:grid-cols-2 gap-4 my-8">
                 <div className="bg-white rounded-xl p-5 border border-gray-200">
-                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mb-3">
-                    <Target className="w-5 h-5 text-blue-600" />
+                  <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center mb-3">
+                    <Target className="w-5 h-5 text-primary" />
                   </div>
                   <h3 className="font-bold mb-2 text-sm">Unique Landing Pages</h3>
                   <p className="text-xs text-gray-600">
@@ -493,8 +493,8 @@ export default function DirectMailPage() {
                 </div>
 
                 <div className="bg-white rounded-xl p-5 border border-gray-200">
-                  <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mb-3">
-                    <Zap className="w-5 h-5 text-purple-600" />
+                  <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center mb-3">
+                    <Zap className="w-5 h-5 text-primary" />
                   </div>
                   <h3 className="font-bold mb-2 text-sm">QR Codes</h3>
                   <p className="text-xs text-gray-600">
@@ -615,7 +615,7 @@ Example:
 
               <div className="not-prose space-y-6 my-8">
                 {faqs.map((faq, index) => (
-                  <div key={index} className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-lg p-6 border border-gray-200">
+                  <div key={index} className="bg-gradient-to-br from-gray-50 to-primary/5 rounded-lg p-6 border border-gray-200">
                     <h3 className="font-bold text-lg mb-3">{faq.question}</h3>
                     <p className="text-gray-700">{faq.answer}</p>
                   </div>
@@ -662,7 +662,7 @@ Example:
         />
 
         {/* Related Posts */}
-        <section className="py-16 bg-gradient-to-br from-gray-50 to-blue-50">
+        <section className="py-16 bg-gradient-to-br from-gray-50 to-primary/5">
           <Container>
             <div className="max-w-5xl mx-auto">
               <SimpleRelatedPosts posts={[

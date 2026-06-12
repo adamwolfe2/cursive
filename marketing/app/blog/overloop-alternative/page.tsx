@@ -54,7 +54,7 @@ export default function BlogPost() {
               <ArrowLeft className="w-4 h-4" />
               Back to Blog
             </Link>
-            <div className="max-w-4xl">
+            <div className="max-w-4xl mx-auto">
               <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
                 Comparisons
               </div>
@@ -111,7 +111,7 @@ export default function BlogPost() {
               <div className="not-prose overflow-x-auto my-8">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                    <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                       <th className="border border-gray-300 p-3 text-left font-bold">Tool</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Best For</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Approach</th>
@@ -120,7 +120,7 @@ export default function BlogPost() {
                     </tr>
                   </thead>
                   <tbody className="bg-white">
-                    <tr className="bg-blue-50 border-2 border-blue-500">
+                    <tr className="bg-primary/5 border-2 border-primary">
                       <td className="border border-gray-300 p-3 font-bold">Cursive</td>
                       <td className="border border-gray-300 p-3">Visitor ID + in-market audiences</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold">Warm (visitor ID)</td>
@@ -227,31 +227,31 @@ export default function BlogPost() {
               {/* Alternative 1: Cursive */}
               <h2>6 Best Overloop Alternatives (Detailed Reviews)</h2>
 
-              <div className="not-prose bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-8 my-8 border-2 border-blue-500">
+              <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-8 my-8 border-2 border-primary">
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <h3 className="text-2xl font-bold mb-2">1. Cursive</h3>
                     <p className="text-sm text-gray-600">Best for: B2B teams that want to convert their own website traffic instead of buying cold lists</p>
                   </div>
-                  <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-bold">Our Pick</span>
+                  <span className="bg-primary text-white px-3 py-1 rounded-full text-sm font-bold">Our Pick</span>
                 </div>
 
                 <p className="text-gray-700 mb-4">
-                  <strong>What makes it different:</strong> <Link href="/" className="text-blue-600 hover:underline">Cursive</Link> flips
+                  <strong>What makes it different:</strong> <Link href="/" className="text-primary hover:underline">Cursive</Link> flips
                   the outbound model on its head. Instead of starting with a cold contact list like Overloop,
-                  Cursive starts by <Link href="/visitor-identification" className="text-blue-600 hover:underline">identifying people who
+                  Cursive starts by <Link href="/visitor-identification" className="text-primary hover:underline">identifying people who
                   already visited your website</Link> — people who have shown real buying intent by browsing your product pages,
-                  pricing, or case studies. The <Link href="/what-is-ai-sdr" className="text-blue-600 hover:underline">AI SDR</Link> then
+                  pricing, or case studies. The <Link href="/what-is-ai-sdr" className="text-primary hover:underline">AI SDR</Link> then
                   writes genuinely personalized emails based on each visitor&apos;s company, role, and on-site behavior, and
-                  delivers outreach via email, LinkedIn, and <Link href="/direct-mail" className="text-blue-600 hover:underline">direct mail</Link>.
+                  delivers outreach via email, LinkedIn, and <Link href="/direct-mail" className="text-primary hover:underline">direct mail</Link>.
                 </p>
 
                 <p className="text-gray-700 mb-4">
-                  Cursive&apos;s <Link href="/intent-audiences" className="text-blue-600 hover:underline">intent audience engine</Link> tracks
+                  Cursive&apos;s <Link href="/intent-audiences" className="text-primary hover:underline">intent audience engine</Link> tracks
                   which pages visitors view, how often they return, and what content they engage with — then scores and routes
-                  them to the most relevant outreach sequence. The <Link href="/audience-builder" className="text-blue-600 hover:underline">audience
+                  them to the most relevant outreach sequence. The <Link href="/audience-builder" className="text-primary hover:underline">audience
                   builder</Link> lets you create precise ICP segments so your AI SDR only contacts the right people.
-                  Choose the <Link href="/marketplace" className="text-blue-600 hover:underline">Cursive self-serve plan</Link> that fits your needs.
+                  Choose the <Link href="/marketplace" className="text-primary hover:underline">Cursive self-serve plan</Link> that fits your needs.
                 </p>
 
                 <div className="grid md:grid-cols-2 gap-6 mb-4">
@@ -298,12 +298,12 @@ export default function BlogPost() {
                 <div className="bg-white rounded-lg p-4">
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-bold">Pricing:</span>
-                    <span className="text-lg font-bold text-blue-600">$97/mo Pixel | $197/mo Audience | $247/mo Bundle</span>
+                    <span className="text-lg font-bold text-primary">$97/mo Pixel | $197/mo Audience | $247/mo Bundle</span>
                   </div>
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> B2B companies generating 5,000+ monthly website visitors that want
                     higher reply rates from warm, intent-driven outreach rather than cold list blasting. Replaces
-                    Overloop + data provider + enrichment tool in one platform. See <Link href="/pricing" className="text-blue-600 hover:underline">pricing details</Link>.
+                    Overloop + data provider + enrichment tool in one platform. See <Link href="/pricing" className="text-primary hover:underline">pricing details</Link>.
                   </p>
                 </div>
               </div>
@@ -374,7 +374,7 @@ export default function BlogPost() {
                   </div>
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> High-volume cold email teams that prioritize deliverability over
-                    multi-channel. See our <Link href="/blog/instantly-alternative" className="text-blue-600 hover:underline">Instantly alternatives guide</Link> for
+                    multi-channel. See our <Link href="/blog/instantly-alternative" className="text-primary hover:underline">Instantly alternatives guide</Link> for
                     more comparisons.
                   </p>
                 </div>
@@ -515,7 +515,7 @@ export default function BlogPost() {
                   </div>
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> Agencies and high-volume cold email teams that need bulletproof
-                    deliverability infrastructure. See our <Link href="/blog/smartlead-alternative" className="text-blue-600 hover:underline">Smartlead alternatives comparison</Link>.
+                    deliverability infrastructure. See our <Link href="/blog/smartlead-alternative" className="text-primary hover:underline">Smartlead alternatives comparison</Link>.
                   </p>
                 </div>
               </div>
@@ -673,7 +673,7 @@ export default function BlogPost() {
               <div className="not-prose overflow-x-auto my-8">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                    <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                       <th className="border border-gray-300 p-3 text-left font-bold">Feature</th>
                       <th className="border border-gray-300 p-3 text-center font-bold">Cursive</th>
                       <th className="border border-gray-300 p-3 text-center font-bold">Overloop</th>

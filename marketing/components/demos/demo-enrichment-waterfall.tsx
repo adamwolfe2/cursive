@@ -82,7 +82,7 @@ export function DemoEnrichmentWaterfall() {
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg p-2.5 border border-gray-200"
+          className="bg-gradient-to-br from-primary/5 to-primary/5 rounded-lg p-2.5 border border-gray-200"
         >
           <div className="flex items-center justify-between mb-1">
             <div>
@@ -114,7 +114,7 @@ export function DemoEnrichmentWaterfall() {
             transition={{ delay: index * 0.05 }}
             className={`bg-white rounded-md p-2 border transition-all ${
               step.status === "complete"
-                ? "border-blue-300 bg-blue-50/30"
+                ? "border-primary/30 bg-primary/5"
                 : step.status === "processing"
                 ? "border-primary shadow-sm"
                 : "border-gray-200"
@@ -167,7 +167,7 @@ export function DemoEnrichmentWaterfall() {
                   <motion.span
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="text-[10px] text-blue-600 font-medium flex-shrink-0"
+                    className="text-[10px] text-primary font-medium flex-shrink-0"
                   >
                     {step.confidence}%
                   </motion.span>

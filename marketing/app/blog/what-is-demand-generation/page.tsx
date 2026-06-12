@@ -26,7 +26,7 @@ export default function WhatIsDemandGeneration() {
               Back to Blog
             </Link>
 
-            <div className="max-w-4xl">
+            <div className="max-w-4xl mx-auto">
               <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
                 <TrendingUp className="w-3 h-3 inline mr-1" />
                 Demand Generation
@@ -55,7 +55,7 @@ export default function WhatIsDemandGeneration() {
         {/* Main Content */}
         <section className="py-12 bg-gray-50">
           <Container>
-            <div className="max-w-4xl">
+            <div className="max-w-4xl mx-auto">
 
               {/* Definition */}
               <div className="bg-white rounded-xl p-8 mb-8 border border-gray-200">
@@ -205,9 +205,9 @@ export default function WhatIsDemandGeneration() {
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                  <div className="bg-blue-50 rounded-lg p-4">
+                  <div className="bg-primary/5 rounded-lg p-4">
                     <div className="flex items-center gap-2 mb-2">
-                      <BarChart2 className="w-5 h-5 text-blue-600" />
+                      <BarChart2 className="w-5 h-5 text-primary" />
                       <h3 className="font-semibold">Pipeline Influenced</h3>
                     </div>
                     <p className="text-sm text-gray-700">Total pipeline value where a prospect touched demand gen content before entering a sales opportunity. The gold standard metric.</p>
@@ -221,9 +221,9 @@ export default function WhatIsDemandGeneration() {
                     <p className="text-sm text-gray-700">Demand gen spend divided by pipeline created. Best-in-class teams achieve $0.05-$0.10 per pipeline dollar.</p>
                   </div>
 
-                  <div className="bg-purple-50 rounded-lg p-4">
+                  <div className="bg-primary/5 rounded-lg p-4">
                     <div className="flex items-center gap-2 mb-2">
-                      <TrendingUp className="w-5 h-5 text-purple-600" />
+                      <TrendingUp className="w-5 h-5 text-primary" />
                       <h3 className="font-semibold">MQL-to-SQL Rate</h3>
                     </div>
                     <p className="text-sm text-gray-700">Percentage of marketing-qualified leads accepted by sales. Strong demand gen quality produces 25-40% MQL-to-SQL rates.</p>
@@ -305,8 +305,8 @@ export default function WhatIsDemandGeneration() {
                 </p>
 
                 <div className="space-y-4">
-                  <div className="flex items-start gap-4 p-4 bg-blue-50 rounded-lg">
-                    <div className="w-12 h-12 bg-blue-600 text-white rounded-lg flex items-center justify-center font-bold text-lg flex-shrink-0">1</div>
+                  <div className="flex items-start gap-4 p-4 bg-primary/5 rounded-lg">
+                    <div className="w-12 h-12 bg-primary text-white rounded-lg flex items-center justify-center font-bold text-lg flex-shrink-0">1</div>
                     <div>
                       <h3 className="font-semibold text-lg mb-1">Awareness</h3>
                       <p className="text-gray-700 text-sm">Buyer encounters your brand through a blog post, podcast mention, social post, or event. No active purchase intent yet — just brand recognition.</p>

@@ -77,7 +77,7 @@ export default function BlogPost() {
               Back to Blog
             </Link>
 
-            <div className="max-w-4xl">
+            <div className="max-w-4xl mx-auto">
               <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
                 Compliance
               </div>
@@ -193,7 +193,7 @@ export default function BlogPost() {
                 </li>
               </ol>
 
-              <div className="not-prose bg-blue-50 rounded-xl p-6 my-8 border border-blue-200">
+              <div className="not-prose bg-primary/5 rounded-xl p-6 my-8 border border-primary/20">
                 <h3 className="font-bold text-base mb-2">Real Cost Illustration</h3>
                 <p className="text-sm text-gray-700">
                   If your website gets 10,000 monthly visitors and 40% are from Europe, a US-only tool identifies
@@ -290,7 +290,7 @@ export default function BlogPost() {
                     </tr>
                   </thead>
                   <tbody className="bg-white">
-                    <tr className="bg-blue-50 border-2 border-blue-500">
+                    <tr className="bg-primary/5 border-2 border-primary">
                       <td className="border border-gray-300 p-3 font-bold">Cursive</td>
                       <td className="border border-gray-300 p-3 text-center text-green-600 font-bold">✓ Yes</td>
                       <td className="border border-gray-300 p-3 text-center text-green-600 font-bold">✓ Yes</td>

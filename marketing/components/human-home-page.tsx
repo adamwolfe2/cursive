@@ -164,11 +164,11 @@ export function HumanHomePage() {
                       onClick={() => setActiveFeature(feature.id)}
                       className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs transition-all whitespace-nowrap ${
                         isActive
-                          ? 'bg-blue-50 text-blue-700 font-medium shadow-sm border border-blue-200'
+                          ? 'bg-primary/5 text-primary font-medium shadow-sm border border-primary/20'
                           : 'text-gray-600 hover:bg-gray-50 border border-gray-200'
                       }`}
                     >
-                      <Icon className={`w-3 h-3 flex-shrink-0 ${isActive ? 'text-blue-600' : 'text-gray-400'}`} />
+                      <Icon className={`w-3 h-3 flex-shrink-0 ${isActive ? 'text-primary' : 'text-gray-400'}`} />
                       {feature.label}
                     </button>
                   )
@@ -193,7 +193,7 @@ export function HumanHomePage() {
                       key={feature.id}
                       onClick={() => setActiveFeature(feature.id)}
                       className={`flex flex-col items-center justify-center gap-1 py-3 px-1 transition-colors ${
-                        isActive ? 'bg-blue-50' : 'bg-white'
+                        isActive ? 'bg-primary/5' : 'bg-white'
                       }`}
                     >
                       <Icon className={`w-4 h-4 ${isActive ? 'text-primary' : 'text-gray-400'}`} />
@@ -208,7 +208,7 @@ export function HumanHomePage() {
               </div>
 
               {/* Demo with Browser Chrome */}
-              <div className="bg-gradient-to-br from-blue-50/50 to-blue-100/50 rounded-2xl p-2 md:p-3">
+              <div className="bg-gradient-to-br from-primary/5 to-primary/10 rounded-2xl p-2 md:p-3">
                 <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
                   <div className="bg-gray-100 px-3 py-2 flex items-center gap-1.5 border-b border-gray-200">
                     <div className="w-2 h-2 rounded-full bg-gray-300" />
@@ -278,7 +278,7 @@ export function HumanHomePage() {
                       Most Popular
                     </span>
                   )}
-                  <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center mb-5">
+                  <div className="w-12 h-12 bg-primary/5 rounded-xl flex items-center justify-center mb-5">
                     <Icon className="w-6 h-6 text-primary" />
                   </div>
                   <h3 className="text-lg font-medium text-gray-900">{plan.name}</h3>

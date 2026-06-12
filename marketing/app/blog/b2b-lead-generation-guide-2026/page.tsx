@@ -66,7 +66,7 @@ export default function BlogPost() {
               <ArrowLeft className="w-4 h-4" />
               Back to Blog
             </Link>
-            <div className="max-w-4xl">
+            <div className="max-w-4xl mx-auto">
               <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
                 Guide
               </div>
@@ -111,9 +111,9 @@ export default function BlogPost() {
               </p>
 
               {/* Table of Contents */}
-              <div className="not-prose bg-blue-50 rounded-xl p-6 my-8 border border-blue-100">
+              <div className="not-prose bg-primary/5 rounded-xl p-6 my-8 border border-primary/15">
                 <h3 className="font-bold text-lg mb-3">What This Guide Covers</h3>
-                <ol className="space-y-1 text-sm text-blue-800">
+                <ol className="space-y-1 text-sm text-primary">
                   <li>1. Inbound vs outbound lead generation — when to use each</li>
                   <li>2. Website visitor identification — the highest-ROI lead source</li>
                   <li>3. Intent data — finding in-market buyers before they find you</li>
@@ -139,7 +139,7 @@ export default function BlogPost() {
               <div className="not-prose overflow-x-auto my-6">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                    <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                       <th className="border border-gray-300 p-3 text-left font-bold">Factor</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Inbound</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Outbound</th>
@@ -180,7 +180,7 @@ export default function BlogPost() {
                 sequence.
               </p>
 
-              <div className="not-prose bg-gradient-to-br from-green-50 to-teal-50 rounded-xl p-6 my-6 border border-green-200">
+              <div className="not-prose bg-gradient-to-br from-green-50 to-primary/5 rounded-xl p-6 my-6 border border-green-200">
                 <h3 className="font-bold text-lg mb-3">Why Visitor Identification Has the Highest ROI</h3>
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-start gap-2"><Check className="w-4 h-4 text-green-600 mt-0.5 shrink-0" /><span><strong>Highest intent:</strong> Visitors are actively researching your solution — far warmer than any cold prospect</span></li>
@@ -192,7 +192,7 @@ export default function BlogPost() {
               </div>
 
               <p>
-                Key tools for visitor identification: <Link href="/" className="text-blue-600 hover:underline">Cursive</Link> (70% person-level, $97/mo),
+                Key tools for visitor identification: <Link href="/" className="text-primary hover:underline">Cursive</Link> (70% person-level, $97/mo),
                 RB2B (50-60% person-level, free tier available), Warmly (40% company-level, $3,500/mo),
                 Clearbit/HubSpot (30-40% company-level, HubSpot plan required).
               </p>
@@ -213,13 +213,13 @@ export default function BlogPost() {
                 the same message sent to the same company three months earlier or later.
               </p>
 
-              <div className="not-prose bg-gradient-to-br from-purple-50 to-indigo-50 rounded-xl p-6 my-6 border border-purple-200">
+              <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-6 my-6 border border-primary/20">
                 <h3 className="font-bold text-lg mb-3">Types of Intent Signals</h3>
                 <ul className="space-y-2 text-sm">
-                  <li className="flex items-start gap-2"><span className="text-purple-600 font-bold mt-0.5 shrink-0">1.</span><span><strong>Topic-based intent:</strong> A company&apos;s employees are consuming content on topics related to your solution (e.g., &quot;website visitor tracking,&quot; &quot;B2B lead generation&quot;)</span></li>
-                  <li className="flex items-start gap-2"><span className="text-purple-600 font-bold mt-0.5 shrink-0">2.</span><span><strong>Competitor intent:</strong> They are visiting competitor websites or searching competitor brand names</span></li>
-                  <li className="flex items-start gap-2"><span className="text-purple-600 font-bold mt-0.5 shrink-0">3.</span><span><strong>Review site intent:</strong> They are reading reviews on G2, Capterra, or TrustRadius for tools in your category</span></li>
-                  <li className="flex items-start gap-2"><span className="text-purple-600 font-bold mt-0.5 shrink-0">4.</span><span><strong>Your website behavioral intent:</strong> They visited your pricing page or came back three times in a week</span></li>
+                  <li className="flex items-start gap-2"><span className="text-primary font-bold mt-0.5 shrink-0">1.</span><span><strong>Topic-based intent:</strong> A company&apos;s employees are consuming content on topics related to your solution (e.g., &quot;website visitor tracking,&quot; &quot;B2B lead generation&quot;)</span></li>
+                  <li className="flex items-start gap-2"><span className="text-primary font-bold mt-0.5 shrink-0">2.</span><span><strong>Competitor intent:</strong> They are visiting competitor websites or searching competitor brand names</span></li>
+                  <li className="flex items-start gap-2"><span className="text-primary font-bold mt-0.5 shrink-0">3.</span><span><strong>Review site intent:</strong> They are reading reviews on G2, Capterra, or TrustRadius for tools in your category</span></li>
+                  <li className="flex items-start gap-2"><span className="text-primary font-bold mt-0.5 shrink-0">4.</span><span><strong>Your website behavioral intent:</strong> They visited your pricing page or came back three times in a week</span></li>
                 </ul>
                 <p className="text-sm text-gray-600 mt-3">Cursive scans 60B+ behaviors and URLs weekly across 30,000+ intent categories to surface companies in active buying mode.</p>
               </div>
@@ -302,35 +302,35 @@ export default function BlogPost() {
 
               <div className="not-prose space-y-3 my-6">
                 <div className="flex items-start gap-4 p-4 bg-white rounded-lg border border-gray-200">
-                  <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm shrink-0">1</div>
+                  <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm shrink-0">1</div>
                   <div>
                     <p className="font-bold">Personalization at scale</p>
                     <p className="text-sm text-gray-600">AI can research each prospect — LinkedIn activity, company news, product reviews, tech stack — and write genuinely relevant outreach that reads like it was crafted by a human SDR who spent 30 minutes researching the account.</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4 p-4 bg-white rounded-lg border border-gray-200">
-                  <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm shrink-0">2</div>
+                  <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm shrink-0">2</div>
                   <div>
                     <p className="font-bold">Intent signal processing</p>
                     <p className="text-sm text-gray-600">AI can analyze billions of behavioral signals to identify in-market buyers faster and more accurately than manual analysis. Cursive scans 60B+ behaviors and URLs weekly across 30,000+ categories.</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4 p-4 bg-white rounded-lg border border-gray-200">
-                  <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm shrink-0">3</div>
+                  <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm shrink-0">3</div>
                   <div>
                     <p className="font-bold">Automated SDR workflows</p>
                     <p className="text-sm text-gray-600">AI SDRs handle initial outreach across email, LinkedIn, SMS, and direct mail without human intervention — dramatically reducing cost per lead and response time. Cursive&apos;s AI SDR triggers outreach the moment a visitor is identified or an intent signal fires.</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4 p-4 bg-white rounded-lg border border-gray-200">
-                  <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm shrink-0">4</div>
+                  <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm shrink-0">4</div>
                   <div>
                     <p className="font-bold">Sequence optimization</p>
                     <p className="text-sm text-gray-600">AI A/B tests subject lines, CTAs, send timing, and message structure automatically — continuously improving response rates without manual analysis.</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4 p-4 bg-white rounded-lg border border-gray-200">
-                  <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm shrink-0">5</div>
+                  <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm shrink-0">5</div>
                   <div>
                     <p className="font-bold">Lead scoring and prioritization</p>
                     <p className="text-sm text-gray-600">AI models score inbound leads in real time, prioritizing the queue for human SDRs based on fit, intent signals, and behavioral context — ensuring reps spend their time on the highest-probability accounts.</p>
@@ -344,7 +344,7 @@ export default function BlogPost() {
               <div className="not-prose overflow-x-auto my-6">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                    <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                       <th className="border border-gray-300 p-3 text-left font-bold">Metric</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">What It Measures</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Target Benchmark</th>
@@ -367,13 +367,13 @@ export default function BlogPost() {
               <h2>9. Recommended B2B Lead Generation Tools for 2026</h2>
 
               <div className="not-prose space-y-3 my-6">
-                <div className="p-4 bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg border-2 border-blue-300">
+                <div className="p-4 bg-gradient-to-br from-primary/5 to-primary/5 rounded-lg border-2 border-primary/30">
                   <div className="flex items-start justify-between mb-2">
                     <p className="font-bold text-lg">Cursive — Visitor ID + Intent + AI SDR</p>
-                    <span className="bg-blue-600 text-white px-2 py-0.5 rounded text-xs font-bold">Our Pick</span>
+                    <span className="bg-primary text-white px-2 py-0.5 rounded text-xs font-bold">Our Pick</span>
                   </div>
                   <p className="text-sm text-gray-700 mb-2">70% person-level visitor identification and fresh weekly lists of in-market buyers. Choose Visitor Pixel at $97/mo, Custom Audience at $197/mo, or the Pixel + Audience Bundle at $247/mo.</p>
-                  <Link href="/" className="text-blue-600 text-sm hover:underline font-medium">Learn more about Cursive →</Link>
+                  <Link href="/" className="text-primary text-sm hover:underline font-medium">Learn more about Cursive →</Link>
                 </div>
 
                 <div className="p-4 bg-white rounded-lg border border-gray-200">

@@ -31,7 +31,7 @@ export default function BlogPost() {
             Back to Blog
           </Link>
 
-          <div className="max-w-4xl">
+          <div className="max-w-4xl mx-auto">
             <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
               Scaling
             </div>
@@ -153,7 +153,7 @@ export default function BlogPost() {
                 { number: 3, title: 'Process', subtitle: 'Standardize what works' },
                 { number: 4, title: 'Quality Control', subtitle: 'Monitor and optimize' }
               ].map((item) => (
-                <div key={item.number} className="flex items-center gap-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-5 mb-3 border border-gray-200">
+                <div key={item.number} className="flex items-center gap-4 bg-gradient-to-r from-primary/5 to-primary/5 rounded-xl p-5 mb-3 border border-gray-200">
                   <div className="bg-primary text-white rounded-full w-10 h-10 flex items-center justify-center font-bold flex-shrink-0">
                     {item.number}
                   </div>
@@ -184,9 +184,9 @@ export default function BlogPost() {
               <li><strong>Domain naming convention:</strong> Use variations like mail.yourcompany.com, reach.yourcompany.com, connect.yourcompany.com to keep them organized</li>
             </ul>
 
-            <div className="not-prose bg-blue-50 rounded-xl p-6 my-8 border border-blue-200">
+            <div className="not-prose bg-primary/5 rounded-xl p-6 my-8 border border-primary/20">
               <div className="flex gap-3">
-                <AlertTriangle className="w-6 h-6 text-blue-600 flex-shrink-0 mt-0.5" />
+                <AlertTriangle className="w-6 h-6 text-primary flex-shrink-0 mt-0.5" />
                 <div>
                   <h4 className="font-bold mb-2">Pro Tip</h4>
                   <p className="text-sm text-gray-700">
@@ -422,7 +422,7 @@ export default function BlogPost() {
 
             <div className="not-prose my-8">
               <div className="space-y-6">
-                <div className="bg-blue-50 rounded-xl p-6 border border-blue-200">
+                <div className="bg-primary/5 rounded-xl p-6 border border-primary/20">
                   <div className="font-bold text-lg mb-2">Month 1-2: Foundation</div>
                   <ul className="text-sm space-y-1 text-gray-700">
                     <li>• Set up 3-5 sending domains</li>
@@ -433,7 +433,7 @@ export default function BlogPost() {
                   </ul>
                 </div>
 
-                <div className="bg-blue-50 rounded-xl p-6 border border-blue-200">
+                <div className="bg-primary/5 rounded-xl p-6 border border-primary/20">
                   <div className="font-bold text-lg mb-2">Month 3-4: Ramp</div>
                   <ul className="text-sm space-y-1 text-gray-700">
                     <li>• Launch first automated campaigns</li>
@@ -444,7 +444,7 @@ export default function BlogPost() {
                   </ul>
                 </div>
 
-                <div className="bg-blue-50 rounded-xl p-6 border border-blue-200">
+                <div className="bg-primary/5 rounded-xl p-6 border border-primary/20">
                   <div className="font-bold text-lg mb-2">Month 5-6: Scale</div>
                   <ul className="text-sm space-y-1 text-gray-700">
                     <li>• Add more domains as needed</li>
@@ -562,7 +562,7 @@ export default function BlogPost() {
       />
 
       {/* Related Posts */}
-      <section className="py-16 bg-gradient-to-br from-gray-50 to-blue-50">
+      <section className="py-16 bg-gradient-to-br from-gray-50 to-primary/5">
         <Container>
           <h2 className="text-3xl font-bold mb-8 text-center">Read Next</h2>
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">

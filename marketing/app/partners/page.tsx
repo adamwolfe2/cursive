@@ -99,7 +99,7 @@ export default function PartnersPage() {
       <section className="relative overflow-hidden border-b border-gray-100 pt-20 pb-16 sm:pt-24">
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 bg-gradient-to-b from-blue-50/40 via-white to-white"
+          className="pointer-events-none absolute inset-0 bg-gradient-to-b from-primary/5 via-white to-white"
         />
         <Container className="relative max-w-3xl text-center">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
@@ -144,7 +144,7 @@ export default function PartnersPage() {
               const Icon = s.icon
               return (
                 <div key={s.title} className="rounded-2xl border border-gray-200 p-6">
-                  <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 text-primary">
+                  <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-primary/5 text-primary">
                     <Icon className="h-5 w-5" />
                   </div>
                   <p className="text-xs font-semibold text-primary">Step {i + 1}</p>

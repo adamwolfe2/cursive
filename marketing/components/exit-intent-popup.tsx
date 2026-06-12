@@ -170,9 +170,9 @@ export function ExitIntentPopup() {
               {submitted ? (
                 // Success State
                 <div className="text-center py-4">
-                  <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                     <svg
-                      className="w-8 h-8 text-blue-600"
+                      className="w-8 h-8 text-primary"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -228,7 +228,7 @@ export function ExitIntentPopup() {
                       className="w-full bg-white border-2 border-gray-200 hover:border-primary rounded-xl p-6 text-left transition-all group"
                     >
                       <div className="flex items-start gap-4">
-                        <div className="w-12 h-12 bg-blue-50 group-hover:bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors">
+                        <div className="w-12 h-12 bg-primary/5 group-hover:bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors">
                           <svg
                             className="w-6 h-6 text-primary"
                             fill="none"
@@ -259,7 +259,7 @@ export function ExitIntentPopup() {
                       className="w-full bg-white border-2 border-gray-200 hover:border-primary rounded-xl p-6 text-left transition-all group"
                     >
                       <div className="flex items-start gap-4">
-                        <div className="w-12 h-12 bg-blue-50 group-hover:bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors">
+                        <div className="w-12 h-12 bg-primary/5 group-hover:bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors">
                           <svg
                             className="w-6 h-6 text-primary"
                             fill="none"

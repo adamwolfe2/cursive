@@ -63,7 +63,7 @@ export default function BlogPost() {
               Back to Blog
             </Link>
 
-            <div className="max-w-4xl">
+            <div className="max-w-4xl mx-auto">
               <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
                 Buying Guide
               </div>
@@ -98,7 +98,7 @@ export default function BlogPost() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm border-collapse bg-white rounded-xl shadow-sm">
                   <thead>
-                    <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                    <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                       <th className="border border-gray-200 p-3 text-left font-bold">Provider</th>
                       <th className="border border-gray-200 p-3 text-left font-bold">Best For</th>
                       <th className="border border-gray-200 p-3 text-left font-bold">Visitor ID</th>
@@ -108,8 +108,8 @@ export default function BlogPost() {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr className="bg-blue-50 border-2 border-blue-400">
-                      <td className="border border-gray-200 p-3 font-bold text-blue-700">Cursive ⭐ #1</td>
+                    <tr className="bg-primary/5 border-2 border-primary/40">
+                      <td className="border border-gray-200 p-3 font-bold text-primary">Cursive ⭐ #1</td>
                       <td className="border border-gray-200 p-3">Visitor ID + AI Outreach</td>
                       <td className="border border-gray-200 p-3 text-green-600 font-bold">70% rate</td>
                       <td className="border border-gray-200 p-3 text-green-600 font-bold">Yes</td>
@@ -220,14 +220,14 @@ export default function BlogPost() {
               </p>
 
               {/* Provider 1: Cursive */}
-              <div className="not-prose bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-8 my-10 border-2 border-blue-300">
+              <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-2xl p-8 my-10 border-2 border-primary/30">
                 <div className="flex items-start justify-between mb-4">
                   <div>
-                    <div className="inline-block px-2 py-1 bg-blue-600 text-white text-xs font-bold rounded mb-2">OUR TOP PICK</div>
+                    <div className="inline-block px-2 py-1 bg-primary text-white text-xs font-bold rounded mb-2">OUR TOP PICK</div>
                     <h3 className="text-2xl font-bold text-gray-900">1. Cursive — Best for Visitor ID + AI-Powered Outreach</h3>
                   </div>
                   <div className="text-right">
-                    <div className="text-2xl font-bold text-blue-700">4.8/5</div>
+                    <div className="text-2xl font-bold text-primary">4.8/5</div>
                     <div className="text-xs text-gray-500">Overall Rating</div>
                   </div>
                 </div>
@@ -265,11 +265,11 @@ export default function BlogPost() {
                   </div>
                 </div>
                 <div className="flex flex-wrap items-center gap-4">
-                  <div className="bg-white rounded-lg px-4 py-2 border border-blue-200">
+                  <div className="bg-white rounded-lg px-4 py-2 border border-primary/20">
                     <span className="text-xs text-gray-500">Starting Price</span>
-                    <p className="font-bold text-blue-700">$97/mo · $197/mo · $247/mo</p>
+                    <p className="font-bold text-primary">$97/mo · $197/mo · $247/mo</p>
                   </div>
-                  <div className="bg-white rounded-lg px-4 py-2 border border-blue-200">
+                  <div className="bg-white rounded-lg px-4 py-2 border border-primary/20">
                     <span className="text-xs text-gray-500">Best For</span>
                     <p className="font-bold text-gray-800">B2B teams with website traffic wanting automated pipeline</p>
                   </div>
@@ -735,7 +735,7 @@ export default function BlogPost() {
               <div className="not-prose overflow-x-auto my-8">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                    <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                       <th className="border border-gray-300 p-3 text-left font-bold">Provider</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Entry Price</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Team Price</th>
@@ -744,8 +744,8 @@ export default function BlogPost() {
                     </tr>
                   </thead>
                   <tbody className="bg-white">
-                    <tr className="bg-blue-50 border-l-4 border-blue-500">
-                      <td className="border border-gray-300 p-3 font-bold text-blue-700">Cursive</td>
+                    <tr className="bg-primary/5 border-l-4 border-primary">
+                      <td className="border border-gray-300 p-3 font-bold text-primary">Cursive</td>
                       <td className="border border-gray-300 p-3">$97/mo</td>
                       <td className="border border-gray-300 p-3">$247/mo bundle</td>
                       <td className="border border-gray-300 p-3 text-green-600">Monthly</td>
@@ -882,8 +882,8 @@ export default function BlogPost() {
               <h2>Which B2B Data Provider Should You Choose?</h2>
 
               <div className="not-prose space-y-4 my-6">
-                <div className="bg-blue-50 rounded-xl p-5 border border-blue-200">
-                  <p className="font-bold text-blue-800 mb-1">Best Overall: Cursive</p>
+                <div className="bg-primary/5 rounded-xl p-5 border border-primary/20">
+                  <p className="font-bold text-primary mb-1">Best Overall: Cursive</p>
                   <p className="text-gray-700 text-sm">The only platform that combines individual visitor identification (70% rate), 420M+ profiles, and 60B+ behaviors & URLs scanned weekly. Choose Visitor Pixel for $97/month, Custom Audience for $197/month, or both for $247/month.</p>
                 </div>
                 <div className="bg-gray-50 rounded-xl p-5 border border-gray-200">
@@ -919,11 +919,11 @@ export default function BlogPost() {
         </section>
 
         {/* CTA Section */}
-        <section className="py-16 bg-gradient-to-br from-blue-600 to-purple-700 text-white">
+        <section className="py-16 bg-gradient-to-br from-primary to-primary-dark text-white">
           <Container>
             <div className="max-w-3xl mx-auto text-center">
               <h2 className="text-3xl font-bold mb-4">See How Many Visitors You&apos;re Missing</h2>
-              <p className="text-xl text-blue-100 mb-8">
+              <p className="text-xl text-white/90 mb-8">
                 Get a free visitor identification audit for your website. Find out how many anonymous B2B buyers
                 are visiting your site — and how many you could be converting into pipeline with Cursive&apos;s
                 70% identification rate.

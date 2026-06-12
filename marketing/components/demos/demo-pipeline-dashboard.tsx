@@ -145,7 +145,7 @@ export function DemoPipelineDashboard() {
                 initial={{ height: 0 }}
                 animate={{ height: `${height}%` }}
                 transition={{ duration: 0.6, delay: 0.7 + i * 0.08 }}
-                className="flex-1 bg-gradient-to-t from-blue-500 to-blue-400 rounded-t"
+                className="flex-1 bg-gradient-to-t from-primary/50 to-primary-dark rounded-t"
               />
             ))}
           </div>

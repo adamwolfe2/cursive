@@ -34,7 +34,7 @@ export function LeadSequenceFlow() {
           transition={{ delay: 0.2 }}
           className="flex flex-col items-center mb-8"
         >
-          <div className="bg-blue-100 border-2 border-primary px-6 py-4 rounded-lg text-center max-w-xs">
+          <div className="bg-primary/10 border-2 border-primary px-6 py-4 rounded-lg text-center max-w-xs">
             <div className="flex items-center gap-2 mb-2 justify-center">
               <svg
                 viewBox="0 0 24 24"
@@ -63,12 +63,12 @@ export function LeadSequenceFlow() {
             transition={{ delay: 0.4 }}
             className="flex flex-col items-center"
           >
-            <div className="bg-blue-500 text-white px-4 py-2 rounded text-xs mb-2">
+            <div className="bg-primary/50 text-white px-4 py-2 rounded text-xs mb-2">
               If opened →
             </div>
             <div className="text-xs text-gray-600 mb-2">Day 2</div>
             <div className="w-px h-8 bg-primary" />
-            <div className="bg-blue-100 border-2 border-primary px-4 py-3 rounded-lg text-center max-w-xs">
+            <div className="bg-primary/10 border-2 border-primary px-4 py-3 rounded-lg text-center max-w-xs">
               <div className="text-xs text-primary mb-1">SMS</div>
               <div className="text-xs text-gray-900">Follow-up SMS</div>
               <div className="text-xs text-gray-600">Quick question about...</div>
@@ -76,7 +76,7 @@ export function LeadSequenceFlow() {
             <div className="w-px h-8 bg-primary mt-4" />
             <div className="text-xs text-gray-600 mb-2">Day 3</div>
             <div className="w-px h-8 bg-primary" />
-            <div className="bg-blue-100 border-2 border-primary px-4 py-3 rounded-lg text-center max-w-xs">
+            <div className="bg-primary/10 border-2 border-primary px-4 py-3 rounded-lg text-center max-w-xs">
               <div className="text-xs text-primary mb-1">Call</div>
               <div className="text-xs text-gray-900">Call Task Created</div>
               <div className="text-xs text-gray-600">Assigned to rep</div>
@@ -90,12 +90,12 @@ export function LeadSequenceFlow() {
             transition={{ delay: 0.4 }}
             className="flex flex-col items-center"
           >
-            <div className="bg-blue-500 text-white px-4 py-2 rounded text-xs mb-2">
+            <div className="bg-primary/50 text-white px-4 py-2 rounded text-xs mb-2">
               If no open →
             </div>
             <div className="text-xs text-gray-600 mb-2">Day 5</div>
             <div className="w-px h-8 bg-primary" />
-            <div className="bg-blue-100 border-2 border-primary px-4 py-3 rounded-lg text-center max-w-xs">
+            <div className="bg-primary/10 border-2 border-primary px-4 py-3 rounded-lg text-center max-w-xs">
               <div className="text-xs text-primary mb-1">Email</div>
               <div className="text-xs text-gray-900">Re-engagement Email</div>
               <div className="text-xs text-gray-600">Trying to connect...</div>
@@ -145,7 +145,7 @@ export function LeadSequenceFlow() {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.8 }}
-            className="bg-blue-100 border-2 border-primary px-6 py-3 rounded-lg text-center"
+            className="bg-primary/10 border-2 border-primary px-6 py-3 rounded-lg text-center"
           >
             <svg
               viewBox="0 0 24 24"

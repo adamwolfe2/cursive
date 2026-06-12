@@ -35,7 +35,7 @@ export default function BlogPost() {
               Back to Blog
             </Link>
 
-            <div className="max-w-4xl">
+            <div className="max-w-4xl mx-auto">
               <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
                 AI &amp; Automation
               </div>
@@ -135,7 +135,7 @@ export default function BlogPost() {
               </p>
 
               <p>
-                AI agents are becoming part of the B2B buyer&apos;s journey. Not hypothetically &mdash; right now. When a VP of Marketing asks their AI assistant to &ldquo;find me a visitor identification platform under $3K a month that integrates with HubSpot,&rdquo; that assistant is going to visit vendor websites, gather information, and build a comparison. The <Link href="/blog/ai-agents-replacing-buyer-journey" className="text-blue-600 hover:underline">buyer&apos;s journey is shifting from human-driven research to agent-driven evaluation</Link>, and the websites that communicate well with those agents will get recommended more often.
+                AI agents are becoming part of the B2B buyer&apos;s journey. Not hypothetically &mdash; right now. When a VP of Marketing asks their AI assistant to &ldquo;find me a visitor identification platform under $3K a month that integrates with HubSpot,&rdquo; that assistant is going to visit vendor websites, gather information, and build a comparison. The <Link href="/blog/ai-agents-replacing-buyer-journey" className="text-primary hover:underline">buyer&apos;s journey is shifting from human-driven research to agent-driven evaluation</Link>, and the websites that communicate well with those agents will get recommended more often.
               </p>
 
               <p>
@@ -151,7 +151,7 @@ export default function BlogPost() {
               </p>
 
               <p>
-                At Cursive, we built our entire <Link href="/platform" className="text-blue-600 hover:underline">platform</Link> around the idea that knowing who&apos;s on your website &mdash; and reaching them in real time &mdash; is the highest-leverage growth motion in B2B. That thesis extends naturally to agentic traffic. When an AI agent visits your <Link href="/pricing" className="text-blue-600 hover:underline">pricing page</Link> on behalf of a prospect, that visit is a signal of active evaluation. With <Link href="/visitor-identification" className="text-blue-600 hover:underline">Cursive&apos;s visitor identification</Link>, you see that signal in real time and can act on it before your competitors even know the evaluation is happening.
+                At Cursive, we built our entire <Link href="/platform" className="text-primary hover:underline">platform</Link> around the idea that knowing who&apos;s on your website &mdash; and reaching them in real time &mdash; is the highest-leverage growth motion in B2B. That thesis extends naturally to agentic traffic. When an AI agent visits your <Link href="/pricing" className="text-primary hover:underline">pricing page</Link> on behalf of a prospect, that visit is a signal of active evaluation. With <Link href="/visitor-identification" className="text-primary hover:underline">Cursive&apos;s visitor identification</Link>, you see that signal in real time and can act on it before your competitors even know the evaluation is happening.
               </p>
 
               {/* Section 5: What You Should Do This Week */}
@@ -182,7 +182,7 @@ export default function BlogPost() {
               </p>
 
               <p>
-                For a full technical implementation guide with code examples, see our <Link href="/blog/webmcp-implementation-guide-b2b-saas" className="text-blue-600 hover:underline">step-by-step WebMCP implementation guide for B2B SaaS</Link>.
+                For a full technical implementation guide with code examples, see our <Link href="/blog/webmcp-implementation-guide-b2b-saas" className="text-primary hover:underline">step-by-step WebMCP implementation guide for B2B SaaS</Link>.
               </p>
 
               {/* Final CTA */}
@@ -193,7 +193,7 @@ export default function BlogPost() {
               </p>
 
               <p>
-                At <a href="https://www.meetcursive.com">Cursive</a>, we&apos;ve already implemented WebMCP across our entire site &mdash; six imperative tools, seven annotated forms, plus <code>llms.txt</code>, a JSON API endpoint, and full structured data coverage. We did it because we believe the companies that build for the agentic web today will have a compounding advantage over the next two years. You can read the full story of what we built and why in our companion article: <Link href="/blog/webmcp-ai-agent-ready-lead-generation" className="text-blue-600 hover:underline">Why We Made Cursive the First AI-Agent-Ready Lead Gen Platform</Link>.
+                At <a href="https://www.meetcursive.com">Cursive</a>, we&apos;ve already implemented WebMCP across our entire site &mdash; six imperative tools, seven annotated forms, plus <code>llms.txt</code>, a JSON API endpoint, and full structured data coverage. We did it because we believe the companies that build for the agentic web today will have a compounding advantage over the next two years. You can read the full story of what we built and why in our companion article: <Link href="/blog/webmcp-ai-agent-ready-lead-generation" className="text-primary hover:underline">Why We Made Cursive the First AI-Agent-Ready Lead Gen Platform</Link>.
               </p>
 
               <p>
@@ -213,7 +213,7 @@ export default function BlogPost() {
         />
 
         {/* Related Posts */}
-        <section className="py-16 bg-gradient-to-br from-gray-50 to-blue-50">
+        <section className="py-16 bg-gradient-to-br from-gray-50 to-primary/5">
           <Container>
             <h2 className="text-3xl font-bold mb-8 text-center">Read Next</h2>
             <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">

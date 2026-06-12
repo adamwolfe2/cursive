@@ -49,7 +49,7 @@ export function VisitorTrackingFlow() {
                   {node.badge}
                 </div>
               )}
-              <div className="bg-white border-2 border-blue-200 rounded-xl p-6 min-w-[160px] text-center">
+              <div className="bg-white border-2 border-primary/20 rounded-xl p-6 min-w-[160px] text-center">
                 <div className="w-12 h-12 mx-auto mb-3">
                   <svg
                     viewBox="0 0 24 24"
@@ -71,7 +71,7 @@ export function VisitorTrackingFlow() {
             </motion.div>
             {index < nodes.length - 1 && (
               <svg
-                className="w-8 h-8 text-blue-400 flex-shrink-0"
+                className="w-8 h-8 text-primary flex-shrink-0"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"

@@ -142,7 +142,7 @@ export function DemoEmailValidator() {
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg p-2.5 text-center border border-gray-200 flex flex-col justify-center"
+          className="bg-gradient-to-br from-primary/5 to-primary/5 rounded-lg p-2.5 text-center border border-gray-200 flex flex-col justify-center"
         >
           <motion.div
             key={score}
@@ -166,7 +166,7 @@ export function DemoEmailValidator() {
             transition={{ delay: index * 0.05 }}
             className={`bg-white rounded-md p-2 border transition-all ${
               check.status === "pass"
-                ? "border-blue-300 bg-blue-50/30"
+                ? "border-primary/30 bg-primary/5"
                 : check.status === "warning"
                 ? "border-gray-300 bg-gray-50/30"
                 : check.status === "checking"

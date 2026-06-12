@@ -48,7 +48,7 @@ export default function BlogPost() {
             Back to Blog
           </Link>
 
-          <div className="max-w-4xl">
+          <div className="max-w-4xl mx-auto">
             <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
               Platform Comparison
             </div>
@@ -114,7 +114,7 @@ export default function BlogPost() {
             <div className="not-prose overflow-x-auto my-8">
               <table className="w-full text-sm border-collapse">
                 <thead>
-                  <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                  <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                     <th className="border border-gray-300 p-3 text-left font-bold">Feature</th>
                     <th className="border border-gray-300 p-3 text-left font-bold">Apollo.io</th>
                     <th className="border border-gray-300 p-3 text-left font-bold">Cursive</th>
@@ -201,9 +201,9 @@ export default function BlogPost() {
                 </ul>
               </div>
 
-              <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 border-2 border-blue-500">
+              <div className="bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-6 border-2 border-primary">
                 <h4 className="font-bold text-lg mb-4 flex items-center gap-2">
-                  <span className="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm">C</span>
+                  <span className="bg-primary text-white w-8 h-8 rounded-full flex items-center justify-center text-sm">C</span>
                   Cursive
                 </h4>
                 <p className="text-sm mb-4 text-gray-700">
@@ -277,7 +277,7 @@ export default function BlogPost() {
                 </ul>
               </div>
 
-              <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 border-2 border-blue-500">
+              <div className="bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-6 border-2 border-primary">
                 <h4 className="font-bold text-lg mb-4">Cursive Visitor ID</h4>
                 <ul className="space-y-3 text-sm">
                   <li className="flex items-start gap-2">
@@ -343,7 +343,7 @@ export default function BlogPost() {
                 </ul>
               </div>
 
-              <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 border-2 border-blue-500">
+              <div className="bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-6 border-2 border-primary">
                 <h4 className="font-bold text-lg mb-4">Cursive Intent Data</h4>
                 <ul className="space-y-3 text-sm">
                   <li className="flex items-start gap-2">
@@ -409,7 +409,7 @@ export default function BlogPost() {
                 </ul>
               </div>
 
-              <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 border-2 border-blue-500">
+              <div className="bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-6 border-2 border-primary">
                 <h4 className="font-bold text-lg mb-4">Cursive Automation</h4>
                 <ul className="space-y-3 text-sm">
                   <li className="flex items-start gap-2">
@@ -448,7 +448,7 @@ export default function BlogPost() {
 
             <h3>Pricing Comparison</h3>
 
-            <div className="not-prose bg-gradient-to-br from-green-50 to-blue-50 rounded-xl p-8 my-8 border-2 border-green-500">
+            <div className="not-prose bg-gradient-to-br from-green-50 to-primary/5 rounded-xl p-8 my-8 border-2 border-green-500">
               <h4 className="font-bold text-2xl mb-6">Cost Analysis for 5-Person Team</h4>
 
               <div className="grid md:grid-cols-2 gap-8">
@@ -477,8 +477,8 @@ export default function BlogPost() {
                   </div>
                 </div>
 
-                <div className="bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg p-6">
-                  <h5 className="font-bold text-lg mb-4 text-blue-900">Cursive</h5>
+                <div className="bg-gradient-to-br from-primary/10 to-primary/10 rounded-lg p-6">
+                  <h5 className="font-bold text-lg mb-4 text-primary">Cursive</h5>
                   <div className="space-y-3 text-sm">
                     <div className="flex justify-between">
                       <span>Growth plan:</span>
@@ -496,7 +496,7 @@ export default function BlogPost() {
                       <span className="font-bold">Total Annual:</span>
                       <span className="font-bold text-green-600">$4,788</span>
                     </div>
-                    <p className="text-xs text-blue-800 mt-2">
+                    <p className="text-xs text-primary mt-2">
                       Includes 70%+ person-level identification + AI outreach
                     </p>
                   </div>
@@ -543,7 +543,7 @@ export default function BlogPost() {
                 </div>
               </div>
 
-              <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 border-2 border-blue-500">
+              <div className="bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-6 border-2 border-primary">
                 <h4 className="font-bold text-lg mb-4">Cursive Warm Outreach</h4>
                 <div className="space-y-3 text-sm">
                   <div className="flex justify-between">
@@ -688,31 +688,31 @@ export default function BlogPost() {
                 </ul>
               </div>
 
-              <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 border-2 border-blue-500">
-                <h4 className="font-bold text-lg mb-4 text-blue-900">Choose Cursive if you:</h4>
+              <div className="bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-6 border-2 border-primary">
+                <h4 className="font-bold text-lg mb-4 text-primary">Choose Cursive if you:</h4>
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-blue-600 mt-1 flex-shrink-0" />
+                    <Check className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
                     <span><strong>Want to identify website visitors</strong></span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-blue-600 mt-1 flex-shrink-0" />
+                    <Check className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
                     <span><strong>Focus on warm inbound traffic</strong></span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-blue-600 mt-1 flex-shrink-0" />
+                    <Check className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
                     <span><strong>Have website traffic (1k+/month)</strong></span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-blue-600 mt-1 flex-shrink-0" />
+                    <Check className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
                     <span><strong>Want 20-30% response rates</strong></span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-blue-600 mt-1 flex-shrink-0" />
+                    <Check className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
                     <span><strong>Need automated intent-based outreach</strong></span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-blue-600 mt-1 flex-shrink-0" />
+                    <Check className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
                     <span><strong>Want person-level behavioral data</strong></span>
                   </li>
                 </ul>
@@ -725,11 +725,11 @@ export default function BlogPost() {
               Many successful teams use Apollo for outbound and Cursive for inbound:
             </p>
 
-            <div className="not-prose bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl p-6 my-8 border border-purple-300">
+            <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-6 my-8 border border-primary/30">
               <h4 className="font-bold text-lg mb-3">The Dual-Channel Strategy</h4>
               <ul className="space-y-3 text-sm">
                 <li className="flex items-start gap-2">
-                  <span className="bg-blue-600 text-white px-2 py-1 rounded text-xs font-bold">Cursive</span>
+                  <span className="bg-primary text-white px-2 py-1 rounded text-xs font-bold">Cursive</span>
                   <span><strong>Primary channel (70% of pipeline):</strong> Identify and convert warm website visitors with 20-30% response rates</span>
                 </li>
                 <li className="flex items-start gap-2">
@@ -776,7 +776,7 @@ export default function BlogPost() {
               in as a supplemental cold outbound channel for accounts that have not visited the website.
             </p>
 
-            <div className="not-prose bg-gradient-to-br from-green-50 to-blue-50 rounded-xl p-6 my-8 border border-green-200">
+            <div className="not-prose bg-gradient-to-br from-green-50 to-primary/5 rounded-xl p-6 my-8 border border-green-200">
               <h4 className="font-bold text-lg mb-3">Migration Checklist</h4>
               <ul className="space-y-2 text-sm text-gray-700">
                 <li className="flex items-start gap-2">
@@ -814,7 +814,7 @@ export default function BlogPost() {
 
             <h3>Teams Using Both Platforms</h3>
 
-            <div className="not-prose bg-blue-50 rounded-xl p-6 my-8 border border-blue-200">
+            <div className="not-prose bg-primary/5 rounded-xl p-6 my-8 border border-primary/20">
               <p className="text-sm italic mb-2">
                 &quot;We use Apollo for cold outbound but were frustrated with 1.5% response rates. We added Cursive to
                 identify our website visitors and now 70% of our pipeline comes from Cursive at 25% response rates. We
@@ -823,7 +823,7 @@ export default function BlogPost() {
               <p className="text-sm font-bold">-- VP Sales, Marketing Tech Startup</p>
             </div>
 
-            <div className="not-prose bg-blue-50 rounded-xl p-6 my-8 border border-blue-200">
+            <div className="not-prose bg-primary/5 rounded-xl p-6 my-8 border border-primary/20">
               <p className="text-sm italic mb-2">
                 &quot;Apollo is great for building lists but we were spending hours manually researching and personalizing.
                 Cursive identifies visitors automatically and personalizes based on what they viewed. We went from 4
@@ -832,7 +832,7 @@ export default function BlogPost() {
               <p className="text-sm font-bold">-- Founder, B2B SaaS (Seed Stage)</p>
             </div>
 
-            <div className="not-prose bg-blue-50 rounded-xl p-6 my-8 border border-blue-200">
+            <div className="not-prose bg-primary/5 rounded-xl p-6 my-8 border border-primary/20">
               <p className="text-sm italic mb-2">
                 &quot;We ran Apollo and Cursive side by side for 30 days. Apollo generated 18 meetings from 4,200
                 cold emails (0.4% meeting rate). Cursive generated 42 meetings from 680 warm visitor outreach emails
@@ -846,7 +846,7 @@ export default function BlogPost() {
 
             <div className="not-prose space-y-6 my-8">
               {faqs.map((faq, index) => (
-                <div key={index} className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-lg p-6 border border-gray-200">
+                <div key={index} className="bg-gradient-to-br from-gray-50 to-primary/5 rounded-lg p-6 border border-gray-200">
                   <h3 className="font-bold text-lg mb-3">{faq.question}</h3>
                   <p className="text-gray-700">{faq.answer}</p>
                 </div>
@@ -892,7 +892,7 @@ export default function BlogPost() {
       />
 
       {/* Related Posts */}
-      <section className="py-16 bg-gradient-to-br from-gray-50 to-blue-50">
+      <section className="py-16 bg-gradient-to-br from-gray-50 to-primary/5">
         <Container>
           <div className="max-w-5xl mx-auto">
             <SimpleRelatedPosts posts={[

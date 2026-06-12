@@ -35,7 +35,7 @@ export default function BlogPost() {
               <ArrowLeft className="w-4 h-4" />
               Back to Blog
             </Link>
-            <div className="max-w-4xl">
+            <div className="max-w-4xl mx-auto">
               <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
                 Strategy
               </div>
@@ -79,7 +79,7 @@ export default function BlogPost() {
                 The difference between a 2% and a 6% conversion rate on identified visitors is not a better email template. It is context. It is knowing that James Sullivan spent 18 months as a BDR before moving into sales leadership, that his company just closed a Series B round in November, and that he spoke on a panel about outbound efficiency at SaaStr last month. That context transforms a generic cold email into a relevant conversation starter.
               </p>
 
-              <div className="not-prose bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-8 my-8 border border-blue-200">
+              <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-8 my-8 border border-primary/20">
                 <h3 className="font-bold text-lg mb-2">The core insight</h3>
                 <p className="text-gray-700">
                   Raw visitor identification data converts at under 2% in most B2B contexts. Not because the data is bad — but because it is incomplete. Data tells you who. Intelligence tells you why to care and what to say.
@@ -143,7 +143,7 @@ export default function BlogPost() {
               <div className="not-prose overflow-x-auto my-8">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                    <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                       <th className="border border-gray-300 p-3 text-left font-bold">Intelligence Tier</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Cost</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">What You Get</th>

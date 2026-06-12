@@ -66,7 +66,7 @@ export default function BlogPost() {
               <ArrowLeft className="w-4 h-4" />
               Back to Blog
             </Link>
-            <div className="max-w-4xl">
+            <div className="max-w-4xl mx-auto">
               <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
                 Comparisons
               </div>
@@ -123,7 +123,7 @@ export default function BlogPost() {
               <div className="not-prose overflow-x-auto my-8">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                    <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                       <th className="border border-gray-300 p-3 text-left font-bold">Tool</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Best For</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Visitor ID</th>
@@ -132,7 +132,7 @@ export default function BlogPost() {
                     </tr>
                   </thead>
                   <tbody className="bg-white">
-                    <tr className="bg-blue-50 border-2 border-blue-500">
+                    <tr className="bg-primary/5 border-2 border-primary">
                       <td className="border border-gray-300 p-3 font-bold">Cursive</td>
                       <td className="border border-gray-300 p-3">Warm visitor ID + intent + AI outreach</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold"><Check className="w-4 h-4 inline" /> 70% person-level</td>
@@ -232,17 +232,17 @@ export default function BlogPost() {
               <h2>7 Best Amplemarket Alternatives (Detailed Reviews)</h2>
 
               {/* 1. Cursive */}
-              <div className="not-prose bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-8 my-8 border-2 border-blue-500">
+              <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-8 my-8 border-2 border-primary">
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <h3 className="text-2xl font-bold mb-2">1. Cursive</h3>
                     <p className="text-sm text-gray-600">Best for: Teams that want to capture warm visitors AND run cold outreach in one platform</p>
                   </div>
-                  <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-bold">Our Pick</span>
+                  <span className="bg-primary text-white px-3 py-1 rounded-full text-sm font-bold">Our Pick</span>
                 </div>
 
                 <p className="text-gray-700 mb-4">
-                  <strong>What makes it different:</strong> Amplemarket starts every sequence cold. <Link href="/" className="text-blue-600 hover:underline">Cursive</Link> starts
+                  <strong>What makes it different:</strong> Amplemarket starts every sequence cold. <Link href="/" className="text-primary hover:underline">Cursive</Link> starts
                   with the warmest signal available: people who have already visited your website and shown explicit interest
                   in what you sell. Cursive installs a lightweight pixel, identifies up to 70% of anonymous visitors in real
                   time, matches them to its database of 280M US consumer and 140M+ business profiles, then automatically
@@ -310,12 +310,12 @@ export default function BlogPost() {
                 <div className="bg-white rounded-lg p-4">
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-bold">Pricing:</span>
-                    <span className="text-lg font-bold text-blue-600">$97 / $197 / $247 per month</span>
+                    <span className="text-lg font-bold text-primary">$97 / $197 / $247 per month</span>
                   </div>
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> B2B teams paying Amplemarket-level pricing for cold outreach who want to
                     redirect that budget to a platform that also captures the warm traffic they are currently missing.
-                    See <Link href="/pricing" className="text-blue-600 hover:underline">pricing details</Link>.
+                    See <Link href="/pricing" className="text-primary hover:underline">pricing details</Link>.
                   </p>
                 </div>
               </div>
@@ -601,27 +601,27 @@ export default function BlogPost() {
               {/* Which to Choose */}
               <h2>Which Amplemarket Alternative Should You Choose?</h2>
 
-              <div className="not-prose bg-gradient-to-br from-gray-50 to-blue-50 rounded-xl p-6 my-8 border border-gray-200">
+              <div className="not-prose bg-gradient-to-br from-gray-50 to-primary/5 rounded-xl p-6 my-8 border border-gray-200">
                 <h3 className="font-bold text-lg mb-4">Decision Matrix by Use Case</h3>
                 <div className="space-y-4 text-sm">
                   <div className="border-b border-gray-200 pb-3">
-                    <p className="font-bold text-blue-700 mb-1">You want to capture warm website visitors + run outreach + use intent data:</p>
+                    <p className="font-bold text-primary mb-1">You want to capture warm website visitors + run outreach + use intent data:</p>
                     <p className="text-gray-700"><strong>Choose Cursive.</strong> The only tool in this comparison that combines 70% person-level visitor identification with real-time intent signals and AI-powered multi-channel outreach. Plans start at $97/mo, adding the warm-signal layer Amplemarket lacks entirely.</p>
                   </div>
                   <div className="border-b border-gray-200 pb-3">
-                    <p className="font-bold text-blue-700 mb-1">You want to cut costs while keeping cold outreach automation:</p>
+                    <p className="font-bold text-primary mb-1">You want to cut costs while keeping cold outreach automation:</p>
                     <p className="text-gray-700"><strong>Choose Apollo or Reply.io.</strong> Both deliver solid cold sequencing at a fraction of Amplemarket&apos;s price point.</p>
                   </div>
                   <div className="border-b border-gray-200 pb-3">
-                    <p className="font-bold text-blue-700 mb-1">You need enterprise-grade sequencing + deal intelligence:</p>
+                    <p className="font-bold text-primary mb-1">You need enterprise-grade sequencing + deal intelligence:</p>
                     <p className="text-gray-700"><strong>Choose Outreach or Salesloft.</strong> Both handle enterprise complexity and revenue forecasting that Amplemarket does not.</p>
                   </div>
                   <div className="border-b border-gray-200 pb-3">
-                    <p className="font-bold text-blue-700 mb-1">You want to add visitor identification to your existing Amplemarket stack:</p>
+                    <p className="font-bold text-primary mb-1">You want to add visitor identification to your existing Amplemarket stack:</p>
                     <p className="text-gray-700"><strong>Choose Cursive.</strong> Its month-to-month self-serve plans start at $97/mo and add the visitor ID layer, rather than paying Amplemarket + Warmly ($1,000-$2,000 + $3,500).</p>
                   </div>
                   <div>
-                    <p className="font-bold text-blue-700 mb-1">You are a small team looking for affordable multichannel sequencing:</p>
+                    <p className="font-bold text-primary mb-1">You are a small team looking for affordable multichannel sequencing:</p>
                     <p className="text-gray-700"><strong>Choose Klenty or Reply.io.</strong> Lower price points with solid multichannel coverage for smaller teams.</p>
                   </div>
                 </div>

@@ -36,7 +36,7 @@ export default function BlogPost() {
             Back to Blog
           </Link>
 
-          <div className="max-w-4xl">
+          <div className="max-w-4xl mx-auto">
             <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
               Strategy
             </div>
@@ -156,7 +156,7 @@ export default function BlogPost() {
                   description: 'Validate with real campaigns'
                 }
               ].map((step) => (
-                <div key={step.step} className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-6 mb-4 border border-gray-200">
+                <div key={step.step} className="bg-gradient-to-r from-primary/5 to-primary/5 rounded-xl p-6 mb-4 border border-gray-200">
                   <div className="flex items-start gap-4">
                     <div className="bg-primary text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-lg flex-shrink-0">
                       {step.step}
@@ -291,28 +291,28 @@ export default function BlogPost() {
               <li><strong>End Users:</strong> Will use the product</li>
             </ul>
 
-            <div className="not-prose bg-blue-50 rounded-xl p-6 my-8 border border-blue-200">
+            <div className="not-prose bg-primary/5 rounded-xl p-6 my-8 border border-primary/20">
               <h4 className="font-bold mb-4">Example Buying Committee</h4>
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b-2 border-blue-200">
+                  <tr className="border-b-2 border-primary/20">
                     <th className="py-2 text-left">Role</th>
                     <th className="py-2 text-left">Title</th>
                     <th className="py-2 text-left">Primary Pain</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr className="border-b border-blue-100">
+                  <tr className="border-b border-primary/15">
                     <td className="py-2 font-medium">Champion</td>
                     <td className="py-2 text-gray-600">Director of Sales Ops</td>
                     <td className="py-2 text-gray-600">Manual processes, data chaos</td>
                   </tr>
-                  <tr className="border-b border-blue-100">
+                  <tr className="border-b border-primary/15">
                     <td className="py-2 font-medium">Economic Buyer</td>
                     <td className="py-2 text-gray-600">VP of Sales</td>
                     <td className="py-2 text-gray-600">Missing revenue targets</td>
                   </tr>
-                  <tr className="border-b border-blue-100">
+                  <tr className="border-b border-primary/15">
                     <td className="py-2 font-medium">Decision Maker</td>
                     <td className="py-2 text-gray-600">CRO</td>
                     <td className="py-2 text-gray-600">Pipeline predictability</td>
@@ -377,7 +377,7 @@ export default function BlogPost() {
 
             <div className="not-prose my-8">
               <div className="grid md:grid-cols-2 gap-6">
-                <div className="bg-blue-50 rounded-xl p-6 border border-blue-200">
+                <div className="bg-primary/5 rounded-xl p-6 border border-primary/20">
                   <h4 className="font-bold text-lg mb-3">ICP (Company Level)</h4>
                   <ul className="space-y-2 text-sm">
                     <li>• B2B SaaS</li>
@@ -387,7 +387,7 @@ export default function BlogPost() {
                     <li>• Uses Salesforce</li>
                   </ul>
                 </div>
-                <div className="bg-blue-50 rounded-xl p-6 border border-blue-200">
+                <div className="bg-primary/5 rounded-xl p-6 border border-primary/20">
                   <h4 className="font-bold text-lg mb-3">Buyer Persona (Individual)</h4>
                   <ul className="space-y-2 text-sm">
                     <li>• Director of Sales Ops</li>
@@ -463,7 +463,7 @@ export default function BlogPost() {
               Use this template to document your ICP:
             </p>
 
-            <div className="not-prose bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-8 my-8 border border-gray-200">
+            <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-8 my-8 border border-gray-200">
               <h4 className="font-bold text-xl mb-6">ICP: [Name]</h4>
 
               <div className="space-y-6">
@@ -548,7 +548,7 @@ export default function BlogPost() {
       />
 
       {/* Related Posts */}
-      <section className="py-16 bg-gradient-to-br from-gray-50 to-blue-50">
+      <section className="py-16 bg-gradient-to-br from-gray-50 to-primary/5">
         <Container>
           <h2 className="text-3xl font-bold mb-8 text-center">Read Next</h2>
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">

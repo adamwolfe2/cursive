@@ -61,8 +61,8 @@ export default function LeadGenerationPage() {
             Back to Blog
           </Link>
 
-          <div className="max-w-4xl">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-full text-sm font-medium mb-6">
+          <div className="max-w-4xl mx-auto">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-full text-sm font-medium mb-6">
               <TrendingUp className="w-4 h-4" />
               Lead Generation
             </div>
@@ -144,7 +144,7 @@ export default function LeadGenerationPage() {
               outbound with the relevance of inbound. It&apos;s the future of B2B lead generation.
             </p>
 
-            <div className="not-prose bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 my-8 border border-blue-200">
+            <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-6 my-8 border border-primary/20">
               <h3 className="font-bold text-lg mb-3">Lead Generation Eras: Response Rate Comparison</h3>
               <div className="space-y-4">
                 <div>
@@ -180,7 +180,7 @@ export default function LeadGenerationPage() {
                     <span className="text-sm text-gray-600">12-25% response rate</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-3">
-                    <div className="bg-blue-600 h-3 rounded-full" style={{ width: "90%" }}></div>
+                    <div className="bg-primary h-3 rounded-full" style={{ width: "90%" }}></div>
                   </div>
                 </div>
               </div>
@@ -229,7 +229,7 @@ export default function LeadGenerationPage() {
             <div className="not-prose overflow-x-auto my-8">
               <table className="w-full text-sm border-collapse">
                 <thead>
-                  <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                  <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                     <th className="border border-gray-300 p-3 text-left font-bold">Factor</th>
                     <th className="border border-gray-300 p-3 text-left font-bold">Cold Outreach</th>
                     <th className="border border-gray-300 p-3 text-left font-bold">Intent-Based Outreach</th>
@@ -485,7 +485,7 @@ export default function LeadGenerationPage() {
             <div className="not-prose overflow-x-auto my-8">
               <table className="w-full text-sm border-collapse">
                 <thead>
-                  <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                  <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                     <th className="border border-gray-300 p-3 text-left font-bold">Signal</th>
                     <th className="border border-gray-300 p-3 text-left font-bold">Points</th>
                     <th className="border border-gray-300 p-3 text-left font-bold">Category</th>
@@ -634,7 +634,7 @@ export default function LeadGenerationPage() {
 
             <div className="not-prose space-y-6 my-8">
               {faqs.map((faq, index) => (
-                <div key={index} className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-lg p-6 border border-gray-200">
+                <div key={index} className="bg-gradient-to-br from-gray-50 to-primary/5 rounded-lg p-6 border border-gray-200">
                   <h3 className="font-bold text-lg mb-3">{faq.question}</h3>
                   <p className="text-gray-700">{faq.answer}</p>
                 </div>
@@ -685,7 +685,7 @@ export default function LeadGenerationPage() {
       />
 
       {/* Related Posts */}
-      <section className="py-16 bg-gradient-to-br from-gray-50 to-blue-50">
+      <section className="py-16 bg-gradient-to-br from-gray-50 to-primary/5">
         <Container>
           <div className="max-w-5xl mx-auto">
             <SimpleRelatedPosts posts={[

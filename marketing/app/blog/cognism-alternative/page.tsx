@@ -57,7 +57,7 @@ export default function BlogPost() {
               Back to Blog
             </Link>
 
-            <div className="max-w-4xl">
+            <div className="max-w-4xl mx-auto">
               <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
                 Data &amp; Intelligence
               </div>
@@ -135,7 +135,7 @@ export default function BlogPost() {
               <div className="not-prose overflow-x-auto my-8">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                    <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                       <th className="border border-gray-300 p-3 text-left font-bold">Tool</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Database</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Visitor ID</th>
@@ -146,7 +146,7 @@ export default function BlogPost() {
                     </tr>
                   </thead>
                   <tbody className="bg-white">
-                    <tr className="bg-blue-50 border-2 border-blue-500">
+                    <tr className="bg-primary/5 border-2 border-primary">
                       <td className="border border-gray-300 p-3 font-bold">Cursive</td>
                       <td className="border border-gray-300 p-3">280M consumer / 140M+ business</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold">70% person-level</td>
@@ -216,19 +216,19 @@ export default function BlogPost() {
               <h2>7 Best Cognism Alternatives (Detailed Comparison)</h2>
 
               {/* Tool 1: Cursive */}
-              <div className="not-prose bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-8 my-8 border-2 border-blue-500">
+              <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-8 my-8 border-2 border-primary">
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <h3 className="text-2xl font-bold mb-2">1. Cursive</h3>
                     <p className="text-sm text-gray-600">Best for: AI-powered pipeline generation with visitor identification + intent-driven outreach</p>
                   </div>
-                  <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-bold whitespace-nowrap">Top Pick</span>
+                  <span className="bg-primary text-white px-3 py-1 rounded-full text-sm font-bold whitespace-nowrap">Top Pick</span>
                 </div>
 
                 <p className="text-gray-700 mb-4">
                   <strong>What makes it different:</strong> Cognism gives you a database to search and data to export.
                   Cursive gives you a complete pipeline generation engine. It combines{" "}
-                  <Link href="/visitor-identification" className="text-blue-600 hover:underline">industry-leading 70% visitor identification</Link>,
+                  <Link href="/visitor-identification" className="text-primary hover:underline">industry-leading 70% visitor identification</Link>,
                   280M consumer profiles, 140M+ business profiles, 60B+ behavioral intent signals, and AI-powered
                   multi-channel outreach (email, LinkedIn, SMS, and direct mail) -- all in one platform. Instead of
                   manually prospecting a database like Cognism, Cursive automatically identifies the companies and
@@ -291,28 +291,28 @@ export default function BlogPost() {
                 <div className="bg-white rounded-lg p-4">
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-bold">Pricing:</span>
-                    <span className="text-lg font-bold text-blue-600">$97/mo / $197/mo / $247/mo</span>
+                    <span className="text-lg font-bold text-primary">$97/mo / $197/mo / $247/mo</span>
                   </div>
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> B2B companies targeting US and North American markets who want to convert
                     anonymous website traffic into pipeline and automate personalized outreach -- without the expensive
                     annual contracts or EMEA-specific data overhead of Cognism. See our{" "}
-                    <Link href="/pricing" className="text-blue-600 hover:underline">pricing page</Link> for full details.
+                    <Link href="/pricing" className="text-primary hover:underline">pricing page</Link> for full details.
                   </p>
                 </div>
               </div>
 
               {/* Mid-article CTA */}
-              <div className="not-prose bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-8 my-8 text-white text-center">
+              <div className="not-prose bg-gradient-to-r from-primary to-primary-dark rounded-xl p-8 my-8 text-white text-center">
                 <h3 className="text-2xl font-bold mb-3">Tired of Paying $15k+/Year for a Data Provider?</h3>
-                <p className="text-blue-100 mb-6 max-w-xl mx-auto">
+                <p className="text-white/90 mb-6 max-w-xl mx-auto">
                   Cursive identifies companies visiting your website, enriches them with 60B+ behaviors & URLs scanned weekly, and
                   automates personalized outreach across email, LinkedIn, and direct mail. Month-to-month pricing.
                   No annual contracts.
                 </p>
                 <Link
                   href="https://www.meetcursive.com/platform"
-                  className="inline-block bg-white text-blue-600 font-bold px-6 py-3 rounded-lg hover:bg-blue-50 transition-colors"
+                  className="inline-block bg-white text-primary font-bold px-6 py-3 rounded-lg hover:bg-primary/5 transition-colors"
                 >
                   See How Cursive Works
                 </Link>
@@ -780,10 +780,10 @@ export default function BlogPost() {
 
               <h3>If You Primarily Sell in the US and Want Automation:</h3>
               <p>
-                Choose <strong><Link href="/" className="text-blue-600 hover:underline">Cursive</Link></strong>.
+                Choose <strong><Link href="/" className="text-primary hover:underline">Cursive</Link></strong>.
                 Cognism's EMEA advantage means little for North American-focused teams. Cursive gives you superior
                 US data coverage, industry-leading{" "}
-                <Link href="/visitor-identification" className="text-blue-600 hover:underline">70% visitor identification</Link>,
+                <Link href="/visitor-identification" className="text-primary hover:underline">70% visitor identification</Link>,
                 60B+ behaviors & URLs scanned weekly, and built-in AI outreach -- at a more flexible price point than either
                 Cognism or ZoomInfo.
               </p>
@@ -812,7 +812,7 @@ export default function BlogPost() {
               <h3>If Intent Data Is Your Priority:</h3>
               <p>
                 Choose <strong>Lead411</strong> for Bombora intent data included at a transparent price, or{" "}
-                <strong><Link href="/" className="text-blue-600 hover:underline">Cursive</Link></strong> for
+                <strong><Link href="/" className="text-primary hover:underline">Cursive</Link></strong> for
                 first-party intent signals from website behavior combined with 60B+ weekly behavioral data
                 points -- which is far more actionable than third-party intent alone.
               </p>
@@ -827,7 +827,7 @@ export default function BlogPost() {
               {/* Evaluation Checklist */}
               <h2>Cognism Alternative Evaluation Checklist</h2>
 
-              <div className="not-prose bg-gradient-to-br from-gray-50 to-blue-50 rounded-xl p-6 my-8 border border-gray-200">
+              <div className="not-prose bg-gradient-to-br from-gray-50 to-primary/5 rounded-xl p-6 my-8 border border-gray-200">
                 <h3 className="font-bold text-lg mb-4">Key Questions to Ask Before Switching</h3>
                 <div className="grid md:grid-cols-2 gap-4 text-sm">
                   <div className="space-y-3">
@@ -866,7 +866,7 @@ export default function BlogPost() {
 
               <div className="not-prose space-y-6 my-8">
                 {faqs.map((faq, index) => (
-                  <div key={index} className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-lg p-6 border border-gray-200">
+                  <div key={index} className="bg-gradient-to-br from-gray-50 to-primary/5 rounded-lg p-6 border border-gray-200">
                     <h3 className="font-bold text-lg mb-3">{faq.question}</h3>
                     <p className="text-gray-700">{faq.answer}</p>
                   </div>
@@ -894,7 +894,7 @@ export default function BlogPost() {
 
               <p>
                 For teams ready to move beyond database-first prospecting,{" "}
-                <Link href="/" className="text-blue-600 hover:underline">Cursive</Link> represents the next
+                <Link href="/" className="text-primary hover:underline">Cursive</Link> represents the next
                 evolution: identifying companies already showing buying intent on your website and automating
                 personalized, multi-channel outreach to convert them -- without the complexity of stitching
                 together multiple tools or committing to expensive annual contracts.
@@ -919,7 +919,7 @@ export default function BlogPost() {
         />
 
         {/* Related Posts */}
-        <section className="py-16 bg-gradient-to-br from-gray-50 to-blue-50">
+        <section className="py-16 bg-gradient-to-br from-gray-50 to-primary/5">
           <Container>
             <div className="max-w-5xl mx-auto">
               <SimpleRelatedPosts posts={[

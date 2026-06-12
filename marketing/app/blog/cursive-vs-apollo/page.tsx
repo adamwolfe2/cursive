@@ -61,7 +61,7 @@ export default function BlogPost() {
             Back to Blog
           </Link>
 
-          <div className="max-w-4xl">
+          <div className="max-w-4xl mx-auto">
             <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
               Comparisons
             </div>
@@ -147,7 +147,7 @@ export default function BlogPost() {
             <div className="not-prose overflow-x-auto my-8">
               <table className="w-full text-sm border-collapse">
                 <thead>
-                  <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                  <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                     <th className="border border-gray-300 p-3 text-left font-bold">Feature</th>
                     <th className="border border-gray-300 p-3 text-left font-bold">Apollo.io</th>
                     <th className="border border-gray-300 p-3 text-left font-bold">Cursive</th>
@@ -259,9 +259,9 @@ export default function BlogPost() {
                 </ul>
               </div>
 
-              <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 border-2 border-blue-500">
+              <div className="bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-6 border-2 border-primary">
                 <h4 className="font-bold text-lg mb-4 flex items-center gap-2">
-                  <span className="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm">C</span>
+                  <span className="bg-primary text-white w-8 h-8 rounded-full flex items-center justify-center text-sm">C</span>
                   Cursive
                 </h4>
                 <p className="text-sm mb-4 text-gray-700">
@@ -356,7 +356,7 @@ export default function BlogPost() {
                 </ul>
               </div>
 
-              <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 border-2 border-blue-500">
+              <div className="bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-6 border-2 border-primary">
                 <h4 className="font-bold text-lg mb-4">Cursive Intent Signals</h4>
                 <ul className="space-y-3 text-sm">
                   <li className="flex items-start gap-2">
@@ -439,7 +439,7 @@ export default function BlogPost() {
                 </ul>
               </div>
 
-              <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 border-2 border-blue-500">
+              <div className="bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-6 border-2 border-primary">
                 <h4 className="font-bold text-lg mb-4">Cursive Automation</h4>
                 <ul className="space-y-3 text-sm">
                   <li className="flex items-start gap-2">
@@ -547,7 +547,7 @@ export default function BlogPost() {
               for your money and what additional tools you need to match capabilities.
             </p>
 
-            <div className="not-prose bg-gradient-to-br from-green-50 to-blue-50 rounded-xl p-8 my-8 border-2 border-green-500">
+            <div className="not-prose bg-gradient-to-br from-green-50 to-primary/5 rounded-xl p-8 my-8 border-2 border-green-500">
               <h4 className="font-bold text-2xl mb-6">Cost Analysis for a 5-Person Sales Team</h4>
 
               <div className="grid md:grid-cols-2 gap-8">
@@ -580,8 +580,8 @@ export default function BlogPost() {
                   </div>
                 </div>
 
-                <div className="bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg p-6">
-                  <h5 className="font-bold text-lg mb-4 text-blue-900">Cursive (All-in-One)</h5>
+                <div className="bg-gradient-to-br from-primary/10 to-primary/10 rounded-lg p-6">
+                  <h5 className="font-bold text-lg mb-4 text-primary">Cursive (All-in-One)</h5>
                   <div className="space-y-3 text-sm">
                     <div className="flex justify-between">
                       <span>Growth plan (unlimited users):</span>
@@ -603,7 +603,7 @@ export default function BlogPost() {
                       <span className="font-bold">Total Annual:</span>
                       <span className="font-bold text-green-600">$5,988-11,988</span>
                     </div>
-                    <p className="text-xs text-blue-800 mt-2">
+                    <p className="text-xs text-primary mt-2">
                       All capabilities included. No per-user charges.
                     </p>
                   </div>
@@ -651,7 +651,7 @@ export default function BlogPost() {
                 </div>
               </div>
 
-              <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 border-2 border-blue-500">
+              <div className="bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-6 border-2 border-primary">
                 <h4 className="font-bold text-lg mb-4">Cursive Warm Visitor Pipeline</h4>
                 <div className="space-y-3 text-sm">
                   <div className="flex justify-between">
@@ -719,31 +719,31 @@ export default function BlogPost() {
                 </ul>
               </div>
 
-              <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 border-2 border-blue-500">
-                <h4 className="font-bold text-lg mb-4 text-blue-900">Choose Cursive if you:</h4>
+              <div className="bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-6 border-2 border-primary">
+                <h4 className="font-bold text-lg mb-4 text-primary">Choose Cursive if you:</h4>
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-blue-600 mt-1 flex-shrink-0" />
+                    <Check className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
                     <span><strong>Want to convert website visitors into pipeline</strong></span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-blue-600 mt-1 flex-shrink-0" />
+                    <Check className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
                     <span><strong>Need person-level visitor identification</strong></span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-blue-600 mt-1 flex-shrink-0" />
+                    <Check className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
                     <span><strong>Have 1,000+ monthly website visitors</strong></span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-blue-600 mt-1 flex-shrink-0" />
+                    <Check className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
                     <span><strong>Want 20-30% response rates instead of 1-3%</strong></span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-blue-600 mt-1 flex-shrink-0" />
+                    <Check className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
                     <span><strong>Need multi-channel outreach (email + LinkedIn + SMS + mail)</strong></span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-blue-600 mt-1 flex-shrink-0" />
+                    <Check className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
                     <span><strong>Want AI-powered personalization based on actual behavior</strong></span>
                   </li>
                 </ul>
@@ -757,11 +757,11 @@ export default function BlogPost() {
               complementary roles, creating a dual-channel pipeline that covers warm inbound and cold outbound.
             </p>
 
-            <div className="not-prose bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl p-6 my-8 border border-purple-300">
+            <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-6 my-8 border border-primary/30">
               <h4 className="font-bold text-lg mb-3">The Optimal Dual-Channel Setup</h4>
               <ul className="space-y-3 text-sm">
                 <li className="flex items-start gap-2">
-                  <span className="bg-blue-600 text-white px-2 py-1 rounded text-xs font-bold">Cursive</span>
+                  <span className="bg-primary text-white px-2 py-1 rounded text-xs font-bold">Cursive</span>
                   <span><strong>Primary channel (70% of pipeline):</strong> Identify website visitors, score by intent, and automate personalized multi-channel outreach. This becomes your highest-ROI pipeline source with 20-30% response rates.</span>
                 </li>
                 <li className="flex items-start gap-2">
@@ -783,26 +783,26 @@ export default function BlogPost() {
               Apollo workflow and gradually shift budget as they see results.
             </p>
 
-            <div className="not-prose bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl p-6 my-8 border border-purple-300">
+            <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-6 my-8 border border-primary/30">
               <h4 className="font-bold text-lg mb-4">5-Step Integration Process</h4>
               <ul className="space-y-4 text-sm">
                 <li className="flex items-start gap-3">
-                  <span className="bg-blue-600 text-white px-2.5 py-1 rounded-full text-xs font-bold flex-shrink-0">1</span>
+                  <span className="bg-primary text-white px-2.5 py-1 rounded-full text-xs font-bold flex-shrink-0">1</span>
                   <div>
-                    <strong>Install the Cursive pixel (5 minutes):</strong> Add the <Link href="/pixel" className="text-blue-600 underline">tracking
+                    <strong>Install the Cursive pixel (5 minutes):</strong> Add the <Link href="/pixel" className="text-primary underline">tracking
                     snippet</Link> to your website. Start identifying visitors immediately while Apollo continues running.
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="bg-blue-600 text-white px-2.5 py-1 rounded-full text-xs font-bold flex-shrink-0">2</span>
+                  <span className="bg-primary text-white px-2.5 py-1 rounded-full text-xs font-bold flex-shrink-0">2</span>
                   <div>
-                    <strong>Define your ICP in Cursive (30 minutes):</strong> Use the <Link href="/audience-builder" className="text-blue-600 underline">audience
+                    <strong>Define your ICP in Cursive (30 minutes):</strong> Use the <Link href="/audience-builder" className="text-primary underline">audience
                     builder</Link> to replicate your Apollo ICP filters. Add behavioral filters (pages visited, time on site)
                     that Apollo cannot match.
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="bg-blue-600 text-white px-2.5 py-1 rounded-full text-xs font-bold flex-shrink-0">3</span>
+                  <span className="bg-primary text-white px-2.5 py-1 rounded-full text-xs font-bold flex-shrink-0">3</span>
                   <div>
                     <strong>Set up warm outreach workflows (1 hour):</strong> Create intent-triggered sequences across email,
                     LinkedIn, and SMS. Use your best Apollo email templates as a starting point and let Cursive&apos;s AI
@@ -810,14 +810,14 @@ export default function BlogPost() {
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="bg-blue-600 text-white px-2.5 py-1 rounded-full text-xs font-bold flex-shrink-0">4</span>
+                  <span className="bg-primary text-white px-2.5 py-1 rounded-full text-xs font-bold flex-shrink-0">4</span>
                   <div>
                     <strong>Connect your CRM (15 minutes):</strong> Sync Cursive with your CRM so identified visitors and
                     engagement data flow alongside your Apollo contacts. Avoid contacting the same person through both platforms.
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="bg-blue-600 text-white px-2.5 py-1 rounded-full text-xs font-bold flex-shrink-0">5</span>
+                  <span className="bg-primary text-white px-2.5 py-1 rounded-full text-xs font-bold flex-shrink-0">5</span>
                   <div>
                     <strong>Compare results for 30 days:</strong> Track meetings booked and pipeline generated from Apollo cold
                     outbound versus Cursive warm outreach. Most teams see 3-5x more pipeline per dollar from Cursive and
@@ -832,7 +832,7 @@ export default function BlogPost() {
             <div className="not-prose overflow-x-auto my-8">
               <table className="w-full text-sm border-collapse">
                 <thead>
-                  <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                  <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                     <th className="border border-gray-300 p-3 text-left font-bold">Data Dimension</th>
                     <th className="border border-gray-300 p-3 text-left font-bold">Apollo.io</th>
                     <th className="border border-gray-300 p-3 text-left font-bold">Cursive</th>
@@ -894,7 +894,7 @@ export default function BlogPost() {
 
             <h2>Customer Success Stories</h2>
 
-            <div className="not-prose bg-blue-50 rounded-xl p-6 my-8 border border-blue-200">
+            <div className="not-prose bg-primary/5 rounded-xl p-6 my-8 border border-primary/20">
               <p className="text-sm italic mb-2">
                 &quot;We ran Apollo for 18 months and it was our primary pipeline source. When we added Cursive to
                 identify our website visitors, we were shocked to discover that 60% of our Apollo cold targets had
@@ -904,7 +904,7 @@ export default function BlogPost() {
               <p className="text-sm font-bold">-- VP Sales, B2B SaaS (Series B)</p>
             </div>
 
-            <div className="not-prose bg-blue-50 rounded-xl p-6 my-8 border border-blue-200">
+            <div className="not-prose bg-primary/5 rounded-xl p-6 my-8 border border-primary/20">
               <p className="text-sm italic mb-2">
                 &quot;Apollo gives us the database to build lists, but the response rates on cold outbound kept
                 declining. We added Cursive and now our warm visitor outreach generates 5x more meetings than
@@ -914,7 +914,7 @@ export default function BlogPost() {
               <p className="text-sm font-bold">-- Head of Growth, Marketing Technology Company</p>
             </div>
 
-            <div className="not-prose bg-blue-50 rounded-xl p-6 my-8 border border-blue-200">
+            <div className="not-prose bg-primary/5 rounded-xl p-6 my-8 border border-primary/20">
               <p className="text-sm italic mb-2">
                 &quot;As a founder, I do not have time to build lists and run cold sequences in Apollo. I installed
                 Cursive on a Monday afternoon and had three meetings booked by Friday, all from people who had
@@ -989,23 +989,23 @@ export default function BlogPost() {
           <div className="max-w-3xl mx-auto">
             <h2 className="text-2xl font-bold mb-6">Related Comparisons</h2>
             <div className="grid md:grid-cols-2 gap-4">
-              <Link href="/blog/cursive-vs-instantly" className="block bg-gray-50 rounded-lg p-5 border border-gray-200 hover:shadow-md hover:border-blue-400 transition-all">
+              <Link href="/blog/cursive-vs-instantly" className="block bg-gray-50 rounded-lg p-5 border border-gray-200 hover:shadow-md hover:border-primary/40 transition-all">
                 <h3 className="font-bold mb-1">Cursive vs Instantly</h3>
                 <p className="text-sm text-gray-600">Full-stack vs email-only outreach</p>
               </Link>
-              <Link href="/blog/cursive-vs-demandbase" className="block bg-gray-50 rounded-lg p-5 border border-gray-200 hover:shadow-md hover:border-blue-400 transition-all">
+              <Link href="/blog/cursive-vs-demandbase" className="block bg-gray-50 rounded-lg p-5 border border-gray-200 hover:shadow-md hover:border-primary/40 transition-all">
                 <h3 className="font-bold mb-1">Cursive vs Demandbase</h3>
                 <p className="text-sm text-gray-600">Affordable ABM alternative</p>
               </Link>
-              <Link href="/blog/6sense-vs-cursive-comparison" className="block bg-gray-50 rounded-lg p-5 border border-gray-200 hover:shadow-md hover:border-blue-400 transition-all">
+              <Link href="/blog/6sense-vs-cursive-comparison" className="block bg-gray-50 rounded-lg p-5 border border-gray-200 hover:shadow-md hover:border-primary/40 transition-all">
                 <h3 className="font-bold mb-1">Cursive vs 6sense</h3>
                 <p className="text-sm text-gray-600">Enterprise ABM vs full-stack lead gen</p>
               </Link>
-              <Link href="/blog/apollo-alternatives-comparison" className="block bg-gray-50 rounded-lg p-5 border border-gray-200 hover:shadow-md hover:border-blue-400 transition-all">
+              <Link href="/blog/apollo-alternatives-comparison" className="block bg-gray-50 rounded-lg p-5 border border-gray-200 hover:shadow-md hover:border-primary/40 transition-all">
                 <h3 className="font-bold mb-1">Apollo Alternatives: 7 Tools Compared</h3>
                 <p className="text-sm text-gray-600">Full roundup of the best Apollo alternatives</p>
               </Link>
-              <Link href="/blog/clearbit-alternatives-comparison" className="block bg-gray-50 rounded-lg p-5 border border-gray-200 hover:shadow-md hover:border-blue-400 transition-all">
+              <Link href="/blog/clearbit-alternatives-comparison" className="block bg-gray-50 rounded-lg p-5 border border-gray-200 hover:shadow-md hover:border-primary/40 transition-all">
                 <h3 className="font-bold mb-1">Clearbit Alternatives</h3>
                 <p className="text-sm text-gray-600">10 data enrichment tools compared</p>
               </Link>

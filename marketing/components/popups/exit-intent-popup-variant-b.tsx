@@ -154,7 +154,7 @@ export function ExitIntentPopupVariantB({
                 {!isSuccess ? (
                   <>
                     {/* Social Proof Badge - VARIANT B DIFFERENCE */}
-                    <div className="mb-4 inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-full text-sm font-medium">
+                    <div className="mb-4 inline-flex items-center gap-2 px-3 py-1.5 bg-primary/5 text-primary rounded-full text-sm font-medium">
                       <TrendingUp className="h-4 w-4" />
                       <span>Join 2,400+ companies using Cursive</span>
                     </div>
@@ -244,9 +244,9 @@ export function ExitIntentPopupVariantB({
                 ) : (
                   <div className="text-center py-8">
                     <div className="mb-4">
-                      <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
+                      <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
                         <svg
-                          className="w-8 h-8 text-blue-600"
+                          className="w-8 h-8 text-primary"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -268,7 +268,7 @@ export function ExitIntentPopupVariantB({
                 )}
               </div>
 
-              <div className="absolute -top-24 -right-24 w-48 h-48 bg-blue-50 rounded-full opacity-50 blur-3xl pointer-events-none" />
+              <div className="absolute -top-24 -right-24 w-48 h-48 bg-primary/5 rounded-full opacity-50 blur-3xl pointer-events-none" />
             </motion.div>
           </div>
         </>

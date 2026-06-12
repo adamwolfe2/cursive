@@ -54,7 +54,7 @@ export default function BlogPost() {
               <ArrowLeft className="w-4 h-4" />
               Back to Blog
             </Link>
-            <div className="max-w-4xl">
+            <div className="max-w-4xl mx-auto">
               <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
                 Comparisons
               </div>
@@ -113,7 +113,7 @@ export default function BlogPost() {
               <div className="not-prose overflow-x-auto my-8">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                    <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                       <th className="border border-gray-300 p-3 text-left font-bold">Tool</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Best For</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Pricing Model</th>
@@ -122,7 +122,7 @@ export default function BlogPost() {
                     </tr>
                   </thead>
                   <tbody className="bg-white">
-                    <tr className="bg-blue-50 border-2 border-blue-500">
+                    <tr className="bg-primary/5 border-2 border-primary">
                       <td className="border border-gray-300 p-3 font-bold">Cursive</td>
                       <td className="border border-gray-300 p-3">Warm lead ID + AI outreach automation</td>
                       <td className="border border-gray-300 p-3">Self-serve monthly</td>
@@ -233,36 +233,36 @@ export default function BlogPost() {
               {/* Alternative 1: Cursive */}
               <h2>7 Best LeadIQ Alternatives (Detailed Reviews)</h2>
 
-              <div className="not-prose bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-8 my-8 border-2 border-blue-500">
+              <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-8 my-8 border-2 border-primary">
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <h3 className="text-2xl font-bold mb-2">1. Cursive</h3>
                     <p className="text-sm text-gray-600">Best for: Identifying warm leads already on your site + AI-automated multi-channel outreach</p>
                   </div>
-                  <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-bold">Our Pick</span>
+                  <span className="bg-primary text-white px-3 py-1 rounded-full text-sm font-bold">Our Pick</span>
                 </div>
 
                 <p className="text-gray-700 mb-4">
                   <strong>What makes it different:</strong> While LeadIQ helps you find cold prospects on LinkedIn,{" "}
-                  <Link href="/" className="text-blue-600 hover:underline">Cursive</Link> identifies the warm prospects
+                  <Link href="/" className="text-primary hover:underline">Cursive</Link> identifies the warm prospects
                   already showing up at your door — people visiting your website who are already curious about what you
-                  sell. Cursive&apos;s <Link href="/visitor-identification" className="text-blue-600 hover:underline">visitor identification</Link> technology
+                  sell. Cursive&apos;s <Link href="/visitor-identification" className="text-primary hover:underline">visitor identification</Link> technology
                   deanonymizes up to 70% of your B2B traffic at the person level, providing names, verified emails, job titles,
-                  and LinkedIn profiles. The built-in <Link href="/what-is-ai-sdr" className="text-blue-600 hover:underline">AI SDR</Link> then
+                  and LinkedIn profiles. The built-in <Link href="/what-is-ai-sdr" className="text-primary hover:underline">AI SDR</Link> then
                   automatically sends personalized outreach across email, LinkedIn,
-                  and <Link href="/direct-mail" className="text-blue-600 hover:underline">direct mail</Link> —
+                  and <Link href="/direct-mail" className="text-primary hover:underline">direct mail</Link> —
                   no manual sequencing required.
                 </p>
 
                 <p className="text-gray-700 mb-4">
-                  The <Link href="/intent-audiences" className="text-blue-600 hover:underline">intent audience engine</Link> tracks
+                  The <Link href="/intent-audiences" className="text-primary hover:underline">intent audience engine</Link> tracks
                   which pages each visitor views, how frequently they return, and which content they engage with,
                   then scores them so your AI SDR prioritizes the most sales-ready visitors first. The{" "}
-                  <Link href="/audience-builder" className="text-blue-600 hover:underline">audience builder</Link> lets
+                  <Link href="/audience-builder" className="text-primary hover:underline">audience builder</Link> lets
                   you apply firmographic filters (company size, industry, title) on top of behavioral signals to ensure
                   outreach only goes to your ideal customer profile. You can also explore additional data and
                   enrichment capabilities via the{" "}
-                  <Link href="/marketplace" className="text-blue-600 hover:underline">Cursive self-serve plans</Link>.
+                  <Link href="/marketplace" className="text-primary hover:underline">Cursive self-serve plans</Link>.
                 </p>
 
                 <div className="grid md:grid-cols-2 gap-6 mb-4">
@@ -317,12 +317,12 @@ export default function BlogPost() {
                 <div className="bg-white rounded-lg p-4">
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-bold">Pricing:</span>
-                    <span className="text-lg font-bold text-blue-600">$97/mo | $197/mo | $247/mo</span>
+                    <span className="text-lg font-bold text-primary">$97/mo | $197/mo | $247/mo</span>
                   </div>
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> B2B companies generating 5,000+ monthly website visitors who want to convert
                     warm traffic into booked meetings without manual outbound research. Replaces LeadIQ + email sequencer +
-                    LinkedIn tool in a single platform. See <Link href="/pricing" className="text-blue-600 hover:underline">pricing details</Link>.
+                    LinkedIn tool in a single platform. See <Link href="/pricing" className="text-primary hover:underline">pricing details</Link>.
                   </p>
                 </div>
               </div>
@@ -394,7 +394,7 @@ export default function BlogPost() {
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> SDR teams running high-volume cold outbound who want a LeadIQ replacement
                     that includes email sequencing. See our full{" "}
-                    <Link href="/blog/cursive-vs-apollo" className="text-blue-600 hover:underline">Cursive vs Apollo comparison</Link>.
+                    <Link href="/blog/cursive-vs-apollo" className="text-primary hover:underline">Cursive vs Apollo comparison</Link>.
                   </p>
                 </div>
               </div>
@@ -466,7 +466,7 @@ export default function BlogPost() {
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> Budget-conscious individual reps who want the same LeadIQ Chrome extension
                     workflow at a lower price point. Not a full workflow replacement. See our full{" "}
-                    <Link href="/blog/lusha-alternative" className="text-blue-600 hover:underline">Lusha alternatives guide</Link>.
+                    <Link href="/blog/lusha-alternative" className="text-primary hover:underline">Lusha alternatives guide</Link>.
                   </p>
                 </div>
               </div>
@@ -538,7 +538,7 @@ export default function BlogPost() {
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> Enterprise sales organizations with 20+ reps that need maximum contact
                     data coverage and can invest in the implementation. See our full{" "}
-                    <Link href="/blog/cursive-vs-zoominfo" className="text-blue-600 hover:underline">Cursive vs ZoomInfo comparison</Link>.
+                    <Link href="/blog/cursive-vs-zoominfo" className="text-primary hover:underline">Cursive vs ZoomInfo comparison</Link>.
                   </p>
                 </div>
               </div>
@@ -682,7 +682,7 @@ export default function BlogPost() {
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> Enterprise sales teams with a heavy phone-dialing motion selling into
                     European markets. See our full{" "}
-                    <Link href="/blog/cognism-alternative" className="text-blue-600 hover:underline">Cognism alternatives guide</Link>.
+                    <Link href="/blog/cognism-alternative" className="text-primary hover:underline">Cognism alternatives guide</Link>.
                   </p>
                 </div>
               </div>
@@ -769,7 +769,7 @@ export default function BlogPost() {
               <div className="not-prose overflow-x-auto my-8">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                    <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                       <th className="border border-gray-300 p-3 text-left font-bold">Feature</th>
                       <th className="border border-gray-300 p-3 text-center font-bold">Cursive</th>
                       <th className="border border-gray-300 p-3 text-center font-bold">Apollo.io</th>

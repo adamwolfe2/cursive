@@ -61,7 +61,7 @@ export default function BlogPost() {
               <ArrowLeft className="w-4 h-4" />
               Back to Blog
             </Link>
-            <div className="max-w-4xl">
+            <div className="max-w-4xl mx-auto">
               <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
                 Comparisons
               </div>
@@ -118,7 +118,7 @@ export default function BlogPost() {
               <div className="not-prose overflow-x-auto my-8">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                    <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                       <th className="border border-gray-300 p-3 text-left font-bold">Tool</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Best For</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">ID Rate</th>
@@ -128,7 +128,7 @@ export default function BlogPost() {
                     </tr>
                   </thead>
                   <tbody className="bg-white">
-                    <tr className="bg-blue-50 border-2 border-blue-500">
+                    <tr className="bg-primary/5 border-2 border-primary">
                       <td className="border border-gray-300 p-3 font-bold">Cursive</td>
                       <td className="border border-gray-300 p-3">Complete pipeline: ID + intent + AI SDR</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold">70% person-level</td>
@@ -251,26 +251,26 @@ export default function BlogPost() {
               <h2>7 Best AudienceLab Alternatives (Detailed Reviews)</h2>
 
               {/* 1. Cursive */}
-              <div className="not-prose bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-8 my-8 border-2 border-blue-500">
+              <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-8 my-8 border-2 border-primary">
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <h3 className="text-2xl font-bold mb-2">1. Cursive</h3>
                     <p className="text-sm text-gray-600">Best for: Teams that want to go from anonymous visitor to booked meeting in one platform</p>
                   </div>
-                  <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-bold">Our Pick</span>
+                  <span className="bg-primary text-white px-3 py-1 rounded-full text-sm font-bold">Our Pick</span>
                 </div>
 
                 <p className="text-gray-700 mb-4">
                   <strong>What makes it different:</strong> AudienceLab answers the question &ldquo;who visited my site?&rdquo;{" "}
-                  <Link href="/" className="text-blue-600 hover:underline">Cursive</Link> answers the question
+                  <Link href="/" className="text-primary hover:underline">Cursive</Link> answers the question
                   &ldquo;who visited, why are they interested, and how do we reach them right now?&rdquo; The platform combines
                   70% person-level{" "}
-                  <Link href="/visitor-identification" className="text-blue-600 hover:underline">visitor identification</Link> with
-                  60B+ <Link href="/what-is-b2b-intent-data" className="text-blue-600 hover:underline">intent signals</Link> scanned
+                  <Link href="/visitor-identification" className="text-primary hover:underline">visitor identification</Link> with
+                  60B+ <Link href="/what-is-b2b-intent-data" className="text-primary hover:underline">intent signals</Link> scanned
                   weekly across 30,000+ buying categories, a database of 280M consumer and 140M+ business profiles, and an{" "}
-                  <Link href="/what-is-ai-sdr" className="text-blue-600 hover:underline">AI SDR</Link> that automates personalized
+                  <Link href="/what-is-ai-sdr" className="text-primary hover:underline">AI SDR</Link> that automates personalized
                   outreach across email, LinkedIn, SMS, and{" "}
-                  <Link href="/direct-mail" className="text-blue-600 hover:underline">direct mail</Link> — all triggered by
+                  <Link href="/direct-mail" className="text-primary hover:underline">direct mail</Link> — all triggered by
                   visitor behavior.
                 </p>
 
@@ -278,9 +278,9 @@ export default function BlogPost() {
                   Where AudienceLab requires you to export identified visitors and manually route them into other tools,
                   Cursive handles the entire workflow: identify the visitor, score them by intent, enrich their profile,
                   and launch personalized multi-channel outreach automatically. Cursive&apos;s{" "}
-                  <Link href="/marketplace" className="text-blue-600 hover:underline">Custom Audience plan at $197/mo</Link> delivers
+                  <Link href="/marketplace" className="text-primary hover:underline">Custom Audience plan at $197/mo</Link> delivers
                   a fresh weekly list of in-market buyers. Teams that also need visitor identification can choose the{" "}
-                  <Link href="https://leads.meetcursive.com/get-leads" className="text-blue-600 hover:underline">Pixel + Audience Bundle</Link> at
+                  <Link href="https://leads.meetcursive.com/get-leads" className="text-primary hover:underline">Pixel + Audience Bundle</Link> at
                   $247/mo, with no setup fee and the flexibility to cancel anytime.
                 </p>
 
@@ -336,13 +336,13 @@ export default function BlogPost() {
                 <div className="bg-white rounded-lg p-4">
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-bold">Pricing:</span>
-                    <span className="text-lg font-bold text-blue-600">$97 / $197 / $247 per month</span>
+                    <span className="text-lg font-bold text-primary">$97 / $197 / $247 per month</span>
                   </div>
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> B2B teams that want to eliminate the gap between identified visitor and
                     booked meeting. Replaces AudienceLab plus your sequencing tool plus your intent data subscription in
-                    a single platform. See <Link href="/pricing" className="text-blue-600 hover:underline">pricing details</Link> or
-                    start a <Link href="/free-audit" className="text-blue-600 hover:underline">free audit</Link>.
+                    a single platform. See <Link href="/pricing" className="text-primary hover:underline">pricing details</Link> or
+                    start a <Link href="/free-audit" className="text-primary hover:underline">free audit</Link>.
                   </p>
                 </div>
               </div>
@@ -415,7 +415,7 @@ export default function BlogPost() {
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> Early-stage teams testing visitor identification for the first time who want
                     a zero-cost starting point. Read our{" "}
-                    <Link href="/blog/rb2b-alternative" className="text-blue-600 hover:underline">RB2B alternatives comparison</Link> if
+                    <Link href="/blog/rb2b-alternative" className="text-primary hover:underline">RB2B alternatives comparison</Link> if
                     you have outgrown the free tier.
                   </p>
                 </div>
@@ -489,7 +489,7 @@ export default function BlogPost() {
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> Teams that want more signal context than pure ID tools but are not yet ready
                     for a full AI SDR automation layer. Read our{" "}
-                    <Link href="/blog/warmly-alternatives-comparison" className="text-blue-600 hover:underline">Warmly alternatives comparison</Link> for
+                    <Link href="/blog/warmly-alternatives-comparison" className="text-primary hover:underline">Warmly alternatives comparison</Link> for
                     a deeper breakdown.
                   </p>
                 </div>
@@ -559,7 +559,7 @@ export default function BlogPost() {
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> HubSpot customers that need basic company-level visitor intelligence and do
                     not require person-level identification. See our{" "}
-                    <Link href="/blog/clearbit-alternatives-comparison" className="text-blue-600 hover:underline">Clearbit alternatives comparison</Link> if
+                    <Link href="/blog/clearbit-alternatives-comparison" className="text-primary hover:underline">Clearbit alternatives comparison</Link> if
                     you need more.
                   </p>
                 </div>
@@ -633,7 +633,7 @@ export default function BlogPost() {
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> SMBs and European-focused teams that want account-level visibility into
                     which companies are visiting and are comfortable doing manual outreach from there. See our{" "}
-                    <Link href="/blog/cursive-vs-leadfeeder" className="text-blue-600 hover:underline">Cursive vs Leadfeeder comparison</Link>.
+                    <Link href="/blog/cursive-vs-leadfeeder" className="text-primary hover:underline">Cursive vs Leadfeeder comparison</Link>.
                   </p>
                 </div>
               </div>
@@ -703,7 +703,7 @@ export default function BlogPost() {
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> E-commerce and B2C brands focused on expanding email marketing audiences
                     through identity resolution. Not a direct B2B AudienceLab replacement. See our{" "}
-                    <Link href="/blog/opensend-alternative" className="text-blue-600 hover:underline">Opensend alternatives comparison</Link>.
+                    <Link href="/blog/opensend-alternative" className="text-primary hover:underline">Opensend alternatives comparison</Link>.
                   </p>
                 </div>
               </div>
@@ -777,7 +777,7 @@ export default function BlogPost() {
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> Enterprise B2B teams already paying for ZoomInfo who want visitor
                     identification as part of a consolidated data platform. See our{" "}
-                    <Link href="/blog/zoominfo-vs-cursive-comparison" className="text-blue-600 hover:underline">ZoomInfo vs Cursive comparison</Link>.
+                    <Link href="/blog/zoominfo-vs-cursive-comparison" className="text-primary hover:underline">ZoomInfo vs Cursive comparison</Link>.
                   </p>
                 </div>
               </div>
@@ -792,7 +792,7 @@ export default function BlogPost() {
               <div className="not-prose overflow-x-auto my-8">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                    <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                       <th className="border border-gray-300 p-3 text-left font-bold">Feature</th>
                       <th className="border border-gray-300 p-3 text-center font-bold">Cursive</th>
                       <th className="border border-gray-300 p-3 text-center font-bold">RB2B</th>
@@ -896,35 +896,35 @@ export default function BlogPost() {
                 Here is a quick framework.
               </p>
 
-              <div className="not-prose bg-gradient-to-br from-gray-50 to-blue-50 rounded-xl p-6 my-8 border border-gray-200">
+              <div className="not-prose bg-gradient-to-br from-gray-50 to-primary/5 rounded-xl p-6 my-8 border border-gray-200">
                 <h3 className="font-bold text-lg mb-4">Use Case Decision Matrix</h3>
                 <div className="space-y-4 text-sm">
                   <div className="border-b border-gray-200 pb-3">
-                    <p className="font-bold text-blue-700 mb-1">You want visitor ID + intent data + AI outreach automation in one platform:</p>
+                    <p className="font-bold text-primary mb-1">You want visitor ID + intent data + AI outreach automation in one platform:</p>
                     <p className="text-gray-700"><strong>Choose Cursive.</strong> Identify companies and people visiting your site, receive fresh weekly lists of in-market buyers, or get both. Plans cost $97, $197, or $247 per month.</p>
                   </div>
                   <div className="border-b border-gray-200 pb-3">
-                    <p className="font-bold text-blue-700 mb-1">You want to test person-level visitor ID before committing to a paid tool:</p>
+                    <p className="font-bold text-primary mb-1">You want to test person-level visitor ID before committing to a paid tool:</p>
                     <p className="text-gray-700"><strong>Choose RB2B.</strong> The free tier delivers LinkedIn profiles of identified visitors to Slack. Good for proof-of-concept, but plan to graduate to a tool with automation once you have validated the use case.</p>
                   </div>
                   <div className="border-b border-gray-200 pb-3">
-                    <p className="font-bold text-blue-700 mb-1">You want better signal context than AudienceLab but are not ready for full automation:</p>
+                    <p className="font-bold text-primary mb-1">You want better signal context than AudienceLab but are not ready for full automation:</p>
                     <p className="text-gray-700"><strong>Choose Warmly.</strong> Adds real-time Slack alerts, account intelligence, and basic lead routing on top of visitor identification — a step up from pure data delivery without the full automation investment.</p>
                   </div>
                   <div className="border-b border-gray-200 pb-3">
-                    <p className="font-bold text-blue-700 mb-1">You are already a HubSpot customer and just need company-level visitor ID:</p>
+                    <p className="font-bold text-primary mb-1">You are already a HubSpot customer and just need company-level visitor ID:</p>
                     <p className="text-gray-700"><strong>Choose Clearbit Reveal (HubSpot).</strong> Included in your HubSpot subscription, zero additional cost. Understand it is company-level only — not a replacement for person-level identification tools.</p>
                   </div>
                   <div className="border-b border-gray-200 pb-3">
-                    <p className="font-bold text-blue-700 mb-1">You primarily sell in Europe and want company-level visitor tracking:</p>
+                    <p className="font-bold text-primary mb-1">You primarily sell in Europe and want company-level visitor tracking:</p>
                     <p className="text-gray-700"><strong>Choose Leadfeeder (Dealfront).</strong> Strong European company coverage, GDPR-compliant, and a free tier to start. Be aware it is company-level only.</p>
                   </div>
                   <div className="border-b border-gray-200 pb-3">
-                    <p className="font-bold text-blue-700 mb-1">You are an e-commerce or B2C brand focused on email audience building:</p>
+                    <p className="font-bold text-primary mb-1">You are an e-commerce or B2C brand focused on email audience building:</p>
                     <p className="text-gray-700"><strong>Consider Opensend.</strong> Built for identity resolution and email capture for remarketing, not B2B outbound sales.</p>
                   </div>
                   <div>
-                    <p className="font-bold text-blue-700 mb-1">You are enterprise and already paying for ZoomInfo:</p>
+                    <p className="font-bold text-primary mb-1">You are enterprise and already paying for ZoomInfo:</p>
                     <p className="text-gray-700"><strong>Evaluate ZoomInfo WebSights.</strong> Makes sense as a consolidation play if you are already in the ecosystem. If you are not already a ZoomInfo customer, the entry cost is prohibitive compared to Cursive.</p>
                   </div>
                 </div>

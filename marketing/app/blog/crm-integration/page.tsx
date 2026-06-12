@@ -61,7 +61,7 @@ export default function CRMIntegrationPage() {
               Back to Blog
             </Link>
 
-            <div className="max-w-4xl">
+            <div className="max-w-4xl mx-auto">
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-full text-sm font-medium mb-6">
                 <Workflow className="w-4 h-4" />
                 CRM Integration
@@ -134,7 +134,7 @@ export default function CRMIntegrationPage() {
                 gymnastics.
               </p>
 
-              <div className="not-prose bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 my-8 border border-blue-200">
+              <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-6 my-8 border border-primary/20">
                 <h3 className="font-bold text-lg mb-3">The Cost of Disconnected Data</h3>
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-start gap-2">
@@ -309,23 +309,23 @@ export default function CRMIntegrationPage() {
                 add the account to a sequence, or route to the appropriate team.
               </p>
 
-              <div className="not-prose bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 my-8 border border-blue-200">
+              <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-6 my-8 border border-primary/20">
                 <h3 className="font-bold text-lg mb-3">Real Example: SaaS Company Pipeline Impact</h3>
                 <p className="text-sm text-gray-700 mb-4">
                   A mid-market SaaS company integrated Cursive&apos;s visitor identification with HubSpot CRM.
                   Results after 90 days:
                 </p>
                 <div className="grid grid-cols-3 gap-4 text-center">
-                  <div className="bg-white rounded-lg p-4 border border-blue-100">
-                    <p className="text-3xl font-bold text-blue-600">3,400+</p>
+                  <div className="bg-white rounded-lg p-4 border border-primary/15">
+                    <p className="text-3xl font-bold text-primary">3,400+</p>
                     <p className="text-xs text-gray-600 mt-1">New companies identified per month</p>
                   </div>
-                  <div className="bg-white rounded-lg p-4 border border-blue-100">
-                    <p className="text-3xl font-bold text-blue-600">47%</p>
+                  <div className="bg-white rounded-lg p-4 border border-primary/15">
+                    <p className="text-3xl font-bold text-primary">47%</p>
                     <p className="text-xs text-gray-600 mt-1">Increase in qualified pipeline</p>
                   </div>
-                  <div className="bg-white rounded-lg p-4 border border-blue-100">
-                    <p className="text-3xl font-bold text-blue-600">2.3x</p>
+                  <div className="bg-white rounded-lg p-4 border border-primary/15">
+                    <p className="text-3xl font-bold text-primary">2.3x</p>
                     <p className="text-xs text-gray-600 mt-1">Faster speed-to-lead</p>
                   </div>
                 </div>
@@ -427,7 +427,7 @@ export default function CRMIntegrationPage() {
               <div className="not-prose overflow-x-auto my-8">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                    <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                       <th className="border border-gray-300 p-3 text-left font-bold">Feature</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">HubSpot</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Salesforce</th>
@@ -571,7 +571,7 @@ export default function CRMIntegrationPage() {
 
               <div className="not-prose space-y-6 my-8">
                 {faqs.map((faq, index) => (
-                  <div key={index} className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-lg p-6 border border-gray-200">
+                  <div key={index} className="bg-gradient-to-br from-gray-50 to-primary/5 rounded-lg p-6 border border-gray-200">
                     <h3 className="font-bold text-lg mb-3">{faq.question}</h3>
                     <p className="text-gray-700">{faq.answer}</p>
                   </div>
@@ -621,7 +621,7 @@ export default function CRMIntegrationPage() {
         />
 
         {/* Related Posts */}
-        <section className="py-16 bg-gradient-to-br from-gray-50 to-blue-50">
+        <section className="py-16 bg-gradient-to-br from-gray-50 to-primary/5">
           <Container>
             <div className="max-w-5xl mx-auto">
               <SimpleRelatedPosts posts={[

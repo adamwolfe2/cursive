@@ -66,7 +66,7 @@ export default function BlogPost() {
               <ArrowLeft className="w-4 h-4" />
               Back to Blog
             </Link>
-            <div className="max-w-4xl">
+            <div className="max-w-4xl mx-auto">
               <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
                 Education
               </div>
@@ -129,8 +129,8 @@ export default function BlogPost() {
               <h2>The 5 Main Types of B2B Data</h2>
 
               {/* Type 1 */}
-              <div className="not-prose bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 my-6 border border-blue-200">
-                <h3 className="font-bold text-xl mb-3 text-blue-900">1. Contact Data</h3>
+              <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-6 my-6 border border-primary/20">
+                <h3 className="font-bold text-xl mb-3 text-primary">1. Contact Data</h3>
                 <p className="text-gray-700 mb-3 text-sm">
                   Contact data is the most fundamental type: information that lets you reach a specific individual.
                   High-quality contact data includes:
@@ -149,8 +149,8 @@ export default function BlogPost() {
               </div>
 
               {/* Type 2 */}
-              <div className="not-prose bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6 my-6 border border-purple-200">
-                <h3 className="font-bold text-xl mb-3 text-purple-900">2. Firmographic Data</h3>
+              <div className="not-prose bg-gradient-to-br from-primary/5 to-pink-50 rounded-xl p-6 my-6 border border-primary/20">
+                <h3 className="font-bold text-xl mb-3 text-primary">2. Firmographic Data</h3>
                 <p className="text-gray-700 mb-3 text-sm">
                   Firmographic data describes the organizational characteristics of a company — the B2B equivalent of
                   consumer demographic data. Key firmographic attributes include:
@@ -169,7 +169,7 @@ export default function BlogPost() {
               </div>
 
               {/* Type 3 */}
-              <div className="not-prose bg-gradient-to-br from-green-50 to-teal-50 rounded-xl p-6 my-6 border border-green-200">
+              <div className="not-prose bg-gradient-to-br from-green-50 to-primary/5 rounded-xl p-6 my-6 border border-green-200">
                 <h3 className="font-bold text-xl mb-3 text-green-900">3. Intent Data</h3>
                 <p className="text-gray-700 mb-3 text-sm">
                   Intent data is the signal layer that transforms static contact lists into prioritized, timing-aware
@@ -238,35 +238,35 @@ export default function BlogPost() {
 
               <div className="not-prose space-y-4 my-6">
                 <div className="flex items-start gap-4 p-4 bg-white rounded-lg border border-gray-200">
-                  <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold shrink-0">1</div>
+                  <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold shrink-0">1</div>
                   <div>
                     <p className="font-bold">Web scraping and aggregation</p>
                     <p className="text-sm text-gray-600">Automated collection from LinkedIn, company websites, public directories, press releases, and professional networks. Forms the backbone of most contact and firmographic databases.</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4 p-4 bg-white rounded-lg border border-gray-200">
-                  <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold shrink-0">2</div>
+                  <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold shrink-0">2</div>
                   <div>
                     <p className="font-bold">Intent data networks</p>
                     <p className="text-sm text-gray-600">Publisher cooperatives and content networks that track which topics and keywords users engage with across thousands of B2B websites. Companies like Bombora aggregate this at the company level. Cursive scans 60B+ behaviors and URLs weekly across 30,000+ categories.</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4 p-4 bg-white rounded-lg border border-gray-200">
-                  <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold shrink-0">3</div>
+                  <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold shrink-0">3</div>
                   <div>
                     <p className="font-bold">Identity graphs</p>
                     <p className="text-sm text-gray-600">Matching anonymous online activity (cookie IDs, device fingerprints, email hashes) to real-person profiles. This is how visitor identification tools like Cursive match anonymous website sessions to names and emails at 70% person-level accuracy across 280M US consumer and 140M+ business profiles.</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4 p-4 bg-white rounded-lg border border-gray-200">
-                  <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold shrink-0">4</div>
+                  <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold shrink-0">4</div>
                   <div>
                     <p className="font-bold">First-party data collection</p>
                     <p className="text-sm text-gray-600">Form fills, event registrations, content downloads, CRM data from your own customers and prospects. The highest quality and most compliant data, but limited in scale.</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4 p-4 bg-white rounded-lg border border-gray-200">
-                  <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold shrink-0">5</div>
+                  <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold shrink-0">5</div>
                   <div>
                     <p className="font-bold">Data partnerships and co-ops</p>
                     <p className="text-sm text-gray-600">Cooperative data sharing between companies and providers, where participant data is anonymized, aggregated, and shared back as enriched insights. Common in intent data and consumer identity networks.</p>
@@ -280,7 +280,7 @@ export default function BlogPost() {
               <div className="not-prose overflow-x-auto my-8">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                    <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                       <th className="border border-gray-300 p-3 text-left font-bold">Attribute</th>
                       <th className="border border-gray-300 p-3 text-left font-bold text-green-200">Good B2B Data</th>
                       <th className="border border-gray-300 p-3 text-left font-bold text-red-200">Bad B2B Data</th>
@@ -332,23 +332,23 @@ export default function BlogPost() {
               <h2>How to Use B2B Data for Sales and Marketing</h2>
 
               <div className="not-prose space-y-3 my-6">
-                <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-100">
+                <div className="p-4 bg-gradient-to-r from-primary/5 to-primary/5 rounded-lg border border-primary/15">
                   <p className="font-bold mb-1">ICP Definition and List Building (Firmographic)</p>
                   <p className="text-sm text-gray-700">Use firmographic filters to define your ideal customer profile — company size, industry, revenue range, growth stage — then build prospecting lists of companies matching those criteria.</p>
                 </div>
-                <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-100">
+                <div className="p-4 bg-gradient-to-r from-primary/5 to-primary/5 rounded-lg border border-primary/15">
                   <p className="font-bold mb-1">Intent-Based Prioritization (Intent Data)</p>
                   <p className="text-sm text-gray-700">Layer intent signals on top of your ICP list to identify which companies are actively in a buying cycle right now. Prioritize outreach to high-fit + high-intent accounts over low-intent accounts, even if they match your ICP perfectly.</p>
                 </div>
-                <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-100">
+                <div className="p-4 bg-gradient-to-r from-primary/5 to-primary/5 rounded-lg border border-primary/15">
                   <p className="font-bold mb-1">Website Visitor Identification (Behavioral)</p>
                   <p className="text-sm text-gray-700">Install a visitor identification pixel to identify anonymous website visitors. This is first-party behavioral data — people who have already shown interest by visiting your site — and represents your warmest available leads. Cursive identifies up to 70% of visitors by name and email.</p>
                 </div>
-                <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-100">
+                <div className="p-4 bg-gradient-to-r from-primary/5 to-primary/5 rounded-lg border border-primary/15">
                   <p className="font-bold mb-1">Personalized Outreach (Contact + Technographic)</p>
                   <p className="text-sm text-gray-700">Use contact data for personalized email and LinkedIn outreach. Layer in technographic data to reference their existing tools and create highly relevant messaging for each account.</p>
                 </div>
-                <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-100">
+                <div className="p-4 bg-gradient-to-r from-primary/5 to-primary/5 rounded-lg border border-primary/15">
                   <p className="font-bold mb-1">CRM Enrichment and Hygiene (All Types)</p>
                   <p className="text-sm text-gray-700">Continuously enrich your CRM with fresh contact, firmographic, and intent data to keep records accurate and add missing fields. This improves segmentation, reporting, and sales rep productivity.</p>
                 </div>

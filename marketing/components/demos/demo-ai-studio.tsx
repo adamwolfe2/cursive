@@ -109,7 +109,7 @@ export function DemoAIStudio() {
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
             transition={{ duration: 0.5, ease: "easeOut" }}
-            className="h-full bg-gradient-to-r from-primary to-blue-500 rounded-full"
+            className="h-full bg-gradient-to-r from-primary to-primary/50 rounded-full"
           />
         </div>
       </motion.div>
@@ -128,7 +128,7 @@ export function DemoAIStudio() {
               transition={{ duration: 0.3, delay: i * 0.1 }}
               className={`flex items-center gap-3 p-3 rounded-lg border transition-all ${
                 isComplete
-                  ? "bg-blue-50 border-blue-200"
+                  ? "bg-primary/5 border-primary/20"
                   : isActive
                   ? "bg-white border-gray-300 shadow-sm"
                   : "bg-white border-gray-200"
@@ -219,7 +219,7 @@ export function DemoAIStudio() {
               <motion.span
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
-                className="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded font-medium"
+                className="px-2 py-1 bg-primary/5 text-primary text-xs rounded font-medium"
               >
                 ✓ Ready
               </motion.span>

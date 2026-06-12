@@ -36,7 +36,7 @@ export default function BlogPost() {
             Back to Blog
           </Link>
 
-          <div className="max-w-4xl">
+          <div className="max-w-4xl mx-auto">
             <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
               AI & Automation
             </div>
@@ -111,7 +111,7 @@ export default function BlogPost() {
 
             <h2>The Results (90 Days)</h2>
 
-            <div className="not-prose bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-8 my-8 border border-gray-200">
+            <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/10 rounded-xl p-8 my-8 border border-gray-200">
               <h3 className="text-2xl font-bold mb-6 text-gray-900">Head-to-Head Comparison</h3>
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="bg-white rounded-lg p-6">
@@ -140,7 +140,7 @@ export default function BlogPost() {
                   </div>
                 </div>
 
-                <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-6 border-2 border-blue-500">
+                <div className="bg-gradient-to-br from-primary/5 to-primary/10 rounded-lg p-6 border-2 border-primary">
                   <h4 className="font-bold text-lg mb-4">Team AI</h4>
                   <div className="space-y-3 text-sm">
                     <div className="flex justify-between">
@@ -161,7 +161,7 @@ export default function BlogPost() {
                     </div>
                     <div className="flex justify-between border-t pt-3">
                       <span className="text-gray-600">Cost per Meeting</span>
-                      <span className="font-bold text-blue-600">$83</span>
+                      <span className="font-bold text-primary">$83</span>
                     </div>
                   </div>
                 </div>
@@ -320,7 +320,7 @@ export default function BlogPost() {
       />
 
         {/* Related Posts */}
-        <section className="py-16 bg-gradient-to-br from-gray-50 to-blue-50">
+        <section className="py-16 bg-gradient-to-br from-gray-50 to-primary/5">
         <Container>
           <h2 className="text-3xl font-bold mb-8 text-center">Read Next</h2>
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">

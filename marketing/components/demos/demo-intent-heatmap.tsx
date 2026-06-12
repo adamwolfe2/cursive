@@ -113,7 +113,7 @@ export function DemoIntentHeatmap() {
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.3 }}
-        className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-8 border border-gray-200 relative overflow-hidden"
+        className="bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-8 border border-gray-200 relative overflow-hidden"
         style={{ minHeight: "250px" }}
       >
         {/* Map Background */}
@@ -183,7 +183,7 @@ export function DemoIntentHeatmap() {
                     opacity: [0.8, 0],
                   }}
                   transition={{ duration: 1.5 }}
-                  className="w-6 h-6 -left-3 -top-3 rounded-full bg-blue-500 absolute"
+                  className="w-6 h-6 -left-3 -top-3 rounded-full bg-primary/50 absolute"
                 />
               </motion.div>
             )
@@ -207,7 +207,7 @@ export function DemoIntentHeatmap() {
                   <motion.div
                     animate={{ opacity: [1, 0.3, 1] }}
                     transition={{ duration: 1.5, repeat: Infinity }}
-                    className="w-1.5 h-1.5 rounded-full bg-blue-500"
+                    className="w-1.5 h-1.5 rounded-full bg-primary/50"
                   />
                   {category}
                 </span>
@@ -228,7 +228,7 @@ export function DemoIntentHeatmap() {
           <motion.div
             animate={{ opacity: [1, 0.3, 1] }}
             transition={{ duration: 2, repeat: Infinity }}
-            className="w-2 h-2 bg-blue-500 rounded-full"
+            className="w-2 h-2 bg-primary/50 rounded-full"
           />
           <h4 className="text-sm text-gray-900 font-medium">Recent Signals</h4>
         </div>

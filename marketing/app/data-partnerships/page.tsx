@@ -102,7 +102,7 @@ export default function DataPartnershipsPage() {
               tone — visible enough to ground the brand. */}
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-0 bg-gradient-to-b from-blue-50/40 via-white to-white"
+            className="pointer-events-none absolute inset-0 bg-gradient-to-b from-primary/5 via-white to-white"
           />
           <Container className="relative max-w-3xl">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">

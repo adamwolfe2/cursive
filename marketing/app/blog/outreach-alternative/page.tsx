@@ -62,7 +62,7 @@ export default function BlogPost() {
               <ArrowLeft className="w-4 h-4" />
               Back to Blog
             </Link>
-            <div className="max-w-4xl">
+            <div className="max-w-4xl mx-auto">
               <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
                 Comparisons
               </div>
@@ -124,7 +124,7 @@ export default function BlogPost() {
               <div className="not-prose overflow-x-auto my-8">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                    <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                       <th className="border border-gray-300 p-3 text-left font-bold">Tool</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Best For</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Visitor ID</th>
@@ -133,7 +133,7 @@ export default function BlogPost() {
                     </tr>
                   </thead>
                   <tbody className="bg-white">
-                    <tr className="bg-blue-50 border-2 border-blue-500">
+                    <tr className="bg-primary/5 border-2 border-primary">
                       <td className="border border-gray-300 p-3 font-bold">Cursive</td>
                       <td className="border border-gray-300 p-3">Warm visitor leads + AI multi-channel outreach</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold"><Check className="w-4 h-4 inline" /> 70% person-level</td>
@@ -251,26 +251,26 @@ export default function BlogPost() {
               <h2>7 Best Outreach.io Alternatives (Detailed Reviews)</h2>
 
               {/* 1. Cursive */}
-              <div className="not-prose bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-8 my-8 border-2 border-blue-500">
+              <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-8 my-8 border-2 border-primary">
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <h3 className="text-2xl font-bold mb-2">1. Cursive</h3>
                     <p className="text-sm text-gray-600">Best for: Teams that want to identify warm visitors and trigger intent-driven outreach automatically</p>
                   </div>
-                  <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-bold">Our Pick</span>
+                  <span className="bg-primary text-white px-3 py-1 rounded-full text-sm font-bold">Our Pick</span>
                 </div>
 
                 <p className="text-gray-700 mb-4">
                   <strong>What makes it different:</strong> Outreach helps you sequence outreach to contacts you manually import.
-                  <Link href="/" className="text-blue-600 hover:underline"> Cursive</Link> identifies which people you should be reaching
+                  <Link href="/" className="text-primary hover:underline"> Cursive</Link> identifies which people you should be reaching
                   in the first place, then sequences them automatically. The platform installs a lightweight pixel that identifies
                   up to 70% of your anonymous website visitors by person — name, email, phone, company, and LinkedIn — and then
-                  its <Link href="/what-is-ai-sdr" className="text-blue-600 hover:underline">AI SDR</Link> triggers personalized outreach
-                  across email, LinkedIn, SMS, and <Link href="/direct-mail" className="text-blue-600 hover:underline">direct mail</Link> automatically.
+                  its <Link href="/what-is-ai-sdr" className="text-primary hover:underline">AI SDR</Link> triggers personalized outreach
+                  across email, LinkedIn, SMS, and <Link href="/direct-mail" className="text-primary hover:underline">direct mail</Link> automatically.
                 </p>
 
                 <p className="text-gray-700 mb-4">
-                  The platform also includes an <Link href="/intent-audiences" className="text-blue-600 hover:underline">intent audience engine</Link> that
+                  The platform also includes an <Link href="/intent-audiences" className="text-primary hover:underline">intent audience engine</Link> that
                   scans 60B+ behaviors and URLs weekly across 30,000+ categories to surface companies actively in-market for your category.
                   Combined with a database of 280M US consumer and 140M+ business profiles, Cursive replaces the three-tool stack most
                   Outreach users maintain (sequencer + data provider + intent signal tool) with self-serve plans from $97-$247/month — versus Outreach&apos;s
@@ -329,13 +329,13 @@ export default function BlogPost() {
                 <div className="bg-white rounded-lg p-4">
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-bold">Pricing:</span>
-                    <span className="text-lg font-bold text-blue-600">$97/mo Pixel | $197/mo Audience | $247/mo Bundle</span>
+                    <span className="text-lg font-bold text-primary">$97/mo Pixel | $197/mo Audience | $247/mo Bundle</span>
                   </div>
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> B2B teams that want to replace cold list prospecting with intent-driven,
                     warm visitor pipeline. One platform replaces Outreach, your contact data subscription, and your
-                    intent data tool. See <Link href="/pricing" className="text-blue-600 hover:underline">full pricing</Link> or
-                    choose the <Link href="/marketplace" className="text-blue-600 hover:underline">self-serve plan</Link> that fits your needs.
+                    intent data tool. See <Link href="/pricing" className="text-primary hover:underline">full pricing</Link> or
+                    choose the <Link href="/marketplace" className="text-primary hover:underline">self-serve plan</Link> that fits your needs.
                   </p>
                 </div>
               </div>
@@ -784,7 +784,7 @@ export default function BlogPost() {
               <div className="not-prose overflow-x-auto my-8">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                    <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                       <th className="border border-gray-300 p-3 text-left font-bold">Feature</th>
                       <th className="border border-gray-300 p-3 text-center font-bold">Cursive</th>
                       <th className="border border-gray-300 p-3 text-center font-bold">Outreach</th>
@@ -865,31 +865,31 @@ export default function BlogPost() {
               {/* Decision Framework */}
               <h2>Which Outreach Alternative Should You Choose?</h2>
 
-              <div className="not-prose bg-gradient-to-br from-gray-50 to-blue-50 rounded-xl p-6 my-8 border border-gray-200">
+              <div className="not-prose bg-gradient-to-br from-gray-50 to-primary/5 rounded-xl p-6 my-8 border border-gray-200">
                 <h3 className="font-bold text-lg mb-4">Decision Matrix by Use Case</h3>
                 <div className="space-y-4 text-sm">
                   <div className="border-b border-gray-200 pb-3">
-                    <p className="font-bold text-blue-700 mb-1">You want visitor identification + intent data + automated outreach (replace Outreach + data stack):</p>
+                    <p className="font-bold text-primary mb-1">You want visitor identification + intent data + automated outreach (replace Outreach + data stack):</p>
                     <p className="text-gray-700"><strong>Choose Cursive.</strong> Identify warm visitors for $97/month, receive fresh weekly in-market buyer lists for $197/month, or get both for $247/month.</p>
                   </div>
                   <div className="border-b border-gray-200 pb-3">
-                    <p className="font-bold text-blue-700 mb-1">You want affordable sequencing + bundled contact data:</p>
+                    <p className="font-bold text-primary mb-1">You want affordable sequencing + bundled contact data:</p>
                     <p className="text-gray-700"><strong>Choose Apollo.</strong> Best cost-reduction move from Outreach — replaces both Outreach and your data provider at $49-$99/user/month with 275M+ contacts included.</p>
                   </div>
                   <div className="border-b border-gray-200 pb-3">
-                    <p className="font-bold text-blue-700 mb-1">You want comparable enterprise features at slightly lower price:</p>
+                    <p className="font-bold text-primary mb-1">You want comparable enterprise features at slightly lower price:</p>
                     <p className="text-gray-700"><strong>Choose Salesloft.</strong> Peer-level enterprise SEP with comparable cadence features at $75-$125/user/month. Includes Drift integration for conversational marketing.</p>
                   </div>
                   <div className="border-b border-gray-200 pb-3">
-                    <p className="font-bold text-blue-700 mb-1">You want multi-channel sequences without enterprise minimums:</p>
+                    <p className="font-bold text-primary mb-1">You want multi-channel sequences without enterprise minimums:</p>
                     <p className="text-gray-700"><strong>Choose Reply.io.</strong> True multi-channel (email, LinkedIn, SMS, WhatsApp) with AI writing at $59/user/month, no annual commitment required.</p>
                   </div>
                   <div className="border-b border-gray-200 pb-3">
-                    <p className="font-bold text-blue-700 mb-1">You run Salesforce and need tight native CRM sync:</p>
+                    <p className="font-bold text-primary mb-1">You run Salesforce and need tight native CRM sync:</p>
                     <p className="text-gray-700"><strong>Choose Groove.</strong> Native Salesforce sync at $19/user/month base. Dramatically cheaper than Outreach for Salesforce shops that prioritize data quality over advanced sequencing features.</p>
                   </div>
                   <div>
-                    <p className="font-bold text-blue-700 mb-1">You are a small team that found Outreach completely overbuilt:</p>
+                    <p className="font-bold text-primary mb-1">You are a small team that found Outreach completely overbuilt:</p>
                     <p className="text-gray-700"><strong>Choose lemlist or Klenty.</strong> Clean, accessible email + LinkedIn sequencing at $50-$99/user/month without enterprise complexity or minimums.</p>
                   </div>
                 </div>

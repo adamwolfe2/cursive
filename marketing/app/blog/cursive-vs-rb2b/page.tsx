@@ -60,7 +60,7 @@ export default function BlogPost() {
             <ArrowLeft className="w-4 h-4" />
             Back to Blog
           </Link>
-          <div className="max-w-4xl">
+          <div className="max-w-4xl mx-auto">
             <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
               Comparisons
             </div>
@@ -98,7 +98,7 @@ export default function BlogPost() {
             <div className="not-prose overflow-x-auto my-8">
               <table className="w-full text-sm border-collapse">
                 <thead>
-                  <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                  <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                     <th className="border border-gray-300 p-3 text-left font-bold">Feature</th>
                     <th className="border border-gray-300 p-3 text-left font-bold">Cursive</th>
                     <th className="border border-gray-300 p-3 text-left font-bold">RB2B</th>
@@ -142,12 +142,12 @@ export default function BlogPost() {
                   </tr>
                   <tr className="bg-gray-50">
                     <td className="border border-gray-300 p-3 font-medium">Pricing</td>
-                    <td className="border border-gray-300 p-3 font-bold text-blue-600">$97-$247/mo (self-serve)</td>
+                    <td className="border border-gray-300 p-3 font-bold text-primary">$97-$247/mo (self-serve)</td>
                     <td className="border border-gray-300 p-3">~$500/mo (ID only)</td>
                   </tr>
                   <tr>
                     <td className="border border-gray-300 p-3 font-medium">True Cost of Ownership</td>
-                    <td className="border border-gray-300 p-3 font-bold text-blue-600">$97-$247/mo</td>
+                    <td className="border border-gray-300 p-3 font-bold text-primary">$97-$247/mo</td>
                     <td className="border border-gray-300 p-3">~$1,500-2,500/mo with add-ons</td>
                   </tr>
                 </tbody>
@@ -189,7 +189,7 @@ export default function BlogPost() {
               <strong>RB2B</strong> reports a <strong>50-60% match rate</strong> using its proprietary identity graph. This is respectable for the industry and represents solid performance for enterprise traffic. However, match rates tend to drop for smaller companies and non-US visitors where RB2B's data partnerships have less coverage.
             </p>
 
-            <div className="not-prose bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-8 my-8 border-2 border-blue-500">
+            <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-8 my-8 border-2 border-primary">
               <h4 className="font-bold text-lg mb-3">Bottom Line on Accuracy</h4>
               <p className="text-gray-700">
                 Cursive's 70% match rate means you identify roughly 40% more visitors than RB2B on the same traffic volume. For a site with 10,000 monthly visitors, that is an additional 1,000-2,000 identified prospects per month flowing into your pipeline. Over a quarter, that advantage compounds significantly.
@@ -281,11 +281,11 @@ export default function BlogPost() {
               At first glance, RB2B looks significantly cheaper than Cursive. But sticker price is misleading when one tool requires three or four additional purchases to deliver comparable functionality. Let us break down the true total cost of ownership.
             </p>
 
-            <div className="not-prose bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-8 my-8 border-2 border-blue-500">
+            <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-8 my-8 border-2 border-primary">
               <h4 className="font-bold text-lg mb-4">Total Cost of Ownership Comparison</h4>
               <div className="grid md:grid-cols-2 gap-6">
-                <div className="bg-white rounded-lg p-6 border border-blue-200">
-                  <h5 className="font-bold text-blue-600 mb-3">Cursive Self-Serve Plans</h5>
+                <div className="bg-white rounded-lg p-6 border border-primary/20">
+                  <h5 className="font-bold text-primary mb-3">Cursive Self-Serve Plans</h5>
                   <ul className="space-y-2 text-sm">
                     <li className="flex justify-between"><span>Visitor identification</span><span className="font-medium">Included</span></li>
                     <li className="flex justify-between"><span>AI SDR + outreach</span><span className="font-medium">Included</span></li>
@@ -293,7 +293,7 @@ export default function BlogPost() {
                     <li className="flex justify-between"><span>Lead enrichment</span><span className="font-medium">Included</span></li>
                     <li className="flex justify-between"><span>Audience segmentation</span><span className="font-medium">Included</span></li>
                     <li className="flex justify-between"><span>CRM integration</span><span className="font-medium">Included</span></li>
-                    <li className="border-t pt-2 flex justify-between font-bold text-blue-600"><span>Cursive plans</span><span>$97-$247/mo</span></li>
+                    <li className="border-t pt-2 flex justify-between font-bold text-primary"><span>Cursive plans</span><span>$97-$247/mo</span></li>
                   </ul>
                 </div>
                 <div className="bg-white rounded-lg p-6 border border-gray-200">
@@ -321,7 +321,7 @@ export default function BlogPost() {
             <h2>Use Case Scenarios</h2>
 
             <h3>Choose Cursive If...</h3>
-            <div className="not-prose bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-8 my-8 border-2 border-blue-500">
+            <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-8 my-8 border-2 border-primary">
               <ul className="space-y-3 text-sm">
                 <li className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-green-600 mt-0.5 shrink-0" />
@@ -459,19 +459,19 @@ export default function BlogPost() {
           <div className="max-w-3xl mx-auto">
             <h2 className="text-2xl font-bold mb-6">Related Comparisons</h2>
             <div className="grid md:grid-cols-2 gap-4">
-              <Link href="/blog/cursive-vs-leadfeeder" className="block bg-gradient-to-br from-gray-50 to-blue-50 rounded-xl p-6 border border-gray-200 hover:shadow-lg hover:border-blue-400 transition-all duration-300">
+              <Link href="/blog/cursive-vs-leadfeeder" className="block bg-gradient-to-br from-gray-50 to-primary/5 rounded-xl p-6 border border-gray-200 hover:shadow-lg hover:border-primary/40 transition-all duration-300">
                 <h3 className="font-bold mb-2">Cursive vs Leadfeeder</h3>
                 <p className="text-sm text-gray-600">Person-level vs company-level identification compared</p>
               </Link>
-              <Link href="/blog/cursive-vs-clearbit" className="block bg-gradient-to-br from-gray-50 to-blue-50 rounded-xl p-6 border border-gray-200 hover:shadow-lg hover:border-blue-400 transition-all duration-300">
+              <Link href="/blog/cursive-vs-clearbit" className="block bg-gradient-to-br from-gray-50 to-primary/5 rounded-xl p-6 border border-gray-200 hover:shadow-lg hover:border-primary/40 transition-all duration-300">
                 <h3 className="font-bold mb-2">Cursive vs Clearbit</h3>
                 <p className="text-sm text-gray-600">Why Cursive is the modern Clearbit replacement</p>
               </Link>
-              <Link href="/blog/clearbit-alternatives-comparison" className="block bg-gradient-to-br from-gray-50 to-blue-50 rounded-xl p-6 border border-gray-200 hover:shadow-lg hover:border-blue-400 transition-all duration-300">
+              <Link href="/blog/clearbit-alternatives-comparison" className="block bg-gradient-to-br from-gray-50 to-primary/5 rounded-xl p-6 border border-gray-200 hover:shadow-lg hover:border-primary/40 transition-all duration-300">
                 <h3 className="font-bold mb-2">Clearbit Alternatives: 10 Tools Compared</h3>
                 <p className="text-sm text-gray-600">Comprehensive roundup of B2B data and enrichment tools</p>
               </Link>
-              <Link href="/blog/warmly-vs-cursive-comparison" className="block bg-gradient-to-br from-gray-50 to-blue-50 rounded-xl p-6 border border-gray-200 hover:shadow-lg hover:border-blue-400 transition-all duration-300">
+              <Link href="/blog/warmly-vs-cursive-comparison" className="block bg-gradient-to-br from-gray-50 to-primary/5 rounded-xl p-6 border border-gray-200 hover:shadow-lg hover:border-primary/40 transition-all duration-300">
                 <h3 className="font-bold mb-2">Warmly vs Cursive</h3>
                 <p className="text-sm text-gray-600">Two intent-based platforms compared side by side</p>
               </Link>

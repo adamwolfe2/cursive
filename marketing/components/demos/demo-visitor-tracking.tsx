@@ -185,7 +185,7 @@ export function DemoVisitorTracking() {
           <motion.div
             animate={{ opacity: [1, 0.4, 1] }}
             transition={{ duration: 2, repeat: Infinity }}
-            className="w-1.5 h-1.5 bg-blue-500 rounded-full"
+            className="w-1.5 h-1.5 bg-primary/50 rounded-full"
           />
           <h4 className="text-xs text-gray-900 font-medium">Live Visitors</h4>
         </div>
@@ -240,12 +240,12 @@ export function DemoVisitorTracking() {
                   <motion.span
                     initial={{ scale: 0.8 }}
                     animate={{ scale: 1 }}
-                    className="px-1.5 py-0.5 bg-blue-50 text-blue-700 text-[10px] rounded-full flex items-center gap-1 flex-shrink-0"
+                    className="px-1.5 py-0.5 bg-primary/5 text-primary text-[10px] rounded-full flex items-center gap-1 flex-shrink-0"
                   >
                     <motion.div
                       animate={{ opacity: [1, 0.3, 1] }}
                       transition={{ duration: 1.5, repeat: Infinity }}
-                      className="w-1 h-1 bg-blue-500 rounded-full"
+                      className="w-1 h-1 bg-primary/50 rounded-full"
                     />
                     Live
                   </motion.span>

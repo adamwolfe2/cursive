@@ -35,7 +35,7 @@ function SectionHeading({ plain, script, sub }: { plain: string; script?: string
 
 function IconChip({ Icon }: { Icon: LucideIcon }) {
   return (
-    <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center">
+    <div className="w-12 h-12 rounded-xl bg-primary/5 flex items-center justify-center">
       <Icon className="w-6 h-6 text-primary" />
     </div>
   )
@@ -332,7 +332,7 @@ export default function PixelPage() {
                 transition={{ duration: 0.5, ease: EASE }}
                 className="max-w-2xl mx-auto rounded-2xl border border-gray-200 bg-white p-6 sm:p-8 text-center"
               >
-                <div className="mx-auto w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center">
+                <div className="mx-auto w-12 h-12 rounded-xl bg-primary/5 flex items-center justify-center">
                   <Shield className="w-6 h-6 text-primary" />
                 </div>
                 <h3 className="mt-5 text-lg font-medium text-gray-900">Privacy-compliant by default</h3>

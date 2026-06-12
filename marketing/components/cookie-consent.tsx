@@ -95,7 +95,7 @@ export function CookieConsent() {
 
             {/* Icon + heading */}
             <div className="flex items-center gap-2.5 mb-3">
-              <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0">
+              <div className="w-8 h-8 bg-primary/5 rounded-lg flex items-center justify-center flex-shrink-0">
                 <Cookie className="w-4 h-4 text-primary" />
               </div>
               <h3 className="text-sm font-medium text-gray-900">

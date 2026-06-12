@@ -276,7 +276,7 @@ export function ExitIntentPopup({ enabled = true, onSubmit }: ExitIntentPopupPro
               </div>
 
               {/* Decorative Element */}
-              <div className="absolute -top-24 -right-24 w-48 h-48 bg-blue-50 rounded-full opacity-50 blur-3xl pointer-events-none" />
+              <div className="absolute -top-24 -right-24 w-48 h-48 bg-primary/5 rounded-full opacity-50 blur-3xl pointer-events-none" />
             </motion.div>
           </div>
         </>

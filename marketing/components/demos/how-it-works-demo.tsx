@@ -67,10 +67,10 @@ function TrackingPixelDemo() {
                 className="ml-4 space-y-2"
               >
                 <div className="text-gray-400">&lt;!-- Cursive Tracking Pixel --&gt;</div>
-                <div className="text-blue-400">&lt;script </div>
-                <div className="ml-4 text-blue-400">src=&quot;https://cursive.com/pixel.js&quot;</div>
-                <div className="ml-4 text-purple-400">data-id=&quot;YOUR_ID&quot;</div>
-                <div className="text-blue-400">&gt;&lt;/script&gt;</div>
+                <div className="text-primary">&lt;script </div>
+                <div className="ml-4 text-primary">src=&quot;https://cursive.com/pixel.js&quot;</div>
+                <div className="ml-4 text-primary">data-id=&quot;YOUR_ID&quot;</div>
+                <div className="text-primary">&gt;&lt;/script&gt;</div>
               </motion.div>
             )}
           </AnimatePresence>
@@ -87,7 +87,7 @@ function TrackingPixelDemo() {
               className="absolute bottom-8 left-1/2 -translate-x-1/2"
             >
               <div className={`px-6 py-3 rounded-full shadow-xl flex items-center gap-3 ${
-                installed ? 'bg-blue-500' : 'bg-primary'
+                installed ? 'bg-primary/50' : 'bg-primary'
               } text-white`}>
                 {installed ? (
                   <>
@@ -271,8 +271,8 @@ function VisitorIdentificationDemo() {
             <div className="text-sm font-medium text-gray-600 mb-1">Anonymous → Known</div>
             <div className="flex items-center gap-2">
               <div className="w-8 h-2 bg-gray-300 rounded-full" />
-              <ArrowRight className="w-4 h-4 text-blue-500" />
-              <div className="w-8 h-2 bg-blue-500 rounded-full" />
+              <ArrowRight className="w-4 h-4 text-primary" />
+              <div className="w-8 h-2 bg-primary/50 rounded-full" />
             </div>
           </motion.div>
           <motion.div
@@ -602,7 +602,7 @@ function CampaignDemo() {
                   animate={{ opacity: 1, y: -50, scale: 1 }}
                   className="absolute top-0 left-1/2 -translate-x-1/2 whitespace-nowrap"
                 >
-                  <div className="bg-blue-500 text-white px-3 py-1.5 rounded-full text-xs font-medium shadow-lg">
+                  <div className="bg-primary/50 text-white px-3 py-1.5 rounded-full text-xs font-medium shadow-lg">
                     {channel.metric}
                   </div>
                 </motion.div>

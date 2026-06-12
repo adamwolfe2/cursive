@@ -62,7 +62,7 @@ export default function BlogPost() {
               <ArrowLeft className="w-4 h-4" />
               Back to Blog
             </Link>
-            <div className="max-w-4xl">
+            <div className="max-w-4xl mx-auto">
               <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
                 Comparisons
               </div>
@@ -121,7 +121,7 @@ export default function BlogPost() {
               <div className="not-prose overflow-x-auto my-8">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                    <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                       <th className="border border-gray-300 p-3 text-left font-bold">Tool</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Best For</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Visitor ID</th>
@@ -130,7 +130,7 @@ export default function BlogPost() {
                     </tr>
                   </thead>
                   <tbody className="bg-white">
-                    <tr className="bg-blue-50 border-2 border-blue-500">
+                    <tr className="bg-primary/5 border-2 border-primary">
                       <td className="border border-gray-300 p-3 font-bold">Cursive</td>
                       <td className="border border-gray-300 p-3">Full-stack data + visitor ID + AI SDR</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold"><Check className="w-4 h-4 inline" /> 70% person-level</td>
@@ -242,38 +242,38 @@ export default function BlogPost() {
               <h2>7 Best DataShopper Alternatives (Detailed Reviews)</h2>
 
               {/* 1. Cursive */}
-              <div className="not-prose bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-8 my-8 border-2 border-blue-500">
+              <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-8 my-8 border-2 border-primary">
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <h3 className="text-2xl font-bold mb-2">1. Cursive</h3>
                     <p className="text-sm text-gray-600">Best for: Teams that want warm, intent-qualified leads instead of cold purchased lists</p>
                   </div>
-                  <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-bold">Our Pick</span>
+                  <span className="bg-primary text-white px-3 py-1 rounded-full text-sm font-bold">Our Pick</span>
                 </div>
 
                 <p className="text-gray-700 mb-4">
                   <strong>What makes it different:</strong> DataShopper sells you a list of people who match your
-                  firmographic criteria. <Link href="/" className="text-blue-600 hover:underline">Cursive</Link> shows you
+                  firmographic criteria. <Link href="/" className="text-primary hover:underline">Cursive</Link> shows you
                   the people who are already raising their hands — visiting your website, researching your category,
                   and showing buying signals right now. The platform combines 280M consumer profiles, 140M+ business
                   profiles, and 60B+ weekly{" "}
-                  <Link href="/what-is-b2b-intent-data" className="text-blue-600 hover:underline">intent signals</Link>{" "}
+                  <Link href="/what-is-b2b-intent-data" className="text-primary hover:underline">intent signals</Link>{" "}
                   across 30,000+ categories with real-time{" "}
-                  <Link href="/visitor-identification" className="text-blue-600 hover:underline">visitor identification</Link>{" "}
+                  <Link href="/visitor-identification" className="text-primary hover:underline">visitor identification</Link>{" "}
                   (70% person-level match rate) and an{" "}
-                  <Link href="/what-is-ai-sdr" className="text-blue-600 hover:underline">AI SDR</Link> that automates
+                  <Link href="/what-is-ai-sdr" className="text-primary hover:underline">AI SDR</Link> that automates
                   personalized outreach across email, LinkedIn, SMS, and{" "}
-                  <Link href="/direct-mail" className="text-blue-600 hover:underline">direct mail</Link>.
+                  <Link href="/direct-mail" className="text-primary hover:underline">direct mail</Link>.
                 </p>
 
                 <p className="text-gray-700 mb-4">
                   Unlike DataShopper&apos;s one-time list purchase, Cursive is a continuously running intelligence layer.
                   The SuperPixel installs on your website and identifies anonymous visitors in real time, matching them
                   to verified contact records. The{" "}
-                  <Link href="/intent-audiences" className="text-blue-600 hover:underline">intent audience engine</Link>{" "}
+                  <Link href="/intent-audiences" className="text-primary hover:underline">intent audience engine</Link>{" "}
                   surfaces companies actively researching your category across the web. For teams that need flexible
                   visitor identification and fresh in-market buyer lists, the{" "}
-                  <Link href="/marketplace" className="text-blue-600 hover:underline">self-serve plans</Link> at
+                  <Link href="/marketplace" className="text-primary hover:underline">self-serve plans</Link> at
                   leads.meetcursive.com/get-leads start at $97/month, with no setup fee and cancellation anytime.
                 </p>
 
@@ -329,13 +329,13 @@ export default function BlogPost() {
                 <div className="bg-white rounded-lg p-4">
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-bold">Pricing:</span>
-                    <span className="text-lg font-bold text-blue-600">$97/mo | $197/mo | $247/mo self-serve</span>
+                    <span className="text-lg font-bold text-primary">$97/mo | $197/mo | $247/mo self-serve</span>
                   </div>
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> B2B teams tired of buying cold lists and waiting for responses. Cursive
                     surfaces warm, intent-ready prospects automatically — combining the data layer, intent signals, visitor
                     identification, and outreach automation in one platform. See{" "}
-                    <Link href="/pricing" className="text-blue-600 hover:underline">pricing details</Link>.
+                    <Link href="/pricing" className="text-primary hover:underline">pricing details</Link>.
                   </p>
                 </div>
               </div>
@@ -411,7 +411,7 @@ export default function BlogPost() {
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> Teams making the jump from purchased static lists to dynamic, queryable
                     data with integrated outreach. Apollo is the most cost-effective entry point. Read our{" "}
-                    <Link href="/blog/apollo-vs-cursive" className="text-blue-600 hover:underline">Apollo vs Cursive comparison</Link> for
+                    <Link href="/blog/apollo-vs-cursive" className="text-primary hover:underline">Apollo vs Cursive comparison</Link> for
                     a detailed breakdown.
                   </p>
                 </div>
@@ -484,7 +484,7 @@ export default function BlogPost() {
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> Large enterprise sales organizations with dedicated RevOps and a need
                     for maximum data depth. The price jump from DataShopper to ZoomInfo is substantial. See our{" "}
-                    <Link href="/blog/zoominfo-vs-cursive-comparison" className="text-blue-600 hover:underline">ZoomInfo vs Cursive comparison</Link>{" "}
+                    <Link href="/blog/zoominfo-vs-cursive-comparison" className="text-primary hover:underline">ZoomInfo vs Cursive comparison</Link>{" "}
                     for a full breakdown.
                   </p>
                 </div>
@@ -558,7 +558,7 @@ export default function BlogPost() {
                     <strong>Best for:</strong> Teams with strict compliance requirements or heavy European pipeline
                     where verified phone data is essential. For US-focused teams, Cognism&apos;s coverage advantage
                     is less compelling. See our{" "}
-                    <Link href="/blog/cognism-alternative" className="text-blue-600 hover:underline">Cognism alternatives comparison</Link>.
+                    <Link href="/blog/cognism-alternative" className="text-primary hover:underline">Cognism alternatives comparison</Link>.
                   </p>
                 </div>
               </div>
@@ -631,7 +631,7 @@ export default function BlogPost() {
                     <strong>Best for:</strong> Teams looking for an affordable, AI-powered alternative to static
                     purchased lists with real-time data freshness. Not a fit for teams that need visitor identification
                     or integrated outreach automation. See our{" "}
-                    <Link href="/blog/seamless-ai-alternative" className="text-blue-600 hover:underline">Seamless.AI alternatives comparison</Link>.
+                    <Link href="/blog/seamless-ai-alternative" className="text-primary hover:underline">Seamless.AI alternatives comparison</Link>.
                   </p>
                 </div>
               </div>
@@ -703,7 +703,7 @@ export default function BlogPost() {
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> Individual SDRs doing manual LinkedIn prospecting who need verified
                     direct dials. Not a fit for teams needing bulk list purchasing or dynamic data workflows. Read our{" "}
-                    <Link href="/blog/lusha-alternative" className="text-blue-600 hover:underline">full Lusha alternatives comparison</Link>.
+                    <Link href="/blog/lusha-alternative" className="text-primary hover:underline">full Lusha alternatives comparison</Link>.
                   </p>
                 </div>
               </div>
@@ -775,7 +775,7 @@ export default function BlogPost() {
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> Marketers, PR professionals, and link builders who need domain-based
                     email finding. Not a replacement for DataShopper&apos;s B2B list purchasing functionality. Read our{" "}
-                    <Link href="/blog/hunter-io-alternative" className="text-blue-600 hover:underline">Hunter.io alternatives comparison</Link>.
+                    <Link href="/blog/hunter-io-alternative" className="text-primary hover:underline">Hunter.io alternatives comparison</Link>.
                   </p>
                 </div>
               </div>
@@ -788,7 +788,7 @@ export default function BlogPost() {
                   <thead>
                     <tr className="bg-gray-100">
                       <th className="border border-gray-300 p-3 text-left font-bold">Feature</th>
-                      <th className="border border-gray-300 p-3 text-center font-bold text-blue-700">Cursive</th>
+                      <th className="border border-gray-300 p-3 text-center font-bold text-primary">Cursive</th>
                       <th className="border border-gray-300 p-3 text-center font-bold">Apollo</th>
                       <th className="border border-gray-300 p-3 text-center font-bold">ZoomInfo</th>
                       <th className="border border-gray-300 p-3 text-center font-bold">Cognism</th>
@@ -890,31 +890,31 @@ export default function BlogPost() {
                 quick decision framework.
               </p>
 
-              <div className="not-prose bg-gradient-to-br from-gray-50 to-blue-50 rounded-xl p-6 my-8 border border-gray-200">
+              <div className="not-prose bg-gradient-to-br from-gray-50 to-primary/5 rounded-xl p-6 my-8 border border-gray-200">
                 <h3 className="font-bold text-lg mb-4">Decision Matrix by Use Case</h3>
                 <div className="space-y-4 text-sm">
                   <div className="border-b border-gray-200 pb-3">
-                    <p className="font-bold text-blue-700 mb-1">You want warm leads, not cold lists — with visitor ID + intent data + automated outreach:</p>
+                    <p className="font-bold text-primary mb-1">You want warm leads, not cold lists — with visitor ID + intent data + automated outreach:</p>
                     <p className="text-gray-700"><strong>Choose Cursive.</strong> The only tool in this comparison that combines real-time visitor identification, behavioral intent signals, and automated AI outreach in one platform. Stop buying cold contact lists; start converting the warm traffic already visiting your site.</p>
                   </div>
                   <div className="border-b border-gray-200 pb-3">
-                    <p className="font-bold text-blue-700 mb-1">You want live, queryable data with built-in sequencing at low cost:</p>
+                    <p className="font-bold text-primary mb-1">You want live, queryable data with built-in sequencing at low cost:</p>
                     <p className="text-gray-700"><strong>Choose Apollo.io.</strong> The most natural upgrade from static list purchasing — a live database you can query repeatedly with built-in email and LinkedIn outreach. Generous free tier for testing.</p>
                   </div>
                   <div className="border-b border-gray-200 pb-3">
-                    <p className="font-bold text-blue-700 mb-1">You sell into European markets and need verified direct dials with GDPR compliance:</p>
+                    <p className="font-bold text-primary mb-1">You sell into European markets and need verified direct dials with GDPR compliance:</p>
                     <p className="text-gray-700"><strong>Choose Cognism.</strong> Best-in-class phone-verified data and compliance rigor for European pipeline. More expensive than DataShopper but far better quality and freshness.</p>
                   </div>
                   <div className="border-b border-gray-200 pb-3">
-                    <p className="font-bold text-blue-700 mb-1">You are at the enterprise level and need the broadest possible data depth:</p>
+                    <p className="font-bold text-primary mb-1">You are at the enterprise level and need the broadest possible data depth:</p>
                     <p className="text-gray-700"><strong>Choose ZoomInfo.</strong> Largest global B2B database with intent data, visitor identification, and engagement tools. Be prepared for the price jump and multi-year contracts.</p>
                   </div>
                   <div className="border-b border-gray-200 pb-3">
-                    <p className="font-bold text-blue-700 mb-1">You are an agency managing variable lead volume across clients:</p>
+                    <p className="font-bold text-primary mb-1">You are an agency managing variable lead volume across clients:</p>
                     <p className="text-gray-700"><strong>Choose Cursive self-serve.</strong> Choose the $197/month Custom Audience for a fresh weekly list of in-market buyers, or the $247/month bundle to add visitor identification.</p>
                   </div>
                   <div>
-                    <p className="font-bold text-blue-700 mb-1">You need domain-based email finding for PR, link building, or content marketing:</p>
+                    <p className="font-bold text-primary mb-1">You need domain-based email finding for PR, link building, or content marketing:</p>
                     <p className="text-gray-700"><strong>Choose Hunter.io.</strong> Best domain-based email finder for non-sales use cases at an accessible price. Not designed for high-volume B2B sales prospecting.</p>
                   </div>
                 </div>

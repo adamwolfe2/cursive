@@ -35,7 +35,7 @@ export default function BlogPost() {
             Back to Blog
           </Link>
 
-          <div className="max-w-4xl">
+          <div className="max-w-4xl mx-auto">
             <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
               Engineering
             </div>
@@ -516,7 +516,7 @@ return {
       />
 
       {/* Related Posts */}
-      <section className="py-16 bg-gradient-to-br from-gray-50 to-blue-50">
+      <section className="py-16 bg-gradient-to-br from-gray-50 to-primary/5">
         <Container>
           <h2 className="text-3xl font-bold mb-8 text-center">Read Next</h2>
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">

@@ -57,7 +57,7 @@ export default function BlogPost() {
               Back to Blog
             </Link>
 
-            <div className="max-w-4xl">
+            <div className="max-w-4xl mx-auto">
               <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
                 Comparisons
               </div>
@@ -118,7 +118,7 @@ export default function BlogPost() {
               <div className="not-prose overflow-x-auto my-8">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                    <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                       <th className="border border-gray-300 p-3 text-left font-bold">Feature</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Cursive</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">ZoomInfo</th>
@@ -177,7 +177,7 @@ export default function BlogPost() {
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-3 font-bold">Best For</td>
-                      <td className="border border-gray-300 p-3 font-bold text-blue-700">SMB to mid-market, visitor conversion, US-focused</td>
+                      <td className="border border-gray-300 p-3 font-bold text-primary">SMB to mid-market, visitor conversion, US-focused</td>
                       <td className="border border-gray-300 p-3 font-bold">Enterprise, cold outbound, deep US data research</td>
                     </tr>
                   </tbody>
@@ -207,7 +207,7 @@ export default function BlogPost() {
                 setup fee, and can be canceled anytime.
               </p>
 
-              <div className="not-prose bg-gradient-to-br from-green-50 to-blue-50 rounded-xl p-8 my-8 border-2 border-green-500">
+              <div className="not-prose bg-gradient-to-br from-green-50 to-primary/5 rounded-xl p-8 my-8 border-2 border-green-500">
                 <h4 className="font-bold text-2xl mb-6">Cost Comparison: First-Year Total Investment</h4>
                 <div className="grid md:grid-cols-2 gap-8">
                   <div className="bg-white rounded-lg p-6">
@@ -238,8 +238,8 @@ export default function BlogPost() {
                       </p>
                     </div>
                   </div>
-                  <div className="bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg p-6">
-                    <h5 className="font-bold text-lg mb-4 text-blue-900">Cursive (Self-Serve, first year)</h5>
+                  <div className="bg-gradient-to-br from-primary/10 to-primary/10 rounded-lg p-6">
+                    <h5 className="font-bold text-lg mb-4 text-primary">Cursive (Self-Serve, first year)</h5>
                     <div className="space-y-3 text-sm">
                       <div className="flex justify-between">
                         <span>Self-serve plans:</span>
@@ -261,7 +261,7 @@ export default function BlogPost() {
                         <span className="font-bold">Typical first year:</span>
                         <span className="font-bold text-green-600">$1,164-2,964</span>
                       </div>
-                      <p className="text-xs text-blue-800 mt-2">
+                      <p className="text-xs text-primary mt-2">
                         Month-to-month. Cancel anytime. All capabilities included.
                       </p>
                     </div>
@@ -323,9 +323,9 @@ export default function BlogPost() {
                     </li>
                   </ul>
                 </div>
-                <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 border-2 border-blue-500">
+                <div className="bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-6 border-2 border-primary">
                   <h4 className="font-bold text-lg mb-4 flex items-center gap-2">
-                    <span className="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">C</span>
+                    <span className="bg-primary text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">C</span>
                     Cursive Visitor ID
                   </h4>
                   <ul className="space-y-3 text-sm">
@@ -387,7 +387,7 @@ export default function BlogPost() {
               <div className="not-prose overflow-x-auto my-8">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                    <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                       <th className="border border-gray-300 p-3 text-left font-bold">Data Dimension</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Cursive</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">ZoomInfo</th>
@@ -488,7 +488,7 @@ export default function BlogPost() {
                     </li>
                   </ul>
                 </div>
-                <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 border-2 border-blue-500">
+                <div className="bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-6 border-2 border-primary">
                   <h4 className="font-bold text-lg mb-4">Cursive Intent Signals</h4>
                   <ul className="space-y-3 text-sm">
                     <li className="flex items-start gap-2">
@@ -545,7 +545,7 @@ export default function BlogPost() {
                 actually reach inboxes.
               </p>
 
-              <div className="not-prose bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl p-6 my-8 border border-purple-300">
+              <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-6 my-8 border border-primary/30">
                 <h4 className="font-bold text-lg mb-4">Response Rate Comparison</h4>
                 <div className="grid md:grid-cols-3 gap-4 text-center">
                   <div className="bg-white rounded-lg p-4">
@@ -554,14 +554,14 @@ export default function BlogPost() {
                     <div className="text-xs text-gray-500">Database-sourced cold contacts with template sequences</div>
                   </div>
                   <div className="bg-white rounded-lg p-4">
-                    <div className="text-3xl font-bold text-blue-600 mb-1">10-15%</div>
+                    <div className="text-3xl font-bold text-primary mb-1">10-15%</div>
                     <div className="text-sm font-bold text-gray-700 mb-1">Industry Average (Intent)</div>
                     <div className="text-xs text-gray-500">Intent-triggered outreach to in-market accounts</div>
                   </div>
-                  <div className="bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg p-4 border-2 border-blue-400">
-                    <div className="text-3xl font-bold text-blue-700 mb-1">20-30%</div>
-                    <div className="text-sm font-bold text-blue-900 mb-1">Cursive Warm Visitor Outreach</div>
-                    <div className="text-xs text-blue-700">AI-personalized outreach to your identified website visitors</div>
+                  <div className="bg-gradient-to-br from-primary/10 to-primary/10 rounded-lg p-4 border-2 border-primary/40">
+                    <div className="text-3xl font-bold text-primary mb-1">20-30%</div>
+                    <div className="text-sm font-bold text-primary mb-1">Cursive Warm Visitor Outreach</div>
+                    <div className="text-xs text-primary">AI-personalized outreach to your identified website visitors</div>
                   </div>
                 </div>
               </div>
@@ -667,31 +667,31 @@ export default function BlogPost() {
                     </li>
                   </ul>
                 </div>
-                <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 border-2 border-blue-500">
-                  <h4 className="font-bold text-xl mb-4 text-blue-900">Choose Cursive if:</h4>
+                <div className="bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-6 border-2 border-primary">
+                  <h4 className="font-bold text-xl mb-4 text-primary">Choose Cursive if:</h4>
                   <ul className="space-y-3 text-sm">
                     <li className="flex items-start gap-2">
-                      <Check className="w-4 h-4 text-blue-600 mt-1 flex-shrink-0" />
+                      <Check className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
                       <span><strong>You want to convert website visitors into pipeline</strong></span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <Check className="w-4 h-4 text-blue-600 mt-1 flex-shrink-0" />
+                      <Check className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
                       <span><strong>You need person-level identification, not just company-level</strong></span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <Check className="w-4 h-4 text-blue-600 mt-1 flex-shrink-0" />
+                      <Check className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
                       <span><strong>You are an SMB, startup, or mid-market company</strong></span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <Check className="w-4 h-4 text-blue-600 mt-1 flex-shrink-0" />
+                      <Check className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
                       <span><strong>You need flexible month-to-month pricing</strong></span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <Check className="w-4 h-4 text-blue-600 mt-1 flex-shrink-0" />
+                      <Check className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
                       <span><strong>You want AI-powered outreach included (not as a $10k add-on)</strong></span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <Check className="w-4 h-4 text-blue-600 mt-1 flex-shrink-0" />
+                      <Check className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
                       <span><strong>You have 1,000+ monthly website visitors to identify</strong></span>
                     </li>
                   </ul>
@@ -701,7 +701,7 @@ export default function BlogPost() {
               {/* Customer Testimonials */}
               <h2>What Customers Say About Switching from ZoomInfo to Cursive</h2>
 
-              <div className="not-prose bg-blue-50 rounded-xl p-6 my-8 border border-blue-200">
+              <div className="not-prose bg-primary/5 rounded-xl p-6 my-8 border border-primary/20">
                 <p className="text-sm italic mb-2">
                   &quot;We were spending $22,000 a year on ZoomInfo and generating okay cold pipeline from it.
                   When we added Cursive, we discovered that a huge portion of our best-fit prospects were
@@ -712,7 +712,7 @@ export default function BlogPost() {
                 <p className="text-sm font-bold">-- VP of Sales, B2B SaaS (Series B)</p>
               </div>
 
-              <div className="not-prose bg-blue-50 rounded-xl p-6 my-8 border border-blue-200">
+              <div className="not-prose bg-primary/5 rounded-xl p-6 my-8 border border-primary/20">
                 <p className="text-sm italic mb-2">
                   &quot;ZoomInfo is great if you have a big team and need to research enterprise accounts.
                   But for a 15-person company, $20k a year for a database felt excessive. Cursive gave us
@@ -723,7 +723,7 @@ export default function BlogPost() {
                 <p className="text-sm font-bold">-- Founder, B2B Fintech</p>
               </div>
 
-              <div className="not-prose bg-blue-50 rounded-xl p-6 my-8 border border-blue-200">
+              <div className="not-prose bg-primary/5 rounded-xl p-6 my-8 border border-primary/20">
                 <p className="text-sm italic mb-2">
                   &quot;We actually use both. ZoomInfo powers our cold outbound to accounts that have not
                   visited us yet -- we still need that for net-new pipeline. But Cursive runs 24/7 in
@@ -741,11 +741,11 @@ export default function BlogPost() {
                 complementary roles, rather than treating them as either/or:
               </p>
 
-              <div className="not-prose bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl p-6 my-8 border border-purple-300">
+              <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-6 my-8 border border-primary/30">
                 <h4 className="font-bold text-lg mb-4">The Optimal Combined Setup</h4>
                 <ul className="space-y-4 text-sm">
                   <li className="flex items-start gap-3">
-                    <span className="bg-blue-600 text-white px-2 py-1 rounded text-xs font-bold whitespace-nowrap">Cursive</span>
+                    <span className="bg-primary text-white px-2 py-1 rounded text-xs font-bold whitespace-nowrap">Cursive</span>
                     <span><strong>Primary warm pipeline (60-70% of pipeline):</strong> Install the Cursive pixel, let it run 24/7 identifying the warmest prospects -- people who have already found you and are actively researching your solution. Cursive automatically engages them with AI-personalized multi-channel outreach. These leads convert at 20-30% response rates.</span>
                   </li>
                   <li className="flex items-start gap-3">
@@ -765,7 +765,7 @@ export default function BlogPost() {
 
               <div className="not-prose space-y-6 my-8">
                 {faqs.map((faq, index) => (
-                  <div key={index} className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-lg p-6 border border-gray-200">
+                  <div key={index} className="bg-gradient-to-br from-gray-50 to-primary/5 rounded-lg p-6 border border-gray-200">
                     <h3 className="font-bold text-lg mb-3">{faq.question}</h3>
                     <p className="text-gray-700">{faq.answer}</p>
                   </div>
@@ -788,9 +788,9 @@ export default function BlogPost() {
                 Cursive is the right choice for the vast majority of B2B companies -- startups, SMBs, and
                 mid-market companies -- that want to stop spraying cold emails at purchased databases and
                 start converting the warm prospects already visiting their website. With{" "}
-                <Link href="/visitor-identification" className="text-blue-600 hover:underline">70% person-level identification</Link>,
+                <Link href="/visitor-identification" className="text-primary hover:underline">70% person-level identification</Link>,
                 60B+ behaviors & URLs scanned weekly,{" "}
-                <Link href="/platform" className="text-blue-600 hover:underline">AI-powered multi-channel outreach</Link>,
+                <Link href="/platform" className="text-primary hover:underline">AI-powered multi-channel outreach</Link>,
                 95%+ email deliverability, 200+ CRM integrations, and month-to-month pricing starting at
                 $97/month -- Cursive delivers more actionable pipeline per dollar than any database-first
                 platform at any price point.
@@ -820,7 +820,7 @@ export default function BlogPost() {
         />
 
         {/* Related Posts */}
-        <section className="py-16 bg-gradient-to-br from-gray-50 to-blue-50">
+        <section className="py-16 bg-gradient-to-br from-gray-50 to-primary/5">
           <Container>
             <div className="max-w-5xl mx-auto">
               <SimpleRelatedPosts posts={[

@@ -35,7 +35,7 @@ export default function BlogPost() {
             Back to Blog
           </Link>
 
-          <div className="max-w-4xl">
+          <div className="max-w-4xl mx-auto">
             <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
               Email Marketing
             </div>
@@ -135,8 +135,8 @@ export default function BlogPost() {
 
             <h2>What's Working</h2>
 
-            <div className="not-prose bg-blue-50 rounded-xl p-6 my-8 border border-blue-200">
-              <h3 className="text-xl font-bold mb-4 text-blue-900 flex items-center gap-2">
+            <div className="not-prose bg-primary/5 rounded-xl p-6 my-8 border border-primary/20">
+              <h3 className="text-xl font-bold mb-4 text-primary flex items-center gap-2">
                 <CheckCircle className="w-6 h-6" />
                 Do More of This
               </h3>
@@ -195,7 +195,7 @@ export default function BlogPost() {
               Here's what a winning cold email looks like in 2026:
             </p>
 
-            <div className="not-prose bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 my-8 border border-gray-200">
+            <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-6 my-8 border border-gray-200">
               <div className="bg-white rounded-lg p-5 font-mono text-sm">
                 <p className="text-gray-500 mb-4">Subject: [Specific trigger event]</p>
                 <div className="space-y-3 text-gray-800">
@@ -435,7 +435,7 @@ export default function BlogPost() {
       />
 
       {/* Related Posts */}
-      <section className="py-16 bg-gradient-to-br from-gray-50 to-blue-50">
+      <section className="py-16 bg-gradient-to-br from-gray-50 to-primary/5">
         <Container>
           <h2 className="text-3xl font-bold mb-8 text-center">Read Next</h2>
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">

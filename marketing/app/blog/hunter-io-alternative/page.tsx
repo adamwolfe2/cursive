@@ -63,7 +63,7 @@ export default function BlogPost() {
               Back to Blog
             </Link>
 
-            <div className="max-w-4xl">
+            <div className="max-w-4xl mx-auto">
               <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
                 Data &amp; Intelligence
               </div>
@@ -148,7 +148,7 @@ export default function BlogPost() {
               <div className="not-prose overflow-x-auto my-8">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                    <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                       <th className="border border-gray-300 p-3 text-left font-bold">Tool</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Database</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Phone #s</th>
@@ -159,7 +159,7 @@ export default function BlogPost() {
                     </tr>
                   </thead>
                   <tbody className="bg-white">
-                    <tr className="bg-blue-50 border-2 border-blue-500">
+                    <tr className="bg-primary/5 border-2 border-primary">
                       <td className="border border-gray-300 p-3 font-bold">Cursive</td>
                       <td className="border border-gray-300 p-3">280M consumer / 140M+ business</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold">Yes</td>
@@ -229,20 +229,20 @@ export default function BlogPost() {
               <h2>7 Best Hunter.io Alternatives (Detailed Comparison)</h2>
 
               {/* Tool 1: Cursive */}
-              <div className="not-prose bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-8 my-8 border-2 border-blue-500">
+              <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-8 my-8 border-2 border-primary">
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <h3 className="text-2xl font-bold mb-2">1. Cursive</h3>
                     <p className="text-sm text-gray-600">Best for: Full-stack B2B prospecting with visitor identification, intent data, and AI outreach in one platform</p>
                   </div>
-                  <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-bold whitespace-nowrap">Top Pick</span>
+                  <span className="bg-primary text-white px-3 py-1 rounded-full text-sm font-bold whitespace-nowrap">Top Pick</span>
                 </div>
 
                 <p className="text-gray-700 mb-4">
                   <strong>What makes it different:</strong> Hunter.io finds email addresses for companies you already
                   know you want to reach. Cursive identifies the companies and people visiting your website who you
                   do not even know about yet -- at an industry-leading{" "}
-                  <Link href="/visitor-identification" className="text-blue-600 hover:underline">70% person-level identification rate</Link> --
+                  <Link href="/visitor-identification" className="text-primary hover:underline">70% person-level identification rate</Link> --
                   and then automates personalized outreach to convert them. With 280M consumer profiles, 140M+ business
                   profiles, phone numbers, and 60B+ weekly behavioral intent signals, Cursive is a complete pipeline
                   engine compared to Hunter's single-purpose email lookup utility. And with self-serve plans
@@ -305,27 +305,27 @@ export default function BlogPost() {
                 <div className="bg-white rounded-lg p-4">
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-bold">Pricing:</span>
-                    <span className="text-lg font-bold text-blue-600">$97/mo Pixel | $197/mo Audience | $247/mo Bundle</span>
+                    <span className="text-lg font-bold text-primary">$97/mo Pixel | $197/mo Audience | $247/mo Bundle</span>
                   </div>
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> B2B companies that have outgrown Hunter.io's email-only lookup model
                     and need a complete pipeline generation stack -- with visitor identification, phone and email data,
                     intent signals, and AI outreach automation in one platform. See our{" "}
-                    <Link href="/pricing" className="text-blue-600 hover:underline">pricing page</Link> for full details.
+                    <Link href="/pricing" className="text-primary hover:underline">pricing page</Link> for full details.
                   </p>
                 </div>
               </div>
 
               {/* Mid-article CTA */}
-              <div className="not-prose bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-8 my-8 text-white text-center">
+              <div className="not-prose bg-gradient-to-r from-primary to-primary-dark rounded-xl p-8 my-8 text-white text-center">
                 <h3 className="text-2xl font-bold mb-3">Hunter.io Finds Emails. Cursive Finds Your Next Customers.</h3>
-                <p className="text-blue-100 mb-6 max-w-xl mx-auto">
+                <p className="text-white/90 mb-6 max-w-xl mx-auto">
                   Identify 70% of anonymous website visitors in real time, enrich with phone + email + 60B+ intent
                   signals, and automate personalized multi-channel outreach. Self-serve plans start at $97/month.
                 </p>
                 <Link
                   href="https://www.meetcursive.com/platform"
-                  className="inline-block bg-white text-blue-600 font-bold px-6 py-3 rounded-lg hover:bg-blue-50 transition-colors"
+                  className="inline-block bg-white text-primary font-bold px-6 py-3 rounded-lg hover:bg-primary/5 transition-colors"
                 >
                   See How Cursive Works
                 </Link>
@@ -423,7 +423,7 @@ export default function BlogPost() {
                     <h3 className="text-2xl font-bold mb-2">3. Lusha</h3>
                     <p className="text-sm text-gray-600">Best for: LinkedIn-focused prospecting with high-accuracy direct dial phone numbers</p>
                   </div>
-                  <span className="bg-purple-600 text-white px-3 py-1 rounded-full text-sm font-bold whitespace-nowrap">LinkedIn Pick</span>
+                  <span className="bg-primary text-white px-3 py-1 rounded-full text-sm font-bold whitespace-nowrap">LinkedIn Pick</span>
                 </div>
 
                 <p className="text-gray-700 mb-4">
@@ -812,9 +812,9 @@ export default function BlogPost() {
 
               <h3>If You Need a Full-Stack Pipeline Engine:</h3>
               <p>
-                Choose <strong><Link href="/" className="text-blue-600 hover:underline">Cursive</Link></strong>.
+                Choose <strong><Link href="/" className="text-primary hover:underline">Cursive</Link></strong>.
                 Cursive identifies the people visiting your website at{" "}
-                <Link href="/visitor-identification" className="text-blue-600 hover:underline">70% person-level match rate</Link>,
+                <Link href="/visitor-identification" className="text-primary hover:underline">70% person-level match rate</Link>,
                 enriches them with phone, email, LinkedIn, and 60B+ behaviors & URLs scanned weekly, and automates personalized
                 multi-channel outreach -- all from a single platform. It is not just an email finder; it is a
                 complete pipeline generation system built for modern B2B teams.
@@ -858,7 +858,7 @@ export default function BlogPost() {
               {/* Evaluation Checklist */}
               <h2>Hunter.io Alternative Evaluation Checklist</h2>
 
-              <div className="not-prose bg-gradient-to-br from-gray-50 to-blue-50 rounded-xl p-6 my-8 border border-gray-200">
+              <div className="not-prose bg-gradient-to-br from-gray-50 to-primary/5 rounded-xl p-6 my-8 border border-gray-200">
                 <h3 className="font-bold text-lg mb-4">Key Questions to Ask Before Switching</h3>
                 <div className="grid md:grid-cols-2 gap-4 text-sm">
                   <div className="space-y-3">
@@ -897,7 +897,7 @@ export default function BlogPost() {
 
               <div className="not-prose space-y-6 my-8">
                 {faqs.map((faq, index) => (
-                  <div key={index} className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-lg p-6 border border-gray-200">
+                  <div key={index} className="bg-gradient-to-br from-gray-50 to-primary/5 rounded-lg p-6 border border-gray-200">
                     <h3 className="font-bold text-lg mb-3">{faq.question}</h3>
                     <p className="text-gray-700">{faq.answer}</p>
                   </div>
@@ -932,7 +932,7 @@ export default function BlogPost() {
 
               <p>
                 For teams ready to make the leap from email finding to pipeline generation,{" "}
-                <Link href="/" className="text-blue-600 hover:underline">Cursive</Link> represents the most
+                <Link href="/" className="text-primary hover:underline">Cursive</Link> represents the most
                 significant evolution: a platform that does not just help you find people to contact, but identifies
                 the people who have already raised their hand by visiting your website, and converts them
                 automatically.
@@ -958,7 +958,7 @@ export default function BlogPost() {
         />
 
         {/* Related Posts */}
-        <section className="py-16 bg-gradient-to-br from-gray-50 to-blue-50">
+        <section className="py-16 bg-gradient-to-br from-gray-50 to-primary/5">
           <Container>
             <div className="max-w-5xl mx-auto">
               <div className="grid md:grid-cols-3 gap-6">
@@ -979,7 +979,7 @@ export default function BlogPost() {
                     href: "/blog/best-b2b-data-providers-2026"
                   }
                 ].map((post, i) => (
-                  <Link key={i} href={post.href} className="block bg-white rounded-xl p-6 border border-gray-200 hover:border-blue-300 hover:shadow-sm transition-all">
+                  <Link key={i} href={post.href} className="block bg-white rounded-xl p-6 border border-gray-200 hover:border-primary/30 hover:shadow-sm transition-all">
                     <h3 className="font-bold mb-2 text-gray-900">{post.title}</h3>
                     <p className="text-sm text-gray-600">{post.description}</p>
                   </Link>
@@ -1003,7 +1003,7 @@ export default function BlogPost() {
                     href: "/blog/scaling-outbound"
                   }
                 ].map((post, i) => (
-                  <Link key={i} href={post.href} className="block bg-white rounded-xl p-6 border border-gray-200 hover:border-blue-300 hover:shadow-sm transition-all">
+                  <Link key={i} href={post.href} className="block bg-white rounded-xl p-6 border border-gray-200 hover:border-primary/30 hover:shadow-sm transition-all">
                     <h3 className="font-bold mb-2 text-gray-900">{post.title}</h3>
                     <p className="text-sm text-gray-600">{post.description}</p>
                   </Link>

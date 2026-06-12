@@ -54,7 +54,7 @@ export default function BlogPost() {
             <ArrowLeft className="w-4 h-4" />
             Back to Blog
           </Link>
-          <div className="max-w-4xl">
+          <div className="max-w-4xl mx-auto">
             <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
               Comparisons
             </div>
@@ -111,7 +111,7 @@ export default function BlogPost() {
             <div className="not-prose overflow-x-auto my-8">
               <table className="w-full text-sm border-collapse">
                 <thead>
-                  <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                  <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                     <th className="border border-gray-300 p-3 text-left font-bold">Capability</th>
                     <th className="border border-gray-300 p-3 text-center font-bold">Reply.io</th>
                     <th className="border border-gray-300 p-3 text-center font-bold">Cursive</th>
@@ -227,37 +227,37 @@ export default function BlogPost() {
             {/* Cursive as Alternative */}
             <h2>Cursive: The Reply.io Alternative Built for Warm Outreach</h2>
 
-            <div className="not-prose bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-8 my-8 border-2 border-blue-500">
+            <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-8 my-8 border-2 border-primary">
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <h3 className="text-2xl font-bold mb-2">Cursive</h3>
                   <p className="text-sm text-gray-600">Best for: Teams that want to reach buyers showing real intent — not just cold lists</p>
                 </div>
-                <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-bold">Top Pick</span>
+                <span className="bg-primary text-white px-3 py-1 rounded-full text-sm font-bold">Top Pick</span>
               </div>
 
               <p className="text-gray-700 mb-4">
-                <strong>What makes it different:</strong> <Link href="/" className="text-blue-600 hover:underline">Cursive</Link> starts
+                <strong>What makes it different:</strong> <Link href="/" className="text-primary hover:underline">Cursive</Link> starts
                 where Reply.io cannot: your own website traffic. By identifying up to 70% of anonymous B2B visitors at
                 the person level — with names, email addresses, job titles, and LinkedIn profiles — Cursive gives
-                your <Link href="/what-is-ai-sdr" className="text-blue-600 hover:underline">AI SDR</Link> a fundamentally
+                your <Link href="/what-is-ai-sdr" className="text-primary hover:underline">AI SDR</Link> a fundamentally
                 better list to work from. These are people who already know you exist and have shown interest. The
                 response rates reflect it.
               </p>
 
               <p className="text-gray-700 mb-4">
-                From there, the <Link href="/intent-audiences" className="text-blue-600 hover:underline">intent audience engine</Link> scores
+                From there, the <Link href="/intent-audiences" className="text-primary hover:underline">intent audience engine</Link> scores
                 each visitor by engagement depth — pages viewed, time on site, return visits, pricing page interactions —
                 and routes them into the right outreach sequence automatically. Emails written by the AI reference
                 specific pages the prospect visited, making them feel personal rather than templated. Outreach goes
-                across email, LinkedIn, and <Link href="/direct-mail" className="text-blue-600 hover:underline">direct mail</Link>,
+                across email, LinkedIn, and <Link href="/direct-mail" className="text-primary hover:underline">direct mail</Link>,
                 coordinated to hit the prospect across channels while intent is still hot.
               </p>
 
               <p className="text-gray-700 mb-4">
-                For teams that do not have enough website traffic yet, the <Link href="/audience-builder" className="text-blue-600 hover:underline">audience builder</Link> pulls
+                For teams that do not have enough website traffic yet, the <Link href="/audience-builder" className="text-primary hover:underline">audience builder</Link> pulls
                 from 280M US consumer profiles and 140M+ business profiles, letting you build targeted lists that can
-                supplement your visitor-based pipeline. Visit the <Link href="/marketplace" className="text-blue-600 hover:underline">self-serve plans</Link> to
+                supplement your visitor-based pipeline. Visit the <Link href="/marketplace" className="text-primary hover:underline">self-serve plans</Link> to
                 choose Visitor Pixel, Custom Audience, or the Pixel + Audience Bundle.
               </p>
 
@@ -309,12 +309,12 @@ export default function BlogPost() {
               <div className="bg-white rounded-lg p-4">
                 <div className="flex justify-between items-center mb-2">
                   <span className="font-bold">Pricing:</span>
-                  <span className="text-lg font-bold text-blue-600">Starting at $97/mo</span>
+                  <span className="text-lg font-bold text-primary">Starting at $97/mo</span>
                 </div>
                 <p className="text-sm text-gray-600">
                   <strong>Best for:</strong> B2B companies generating 3,000+ monthly website visitors that want to
                   convert warm traffic into booked meetings without managing a per-seat sequencing tool.
-                  See <Link href="/pricing" className="text-blue-600 hover:underline">pricing details</Link>.
+                  See <Link href="/pricing" className="text-primary hover:underline">pricing details</Link>.
                 </p>
               </div>
             </div>
@@ -354,7 +354,7 @@ export default function BlogPost() {
             <div className="not-prose overflow-x-auto my-8">
               <table className="w-full text-sm border-collapse">
                 <thead>
-                  <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                  <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                     <th className="border border-gray-300 p-3 text-left font-bold">Feature</th>
                     <th className="border border-gray-300 p-3 text-center font-bold">Cursive</th>
                     <th className="border border-gray-300 p-3 text-center font-bold">Reply.io</th>

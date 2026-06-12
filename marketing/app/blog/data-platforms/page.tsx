@@ -48,7 +48,7 @@ export default function DataPlatformsPage() {
               Back to Blog
             </Link>
 
-            <div className="max-w-4xl">
+            <div className="max-w-4xl mx-auto">
               <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
                 Data Platforms
               </div>
@@ -193,7 +193,7 @@ export default function DataPlatformsPage() {
               <div className="not-prose overflow-x-auto my-8">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                    <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                       <th className="border border-gray-300 p-3 text-left font-bold">Platform Type</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">What It Provides</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Starting Price</th>
@@ -219,7 +219,7 @@ export default function DataPlatformsPage() {
                       <td className="border border-gray-300 p-3">$20k/year</td>
                       <td className="border border-gray-300 p-3">ABM prioritization</td>
                     </tr>
-                    <tr className="bg-blue-50 border-2 border-blue-500">
+                    <tr className="bg-primary/5 border-2 border-primary">
                       <td className="border border-gray-300 p-3 font-bold">Unified Intelligence</td>
                       <td className="border border-gray-300 p-3">All of the above + visitor ID</td>
                       <td className="border border-gray-300 p-3">$99/month</td>
@@ -239,8 +239,8 @@ export default function DataPlatformsPage() {
               <div className="not-prose grid md:grid-cols-1 gap-4 my-8">
                 <div className="bg-white rounded-xl p-6 border border-gray-200">
                   <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <CheckCircle className="w-5 h-5 text-blue-600" />
+                    <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <CheckCircle className="w-5 h-5 text-primary" />
                     </div>
                     <div>
                       <h3 className="font-bold mb-1">1. Accuracy</h3>
@@ -253,8 +253,8 @@ export default function DataPlatformsPage() {
 
                 <div className="bg-white rounded-xl p-6 border border-gray-200">
                   <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <Layers className="w-5 h-5 text-purple-600" />
+                    <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Layers className="w-5 h-5 text-primary" />
                     </div>
                     <div>
                       <h3 className="font-bold mb-1">2. Completeness</h3>
@@ -595,7 +595,7 @@ export default function DataPlatformsPage() {
 
               <div className="not-prose space-y-6 my-8">
                 {faqs.map((faq, index) => (
-                  <div key={index} className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-lg p-6 border border-gray-200">
+                  <div key={index} className="bg-gradient-to-br from-gray-50 to-primary/5 rounded-lg p-6 border border-gray-200">
                     <h3 className="font-bold text-lg mb-3">{faq.question}</h3>
                     <p className="text-gray-700">{faq.answer}</p>
                   </div>
@@ -641,7 +641,7 @@ export default function DataPlatformsPage() {
         />
 
         {/* Related Posts */}
-        <section className="py-16 bg-gradient-to-br from-gray-50 to-blue-50">
+        <section className="py-16 bg-gradient-to-br from-gray-50 to-primary/5">
           <Container>
             <div className="max-w-5xl mx-auto">
               <SimpleRelatedPosts posts={[

@@ -66,7 +66,7 @@ export default function BlogPost() {
             <ArrowLeft className="w-4 h-4" />
             Back to Blog
           </Link>
-          <div className="max-w-4xl">
+          <div className="max-w-4xl mx-auto">
             <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
               Comparisons
             </div>
@@ -122,7 +122,7 @@ export default function BlogPost() {
             <div className="not-prose overflow-x-auto my-8">
               <table className="w-full text-sm border-collapse">
                 <thead>
-                  <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                  <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                     <th className="border border-gray-300 p-3 text-left font-bold">Tool</th>
                     <th className="border border-gray-300 p-3 text-left font-bold">Best For</th>
                     <th className="border border-gray-300 p-3 text-left font-bold">Match Rate</th>
@@ -131,7 +131,7 @@ export default function BlogPost() {
                   </tr>
                 </thead>
                 <tbody className="bg-white">
-                  <tr className="bg-blue-50 border-2 border-blue-500">
+                  <tr className="bg-primary/5 border-2 border-primary">
                     <td className="border border-gray-300 p-3 font-bold">Cursive</td>
                     <td className="border border-gray-300 p-3">Full-stack visitor ID + AI outreach</td>
                     <td className="border border-gray-300 p-3 text-green-600 font-bold">~70% person-level</td>
@@ -238,30 +238,30 @@ export default function BlogPost() {
             {/* Alternative 1: Cursive */}
             <h2>7 Best RB2B Alternatives (Detailed Reviews)</h2>
 
-            <div className="not-prose bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-8 my-8 border-2 border-blue-500">
+            <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-8 my-8 border-2 border-primary">
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <h3 className="text-2xl font-bold mb-2">1. Cursive</h3>
                   <p className="text-sm text-gray-600">Best for: Full-stack visitor identification with AI-powered outreach automation</p>
                 </div>
-                <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-bold">Our Pick</span>
+                <span className="bg-primary text-white px-3 py-1 rounded-full text-sm font-bold">Our Pick</span>
               </div>
 
               <p className="text-gray-700 mb-4">
-                <strong>What makes it different:</strong> While RB2B stops at identification, <Link href="/" className="text-blue-600 hover:underline">Cursive</Link> is
-                a complete lead generation platform that combines <Link href="/visitor-identification" className="text-blue-600 hover:underline">visitor identification</Link> (70%
-                person-level match rate) with an <Link href="/what-is-ai-sdr" className="text-blue-600 hover:underline">AI SDR</Link> that
-                automates personalized outreach across email, LinkedIn, and <Link href="/direct-mail" className="text-blue-600 hover:underline">direct mail</Link>.
+                <strong>What makes it different:</strong> While RB2B stops at identification, <Link href="/" className="text-primary hover:underline">Cursive</Link> is
+                a complete lead generation platform that combines <Link href="/visitor-identification" className="text-primary hover:underline">visitor identification</Link> (70%
+                person-level match rate) with an <Link href="/what-is-ai-sdr" className="text-primary hover:underline">AI SDR</Link> that
+                automates personalized outreach across email, LinkedIn, and <Link href="/direct-mail" className="text-primary hover:underline">direct mail</Link>.
                 Instead of identifying visitors and hoping your team follows up, Cursive automatically engages high-intent
                 prospects within minutes of their visit.
               </p>
 
               <p className="text-gray-700 mb-4">
-                The platform&apos;s <Link href="/intent-audiences" className="text-blue-600 hover:underline">intent audience engine</Link> tracks
+                The platform&apos;s <Link href="/intent-audiences" className="text-primary hover:underline">intent audience engine</Link> tracks
                 which pages visitors view, how often they return, and what content they engage with, then scores
-                and routes them to the right outreach sequence. The <Link href="/audience-builder" className="text-blue-600 hover:underline">audience builder</Link> lets
+                and routes them to the right outreach sequence. The <Link href="/audience-builder" className="text-primary hover:underline">audience builder</Link> lets
                 you create precise segments based on firmographic data, visit behavior, and technographic signals. You can also
-                choose the <Link href="/marketplace" className="text-blue-600 hover:underline">Cursive self-serve plan</Link> that fits your needs.
+                choose the <Link href="/marketplace" className="text-primary hover:underline">Cursive self-serve plan</Link> that fits your needs.
               </p>
 
               <div className="grid md:grid-cols-2 gap-6 mb-4">
@@ -308,12 +308,12 @@ export default function BlogPost() {
               <div className="bg-white rounded-lg p-4">
                 <div className="flex justify-between items-center mb-2">
                   <span className="font-bold">Pricing:</span>
-                  <span className="text-lg font-bold text-blue-600">$97/mo Pixel | $197/mo Audience | $247/mo Bundle</span>
+                  <span className="text-lg font-bold text-primary">$97/mo Pixel | $197/mo Audience | $247/mo Bundle</span>
                 </div>
                 <p className="text-sm text-gray-600">
                   <strong>Best for:</strong> B2B companies generating 5,000+ monthly website visitors that want to convert
                   traffic into booked meetings without stitching together multiple tools. Replaces RB2B + email sequencer +
-                  LinkedIn tool + enrichment service. See <Link href="/pricing" className="text-blue-600 hover:underline">pricing details</Link>.
+                  LinkedIn tool + enrichment service. See <Link href="/pricing" className="text-primary hover:underline">pricing details</Link>.
                 </p>
               </div>
             </div>
@@ -383,7 +383,7 @@ export default function BlogPost() {
                 </div>
                 <p className="text-sm text-gray-600">
                   <strong>Best for:</strong> Companies with high-traffic websites that benefit from live chat engagement. Works
-                  well alongside outbound tools but does not fully replace them. Read our full <Link href="/blog/warmly-vs-cursive-comparison" className="text-blue-600 hover:underline">Warmly vs Cursive comparison</Link>.
+                  well alongside outbound tools but does not fully replace them. Read our full <Link href="/blog/warmly-vs-cursive-comparison" className="text-primary hover:underline">Warmly vs Cursive comparison</Link>.
                 </p>
               </div>
             </div>
@@ -454,7 +454,7 @@ export default function BlogPost() {
                 <p className="text-sm text-gray-600">
                   <strong>Best for:</strong> Marketing teams that want to identify companies visiting their site and pass
                   that data to sales. Not a full RB2B replacement since it lacks person-level data. See our
-                  detailed <Link href="/blog/leadfeeder-alternative" className="text-blue-600 hover:underline">Leadfeeder alternatives guide</Link>.
+                  detailed <Link href="/blog/leadfeeder-alternative" className="text-primary hover:underline">Leadfeeder alternatives guide</Link>.
                 </p>
               </div>
             </div>
@@ -511,7 +511,7 @@ export default function BlogPost() {
               <div className="bg-gray-50 rounded-lg p-4">
                 <p className="text-sm text-gray-600">
                   <strong>Recommendation:</strong> If you need a Clearbit replacement, read our
-                  full <Link href="/blog/clearbit-alternatives-comparison" className="text-blue-600 hover:underline">Clearbit alternatives comparison</Link>.
+                  full <Link href="/blog/clearbit-alternatives-comparison" className="text-primary hover:underline">Clearbit alternatives comparison</Link>.
                   For visitor identification specifically, Cursive and Warmly are the strongest replacements.
                 </p>
               </div>
@@ -740,7 +740,7 @@ export default function BlogPost() {
             <div className="not-prose overflow-x-auto my-8">
               <table className="w-full text-sm border-collapse">
                 <thead>
-                  <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                  <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                     <th className="border border-gray-300 p-3 text-left font-bold">Feature</th>
                     <th className="border border-gray-300 p-3 text-center font-bold">Cursive</th>
                     <th className="border border-gray-300 p-3 text-center font-bold">Warmly</th>
@@ -860,11 +860,11 @@ export default function BlogPost() {
               six-step migration plan that most teams complete in under a week.
             </p>
 
-            <div className="not-prose bg-gradient-to-br from-gray-50 to-blue-50 rounded-xl p-6 my-8 border border-gray-200">
+            <div className="not-prose bg-gradient-to-br from-gray-50 to-primary/5 rounded-xl p-6 my-8 border border-gray-200">
               <h3 className="font-bold text-lg mb-4">6-Step Migration Plan</h3>
               <ol className="space-y-4 text-sm">
                 <li className="flex items-start gap-3">
-                  <span className="bg-blue-600 text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">1</span>
+                  <span className="bg-primary text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">1</span>
                   <div>
                     <strong>Audit your current RB2B data.</strong> Export your existing visitor data, conversion metrics, and any
                     CRM integrations. Document your current match rates and follow-up workflows so you have a baseline to
@@ -872,16 +872,16 @@ export default function BlogPost() {
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="bg-blue-600 text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">2</span>
+                  <span className="bg-primary text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">2</span>
                   <div>
                     <strong>Install your new platform&apos;s tracking pixel.</strong> For Cursive, this is a single line of JavaScript
                     added to your site header. It takes about 5 minutes and starts collecting data immediately. You can run both
                     RB2B and your new tool simultaneously during the transition. Learn more about
-                    our <Link href="/pixel" className="text-blue-600 hover:underline">pixel setup</Link>.
+                    our <Link href="/pixel" className="text-primary hover:underline">pixel setup</Link>.
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="bg-blue-600 text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">3</span>
+                  <span className="bg-primary text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">3</span>
                   <div>
                     <strong>Configure your ideal customer profile (ICP) filters.</strong> Set up firmographic and behavioral
                     filters so the new tool surfaces the visitors that match your target accounts. This prevents your sales
@@ -889,22 +889,22 @@ export default function BlogPost() {
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="bg-blue-600 text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">4</span>
+                  <span className="bg-primary text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">4</span>
                   <div>
                     <strong>Set up outreach automation.</strong> If using Cursive, configure your AI SDR sequences including
-                    email templates, LinkedIn connection messages, and <Link href="/direct-mail" className="text-blue-600 hover:underline">direct mail</Link> triggers.
+                    email templates, LinkedIn connection messages, and <Link href="/direct-mail" className="text-primary hover:underline">direct mail</Link> triggers.
                     Map your existing follow-up cadences into the new platform.
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="bg-blue-600 text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">5</span>
+                  <span className="bg-primary text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">5</span>
                   <div>
                     <strong>Run both tools in parallel for 2 weeks.</strong> Compare match rates, data quality, and conversion
                     metrics side by side. This overlap period lets you validate the new tool&apos;s performance before fully committing.
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="bg-blue-600 text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">6</span>
+                  <span className="bg-primary text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">6</span>
                   <div>
                     <strong>Remove RB2B and consolidate.</strong> Once you have confirmed the new tool meets or exceeds your
                     benchmarks, remove the RB2B script and cancel the subscription along with any redundant add-on tools.

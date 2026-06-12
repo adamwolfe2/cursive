@@ -172,7 +172,7 @@ export function BlogScrollPopup({
               aria-labelledby="blog-popup-title"
             >
               {/* Header Bar */}
-              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-5 py-3 flex items-center justify-between border-b border-gray-100">
+              <div className="bg-gradient-to-r from-primary/5 to-primary/5 px-5 py-3 flex items-center justify-between border-b border-gray-100">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
                   <span className="text-sm font-medium text-gray-700">B2B Growth Insights</span>
@@ -192,7 +192,7 @@ export function BlogScrollPopup({
                   <>
                     {/* Icon */}
                     <div className="mb-4">
-                      <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                      <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
                         <Mail className="h-6 w-6 text-primary" />
                       </div>
                     </div>

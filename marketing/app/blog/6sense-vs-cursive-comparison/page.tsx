@@ -48,7 +48,7 @@ export default function BlogPost() {
             Back to Blog
           </Link>
 
-          <div className="max-w-4xl">
+          <div className="max-w-4xl mx-auto">
             <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
               Platform Comparison
             </div>
@@ -114,7 +114,7 @@ export default function BlogPost() {
             <div className="not-prose overflow-x-auto my-8">
               <table className="w-full text-sm border-collapse">
                 <thead>
-                  <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                  <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                     <th className="border border-gray-300 p-3 text-left font-bold">Feature</th>
                     <th className="border border-gray-300 p-3 text-left font-bold">6sense</th>
                     <th className="border border-gray-300 p-3 text-left font-bold">Cursive</th>
@@ -194,9 +194,9 @@ export default function BlogPost() {
                 </ul>
               </div>
 
-              <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 border-2 border-blue-500">
+              <div className="bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-6 border-2 border-primary">
                 <h4 className="font-bold text-lg mb-4 flex items-center gap-2">
-                  <span className="bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center text-sm">C</span>
+                  <span className="bg-primary text-white w-8 h-8 rounded-full flex items-center justify-center text-sm">C</span>
                   Cursive
                 </h4>
                 <ul className="space-y-3 text-sm">
@@ -266,7 +266,7 @@ export default function BlogPost() {
                 </ul>
               </div>
 
-              <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 border-2 border-blue-500">
+              <div className="bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-6 border-2 border-primary">
                 <h4 className="font-bold text-lg mb-4">Cursive Intent</h4>
                 <ul className="space-y-3 text-sm">
                   <li className="flex items-start gap-2">
@@ -340,7 +340,7 @@ export default function BlogPost() {
                 </ul>
               </div>
 
-              <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 border-2 border-blue-500">
+              <div className="bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-6 border-2 border-primary">
                 <h4 className="font-bold text-lg mb-4">Cursive Outreach</h4>
                 <ul className="space-y-3 text-sm">
                   <li className="flex items-start gap-2">
@@ -393,7 +393,7 @@ export default function BlogPost() {
 
             <h3>Pricing & ROI</h3>
 
-            <div className="not-prose bg-gradient-to-br from-green-50 to-blue-50 rounded-xl p-8 my-8 border-2 border-green-500">
+            <div className="not-prose bg-gradient-to-br from-green-50 to-primary/5 rounded-xl p-8 my-8 border-2 border-green-500">
               <h4 className="font-bold text-2xl mb-6">Cost Comparison (Annual)</h4>
 
               <div className="grid md:grid-cols-2 gap-8">
@@ -423,8 +423,8 @@ export default function BlogPost() {
                   </div>
                 </div>
 
-                <div className="bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg p-6">
-                  <h5 className="font-bold text-lg mb-4 text-blue-900">Cursive Total Cost</h5>
+                <div className="bg-gradient-to-br from-primary/10 to-primary/10 rounded-lg p-6">
+                  <h5 className="font-bold text-lg mb-4 text-primary">Cursive Total Cost</h5>
                   <div className="space-y-3 text-sm">
                     <div className="flex justify-between">
                       <span>Cursive platform:</span>
@@ -583,31 +583,31 @@ export default function BlogPost() {
                 </ul>
               </div>
 
-              <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 border-2 border-blue-500">
-                <h4 className="font-bold text-lg mb-4 text-blue-900">Choose Cursive if you:</h4>
+              <div className="bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-6 border-2 border-primary">
+                <h4 className="font-bold text-lg mb-4 text-primary">Choose Cursive if you:</h4>
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-blue-600 mt-1 flex-shrink-0" />
+                    <Check className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
                     <span><strong>Need affordable pricing ($99-$999/mo)</strong></span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-blue-600 mt-1 flex-shrink-0" />
+                    <Check className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
                     <span><strong>Want person-level visitor identification</strong></span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-blue-600 mt-1 flex-shrink-0" />
+                    <Check className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
                     <span><strong>Need immediate time-to-value (same day)</strong></span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-blue-600 mt-1 flex-shrink-0" />
+                    <Check className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
                     <span><strong>Want automated outreach included</strong></span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-blue-600 mt-1 flex-shrink-0" />
+                    <Check className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
                     <span><strong>Focus on converting website traffic</strong></span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-blue-600 mt-1 flex-shrink-0" />
+                    <Check className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
                     <span><strong>Prefer monthly flexibility over annual contracts</strong></span>
                   </li>
                 </ul>
@@ -618,7 +618,7 @@ export default function BlogPost() {
 
             <h3>Why Teams Switch from 6sense to Cursive</h3>
 
-            <div className="not-prose bg-blue-50 rounded-xl p-6 my-8 border border-blue-200">
+            <div className="not-prose bg-primary/5 rounded-xl p-6 my-8 border border-primary/20">
               <p className="text-sm italic mb-2">
                 &quot;We were paying $75k/year for 6sense but only using it for visitor identification. The predictive scoring
                 was interesting but didn't translate to meetings. We switched to Cursive at $399/mo and our meeting rate
@@ -627,7 +627,7 @@ export default function BlogPost() {
               <p className="text-sm font-bold">— VP Sales, B2B SaaS (Series B)</p>
             </div>
 
-            <div className="not-prose bg-blue-50 rounded-xl p-6 my-8 border border-blue-200">
+            <div className="not-prose bg-primary/5 rounded-xl p-6 my-8 border border-primary/20">
               <p className="text-sm italic mb-2">
                 &quot;6sense wanted $120k+ and told us implementation would take 4 months. We needed something now. Cursive
                 was live in 10 minutes and we booked our first meeting from an identified visitor that same day. The ROI
@@ -640,7 +640,7 @@ export default function BlogPost() {
 
             <div className="not-prose space-y-6 my-8">
               {faqs.map((faq, index) => (
-                <div key={index} className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-lg p-6 border border-gray-200">
+                <div key={index} className="bg-gradient-to-br from-gray-50 to-primary/5 rounded-lg p-6 border border-gray-200">
                   <h3 className="font-bold text-lg mb-3">{faq.question}</h3>
                   <p className="text-gray-700">{faq.answer}</p>
                 </div>
@@ -706,7 +706,7 @@ export default function BlogPost() {
       />
 
       {/* Related Posts */}
-      <section className="py-16 bg-gradient-to-br from-gray-50 to-blue-50">
+      <section className="py-16 bg-gradient-to-br from-gray-50 to-primary/5">
         <Container>
           <div className="max-w-5xl mx-auto">
             <SimpleRelatedPosts posts={[

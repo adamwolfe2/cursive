@@ -57,7 +57,7 @@ export default function BlogPost() {
               Back to Blog
             </Link>
 
-            <div className="max-w-4xl">
+            <div className="max-w-4xl mx-auto">
               <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
                 Visitor Identification
               </div>
@@ -136,7 +136,7 @@ export default function BlogPost() {
               <div className="not-prose overflow-x-auto my-8">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                    <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                       <th className="border border-gray-300 p-3 text-left font-bold">Tool</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">ID Rate</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">AI Outreach</th>
@@ -147,7 +147,7 @@ export default function BlogPost() {
                     </tr>
                   </thead>
                   <tbody className="bg-white">
-                    <tr className="bg-blue-50 border-2 border-blue-500">
+                    <tr className="bg-primary/5 border-2 border-primary">
                       <td className="border border-gray-300 p-3 font-bold">Cursive</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold">70% person-level</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold">Built-in AI SDR</td>
@@ -217,20 +217,20 @@ export default function BlogPost() {
               <h2>Best Opensend Alternatives (Detailed Comparison)</h2>
 
               {/* Tool 1: Cursive */}
-              <div className="not-prose bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-8 my-8 border-2 border-blue-500">
+              <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-8 my-8 border-2 border-primary">
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <h3 className="text-2xl font-bold mb-2">1. Cursive</h3>
                     <p className="text-sm text-gray-600">Best for: The highest identification rates + AI-powered outreach + intent data + direct mail -- all in one platform</p>
                   </div>
-                  <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-bold whitespace-nowrap">Top Pick</span>
+                  <span className="bg-primary text-white px-3 py-1 rounded-full text-sm font-bold whitespace-nowrap">Top Pick</span>
                 </div>
 
                 <p className="text-gray-700 mb-4">
                   <strong>What makes it different:</strong> Cursive is the most complete visitor identification
                   and pipeline automation platform available. Where Opensend identifies visitors and hands them
                   off to your team, Cursive identifies visitors at a{" "}
-                  <Link href="/visitor-identification" className="text-blue-600 hover:underline">70% person-level match rate</Link>{" "}
+                  <Link href="/visitor-identification" className="text-primary hover:underline">70% person-level match rate</Link>{" "}
                   -- the highest in the industry -- then immediately enriches each identified visitor with
                   60B+ behavioral intent signals to score their purchase readiness, and automatically triggers
                   personalized AI-generated outreach across email, LinkedIn, SMS, and direct mail. The entire
@@ -293,13 +293,13 @@ export default function BlogPost() {
                 <div className="bg-white rounded-lg p-4">
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-bold">Pricing:</span>
-                    <span className="text-lg font-bold text-blue-600">$97/mo Pixel | $197/mo Audience | $247/mo Bundle</span>
+                    <span className="text-lg font-bold text-primary">$97/mo Pixel | $197/mo Audience | $247/mo Bundle</span>
                   </div>
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> B2B companies and e-commerce brands that want to convert more
                     website traffic into pipeline with the highest identification rate available, plus automated
                     outreach that eliminates manual follow-up work. See our{" "}
-                    <Link href="/pricing" className="text-blue-600 hover:underline">pricing page</Link> for details.
+                    <Link href="/pricing" className="text-primary hover:underline">pricing page</Link> for details.
                   </p>
                 </div>
               </div>
@@ -712,7 +712,7 @@ export default function BlogPost() {
               <h2>Decision Framework: Which Opensend Alternative Is Right for You?</h2>
 
               <div className="not-prose space-y-4 my-8">
-                <div className="bg-blue-50 rounded-lg p-5 border border-blue-200">
+                <div className="bg-primary/5 rounded-lg p-5 border border-primary/20">
                   <h3 className="font-bold mb-2">Choose Cursive if...</h3>
                   <p className="text-sm text-gray-700">You want the highest person-level identification rate (70%), intent data to prioritize your best visitors, and automated AI-powered multi-channel outreach (including direct mail) that acts on identified visitors without any manual work. Cursive is the best choice for B2B SaaS, services, and any company that wants a complete pipeline -- not just a list of visitors to manually follow up on.</p>
                 </div>

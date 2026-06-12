@@ -70,7 +70,7 @@ export default function BlogPost() {
             <ArrowLeft className="w-4 h-4" />
             Back to Blog
           </Link>
-          <div className="max-w-4xl">
+          <div className="max-w-4xl mx-auto">
             <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
               Comparisons
             </div>
@@ -130,7 +130,7 @@ export default function BlogPost() {
             <div className="not-prose overflow-x-auto my-8">
               <table className="w-full text-sm border-collapse">
                 <thead>
-                  <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                  <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                     <th className="border border-gray-300 p-3 text-left font-bold">Tool</th>
                     <th className="border border-gray-300 p-3 text-left font-bold">Visitor ID</th>
                     <th className="border border-gray-300 p-3 text-left font-bold">Intent Data</th>
@@ -141,7 +141,7 @@ export default function BlogPost() {
                   </tr>
                 </thead>
                 <tbody className="bg-white">
-                  <tr className="bg-blue-50 border-2 border-blue-500">
+                  <tr className="bg-primary/5 border-2 border-primary">
                     <td className="border border-gray-300 p-3 font-bold">Cursive</td>
                     <td className="border border-gray-300 p-3 text-green-600 font-bold">Person-level (70%)</td>
                     <td className="border border-gray-300 p-3 text-green-600 font-bold">AI intent scoring</td>
@@ -268,23 +268,23 @@ export default function BlogPost() {
             {/* Alternative 1: Cursive */}
             <h2>7 Best Warmly Alternatives (Detailed Reviews)</h2>
 
-            <div className="not-prose bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-8 my-8 border-2 border-blue-500">
+            <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-8 my-8 border-2 border-primary">
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <h3 className="text-2xl font-bold mb-2">1. Cursive</h3>
                   <p className="text-sm text-gray-600">Best for: Teams that want visitor ID + intent data + full outbound platform in one tool</p>
                 </div>
-                <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-bold">Our Pick</span>
+                <span className="bg-primary text-white px-3 py-1 rounded-full text-sm font-bold">Our Pick</span>
               </div>
 
               <p className="text-gray-700 mb-4">
-                <strong>What makes it different:</strong> <Link href="/" className="text-blue-600 hover:underline">Cursive</Link> solves
+                <strong>What makes it different:</strong> <Link href="/" className="text-primary hover:underline">Cursive</Link> solves
                 the fundamental problem with Warmly: the gap between identification and action. Where Warmly tells
                 you who is visiting and leaves you to figure out what to do about it, Cursive identifies visitors,
                 scores their{" "}
-                <Link href="/intent-audiences" className="text-blue-600 hover:underline">intent</Link>, and
+                <Link href="/intent-audiences" className="text-primary hover:underline">intent</Link>, and
                 automatically engages them with personalized multi-channel outreach through an{" "}
-                <Link href="/what-is-ai-sdr" className="text-blue-600 hover:underline">AI SDR</Link>, all from a
+                <Link href="/what-is-ai-sdr" className="text-primary hover:underline">AI SDR</Link>, all from a
                 single platform.
               </p>
 
@@ -293,11 +293,11 @@ export default function BlogPost() {
                 your site, including names, titles, email addresses, and LinkedIn profiles. But instead of dumping
                 that data into Slack and hoping someone follows up, Cursive&apos;s AI SDR automatically crafts
                 personalized sequences across email, LinkedIn, and{" "}
-                <Link href="/direct-mail" className="text-blue-600 hover:underline">direct mail</Link> based on
+                <Link href="/direct-mail" className="text-primary hover:underline">direct mail</Link> based on
                 what each visitor viewed and their role at the company. The{" "}
-                <Link href="/audience-builder" className="text-blue-600 hover:underline">audience builder</Link> lets
+                <Link href="/audience-builder" className="text-primary hover:underline">audience builder</Link> lets
                 you define your ICP so you only engage the visitors that match your target profile, and the{" "}
-                <Link href="/visitor-identification" className="text-blue-600 hover:underline">visitor identification</Link> engine
+                <Link href="/visitor-identification" className="text-primary hover:underline">visitor identification</Link> engine
                 provides real-time intent signals based on pages visited, time on site, and engagement depth.
                 Choose Visitor Pixel at $97/mo, Custom Audience at $197/mo, or the Pixel + Audience Bundle at $247/mo.
                 Every plan is month-to-month with no setup fee, and you can cancel anytime.
@@ -351,14 +351,14 @@ export default function BlogPost() {
               <div className="bg-white rounded-lg p-4">
                 <div className="flex justify-between items-center mb-2">
                   <span className="font-bold">Pricing:</span>
-                  <span className="text-lg font-bold text-blue-600">From $97/mo, cancel anytime</span>
+                  <span className="text-lg font-bold text-primary">From $97/mo, cancel anytime</span>
                 </div>
                 <p className="text-sm text-gray-600">
                   <strong>Best for:</strong> B2B companies that want to close the gap between visitor identification
                   and outreach. Instead of paying Warmly for identification and then buying separate outreach tools,
                   Cursive combines both in a single platform at better value. Replaces Warmly + your outreach tool
                   with one integrated solution.
-                  See <Link href="/pricing" className="text-blue-600 hover:underline">pricing details</Link>.
+                  See <Link href="/pricing" className="text-primary hover:underline">pricing details</Link>.
                 </p>
               </div>
             </div>
@@ -433,7 +433,7 @@ export default function BlogPost() {
                   <strong>Best for:</strong> Small sales teams and founders who want the most basic version of what
                   Warmly offers at a lower price. If you only use Warmly for Slack notifications of website visitors,
                   RB2B delivers that for free. See our{" "}
-                  <Link href="/blog/rb2b-alternative" className="text-blue-600 hover:underline">RB2B alternatives comparison</Link>.
+                  <Link href="/blog/rb2b-alternative" className="text-primary hover:underline">RB2B alternatives comparison</Link>.
                 </p>
               </div>
             </div>
@@ -509,7 +509,7 @@ export default function BlogPost() {
                   <strong>Best for:</strong> SMBs that want to know which companies visit their website at a fraction
                   of Warmly&apos;s price, especially teams selling into European markets. A step down from Warmly in
                   terms of person-level identification, but significantly more affordable. See our{" "}
-                  <Link href="/blog/leadfeeder-alternative" className="text-blue-600 hover:underline">Leadfeeder alternatives comparison</Link>.
+                  <Link href="/blog/leadfeeder-alternative" className="text-primary hover:underline">Leadfeeder alternatives comparison</Link>.
                 </p>
               </div>
             </div>
@@ -584,7 +584,7 @@ export default function BlogPost() {
                   <strong>Best for:</strong> Teams fully committed to HubSpot that want visitor identification and
                   enrichment without adding another vendor. Eliminates the need for Warmly if you are a HubSpot shop,
                   though you lose person-level identification. See our{" "}
-                  <Link href="/blog/clearbit-alternatives-comparison" className="text-blue-600 hover:underline">Clearbit alternatives comparison</Link>.
+                  <Link href="/blog/clearbit-alternatives-comparison" className="text-primary hover:underline">Clearbit alternatives comparison</Link>.
                 </p>
               </div>
             </div>
@@ -659,7 +659,7 @@ export default function BlogPost() {
                   <strong>Best for:</strong> Enterprise teams that have outgrown Warmly and need a full ABM platform
                   with predictive intelligence. Not a cost-effective alternative; it is a category upgrade that makes
                   sense only for organizations with dedicated ABM budgets. See our{" "}
-                  <Link href="/blog/6sense-alternatives-comparison" className="text-blue-600 hover:underline">6sense alternatives comparison</Link>.
+                  <Link href="/blog/6sense-alternatives-comparison" className="text-primary hover:underline">6sense alternatives comparison</Link>.
                 </p>
               </div>
             </div>
@@ -734,7 +734,7 @@ export default function BlogPost() {
                   <strong>Best for:</strong> Enterprise marketing teams that want visitor identification combined with
                   ABM advertising in a single platform. An expensive upgrade from Warmly that only makes sense for
                   organizations with significant ABM budgets. See our{" "}
-                  <Link href="/blog/demandbase-alternative" className="text-blue-600 hover:underline">Demandbase alternatives comparison</Link>.
+                  <Link href="/blog/demandbase-alternative" className="text-primary hover:underline">Demandbase alternatives comparison</Link>.
                 </p>
               </div>
             </div>
@@ -826,7 +826,7 @@ export default function BlogPost() {
             <div className="not-prose overflow-x-auto my-8">
               <table className="w-full text-sm border-collapse">
                 <thead>
-                  <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                  <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                     <th className="border border-gray-300 p-3 text-left font-bold">Feature</th>
                     <th className="border border-gray-300 p-3 text-center font-bold">Cursive</th>
                     <th className="border border-gray-300 p-3 text-center font-bold">RB2B</th>
@@ -920,20 +920,20 @@ export default function BlogPost() {
               Here is a decision framework to guide your selection.
             </p>
 
-            <div className="not-prose bg-gradient-to-br from-gray-50 to-blue-50 rounded-xl p-6 my-8 border border-gray-200">
+            <div className="not-prose bg-gradient-to-br from-gray-50 to-primary/5 rounded-xl p-6 my-8 border border-gray-200">
               <h3 className="font-bold text-lg mb-4">Decision Framework: Which Alternative Is Right for You?</h3>
               <ul className="space-y-4 text-sm">
                 <li className="flex items-start gap-3">
-                  <span className="bg-blue-600 text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">1</span>
+                  <span className="bg-primary text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">1</span>
                   <div>
                     <strong>You want visitor ID + intent + outreach in one platform:</strong> Choose{" "}
-                    <Link href="/" className="text-blue-600 hover:underline">Cursive</Link>. It closes the gap between
+                    <Link href="/" className="text-primary hover:underline">Cursive</Link>. It closes the gap between
                     knowing who visits and engaging them. Person-level ID plus AI-powered multi-channel outreach from
                     $97/mo for Visitor Pixel, $197/mo for Custom Audience, or $247/mo for both.
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="bg-blue-600 text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">2</span>
+                  <span className="bg-primary text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">2</span>
                   <div>
                     <strong>You want the cheapest possible person-level visitor ID:</strong> Choose RB2B. Free tier
                     available with person-level Slack notifications. No outreach tools, but it delivers the core
@@ -941,7 +941,7 @@ export default function BlogPost() {
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="bg-blue-600 text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">3</span>
+                  <span className="bg-primary text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">3</span>
                   <div>
                     <strong>You need affordable company-level tracking with strong CRM integration:</strong> Choose
                     Leadfeeder (Dealfront). Great for SMBs, especially those selling into Europe. Deep Salesforce
@@ -949,7 +949,7 @@ export default function BlogPost() {
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="bg-blue-600 text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">4</span>
+                  <span className="bg-primary text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">4</span>
                   <div>
                     <strong>You are a HubSpot shop and want native visitor data:</strong> Choose Clearbit (Breeze).
                     Built into HubSpot, no separate tool needed. Company-level identification plus enrichment
@@ -957,7 +957,7 @@ export default function BlogPost() {
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="bg-blue-600 text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">5</span>
+                  <span className="bg-primary text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">5</span>
                   <div>
                     <strong>You need enterprise-grade ABM with predictive analytics:</strong> Choose 6sense. Full
                     ABM platform with buying stage prediction and orchestration. Only makes sense with $50k+ annual
@@ -965,7 +965,7 @@ export default function BlogPost() {
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="bg-blue-600 text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">6</span>
+                  <span className="bg-primary text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">6</span>
                   <div>
                     <strong>You need visitor ID combined with marketing attribution:</strong> Choose Factors.ai.
                     Combines company identification with multi-touch attribution analytics for mid-market teams

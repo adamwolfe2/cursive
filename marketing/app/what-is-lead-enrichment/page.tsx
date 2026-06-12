@@ -114,7 +114,7 @@ export default function WhatIsLeadEnrichment() {
                 transition={{ duration: 0.5, ease: EASE }}
                 className="not-prose mb-10 rounded-2xl border border-gray-200 bg-[#F7F9FB] p-6 sm:p-8"
               >
-                <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center">
+                <div className="w-12 h-12 rounded-xl bg-primary/5 flex items-center justify-center">
                   <ShieldCheck className="w-6 h-6 text-primary" />
                 </div>
                 <p className="mt-5 text-base text-gray-700 leading-relaxed">

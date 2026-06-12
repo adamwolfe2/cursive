@@ -21,7 +21,7 @@ export function SimpleRelatedPosts({ posts }: SimpleRelatedPostsProps) {
           <Link
             key={post.href}
             href={post.href}
-            className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg hover:border-blue-400 transition-all duration-300"
+            className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg hover:border-primary/40 transition-all duration-300"
           >
             <h3 className="font-bold mb-2 text-lg">{post.title}</h3>
             <p className="text-sm text-gray-600">{post.description}</p>

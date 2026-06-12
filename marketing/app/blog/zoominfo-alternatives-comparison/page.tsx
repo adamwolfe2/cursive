@@ -53,7 +53,7 @@ export default function BlogPost() {
             Back to Blog
           </Link>
 
-          <div className="max-w-4xl">
+          <div className="max-w-4xl mx-auto">
             <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
               Data & Intelligence
             </div>
@@ -128,7 +128,7 @@ export default function BlogPost() {
             <div className="not-prose overflow-x-auto my-8">
               <table className="w-full text-sm border-collapse">
                 <thead>
-                  <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                  <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                     <th className="border border-gray-300 p-3 text-left font-bold">Tool</th>
                     <th className="border border-gray-300 p-3 text-left font-bold">Annual Cost (Small Team)</th>
                     <th className="border border-gray-300 p-3 text-left font-bold">Annual Cost (Mid-Market)</th>
@@ -144,7 +144,7 @@ export default function BlogPost() {
                     <td className="border border-gray-300 p-3">Annual (required)</td>
                     <td className="border border-gray-300 p-3">--</td>
                   </tr>
-                  <tr className="bg-blue-50 border-2 border-blue-500">
+                  <tr className="bg-primary/5 border-2 border-primary">
                     <td className="border border-gray-300 p-3 font-bold">Cursive</td>
                     <td className="border border-gray-300 p-3">$1,164 - $2,964</td>
                     <td className="border border-gray-300 p-3">$1,164 - $2,964</td>
@@ -210,7 +210,7 @@ export default function BlogPost() {
             <div className="not-prose overflow-x-auto my-8">
               <table className="w-full text-sm border-collapse">
                 <thead>
-                  <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                  <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                     <th className="border border-gray-300 p-3 text-left font-bold">Tool</th>
                     <th className="border border-gray-300 p-3 text-left font-bold">Database Size</th>
                     <th className="border border-gray-300 p-3 text-left font-bold">Intent Data</th>
@@ -220,7 +220,7 @@ export default function BlogPost() {
                   </tr>
                 </thead>
                 <tbody className="bg-white">
-                  <tr className="bg-blue-50 border-2 border-blue-500">
+                  <tr className="bg-primary/5 border-2 border-primary">
                     <td className="border border-gray-300 p-3 font-bold">Cursive</td>
                     <td className="border border-gray-300 p-3">200M+ contacts</td>
                     <td className="border border-gray-300 p-3 text-green-600 font-bold">1st party website</td>
@@ -291,20 +291,20 @@ export default function BlogPost() {
             <h2>8 Best ZoomInfo Alternatives (Detailed Reviews)</h2>
 
             {/* Tool 1: Cursive */}
-            <div className="not-prose bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-8 my-8 border-2 border-blue-500">
+            <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-8 my-8 border-2 border-primary">
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <h3 className="text-2xl font-bold mb-2">1. Cursive</h3>
                   <p className="text-sm text-gray-600">Best for: Visitor identification + fresh in-market buyer lists at a fraction of ZoomInfo's cost</p>
                 </div>
-                <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-bold">Top Pick</span>
+                <span className="bg-primary text-white px-3 py-1 rounded-full text-sm font-bold">Top Pick</span>
               </div>
 
               <p className="text-gray-700 mb-4">
                 <strong>What makes it different:</strong> Cursive takes a fundamentally different approach to B2B data than
                 ZoomInfo. Instead of selling you access to a database and letting you figure out who to contact, Cursive{" "}
-                <Link href="/visitor-identification" className="text-blue-600 hover:underline">identifies companies already visiting your website</Link>,
-                enriches them with <Link href="/intent-audiences" className="text-blue-600 hover:underline">intent data</Link>,
+                <Link href="/visitor-identification" className="text-primary hover:underline">identifies companies already visiting your website</Link>,
+                enriches them with <Link href="/intent-audiences" className="text-primary hover:underline">intent data</Link>,
                 and delivers fresh weekly lists of in-market buyers to Google Sheets. You're not cold prospecting -- you're
                 focusing on companies and people already showing intent.
               </p>
@@ -375,27 +375,27 @@ export default function BlogPost() {
               <div className="bg-white rounded-lg p-4">
                 <div className="flex justify-between items-center mb-2">
                   <span className="font-bold">Pricing:</span>
-                  <span className="text-lg font-bold text-blue-600">$97 Visitor Pixel / $197 Custom Audience / $247 Bundle</span>
+                  <span className="text-lg font-bold text-primary">$97 Visitor Pixel / $197 Custom Audience / $247 Bundle</span>
                 </div>
                 <p className="text-sm text-gray-600">
                   <strong>Best for:</strong> Growth-stage B2B companies spending $15k+ on ZoomInfo when they really need intent-based
                   buyer data, not a massive database. If you're paying for ZoomInfo but only using it for basic contact lookups and list
                   building, Cursive will likely generate more pipeline at a lower cost. See our{" "}
-                  <Link href="/pricing" className="text-blue-600 hover:underline">pricing page</Link> for full details.
+                  <Link href="/pricing" className="text-primary hover:underline">pricing page</Link> for full details.
                 </p>
               </div>
             </div>
 
             {/* Mid-article CTA */}
-            <div className="not-prose bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-8 my-8 text-white text-center">
+            <div className="not-prose bg-gradient-to-r from-primary to-primary-dark rounded-xl p-8 my-8 text-white text-center">
               <h3 className="text-2xl font-bold mb-3">Spending $15k+ on ZoomInfo?</h3>
-              <p className="text-blue-100 mb-6 max-w-xl mx-auto">
+              <p className="text-white/90 mb-6 max-w-xl mx-auto">
                 Most teams switching from ZoomInfo to Cursive save 80-90% while generating more pipeline.
                 Cursive identifies your website visitors and delivers fresh weekly lists of in-market buyers -- no massive database contract required.
               </p>
               <Link
                 href="https://www.meetcursive.com/platform"
-                className="inline-block bg-white text-blue-600 font-bold px-6 py-3 rounded-lg hover:bg-blue-50 transition-colors"
+                className="inline-block bg-white text-primary font-bold px-6 py-3 rounded-lg hover:bg-primary/5 transition-colors"
               >
                 See How Cursive Works
               </Link>
@@ -926,10 +926,10 @@ export default function BlogPost() {
 
             <h3>If You Want Intent Data + Automated Outbound (Best for Most Teams):</h3>
             <p>
-              Choose <strong><Link href="/" className="text-blue-600 hover:underline">Cursive</Link></strong>. Most teams
+              Choose <strong><Link href="/" className="text-primary hover:underline">Cursive</Link></strong>. Most teams
               that switch from ZoomInfo realize they were paying for a massive database but only using it for basic
               contact lookups. Cursive flips the model: instead of searching a database, it identifies companies and people
-              visiting your website and delivers <Link href="/platform" className="text-blue-600 hover:underline">fresh weekly in-market buyer lists</Link>
+              visiting your website and delivers <Link href="/platform" className="text-primary hover:underline">fresh weekly in-market buyer lists</Link>
               to Google Sheets. You get warmer leads at a fraction of the cost.
             </p>
 
@@ -954,23 +954,23 @@ export default function BlogPost() {
             <h3>If You Want Intent Data at a Budget Price:</h3>
             <p>
               Choose <strong>Lead411</strong> for third-party Bombora intent data included in the base price, or{" "}
-              <strong><Link href="/" className="text-blue-600 hover:underline">Cursive</Link></strong>{" "}
+              <strong><Link href="/" className="text-primary hover:underline">Cursive</Link></strong>{" "}
               for first-party website intent signals. Both options cost a fraction of what ZoomInfo charges for comparable
-              intent capabilities. See our <Link href="/intent-audiences" className="text-blue-600 hover:underline">intent audiences page</Link> for more on
+              intent capabilities. See our <Link href="/intent-audiences" className="text-primary hover:underline">intent audiences page</Link> for more on
               how first-party intent works.
             </p>
 
             <h3>If You're on HubSpot:</h3>
             <p>
               Consider <strong>Clearbit (Breeze)</strong> for enrichment that's native to your CRM. The integration is
-              tighter than any third-party tool. Pair it with <Link href="/" className="text-blue-600 hover:underline">Cursive</Link> for visitor
+              tighter than any third-party tool. Pair it with <Link href="/" className="text-primary hover:underline">Cursive</Link> for visitor
               identification and fresh weekly in-market buyer lists.
             </p>
 
             {/* Key Buying Criteria */}
             <h2>What to Evaluate When Replacing ZoomInfo</h2>
 
-            <div className="not-prose bg-gradient-to-br from-gray-50 to-blue-50 rounded-xl p-6 my-8 border border-gray-200">
+            <div className="not-prose bg-gradient-to-br from-gray-50 to-primary/5 rounded-xl p-6 my-8 border border-gray-200">
               <h3 className="font-bold text-lg mb-4">Your ZoomInfo Replacement Checklist</h3>
               <div className="grid md:grid-cols-2 gap-4 text-sm">
                 <div className="space-y-3">
@@ -1009,7 +1009,7 @@ export default function BlogPost() {
 
             <div className="not-prose space-y-6 my-8">
               {faqs.map((faq, index) => (
-                <div key={index} className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-lg p-6 border border-gray-200">
+                <div key={index} className="bg-gradient-to-br from-gray-50 to-primary/5 rounded-lg p-6 border border-gray-200">
                   <h3 className="font-bold text-lg mb-3">{faq.question}</h3>
                   <p className="text-gray-700">{faq.answer}</p>
                 </div>
@@ -1028,11 +1028,11 @@ export default function BlogPost() {
 
             <p>
               The best alternative depends on your specific situation. If you're tired of paying $15k+ for a database
-              when what you really need is pipeline, <Link href="/" className="text-blue-600 hover:underline">Cursive</Link>{" "}
+              when what you really need is pipeline, <Link href="/" className="text-primary hover:underline">Cursive</Link>{" "}
               offers a fundamentally better approach: identifying companies already showing{" "}
-              <Link href="/intent-audiences" className="text-blue-600 hover:underline">buying intent</Link> on your website
-              and automating personalized <Link href="/platform" className="text-blue-600 hover:underline">multi-channel outreach</Link>{" "}
-              to convert them. All at a <Link href="/pricing" className="text-blue-600 hover:underline">fraction of ZoomInfo's cost</Link>.
+              <Link href="/intent-audiences" className="text-primary hover:underline">buying intent</Link> on your website
+              and automating personalized <Link href="/platform" className="text-primary hover:underline">multi-channel outreach</Link>{" "}
+              to convert them. All at a <Link href="/pricing" className="text-primary hover:underline">fraction of ZoomInfo's cost</Link>.
             </p>
 
             <p>
@@ -1064,7 +1064,7 @@ export default function BlogPost() {
       />
 
       {/* Related Comparisons */}
-      <section className="py-16 bg-gradient-to-br from-gray-50 to-blue-50">
+      <section className="py-16 bg-gradient-to-br from-gray-50 to-primary/5">
         <Container>
           <div className="max-w-5xl mx-auto">
             <SimpleRelatedPosts posts={[

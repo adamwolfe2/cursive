@@ -147,7 +147,7 @@ export function BlogClient() {
         </section>
 
         {/* Featured Post */}
-        <section className="py-16 bg-gradient-to-br from-gray-50 to-blue-50">
+        <section className="py-16 bg-gradient-to-br from-gray-50 to-primary/5">
           <Container>
             <div className="mb-8">
               <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
@@ -164,7 +164,7 @@ export function BlogClient() {
                 viewport={{ once: true }}
                 className="grid lg:grid-cols-2 gap-8 bg-white rounded-2xl overflow-hidden border border-gray-200 hover:shadow-2xl transition-all duration-300"
               >
-                <div className="aspect-video bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                <div className="aspect-video bg-gradient-to-br from-primary/50 to-primary-dark flex items-center justify-center">
                   <div className="text-center text-white p-8">
                     <div className="text-6xl font-bold mb-4">AI vs Human</div>
                     <div className="text-2xl">The Ultimate BDR Showdown</div>
@@ -242,7 +242,7 @@ export function BlogClient() {
                         <post.icon className="w-16 h-16 text-white" />
                       </div>
                       <div className="p-6 flex flex-col flex-1">
-                        <div className="inline-block px-3 py-1 bg-blue-100 text-primary rounded-full text-xs font-medium mb-3 w-fit">
+                        <div className="inline-block px-3 py-1 bg-primary/10 text-primary rounded-full text-xs font-medium mb-3 w-fit">
                           {post.category}
                         </div>
                         <h3 className="text-xl font-bold mb-3 group-hover:text-primary transition-colors">
@@ -271,7 +271,7 @@ export function BlogClient() {
         </section>
 
         {/* Categories Section */}
-        <section className="py-20 bg-gradient-to-br from-gray-50 to-blue-50">
+        <section className="py-20 bg-gradient-to-br from-gray-50 to-primary/5">
           <Container>
             <div className="mb-12 text-center">
               <h2 className="text-3xl font-bold mb-2">Explore by Category</h2>
@@ -383,7 +383,7 @@ const blogCategories = [
     description: "Learn how to identify anonymous website visitors and turn traffic into qualified leads.",
     slug: "visitor-tracking",
     icon: Eye,
-    gradient: "bg-gradient-to-br from-blue-500 to-blue-600",
+    gradient: "bg-gradient-to-br from-primary/50 to-primary-dark",
     postCount: 12,
   },
   {
@@ -391,7 +391,7 @@ const blogCategories = [
     description: "Master B2B audience segmentation and intent-based targeting strategies.",
     slug: "audience-targeting",
     icon: Target,
-    gradient: "bg-gradient-to-br from-blue-500 to-blue-600",
+    gradient: "bg-gradient-to-br from-primary/50 to-primary-dark",
     postCount: 8,
   },
   {
@@ -399,7 +399,7 @@ const blogCategories = [
     description: "Explore B2B data enrichment and how to leverage business intelligence for growth.",
     slug: "data-platforms",
     icon: Database,
-    gradient: "bg-gradient-to-br from-blue-500 to-blue-600",
+    gradient: "bg-gradient-to-br from-primary/50 to-primary-dark",
     postCount: 15,
   },
   {
@@ -407,7 +407,7 @@ const blogCategories = [
     description: "Proven tactics to generate qualified B2B leads with AI-powered automation.",
     slug: "lead-generation",
     icon: TrendingUp,
-    gradient: "bg-gradient-to-br from-blue-500 to-blue-600",
+    gradient: "bg-gradient-to-br from-primary/50 to-primary-dark",
     postCount: 18,
   },
   {
@@ -415,7 +415,7 @@ const blogCategories = [
     description: "Automate direct mail campaigns triggered by digital behavior for higher conversions.",
     slug: "direct-mail",
     icon: Mail,
-    gradient: "bg-gradient-to-br from-blue-500 to-blue-600",
+    gradient: "bg-gradient-to-br from-primary/50 to-primary-dark",
     postCount: 6,
   },
   {
@@ -423,7 +423,7 @@ const blogCategories = [
     description: "Re-engage anonymous visitors across email, ads, and direct mail channels.",
     slug: "retargeting",
     icon: RotateCcw,
-    gradient: "bg-gradient-to-br from-blue-500 to-blue-600",
+    gradient: "bg-gradient-to-br from-primary/50 to-primary-dark",
     postCount: 10,
   },
   {
@@ -431,7 +431,7 @@ const blogCategories = [
     description: "Track marketing performance, measure ROI, and implement multi-touch attribution.",
     slug: "analytics",
     icon: BarChart3,
-    gradient: "bg-gradient-to-br from-blue-500 to-blue-600",
+    gradient: "bg-gradient-to-br from-primary/50 to-primary-dark",
     postCount: 9,
   },
   {
@@ -439,7 +439,7 @@ const blogCategories = [
     description: "Connect your marketing stack and automate workflows across all your tools.",
     slug: "crm-integration",
     icon: Workflow,
-    gradient: "bg-gradient-to-br from-blue-500 to-blue-600",
+    gradient: "bg-gradient-to-br from-primary/50 to-primary-dark",
     postCount: 7,
   },
   {
@@ -455,7 +455,7 @@ const blogCategories = [
     description: "How AI is transforming sales workflows, from prospecting to closing deals.",
     slug: "ai-in-sales",
     icon: BrainCircuit,
-    gradient: "bg-gradient-to-br from-purple-500 to-indigo-600",
+    gradient: "bg-gradient-to-br from-primary/50 to-primary-dark",
     postCount: 3,
   },
   {
@@ -463,7 +463,7 @@ const blogCategories = [
     description: "Platforms and strategies to engage prospects and accelerate your pipeline.",
     slug: "sales-engagement",
     icon: Zap,
-    gradient: "bg-gradient-to-br from-emerald-500 to-teal-600",
+    gradient: "bg-gradient-to-br from-emerald-500 to-primary-dark",
     postCount: 3,
   },
 ]
@@ -511,7 +511,7 @@ const blogPosts = [
     categorySlug: "lead-generation",
     date: "April 3, 2026",
     readTime: "10 min read",
-    color: "bg-gradient-to-br from-blue-500 to-blue-600",
+    color: "bg-gradient-to-br from-primary/50 to-primary-dark",
     icon: Search,
   },
   {
@@ -522,7 +522,7 @@ const blogPosts = [
     categorySlug: "lead-generation",
     date: "April 3, 2026",
     readTime: "18 min read",
-    color: "bg-gradient-to-br from-blue-500 to-blue-600",
+    color: "bg-gradient-to-br from-primary/50 to-primary-dark",
     icon: Database,
   },
   {
@@ -533,7 +533,7 @@ const blogPosts = [
     categorySlug: "lead-generation",
     date: "April 3, 2026",
     readTime: "14 min read",
-    color: "bg-gradient-to-br from-blue-500 to-blue-600",
+    color: "bg-gradient-to-br from-primary/50 to-primary-dark",
     icon: Users,
   },
   {
@@ -544,7 +544,7 @@ const blogPosts = [
     categorySlug: "ai-in-sales",
     date: "April 3, 2026",
     readTime: "10 min read",
-    color: "bg-gradient-to-br from-purple-500 to-indigo-600",
+    color: "bg-gradient-to-br from-primary/50 to-primary-dark",
     icon: Bot,
   },
   {
@@ -555,7 +555,7 @@ const blogPosts = [
     categorySlug: "ai-in-sales",
     date: "April 3, 2026",
     readTime: "9 min read",
-    color: "bg-gradient-to-br from-purple-500 to-indigo-600",
+    color: "bg-gradient-to-br from-primary/50 to-primary-dark",
     icon: BrainCircuit,
   },
   {
@@ -566,7 +566,7 @@ const blogPosts = [
     categorySlug: "ai-in-sales",
     date: "April 3, 2026",
     readTime: "8 min read",
-    color: "bg-gradient-to-br from-purple-500 to-indigo-600",
+    color: "bg-gradient-to-br from-primary/50 to-primary-dark",
     icon: TrendingUp,
   },
   {
@@ -577,7 +577,7 @@ const blogPosts = [
     categorySlug: "sales-engagement",
     date: "April 3, 2026",
     readTime: "10 min read",
-    color: "bg-gradient-to-br from-emerald-500 to-teal-600",
+    color: "bg-gradient-to-br from-emerald-500 to-primary-dark",
     icon: Zap,
   },
   {
@@ -588,7 +588,7 @@ const blogPosts = [
     categorySlug: "sales-engagement",
     date: "April 3, 2026",
     readTime: "10 min read",
-    color: "bg-gradient-to-br from-emerald-500 to-teal-600",
+    color: "bg-gradient-to-br from-emerald-500 to-primary-dark",
     icon: Workflow,
   },
   {
@@ -599,7 +599,7 @@ const blogPosts = [
     categorySlug: "sales-engagement",
     date: "April 3, 2026",
     readTime: "10 min read",
-    color: "bg-gradient-to-br from-emerald-500 to-teal-600",
+    color: "bg-gradient-to-br from-emerald-500 to-primary-dark",
     icon: Target,
   },
   {
@@ -610,7 +610,7 @@ const blogPosts = [
     categorySlug: "lead-generation",
     date: "Jan 28, 2026",
     readTime: "6 min read",
-    color: "bg-gradient-to-br from-blue-500 to-blue-600",
+    color: "bg-gradient-to-br from-primary/50 to-primary-dark",
     icon: Target,
   },
   {
@@ -621,7 +621,7 @@ const blogPosts = [
     categorySlug: "audience-targeting",
     date: "Jan 21, 2026",
     readTime: "10 min read",
-    color: "bg-gradient-to-br from-blue-500 to-blue-600",
+    color: "bg-gradient-to-br from-primary/50 to-primary-dark",
     icon: TrendingUp,
   },
   {
@@ -632,7 +632,7 @@ const blogPosts = [
     categorySlug: "lead-generation",
     date: "Jan 14, 2026",
     readTime: "7 min read",
-    color: "bg-gradient-to-br from-blue-500 to-blue-600",
+    color: "bg-gradient-to-br from-primary/50 to-primary-dark",
     icon: TrendingUp,
   },
 ]

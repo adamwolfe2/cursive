@@ -136,7 +136,7 @@ function VisitorDemo({ compact = false }: { compact?: boolean }) {
         {phase === 'matching' && (
           <div>
             <div className="flex items-center gap-2 mb-3">
-              <span className="text-[10px] font-semibold bg-blue-50 text-primary px-2 py-0.5 rounded">MATCHING IDENTITY GRAPH</span>
+              <span className="text-[10px] font-semibold bg-primary/5 text-primary px-2 py-0.5 rounded">MATCHING IDENTITY GRAPH</span>
             </div>
             <div className="bg-gray-50 border border-gray-100 rounded-lg p-3 mb-4">
               <div className="flex justify-between text-xs">

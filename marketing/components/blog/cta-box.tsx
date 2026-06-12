@@ -30,7 +30,7 @@ const ctaConfig: Record<
       'Cursive resolves 40–60% of your anonymous website visitors with a deterministic pixel — vs 2–5% for cookie-based tools — and turns them into qualified leads. Install in 60 seconds.',
     buttonText: 'Get Started',
     buttonHref: GET_LEADS_URL,
-    accentColor: 'bg-blue-50 border-blue-200',
+    accentColor: 'bg-primary/5 border-primary/20',
   },
   trial: {
     icon: Zap,
@@ -39,7 +39,7 @@ const ctaConfig: Record<
       'Install the Cursive pixel in 60 seconds and start seeing the companies and people visiting your site. Plans from $97/mo.',
     buttonText: 'Get Started',
     buttonHref: GET_LEADS_URL,
-    accentColor: 'bg-blue-50 border-blue-200',
+    accentColor: 'bg-primary/5 border-primary/20',
   },
   pricing: {
     icon: Sparkles,
@@ -48,7 +48,7 @@ const ctaConfig: Record<
       'Visitor Pixel from $97/mo, Custom Audience from $197/mo, or both in the bundle. Pick a plan and get started in minutes.',
     buttonText: 'Get Started',
     buttonHref: GET_LEADS_URL,
-    accentColor: 'bg-blue-50 border-blue-200',
+    accentColor: 'bg-primary/5 border-primary/20',
   },
   newsletter: {
     icon: Sparkles,
@@ -57,7 +57,7 @@ const ctaConfig: Record<
       'Join 5,000+ marketers receiving our weekly newsletter with actionable tactics for visitor identification and lead generation.',
     buttonText: 'Subscribe Now',
     buttonHref: '/newsletter',
-    accentColor: 'bg-blue-50 border-blue-200',
+    accentColor: 'bg-primary/5 border-primary/20',
   },
 }
 

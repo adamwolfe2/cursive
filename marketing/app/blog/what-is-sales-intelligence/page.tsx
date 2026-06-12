@@ -26,7 +26,7 @@ export default function WhatIsSalesIntelligence() {
               Back to Blog
             </Link>
 
-            <div className="max-w-4xl">
+            <div className="max-w-4xl mx-auto">
               <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
                 <Database className="w-3 h-3 inline mr-1" />
                 Sales Intelligence
@@ -55,7 +55,7 @@ export default function WhatIsSalesIntelligence() {
         {/* Main Content */}
         <section className="py-12 bg-gray-50">
           <Container>
-            <div className="max-w-4xl">
+            <div className="max-w-4xl mx-auto">
 
               {/* Definition */}
               <div className="bg-white rounded-xl p-8 mb-8 border border-gray-200">
@@ -84,9 +84,9 @@ export default function WhatIsSalesIntelligence() {
                 <h2 className="text-3xl font-bold mb-6">5 Types of Sales Intelligence Data</h2>
 
                 <div className="space-y-6">
-                  <div className="border-l-4 border-blue-500 pl-6">
+                  <div className="border-l-4 border-primary pl-6">
                     <h3 className="text-xl font-semibold mb-2 flex items-center gap-2">
-                      <BarChart2 className="w-5 h-5 text-blue-500" />
+                      <BarChart2 className="w-5 h-5 text-primary" />
                       1. Firmographic Data
                     </h3>
                     <p className="text-gray-700 mb-3">
@@ -130,9 +130,9 @@ export default function WhatIsSalesIntelligence() {
                     </div>
                   </div>
 
-                  <div className="border-l-4 border-purple-500 pl-6">
+                  <div className="border-l-4 border-primary pl-6">
                     <h3 className="text-xl font-semibold mb-2 flex items-center gap-2">
-                      <Zap className="w-5 h-5 text-purple-500" />
+                      <Zap className="w-5 h-5 text-primary" />
                       3. Intent Data
                     </h3>
                     <p className="text-gray-700 mb-3">
@@ -140,7 +140,7 @@ export default function WhatIsSalesIntelligence() {
                       a purchase decision. This is the highest-value intelligence because it tells you not just
                       who fits your ICP, but who is in an active buying window right now.
                     </p>
-                    <div className="bg-purple-50 rounded-lg p-4 text-sm text-gray-700">
+                    <div className="bg-primary/5 rounded-lg p-4 text-sm text-gray-700">
                       <p className="font-medium mb-2">Intent signals that matter:</p>
                       <ul className="space-y-1 list-disc list-inside">
                         <li>Visiting your website (especially pricing, demo, and comparison pages)</li>
@@ -260,7 +260,7 @@ export default function WhatIsSalesIntelligence() {
                 <h2 className="text-3xl font-bold mb-6">Key Sales Intelligence Use Cases</h2>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="bg-blue-50 rounded-lg p-5">
+                  <div className="bg-primary/5 rounded-lg p-5">
                     <h3 className="font-semibold text-lg mb-2">ICP Scoring and Prioritization</h3>
                     <p className="text-gray-700 text-sm">
                       Score every account in your TAM against your ideal customer profile using firmographic and
@@ -278,7 +278,7 @@ export default function WhatIsSalesIntelligence() {
                     </p>
                   </div>
 
-                  <div className="bg-purple-50 rounded-lg p-5">
+                  <div className="bg-primary/5 rounded-lg p-5">
                     <h3 className="font-semibold text-lg mb-2">Competitive Displacement</h3>
                     <p className="text-gray-700 text-sm">
                       Use technographic data to identify companies using competitor products. Layer in intent

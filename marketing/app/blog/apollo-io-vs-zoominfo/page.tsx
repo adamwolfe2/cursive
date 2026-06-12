@@ -66,7 +66,7 @@ export default function BlogPost() {
               <ArrowLeft className="w-4 h-4" />
               Back to Blog
             </Link>
-            <div className="max-w-4xl">
+            <div className="max-w-4xl mx-auto">
               <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
                 Comparisons
               </div>
@@ -128,7 +128,7 @@ export default function BlogPost() {
               <div className="not-prose overflow-x-auto my-8">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                    <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                       <th className="border border-gray-300 p-3 text-left font-bold">Feature</th>
                       <th className="border border-gray-300 p-3 text-center font-bold">Cursive</th>
                       <th className="border border-gray-300 p-3 text-center font-bold">Apollo.io</th>
@@ -136,7 +136,7 @@ export default function BlogPost() {
                     </tr>
                   </thead>
                   <tbody className="bg-white">
-                    <tr className="bg-blue-50 border-2 border-blue-500">
+                    <tr className="bg-primary/5 border-2 border-primary">
                       <td className="border border-gray-300 p-3 font-medium">Visitor Identification</td>
                       <td className="border border-gray-300 p-3 text-center text-green-600 font-bold"><Check className="w-4 h-4 inline" /> 70% person-level</td>
                       <td className="border border-gray-300 p-3 text-center"><X className="w-4 h-4 inline text-red-400" /></td>
@@ -437,17 +437,17 @@ export default function BlogPost() {
               {/* Cursive: The Real-Time Alternative */}
               <h2>Why Cursive Outperforms Both Apollo and ZoomInfo</h2>
 
-              <div className="not-prose bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-8 my-8 border-2 border-blue-500">
+              <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-8 my-8 border-2 border-primary">
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <h3 className="text-2xl font-bold mb-2">Cursive: Real-Time Warm Visitor Identification</h3>
                     <p className="text-sm text-gray-600">Best for: Teams that want to contact warm, intent-ready buyers instead of cold-prospecting static lists</p>
                   </div>
-                  <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-bold">Our Pick</span>
+                  <span className="bg-primary text-white px-3 py-1 rounded-full text-sm font-bold">Our Pick</span>
                 </div>
 
                 <p className="text-gray-700 mb-4">
-                  <Link href="/" className="text-blue-600 hover:underline">Cursive</Link> approaches B2B prospecting from the opposite direction of Apollo and ZoomInfo.
+                  <Link href="/" className="text-primary hover:underline">Cursive</Link> approaches B2B prospecting from the opposite direction of Apollo and ZoomInfo.
                   Instead of searching a static database for cold contacts to reach, Cursive identifies who
                   is already visiting your website — up to 70% of your anonymous visitors identified by person
                   (name, email, phone, company, LinkedIn URL) in real time. These are not cold contacts found
@@ -455,7 +455,7 @@ export default function BlogPost() {
                 </p>
 
                 <p className="text-gray-700 mb-4">
-                  Beyond visitor identification, Cursive&apos;s <Link href="/intent-audiences" className="text-blue-600 hover:underline">intent audience engine</Link> scans
+                  Beyond visitor identification, Cursive&apos;s <Link href="/intent-audiences" className="text-primary hover:underline">intent audience engine</Link> scans
                   60B+ behaviors and URLs weekly across 30,000+ buying categories to surface companies actively
                   researching your category — even if they have not yet visited your website. Combined with
                   a built-in database of 280M US consumer and 140M+ business profiles, Cursive gives you
@@ -518,13 +518,13 @@ export default function BlogPost() {
                 <div className="bg-white rounded-lg p-4">
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-bold">Pricing:</span>
-                    <span className="text-lg font-bold text-blue-600">$97 / $197 / $247 per month</span>
+                    <span className="text-lg font-bold text-primary">$97 / $197 / $247 per month</span>
                   </div>
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> B2B teams that want to stop cold-prospecting static databases
                     and start converting the warm, in-market buyers already visiting their website. See{" "}
-                    <Link href="/pricing" className="text-blue-600 hover:underline">full pricing</Link> or
-                    explore the <Link href="https://leads.meetcursive.com/get-leads" className="text-blue-600 hover:underline">self-serve plans</Link>, available month-to-month with no setup fee.
+                    <Link href="/pricing" className="text-primary hover:underline">full pricing</Link> or
+                    explore the <Link href="https://leads.meetcursive.com/get-leads" className="text-primary hover:underline">self-serve plans</Link>, available month-to-month with no setup fee.
                   </p>
                 </div>
               </div>
@@ -532,27 +532,27 @@ export default function BlogPost() {
               {/* Apollo vs ZoomInfo: Which to Choose */}
               <h2>Apollo vs ZoomInfo: Which Should You Choose?</h2>
 
-              <div className="not-prose bg-gradient-to-br from-gray-50 to-blue-50 rounded-xl p-6 my-8 border border-gray-200">
+              <div className="not-prose bg-gradient-to-br from-gray-50 to-primary/5 rounded-xl p-6 my-8 border border-gray-200">
                 <h3 className="font-bold text-lg mb-4">Decision Matrix: Apollo vs ZoomInfo vs Cursive</h3>
                 <div className="space-y-4 text-sm">
                   <div className="border-b border-gray-200 pb-3">
-                    <p className="font-bold text-blue-700 mb-1">You want to identify warm visitors and in-market buyers automatically:</p>
+                    <p className="font-bold text-primary mb-1">You want to identify warm visitors and in-market buyers automatically:</p>
                     <p className="text-gray-700"><strong>Choose Cursive.</strong> Identify companies and people visiting your website, receive fresh weekly lists of in-market buyers, or get both with plans at $97, $197, or $247 per month.</p>
                   </div>
                   <div className="border-b border-gray-200 pb-3">
-                    <p className="font-bold text-blue-700 mb-1">You are an SMB or mid-market team and want contact data + outreach bundled affordably:</p>
+                    <p className="font-bold text-primary mb-1">You are an SMB or mid-market team and want contact data + outreach bundled affordably:</p>
                     <p className="text-gray-700"><strong>Choose Apollo.io.</strong> 275M+ contacts plus email sequencing, LinkedIn automation, and AI email writing at $49-$99/user/month. The best value for teams that cannot justify ZoomInfo pricing.</p>
                   </div>
                   <div className="border-b border-gray-200 pb-3">
-                    <p className="font-bold text-blue-700 mb-1">You are an enterprise sales org and data accuracy is mission-critical:</p>
+                    <p className="font-bold text-primary mb-1">You are an enterprise sales org and data accuracy is mission-critical:</p>
                     <p className="text-gray-700"><strong>Choose ZoomInfo.</strong> Best direct-dial phone accuracy, deepest firmographic data, and strongest enterprise CRM integrations. Worth the $15,000-$40,000+/yr cost for large organizations where data quality materially impacts revenue.</p>
                   </div>
                   <div className="border-b border-gray-200 pb-3">
-                    <p className="font-bold text-blue-700 mb-1">You want high-volume cold prospecting with budget control:</p>
+                    <p className="font-bold text-primary mb-1">You want high-volume cold prospecting with budget control:</p>
                     <p className="text-gray-700"><strong>Choose Apollo.io.</strong> Generous free tier, no contract required, and per-user pricing that scales linearly. Much more flexible than ZoomInfo&apos;s annual contracts and minimum seat requirements.</p>
                   </div>
                   <div>
-                    <p className="font-bold text-blue-700 mb-1">You want the best of warm leads AND cold outreach coverage:</p>
+                    <p className="font-bold text-primary mb-1">You want the best of warm leads AND cold outreach coverage:</p>
                     <p className="text-gray-700"><strong>Combine Cursive + Apollo.io.</strong> Use Cursive for warm visitor identification and in-market buyer targeting (highest conversion), and Apollo for broader cold outbound. Cursive integrates with Apollo&apos;s sequences directly.</p>
                   </div>
                 </div>
@@ -564,7 +564,7 @@ export default function BlogPost() {
               <div className="not-prose overflow-x-auto my-8">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                    <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                       <th className="border border-gray-300 p-3 text-left font-bold">Capability</th>
                       <th className="border border-gray-300 p-3 text-center font-bold">Cursive</th>
                       <th className="border border-gray-300 p-3 text-center font-bold">Apollo.io</th>

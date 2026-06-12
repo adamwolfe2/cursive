@@ -48,7 +48,7 @@ export default function AudienceTargetingPage() {
               Back to Blog
             </Link>
 
-            <div className="max-w-4xl">
+            <div className="max-w-4xl mx-auto">
               <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
                 Audience Targeting
               </div>
@@ -113,7 +113,7 @@ export default function AudienceTargetingPage() {
                 the copy. It&apos;s the targeting.
               </p>
 
-              <div className="not-prose bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 my-8 border border-blue-200">
+              <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-6 my-8 border border-primary/20">
                 <h3 className="font-bold text-lg mb-3">The Cost of Poor Targeting</h3>
                 <div className="grid md:grid-cols-3 gap-4 text-center">
                   <div className="bg-white rounded-lg p-4">
@@ -234,8 +234,8 @@ export default function AudienceTargetingPage() {
 
               <div className="not-prose grid md:grid-cols-2 gap-6 my-8">
                 <div className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow">
-                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                    <Users className="w-6 h-6 text-blue-600" />
+                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                    <Users className="w-6 h-6 text-primary" />
                   </div>
                   <h3 className="font-bold text-lg mb-2">1. Firmographic Data</h3>
                   <p className="text-sm text-gray-600 mb-3">
@@ -262,8 +262,8 @@ export default function AudienceTargetingPage() {
                 </div>
 
                 <div className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow">
-                  <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
-                    <Layers className="w-6 h-6 text-purple-600" />
+                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                    <Layers className="w-6 h-6 text-primary" />
                   </div>
                   <h3 className="font-bold text-lg mb-2">2. Technographic Data</h3>
                   <p className="text-sm text-gray-600 mb-3">
@@ -368,7 +368,7 @@ export default function AudienceTargetingPage() {
                 visitors are, even when they don&apos;t fill out a form.
               </p>
 
-              <div className="not-prose bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 my-8 border border-blue-200">
+              <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-6 my-8 border border-primary/20">
                 <h3 className="font-bold text-lg mb-3">High-Value Website Intent Signals</h3>
                 <div className="space-y-3">
                   <div className="flex items-center gap-3 bg-white rounded-lg p-3">
@@ -632,7 +632,7 @@ export default function AudienceTargetingPage() {
               <div className="not-prose overflow-x-auto my-8">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                    <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                       <th className="border border-gray-300 p-3 text-left font-bold">Metric</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Poor</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Good</th>
@@ -768,7 +768,7 @@ export default function AudienceTargetingPage() {
 
               <div className="not-prose space-y-6 my-8">
                 {faqs.map((faq, index) => (
-                  <div key={index} className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-lg p-6 border border-gray-200">
+                  <div key={index} className="bg-gradient-to-br from-gray-50 to-primary/5 rounded-lg p-6 border border-gray-200">
                     <h3 className="font-bold text-lg mb-3">{faq.question}</h3>
                     <p className="text-gray-700">{faq.answer}</p>
                   </div>
@@ -814,7 +814,7 @@ export default function AudienceTargetingPage() {
         />
 
         {/* Related Posts */}
-        <section className="py-16 bg-gradient-to-br from-gray-50 to-blue-50">
+        <section className="py-16 bg-gradient-to-br from-gray-50 to-primary/5">
           <Container>
             <div className="max-w-5xl mx-auto">
               <SimpleRelatedPosts posts={[

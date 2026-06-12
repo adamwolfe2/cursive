@@ -65,7 +65,7 @@ export function DemoAccountIntelligence() {
         key={company.name}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 border border-gray-200"
+        className="bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-6 border border-gray-200"
       >
         <div className="flex items-start justify-between mb-4 gap-2 flex-wrap">
           <div className="flex items-center gap-3">
@@ -89,7 +89,7 @@ export function DemoAccountIntelligence() {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.3 }}
-            className="px-3 py-1.5 bg-blue-100 text-blue-700 text-xs rounded-full font-medium"
+            className="px-3 py-1.5 bg-primary/10 text-primary text-xs rounded-full font-medium"
           >
             High Intent
           </motion.div>
@@ -189,14 +189,14 @@ export function DemoAccountIntelligence() {
                 className="bg-white rounded-lg p-4 border border-gray-200 hover:border-gray-300 hover:shadow-sm transition-all cursor-pointer"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white text-sm">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary/50 to-primary-dark flex items-center justify-center text-white text-sm">
                     {contact[0]}
                   </div>
                   <div className="flex-1">
                     <div className="text-sm font-medium text-gray-900">{contact.split(" - ")[0]}</div>
                     <div className="text-xs text-gray-600">{contact.split(" - ")[1]}</div>
                   </div>
-                  <div className="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded">Verified</div>
+                  <div className="px-2 py-1 bg-primary/5 text-primary text-xs rounded">Verified</div>
                 </div>
               </motion.div>
             ))}

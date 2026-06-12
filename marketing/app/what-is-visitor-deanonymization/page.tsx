@@ -81,7 +81,7 @@ function SectionTitle({ id, children }: { id: string; children: React.ReactNode 
   return (
     <div id={id} className="flex items-center gap-3 mb-6 scroll-mt-24">
       {Icon && (
-        <span className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
+        <span className="w-12 h-12 rounded-xl bg-primary/5 flex items-center justify-center flex-shrink-0">
           <Icon className="w-6 h-6 text-primary" />
         </span>
       )}
@@ -218,7 +218,7 @@ export default function WhatIsVisitorDeanonymization() {
                   <FadeIn key={stage.n} delay={i * 0.04}>
                     <div className="rounded-2xl border border-gray-200 p-6 sm:p-8">
                       <div className="flex items-start gap-4">
-                        <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-blue-50 text-base font-medium text-primary">
+                        <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-primary/5 text-base font-medium text-primary">
                           {stage.n}
                         </span>
                         <div>

@@ -66,7 +66,7 @@ export default function BlogPost() {
               <ArrowLeft className="w-4 h-4" />
               Back to Blog
             </Link>
-            <div className="max-w-4xl">
+            <div className="max-w-4xl mx-auto">
               <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
                 Comparisons
               </div>
@@ -127,7 +127,7 @@ export default function BlogPost() {
               <div className="not-prose overflow-x-auto my-8">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                    <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                       <th className="border border-gray-300 p-3 text-left font-bold">Tool</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Best For</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Visitor ID</th>
@@ -136,7 +136,7 @@ export default function BlogPost() {
                     </tr>
                   </thead>
                   <tbody className="bg-white">
-                    <tr className="bg-blue-50 border-2 border-blue-500">
+                    <tr className="bg-primary/5 border-2 border-primary">
                       <td className="border border-gray-300 p-3 font-bold">Cursive</td>
                       <td className="border border-gray-300 p-3">Warm visitor leads + AI outreach automation</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold"><Check className="w-4 h-4 inline" /> 70% person-level</td>
@@ -249,27 +249,27 @@ export default function BlogPost() {
               <h2>7 Best Instantly AI Alternatives (Detailed Reviews)</h2>
 
               {/* 1. Cursive */}
-              <div className="not-prose bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-8 my-8 border-2 border-blue-500">
+              <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-8 my-8 border-2 border-primary">
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <h3 className="text-2xl font-bold mb-2">1. Cursive</h3>
                     <p className="text-sm text-gray-600">Best for: Teams that want to find warm prospects first, then automate outreach</p>
                   </div>
-                  <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-bold">Our Pick</span>
+                  <span className="bg-primary text-white px-3 py-1 rounded-full text-sm font-bold">Our Pick</span>
                 </div>
 
                 <p className="text-gray-700 mb-4">
                   <strong>What makes it different:</strong> Instantly AI solves the delivery problem for cold email.
-                  <Link href="/" className="text-blue-600 hover:underline"> Cursive</Link> solves the upstream problem:
+                  <Link href="/" className="text-primary hover:underline"> Cursive</Link> solves the upstream problem:
                   identifying who you should be reaching out to before you send anything. The platform installs
                   a lightweight pixel on your website, identifies up to 70% of your anonymous visitors by person
                   (name, email, phone, company, LinkedIn), and then automatically triggers personalized outreach
-                  via its built-in <Link href="/what-is-ai-sdr" className="text-blue-600 hover:underline">AI SDR</Link> across
-                  email, LinkedIn, SMS, and <Link href="/direct-mail" className="text-blue-600 hover:underline">direct mail</Link>.
+                  via its built-in <Link href="/what-is-ai-sdr" className="text-primary hover:underline">AI SDR</Link> across
+                  email, LinkedIn, SMS, and <Link href="/direct-mail" className="text-primary hover:underline">direct mail</Link>.
                 </p>
 
                 <p className="text-gray-700 mb-4">
-                  Beyond visitor identification, Cursive&apos;s <Link href="/intent-audiences" className="text-blue-600 hover:underline">intent audience engine</Link> scans
+                  Beyond visitor identification, Cursive&apos;s <Link href="/intent-audiences" className="text-primary hover:underline">intent audience engine</Link> scans
                   60B+ behaviors and URLs weekly across 30,000+ buying categories to surface companies actively
                   researching your category — giving you a warm pipeline that Instantly AI simply cannot generate.
                   With a built-in database of 280M US consumer and 140M+ business profiles, Cursive eliminates
@@ -329,13 +329,13 @@ export default function BlogPost() {
                 <div className="bg-white rounded-lg p-4">
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-bold">Pricing:</span>
-                    <span className="text-lg font-bold text-blue-600">$97/mo Pixel | $197/mo Audience | $247/mo Bundle</span>
+                    <span className="text-lg font-bold text-primary">$97/mo Pixel | $197/mo Audience | $247/mo Bundle</span>
                   </div>
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> B2B teams that want to move from cold email blasts to warm,
                     intent-driven pipeline. One platform replaces Instantly AI, your contact data provider,
-                    and your intent subscription. See <Link href="/pricing" className="text-blue-600 hover:underline">full pricing</Link> or
-                    explore the <Link href="https://leads.meetcursive.com/get-leads" className="text-blue-600 hover:underline">self-serve plans</Link>.
+                    and your intent subscription. See <Link href="/pricing" className="text-primary hover:underline">full pricing</Link> or
+                    explore the <Link href="https://leads.meetcursive.com/get-leads" className="text-primary hover:underline">self-serve plans</Link>.
                   </p>
                 </div>
               </div>
@@ -783,7 +783,7 @@ export default function BlogPost() {
               <div className="not-prose overflow-x-auto my-8">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                    <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                       <th className="border border-gray-300 p-3 text-left font-bold">Feature</th>
                       <th className="border border-gray-300 p-3 text-center font-bold">Cursive</th>
                       <th className="border border-gray-300 p-3 text-center font-bold">Instantly AI</th>
@@ -864,31 +864,31 @@ export default function BlogPost() {
               {/* Which Alternative */}
               <h2>Which Instantly AI Alternative Should You Choose?</h2>
 
-              <div className="not-prose bg-gradient-to-br from-gray-50 to-blue-50 rounded-xl p-6 my-8 border border-gray-200">
+              <div className="not-prose bg-gradient-to-br from-gray-50 to-primary/5 rounded-xl p-6 my-8 border border-gray-200">
                 <h3 className="font-bold text-lg mb-4">Decision Matrix by Use Case</h3>
                 <div className="space-y-4 text-sm">
                   <div className="border-b border-gray-200 pb-3">
-                    <p className="font-bold text-blue-700 mb-1">You want visitor identification + intent data + automated warm outreach:</p>
+                    <p className="font-bold text-primary mb-1">You want visitor identification + intent data + automated warm outreach:</p>
                     <p className="text-gray-700"><strong>Choose Cursive.</strong> Identify warm visitors, receive fresh weekly lists of in-market buyers, or get both with the $247/month bundle.</p>
                   </div>
                   <div className="border-b border-gray-200 pb-3">
-                    <p className="font-bold text-blue-700 mb-1">You want Instantly AI&apos;s model with better deliverability controls for agency use:</p>
+                    <p className="font-bold text-primary mb-1">You want Instantly AI&apos;s model with better deliverability controls for agency use:</p>
                     <p className="text-gray-700"><strong>Choose Smartlead.</strong> More sophisticated deliverability management, advanced sequence logic, and better agency client management at $59-$174/month.</p>
                   </div>
                   <div className="border-b border-gray-200 pb-3">
-                    <p className="font-bold text-blue-700 mb-1">You want cold email + LinkedIn + contact data bundled:</p>
+                    <p className="font-bold text-primary mb-1">You want cold email + LinkedIn + contact data bundled:</p>
                     <p className="text-gray-700"><strong>Choose Apollo.io.</strong> 275M+ contact database plus email sequencing and LinkedIn automation eliminates your need for separate contact sourcing.</p>
                   </div>
                   <div className="border-b border-gray-200 pb-3">
-                    <p className="font-bold text-blue-700 mb-1">You want true multi-channel (email, LinkedIn, SMS, WhatsApp, calls):</p>
+                    <p className="font-bold text-primary mb-1">You want true multi-channel (email, LinkedIn, SMS, WhatsApp, calls):</p>
                     <p className="text-gray-700"><strong>Choose Reply.io.</strong> Most comprehensive multi-channel sequencing at $59/user/month with AI writing and agency white-label options.</p>
                   </div>
                   <div className="border-b border-gray-200 pb-3">
-                    <p className="font-bold text-blue-700 mb-1">You want personalized cold email + LinkedIn at SMB pricing:</p>
+                    <p className="font-bold text-primary mb-1">You want personalized cold email + LinkedIn at SMB pricing:</p>
                     <p className="text-gray-700"><strong>Choose lemlist.</strong> Best image/video personalization in cold email with LinkedIn automation included at $59/user/month.</p>
                   </div>
                   <div>
-                    <p className="font-bold text-blue-700 mb-1">You want simple cold email + LinkedIn for a small team:</p>
+                    <p className="font-bold text-primary mb-1">You want simple cold email + LinkedIn for a small team:</p>
                     <p className="text-gray-700"><strong>Choose Mailshake.</strong> Clean, easy-to-use interface with email, LinkedIn, and a phone dialer. No complex multi-account infrastructure to manage.</p>
                   </div>
                 </div>

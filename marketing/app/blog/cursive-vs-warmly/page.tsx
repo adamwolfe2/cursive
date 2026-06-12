@@ -84,7 +84,7 @@ export default function CursiveVsWarmly() {
               Back to Blog
             </Link>
 
-            <div className="max-w-4xl">
+            <div className="max-w-4xl mx-auto">
               <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
                 Comparison
               </div>
@@ -111,12 +111,12 @@ export default function CursiveVsWarmly() {
         </section>
 
         {/* Quick Summary */}
-        <section className="py-8 bg-blue-50 border-y border-blue-100">
+        <section className="py-8 bg-primary/5 border-y border-primary/15">
           <Container>
-            <div className="max-w-4xl">
+            <div className="max-w-4xl mx-auto">
               <h2 className="text-lg font-bold mb-3">TL;DR — Quick Summary</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-white rounded-xl p-5 border border-blue-200">
+                <div className="bg-white rounded-xl p-5 border border-primary/20">
                   <h3 className="font-bold text-lg mb-2 text-primary">Choose Cursive if...</h3>
                   <ul className="space-y-2 text-sm text-gray-700">
                     <li className="flex items-start gap-2"><Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> You want 70% person-level ID rate</li>

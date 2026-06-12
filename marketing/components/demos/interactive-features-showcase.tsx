@@ -128,7 +128,7 @@ export function InteractiveFeaturesShowcase() {
       </div>
 
       {/* Demo Container with Browser Chrome */}
-      <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-4 md:p-6">
+      <div className="bg-gradient-to-br from-primary/5 to-primary/10 rounded-2xl p-4 md:p-6">
         <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
           {/* Browser Dots */}
           <div className="bg-gray-100 px-4 py-3 flex items-center gap-1.5 border-b border-gray-200">

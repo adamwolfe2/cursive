@@ -66,7 +66,7 @@ export default function BlogPost() {
               <ArrowLeft className="w-4 h-4" />
               Back to Blog
             </Link>
-            <div className="max-w-4xl">
+            <div className="max-w-4xl mx-auto">
               <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
                 Guide
               </div>
@@ -132,32 +132,32 @@ export default function BlogPost() {
               <h2>How Website Visitor Identification Works</h2>
 
               <div className="not-prose space-y-4 my-6">
-                <div className="flex items-start gap-4 p-5 bg-white rounded-xl border-l-4 border-blue-500 shadow-sm">
-                  <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-lg shrink-0">1</div>
+                <div className="flex items-start gap-4 p-5 bg-white rounded-xl border-l-4 border-primary shadow-sm">
+                  <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold text-lg shrink-0">1</div>
                   <div>
                     <p className="font-bold text-lg mb-1">Pixel Fires on Page Load</p>
                     <p className="text-sm text-gray-700">A lightweight JavaScript pixel (typically 1-3KB) fires when a visitor lands on any page with the tag installed. The pixel collects: device fingerprint (browser type, screen resolution, fonts), IP address, existing cookie IDs, URL visited, referral source, and session timing data. This happens invisibly in under 50 milliseconds.</p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-4 p-5 bg-white rounded-xl border-l-4 border-blue-500 shadow-sm">
-                  <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-lg shrink-0">2</div>
+                <div className="flex items-start gap-4 p-5 bg-white rounded-xl border-l-4 border-primary shadow-sm">
+                  <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold text-lg shrink-0">2</div>
                   <div>
                     <p className="font-bold text-lg mb-1">Identity Graph Matching</p>
                     <p className="text-sm text-gray-700">The collected identifiers are sent to the provider&apos;s identity graph for matching. Identity graphs use two approaches: (a) Deterministic matching — exact email-hash matches when a visitor has previously visited a site in the provider&apos;s network and provided their email; (b) Probabilistic matching — device fingerprinting and behavioral patterns to make high-confidence identity inferences. Cursive&apos;s identity graph covers 280M US consumer profiles and 140M+ business profiles.</p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-4 p-5 bg-white rounded-xl border-l-4 border-blue-500 shadow-sm">
-                  <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-lg shrink-0">3</div>
+                <div className="flex items-start gap-4 p-5 bg-white rounded-xl border-l-4 border-primary shadow-sm">
+                  <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold text-lg shrink-0">3</div>
                   <div>
                     <p className="font-bold text-lg mb-1">Profile Enrichment</p>
                     <p className="text-sm text-gray-700">Once a match is found, the system enriches the profile with contact data: full name, work email, direct phone, job title, seniority, department, company name, company size, industry, LinkedIn URL, and additional firmographic data. This enrichment layer determines how actionable the identification is.</p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-4 p-5 bg-white rounded-xl border-l-4 border-blue-500 shadow-sm">
-                  <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-lg shrink-0">4</div>
+                <div className="flex items-start gap-4 p-5 bg-white rounded-xl border-l-4 border-primary shadow-sm">
+                  <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold text-lg shrink-0">4</div>
                   <div>
                     <p className="font-bold text-lg mb-1">Alert and Outreach Trigger</p>
                     <p className="text-sm text-gray-700">The identified visitor profile is returned to your system — either as a Slack/email alert, a CRM record, or an automated outreach trigger. Cursive&apos;s AI SDR automatically triggers personalized outreach via email, LinkedIn, SMS, or direct mail based on the identified visitor&apos;s profile and the pages they visited.</p>
@@ -176,7 +176,7 @@ export default function BlogPost() {
               <div className="not-prose overflow-x-auto my-8">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                    <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                       <th className="border border-gray-300 p-3 text-left font-bold">Provider</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">ID Rate</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">ID Level</th>
@@ -186,7 +186,7 @@ export default function BlogPost() {
                     </tr>
                   </thead>
                   <tbody className="bg-white">
-                    <tr className="bg-blue-50 border-2 border-blue-400">
+                    <tr className="bg-primary/5 border-2 border-primary/40">
                       <td className="border border-gray-300 p-3 font-bold">Cursive</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold">70%</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold">Person</td>
@@ -249,28 +249,28 @@ export default function BlogPost() {
               <h2>Best Use Cases for Website Visitor Identification</h2>
 
               <div className="not-prose grid md:grid-cols-2 gap-4 my-6">
-                <div className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border border-blue-100">
-                  <h4 className="font-bold mb-2 text-blue-900">Warm Outbound Sequences</h4>
+                <div className="p-4 bg-gradient-to-br from-primary/5 to-primary/5 rounded-lg border border-primary/15">
+                  <h4 className="font-bold mb-2 text-primary">Warm Outbound Sequences</h4>
                   <p className="text-sm text-gray-700">The most common use case: identify anonymous visitors, immediately enroll them in a personalized outreach sequence. Reference the specific pages they visited for relevance and timing advantage.</p>
                 </div>
-                <div className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border border-blue-100">
-                  <h4 className="font-bold mb-2 text-blue-900">Target Account Alerts</h4>
+                <div className="p-4 bg-gradient-to-br from-primary/5 to-primary/5 rounded-lg border border-primary/15">
+                  <h4 className="font-bold mb-2 text-primary">Target Account Alerts</h4>
                   <p className="text-sm text-gray-700">Alert account executives in real time when a target account visits. AEs can call or message immediately while the prospect is actively researching, dramatically improving connection rates.</p>
                 </div>
-                <div className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border border-blue-100">
-                  <h4 className="font-bold mb-2 text-blue-900">Pricing Page Identification</h4>
+                <div className="p-4 bg-gradient-to-br from-primary/5 to-primary/5 rounded-lg border border-primary/15">
+                  <h4 className="font-bold mb-2 text-primary">Pricing Page Identification</h4>
                   <p className="text-sm text-gray-700">Visitors on your pricing page are in late-stage evaluation. Identifying them and triggering immediate personalized outreach captures prospects at peak intent before they evaluate competitors.</p>
                 </div>
-                <div className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border border-blue-100">
-                  <h4 className="font-bold mb-2 text-blue-900">Return Visitor Prioritization</h4>
+                <div className="p-4 bg-gradient-to-br from-primary/5 to-primary/5 rounded-lg border border-primary/15">
+                  <h4 className="font-bold mb-2 text-primary">Return Visitor Prioritization</h4>
                   <p className="text-sm text-gray-700">Visitors who return 3+ times in a short period are expressing strong intent. Identify and prioritize these high-frequency returners for immediate follow-up over single-visit cold traffic.</p>
                 </div>
-                <div className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border border-blue-100">
-                  <h4 className="font-bold mb-2 text-blue-900">Retargeting Audience Enhancement</h4>
+                <div className="p-4 bg-gradient-to-br from-primary/5 to-primary/5 rounded-lg border border-primary/15">
+                  <h4 className="font-bold mb-2 text-primary">Retargeting Audience Enhancement</h4>
                   <p className="text-sm text-gray-700">Identified visitors can be added to LinkedIn Matched Audiences and Google Customer Match for precise advertising retargeting with job-title level segmentation.</p>
                 </div>
-                <div className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border border-blue-100">
-                  <h4 className="font-bold mb-2 text-blue-900">Competitive Page Monitoring</h4>
+                <div className="p-4 bg-gradient-to-br from-primary/5 to-primary/5 rounded-lg border border-primary/15">
+                  <h4 className="font-bold mb-2 text-primary">Competitive Page Monitoring</h4>
                   <p className="text-sm text-gray-700">Identify who visits pages that compare you to competitors. These visitors are in active vendor evaluation — the highest-value window for outreach.</p>
                 </div>
               </div>
@@ -282,35 +282,35 @@ export default function BlogPost() {
 
               <div className="not-prose space-y-3 my-6">
                 <div className="flex items-start gap-3 p-4 bg-white rounded-lg border border-gray-200">
-                  <div className="w-7 h-7 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm shrink-0 mt-0.5">1</div>
+                  <div className="w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm shrink-0 mt-0.5">1</div>
                   <div>
                     <p className="font-bold">Choose your provider</p>
                     <p className="text-sm text-gray-600">For person-level B2B identification, evaluate Cursive (70% ID, Visitor Pixel at $97/mo) and RB2B (50-60% ID, free tier). For company-level only, evaluate Warmly or Leadfeeder.</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3 p-4 bg-white rounded-lg border border-gray-200">
-                  <div className="w-7 h-7 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm shrink-0 mt-0.5">2</div>
+                  <div className="w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm shrink-0 mt-0.5">2</div>
                   <div>
                     <p className="font-bold">Install the tracking pixel</p>
                     <p className="text-sm text-gray-600">Copy the one-line JavaScript snippet from your dashboard and paste it into your website&apos;s &lt;head&gt; tag, or deploy it through Google Tag Manager without requiring a developer or code deployment.</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3 p-4 bg-white rounded-lg border border-gray-200">
-                  <div className="w-7 h-7 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm shrink-0 mt-0.5">3</div>
+                  <div className="w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm shrink-0 mt-0.5">3</div>
                   <div>
                     <p className="font-bold">Configure ICP filters</p>
                     <p className="text-sm text-gray-600">Set filters to surface only visitors that match your ideal customer profile: job title (e.g., VP Marketing, Director of Sales), company size (e.g., 50-500 employees), industry, and geography. This reduces noise and keeps your team focused on high-value matches.</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3 p-4 bg-white rounded-lg border border-gray-200">
-                  <div className="w-7 h-7 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm shrink-0 mt-0.5">4</div>
+                  <div className="w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm shrink-0 mt-0.5">4</div>
                   <div>
                     <p className="font-bold">Connect your CRM</p>
                     <p className="text-sm text-gray-600">Integrate with your CRM (HubSpot, Salesforce, Pipedrive, or 200+ others with Cursive) so identified visitors automatically create or update contact and company records. Set routing rules to assign visitors to the correct account owner.</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3 p-4 bg-white rounded-lg border border-gray-200">
-                  <div className="w-7 h-7 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm shrink-0 mt-0.5">5</div>
+                  <div className="w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm shrink-0 mt-0.5">5</div>
                   <div>
                     <p className="font-bold">Set up outreach automation</p>
                     <p className="text-sm text-gray-600">Configure which visitor actions trigger outreach: visited pricing page, returned 3+ times, visited competitor comparison page. Cursive&apos;s AI SDR handles this automatically across email, LinkedIn, SMS, and direct mail.</p>
@@ -330,24 +330,24 @@ export default function BlogPost() {
               <p>An effective identified-visitor outreach sequence looks like this:</p>
 
               <div className="not-prose space-y-3 my-6">
-                <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg border border-blue-100">
-                  <span className="text-blue-700 font-bold text-sm w-16 shrink-0">Day 0 (within minutes)</span>
+                <div className="flex items-start gap-3 p-3 bg-primary/5 rounded-lg border border-primary/15">
+                  <span className="text-primary font-bold text-sm w-16 shrink-0">Day 0 (within minutes)</span>
                   <p className="text-sm text-gray-700"><strong>Personalized email:</strong> Reference exactly what they looked at. &quot;I noticed you spent time on our pricing page today — happy to answer any specific questions about what&apos;s included at each tier.&quot; Short, specific, no pitch.</p>
                 </div>
-                <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg border border-blue-100">
-                  <span className="text-blue-700 font-bold text-sm w-16 shrink-0">Day 1</span>
+                <div className="flex items-start gap-3 p-3 bg-primary/5 rounded-lg border border-primary/15">
+                  <span className="text-primary font-bold text-sm w-16 shrink-0">Day 1</span>
                   <p className="text-sm text-gray-700"><strong>LinkedIn connection:</strong> Connect with a brief personalized note. No pitch in the connection request — just context about why you are connecting.</p>
                 </div>
-                <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg border border-blue-100">
-                  <span className="text-blue-700 font-bold text-sm w-16 shrink-0">Day 3</span>
+                <div className="flex items-start gap-3 p-3 bg-primary/5 rounded-lg border border-primary/15">
+                  <span className="text-primary font-bold text-sm w-16 shrink-0">Day 3</span>
                   <p className="text-sm text-gray-700"><strong>Follow-up email:</strong> Share a relevant case study, ROI calculation, or comparison guide based on their company profile. Add value, do not just ask for a meeting again.</p>
                 </div>
-                <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg border border-blue-100">
-                  <span className="text-blue-700 font-bold text-sm w-16 shrink-0">Day 7</span>
+                <div className="flex items-start gap-3 p-3 bg-primary/5 rounded-lg border border-primary/15">
+                  <span className="text-primary font-bold text-sm w-16 shrink-0">Day 7</span>
                   <p className="text-sm text-gray-700"><strong>LinkedIn message:</strong> After connection is accepted, send a short value-add message via LinkedIn DM.</p>
                 </div>
-                <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg border border-blue-100">
-                  <span className="text-blue-700 font-bold text-sm w-16 shrink-0">Day 14</span>
+                <div className="flex items-start gap-3 p-3 bg-primary/5 rounded-lg border border-primary/15">
+                  <span className="text-primary font-bold text-sm w-16 shrink-0">Day 14</span>
                   <p className="text-sm text-gray-700"><strong>Final email or direct mail:</strong> A final email or, for high-value accounts, a physical direct mail piece. Direct mail open and response rates are significantly higher than email for enterprise buyers.</p>
                 </div>
               </div>

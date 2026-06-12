@@ -63,7 +63,7 @@ export default function BlogPost() {
               Back to Blog
             </Link>
 
-            <div className="max-w-4xl">
+            <div className="max-w-4xl mx-auto">
               <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
                 Data &amp; Intelligence
               </div>
@@ -148,7 +148,7 @@ export default function BlogPost() {
               <div className="not-prose overflow-x-auto my-8">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                    <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                       <th className="border border-gray-300 p-3 text-left font-bold">Tool</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Database</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Visitor ID</th>
@@ -159,7 +159,7 @@ export default function BlogPost() {
                     </tr>
                   </thead>
                   <tbody className="bg-white">
-                    <tr className="bg-blue-50 border-2 border-blue-500">
+                    <tr className="bg-primary/5 border-2 border-primary">
                       <td className="border border-gray-300 p-3 font-bold">Cursive</td>
                       <td className="border border-gray-300 p-3">280M consumer / 140M+ business</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold">70% person-level</td>
@@ -229,20 +229,20 @@ export default function BlogPost() {
               <h2>7 Best SalesIntel Alternatives (Detailed Comparison)</h2>
 
               {/* Tool 1: Cursive */}
-              <div className="not-prose bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-8 my-8 border-2 border-blue-500">
+              <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-8 my-8 border-2 border-primary">
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <h3 className="text-2xl font-bold mb-2">1. Cursive</h3>
                     <p className="text-sm text-gray-600">Best for: AI-powered pipeline generation with visitor identification + intent-driven outreach</p>
                   </div>
-                  <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-bold whitespace-nowrap">Top Pick</span>
+                  <span className="bg-primary text-white px-3 py-1 rounded-full text-sm font-bold whitespace-nowrap">Top Pick</span>
                 </div>
 
                 <p className="text-gray-700 mb-4">
                   <strong>What makes it different:</strong> SalesIntel helps you build verified contact lists for
                   cold outbound. Cursive flips the model: instead of searching a database for people to contact cold,
                   it identifies who is already visiting your website -- at an industry-leading{" "}
-                  <Link href="/visitor-identification" className="text-blue-600 hover:underline">70% person-level identification rate</Link> --
+                  <Link href="/visitor-identification" className="text-primary hover:underline">70% person-level identification rate</Link> --
                   and then automates personalized multi-channel outreach to convert them. Combined with 280M consumer
                   profiles, 140M+ business profiles, and 60B+ weekly behavioral intent signals, Cursive gives you
                   both the prospecting database and the automated pipeline engine that SalesIntel lacks.
@@ -304,28 +304,28 @@ export default function BlogPost() {
                 <div className="bg-white rounded-lg p-4">
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-bold">Pricing:</span>
-                    <span className="text-lg font-bold text-blue-600">$97/mo Pixel | $197/mo Audience | $247/mo Bundle</span>
+                    <span className="text-lg font-bold text-primary">$97/mo Pixel | $197/mo Audience | $247/mo Bundle</span>
                   </div>
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> B2B companies that want to go beyond manual database prospecting and
                     convert high-intent website visitors into pipeline -- with AI-powered outreach included rather than
                     needing a separate sales engagement platform. See our{" "}
-                    <Link href="/pricing" className="text-blue-600 hover:underline">pricing page</Link> for full details.
+                    <Link href="/pricing" className="text-primary hover:underline">pricing page</Link> for full details.
                   </p>
                 </div>
               </div>
 
               {/* Mid-article CTA */}
-              <div className="not-prose bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-8 my-8 text-white text-center">
+              <div className="not-prose bg-gradient-to-r from-primary to-primary-dark rounded-xl p-8 my-8 text-white text-center">
                 <h3 className="text-2xl font-bold mb-3">Stop Paying Per Seat for a Static Database</h3>
-                <p className="text-blue-100 mb-6 max-w-xl mx-auto">
+                <p className="text-white/90 mb-6 max-w-xl mx-auto">
                   Cursive identifies companies and people visiting your website at 70% match rate, enriches them
                   with 60B+ behaviors & URLs scanned weekly, and automates personalized outreach across email, LinkedIn, and direct mail.
                   Self-serve plans start at $97/month. No setup fee, cancel anytime.
                 </p>
                 <Link
                   href="https://www.meetcursive.com/platform"
-                  className="inline-block bg-white text-blue-600 font-bold px-6 py-3 rounded-lg hover:bg-blue-50 transition-colors"
+                  className="inline-block bg-white text-primary font-bold px-6 py-3 rounded-lg hover:bg-primary/5 transition-colors"
                 >
                   See How Cursive Works
                 </Link>
@@ -786,10 +786,10 @@ export default function BlogPost() {
 
               <h3>If You Want to Go Beyond Cold Database Prospecting:</h3>
               <p>
-                Choose <strong><Link href="/" className="text-blue-600 hover:underline">Cursive</Link></strong>.
+                Choose <strong><Link href="/" className="text-primary hover:underline">Cursive</Link></strong>.
                 Rather than searching a static database for cold contacts, Cursive identifies the people already
                 visiting your website at an industry-leading{" "}
-                <Link href="/visitor-identification" className="text-blue-600 hover:underline">70% person-level match rate</Link>,
+                <Link href="/visitor-identification" className="text-primary hover:underline">70% person-level match rate</Link>,
                 enriches them with intent signals from 60B+ weekly behavioral data points, and automates
                 personalized outreach -- all without a separate sales engagement platform.
               </p>
@@ -813,7 +813,7 @@ export default function BlogPost() {
               <p>
                 Choose <strong>Lead411</strong> for Bombora intent data included at $99/user/month with unlimited
                 lookups and trigger event signals. Or choose{" "}
-                <strong><Link href="/" className="text-blue-600 hover:underline">Cursive</Link></strong> for
+                <strong><Link href="/" className="text-primary hover:underline">Cursive</Link></strong> for
                 first-party intent signals from website behavior combined with 60B+ weekly behavioral data
                 points -- which is more actionable than third-party Bombora data alone.
               </p>
@@ -828,7 +828,7 @@ export default function BlogPost() {
               {/* Evaluation Checklist */}
               <h2>SalesIntel Alternative Evaluation Checklist</h2>
 
-              <div className="not-prose bg-gradient-to-br from-gray-50 to-blue-50 rounded-xl p-6 my-8 border border-gray-200">
+              <div className="not-prose bg-gradient-to-br from-gray-50 to-primary/5 rounded-xl p-6 my-8 border border-gray-200">
                 <h3 className="font-bold text-lg mb-4">Key Questions to Ask Before Switching</h3>
                 <div className="grid md:grid-cols-2 gap-4 text-sm">
                   <div className="space-y-3">
@@ -867,7 +867,7 @@ export default function BlogPost() {
 
               <div className="not-prose space-y-6 my-8">
                 {faqs.map((faq, index) => (
-                  <div key={index} className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-lg p-6 border border-gray-200">
+                  <div key={index} className="bg-gradient-to-br from-gray-50 to-primary/5 rounded-lg p-6 border border-gray-200">
                     <h3 className="font-bold text-lg mb-3">{faq.question}</h3>
                     <p className="text-gray-700">{faq.answer}</p>
                   </div>
@@ -900,7 +900,7 @@ export default function BlogPost() {
 
               <p>
                 For teams ready to complement or replace static database prospecting,{" "}
-                <Link href="/" className="text-blue-600 hover:underline">Cursive</Link> represents the most
+                <Link href="/" className="text-primary hover:underline">Cursive</Link> represents the most
                 significant evolution: identifying and converting the prospects who are already showing buying
                 intent on your website, with AI-personalized outreach across every channel -- without annual
                 contracts or the ongoing cost of separate sales engagement tools.
@@ -926,7 +926,7 @@ export default function BlogPost() {
         />
 
         {/* Related Posts */}
-        <section className="py-16 bg-gradient-to-br from-gray-50 to-blue-50">
+        <section className="py-16 bg-gradient-to-br from-gray-50 to-primary/5">
           <Container>
             <div className="max-w-5xl mx-auto">
               <div className="grid md:grid-cols-3 gap-6">
@@ -947,7 +947,7 @@ export default function BlogPost() {
                     href: "/blog/cognism-alternative"
                   }
                 ].map((post, i) => (
-                  <Link key={i} href={post.href} className="block bg-white rounded-xl p-6 border border-gray-200 hover:border-blue-300 hover:shadow-sm transition-all">
+                  <Link key={i} href={post.href} className="block bg-white rounded-xl p-6 border border-gray-200 hover:border-primary/30 hover:shadow-sm transition-all">
                     <h3 className="font-bold mb-2 text-gray-900">{post.title}</h3>
                     <p className="text-sm text-gray-600">{post.description}</p>
                   </Link>
@@ -971,7 +971,7 @@ export default function BlogPost() {
                     href: "/blog/scaling-outbound"
                   }
                 ].map((post, i) => (
-                  <Link key={i} href={post.href} className="block bg-white rounded-xl p-6 border border-gray-200 hover:border-blue-300 hover:shadow-sm transition-all">
+                  <Link key={i} href={post.href} className="block bg-white rounded-xl p-6 border border-gray-200 hover:border-primary/30 hover:shadow-sm transition-all">
                     <h3 className="font-bold mb-2 text-gray-900">{post.title}</h3>
                     <p className="text-sm text-gray-600">{post.description}</p>
                   </Link>

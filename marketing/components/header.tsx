@@ -154,7 +154,7 @@ export function Header() {
                               href={item.href}
                               className="flex items-start gap-3 p-3 rounded-lg hover:bg-[#F7F9FB] transition-colors group"
                             >
-                              <div className="w-10 h-10 flex-shrink-0 bg-gray-100 rounded-lg flex items-center justify-center group-hover:bg-blue-50 transition-colors">
+                              <div className="w-10 h-10 flex-shrink-0 bg-gray-100 rounded-lg flex items-center justify-center group-hover:bg-primary/5 transition-colors">
                                 <Icon className="w-5 h-5 text-gray-600 group-hover:text-primary transition-colors" />
                               </div>
                               <div className="flex-1 min-w-0">

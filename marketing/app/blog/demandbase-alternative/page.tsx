@@ -66,7 +66,7 @@ export default function BlogPost() {
             <ArrowLeft className="w-4 h-4" />
             Back to Blog
           </Link>
-          <div className="max-w-4xl">
+          <div className="max-w-4xl mx-auto">
             <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
               Comparisons
             </div>
@@ -125,7 +125,7 @@ export default function BlogPost() {
             <div className="not-prose overflow-x-auto my-8">
               <table className="w-full text-sm border-collapse">
                 <thead>
-                  <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                  <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                     <th className="border border-gray-300 p-3 text-left font-bold">Tool</th>
                     <th className="border border-gray-300 p-3 text-left font-bold">Best For</th>
                     <th className="border border-gray-300 p-3 text-left font-bold">ABM Focus</th>
@@ -134,7 +134,7 @@ export default function BlogPost() {
                   </tr>
                 </thead>
                 <tbody className="bg-white">
-                  <tr className="bg-blue-50 border-2 border-blue-500">
+                  <tr className="bg-primary/5 border-2 border-primary">
                     <td className="border border-gray-300 p-3 font-bold">Cursive</td>
                     <td className="border border-gray-300 p-3">SMB/Mid-market ABM with AI outreach</td>
                     <td className="border border-gray-300 p-3 text-green-600 font-bold">Identify + Engage</td>
@@ -248,31 +248,31 @@ export default function BlogPost() {
             {/* Alternative 1: Cursive */}
             <h2>7 Best Demandbase Alternatives (Detailed Reviews)</h2>
 
-            <div className="not-prose bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-8 my-8 border-2 border-blue-500">
+            <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-8 my-8 border-2 border-primary">
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <h3 className="text-2xl font-bold mb-2">1. Cursive</h3>
                   <p className="text-sm text-gray-600">Best for: SMBs and mid-market companies that want ABM results without enterprise complexity</p>
                 </div>
-                <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-bold">Our Pick</span>
+                <span className="bg-primary text-white px-3 py-1 rounded-full text-sm font-bold">Our Pick</span>
               </div>
 
               <p className="text-gray-700 mb-4">
-                <strong>What makes it different:</strong> <Link href="/" className="text-blue-600 hover:underline">Cursive</Link> takes
+                <strong>What makes it different:</strong> <Link href="/" className="text-primary hover:underline">Cursive</Link> takes
                 a fundamentally different approach to ABM than Demandbase. Instead of building around advertising, Cursive
                 focuses on the highest-ROI ABM motion: identifying which target accounts visit your website, scoring them
-                by <Link href="/intent-audiences" className="text-blue-600 hover:underline">intent signals</Link>, and automatically
-                engaging them with personalized multi-channel outreach through an <Link href="/what-is-ai-sdr" className="text-blue-600 hover:underline">AI SDR</Link>.
+                by <Link href="/intent-audiences" className="text-primary hover:underline">intent signals</Link>, and automatically
+                engaging them with personalized multi-channel outreach through an <Link href="/what-is-ai-sdr" className="text-primary hover:underline">AI SDR</Link>.
               </p>
 
               <p className="text-gray-700 mb-4">
                 With approximately 70% person-level match rates, Cursive does not just identify which companies visit.
                 It identifies the specific people, complete with names, titles, email addresses, and LinkedIn profiles. The
-                AI SDR then crafts personalized sequences across email, LinkedIn, and <Link href="/direct-mail" className="text-blue-600 hover:underline">direct
+                AI SDR then crafts personalized sequences across email, LinkedIn, and <Link href="/direct-mail" className="text-primary hover:underline">direct
                 mail</Link> based on what each visitor viewed and their role at the company. The{" "}
-                <Link href="/audience-builder" className="text-blue-600 hover:underline">audience builder</Link> lets you define
+                <Link href="/audience-builder" className="text-primary hover:underline">audience builder</Link> lets you define
                 target account lists based on firmographic criteria, and
-                the <Link href="/visitor-identification" className="text-blue-600 hover:underline">visitor identification</Link> engine
+                the <Link href="/visitor-identification" className="text-primary hover:underline">visitor identification</Link> engine
                 tells you exactly when those accounts show up. It is ABM execution distilled to its highest-impact components.
               </p>
 
@@ -324,13 +324,13 @@ export default function BlogPost() {
               <div className="bg-white rounded-lg p-4">
                 <div className="flex justify-between items-center mb-2">
                   <span className="font-bold">Pricing:</span>
-                  <span className="text-lg font-bold text-blue-600">Starting at $97/mo</span>
+                  <span className="text-lg font-bold text-primary">Starting at $97/mo</span>
                 </div>
                 <p className="text-sm text-gray-600">
                   <strong>Best for:</strong> B2B companies with 50-500 target accounts that want to identify when those accounts
                   visit their site and automatically engage the right people with personalized outreach. Replaces Demandbase&apos;s
                   identification + intent + outreach capabilities at a fraction of the cost.
-                  See <Link href="/pricing" className="text-blue-600 hover:underline">pricing details</Link>.
+                  See <Link href="/pricing" className="text-primary hover:underline">pricing details</Link>.
                 </p>
               </div>
             </div>
@@ -403,7 +403,7 @@ export default function BlogPost() {
                 <p className="text-sm text-gray-600">
                   <strong>Best for:</strong> Enterprise teams with $100k+ ABM budgets that prioritize predictive intelligence
                   over advertising. A lateral move from Demandbase rather than a cost savings. See our
-                  detailed <Link href="/blog/6sense-vs-cursive-comparison" className="text-blue-600 hover:underline">6sense vs Cursive comparison</Link>.
+                  detailed <Link href="/blog/6sense-vs-cursive-comparison" className="text-primary hover:underline">6sense vs Cursive comparison</Link>.
                 </p>
               </div>
             </div>
@@ -619,7 +619,7 @@ export default function BlogPost() {
                 <p className="text-sm text-gray-600">
                   <strong>Best for:</strong> Sales teams that do outbound-first ABM and need a large contact database with
                   sequencing. Pairs well with a visitor identification tool like Cursive for a complete ABM stack at a
-                  fraction of Demandbase&apos;s cost. See our <Link href="/blog/apollo-vs-cursive-comparison" className="text-blue-600 hover:underline">Apollo vs Cursive comparison</Link>.
+                  fraction of Demandbase&apos;s cost. See our <Link href="/blog/apollo-vs-cursive-comparison" className="text-primary hover:underline">Apollo vs Cursive comparison</Link>.
                 </p>
               </div>
             </div>
@@ -778,7 +778,7 @@ export default function BlogPost() {
             <div className="not-prose overflow-x-auto my-8">
               <table className="w-full text-sm border-collapse">
                 <thead>
-                  <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                  <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                     <th className="border border-gray-300 p-3 text-left font-bold">Feature</th>
                     <th className="border border-gray-300 p-3 text-center font-bold">Cursive</th>
                     <th className="border border-gray-300 p-3 text-center font-bold">6sense</th>
@@ -908,11 +908,11 @@ export default function BlogPost() {
               touch multiple systems and workflows. Here is a six-step migration plan.
             </p>
 
-            <div className="not-prose bg-gradient-to-br from-gray-50 to-blue-50 rounded-xl p-6 my-8 border border-gray-200">
+            <div className="not-prose bg-gradient-to-br from-gray-50 to-primary/5 rounded-xl p-6 my-8 border border-gray-200">
               <h3 className="font-bold text-lg mb-4">6-Step Migration Plan</h3>
               <ol className="space-y-4 text-sm">
                 <li className="flex items-start gap-3">
-                  <span className="bg-blue-600 text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">1</span>
+                  <span className="bg-primary text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">1</span>
                   <div>
                     <strong>Audit your Demandbase usage and ROI.</strong> Document which Demandbase features you actively
                     use versus which you are paying for but not leveraging. Most teams find they use 30-40% of the platform.
@@ -920,7 +920,7 @@ export default function BlogPost() {
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="bg-blue-600 text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">2</span>
+                  <span className="bg-primary text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">2</span>
                   <div>
                     <strong>Export your target account lists and engagement data.</strong> Download your account lists,
                     engagement history, intent data, and any audience segments you have built. This data will inform your
@@ -928,17 +928,17 @@ export default function BlogPost() {
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="bg-blue-600 text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">3</span>
+                  <span className="bg-primary text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">3</span>
                   <div>
                     <strong>Set up your replacement tool(s).</strong> For Cursive, install the{" "}
-                    <Link href="/pixel" className="text-blue-600 hover:underline">tracking pixel</Link> (5 minutes),
+                    <Link href="/pixel" className="text-primary hover:underline">tracking pixel</Link> (5 minutes),
                     import your target account list, configure ICP filters in the{" "}
-                    <Link href="/audience-builder" className="text-blue-600 hover:underline">audience builder</Link>,
+                    <Link href="/audience-builder" className="text-primary hover:underline">audience builder</Link>,
                     and set up AI outreach sequences. Total setup time: a few hours versus Demandbase&apos;s 4-8 weeks.
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="bg-blue-600 text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">4</span>
+                  <span className="bg-primary text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">4</span>
                   <div>
                     <strong>Migrate advertising campaigns separately.</strong> If display advertising was a key part of your
                     Demandbase usage, set up RollWorks or Terminus for ABM ads, or redirect that budget to outbound channels.
@@ -946,7 +946,7 @@ export default function BlogPost() {
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="bg-blue-600 text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">5</span>
+                  <span className="bg-primary text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">5</span>
                   <div>
                     <strong>Run parallel for one contract cycle.</strong> If possible, overlap your Demandbase contract&apos;s
                     final months with your new tools. Compare pipeline generated, cost-per-meeting, and team efficiency
@@ -954,7 +954,7 @@ export default function BlogPost() {
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="bg-blue-600 text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">6</span>
+                  <span className="bg-primary text-white w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">6</span>
                   <div>
                     <strong>Decommission Demandbase and reallocate budget.</strong> Cancel the Demandbase contract, remove
                     tracking scripts, disconnect CRM integrations, and update your team&apos;s workflows. Consider

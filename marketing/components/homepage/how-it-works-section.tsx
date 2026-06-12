@@ -217,7 +217,7 @@ export function HowItWorksSection() {
                   onClick={() => goToSlide(index)}
                   className={`rounded-full transition-all ${
                     index === currentIndex
-                      ? "bg-blue-500 w-3 h-3"
+                      ? "bg-primary/50 w-3 h-3"
                       : "bg-gray-300 hover:bg-gray-400 w-2 h-2"
                   }`}
                   whileHover={{ scale: 1.2 }}

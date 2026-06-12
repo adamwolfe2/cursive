@@ -67,7 +67,7 @@ export default function BlogPost() {
               Back to Blog
             </Link>
 
-            <div className="max-w-4xl">
+            <div className="max-w-4xl mx-auto">
               <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
                 Buying Guide
               </div>
@@ -103,7 +103,7 @@ export default function BlogPost() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm border-collapse bg-white rounded-xl shadow-sm">
                   <thead>
-                    <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                    <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                       <th className="border border-gray-200 p-3 text-left font-bold">Tool</th>
                       <th className="border border-gray-200 p-3 text-left font-bold">ID Rate</th>
                       <th className="border border-gray-200 p-3 text-left font-bold">ID Level</th>
@@ -114,8 +114,8 @@ export default function BlogPost() {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr className="bg-blue-50 border-2 border-blue-400">
-                      <td className="border border-gray-200 p-3 font-bold text-blue-700">Cursive ⭐ #1</td>
+                    <tr className="bg-primary/5 border-2 border-primary/40">
+                      <td className="border border-gray-200 p-3 font-bold text-primary">Cursive ⭐ #1</td>
                       <td className="border border-gray-200 p-3 font-bold text-green-600">70%</td>
                       <td className="border border-gray-200 p-3 text-green-600 font-semibold">Individual</td>
                       <td className="border border-gray-200 p-3 text-green-600 font-semibold">Yes (AI)</td>
@@ -226,11 +226,11 @@ export default function BlogPost() {
               </p>
 
               <div className="not-prose grid md:grid-cols-2 gap-4 my-8">
-                <div className="bg-blue-50 rounded-xl p-5 border border-blue-200">
+                <div className="bg-primary/5 rounded-xl p-5 border border-primary/20">
                   <h3 className="font-bold text-gray-900 mb-2">Deterministic Matching</h3>
                   <p className="text-sm text-gray-700">Exact-match signals like email hashes, logged-in sessions, and authenticated device IDs. High confidence, lower volume. This is how Cursive achieves its core identification accuracy.</p>
                 </div>
-                <div className="bg-purple-50 rounded-xl p-5 border border-purple-200">
+                <div className="bg-primary/5 rounded-xl p-5 border border-primary/20">
                   <h3 className="font-bold text-gray-900 mb-2">Probabilistic Matching</h3>
                   <p className="text-sm text-gray-700">Statistical modeling across IP addresses, device fingerprints, browser attributes, and behavioral signals. Higher volume, lower precision. Used to extend reach beyond deterministic matches.</p>
                 </div>
@@ -274,28 +274,28 @@ export default function BlogPost() {
               </p>
 
               {/* Platform 1: Cursive */}
-              <div className="not-prose bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-8 my-10 border-2 border-blue-300">
+              <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-2xl p-8 my-10 border-2 border-primary/30">
                 <div className="flex items-start justify-between mb-4">
                   <div>
-                    <div className="inline-block px-2 py-1 bg-blue-600 text-white text-xs font-bold rounded mb-2">BEST OVERALL</div>
+                    <div className="inline-block px-2 py-1 bg-primary text-white text-xs font-bold rounded mb-2">BEST OVERALL</div>
                     <h3 className="text-2xl font-bold text-gray-900">1. Cursive — Best Overall (70% ID Rate + AI Automation)</h3>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-                  <div className="bg-white rounded-lg p-3 text-center border border-blue-200">
-                    <div className="text-2xl font-bold text-blue-700">70%</div>
+                  <div className="bg-white rounded-lg p-3 text-center border border-primary/20">
+                    <div className="text-2xl font-bold text-primary">70%</div>
                     <div className="text-xs text-gray-500">ID Rate</div>
                   </div>
-                  <div className="bg-white rounded-lg p-3 text-center border border-blue-200">
+                  <div className="bg-white rounded-lg p-3 text-center border border-primary/20">
                     <div className="text-sm font-bold text-green-600">Individual</div>
                     <div className="text-xs text-gray-500">ID Level</div>
                   </div>
-                  <div className="bg-white rounded-lg p-3 text-center border border-blue-200">
+                  <div className="bg-white rounded-lg p-3 text-center border border-primary/20">
                     <div className="text-sm font-bold text-green-600">Yes (AI)</div>
                     <div className="text-xs text-gray-500">Outreach</div>
                   </div>
-                  <div className="bg-white rounded-lg p-3 text-center border border-blue-200">
+                  <div className="bg-white rounded-lg p-3 text-center border border-primary/20">
                     <div className="text-sm font-bold text-green-600">Yes</div>
                     <div className="text-xs text-gray-500">Intent Data</div>
                   </div>
@@ -339,11 +339,11 @@ export default function BlogPost() {
                 </div>
 
                 <div className="flex flex-wrap gap-4 mb-6">
-                  <div className="bg-white rounded-lg px-4 py-2 border border-blue-200">
+                  <div className="bg-white rounded-lg px-4 py-2 border border-primary/20">
                     <span className="text-xs text-gray-500">Starting Price</span>
-                    <p className="font-bold text-blue-700">$97/mo · $197/mo · $247/mo</p>
+                    <p className="font-bold text-primary">$97/mo · $197/mo · $247/mo</p>
                   </div>
-                  <div className="bg-white rounded-lg px-4 py-2 border border-blue-200">
+                  <div className="bg-white rounded-lg px-4 py-2 border border-primary/20">
                     <span className="text-xs text-gray-500">Best For</span>
                     <p className="font-bold text-gray-800">B2B teams wanting identification + automated outreach in one platform</p>
                   </div>
@@ -877,7 +877,7 @@ export default function BlogPost() {
               <div className="not-prose overflow-x-auto my-8">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                    <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                       <th className="border border-gray-300 p-3 text-left font-bold">Tool</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Entry Price</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Pricing Model</th>
@@ -886,8 +886,8 @@ export default function BlogPost() {
                     </tr>
                   </thead>
                   <tbody className="bg-white">
-                    <tr className="bg-blue-50 border-l-4 border-blue-500">
-                      <td className="border border-gray-300 p-3 font-bold text-blue-700">Cursive</td>
+                    <tr className="bg-primary/5 border-l-4 border-primary">
+                      <td className="border border-gray-300 p-3 font-bold text-primary">Cursive</td>
                       <td className="border border-gray-300 p-3">$97/mo</td>
                       <td className="border border-gray-300 p-3">Monthly self-serve</td>
                       <td className="border border-gray-300 p-3">Free audit</td>
@@ -1010,8 +1010,8 @@ export default function BlogPost() {
               <h2>Our Verdict: Which Visitor Identification Software Should You Use?</h2>
 
               <div className="not-prose space-y-4 my-6">
-                <div className="bg-blue-50 rounded-xl p-5 border border-blue-200">
-                  <p className="font-bold text-blue-800 mb-1">Best Overall: Cursive</p>
+                <div className="bg-primary/5 rounded-xl p-5 border border-primary/20">
+                  <p className="font-bold text-primary mb-1">Best Overall: Cursive</p>
                   <p className="text-gray-700 text-sm">The industry&apos;s highest individual-level identification rate (70%) helps teams turn anonymous traffic into actionable buyer data. Choose Visitor Pixel for $97/month, Custom Audience for $197/month, or both for $247/month.</p>
                 </div>
                 <div className="bg-gray-50 rounded-xl p-5 border border-gray-200">
@@ -1037,11 +1037,11 @@ export default function BlogPost() {
         </section>
 
         {/* CTA Section */}
-        <section className="py-16 bg-gradient-to-br from-blue-600 to-purple-700 text-white">
+        <section className="py-16 bg-gradient-to-br from-primary to-primary-dark text-white">
           <Container>
             <div className="max-w-3xl mx-auto text-center">
               <h2 className="text-3xl font-bold mb-4">Stop Letting 97% of Your Visitors Leave Anonymously</h2>
-              <p className="text-xl text-blue-100 mb-8">
+              <p className="text-xl text-white/90 mb-8">
                 Cursive identifies up to 70% of your B2B website visitors at the individual level — the highest
                 identification rate in the industry. Get a free visitor audit to see exactly how many qualified
                 buyers are visiting your site right now, then watch Cursive convert them into pipeline automatically.

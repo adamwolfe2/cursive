@@ -99,7 +99,7 @@ export default function WhatIsRevenueIntelligencePage() {
               <ArrowLeft className="w-4 h-4" />
               Back to Blog
             </Link>
-            <div className="max-w-4xl">
+            <div className="max-w-4xl mx-auto">
               <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
                 Guide
               </div>
@@ -237,7 +237,7 @@ export default function WhatIsRevenueIntelligencePage() {
                   visits your pricing page three times in a week but has not filled out a form, that is a
                   high-intent signal. Revenue intelligence that lacks this layer is flying half-blind.
                 </p>
-                <div className="bg-blue-50 rounded-xl p-6 border border-blue-100">
+                <div className="bg-primary/5 rounded-xl p-6 border border-primary/15">
                   <h3 className="font-bold text-lg mb-3">What Cursive adds to your revenue intelligence stack:</h3>
                   <ul className="space-y-2 text-sm text-gray-700">
                     <li className="flex items-start gap-2"><Check className="w-4 h-4 text-green-500 mt-0.5 shrink-0" /> Identify 70% of anonymous website visitors by name, email, and company</li>

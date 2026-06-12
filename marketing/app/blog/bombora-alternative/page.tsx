@@ -54,7 +54,7 @@ export default function BlogPost() {
               <ArrowLeft className="w-4 h-4" />
               Back to Blog
             </Link>
-            <div className="max-w-4xl">
+            <div className="max-w-4xl mx-auto">
               <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
                 Comparisons
               </div>
@@ -114,7 +114,7 @@ export default function BlogPost() {
               <div className="not-prose overflow-x-auto my-8">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                    <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                       <th className="border border-gray-300 p-3 text-left font-bold">Tool</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Intent Type</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">ID Level</th>
@@ -123,7 +123,7 @@ export default function BlogPost() {
                     </tr>
                   </thead>
                   <tbody className="bg-white">
-                    <tr className="bg-blue-50 border-2 border-blue-500">
+                    <tr className="bg-primary/5 border-2 border-primary">
                       <td className="border border-gray-300 p-3 font-bold">Cursive</td>
                       <td className="border border-gray-300 p-3">First-party (your site)</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold">Person-level (~70%)</td>
@@ -231,31 +231,31 @@ export default function BlogPost() {
               {/* Alternative 1: Cursive */}
               <h2>6 Best Bombora Alternatives (Detailed Reviews)</h2>
 
-              <div className="not-prose bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-8 my-8 border-2 border-blue-500">
+              <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-8 my-8 border-2 border-primary">
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <h3 className="text-2xl font-bold mb-2">1. Cursive</h3>
                     <p className="text-sm text-gray-600">Best for: First-party intent data with person-level ID and built-in AI outreach</p>
                   </div>
-                  <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-bold">Our Pick</span>
+                  <span className="bg-primary text-white px-3 py-1 rounded-full text-sm font-bold">Our Pick</span>
                 </div>
 
                 <p className="text-gray-700 mb-4">
                   <strong>What makes it different:</strong> While Bombora tracks third-party signals from publisher sites,{" "}
-                  <Link href="/" className="text-blue-600 hover:underline">Cursive</Link> focuses on the highest-quality
+                  <Link href="/" className="text-primary hover:underline">Cursive</Link> focuses on the highest-quality
                   intent signal available — people actively visiting your own website. These are warm prospects
                   who already know you exist, which dramatically outperforms cold outbound to &quot;surging&quot; accounts.
                   Cursive identifies individual visitors (not just companies) at up to 70% match rates, then triggers
-                  an <Link href="/what-is-ai-sdr" className="text-blue-600 hover:underline">AI SDR</Link> that
+                  an <Link href="/what-is-ai-sdr" className="text-primary hover:underline">AI SDR</Link> that
                   automatically sends personalized outreach across email, LinkedIn,
-                  and <Link href="/direct-mail" className="text-blue-600 hover:underline">direct mail</Link>.
+                  and <Link href="/direct-mail" className="text-primary hover:underline">direct mail</Link>.
                 </p>
 
                 <p className="text-gray-700 mb-4">
-                  The <Link href="/intent-audiences" className="text-blue-600 hover:underline">intent audience engine</Link> scores
+                  The <Link href="/intent-audiences" className="text-primary hover:underline">intent audience engine</Link> scores
                   visitors based on which pages they view, how often they return, and what content they engage with —
                   giving you behavioral intent signals from your own traffic. The{" "}
-                  <Link href="/audience-builder" className="text-blue-600 hover:underline">audience builder</Link> lets
+                  <Link href="/audience-builder" className="text-primary hover:underline">audience builder</Link> lets
                   you create precise segments combining firmographic filters with behavioral signals, so your AI SDR
                   reaches out with messages tailored to each visitor&apos;s specific interest.
                 </p>
@@ -312,13 +312,13 @@ export default function BlogPost() {
                 <div className="bg-white rounded-lg p-4">
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-bold">Pricing:</span>
-                    <span className="text-lg font-bold text-blue-600">Starting at $97/mo</span>
+                    <span className="text-lg font-bold text-primary">Starting at $97/mo</span>
                   </div>
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> B2B companies generating 5,000+ monthly website visitors who want to convert
                     warm traffic into booked meetings. Replaces Bombora&apos;s intent data + a separate sequencing tool + LinkedIn
                     automation + visitor ID tool — all at roughly 5% of Bombora&apos;s annual cost. See{" "}
-                    <Link href="/pricing" className="text-blue-600 hover:underline">pricing details</Link>.
+                    <Link href="/pricing" className="text-primary hover:underline">pricing details</Link>.
                   </p>
                 </div>
               </div>
@@ -391,7 +391,7 @@ export default function BlogPost() {
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> Enterprise marketing teams with 50+ person GTM orgs running mature ABM
                     programs. Not appropriate for teams under $20M ARR due to pricing and implementation complexity.
-                    See our full <Link href="/blog/cursive-vs-6sense" className="text-blue-600 hover:underline">Cursive vs 6sense comparison</Link>.
+                    See our full <Link href="/blog/cursive-vs-6sense" className="text-primary hover:underline">Cursive vs 6sense comparison</Link>.
                   </p>
                 </div>
               </div>
@@ -463,7 +463,7 @@ export default function BlogPost() {
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> Enterprise demand gen teams with significant display advertising budgets
                     and a mature ABM strategy. Read our full{" "}
-                    <Link href="/blog/demandbase-alternative" className="text-blue-600 hover:underline">Demandbase alternatives guide</Link>.
+                    <Link href="/blog/demandbase-alternative" className="text-primary hover:underline">Demandbase alternatives guide</Link>.
                   </p>
                 </div>
               </div>
@@ -622,7 +622,7 @@ export default function BlogPost() {
                   everyone else, you will need an alternative. Clearbit Reveal provided company-level identification
                   of your own website visitors — a different signal from Bombora&apos;s third-party intent, but a useful
                   complement. For a full comparison of what replaced Clearbit, see our{" "}
-                  <Link href="/blog/clearbit-alternatives-comparison" className="text-blue-600 hover:underline">Clearbit alternatives guide</Link>.
+                  <Link href="/blog/clearbit-alternatives-comparison" className="text-primary hover:underline">Clearbit alternatives guide</Link>.
                 </p>
 
                 <div className="grid md:grid-cols-2 gap-6 mb-4">
@@ -682,7 +682,7 @@ export default function BlogPost() {
               <div className="not-prose overflow-x-auto my-8">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                    <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                       <th className="border border-gray-300 p-3 text-left font-bold">Feature</th>
                       <th className="border border-gray-300 p-3 text-center font-bold">Cursive</th>
                       <th className="border border-gray-300 p-3 text-center font-bold">Bombora</th>

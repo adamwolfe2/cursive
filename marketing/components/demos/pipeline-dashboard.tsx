@@ -26,7 +26,7 @@ export function PipelineDashboard() {
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-blue-50 rounded-lg p-4"
+            className="bg-primary/5 rounded-lg p-4"
           >
             <div className="text-sm text-gray-900 mb-2">AI Insight Unlocked</div>
             <div className="text-xs text-gray-600 mb-3">
@@ -48,7 +48,7 @@ export function PipelineDashboard() {
             className="bg-white border border-gray-200 rounded-lg p-4"
           >
             <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white text-sm">
+              <div className="w-10 h-10 bg-gradient-to-br from-primary/50 to-primary-dark rounded-full flex items-center justify-center text-white text-sm">
                 S
               </div>
               <div>
@@ -72,7 +72,7 @@ export function PipelineDashboard() {
             <div className="text-sm text-gray-600 mb-1">Total Pipeline</div>
             <div className="flex items-baseline gap-2">
               <div className="text-2xl text-gray-900">$2.4M</div>
-              <div className="text-xs text-blue-600">↑ Trending</div>
+              <div className="text-xs text-primary">↑ Trending</div>
             </div>
           </div>
 
@@ -80,7 +80,7 @@ export function PipelineDashboard() {
             <div className="text-sm text-gray-600 mb-1">Conversion Rate</div>
             <div className="flex items-baseline gap-2">
               <div className="text-2xl text-gray-900">24.3%</div>
-              <div className="text-xs text-blue-600">+4.1%</div>
+              <div className="text-xs text-primary">+4.1%</div>
             </div>
           </div>
 
@@ -121,7 +121,7 @@ export function PipelineDashboard() {
           <motion.div
             initial={{ opacity: 0, x: 10 }}
             animate={{ opacity: 1, x: 0 }}
-            className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200"
+            className="bg-gradient-to-br from-primary/5 to-primary/10 rounded-lg p-4 border border-primary/20"
           >
             <div className="flex items-center gap-2 mb-2">
               <svg
@@ -143,7 +143,7 @@ export function PipelineDashboard() {
             <div className="bg-white border border-gray-200 rounded-lg p-3">
               <div className="flex items-center justify-between mb-1">
                 <span className="text-xs text-gray-900">Salesforce</span>
-                <span className="bg-blue-100 text-primary text-xs px-2 py-0.5 rounded">
+                <span className="bg-primary/10 text-primary text-xs px-2 py-0.5 rounded">
                   contacted
                 </span>
               </div>
@@ -153,7 +153,7 @@ export function PipelineDashboard() {
             <div className="bg-white border border-gray-200 rounded-lg p-3">
               <div className="flex items-center justify-between mb-1">
                 <span className="text-xs text-gray-900">Salesforce Ventures</span>
-                <span className="bg-blue-100 text-primary text-xs px-2 py-0.5 rounded">
+                <span className="bg-primary/10 text-primary text-xs px-2 py-0.5 rounded">
                   contacted
                 </span>
               </div>

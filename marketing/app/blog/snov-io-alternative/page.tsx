@@ -54,7 +54,7 @@ export default function BlogPost() {
               <ArrowLeft className="w-4 h-4" />
               Back to Blog
             </Link>
-            <div className="max-w-4xl">
+            <div className="max-w-4xl mx-auto">
               <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
                 Comparisons
               </div>
@@ -109,7 +109,7 @@ export default function BlogPost() {
               <div className="not-prose overflow-x-auto my-8">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                    <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                       <th className="border border-gray-300 p-3 text-left font-bold">Tool</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Best For</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Data Source</th>
@@ -118,7 +118,7 @@ export default function BlogPost() {
                     </tr>
                   </thead>
                   <tbody className="bg-white">
-                    <tr className="bg-blue-50 border-2 border-blue-500">
+                    <tr className="bg-primary/5 border-2 border-primary">
                       <td className="border border-gray-300 p-3 font-bold">Cursive</td>
                       <td className="border border-gray-300 p-3">Warm visitors + AI-written outreach</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold">Live website visitors</td>
@@ -230,17 +230,17 @@ export default function BlogPost() {
               {/* Alternative 1: Cursive */}
               <h2>6 Best Snov.io Alternatives (Detailed Reviews)</h2>
 
-              <div className="not-prose bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-8 my-8 border-2 border-blue-500">
+              <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-8 my-8 border-2 border-primary">
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <h3 className="text-2xl font-bold mb-2">1. Cursive</h3>
                     <p className="text-sm text-gray-600">Best for: B2B teams that want 95%+ deliverability and warm leads from their own website traffic</p>
                   </div>
-                  <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-bold">Our Pick</span>
+                  <span className="bg-primary text-white px-3 py-1 rounded-full text-sm font-bold">Our Pick</span>
                 </div>
 
                 <p className="text-gray-700 mb-4">
-                  <strong>What makes it different:</strong> <Link href="/" className="text-blue-600 hover:underline">Cursive</Link> does
+                  <strong>What makes it different:</strong> <Link href="/" className="text-primary hover:underline">Cursive</Link> does
                   not find cold emails — it identifies people who are <em>already visiting your website</em>. This
                   fundamental difference produces dramatically better deliverability: because contacts are identified
                   from live website visits, they are actively employed at their companies, their email addresses are
@@ -249,13 +249,13 @@ export default function BlogPost() {
                 </p>
 
                 <p className="text-gray-700 mb-4">
-                  Once <Link href="/visitor-identification" className="text-blue-600 hover:underline">Cursive identifies your visitors</Link>, the
-                  <Link href="/what-is-ai-sdr" className="text-blue-600 hover:underline"> AI SDR</Link> writes a unique,
+                  Once <Link href="/visitor-identification" className="text-primary hover:underline">Cursive identifies your visitors</Link>, the
+                  <Link href="/what-is-ai-sdr" className="text-primary hover:underline"> AI SDR</Link> writes a unique,
                   personalized email for each contact based on their company, role, the specific pages they visited,
                   and firmographic data. This is not merge-field personalization — it is genuinely unique email content
-                  per recipient. Outreach goes via email, LinkedIn, and <Link href="/direct-mail" className="text-blue-600 hover:underline">direct mail</Link>,
-                  triggered automatically by <Link href="/intent-audiences" className="text-blue-600 hover:underline">intent signals</Link>.
-                  Explore Cursive&apos;s self-serve plans on the <Link href="/marketplace" className="text-blue-600 hover:underline">Cursive plans page</Link>.
+                  per recipient. Outreach goes via email, LinkedIn, and <Link href="/direct-mail" className="text-primary hover:underline">direct mail</Link>,
+                  triggered automatically by <Link href="/intent-audiences" className="text-primary hover:underline">intent signals</Link>.
+                  Explore Cursive&apos;s self-serve plans on the <Link href="/marketplace" className="text-primary hover:underline">Cursive plans page</Link>.
                 </p>
 
                 <div className="grid md:grid-cols-2 gap-6 mb-4">
@@ -306,12 +306,12 @@ export default function BlogPost() {
                 <div className="bg-white rounded-lg p-4">
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-bold">Pricing:</span>
-                    <span className="text-lg font-bold text-blue-600">Starting at $97/mo</span>
+                    <span className="text-lg font-bold text-primary">Starting at $97/mo</span>
                   </div>
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> B2B companies generating 5,000+ monthly website visitors that want
                     to convert that traffic into pipeline with high-deliverability, AI-personalized outreach.
-                    Replaces Snov.io + additional outreach tools with a single warm-lead platform. See <Link href="/pricing" className="text-blue-600 hover:underline">pricing details</Link>.
+                    Replaces Snov.io + additional outreach tools with a single warm-lead platform. See <Link href="/pricing" className="text-primary hover:underline">pricing details</Link>.
                   </p>
                 </div>
               </div>
@@ -383,7 +383,7 @@ export default function BlogPost() {
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> Teams that specifically need domain-based email finding with higher
                     accuracy than Snov.io. Better for pure prospecting research than full outreach automation.
-                    See our <Link href="/blog/hunter-io-alternative" className="text-blue-600 hover:underline">Hunter.io alternatives guide</Link>.
+                    See our <Link href="/blog/hunter-io-alternative" className="text-primary hover:underline">Hunter.io alternatives guide</Link>.
                   </p>
                 </div>
               </div>
@@ -525,7 +525,7 @@ export default function BlogPost() {
                   </div>
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> Enterprise revenue teams that need the highest-quality B2B data at
-                    scale and have budget for a premium solution. See our <Link href="/blog/cursive-vs-zoominfo" className="text-blue-600 hover:underline">Cursive vs ZoomInfo comparison</Link>.
+                    scale and have budget for a premium solution. See our <Link href="/blog/cursive-vs-zoominfo" className="text-primary hover:underline">Cursive vs ZoomInfo comparison</Link>.
                   </p>
                 </div>
               </div>
@@ -597,7 +597,7 @@ export default function BlogPost() {
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> Sales teams that need phone numbers alongside email addresses for a
                     multi-touch cold outreach strategy. Pair with a sequencing tool for full workflow. See
-                    our <Link href="/blog/lusha-alternative" className="text-blue-600 hover:underline">Lusha alternatives guide</Link>.
+                    our <Link href="/blog/lusha-alternative" className="text-primary hover:underline">Lusha alternatives guide</Link>.
                   </p>
                 </div>
               </div>
@@ -668,7 +668,7 @@ export default function BlogPost() {
                   </div>
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> European B2B companies that need GDPR-compliant contact data with
-                    phone-verified mobile numbers and strong EU coverage. See our <Link href="/blog/cognism-alternative" className="text-blue-600 hover:underline">Cognism alternatives guide</Link>.
+                    phone-verified mobile numbers and strong EU coverage. See our <Link href="/blog/cognism-alternative" className="text-primary hover:underline">Cognism alternatives guide</Link>.
                   </p>
                 </div>
               </div>
@@ -684,7 +684,7 @@ export default function BlogPost() {
               <div className="not-prose overflow-x-auto my-8">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                    <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                       <th className="border border-gray-300 p-3 text-left font-bold">Feature</th>
                       <th className="border border-gray-300 p-3 text-center font-bold">Cursive</th>
                       <th className="border border-gray-300 p-3 text-center font-bold">Snov.io</th>

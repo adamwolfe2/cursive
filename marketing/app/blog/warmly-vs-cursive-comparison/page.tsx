@@ -62,7 +62,7 @@ export default function WarmlyVsCursiveComparison() {
             Back to Blog
           </Link>
 
-          <div className="max-w-4xl">
+          <div className="max-w-4xl mx-auto">
             <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
               Platform Comparison
             </div>
@@ -93,11 +93,11 @@ export default function WarmlyVsCursiveComparison() {
           <article className="max-w-3xl mx-auto prose prose-lg prose-blue">
             <h2>The Quick Take</h2>
             <p>
-              Both <strong>Warmly</strong> and <strong><Link href="/" className="text-blue-600 hover:underline">Cursive</Link></strong> help B2B companies identify and engage with potential buyers showing
-              <Link href="/intent-audiences" className="text-blue-600 hover:underline">intent data</Link>. But they take fundamentally different approaches:
+              Both <strong>Warmly</strong> and <strong><Link href="/" className="text-primary hover:underline">Cursive</Link></strong> help B2B companies identify and engage with potential buyers showing
+              <Link href="/intent-audiences" className="text-primary hover:underline">intent data</Link>. But they take fundamentally different approaches:
             </p>
             <ul>
-              <li><strong>Warmly</strong> focuses on real-time engagement with <Link href="/visitor-identification" className="text-blue-600 hover:underline">visitors</Link> actively on your website</li>
+              <li><strong>Warmly</strong> focuses on real-time engagement with <Link href="/visitor-identification" className="text-primary hover:underline">visitors</Link> actively on your website</li>
               <li><strong>Cursive</strong> identifies companies researching your space across the web (not just your site) and automates outreach</li>
             </ul>
             <p>
@@ -110,7 +110,7 @@ export default function WarmlyVsCursiveComparison() {
 
             <h3>What is Warmly?</h3>
             <p>
-              Warmly is a <Link href="/visitor-identification" className="text-blue-600 hover:underline">website visitor identification</Link> and engagement platform. It shows you which
+              Warmly is a <Link href="/visitor-identification" className="text-primary hover:underline">website visitor identification</Link> and engagement platform. It shows you which
               companies are visiting your website in real-time and provides tools to engage them through
               live chat, automated email sequences, and personalized outreach.
             </p>
@@ -121,13 +121,13 @@ export default function WarmlyVsCursiveComparison() {
 
             <h3>What is Cursive?</h3>
             <p>
-              <Link href="/" className="text-blue-600 hover:underline">Cursive</Link> is a B2B <Link href="/intent-audiences" className="text-blue-600 hover:underline">intent intelligence</Link> platform that identifies companies actively researching
-              specific topics across the web. It goes beyond <Link href="/visitor-identification" className="text-blue-600 hover:underline">website tracking</Link> to find prospects showing
+              <Link href="/" className="text-primary hover:underline">Cursive</Link> is a B2B <Link href="/intent-audiences" className="text-primary hover:underline">intent intelligence</Link> platform that identifies companies actively researching
+              specific topics across the web. It goes beyond <Link href="/visitor-identification" className="text-primary hover:underline">website tracking</Link> to find prospects showing
               buying intent anywhere online, then automates personalized outreach via AI SDR agents.
             </p>
             <p>
               <strong>Best for:</strong> Companies looking to scale outbound prospecting without hiring
-              large SDR teams. Learn more about our <Link href="/" className="text-blue-600 hover:underline">AI-powered intent system</Link> and explore our <Link href="/integrations" className="text-blue-600 hover:underline">integrations</Link>.
+              large SDR teams. Learn more about our <Link href="/" className="text-primary hover:underline">AI-powered intent system</Link> and explore our <Link href="/integrations" className="text-primary hover:underline">integrations</Link>.
             </p>
 
             <h2>Feature Comparison</h2>
@@ -135,7 +135,7 @@ export default function WarmlyVsCursiveComparison() {
             <div className="not-prose my-8">
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse bg-white shadow-sm rounded-lg overflow-hidden">
-                  <thead className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                  <thead className="bg-gradient-to-r from-primary to-primary-dark text-white">
                     <tr>
                       <th className="px-6 py-4 text-left font-semibold">Feature</th>
                       <th className="px-6 py-4 text-left font-semibold">Warmly</th>
@@ -210,7 +210,7 @@ export default function WarmlyVsCursiveComparison() {
 
             <h2>Pricing Comparison</h2>
 
-            <div className="not-prose bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-8 my-8 border border-gray-200">
+            <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-8 my-8 border border-gray-200">
               <h3 className="text-2xl font-bold mb-6 text-gray-900">Cost Breakdown</h3>
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="bg-white rounded-lg p-6 border border-gray-200">
@@ -244,7 +244,7 @@ export default function WarmlyVsCursiveComparison() {
                   </div>
                 </div>
 
-                <div className="bg-gradient-to-br from-green-50 to-blue-50 rounded-lg p-6 border-2 border-green-500">
+                <div className="bg-gradient-to-br from-green-50 to-primary/5 rounded-lg p-6 border-2 border-green-500">
                   <h4 className="font-bold text-lg mb-4">Cursive Pricing</h4>
                   <div className="space-y-3 text-sm">
                     <div>
@@ -278,7 +278,7 @@ export default function WarmlyVsCursiveComparison() {
               <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
                 <p className="text-sm text-gray-700">
                   <strong>Cost Consideration:</strong> Warmly's pricing scales with website traffic,
-                  which can become expensive for high-traffic sites. <Link href="/" className="text-blue-600 hover:underline">Cursive</Link> offers flat-rate <Link href="/pricing" className="text-blue-600 hover:underline">pricing</Link>
+                  which can become expensive for high-traffic sites. <Link href="/" className="text-primary hover:underline">Cursive</Link> offers flat-rate <Link href="/pricing" className="text-primary hover:underline">pricing</Link>
                   with unlimited leads, making costs more predictable.
                 </p>
               </div>
@@ -316,7 +316,7 @@ export default function WarmlyVsCursiveComparison() {
 
             <h3>When to Choose Cursive</h3>
             <p>
-              <Link href="/" className="text-blue-600 hover:underline">Cursive</Link> is best when you need to proactively find and engage buyers before they find you.
+              <Link href="/" className="text-primary hover:underline">Cursive</Link> is best when you need to proactively find and engage buyers before they find you.
               Choose Cursive if:
             </p>
             <ul>
@@ -324,7 +324,7 @@ export default function WarmlyVsCursiveComparison() {
               <li>Your prospects don't consistently visit your website</li>
               <li>You want to identify companies researching your category (not just your brand)</li>
               <li>You need automated, personalized outreach at scale</li>
-              <li>You want predictable, flat-rate <Link href="/pricing" className="text-blue-600 hover:underline">pricing</Link></li>
+              <li>You want predictable, flat-rate <Link href="/pricing" className="text-primary hover:underline">pricing</Link></li>
             </ul>
             <p>
               The typical Cursive customer is a growth-stage B2B company that knows their ICP but does not
@@ -343,7 +343,7 @@ export default function WarmlyVsCursiveComparison() {
               with a personalized message referencing their specific situation.
             </p>
             <p>
-              Use our <Link href="/audience-builder" className="text-blue-600 hover:underline">audience builder</Link> to create targeted segments and launch campaigns at scale.
+              Use our <Link href="/audience-builder" className="text-primary hover:underline">audience builder</Link> to create targeted segments and launch campaigns at scale.
             </p>
 
             <h2>Team Structure and Workflow Impact</h2>
@@ -412,7 +412,7 @@ export default function WarmlyVsCursiveComparison() {
 
             <h3>Cursive's Approach</h3>
             <p>
-              <Link href="/" className="text-blue-600 hover:underline">Cursive</Link> monitors <Link href="/intent-audiences" className="text-blue-600 hover:underline">intent signals</Link> across the entire web, including:
+              <Link href="/" className="text-primary hover:underline">Cursive</Link> monitors <Link href="/intent-audiences" className="text-primary hover:underline">intent signals</Link> across the entire web, including:
             </p>
             <ul>
               <li>Companies researching specific topics on review sites like G2, Capterra, and TrustRadius</li>
@@ -431,11 +431,11 @@ export default function WarmlyVsCursiveComparison() {
               manager with a message that acknowledges their growth phase.
             </p>
             <p>
-              Combine this with <Link href="/direct-mail" className="text-blue-600 hover:underline">direct mail</Link> for a truly omnichannel approach.
+              Combine this with <Link href="/direct-mail" className="text-primary hover:underline">direct mail</Link> for a truly omnichannel approach.
             </p>
 
             <h3>Data Volume and Coverage Compared</h3>
-            <div className="not-prose bg-gradient-to-br from-gray-50 to-blue-50 rounded-xl p-6 my-8 border border-gray-200">
+            <div className="not-prose bg-gradient-to-br from-gray-50 to-primary/5 rounded-xl p-6 my-8 border border-gray-200">
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <h4 className="font-bold text-lg mb-3">Warmly Data Coverage</h4>
@@ -481,7 +481,7 @@ export default function WarmlyVsCursiveComparison() {
 
             <h3>Cursive Integrations</h3>
             <p>
-              <Link href="/" className="text-blue-600 hover:underline">Cursive</Link> offers similar <Link href="/integrations" className="text-blue-600 hover:underline">integrations</Link> plus deeper automation:
+              <Link href="/" className="text-primary hover:underline">Cursive</Link> offers similar <Link href="/integrations" className="text-primary hover:underline">integrations</Link> plus deeper automation:
             </p>
             <ul>
               <li>CRMs: Salesforce, HubSpot, Pipedrive with bi-directional sync</li>
@@ -490,13 +490,13 @@ export default function WarmlyVsCursiveComparison() {
               <li>Calendaring: Automated meeting booking</li>
             </ul>
             <p>
-              The workflow is proactive: you define your ICP and <Link href="/intent-audiences" className="text-blue-600 hover:underline">intent topics</Link>, and Cursive's AI SDR
-              automatically finds and reaches out to matching prospects. Use our <Link href="/audience-builder" className="text-blue-600 hover:underline">audience builder</Link> to get started.
+              The workflow is proactive: you define your ICP and <Link href="/intent-audiences" className="text-primary hover:underline">intent topics</Link>, and Cursive's AI SDR
+              automatically finds and reaches out to matching prospects. Use our <Link href="/audience-builder" className="text-primary hover:underline">audience builder</Link> to get started.
             </p>
 
             <h2>ROI & Performance Metrics</h2>
 
-            <div className="not-prose bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-8 my-8 border border-gray-200">
+            <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-8 my-8 border border-gray-200">
               <h3 className="text-2xl font-bold mb-6 text-gray-900">Expected Performance</h3>
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="bg-white rounded-lg p-6">
@@ -738,7 +738,7 @@ export default function WarmlyVsCursiveComparison() {
               Both Warmly and Cursive are excellent platforms, but they solve different problems:
             </p>
 
-            <div className="not-prose bg-gradient-to-br from-gray-50 to-blue-50 rounded-xl p-8 my-8 border border-gray-200">
+            <div className="not-prose bg-gradient-to-br from-gray-50 to-primary/5 rounded-xl p-8 my-8 border border-gray-200">
               <h3 className="text-xl font-bold mb-4">Decision Framework</h3>
               <div className="space-y-4 text-sm">
                 <div>
@@ -801,7 +801,7 @@ export default function WarmlyVsCursiveComparison() {
       />
 
       {/* Related Posts */}
-      <section className="py-16 bg-gradient-to-br from-gray-50 to-blue-50">
+      <section className="py-16 bg-gradient-to-br from-gray-50 to-primary/5">
         <Container>
           <div className="max-w-5xl mx-auto">
             <SimpleRelatedPosts posts={[

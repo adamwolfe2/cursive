@@ -145,7 +145,7 @@ export default function IntentDataProvidersComparison() {
               <ArrowLeft className="w-4 h-4" />
               Back to Blog
             </Link>
-            <div className="max-w-4xl">
+            <div className="max-w-4xl mx-auto">
               <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
                 Comparison Guide
               </div>
@@ -171,9 +171,9 @@ export default function IntentDataProvidersComparison() {
         </section>
 
         {/* Quick Picks */}
-        <section className="py-8 bg-blue-50 border-y border-blue-100">
+        <section className="py-8 bg-primary/5 border-y border-primary/15">
           <Container>
-            <div className="max-w-4xl">
+            <div className="max-w-4xl mx-auto">
               <h2 className="text-lg font-bold mb-4">Quick Picks by Use Case</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {[
@@ -184,7 +184,7 @@ export default function IntentDataProvidersComparison() {
                   { label: "Best for IT/tech vendors", winner: "TechTarget", reason: "IT buyer research signals" },
                   { label: "Best person-level ID", winner: "Cursive", reason: "70% individual identification" },
                 ].map(({ label, winner, reason }) => (
-                  <div key={label} className="bg-white rounded-lg p-4 border border-blue-100">
+                  <div key={label} className="bg-white rounded-lg p-4 border border-primary/15">
                     <div className="text-xs text-gray-500 uppercase font-medium mb-1">{label}</div>
                     <div className="font-bold text-gray-900">{winner}</div>
                     <div className="text-xs text-gray-500 mt-0.5">{reason}</div>
@@ -265,7 +265,7 @@ export default function IntentDataProvidersComparison() {
                         </div>
                       </div>
 
-                      <div className={`rounded-lg p-4 text-sm ${p.highlight ? 'bg-blue-50 border border-blue-100 text-blue-900' : 'bg-gray-50 text-gray-700'}`}>
+                      <div className={`rounded-lg p-4 text-sm ${p.highlight ? 'bg-primary/5 border border-primary/15 text-primary' : 'bg-gray-50 text-gray-700'}`}>
                         <strong>Our verdict:</strong> {p.verdict}
                       </div>
                     </div>

@@ -69,7 +69,7 @@ function SectionHeading({ plain, script, sub }: { plain: string; script?: string
 
 function IconChip({ Icon }: { Icon: LucideIcon }) {
   return (
-    <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center">
+    <div className="w-12 h-12 rounded-xl bg-primary/5 flex items-center justify-center">
       <Icon className="w-6 h-6 text-primary" />
     </div>
   )
@@ -501,7 +501,7 @@ export default function WhatIsAccountBasedMarketing() {
                   transition={{ delay: i * 0.04, duration: 0.4, ease: EASE }}
                   className="flex gap-5 rounded-2xl border border-gray-200 p-6 sm:p-7"
                 >
-                  <span className="flex-shrink-0 w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-sm font-semibold text-primary">
+                  <span className="flex-shrink-0 w-10 h-10 rounded-xl bg-primary/5 flex items-center justify-center text-sm font-semibold text-primary">
                     {i + 1}
                   </span>
                   <div>
@@ -705,7 +705,7 @@ export default function WhatIsAccountBasedMarketing() {
                   transition={{ delay: i * 0.04, duration: 0.4, ease: EASE }}
                   className="flex gap-5 rounded-2xl border border-gray-200 p-6 sm:p-7"
                 >
-                  <span className="flex-shrink-0 w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-sm font-semibold text-primary">
+                  <span className="flex-shrink-0 w-10 h-10 rounded-xl bg-primary/5 flex items-center justify-center text-sm font-semibold text-primary">
                     {i + 1}
                   </span>
                   <div>

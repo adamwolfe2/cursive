@@ -85,7 +85,7 @@ export function BlogPostLayout({ post, relatedPosts = [] }: BlogPostLayoutProps)
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             {/* Category Badge */}
             <div className="mb-4">
-              <span className="inline-block px-3 py-1 text-sm font-medium text-primary bg-blue-50 rounded-full uppercase tracking-wide">
+              <span className="inline-block px-3 py-1 text-sm font-medium text-primary bg-primary/5 rounded-full uppercase tracking-wide">
                 {post.category}
               </span>
             </div>

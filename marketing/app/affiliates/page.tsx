@@ -183,15 +183,15 @@ function EarningsCalculator() {
       )}
 
       {nextMilestone && (
-        <div className="flex items-center gap-3 bg-blue-50 border border-blue-200 rounded-xl p-4">
-          <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+        <div className="flex items-center gap-3 bg-primary/5 border border-primary/20 rounded-xl p-4">
+          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
             <Zap className="w-4 h-4 text-primary" />
           </div>
           <div>
-            <p className="text-sm font-semibold text-blue-900">
+            <p className="text-sm font-semibold text-primary">
               {nextMilestone.activations - activations} more activations until your ${nextMilestone.bonus.toLocaleString()} bonus
             </p>
-            <p className="text-xs text-blue-600">Hit {nextMilestone.activations} activations → cash hits your account instantly</p>
+            <p className="text-xs text-primary">Hit {nextMilestone.activations} activations → cash hits your account instantly</p>
           </div>
         </div>
       )}
@@ -658,7 +658,7 @@ export default function AffiliatesPage() {
                 key={i}
                 className="bg-white rounded-xl p-6 border border-gray-200 hover:border-primary hover:shadow-lg transition-all flex gap-4"
               >
-                <div className="flex-shrink-0 w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
+                <div className="flex-shrink-0 w-12 h-12 bg-primary/5 rounded-xl flex items-center justify-center">
                   <icp.icon className="w-6 h-6 text-primary" />
                 </div>
                 <div>

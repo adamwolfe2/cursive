@@ -60,7 +60,7 @@ export default function BlogPost() {
             <ArrowLeft className="w-4 h-4" />
             Back to Blog
           </Link>
-          <div className="max-w-4xl">
+          <div className="max-w-4xl mx-auto">
             <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
               Comparisons
             </div>
@@ -95,7 +95,7 @@ export default function BlogPost() {
             <div className="not-prose overflow-x-auto my-8">
               <table className="w-full text-sm border-collapse">
                 <thead>
-                  <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                  <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                     <th className="border border-gray-300 p-3 text-left font-bold">Tool</th>
                     <th className="border border-gray-300 p-3 text-left font-bold">Best For</th>
                     <th className="border border-gray-300 p-3 text-left font-bold">Key Metric</th>
@@ -104,7 +104,7 @@ export default function BlogPost() {
                   </tr>
                 </thead>
                 <tbody className="bg-white">
-                  <tr className="bg-blue-50 border-2 border-blue-500">
+                  <tr className="bg-primary/5 border-2 border-primary">
                     <td className="border border-gray-300 p-3 font-bold">Cursive</td>
                     <td className="border border-gray-300 p-3">Visitor ID + Email + Multi-Channel</td>
                     <td className="border border-gray-300 p-3">85%+ visitor match rate</td>
@@ -175,19 +175,19 @@ export default function BlogPost() {
               <ul className="space-y-3 text-sm">
                 <li className="flex items-start gap-2">
                   <span className="text-red-600 font-bold mt-0.5">1.</span>
-                  <span><strong>No Visitor Identification:</strong> Instantly cannot tell you who is visiting your website. You are sending cold emails blind, with no idea which prospects are already researching your solution. Tools like <Link href="/visitor-identification" className="text-blue-600 hover:underline">Cursive&apos;s visitor identification</Link> reveal these hidden buyers.</span>
+                  <span><strong>No Visitor Identification:</strong> Instantly cannot tell you who is visiting your website. You are sending cold emails blind, with no idea which prospects are already researching your solution. Tools like <Link href="/visitor-identification" className="text-primary hover:underline">Cursive&apos;s visitor identification</Link> reveal these hidden buyers.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-red-600 font-bold mt-0.5">2.</span>
-                  <span><strong>No Intent Data:</strong> Without <Link href="/what-is-b2b-intent-data" className="text-blue-600 hover:underline">intent signals</Link>, every email is equally cold. You cannot prioritize prospects who are actively in a buying cycle, which means lower reply rates and wasted send volume.</span>
+                  <span><strong>No Intent Data:</strong> Without <Link href="/what-is-b2b-intent-data" className="text-primary hover:underline">intent signals</Link>, every email is equally cold. You cannot prioritize prospects who are actively in a buying cycle, which means lower reply rates and wasted send volume.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-red-600 font-bold mt-0.5">3.</span>
-                  <span><strong>Email-Only Channel:</strong> Modern buyers respond to multi-channel touches. Instantly is limited to email, so you need separate tools for LinkedIn, phone, and <Link href="/direct-mail" className="text-blue-600 hover:underline">direct mail outreach</Link>.</span>
+                  <span><strong>Email-Only Channel:</strong> Modern buyers respond to multi-channel touches. Instantly is limited to email, so you need separate tools for LinkedIn, phone, and <Link href="/direct-mail" className="text-primary hover:underline">direct mail outreach</Link>.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-red-600 font-bold mt-0.5">4.</span>
-                  <span><strong>No Built-In Data Enrichment:</strong> Instantly does not provide contact data or <Link href="/what-is-lead-enrichment" className="text-blue-600 hover:underline">lead enrichment</Link>. You need a separate data provider like Apollo, ZoomInfo, or Clay to build your prospect lists.</span>
+                  <span><strong>No Built-In Data Enrichment:</strong> Instantly does not provide contact data or <Link href="/what-is-lead-enrichment" className="text-primary hover:underline">lead enrichment</Link>. You need a separate data provider like Apollo, ZoomInfo, or Clay to build your prospect lists.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-red-600 font-bold mt-0.5">5.</span>
@@ -204,21 +204,21 @@ export default function BlogPost() {
             <h2>7 Best Instantly Alternatives (Detailed Reviews)</h2>
 
             {/* Tool 1: Cursive */}
-            <div className="not-prose bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-8 my-8 border-2 border-blue-500">
+            <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-8 my-8 border-2 border-primary">
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <h3 className="text-2xl font-bold mb-2">1. Cursive</h3>
                   <p className="text-sm text-gray-600">Best for: Combining visitor identification with automated multi-channel outreach</p>
                 </div>
-                <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-bold">Our Pick</span>
+                <span className="bg-primary text-white px-3 py-1 rounded-full text-sm font-bold">Our Pick</span>
               </div>
 
               <p className="text-gray-700 mb-4">
-                <strong>What makes it different:</strong> While Instantly sends cold emails to purchased lists, <Link href="/" className="text-blue-600 hover:underline">Cursive</Link> flips the outbound model. It starts by <Link href="/visitor-identification" className="text-blue-600 hover:underline">identifying your anonymous website visitors</Link>, enriches them with firmographic and contact data, scores them based on <Link href="/intent-audiences" className="text-blue-600 hover:underline">intent signals</Link>, and automatically enrolls the best-fit prospects into personalized multi-channel sequences. You are not guessing who to email. You are reaching out to people who are already looking at your product.
+                <strong>What makes it different:</strong> While Instantly sends cold emails to purchased lists, <Link href="/" className="text-primary hover:underline">Cursive</Link> flips the outbound model. It starts by <Link href="/visitor-identification" className="text-primary hover:underline">identifying your anonymous website visitors</Link>, enriches them with firmographic and contact data, scores them based on <Link href="/intent-audiences" className="text-primary hover:underline">intent signals</Link>, and automatically enrolls the best-fit prospects into personalized multi-channel sequences. You are not guessing who to email. You are reaching out to people who are already looking at your product.
               </p>
 
               <p className="text-gray-700 mb-4">
-                Cursive&apos;s <Link href="/what-is-ai-sdr" className="text-blue-600 hover:underline">AI SDR</Link> writes personalized messages based on the prospect&apos;s website behavior, company data, and industry context. The platform handles email, LinkedIn, and even <Link href="/what-is-direct-mail-automation" className="text-blue-600 hover:underline">automated direct mail</Link> from a single workflow. For teams that want to replace Instantly plus three other tools, Cursive is the obvious choice.
+                Cursive&apos;s <Link href="/what-is-ai-sdr" className="text-primary hover:underline">AI SDR</Link> writes personalized messages based on the prospect&apos;s website behavior, company data, and industry context. The platform handles email, LinkedIn, and even <Link href="/what-is-direct-mail-automation" className="text-primary hover:underline">automated direct mail</Link> from a single workflow. For teams that want to replace Instantly plus three other tools, Cursive is the obvious choice.
               </p>
 
               <div className="grid md:grid-cols-2 gap-6 mb-4">
@@ -269,10 +269,10 @@ export default function BlogPost() {
               <div className="bg-white rounded-lg p-4">
                 <div className="flex justify-between items-center mb-2">
                   <span className="font-bold">Pricing:</span>
-                  <span className="text-lg font-bold text-blue-600">$97 - $247/mo</span>
+                  <span className="text-lg font-bold text-primary">$97 - $247/mo</span>
                 </div>
                 <p className="text-sm text-gray-600">
-                  <strong>Best for:</strong> B2B companies that want to stop sending blind cold emails and start reaching out to prospects who are already showing buying intent on their website. Replaces Instantly + data provider + visitor ID tool. See <Link href="/pricing" className="text-blue-600 hover:underline">full pricing details</Link>.
+                  <strong>Best for:</strong> B2B companies that want to stop sending blind cold emails and start reaching out to prospects who are already showing buying intent on their website. Replaces Instantly + data provider + visitor ID tool. See <Link href="/pricing" className="text-primary hover:underline">full pricing details</Link>.
                 </p>
               </div>
             </div>
@@ -700,7 +700,7 @@ export default function BlogPost() {
             <div className="not-prose overflow-x-auto my-8">
               <table className="w-full text-sm border-collapse">
                 <thead>
-                  <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                  <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                     <th className="border border-gray-300 p-3 text-left font-bold">Feature</th>
                     <th className="border border-gray-300 p-3 text-center font-bold">Cursive</th>
                     <th className="border border-gray-300 p-3 text-center font-bold">Smartlead</th>
@@ -812,7 +812,7 @@ export default function BlogPost() {
               When comparing Instantly alternatives, the sticker price is misleading. Instantly at $30/month looks affordable until you factor in the other tools you need to build a complete outbound workflow. Here is the true cost comparison:
             </p>
 
-            <div className="not-prose bg-gradient-to-br from-gray-50 to-blue-50 rounded-xl p-6 my-8 border border-gray-200">
+            <div className="not-prose bg-gradient-to-br from-gray-50 to-primary/5 rounded-xl p-6 my-8 border border-gray-200">
               <h3 className="font-bold text-lg mb-4">Total Cost of Outbound Stack (Per Month)</h3>
               <div className="space-y-4">
                 <div className="bg-white rounded-lg p-4 border border-gray-200">
@@ -822,12 +822,12 @@ export default function BlogPost() {
                   </div>
                   <p className="text-sm text-gray-600">Instantly ($30) + Data provider ($100-200) + Visitor ID tool ($99+) + Intent data ($50+) = Fragmented workflow</p>
                 </div>
-                <div className="bg-blue-50 rounded-lg p-4 border-2 border-blue-500">
+                <div className="bg-primary/5 rounded-lg p-4 border-2 border-primary">
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-bold">Cursive (All-in-One)</span>
-                    <span className="text-lg font-bold text-blue-600">$97 - $247/mo</span>
+                    <span className="text-lg font-bold text-primary">$97 - $247/mo</span>
                   </div>
-                  <p className="text-sm text-gray-600">Visitor ID + Intent data + Enrichment + Multi-channel outreach + AI SDR = One unified workflow. Check <Link href="/pricing" className="text-blue-600 hover:underline">our pricing page</Link> for details.</p>
+                  <p className="text-sm text-gray-600">Visitor ID + Intent data + Enrichment + Multi-channel outreach + AI SDR = One unified workflow. Check <Link href="/pricing" className="text-primary hover:underline">our pricing page</Link> for details.</p>
                 </div>
                 <div className="bg-white rounded-lg p-4 border border-gray-200">
                   <div className="flex justify-between items-center mb-2">
@@ -865,45 +865,45 @@ export default function BlogPost() {
 
             <div className="not-prose space-y-4 my-8">
               <div className="bg-white rounded-lg p-5 border border-gray-200 flex gap-4">
-                <div className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm shrink-0">1</div>
+                <div className="bg-primary text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm shrink-0">1</div>
                 <div>
                   <h4 className="font-bold mb-1">Install the Cursive Pixel</h4>
-                  <p className="text-sm text-gray-600">Add the <Link href="/pixel" className="text-blue-600 hover:underline">Cursive tracking pixel</Link> to your website. It takes less than 5 minutes and immediately begins identifying your anonymous visitors. Within 24 hours, you will have a list of companies and contacts visiting your site.</p>
+                  <p className="text-sm text-gray-600">Add the <Link href="/pixel" className="text-primary hover:underline">Cursive tracking pixel</Link> to your website. It takes less than 5 minutes and immediately begins identifying your anonymous visitors. Within 24 hours, you will have a list of companies and contacts visiting your site.</p>
                 </div>
               </div>
               <div className="bg-white rounded-lg p-5 border border-gray-200 flex gap-4">
-                <div className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm shrink-0">2</div>
+                <div className="bg-primary text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm shrink-0">2</div>
                 <div>
                   <h4 className="font-bold mb-1">Export Your Instantly Prospect Lists</h4>
                   <p className="text-sm text-gray-600">Export your existing prospect data from Instantly as CSV files. Cursive can import these lists and automatically enrich them with additional firmographic data, technographics, and intent scores.</p>
                 </div>
               </div>
               <div className="bg-white rounded-lg p-5 border border-gray-200 flex gap-4">
-                <div className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm shrink-0">3</div>
+                <div className="bg-primary text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm shrink-0">3</div>
                 <div>
                   <h4 className="font-bold mb-1">Build Your Intent Audiences</h4>
-                  <p className="text-sm text-gray-600">Use the <Link href="/audience-builder" className="text-blue-600 hover:underline">audience builder</Link> to create segments based on visitor behavior, firmographic criteria, and <Link href="/intent-audiences" className="text-blue-600 hover:underline">intent signals</Link>. This is the step that transforms your outbound from spray-and-pray to precision targeting.</p>
+                  <p className="text-sm text-gray-600">Use the <Link href="/audience-builder" className="text-primary hover:underline">audience builder</Link> to create segments based on visitor behavior, firmographic criteria, and <Link href="/intent-audiences" className="text-primary hover:underline">intent signals</Link>. This is the step that transforms your outbound from spray-and-pray to precision targeting.</p>
                 </div>
               </div>
               <div className="bg-white rounded-lg p-5 border border-gray-200 flex gap-4">
-                <div className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm shrink-0">4</div>
+                <div className="bg-primary text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm shrink-0">4</div>
                 <div>
                   <h4 className="font-bold mb-1">Connect Your Email Accounts</h4>
                   <p className="text-sm text-gray-600">Connect the same email accounts you used with Instantly. Cursive supports multiple sending accounts with warm-up and rotation, so your deliverability stays strong during the transition.</p>
                 </div>
               </div>
               <div className="bg-white rounded-lg p-5 border border-gray-200 flex gap-4">
-                <div className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm shrink-0">5</div>
+                <div className="bg-primary text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm shrink-0">5</div>
                 <div>
                   <h4 className="font-bold mb-1">Launch Your First Intent-Based Campaign</h4>
-                  <p className="text-sm text-gray-600">Create a multi-channel sequence targeting your highest-intent visitors. Let the <Link href="/what-is-ai-sdr" className="text-blue-600 hover:underline">AI SDR</Link> personalize each touchpoint based on the prospect&apos;s website behavior and company profile.</p>
+                  <p className="text-sm text-gray-600">Create a multi-channel sequence targeting your highest-intent visitors. Let the <Link href="/what-is-ai-sdr" className="text-primary hover:underline">AI SDR</Link> personalize each touchpoint based on the prospect&apos;s website behavior and company profile.</p>
                 </div>
               </div>
               <div className="bg-white rounded-lg p-5 border border-gray-200 flex gap-4">
-                <div className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm shrink-0">6</div>
+                <div className="bg-primary text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm shrink-0">6</div>
                 <div>
                   <h4 className="font-bold mb-1">Run Parallel for One Week, Then Cut Over</h4>
-                  <p className="text-sm text-gray-600">Keep Instantly running for any active campaigns while you ramp Cursive. After one week of comparing results, most teams see significantly higher reply rates from intent-based outreach and fully switch over. Book a <a href="https://cal.com/cursiveteam/30min" className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">free consultation</a> if you need help with migration.</p>
+                  <p className="text-sm text-gray-600">Keep Instantly running for any active campaigns while you ramp Cursive. After one week of comparing results, most teams see significantly higher reply rates from intent-based outreach and fully switch over. Book a <a href="https://cal.com/cursiveteam/30min" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">free consultation</a> if you need help with migration.</p>
                 </div>
               </div>
             </div>
@@ -981,19 +981,19 @@ export default function BlogPost() {
           <div className="max-w-3xl mx-auto">
             <h2 className="text-2xl font-bold mb-6">Related Comparisons</h2>
             <div className="grid md:grid-cols-2 gap-4">
-              <Link href="/blog/smartlead-alternative" className="bg-gray-50 rounded-lg p-5 border border-gray-200 hover:shadow-md hover:border-blue-400 transition-all">
+              <Link href="/blog/smartlead-alternative" className="bg-gray-50 rounded-lg p-5 border border-gray-200 hover:shadow-md hover:border-primary/40 transition-all">
                 <h3 className="font-bold mb-1">Smartlead Alternatives</h3>
                 <p className="text-sm text-gray-600">Email outreach with visitor tracking</p>
               </Link>
-              <Link href="/blog/clay-alternative" className="bg-gray-50 rounded-lg p-5 border border-gray-200 hover:shadow-md hover:border-blue-400 transition-all">
+              <Link href="/blog/clay-alternative" className="bg-gray-50 rounded-lg p-5 border border-gray-200 hover:shadow-md hover:border-primary/40 transition-all">
                 <h3 className="font-bold mb-1">Clay Alternatives</h3>
                 <p className="text-sm text-gray-600">Easier data enrichment + outbound tools</p>
               </Link>
-              <Link href="/blog/clearbit-alternatives-comparison" className="bg-gray-50 rounded-lg p-5 border border-gray-200 hover:shadow-md hover:border-blue-400 transition-all">
+              <Link href="/blog/clearbit-alternatives-comparison" className="bg-gray-50 rounded-lg p-5 border border-gray-200 hover:shadow-md hover:border-primary/40 transition-all">
                 <h3 className="font-bold mb-1">Clearbit Alternatives</h3>
                 <p className="text-sm text-gray-600">10 data enrichment tools compared</p>
               </Link>
-              <Link href="/blog/rb2b-alternative" className="bg-gray-50 rounded-lg p-5 border border-gray-200 hover:shadow-md hover:border-blue-400 transition-all">
+              <Link href="/blog/rb2b-alternative" className="bg-gray-50 rounded-lg p-5 border border-gray-200 hover:shadow-md hover:border-primary/40 transition-all">
                 <h3 className="font-bold mb-1">RB2B Alternatives</h3>
                 <p className="text-sm text-gray-600">Visitor identification tools compared</p>
               </Link>

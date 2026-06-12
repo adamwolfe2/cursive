@@ -47,7 +47,7 @@ export default function VisitorTrackingPage() {
             Back to Blog
           </Link>
 
-          <div className="max-w-4xl">
+          <div className="max-w-4xl mx-auto">
             <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
               Visitor Tracking
             </div>
@@ -180,32 +180,32 @@ export default function VisitorTrackingPage() {
               raw identification into an actionable lead record.
             </p>
 
-            <div className="not-prose bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 my-8 border border-blue-200">
+            <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-6 my-8 border border-primary/20">
               <h3 className="font-bold text-lg mb-3">The Identification Pipeline</h3>
               <div className="space-y-3">
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm flex-shrink-0">1</div>
+                  <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm flex-shrink-0">1</div>
                   <div className="bg-white rounded-lg p-3 flex-1">
                     <p className="text-sm font-bold">Signal Collection</p>
                     <p className="text-xs text-gray-500">IP, cookies, user agent, behavior data captured by tracking script</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm flex-shrink-0">2</div>
+                  <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm flex-shrink-0">2</div>
                   <div className="bg-white rounded-lg p-3 flex-1">
                     <p className="text-sm font-bold">Identity Resolution</p>
                     <p className="text-xs text-gray-500">Multiple matching methods run in parallel against identity databases</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm flex-shrink-0">3</div>
+                  <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm flex-shrink-0">3</div>
                   <div className="bg-white rounded-lg p-3 flex-1">
                     <p className="text-sm font-bold">Data Enrichment</p>
                     <p className="text-xs text-gray-500">Firmographic, technographic, and contact data appended to the record</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm flex-shrink-0">4</div>
+                  <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm flex-shrink-0">4</div>
                   <div className="bg-white rounded-lg p-3 flex-1">
                     <p className="text-sm font-bold">Lead Routing</p>
                     <p className="text-xs text-gray-500">Qualified visitors routed to CRM, sales team, or automated workflows</p>
@@ -302,7 +302,7 @@ export default function VisitorTrackingPage() {
             <div className="not-prose overflow-x-auto my-8">
               <table className="w-full text-sm border-collapse">
                 <thead>
-                  <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                  <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                     <th className="border border-gray-300 p-3 text-left font-bold">Method</th>
                     <th className="border border-gray-300 p-3 text-left font-bold">Level</th>
                     <th className="border border-gray-300 p-3 text-left font-bold">Coverage</th>
@@ -479,28 +479,28 @@ export default function VisitorTrackingPage() {
               Track these key metrics weekly to measure the impact of your visitor tracking implementation:
             </p>
 
-            <div className="not-prose bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 my-8 border border-blue-200">
+            <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-6 my-8 border border-primary/20">
               <h3 className="font-bold text-lg mb-3">Key Metrics to Track</h3>
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="bg-white rounded-lg p-4">
                   <p className="font-bold text-sm mb-1">Identification Rate</p>
                   <p className="text-xs text-gray-600">% of total visitors identified (company or individual level)</p>
-                  <p className="text-sm text-blue-600 font-bold mt-1">Target: 50-70% of B2B traffic</p>
+                  <p className="text-sm text-primary font-bold mt-1">Target: 50-70% of B2B traffic</p>
                 </div>
                 <div className="bg-white rounded-lg p-4">
                   <p className="font-bold text-sm mb-1">ICP Match Rate</p>
                   <p className="text-xs text-gray-600">% of identified visitors that match your ideal customer profile</p>
-                  <p className="text-sm text-blue-600 font-bold mt-1">Target: 20-40%</p>
+                  <p className="text-sm text-primary font-bold mt-1">Target: 20-40%</p>
                 </div>
                 <div className="bg-white rounded-lg p-4">
                   <p className="font-bold text-sm mb-1">Sales Follow-up Rate</p>
                   <p className="text-xs text-gray-600">% of qualified visitors that receive outreach within 24 hours</p>
-                  <p className="text-sm text-blue-600 font-bold mt-1">Target: 80%+</p>
+                  <p className="text-sm text-primary font-bold mt-1">Target: 80%+</p>
                 </div>
                 <div className="bg-white rounded-lg p-4">
                   <p className="font-bold text-sm mb-1">Visitor-to-Pipeline Rate</p>
                   <p className="text-xs text-gray-600">% of identified visitors that become qualified pipeline</p>
-                  <p className="text-sm text-blue-600 font-bold mt-1">Target: 3-8%</p>
+                  <p className="text-sm text-primary font-bold mt-1">Target: 3-8%</p>
                 </div>
               </div>
             </div>
@@ -571,8 +571,8 @@ export default function VisitorTrackingPage() {
               </div>
 
               <div className="bg-white rounded-xl p-6 border border-gray-200">
-                <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mb-3">
-                  <Zap className="w-5 h-5 text-purple-600" />
+                <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center mb-3">
+                  <Zap className="w-5 h-5 text-primary" />
                 </div>
                 <h3 className="font-bold mb-2">Differentiating Features</h3>
                 <ul className="space-y-2 text-sm text-gray-700">
@@ -598,7 +598,7 @@ export default function VisitorTrackingPage() {
 
             <div className="not-prose space-y-6 my-8">
               {faqs.map((faq, index) => (
-                <div key={index} className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-lg p-6 border border-gray-200">
+                <div key={index} className="bg-gradient-to-br from-gray-50 to-primary/5 rounded-lg p-6 border border-gray-200">
                   <h3 className="font-bold text-lg mb-3">{faq.question}</h3>
                   <p className="text-gray-700">{faq.answer}</p>
                 </div>
@@ -642,7 +642,7 @@ export default function VisitorTrackingPage() {
       />
 
       {/* Related Posts */}
-      <section className="py-16 bg-gradient-to-br from-gray-50 to-blue-50">
+      <section className="py-16 bg-gradient-to-br from-gray-50 to-primary/5">
         <Container>
           <div className="max-w-5xl mx-auto">
             <SimpleRelatedPosts posts={[

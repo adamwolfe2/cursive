@@ -15,7 +15,7 @@ const EASE = [0.22, 1, 0.36, 1] as const
 
 function IconChip({ Icon }: { Icon: LucideIcon }) {
   return (
-    <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center">
+    <div className="w-12 h-12 rounded-xl bg-primary/5 flex items-center justify-center">
       <Icon className="w-6 h-6 text-primary" />
     </div>
   )

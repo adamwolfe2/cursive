@@ -48,7 +48,7 @@ export default function RetargetingPage() {
               Back to Blog
             </Link>
 
-            <div className="max-w-4xl">
+            <div className="max-w-4xl mx-auto">
               <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
                 Retargeting
               </div>
@@ -114,23 +114,23 @@ export default function RetargetingPage() {
                 multiple channels over long sales cycles.
               </p>
 
-              <div className="not-prose bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 my-8 border border-blue-200">
+              <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-6 my-8 border border-primary/20">
                 <h3 className="font-bold text-lg mb-3">The B2B Retargeting Opportunity</h3>
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="bg-white rounded-lg p-4">
-                    <div className="text-3xl font-bold text-blue-600 mb-1">98%</div>
+                    <div className="text-3xl font-bold text-primary mb-1">98%</div>
                     <p className="text-sm text-gray-600">of B2B visitors leave without converting</p>
                   </div>
                   <div className="bg-white rounded-lg p-4">
-                    <div className="text-3xl font-bold text-blue-600 mb-1">70%</div>
+                    <div className="text-3xl font-bold text-primary mb-1">70%</div>
                     <p className="text-sm text-gray-600">higher conversion rate for retargeted visitors vs. cold traffic</p>
                   </div>
                   <div className="bg-white rounded-lg p-4">
-                    <div className="text-3xl font-bold text-blue-600 mb-1">50-70%</div>
+                    <div className="text-3xl font-bold text-primary mb-1">50-70%</div>
                     <p className="text-sm text-gray-600">lower cost per conversion compared to prospecting campaigns</p>
                   </div>
                   <div className="bg-white rounded-lg p-4">
-                    <div className="text-3xl font-bold text-blue-600 mb-1">6-8</div>
+                    <div className="text-3xl font-bold text-primary mb-1">6-8</div>
                     <p className="text-sm text-gray-600">average touchpoints needed before a B2B buyer engages</p>
                   </div>
                 </div>
@@ -154,21 +154,21 @@ export default function RetargetingPage() {
 
               <h3>How First-Party Retargeting Works</h3>
 
-              <div className="not-prose bg-gradient-to-br from-gray-50 to-blue-50 rounded-xl p-6 my-8 border border-gray-200">
+              <div className="not-prose bg-gradient-to-br from-gray-50 to-primary/5 rounded-xl p-6 my-8 border border-gray-200">
                 <div className="space-y-4">
                   <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm flex-shrink-0">1</div>
+                    <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm flex-shrink-0">1</div>
                     <div className="bg-white rounded-lg p-4 flex-1">
                       <h4 className="font-bold text-sm mb-1">Visitor Identification</h4>
                       <p className="text-xs text-gray-600">
-                        <Link href="/visitor-identification" className="text-blue-600 hover:underline">Cursive identifies companies</Link> visiting
+                        <Link href="/visitor-identification" className="text-primary hover:underline">Cursive identifies companies</Link> visiting
                         your website using IP intelligence, device fingerprinting, and cross-reference databases. Up to 70% of B2B traffic
                         is identifiable at the company level.
                       </p>
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm flex-shrink-0">2</div>
+                    <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm flex-shrink-0">2</div>
                     <div className="bg-white rounded-lg p-4 flex-1">
                       <h4 className="font-bold text-sm mb-1">Audience Segmentation</h4>
                       <p className="text-xs text-gray-600">
@@ -178,22 +178,22 @@ export default function RetargetingPage() {
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm flex-shrink-0">3</div>
+                    <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm flex-shrink-0">3</div>
                     <div className="bg-white rounded-lg p-4 flex-1">
                       <h4 className="font-bold text-sm mb-1">Cross-Platform Sync</h4>
                       <p className="text-xs text-gray-600">
                         Audience segments sync automatically to ad platforms (LinkedIn, Google, Meta), email tools, and
-                        direct mail systems via <Link href="/integrations" className="text-blue-600 hover:underline">200+ native integrations</Link>.
+                        direct mail systems via <Link href="/integrations" className="text-primary hover:underline">200+ native integrations</Link>.
                       </p>
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm flex-shrink-0">4</div>
+                    <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm flex-shrink-0">4</div>
                     <div className="bg-white rounded-lg p-4 flex-1">
                       <h4 className="font-bold text-sm mb-1">Multi-Channel Retargeting</h4>
                       <p className="text-xs text-gray-600">
                         Each segment receives coordinated messaging across channels: ads, email sequences, and for high-value
-                        accounts, <Link href="/blog/direct-mail" className="text-blue-600 hover:underline">automated direct mail</Link>.
+                        accounts, <Link href="/blog/direct-mail" className="text-primary hover:underline">automated direct mail</Link>.
                       </p>
                     </div>
                   </div>
@@ -205,7 +205,7 @@ export default function RetargetingPage() {
               <div className="not-prose overflow-x-auto my-8">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                    <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                       <th className="border border-gray-300 p-3 text-left font-bold">Dimension</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Cookie-Based</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">First-Party Data</th>
@@ -288,9 +288,9 @@ export default function RetargetingPage() {
                   </div>
                 </div>
 
-                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200">
+                <div className="bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-6 border border-primary/20">
                   <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 bg-blue-600 text-white rounded-lg flex items-center justify-center font-bold flex-shrink-0">3</div>
+                    <div className="w-10 h-10 bg-primary text-white rounded-lg flex items-center justify-center font-bold flex-shrink-0">3</div>
                     <div>
                       <h3 className="font-bold text-lg mb-1">ICP-Fit Companies (Any Behavior)</h3>
                       <p className="text-sm text-gray-700 mb-2">
@@ -298,16 +298,16 @@ export default function RetargetingPage() {
                         (industry, size, tech stack) regardless of which pages they visited.
                       </p>
                       <div className="flex gap-4 text-xs">
-                        <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded font-bold">3-4x higher conversion</span>
-                        <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded font-bold">Recommended budget: 20%</span>
+                        <span className="bg-primary/10 text-primary px-2 py-1 rounded font-bold">3-4x higher conversion</span>
+                        <span className="bg-primary/10 text-primary px-2 py-1 rounded font-bold">Recommended budget: 20%</span>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200">
+                <div className="bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-6 border border-primary/20">
                   <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 bg-blue-600 text-white rounded-lg flex items-center justify-center font-bold flex-shrink-0">4</div>
+                    <div className="w-10 h-10 bg-primary text-white rounded-lg flex items-center justify-center font-bold flex-shrink-0">4</div>
                     <div>
                       <h3 className="font-bold text-lg mb-1">Content Engagers (Multi-Page Sessions)</h3>
                       <p className="text-sm text-gray-700 mb-2">
@@ -315,8 +315,8 @@ export default function RetargetingPage() {
                         content and product pages. Deep engagement signals research-phase interest.
                       </p>
                       <div className="flex gap-4 text-xs">
-                        <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded font-bold">2-3x higher conversion</span>
-                        <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded font-bold">Recommended budget: 15%</span>
+                        <span className="bg-primary/10 text-primary px-2 py-1 rounded font-bold">2-3x higher conversion</span>
+                        <span className="bg-primary/10 text-primary px-2 py-1 rounded font-bold">Recommended budget: 15%</span>
                       </div>
                     </div>
                   </div>
@@ -436,16 +436,16 @@ export default function RetargetingPage() {
                 with each channel playing a specific role.
               </p>
 
-              <div className="not-prose bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 my-8 border border-blue-200">
+              <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-6 my-8 border border-primary/20">
                 <h3 className="font-bold text-lg mb-4">Retargeting Orchestration Framework</h3>
                 <div className="space-y-4">
                   <div className="bg-white rounded-lg p-4">
-                    <h4 className="font-bold text-sm text-blue-700 mb-2">Layer 1: Awareness (All Visitors)</h4>
+                    <h4 className="font-bold text-sm text-primary mb-2">Layer 1: Awareness (All Visitors)</h4>
                     <p className="text-xs text-gray-600 mb-2">Channels: Google Display + Meta</p>
                     <p className="text-xs text-gray-700">Goal: Keep your brand visible. Show ads that establish credibility, share customer logos, and highlight key outcomes. Low CPMs mean you can sustain awareness affordably.</p>
                   </div>
                   <div className="bg-white rounded-lg p-4">
-                    <h4 className="font-bold text-sm text-purple-700 mb-2">Layer 2: Engagement (Multi-Page Visitors + ICP Fit)</h4>
+                    <h4 className="font-bold text-sm text-primary mb-2">Layer 2: Engagement (Multi-Page Visitors + ICP Fit)</h4>
                     <p className="text-xs text-gray-600 mb-2">Channels: LinkedIn + Email</p>
                     <p className="text-xs text-gray-700">Goal: Deepen interest. Share case studies, product demos, and educational content targeted to their industry and use case. LinkedIn&apos;s targeting ensures you reach the right stakeholders.</p>
                   </div>
@@ -477,7 +477,7 @@ export default function RetargetingPage() {
               <div className="not-prose overflow-x-auto my-8">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                    <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                       <th className="border border-gray-300 p-3 text-left font-bold">Layer</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Budget %</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Channels</th>
@@ -573,8 +573,8 @@ export default function RetargetingPage() {
 
               <div className="not-prose grid md:grid-cols-2 gap-4 my-8">
                 <div className="bg-white rounded-xl p-5 border border-gray-200">
-                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mb-3">
-                    <Eye className="w-5 h-5 text-blue-600" />
+                  <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center mb-3">
+                    <Eye className="w-5 h-5 text-primary" />
                   </div>
                   <h3 className="font-bold mb-2 text-sm">Return Visit Rate</h3>
                   <p className="text-xs text-gray-600">
@@ -584,8 +584,8 @@ export default function RetargetingPage() {
                 </div>
 
                 <div className="bg-white rounded-xl p-5 border border-gray-200">
-                  <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mb-3">
-                    <Target className="w-5 h-5 text-purple-600" />
+                  <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center mb-3">
+                    <Target className="w-5 h-5 text-primary" />
                   </div>
                   <h3 className="font-bold mb-2 text-sm">Cost Per Pipeline Opportunity</h3>
                   <p className="text-xs text-gray-600">
@@ -601,7 +601,7 @@ export default function RetargetingPage() {
                   <h3 className="font-bold mb-2 text-sm">Influenced Pipeline Value</h3>
                   <p className="text-xs text-gray-600">
                     Total pipeline value from deals where the account was retargeted. Use{" "}
-                    <Link href="/blog/analytics" className="text-blue-600 hover:underline">multi-touch attribution</Link> to credit
+                    <Link href="/blog/analytics" className="text-primary hover:underline">multi-touch attribution</Link> to credit
                     retargeting touchpoints alongside other channels. Benchmark: 5-10x return on ad spend.
                   </p>
                 </div>
@@ -635,7 +635,7 @@ export default function RetargetingPage() {
 
               <div className="not-prose space-y-6 my-8">
                 {faqs.map((faq, index) => (
-                  <div key={index} className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-lg p-6 border border-gray-200">
+                  <div key={index} className="bg-gradient-to-br from-gray-50 to-primary/5 rounded-lg p-6 border border-gray-200">
                     <h3 className="font-bold text-lg mb-3">{faq.question}</h3>
                     <p className="text-gray-700">{faq.answer}</p>
                   </div>
@@ -683,7 +683,7 @@ export default function RetargetingPage() {
         />
 
         {/* Related Posts */}
-        <section className="py-16 bg-gradient-to-br from-gray-50 to-blue-50">
+        <section className="py-16 bg-gradient-to-br from-gray-50 to-primary/5">
           <Container>
             <div className="max-w-5xl mx-auto">
               <SimpleRelatedPosts posts={[

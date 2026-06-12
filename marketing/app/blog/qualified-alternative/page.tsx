@@ -66,7 +66,7 @@ export default function BlogPost() {
               <ArrowLeft className="w-4 h-4" />
               Back to Blog
             </Link>
-            <div className="max-w-4xl">
+            <div className="max-w-4xl mx-auto">
               <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
                 Comparisons
               </div>
@@ -144,7 +144,7 @@ export default function BlogPost() {
               <div className="not-prose overflow-x-auto my-8">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                    <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                       <th className="border border-gray-300 p-3 text-left font-bold">Tool</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">ID Rate</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">ID Level</th>
@@ -153,7 +153,7 @@ export default function BlogPost() {
                     </tr>
                   </thead>
                   <tbody className="bg-white">
-                    <tr className="bg-blue-50 border-2 border-blue-500">
+                    <tr className="bg-primary/5 border-2 border-primary">
                       <td className="border border-gray-300 p-3 font-bold">Cursive</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold">70%</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold">Person-level</td>
@@ -203,17 +203,17 @@ export default function BlogPost() {
               <h2>6 Best Qualified Alternatives (Detailed Reviews)</h2>
 
               {/* 1. Cursive */}
-              <div className="not-prose bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-8 my-8 border-2 border-blue-500">
+              <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-8 my-8 border-2 border-primary">
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <h3 className="text-2xl font-bold mb-2">1. Cursive</h3>
                     <p className="text-sm text-gray-600">Best for: Identifying ALL visitors by name + email and triggering automated outreach — no chat required</p>
                   </div>
-                  <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-bold">Our Pick</span>
+                  <span className="bg-primary text-white px-3 py-1 rounded-full text-sm font-bold">Our Pick</span>
                 </div>
 
                 <p className="text-gray-700 mb-4">
-                  <strong>What makes it different:</strong> Where Qualified waits for visitors to chat, <Link href="/" className="text-blue-600 hover:underline">Cursive</Link> identifies
+                  <strong>What makes it different:</strong> Where Qualified waits for visitors to chat, <Link href="/" className="text-primary hover:underline">Cursive</Link> identifies
                   them the moment they arrive — regardless of whether they interact with anything. Cursive installs a lightweight
                   pixel that fires against its 280M US consumer and 140M+ business profile identity graph, matching anonymous
                   sessions to real people with names, email addresses, job titles, companies, and LinkedIn profiles. The
@@ -221,7 +221,7 @@ export default function BlogPost() {
                 </p>
 
                 <p className="text-gray-700 mb-4">
-                  Beyond identification, Cursive also includes an <Link href="/what-is-ai-sdr" className="text-blue-600 hover:underline">AI SDR</Link> that
+                  Beyond identification, Cursive also includes an <Link href="/what-is-ai-sdr" className="text-primary hover:underline">AI SDR</Link> that
                   automatically triggers personalized outreach via email, LinkedIn, SMS, and direct mail when visitors meet
                   your criteria. Instead of a sales rep monitoring Qualified&apos;s chat queue and hoping the right visitor
                   engages, Cursive proactively reaches out to every identified visitor at the right moment. Real-time
@@ -280,7 +280,7 @@ export default function BlogPost() {
                 <div className="bg-white rounded-lg p-4">
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-bold">Pricing:</span>
-                    <span className="text-lg font-bold text-blue-600">$97/mo Pixel | $197/mo Audience | $247/mo Bundle</span>
+                    <span className="text-lg font-bold text-primary">$97/mo Pixel | $197/mo Audience | $247/mo Bundle</span>
                   </div>
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> B2B teams that want to identify and engage all anonymous visitors — not just
@@ -330,7 +330,7 @@ export default function BlogPost() {
                   </div>
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> Enterprise teams where company-level routing to existing AEs is sufficient and budget is not a constraint.
-                    See our <Link href="/blog/warmly-alternatives-comparison" className="text-blue-600 hover:underline">Warmly alternatives comparison</Link>.
+                    See our <Link href="/blog/warmly-alternatives-comparison" className="text-primary hover:underline">Warmly alternatives comparison</Link>.
                   </p>
                 </div>
               </div>
@@ -377,7 +377,7 @@ export default function BlogPost() {
                   </div>
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> Teams wanting to test person-level visitor identification before committing to a paid platform.
-                    See our <Link href="/blog/rb2b-alternative" className="text-blue-600 hover:underline">RB2B alternatives guide</Link>.
+                    See our <Link href="/blog/rb2b-alternative" className="text-primary hover:underline">RB2B alternatives guide</Link>.
                   </p>
                 </div>
               </div>
@@ -398,7 +398,7 @@ export default function BlogPost() {
                 <div className="bg-gray-50 rounded-lg p-4">
                   <p className="text-sm text-gray-600">
                     <strong>Current status:</strong> HubSpot users can access Clearbit features as part of their plan.
-                    Non-HubSpot teams should evaluate Cursive or RB2B instead. See our <Link href="/blog/clearbit-alternatives-comparison" className="text-blue-600 hover:underline">Clearbit alternatives guide</Link>.
+                    Non-HubSpot teams should evaluate Cursive or RB2B instead. See our <Link href="/blog/clearbit-alternatives-comparison" className="text-primary hover:underline">Clearbit alternatives guide</Link>.
                   </p>
                 </div>
               </div>
@@ -444,7 +444,7 @@ export default function BlogPost() {
                   </div>
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> European B2B teams needing basic company-level visitor data with GDPR compliance for manual AE follow-up.
-                    See our <Link href="/blog/leadfeeder-alternative" className="text-blue-600 hover:underline">Leadfeeder alternatives guide</Link>.
+                    See our <Link href="/blog/leadfeeder-alternative" className="text-primary hover:underline">Leadfeeder alternatives guide</Link>.
                   </p>
                 </div>
               </div>
@@ -466,7 +466,7 @@ export default function BlogPost() {
                 <div className="bg-gray-50 rounded-lg p-4">
                   <p className="text-sm text-gray-600">
                     <strong>Recommendation:</strong> Opensend is a strong tool for e-commerce and DTC but is not a suitable
-                    Qualified alternative for B2B enterprise sales teams. See our <Link href="/blog/opensend-alternative" className="text-blue-600 hover:underline">Opensend alternatives guide</Link>.
+                    Qualified alternative for B2B enterprise sales teams. See our <Link href="/blog/opensend-alternative" className="text-primary hover:underline">Opensend alternatives guide</Link>.
                   </p>
                 </div>
               </div>
@@ -474,27 +474,27 @@ export default function BlogPost() {
               {/* Decision Section */}
               <h2>Which Qualified Alternative Should You Choose?</h2>
 
-              <div className="not-prose bg-gradient-to-br from-gray-50 to-blue-50 rounded-xl p-6 my-8 border border-gray-200">
+              <div className="not-prose bg-gradient-to-br from-gray-50 to-primary/5 rounded-xl p-6 my-8 border border-gray-200">
                 <h3 className="font-bold text-lg mb-4">Decision Matrix by Use Case</h3>
                 <div className="space-y-4 text-sm">
                   <div className="border-b border-gray-200 pb-3">
-                    <p className="font-bold text-blue-700 mb-1">You want to identify ALL visitors (name + email) and trigger automated outreach:</p>
+                    <p className="font-bold text-primary mb-1">You want to identify ALL visitors (name + email) and trigger automated outreach:</p>
                     <p className="text-gray-700"><strong>Choose Cursive.</strong> Identify website visitors from $97/mo, receive fresh weekly in-market buyer lists from $197/mo, or get both for $247/mo vs Qualified&apos;s $3,500-$7,500+/mo.</p>
                   </div>
                   <div className="border-b border-gray-200 pb-3">
-                    <p className="font-bold text-blue-700 mb-1">You need company-level routing with Slack alerts and have a large budget:</p>
+                    <p className="font-bold text-primary mb-1">You need company-level routing with Slack alerts and have a large budget:</p>
                     <p className="text-gray-700"><strong>Choose Warmly.</strong> Better than Qualified for company-level routing without requiring chat engagement, though still expensive at $3,500/mo.</p>
                   </div>
                   <div className="border-b border-gray-200 pb-3">
-                    <p className="font-bold text-blue-700 mb-1">You want to test person-level identification for free before committing:</p>
+                    <p className="font-bold text-primary mb-1">You want to test person-level identification for free before committing:</p>
                     <p className="text-gray-700"><strong>Start with RB2B.</strong> Free tier available, 50-60% person-level LinkedIn match rate, simple Slack integration. Limited in enrichment and has no outreach automation.</p>
                   </div>
                   <div className="border-b border-gray-200 pb-3">
-                    <p className="font-bold text-blue-700 mb-1">You are already on HubSpot and want basic visitor intelligence:</p>
+                    <p className="font-bold text-primary mb-1">You are already on HubSpot and want basic visitor intelligence:</p>
                     <p className="text-gray-700"><strong>Use Clearbit via HubSpot.</strong> If you are a HubSpot customer, the Clearbit features are included. For non-HubSpot teams, look elsewhere.</p>
                   </div>
                   <div>
-                    <p className="font-bold text-blue-700 mb-1">You are a European B2B team needing GDPR-compliant company-level data:</p>
+                    <p className="font-bold text-primary mb-1">You are a European B2B team needing GDPR-compliant company-level data:</p>
                     <p className="text-gray-700"><strong>Choose Leadfeeder/Dealfront.</strong> Good European coverage and GDPR compliance for company-level visitor intelligence at an affordable price.</p>
                   </div>
                 </div>

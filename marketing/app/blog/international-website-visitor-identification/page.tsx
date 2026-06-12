@@ -125,7 +125,7 @@ export default function BlogPost() {
               Back to Blog
             </Link>
 
-            <div className="max-w-4xl">
+            <div className="max-w-4xl mx-auto">
               <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
                 Visitor Identification
               </div>
@@ -379,7 +379,7 @@ export default function BlogPost() {
                 </li>
               </ol>
 
-              <div className="not-prose bg-blue-50 rounded-xl p-6 my-8 border border-blue-200">
+              <div className="not-prose bg-primary/5 rounded-xl p-6 my-8 border border-primary/20">
                 <h3 className="font-bold text-base mb-2">Skip the Manual Audit</h3>
                 <p className="text-sm text-gray-700 mb-4">
                   Cursive&apos;s free audit shows you exactly which visitors you are currently missing — by geography,

@@ -66,7 +66,7 @@ export default function BlogPost() {
             <ArrowLeft className="w-4 h-4" />
             Back to Blog
           </Link>
-          <div className="max-w-4xl">
+          <div className="max-w-4xl mx-auto">
             <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
               Comparisons
             </div>
@@ -101,7 +101,7 @@ export default function BlogPost() {
             <div className="not-prose overflow-x-auto my-8">
               <table className="w-full text-sm border-collapse">
                 <thead>
-                  <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                  <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                     <th className="border border-gray-300 p-3 text-left font-bold">Tool</th>
                     <th className="border border-gray-300 p-3 text-left font-bold">Best For</th>
                     <th className="border border-gray-300 p-3 text-left font-bold">Key Metric</th>
@@ -110,7 +110,7 @@ export default function BlogPost() {
                   </tr>
                 </thead>
                 <tbody className="bg-white">
-                  <tr className="bg-blue-50 border-2 border-blue-500">
+                  <tr className="bg-primary/5 border-2 border-primary">
                     <td className="border border-gray-300 p-3 font-bold">Cursive</td>
                     <td className="border border-gray-300 p-3">Enrichment + Visitor ID + Outreach</td>
                     <td className="border border-gray-300 p-3">85%+ visitor match rate</td>
@@ -189,11 +189,11 @@ export default function BlogPost() {
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-red-600 font-bold mt-0.5">3.</span>
-                  <span><strong>No Visitor Identification:</strong> Clay cannot identify who is visiting your website. It only enriches contacts you already know about. <Link href="/what-is-website-visitor-identification" className="text-blue-600 hover:underline">Website visitor identification</Link> reveals the high-intent prospects Clay never sees.</span>
+                  <span><strong>No Visitor Identification:</strong> Clay cannot identify who is visiting your website. It only enriches contacts you already know about. <Link href="/what-is-website-visitor-identification" className="text-primary hover:underline">Website visitor identification</Link> reveals the high-intent prospects Clay never sees.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-red-600 font-bold mt-0.5">4.</span>
-                  <span><strong>No Built-In Outreach:</strong> Clay enriches data but does not send emails, LinkedIn messages, or <Link href="/what-is-direct-mail-automation" className="text-blue-600 hover:underline">direct mail</Link>. You need to export enriched data to a separate outreach tool, adding another subscription and integration to your stack.</span>
+                  <span><strong>No Built-In Outreach:</strong> Clay enriches data but does not send emails, LinkedIn messages, or <Link href="/what-is-direct-mail-automation" className="text-primary hover:underline">direct mail</Link>. You need to export enriched data to a separate outreach tool, adding another subscription and integration to your stack.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-red-600 font-bold mt-0.5">5.</span>
@@ -210,21 +210,21 @@ export default function BlogPost() {
             <h2>7 Best Clay Alternatives (Detailed Reviews)</h2>
 
             {/* Tool 1: Cursive */}
-            <div className="not-prose bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-8 my-8 border-2 border-blue-500">
+            <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-8 my-8 border-2 border-primary">
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <h3 className="text-2xl font-bold mb-2">1. Cursive</h3>
                   <p className="text-sm text-gray-600">Best for: Built-in enrichment + visitor identification + automated outreach</p>
                 </div>
-                <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-bold">Our Pick</span>
+                <span className="bg-primary text-white px-3 py-1 rounded-full text-sm font-bold">Our Pick</span>
               </div>
 
               <p className="text-gray-700 mb-4">
-                <strong>What makes it different:</strong> Where Clay requires you to build enrichment workflows from scratch, <Link href="/" className="text-blue-600 hover:underline">Cursive</Link> takes a fundamentally different approach. It starts by <Link href="/visitor-identification" className="text-blue-600 hover:underline">identifying your anonymous website visitors</Link>, automatically enriches them with firmographic, technographic, and contact data, scores them based on <Link href="/intent-audiences" className="text-blue-600 hover:underline">intent signals</Link>, and launches personalized multi-channel outreach, all from one platform.
+                <strong>What makes it different:</strong> Where Clay requires you to build enrichment workflows from scratch, <Link href="/" className="text-primary hover:underline">Cursive</Link> takes a fundamentally different approach. It starts by <Link href="/visitor-identification" className="text-primary hover:underline">identifying your anonymous website visitors</Link>, automatically enriches them with firmographic, technographic, and contact data, scores them based on <Link href="/intent-audiences" className="text-primary hover:underline">intent signals</Link>, and launches personalized multi-channel outreach, all from one platform.
               </p>
 
               <p className="text-gray-700 mb-4">
-                You do not need to build a spreadsheet, configure API connectors, or write enrichment formulas. Cursive handles the enrichment pipeline automatically as part of its end-to-end workflow. The <Link href="/what-is-ai-sdr" className="text-blue-600 hover:underline">AI SDR</Link> uses enriched data plus intent signals to craft personalized messages across email, LinkedIn, and <Link href="/direct-mail" className="text-blue-600 hover:underline">direct mail</Link>. For teams that want enrichment as a means to pipeline rather than an end in itself, Cursive replaces Clay and your outreach tools in one platform.
+                You do not need to build a spreadsheet, configure API connectors, or write enrichment formulas. Cursive handles the enrichment pipeline automatically as part of its end-to-end workflow. The <Link href="/what-is-ai-sdr" className="text-primary hover:underline">AI SDR</Link> uses enriched data plus intent signals to craft personalized messages across email, LinkedIn, and <Link href="/direct-mail" className="text-primary hover:underline">direct mail</Link>. For teams that want enrichment as a means to pipeline rather than an end in itself, Cursive replaces Clay and your outreach tools in one platform.
               </p>
 
               <div className="grid md:grid-cols-2 gap-6 mb-4">
@@ -279,10 +279,10 @@ export default function BlogPost() {
               <div className="bg-white rounded-lg p-4">
                 <div className="flex justify-between items-center mb-2">
                   <span className="font-bold">Pricing:</span>
-                  <span className="text-lg font-bold text-blue-600">$97 - $247/mo</span>
+                  <span className="text-lg font-bold text-primary">$97 - $247/mo</span>
                 </div>
                 <p className="text-sm text-gray-600">
-                  <strong>Best for:</strong> Teams that want enrichment as part of a complete lead generation workflow, not as a separate project. Replaces Clay + outreach tool + visitor ID tool. See <Link href="/pricing" className="text-blue-600 hover:underline">pricing details</Link>.
+                  <strong>Best for:</strong> Teams that want enrichment as part of a complete lead generation workflow, not as a separate project. Replaces Clay + outreach tool + visitor ID tool. See <Link href="/pricing" className="text-primary hover:underline">pricing details</Link>.
                 </p>
               </div>
             </div>
@@ -435,7 +435,7 @@ export default function BlogPost() {
               </p>
 
               <p className="text-gray-700 mb-4">
-                The catch is that Clearbit is no longer truly a standalone product. You effectively need HubSpot to get the full benefit. For teams not on HubSpot, Clearbit is a diminishing option. The API still works for existing customers, but new signups are funneled toward HubSpot. If you were using Clay partly because Clearbit became less accessible, the alternatives in this list (especially <Link href="/blog/clearbit-alternatives-comparison" className="text-blue-600 hover:underline">Cursive and Apollo</Link>) are your best paths forward.
+                The catch is that Clearbit is no longer truly a standalone product. You effectively need HubSpot to get the full benefit. For teams not on HubSpot, Clearbit is a diminishing option. The API still works for existing customers, but new signups are funneled toward HubSpot. If you were using Clay partly because Clearbit became less accessible, the alternatives in this list (especially <Link href="/blog/clearbit-alternatives-comparison" className="text-primary hover:underline">Cursive and Apollo</Link>) are your best paths forward.
               </p>
 
               <div className="grid md:grid-cols-2 gap-6 mb-4">
@@ -489,7 +489,7 @@ export default function BlogPost() {
                   <span className="text-lg font-bold">Included with HubSpot (varies)</span>
                 </div>
                 <p className="text-sm text-gray-600">
-                  <strong>Best for:</strong> Teams already committed to HubSpot that want native enrichment. Not viable for non-HubSpot users. Read our full <Link href="/blog/clearbit-alternatives-comparison" className="text-blue-600 hover:underline">Clearbit alternatives comparison</Link>.
+                  <strong>Best for:</strong> Teams already committed to HubSpot that want native enrichment. Not viable for non-HubSpot users. Read our full <Link href="/blog/clearbit-alternatives-comparison" className="text-primary hover:underline">Clearbit alternatives comparison</Link>.
                 </p>
               </div>
             </div>
@@ -710,7 +710,7 @@ export default function BlogPost() {
             <div className="not-prose overflow-x-auto my-8">
               <table className="w-full text-sm border-collapse">
                 <thead>
-                  <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                  <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                     <th className="border border-gray-300 p-3 text-left font-bold">Feature</th>
                     <th className="border border-gray-300 p-3 text-center font-bold">Cursive</th>
                     <th className="border border-gray-300 p-3 text-center font-bold">Apollo</th>
@@ -826,7 +826,7 @@ export default function BlogPost() {
               Clay&apos;s credit-based pricing is one of the most common reasons teams explore alternatives. Here is how the costs actually compare when you factor in what each platform delivers:
             </p>
 
-            <div className="not-prose bg-gradient-to-br from-gray-50 to-blue-50 rounded-xl p-6 my-8 border border-gray-200">
+            <div className="not-prose bg-gradient-to-br from-gray-50 to-primary/5 rounded-xl p-6 my-8 border border-gray-200">
               <h3 className="font-bold text-lg mb-4">Monthly Enrichment Stack Costs (10,000 Leads/Month)</h3>
               <div className="space-y-4">
                 <div className="bg-white rounded-lg p-4 border border-gray-200">
@@ -836,12 +836,12 @@ export default function BlogPost() {
                   </div>
                   <p className="text-sm text-gray-600">Clay ($149-$349 for credits) + Data provider credits ($100-300) + Outreach tool ($60-200) + Visitor ID ($99+) = Complex, expensive stack</p>
                 </div>
-                <div className="bg-blue-50 rounded-lg p-4 border-2 border-blue-500">
+                <div className="bg-primary/5 rounded-lg p-4 border-2 border-primary">
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-bold">Cursive Pixel + Audience Bundle</span>
-                    <span className="text-lg font-bold text-blue-600">$97 - $247/mo</span>
+                    <span className="text-lg font-bold text-primary">$97 - $247/mo</span>
                   </div>
-                  <p className="text-sm text-gray-600">Visitor Pixel + a fresh weekly Custom Audience = both self-serve plans bundled. See <Link href="/pricing" className="text-blue-600 hover:underline">pricing</Link>.</p>
+                  <p className="text-sm text-gray-600">Visitor Pixel + a fresh weekly Custom Audience = both self-serve plans bundled. See <Link href="/pricing" className="text-primary hover:underline">pricing</Link>.</p>
                 </div>
                 <div className="bg-white rounded-lg p-4 border border-gray-200">
                   <div className="flex justify-between items-center mb-2">
@@ -879,45 +879,45 @@ export default function BlogPost() {
 
             <div className="not-prose space-y-4 my-8">
               <div className="bg-white rounded-lg p-5 border border-gray-200 flex gap-4">
-                <div className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm shrink-0">1</div>
+                <div className="bg-primary text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm shrink-0">1</div>
                 <div>
                   <h4 className="font-bold mb-1">Audit Your Clay Workflows</h4>
                   <p className="text-sm text-gray-600">Document what your Clay tables do: which data providers they use, what enrichment fields they populate, and where the output goes. This helps you understand which capabilities you actually use versus which are nice-to-have complexity.</p>
                 </div>
               </div>
               <div className="bg-white rounded-lg p-5 border border-gray-200 flex gap-4">
-                <div className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm shrink-0">2</div>
+                <div className="bg-primary text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm shrink-0">2</div>
                 <div>
                   <h4 className="font-bold mb-1">Install the Cursive Pixel</h4>
-                  <p className="text-sm text-gray-600">Add the <Link href="/pixel" className="text-blue-600 hover:underline">Cursive tracking pixel</Link> to start identifying anonymous website visitors immediately. This is the biggest capability gap Clay never filled: knowing who is already interested in your product before you ever reach out.</p>
+                  <p className="text-sm text-gray-600">Add the <Link href="/pixel" className="text-primary hover:underline">Cursive tracking pixel</Link> to start identifying anonymous website visitors immediately. This is the biggest capability gap Clay never filled: knowing who is already interested in your product before you ever reach out.</p>
                 </div>
               </div>
               <div className="bg-white rounded-lg p-5 border border-gray-200 flex gap-4">
-                <div className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm shrink-0">3</div>
+                <div className="bg-primary text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm shrink-0">3</div>
                 <div>
                   <h4 className="font-bold mb-1">Export and Import Your Enriched Data</h4>
-                  <p className="text-sm text-gray-600">Export your enriched prospect lists from Clay as CSV files. Import them into Cursive, which will re-enrich contacts with its own data sources and add <Link href="/intent-audiences" className="text-blue-600 hover:underline">intent scores</Link> based on website behavior, giving you a richer dataset than Clay alone provided.</p>
+                  <p className="text-sm text-gray-600">Export your enriched prospect lists from Clay as CSV files. Import them into Cursive, which will re-enrich contacts with its own data sources and add <Link href="/intent-audiences" className="text-primary hover:underline">intent scores</Link> based on website behavior, giving you a richer dataset than Clay alone provided.</p>
                 </div>
               </div>
               <div className="bg-white rounded-lg p-5 border border-gray-200 flex gap-4">
-                <div className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm shrink-0">4</div>
+                <div className="bg-primary text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm shrink-0">4</div>
                 <div>
                   <h4 className="font-bold mb-1">Build Intent-Based Audiences</h4>
-                  <p className="text-sm text-gray-600">Use the <Link href="/audience-builder" className="text-blue-600 hover:underline">audience builder</Link> to create segments combining enrichment data (industry, company size, tech stack) with intent signals (pages visited, time on site, return visits). This is where Cursive delivers value Clay cannot.</p>
+                  <p className="text-sm text-gray-600">Use the <Link href="/audience-builder" className="text-primary hover:underline">audience builder</Link> to create segments combining enrichment data (industry, company size, tech stack) with intent signals (pages visited, time on site, return visits). This is where Cursive delivers value Clay cannot.</p>
                 </div>
               </div>
               <div className="bg-white rounded-lg p-5 border border-gray-200 flex gap-4">
-                <div className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm shrink-0">5</div>
+                <div className="bg-primary text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm shrink-0">5</div>
                 <div>
                   <h4 className="font-bold mb-1">Launch Automated Multi-Channel Outreach</h4>
-                  <p className="text-sm text-gray-600">Create sequences that automatically trigger when high-intent visitors match your ICP. The <Link href="/what-is-ai-sdr" className="text-blue-600 hover:underline">AI SDR</Link> personalizes outreach across email, LinkedIn, and <Link href="/direct-mail" className="text-blue-600 hover:underline">direct mail</Link> based on enrichment data and visitor behavior.</p>
+                  <p className="text-sm text-gray-600">Create sequences that automatically trigger when high-intent visitors match your ICP. The <Link href="/what-is-ai-sdr" className="text-primary hover:underline">AI SDR</Link> personalizes outreach across email, LinkedIn, and <Link href="/direct-mail" className="text-primary hover:underline">direct mail</Link> based on enrichment data and visitor behavior.</p>
                 </div>
               </div>
               <div className="bg-white rounded-lg p-5 border border-gray-200 flex gap-4">
-                <div className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm shrink-0">6</div>
+                <div className="bg-primary text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm shrink-0">6</div>
                 <div>
                   <h4 className="font-bold mb-1">Deprecate Clay Tables Incrementally</h4>
-                  <p className="text-sm text-gray-600">As Cursive&apos;s automated enrichment proves itself (usually within 1-2 weeks), start turning off Clay tables one by one. Most teams find that 90% of their Clay workflows become unnecessary once Cursive&apos;s built-in enrichment and visitor identification are running. Schedule a <a href="https://cal.com/cursiveteam/30min" className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">free consultation</a> for migration support.</p>
+                  <p className="text-sm text-gray-600">As Cursive&apos;s automated enrichment proves itself (usually within 1-2 weeks), start turning off Clay tables one by one. Most teams find that 90% of their Clay workflows become unnecessary once Cursive&apos;s built-in enrichment and visitor identification are running. Schedule a <a href="https://cal.com/cursiveteam/30min" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">free consultation</a> for migration support.</p>
                 </div>
               </div>
             </div>
@@ -1000,19 +1000,19 @@ export default function BlogPost() {
           <div className="max-w-3xl mx-auto">
             <h2 className="text-2xl font-bold mb-6">Related Comparisons</h2>
             <div className="grid md:grid-cols-2 gap-4">
-              <Link href="/blog/clearbit-alternatives-comparison" className="bg-gray-50 rounded-lg p-5 border border-gray-200 hover:shadow-md hover:border-blue-400 transition-all">
+              <Link href="/blog/clearbit-alternatives-comparison" className="bg-gray-50 rounded-lg p-5 border border-gray-200 hover:shadow-md hover:border-primary/40 transition-all">
                 <h3 className="font-bold mb-1">Clearbit Alternatives</h3>
                 <p className="text-sm text-gray-600">10 data enrichment tools compared</p>
               </Link>
-              <Link href="/blog/instantly-alternative" className="bg-gray-50 rounded-lg p-5 border border-gray-200 hover:shadow-md hover:border-blue-400 transition-all">
+              <Link href="/blog/instantly-alternative" className="bg-gray-50 rounded-lg p-5 border border-gray-200 hover:shadow-md hover:border-primary/40 transition-all">
                 <h3 className="font-bold mb-1">Instantly Alternatives</h3>
                 <p className="text-sm text-gray-600">Cold email + visitor ID combined</p>
               </Link>
-              <Link href="/blog/smartlead-alternative" className="bg-gray-50 rounded-lg p-5 border border-gray-200 hover:shadow-md hover:border-blue-400 transition-all">
+              <Link href="/blog/smartlead-alternative" className="bg-gray-50 rounded-lg p-5 border border-gray-200 hover:shadow-md hover:border-primary/40 transition-all">
                 <h3 className="font-bold mb-1">Smartlead Alternatives</h3>
                 <p className="text-sm text-gray-600">Email outreach with visitor tracking</p>
               </Link>
-              <Link href="/blog/warmly-vs-cursive-comparison" className="bg-gray-50 rounded-lg p-5 border border-gray-200 hover:shadow-md hover:border-blue-400 transition-all">
+              <Link href="/blog/warmly-vs-cursive-comparison" className="bg-gray-50 rounded-lg p-5 border border-gray-200 hover:shadow-md hover:border-primary/40 transition-all">
                 <h3 className="font-bold mb-1">Warmly vs Cursive</h3>
                 <p className="text-sm text-gray-600">Side-by-side intent platform comparison</p>
               </Link>
@@ -1071,7 +1071,7 @@ export default function BlogPost() {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr className="bg-blue-50">
+                  <tr className="bg-primary/5">
                     <td className="border p-2 font-bold">Cursive</td>
                     <td className="border p-2">Enrichment + Visitor ID + Outreach</td>
                     <td className="border p-2">$97/mo</td>

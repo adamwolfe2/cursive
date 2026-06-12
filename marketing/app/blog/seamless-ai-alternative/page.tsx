@@ -57,7 +57,7 @@ export default function BlogPost() {
               Back to Blog
             </Link>
 
-            <div className="max-w-4xl">
+            <div className="max-w-4xl mx-auto">
               <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
                 Data &amp; Intelligence
               </div>
@@ -137,7 +137,7 @@ export default function BlogPost() {
               <div className="not-prose overflow-x-auto my-8">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                    <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                       <th className="border border-gray-300 p-3 text-left font-bold">Tool</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Database</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Visitor ID</th>
@@ -148,7 +148,7 @@ export default function BlogPost() {
                     </tr>
                   </thead>
                   <tbody className="bg-white">
-                    <tr className="bg-blue-50 border-2 border-blue-500">
+                    <tr className="bg-primary/5 border-2 border-primary">
                       <td className="border border-gray-300 p-3 font-bold">Cursive</td>
                       <td className="border border-gray-300 p-3">280M consumer / 140M+ business</td>
                       <td className="border border-gray-300 p-3 text-green-600 font-bold">70% person-level</td>
@@ -218,20 +218,20 @@ export default function BlogPost() {
               <h2>7 Best Seamless.AI Alternatives (Detailed Comparison)</h2>
 
               {/* Tool 1: Cursive */}
-              <div className="not-prose bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-8 my-8 border-2 border-blue-500">
+              <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-8 my-8 border-2 border-primary">
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <h3 className="text-2xl font-bold mb-2">1. Cursive</h3>
                     <p className="text-sm text-gray-600">Best for: Full-pipeline generation with 70% visitor ID, 95%+ deliverability, and AI-powered outreach</p>
                   </div>
-                  <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-bold whitespace-nowrap">Top Pick</span>
+                  <span className="bg-primary text-white px-3 py-1 rounded-full text-sm font-bold whitespace-nowrap">Top Pick</span>
                 </div>
 
                 <p className="text-gray-700 mb-4">
                   <strong>What makes it different:</strong> Where Seamless.AI is a database search tool with known
                   data quality problems, Cursive is a complete pipeline generation platform built around data accuracy
                   and automation. Cursive combines{" "}
-                  <Link href="/visitor-identification" className="text-blue-600 hover:underline">industry-leading 70% person-level visitor identification</Link>,
+                  <Link href="/visitor-identification" className="text-primary hover:underline">industry-leading 70% person-level visitor identification</Link>,
                   280M consumer profiles, 140M+ business profiles, 60B+ behavioral intent signals, and AI-powered
                   multi-channel outreach -- all with a 95%+ email deliverability guarantee. Instead of exporting
                   stale lists and hoping for delivery, Cursive identifies the real people visiting your site right
@@ -294,13 +294,13 @@ export default function BlogPost() {
                 <div className="bg-white rounded-lg p-4">
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-bold">Pricing:</span>
-                    <span className="text-lg font-bold text-blue-600">$97/mo Pixel | $197/mo Audience | $247/mo Bundle</span>
+                    <span className="text-lg font-bold text-primary">$97/mo Pixel | $197/mo Audience | $247/mo Bundle</span>
                   </div>
                   <p className="text-sm text-gray-600">
                     <strong>Best for:</strong> B2B companies that want clean, deliverable contact data combined with
                     visitor identification and automated outreach -- at a fraction of Seamless.AI's cost and with
                     dramatically better deliverability. See our{" "}
-                    <Link href="/pricing" className="text-blue-600 hover:underline">pricing page</Link> for full details.
+                    <Link href="/pricing" className="text-primary hover:underline">pricing page</Link> for full details.
                   </p>
                 </div>
               </div>
@@ -726,7 +726,7 @@ export default function BlogPost() {
               <h2>Decision Framework: Which Seamless.AI Alternative Is Right for You?</h2>
 
               <div className="not-prose space-y-4 my-8">
-                <div className="bg-blue-50 rounded-lg p-5 border border-blue-200">
+                <div className="bg-primary/5 rounded-lg p-5 border border-primary/20">
                   <h3 className="font-bold mb-2">Choose Cursive if...</h3>
                   <p className="text-sm text-gray-700">You want to convert your existing website traffic into pipeline, need 95%+ email deliverability, and want AI-powered multi-channel outreach included -- all without a long-term contract. Cursive is the best choice for B2B SaaS, agencies, and any team that values data quality and automation over raw database size.</p>
                 </div>

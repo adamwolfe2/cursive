@@ -61,7 +61,7 @@ export default function AnalyticsPage() {
               Back to Blog
             </Link>
 
-            <div className="max-w-4xl">
+            <div className="max-w-4xl mx-auto">
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-full text-sm font-medium mb-6">
                 <BarChart3 className="w-4 h-4" />
                 Analytics
@@ -142,7 +142,7 @@ export default function AnalyticsPage() {
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-red-600 font-bold">3.</span>
-                    <span><strong>Anonymous traffic:</strong> 98% of B2B website visitors never fill out a form. Without <Link href="/visitor-identification" className="text-blue-600 hover:underline">visitor identification</Link>, these visitors are invisible to your analytics&mdash;creating a massive gap between actual interest and reported engagement.</span>
+                    <span><strong>Anonymous traffic:</strong> 98% of B2B website visitors never fill out a form. Without <Link href="/visitor-identification" className="text-primary hover:underline">visitor identification</Link>, these visitors are invisible to your analytics&mdash;creating a massive gap between actual interest and reported engagement.</span>
                   </li>
                 </ul>
               </div>
@@ -295,7 +295,7 @@ export default function AnalyticsPage() {
               <div className="not-prose overflow-x-auto my-8">
                 <table className="w-full text-sm border-collapse">
                   <thead>
-                    <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                    <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                       <th className="border border-gray-300 p-3 text-left font-bold">Model</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Best For</th>
                       <th className="border border-gray-300 p-3 text-left font-bold">Complexity</th>
@@ -321,7 +321,7 @@ export default function AnalyticsPage() {
                       <td className="border border-gray-300 p-3 text-green-600">Simple</td>
                       <td className="border border-gray-300 p-3 text-amber-600">Medium</td>
                     </tr>
-                    <tr className="bg-blue-50 border-2 border-blue-500">
+                    <tr className="bg-primary/5 border-2 border-primary">
                       <td className="border border-gray-300 p-3 font-bold">Position-Based</td>
                       <td className="border border-gray-300 p-3">Most B2B companies</td>
                       <td className="border border-gray-300 p-3 text-amber-600">Medium</td>
@@ -392,7 +392,7 @@ export default function AnalyticsPage() {
                 whether each stage is improving or degrading over time.
               </p>
 
-              <div className="not-prose bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 my-8 border border-blue-200">
+              <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-6 my-8 border border-primary/20">
                 <h3 className="font-bold text-lg mb-3">Dashboard Best Practices</h3>
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-center gap-2">
@@ -455,7 +455,7 @@ export default function AnalyticsPage() {
                 You can prove that the blog post started a $100k deal.
               </p>
 
-              <div className="not-prose bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 my-8 border border-blue-200">
+              <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-6 my-8 border border-primary/20">
                 <h3 className="font-bold text-lg mb-3">Attribution Visibility: Before and After Visitor Identification</h3>
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
@@ -603,7 +603,7 @@ export default function AnalyticsPage() {
 
               <div className="not-prose space-y-6 my-8">
                 {faqs.map((faq, index) => (
-                  <div key={index} className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-lg p-6 border border-gray-200">
+                  <div key={index} className="bg-gradient-to-br from-gray-50 to-primary/5 rounded-lg p-6 border border-gray-200">
                     <h3 className="font-bold text-lg mb-3">{faq.question}</h3>
                     <p className="text-gray-700">{faq.answer}</p>
                   </div>
@@ -652,7 +652,7 @@ export default function AnalyticsPage() {
         />
 
         {/* Related Posts */}
-        <section className="py-16 bg-gradient-to-br from-gray-50 to-blue-50">
+        <section className="py-16 bg-gradient-to-br from-gray-50 to-primary/5">
           <Container>
             <div className="max-w-5xl mx-auto">
               <SimpleRelatedPosts posts={[

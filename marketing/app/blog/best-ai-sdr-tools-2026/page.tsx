@@ -218,7 +218,7 @@ export default function BestAiSdrTools2026() {
               Back to Blog
             </Link>
 
-            <div className="max-w-4xl">
+            <div className="max-w-4xl mx-auto">
               <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
                 <Bot className="w-3 h-3 inline mr-1" />
                 AI SDR Tools
@@ -251,7 +251,7 @@ export default function BestAiSdrTools2026() {
               <span className="text-sm font-medium text-gray-500 mr-2">Jump to:</span>
               {tools.map(t => (
                 <a key={t.name} href={`#${t.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}`}
-                  className="text-sm text-blue-600 hover:underline">
+                  className="text-sm text-primary hover:underline">
                   #{t.rank} {t.name}
                 </a>
               ))}
@@ -288,18 +288,18 @@ export default function BestAiSdrTools2026() {
             <div className="max-w-4xl mx-auto space-y-12">
               {tools.map((tool) => (
                 <div key={tool.name} id={tool.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}
-                  className={`rounded-2xl border-2 p-8 ${tool.rank === 1 ? 'border-blue-500 bg-blue-50' : 'border-gray-200 bg-white'}`}>
+                  className={`rounded-2xl border-2 p-8 ${tool.rank === 1 ? 'border-primary bg-primary/5' : 'border-gray-200 bg-white'}`}>
                   <div className="flex items-start justify-between mb-4">
                     <div>
                       <div className="flex items-center gap-3 mb-2">
-                        <span className={`text-4xl font-bold ${tool.rank === 1 ? 'text-blue-600' : 'text-gray-400'}`}>
+                        <span className={`text-4xl font-bold ${tool.rank === 1 ? 'text-primary' : 'text-gray-400'}`}>
                           #{tool.rank}
                         </span>
                         <div>
                           <div className="flex items-center gap-2">
                             <h2 className="text-2xl font-bold">{tool.name}</h2>
                             {tool.rank === 1 && (
-                              <span className="bg-blue-600 text-white text-xs px-2 py-0.5 rounded-full font-medium">
+                              <span className="bg-primary text-white text-xs px-2 py-0.5 rounded-full font-medium">
                                 Top Pick
                               </span>
                             )}
@@ -395,7 +395,7 @@ export default function BestAiSdrTools2026() {
                     ['Clay', '⚠️ Via APIs', '❌', '✅ 50+ sources', '❌ (no sequencer)', '$149/mo'],
                   ].map(([tool, intent, visitorId, db, outreach, price], i) => (
                     <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                      <td className="p-4 font-medium border-b border-gray-100">{tool}{i === 0 && <span className="ml-2 text-xs bg-blue-600 text-white px-1.5 py-0.5 rounded">Best</span>}</td>
+                      <td className="p-4 font-medium border-b border-gray-100">{tool}{i === 0 && <span className="ml-2 text-xs bg-primary text-white px-1.5 py-0.5 rounded">Best</span>}</td>
                       <td className="p-4 border-b border-gray-100">{intent}</td>
                       <td className="p-4 border-b border-gray-100">{visitorId}</td>
                       <td className="p-4 border-b border-gray-100">{db}</td>
@@ -456,15 +456,15 @@ export default function BestAiSdrTools2026() {
         </section>
 
         {/* CTA */}
-        <section className="py-16 bg-gradient-to-br from-blue-600 to-purple-600 text-white">
+        <section className="py-16 bg-gradient-to-br from-primary to-primary-dark text-white">
           <Container>
             <div className="text-center max-w-2xl mx-auto">
               <h2 className="text-3xl font-bold mb-4">Try the Intent-First AI SDR Approach</h2>
-              <p className="text-xl text-blue-100 mb-8">
+              <p className="text-xl text-white/90 mb-8">
                 Cursive identifies who is visiting your site and researching your category, then sends
                 personalized outreach automatically. Start seeing pipeline in your first week.
               </p>
-              <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50 font-semibold px-8">
+              <Button size="lg" className="bg-white text-primary hover:bg-primary/5 font-semibold px-8">
                 View Self-Serve Plans
               </Button>
             </div>

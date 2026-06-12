@@ -134,9 +134,9 @@ export function DemoAudienceBuilder() {
   }
 
   const filterColors: Record<string, string> = {
-    industry: "bg-blue-50 text-blue-700 border-blue-200",
-    title: "bg-blue-50 text-blue-700 border-blue-200",
-    size: "bg-blue-50 text-blue-700 border-blue-200",
+    industry: "bg-primary/5 text-primary border-primary/20",
+    title: "bg-primary/5 text-primary border-primary/20",
+    size: "bg-primary/5 text-primary border-primary/20",
     location: "bg-gray-50 text-gray-700 border-gray-200",
   }
 
@@ -148,7 +148,7 @@ export function DemoAudienceBuilder() {
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bg-gradient-to-br from-blue-50 to-blue-50 rounded-lg p-3 text-center border border-gray-200 col-span-2"
+          className="bg-gradient-to-br from-primary/5 to-primary/5 rounded-lg p-3 text-center border border-gray-200 col-span-2"
         >
           <div className="text-[10px] text-gray-600 mb-1">Total Audience Size</div>
           <motion.div
@@ -186,7 +186,7 @@ export function DemoAudienceBuilder() {
           >
             {totalMatched}
           </motion.div>
-          <div className="flex items-center justify-center gap-1 text-[10px] text-blue-600">
+          <div className="flex items-center justify-center gap-1 text-[10px] text-primary">
             <span>Live</span>
           </div>
         </motion.div>

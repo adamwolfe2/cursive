@@ -26,7 +26,7 @@ export default function HowToIdentifyAnonymousVisitors() {
               Back to Blog
             </Link>
 
-            <div className="max-w-4xl">
+            <div className="max-w-4xl mx-auto">
               <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
                 <Eye className="w-3 h-3 inline mr-1" />
                 Visitor Identification
@@ -63,7 +63,7 @@ export default function HowToIdentifyAnonymousVisitors() {
               </p>
 
               <p>
-                <Link href="/visitor-identification" className="text-blue-600 hover:underline">Website visitor identification</Link> technology
+                <Link href="/visitor-identification" className="text-primary hover:underline">Website visitor identification</Link> technology
                 closes this gap. Modern platforms can identify 50-70% of anonymous B2B visitors by name,
                 email, company, LinkedIn profile, and the specific pages they visited. This guide explains
                 exactly how it works, what data you get, and how to implement it.
@@ -90,12 +90,12 @@ export default function HowToIdentifyAnonymousVisitors() {
 
               <h2>The 4 Technical Methods Behind Visitor Identification</h2>
 
-              <div className="not-prose bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-8 my-8 border border-gray-200">
+              <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-8 my-8 border border-gray-200">
                 <h3 className="text-xl font-bold mb-6 text-gray-900">Identification Method Comparison</h3>
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="bg-white rounded-lg p-5">
                     <div className="flex items-center gap-2 mb-3">
-                      <Database className="w-5 h-5 text-blue-600" />
+                      <Database className="w-5 h-5 text-primary" />
                       <h4 className="font-bold">1. IP Address Resolution</h4>
                     </div>
                     <p className="text-sm text-gray-600 mb-3">Maps visitor IP ranges to companies and individuals using ISP/business records.</p>
@@ -107,12 +107,12 @@ export default function HowToIdentifyAnonymousVisitors() {
                   </div>
                   <div className="bg-white rounded-lg p-5">
                     <div className="flex items-center gap-2 mb-3">
-                      <Eye className="w-5 h-5 text-purple-600" />
+                      <Eye className="w-5 h-5 text-primary" />
                       <h4 className="font-bold">2. Device Fingerprinting</h4>
                     </div>
                     <p className="text-sm text-gray-600 mb-3">Combines browser, OS, screen, font, and network signals into a probabilistic ID.</p>
                     <div className="space-y-1 text-sm">
-                      <div className="flex justify-between"><span className="text-gray-500">Accuracy</span><span className="font-semibold text-blue-600">70–85%</span></div>
+                      <div className="flex justify-between"><span className="text-gray-500">Accuracy</span><span className="font-semibold text-primary">70–85%</span></div>
                       <div className="flex justify-between"><span className="text-gray-500">Works across sessions</span><span className="font-semibold text-green-600">Yes</span></div>
                       <div className="flex justify-between"><span className="text-gray-500">Privacy risk</span><span className="font-semibold text-yellow-600">Medium</span></div>
                     </div>
@@ -126,7 +126,7 @@ export default function HowToIdentifyAnonymousVisitors() {
                     <div className="space-y-1 text-sm">
                       <div className="flex justify-between"><span className="text-gray-500">Identifies person</span><span className="font-semibold text-green-600">Yes (by name)</span></div>
                       <div className="flex justify-between"><span className="text-gray-500">Email accuracy</span><span className="font-semibold text-green-600">Very high</span></div>
-                      <div className="flex justify-between"><span className="text-gray-500">Coverage</span><span className="font-semibold text-blue-600">B2B professionals</span></div>
+                      <div className="flex justify-between"><span className="text-gray-500">Coverage</span><span className="font-semibold text-primary">B2B professionals</span></div>
                     </div>
                   </div>
                   <div className="bg-white rounded-lg p-5">
@@ -376,7 +376,7 @@ export default function HowToIdentifyAnonymousVisitors() {
                     </ul>
                   </div>
                   <div>
-                    <h4 className="font-bold text-blue-700 mb-3">Visitor Identification (Cursive)</h4>
+                    <h4 className="font-bold text-primary mb-3">Visitor Identification (Cursive)</h4>
                     <ul className="space-y-2">
                       {[
                         ['Cost per lead', '$2–$20'],
@@ -387,7 +387,7 @@ export default function HowToIdentifyAnonymousVisitors() {
                       ].map(([label, value]) => (
                         <li key={label} className="flex justify-between text-sm">
                           <span className="text-gray-600">{label}</span>
-                          <span className="font-semibold text-blue-700">{value}</span>
+                          <span className="font-semibold text-primary">{value}</span>
                         </li>
                       ))}
                     </ul>
@@ -417,8 +417,8 @@ export default function HowToIdentifyAnonymousVisitors() {
                       ['Albacross', 'Company only', '~65%', '$299/mo', 'EU-focused companies'],
                       ['Demandbase', 'Person + Company', '55–65%', '$50k+/yr', 'Enterprise ABM'],
                     ].map(([tool, level, rate, price, best], i) => (
-                      <tr key={i} className={i === 0 ? 'bg-blue-50 font-medium' : i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                        <td className="p-3 border border-gray-200">{tool}{i === 0 && <span className="ml-2 text-xs bg-blue-600 text-white px-1.5 py-0.5 rounded">Top Pick</span>}</td>
+                      <tr key={i} className={i === 0 ? 'bg-primary/5 font-medium' : i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                        <td className="p-3 border border-gray-200">{tool}{i === 0 && <span className="ml-2 text-xs bg-primary text-white px-1.5 py-0.5 rounded">Top Pick</span>}</td>
                         <td className="p-3 border border-gray-200">{level}</td>
                         <td className="p-3 border border-gray-200 text-green-700 font-semibold">{rate}</td>
                         <td className="p-3 border border-gray-200">{price}</td>
@@ -459,15 +459,15 @@ export default function HowToIdentifyAnonymousVisitors() {
         </section>
 
         {/* CTA */}
-        <section className="py-16 bg-gradient-to-br from-blue-600 to-purple-600 text-white">
+        <section className="py-16 bg-gradient-to-br from-primary to-primary-dark text-white">
           <Container>
             <div className="text-center max-w-2xl mx-auto">
               <h2 className="text-3xl font-bold mb-4">Start Identifying Your Anonymous Visitors</h2>
-              <p className="text-xl text-blue-100 mb-8">
+              <p className="text-xl text-white/90 mb-8">
                 Cursive identifies 70% of B2B website visitors by name, email, and LinkedIn — and
                 sends personalized outreach automatically. Install in 5 minutes.
               </p>
-              <Button size="lg" className="bg-white text-blue-600 hover:bg-blue-50 font-semibold px-8">
+              <Button size="lg" className="bg-white text-primary hover:bg-primary/5 font-semibold px-8">
                 Get Started
               </Button>
             </div>

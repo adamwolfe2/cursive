@@ -42,7 +42,7 @@ function SectionHeading({ plain, script, sub }: { plain: string; script?: string
 
 function IconChip({ Icon }: { Icon: LucideIcon }) {
   return (
-    <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center">
+    <div className="w-12 h-12 rounded-xl bg-primary/5 flex items-center justify-center">
       <Icon className="w-6 h-6 text-primary" />
     </div>
   )
@@ -54,8 +54,8 @@ function connectionBadge(method: Integration["connectionMethod"]) {
     { label: string; className: string }
   > = {
     native: { label: "Native", className: "bg-green-100 text-green-800" },
-    webhook: { label: "Webhook", className: "bg-blue-100 text-blue-800" },
-    zapier: { label: "Zapier", className: "bg-purple-100 text-purple-800" },
+    webhook: { label: "Webhook", className: "bg-primary/10 text-primary" },
+    zapier: { label: "Zapier", className: "bg-primary/10 text-primary" },
     csv: { label: "CSV", className: "bg-gray-100 text-gray-800" },
     "coming-soon": {
       label: "Coming Soon",

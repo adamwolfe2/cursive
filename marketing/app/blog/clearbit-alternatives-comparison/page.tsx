@@ -49,7 +49,7 @@ export default function BlogPost() {
             Back to Blog
           </Link>
 
-          <div className="max-w-4xl">
+          <div className="max-w-4xl mx-auto">
             <div className="inline-block px-3 py-1 bg-primary text-white rounded-full text-sm font-medium mb-4">
               Data & Intelligence
             </div>
@@ -111,19 +111,19 @@ export default function BlogPost() {
             <h2>10 Best Clearbit Alternatives (Detailed Comparison)</h2>
 
             {/* Tool 1: Cursive */}
-            <div className="not-prose bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-8 my-8 border-2 border-blue-500">
+            <div className="not-prose bg-gradient-to-br from-primary/5 to-primary/5 rounded-xl p-8 my-8 border-2 border-primary">
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <h3 className="text-2xl font-bold mb-2">1. Cursive</h3>
                   <p className="text-sm text-gray-600">Best for: Real-time visitor identification and intent-based outreach</p>
                 </div>
-                <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-bold">Our Pick</span>
+                <span className="bg-primary text-white px-3 py-1 rounded-full text-sm font-bold">Our Pick</span>
               </div>
 
               <p className="text-gray-700 mb-4">
                 <strong>What makes it different:</strong> While Clearbit focuses on enriching known contacts, Cursive
-                specializes in <Link href="/visitor-identification" className="text-blue-600 hover:underline">identifying anonymous website visitors</Link> and automating personalized outreach based on their
-                behavior and <Link href="/intent-audiences" className="text-blue-600 hover:underline">intent signals</Link>.
+                specializes in <Link href="/visitor-identification" className="text-primary hover:underline">identifying anonymous website visitors</Link> and automating personalized outreach based on their
+                behavior and <Link href="/intent-audiences" className="text-primary hover:underline">intent signals</Link>.
               </p>
 
               <div className="grid md:grid-cols-2 gap-6 mb-4">
@@ -166,11 +166,11 @@ export default function BlogPost() {
               <div className="bg-white rounded-lg p-4">
                 <div className="flex justify-between items-center mb-2">
                   <span className="font-bold">Pricing:</span>
-                  <span className="text-lg font-bold text-blue-600">$99 - $999/mo</span>
+                  <span className="text-lg font-bold text-primary">$99 - $999/mo</span>
                 </div>
                 <p className="text-sm text-gray-600">
                   <strong>Best for:</strong> B2B SaaS companies that want to convert website traffic into pipeline through
-                  automated, intent-based outreach. Ideal replacement if you're using Clearbit Reveal + manual follow-up. See our <Link href="/pricing" className="text-blue-600 hover:underline">pricing</Link> for details.
+                  automated, intent-based outreach. Ideal replacement if you're using Clearbit Reveal + manual follow-up. See our <Link href="/pricing" className="text-primary hover:underline">pricing</Link> for details.
                 </p>
               </div>
             </div>
@@ -756,7 +756,7 @@ export default function BlogPost() {
             <div className="not-prose overflow-x-auto my-8">
               <table className="w-full text-sm border-collapse">
                 <thead>
-                  <tr className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                  <tr className="bg-gradient-to-r from-primary to-primary-dark text-white">
                     <th className="border border-gray-300 p-3 text-left font-bold">Tool</th>
                     <th className="border border-gray-300 p-3 text-left font-bold">Best For</th>
                     <th className="border border-gray-300 p-3 text-left font-bold">Starting Price</th>
@@ -765,7 +765,7 @@ export default function BlogPost() {
                   </tr>
                 </thead>
                 <tbody className="bg-white">
-                  <tr className="bg-blue-50 border-2 border-blue-500">
+                  <tr className="bg-primary/5 border-2 border-primary">
                     <td className="border border-gray-300 p-3 font-bold">Cursive</td>
                     <td className="border border-gray-300 p-3">Visitor ID + Intent</td>
                     <td className="border border-gray-300 p-3">$99/mo</td>
@@ -847,8 +847,8 @@ export default function BlogPost() {
 
             <h3>If You Need Visitor Identification and Intent:</h3>
             <p>
-              Choose <strong><Link href="/" className="text-blue-600 hover:underline">Cursive</Link></strong> for real-time <Link href="/visitor-identification" className="text-blue-600 hover:underline">visitor identification</Link> with automated outreach,
-              or <strong>6sense</strong> if you have an enterprise budget and want a full ABM platform. Our <Link href="/audience-builder" className="text-blue-600 hover:underline">audience builder</Link> makes it easy to segment and target your ideal customers.
+              Choose <strong><Link href="/" className="text-primary hover:underline">Cursive</Link></strong> for real-time <Link href="/visitor-identification" className="text-primary hover:underline">visitor identification</Link> with automated outreach,
+              or <strong>6sense</strong> if you have an enterprise budget and want a full ABM platform. Our <Link href="/audience-builder" className="text-primary hover:underline">audience builder</Link> makes it easy to segment and target your ideal customers.
             </p>
 
             <h3>If You Need the Largest Database:</h3>
@@ -871,15 +871,15 @@ export default function BlogPost() {
 
             <h3>If You Need Intent Data:</h3>
             <p>
-              Choose <strong><Link href="/" className="text-blue-600 hover:underline">Cursive</Link></strong> for website-level <Link href="/intent-audiences" className="text-blue-600 hover:underline">intent data</Link>, <strong>Bombora</strong> for
-              topic-based intent across the web, or <strong>6sense</strong> for predictive intent scoring. Combine intent data with our <Link href="/direct-mail" className="text-blue-600 hover:underline">direct mail</Link> campaigns for maximum impact.
+              Choose <strong><Link href="/" className="text-primary hover:underline">Cursive</Link></strong> for website-level <Link href="/intent-audiences" className="text-primary hover:underline">intent data</Link>, <strong>Bombora</strong> for
+              topic-based intent across the web, or <strong>6sense</strong> for predictive intent scoring. Combine intent data with our <Link href="/direct-mail" className="text-primary hover:underline">direct mail</Link> campaigns for maximum impact.
             </p>
 
             <h2>Frequently Asked Questions</h2>
 
             <div className="not-prose space-y-6 my-8">
               {faqs.map((faq, index) => (
-                <div key={index} className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-lg p-6 border border-gray-200">
+                <div key={index} className="bg-gradient-to-br from-gray-50 to-primary/5 rounded-lg p-6 border border-gray-200">
                   <h3 className="font-bold text-lg mb-3">{faq.question}</h3>
                   <p className="text-gray-700">{faq.answer}</p>
                 </div>
@@ -890,15 +890,15 @@ export default function BlogPost() {
 
             <p>
               Clearbit is no longer the only game in town. Whether you're looking for better pricing, more features,
-              or specialized capabilities like <Link href="/visitor-identification" className="text-blue-600 hover:underline">visitor identification</Link> or
+              or specialized capabilities like <Link href="/visitor-identification" className="text-primary hover:underline">visitor identification</Link> or
               automated lead generation, there's likely an alternative that's a
-              better fit for your needs. Check out our <Link href="/integrations" className="text-blue-600 hover:underline">integrations</Link> to see how easily you can connect these tools to your existing stack.
+              better fit for your needs. Check out our <Link href="/integrations" className="text-primary hover:underline">integrations</Link> to see how easily you can connect these tools to your existing stack.
             </p>
 
             <p>
-              For teams focused on converting website traffic into pipeline, we built <Link href="/" className="text-blue-600 hover:underline">Cursive</Link> to solve the gaps we saw
-              in the market: real-time <Link href="/visitor-identification" className="text-blue-600 hover:underline">visitor identification</Link>, <Link href="/intent-audiences" className="text-blue-600 hover:underline">intent signals</Link>, and automated personalized outreach—all
-              at a <Link href="/pricing" className="text-blue-600 hover:underline">transparent price point</Link>.
+              For teams focused on converting website traffic into pipeline, we built <Link href="/" className="text-primary hover:underline">Cursive</Link> to solve the gaps we saw
+              in the market: real-time <Link href="/visitor-identification" className="text-primary hover:underline">visitor identification</Link>, <Link href="/intent-audiences" className="text-primary hover:underline">intent signals</Link>, and automated personalized outreach—all
+              at a <Link href="/pricing" className="text-primary hover:underline">transparent price point</Link>.
             </p>
 
 
@@ -921,7 +921,7 @@ export default function BlogPost() {
       />
 
       {/* Related Comparisons */}
-      <section className="py-16 bg-gradient-to-br from-gray-50 to-blue-50">
+      <section className="py-16 bg-gradient-to-br from-gray-50 to-primary/5">
         <Container>
           <div className="max-w-5xl mx-auto">
             <SimpleRelatedPosts posts={[
