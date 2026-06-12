@@ -7,6 +7,7 @@ import { DashboardCTA } from "@/components/dashboard-cta"
 import { IntegrationsShowcase } from "@/components/integrations-showcase"
 import { HowItWorksSection } from "@/components/homepage/how-it-works-section"
 import { CompetitiveAdvantagesSection } from "@/components/homepage/competitive-advantages-section"
+import { TestimonialsSection } from "@/components/homepage/testimonials-section"
 import { FAQSection } from "@/components/homepage/faq-section"
 import Link from "next/link"
 import { useState } from "react"
@@ -351,6 +352,9 @@ export function HumanHomePage() {
 
       {/* Competitive Advantages */}
       <CompetitiveAdvantagesSection />
+
+      {/* Social proof — customer testimonials */}
+      <TestimonialsSection />
 
       {/* Core Features Grid */}
       <section id="features" className="py-20 bg-[#F7F9FB]">
