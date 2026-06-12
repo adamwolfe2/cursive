@@ -88,6 +88,8 @@ export async function middleware(req: NextRequest) {
       '/api/enrich/website',
       '/api/ext/',
       '/api/lead-capture',
+      '/api/visitor-estimate',
+      '/api/unsubscribe',
       '/api/onboarding/icp-suggestions',
       '/api/pixel/provision-demo',
       '/api/public/segment-search',
@@ -174,12 +176,15 @@ export async function middleware(req: NextRequest) {
       pathname.startsWith('/auth/signout') ||
       pathname.startsWith('/mfa-challenge') ||
       pathname.startsWith('/superpixel') ||
+      pathname.startsWith('/visitor-estimate') ||
       pathname.startsWith('/privacy') ||
       pathname.startsWith('/terms') ||
       pathname.startsWith('/affiliates') ||
       pathname.startsWith('/api/affiliate/apply') ||
       pathname.startsWith('/api/affiliate/track-click') ||
       pathname.startsWith('/api/lead-capture') ||
+      pathname.startsWith('/api/visitor-estimate') ||
+      pathname.startsWith('/api/unsubscribe') ||
       pathname.startsWith('/api/similarweb') ||
       pathname.startsWith('/api/pixel/provision-demo') ||
       pathname.startsWith('/api/public/segment-search') ||

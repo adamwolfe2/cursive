@@ -150,6 +150,9 @@ export {
 // Demo nurture sequence
 export { demoNurtureSequence } from './demo-nurture-sequence'
 
+// Visitor-Estimate Lead Magnet — cold-lead nurture drip (public VSL calculator)
+export { visitorEstimateNurture } from './visitor-estimate-nurture'
+
 // Purchase email sending with retries
 export { sendPurchaseEmail, sendCreditPurchaseEmail } from './send-purchase-email'
 

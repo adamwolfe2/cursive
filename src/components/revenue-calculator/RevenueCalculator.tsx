@@ -15,7 +15,12 @@ interface FormData {
   industry: string
 }
 
-export function RevenueCalculator() {
+interface RevenueCalculatorProps {
+  /** Capture endpoint for the email report form. Defaults to the marketing webhook. */
+  captureEndpoint?: string
+}
+
+export function RevenueCalculator({ captureEndpoint }: RevenueCalculatorProps = {}) {
   const [step, setStep] = useState<Step>('form')
   const [formData, setFormData] = useState<FormData | null>(null)
   const [results, setResults] = useState<ReturnType<typeof calculateScenarios> | null>(null)
@@ -59,6 +64,7 @@ export function RevenueCalculator() {
           industry={formData.industry}
           siteData={siteData}
           onReset={handleReset}
+          captureEndpoint={captureEndpoint}
         />
       )}
     </div>

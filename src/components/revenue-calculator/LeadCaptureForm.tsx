@@ -8,9 +8,11 @@ interface Props {
   industry: string
   revenueLeak: number
   cursiveAdvantage: number
+  /** Capture endpoint. Defaults to the marketing webhook; the VSL page overrides with a nurture-enabled endpoint. */
+  endpoint?: string
 }
 
-export function LeadCaptureForm({ domain, monthlyVisitors, dealSize, industry, revenueLeak, cursiveAdvantage }: Props) {
+export function LeadCaptureForm({ domain, monthlyVisitors, dealSize, industry, revenueLeak, cursiveAdvantage, endpoint = '/api/lead-capture' }: Props) {
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
 
@@ -22,7 +24,7 @@ export function LeadCaptureForm({ domain, monthlyVisitors, dealSize, industry, r
     }
     setStatus('loading')
     try {
-      const res = await fetch('/api/lead-capture', {
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, domain, monthly_visitors: monthlyVisitors, deal_size: dealSize, industry, revenue_leak_annual: revenueLeak, cursive_advantage_annual: cursiveAdvantage }),
