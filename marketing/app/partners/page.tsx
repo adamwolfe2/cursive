@@ -92,6 +92,10 @@ const FAQS = [
   },
 ] as const
 
+// Paste the VSL embed URL here (YouTube/Loom/Vimeo/Wistia embed src). Section
+// stays hidden until set, so deploying with it empty is safe.
+const VSL_EMBED_URL = ''
+
 export default function PartnersPage() {
   return (
     <article className="bg-white text-gray-900">
@@ -106,7 +110,9 @@ export default function PartnersPage() {
             Partner Program
           </p>
           <h1 className="mt-5 text-4xl font-light leading-[1.1] tracking-tight text-gray-900 sm:text-5xl">
-            Sell a product that sells itself. Earn up to 40% recurring.
+            Sell our winning product.
+            <br />
+            Get paid forever.
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-gray-600">
             Cursive turns website traffic into identified leads — a $97–$247/mo offer that converts
@@ -129,6 +135,26 @@ export default function PartnersPage() {
           </div>
         </Container>
       </section>
+
+      {/* ── VSL ──────────────────────────────────────────────────────────── */}
+      {VSL_EMBED_URL && (
+        <section className="border-b border-gray-100 py-12 sm:py-16">
+          <Container className="max-w-4xl">
+            <div
+              className="relative w-full overflow-hidden rounded-2xl border border-gray-200 bg-gray-900 shadow-sm"
+              style={{ aspectRatio: '16 / 9' }}
+            >
+              <iframe
+                src={VSL_EMBED_URL}
+                title="Cursive Partner Program — how it works"
+                className="absolute inset-0 h-full w-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+                allowFullScreen
+              />
+            </div>
+          </Container>
+        </section>
+      )}
 
       {/* ── How it works ─────────────────────────────────────────────────── */}
       <section className="border-b border-gray-100 py-16 sm:py-20">
