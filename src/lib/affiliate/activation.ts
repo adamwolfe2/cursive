@@ -10,6 +10,7 @@ import {
   sendPartnerActivation,
   sendPartnerTierMilestone,
 } from '@/lib/email/affiliate-emails'
+import { isSelfReferral } from '@/lib/affiliate/guards'
 import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
 
 const TIER_THRESHOLDS = [
@@ -80,13 +81,26 @@ export async function processAffiliateActivation(
   try {
     const admin = createAdminClient()
 
-    // Find a lead referral for this user — must be in 'lead' status
-    const { data: referral } = await admin
+    // Find a lead referral for this user — must be in 'lead' status. Two scoped
+    // .eq() lookups instead of an interpolated .or() filter: raw user_id/email must
+    // never be spliced into PostgREST filter grammar (injection-safe).
+    let referral: { id: string; affiliate_id: string; status: string } | null = null
+    const { data: byUser } = await admin
       .from('affiliate_referrals')
       .select('id, affiliate_id, status')
-      .or(`referred_user_id.eq.${userId},referred_email.eq.${userEmail.toLowerCase()}`)
+      .eq('referred_user_id', userId)
       .eq('status', 'lead')
       .maybeSingle()
+    referral = byUser ?? null
+    if (!referral) {
+      const { data: byEmail } = await admin
+        .from('affiliate_referrals')
+        .select('id, affiliate_id, status')
+        .eq('referred_email', userEmail.toLowerCase())
+        .eq('status', 'lead')
+        .maybeSingle()
+      referral = byEmail ?? null
+    }
 
     if (!referral) {
       safeLog(`[affiliate-activation] No lead referral for user ${userEmail} — organic signup`)
@@ -257,13 +271,24 @@ export async function processAffiliateAttributionByEmail(
 
     const { data: affiliate } = await admin
       .from('affiliates')
-      .select('id')
+      .select('id, email, user_id')
       .eq('partner_code', refCode.toUpperCase())
       .eq('status', 'active')
       .maybeSingle()
 
     if (!affiliate) {
       safeLog(`[affiliate-attribution-email] No active affiliate for refCode=${refCode}`)
+      return
+    }
+
+    // Self-referral guard (B2): never pre-attribute a partner to their own email.
+    if (
+      isSelfReferral(
+        { email: affiliate.email, userId: affiliate.user_id, workspaceId: null },
+        { email }
+      )
+    ) {
+      safeLog(`[affiliate-attribution-email] Rejected self-referral for affiliate ${affiliate.id}`)
       return
     }
 
@@ -309,13 +334,26 @@ export async function processAffiliateAttribution(
     // Look up active affiliate by partner_code
     const { data: affiliate } = await admin
       .from('affiliates')
-      .select('id')
+      .select('id, email, user_id')
       .eq('partner_code', refCode.toUpperCase())
       .eq('status', 'active')
       .maybeSingle()
 
     if (!affiliate) {
       safeLog(`[affiliate-attribution] No active affiliate for refCode=${refCode}`)
+      return
+    }
+
+    // Self-referral guard (B2): reject when the new signup is the affiliate
+    // themselves — by email, auth user, or their own workspace.
+    const ownWorkspaceId = await getAffiliateWorkspaceId(affiliate.id, admin)
+    if (
+      isSelfReferral(
+        { email: affiliate.email, userId: affiliate.user_id, workspaceId: ownWorkspaceId },
+        { email, userId, workspaceId }
+      )
+    ) {
+      safeLog(`[affiliate-attribution] Rejected self-referral for affiliate ${affiliate.id}`)
       return
     }
 

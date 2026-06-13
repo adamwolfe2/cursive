@@ -8,6 +8,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import {
   handleAffiliateClawback,
   handleAffiliateStripeAccountUpdated,
+  resolveInvoiceIdForCharge,
 } from '@/lib/affiliate/commission'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 import { STRIPE_CONFIG } from '@/lib/stripe/config'
@@ -165,6 +166,25 @@ export async function POST(request: NextRequest) {
         }
       } else if (event.type === 'charge.dispute.created') {
         await handleChargeDisputeCreated(event)
+        // Affiliate clawback on chargeback (worse than a refund — we also lose the
+        // revenue + dispute fee). The dispute only carries the charge id, so resolve
+        // the invoice behind it, then claw back + reverse the commission cash.
+        const dispute = event.data.object as Stripe.Dispute
+        const disputeChargeId =
+          typeof dispute.charge === 'string' ? dispute.charge : dispute.charge?.id ?? null
+        if (disputeChargeId) {
+          resolveInvoiceIdForCharge(disputeChargeId)
+            .then((invId) => (invId ? handleAffiliateClawback(invId) : undefined))
+            .catch((err) => safeError('[Stripe Webhook] Affiliate dispute clawback failed (non-fatal):', err))
+        }
+      } else if (event.type === 'invoice.voided' || event.type === 'invoice.marked_uncollectible') {
+        // Voided / uncollectible invoice — the revenue never settles, so claw back
+        // any commission recorded against it.
+        const voidedInvoice = event.data.object as Stripe.Invoice
+        if (voidedInvoice.id) {
+          handleAffiliateClawback(voidedInvoice.id)
+            .catch((err) => safeError('[Stripe Webhook] Affiliate void clawback failed (non-fatal):', err))
+        }
       } else if (event.type === 'customer.deleted') {
         await handleCustomerDeleted(event)
       } else {

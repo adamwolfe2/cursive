@@ -7,6 +7,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { resolveAffiliateIdForUser } from '@/lib/affiliate/portal'
 import { AffiliateSidebar } from './affiliate-sidebar'
 
 interface Affiliate {
@@ -38,32 +39,23 @@ export default async function AffiliateLayout({
 
   const admin = createAdminClient()
 
-  // Look up affiliate by user_id first
-  let affiliate: Affiliate | null = null
-  const { data: byUserId } = await admin
-    .from('affiliates')
-    .select('*')
-    .eq('user_id', authUser.id)
-    .maybeSingle()
+  // Resolve the affiliate via the SINGLE hardened claim authority (verified-email
+  // + one-time link). The previous inline raw-email link here was the same
+  // takeover vector as accept-terms (blocker B1) — never re-introduce it.
+  const affiliateId = await resolveAffiliateIdForUser(
+    authUser.id,
+    authUser.email,
+    !!authUser.email_confirmed_at
+  )
 
-  if (byUserId) {
-    affiliate = byUserId as Affiliate
-  } else {
-    // First sign-in: look up by email and link user_id
-    const { data: byEmail } = await admin
+  let affiliate: Affiliate | null = null
+  if (affiliateId) {
+    const { data } = await admin
       .from('affiliates')
       .select('*')
-      .eq('email', authUser.email?.toLowerCase() || '')
+      .eq('id', affiliateId)
       .maybeSingle()
-
-    if (byEmail) {
-      // Link the user_id so future lookups are fast
-      await admin
-        .from('affiliates')
-        .update({ user_id: authUser.id })
-        .eq('id', byEmail.id)
-      affiliate = { ...byEmail, user_id: authUser.id } as Affiliate
-    }
+    affiliate = (data as Affiliate) ?? null
   }
 
   // Not an affiliate — redirect to application

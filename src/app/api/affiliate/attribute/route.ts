@@ -8,7 +8,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
 import { sendPartnerNewLead } from '@/lib/email/affiliate-emails'
-import { safeError } from '@/lib/utils/log-sanitizer'
+import { isSelfReferral } from '@/lib/affiliate/guards'
+import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
@@ -37,13 +38,25 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     // Look up active affiliate by partner code
     const { data: affiliate } = await admin
       .from('affiliates')
-      .select('id, email, first_name')
+      .select('id, email, first_name, user_id')
       .eq('partner_code', code)
       .eq('status', 'active')
       .maybeSingle()
 
     if (!affiliate) {
       return NextResponse.json({ success: false, reason: 'affiliate_not_found' })
+    }
+
+    // Self-referral guard (B2): an affiliate must never be attributed to their own
+    // signup — it would earn a perpetual kickback on their own subscription.
+    if (
+      isSelfReferral(
+        { email: affiliate.email, userId: affiliate.user_id, workspaceId: null },
+        { email: authUser.email, userId: authUser.id }
+      )
+    ) {
+      safeLog(`[affiliate/attribute] Rejected self-referral for affiliate ${affiliate.id}`)
+      return NextResponse.json({ success: false, reason: 'self_referral' })
     }
 
     // Insert referral with onConflictDoNothing — idempotency guard

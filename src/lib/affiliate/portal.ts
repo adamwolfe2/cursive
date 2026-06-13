@@ -35,31 +35,33 @@ const AFFILIATE_COLUMNS =
   'id, email, first_name, last_name, partner_code, status, active_paying_referrals, lifetime_paying_referrals, current_commission_rate, total_earnings, stripe_connect_account_id, stripe_onboarding_complete, agreement_accepted_at, agreement_version, created_at'
 
 /**
- * Resolve the affiliate for an authenticated user. Links the affiliate row to
- * the auth user (by matching a VERIFIED email) on first access.
+ * Resolve (and on first access, safely claim) the affiliate id for an
+ * authenticated user. This is the SINGLE hardened claim authority for a partner
+ * account — every surface that links an auth user to an affiliate row MUST go
+ * through here. Duplicating this logic unsafely is what allowed the account
+ * takeover / payout-redirection (blocker B1).
  *
- * SECURITY: the email auto-link is the claim mechanism for a partner account,
- * so it is hardened against takeover:
+ * SECURITY: the email auto-link is the claim mechanism, hardened against takeover:
  *   - the email must be confirmed (emailConfirmed) — an unverified signup with
  *     someone else's email cannot claim their partner record.
  *   - the link is one-time: we only set user_id when it is currently NULL
  *     (`.is('user_id', null)`). An already-claimed affiliate can never be
  *     re-bound to a different auth user.
  */
-export async function getAffiliateForUser(
+export async function resolveAffiliateIdForUser(
   authUserId: string,
   email: string | null | undefined,
   emailConfirmed = false
-): Promise<AffiliateRecord | null> {
+): Promise<string | null> {
   const admin = createAdminClient()
 
   const { data: byUser } = await admin
     .from('affiliates')
-    .select(AFFILIATE_COLUMNS)
+    .select('id')
     .eq('user_id', authUserId)
     .maybeSingle()
 
-  if (byUser) return byUser as AffiliateRecord
+  if (byUser) return byUser.id
 
   const lower = email?.toLowerCase()
   if (!lower || !emailConfirmed) return null
@@ -81,20 +83,43 @@ export async function getAffiliateForUser(
     .update({ user_id: authUserId })
     .eq('id', byEmail.id)
     .is('user_id', null)
-    .select(AFFILIATE_COLUMNS)
+    .select('id')
     .maybeSingle()
 
-  // If the conditional update matched nothing, re-read (race: claimed in parallel).
-  if (linked) return linked as AffiliateRecord
+  if (linked) return linked.id
 
+  // Conditional update matched nothing → re-read, but only accept the row if it
+  // is now bound to US (race: claimed in parallel by this same user).
   const { data: reread } = await admin
     .from('affiliates')
-    .select(AFFILIATE_COLUMNS)
+    .select('id')
     .eq('id', byEmail.id)
     .eq('user_id', authUserId)
     .maybeSingle()
 
-  return (reread as AffiliateRecord) ?? null
+  return reread?.id ?? null
+}
+
+/**
+ * Resolve the full affiliate record for an authenticated user, performing the
+ * hardened one-time claim (see resolveAffiliateIdForUser) on first access.
+ */
+export async function getAffiliateForUser(
+  authUserId: string,
+  email: string | null | undefined,
+  emailConfirmed = false
+): Promise<AffiliateRecord | null> {
+  const affiliateId = await resolveAffiliateIdForUser(authUserId, email, emailConfirmed)
+  if (!affiliateId) return null
+
+  const admin = createAdminClient()
+  const { data } = await admin
+    .from('affiliates')
+    .select(AFFILIATE_COLUMNS)
+    .eq('id', affiliateId)
+    .maybeSingle()
+
+  return (data as AffiliateRecord) ?? null
 }
 
 export interface PortalSummary {
