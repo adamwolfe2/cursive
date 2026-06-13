@@ -143,7 +143,7 @@ export default function PartnersPage() {
           <Container className="max-w-4xl">
             <div
               className="relative w-full overflow-hidden rounded-2xl border border-gray-200 bg-gray-900 shadow-sm"
-              style={{ aspectRatio: '16 / 9' }}
+              style={{ aspectRatio: '76 / 45' }}
             >
               <iframe
                 src={VSL_EMBED_URL}
