@@ -90,14 +90,14 @@ const blogPosts = [
   },
   {
     title: 'Best Opensend Alternatives: 7 Visitor ID Tools Compared (2026)',
-    description: 'Compare the best Opensend alternatives at 70% identification rate with full outreach automation included.',
+    description: 'Compare the best Opensend alternatives at 60–70% resolution rate with full outreach automation included.',
     url: '/blog/opensend-alternative',
     date: '2026-02-18',
     category: 'Comparison',
   },
   // Head-to-head comparisons
   {
-    title: 'Cursive vs RB2B: 70% vs 50-60% ID Rate — Full Comparison (2026)',
+    title: 'Cursive vs RB2B: 60–70% vs 50-60% ID Rate — Full Comparison (2026)',
     description: 'Cursive vs RB2B compared on visitor identification rate, person-level data, integrations, and pricing.',
     url: '/blog/cursive-vs-rb2b',
     date: '2026-02-18',
@@ -132,8 +132,8 @@ const blogPosts = [
     category: 'Comparison',
   },
   {
-    title: 'Cursive vs Apollo: 70% Visitor ID From $97/mo vs Cold Contact Database (2026)',
-    description: 'Apollo has 250M+ contacts for cold outreach. Cursive identifies 70% of your website visitors with its $97/month Visitor Pixel.',
+    title: 'Cursive vs Apollo: 60–70% Visitor ID From $97/mo vs Cold Contact Database (2026)',
+    description: 'Apollo has 250M+ contacts for cold outreach. Cursive identifies 60–70% of your website visitors with its $97/month Visitor Pixel.',
     url: '/blog/cursive-vs-apollo',
     date: '2026-02-18',
     category: 'Comparison',
@@ -146,8 +146,8 @@ const blogPosts = [
     category: 'Comparison',
   },
   {
-    title: 'Cursive vs Warmly: 70% vs 40% ID Rate, $97 vs $3.5k/mo (2026)',
-    description: 'Cursive vs Warmly compared on visitor identification rate, person-level data, and pricing. Cursive identifies 70% of B2B visitors with its $97/month Visitor Pixel vs Warmly\'s 40% at $3.5k/month.',
+    title: 'Cursive vs Warmly: 60–70% vs 40% ID Rate, $97 vs $3.5k/mo (2026)',
+    description: 'Cursive vs Warmly compared on visitor identification rate, person-level data, and pricing. Cursive identifies 60–70% of B2B visitors with its $97/month Visitor Pixel vs Warmly\'s 40% at $3.5k/month.',
     url: '/blog/cursive-vs-warmly',
     date: '2026-02-18',
     category: 'Comparison',
@@ -248,7 +248,7 @@ const blogPosts = [
   // How-to guides
   {
     title: 'How to Identify Anonymous Website Visitors: Complete B2B Guide (2026)',
-    description: 'Step-by-step guide to identifying anonymous website visitors using IP resolution, device fingerprinting, and identity matching. Turn 70% of anonymous traffic into qualified leads.',
+    description: 'Step-by-step guide to identifying anonymous website visitors using IP resolution, device fingerprinting, and identity matching. Turn 60–70% of anonymous traffic into qualified leads.',
     url: '/blog/how-to-identify-anonymous-website-visitors',
     date: '2026-02-18',
     category: 'Guide',

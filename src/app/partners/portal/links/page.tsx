@@ -25,7 +25,7 @@ export default async function LinksPage() {
             <h3 className="text-sm font-semibold text-gray-900">What you&apos;re selling</h3>
           </div>
           <ul className="space-y-2 text-sm text-gray-600">
-            <li><strong className="text-gray-900">Visitor Pixel — $97/mo:</strong> identifies 40–60% of anonymous site visitors (company + person).</li>
+            <li><strong className="text-gray-900">Visitor Pixel — $97/mo:</strong> identifies 60–70% of anonymous site visitors (company + person).</li>
             <li><strong className="text-gray-900">Custom Audience — $197/mo:</strong> weekly in-market prospect lists built to ICP.</li>
             <li><strong className="text-gray-900">Bundle — $247/mo:</strong> both, priority updates. Best value, highest converter.</li>
           </ul>

@@ -21,7 +21,7 @@ export const metadata: Metadata = {
 }
 
 const PROOF = [
-  { stat: '70%', label: 'of visitors identifiable' },
+  { stat: '60–70%', label: 'of visitors identifiable' },
   { stat: '420M+', label: 'US consumer profiles' },
   { stat: '60B+', label: 'daily intent signals' },
   { stat: '0.05%', label: 'email bounce rate' },

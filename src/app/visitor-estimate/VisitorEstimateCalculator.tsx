@@ -173,7 +173,7 @@ function Results({
         </div>
         <div className="text-4xl font-black text-red-600 sm:text-6xl">{formatDollar(results.revenueLeak)}</div>
         <p className="mx-auto mt-3 max-w-lg text-sm text-gray-600">
-          {data.domain} gets ~{formatNumber(data.monthlyVisitors)} visitors/month. Cursive identifies up to 70% of them —
+          {data.domain} gets ~{formatNumber(data.monthlyVisitors)} visitors/month. Cursive identifies 60–70% of them —
           that&apos;s {formatNumber(results.cursive.intentQualified)} verified, intent-scored leads your team isn&apos;t getting today.
         </p>
       </div>

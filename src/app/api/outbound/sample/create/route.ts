@@ -44,7 +44,7 @@ const SAMPLE_NAME = 'Sample: SaaS VPs of Marketing'
 const SAMPLE_PRODUCT = 'AI-powered lead generation that identifies anonymous website visitors and automatically drafts personalized outreach.'
 const SAMPLE_ICP = 'B2B SaaS companies scaling outbound. Teams that are frustrated by low cold-email reply rates and want deterministic identity data instead of guessing at intent.'
 const SAMPLE_PERSONA = 'VPs of Marketing, Heads of Demand Gen, and Directors of Growth at 50–500 person SaaS companies.'
-const SAMPLE_VALUE_PROP = 'Cursive identifies 40–60% of anonymous website visitors deterministically — so you can turn pricing-page traffic into booked meetings, not guesswork.'
+const SAMPLE_VALUE_PROP = 'Cursive identifies 60–70% of anonymous website visitors deterministically — so you can turn pricing-page traffic into booked meetings, not guesswork.'
 const SAMPLE_CTA = 'Worth a 15-min look this week?'
 const SAMPLE_LEAD_COUNT = 3 // 3 leads × ~4s Claude call = ~12s total in parallel
 

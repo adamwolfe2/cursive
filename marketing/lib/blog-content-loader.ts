@@ -17,7 +17,7 @@ const blogPosts: Record<string, BlogPost> = {
   'visitor-identification-guide': {
     title: 'The Complete Guide to Website Visitor Identification',
     description:
-      'Learn how visitor identification works, why it matters for B2B companies, and how to identify up to 70% of your anonymous website traffic.',
+      'Learn how visitor identification works, why it matters for B2B companies, and how to identify 60–70% of your anonymous website traffic.',
     content: `
       <h2 id="what-is-visitor-identification">What is Visitor Identification?</h2>
       <p>Visitor identification is the process of revealing the companies and individuals browsing your website—even when they don't fill out a form. For B2B companies, this means you can see which businesses are researching your product, which pages they viewed, and when they visited.</p>
@@ -55,13 +55,13 @@ const blogPosts: Record<string, BlogPost> = {
       <p>Not all traffic can be identified. Accuracy depends on several factors:</p>
 
       <ul>
-        <li><strong>B2B traffic</strong>: 60-70% identification rate (business IP addresses are easier to identify)</li>
+        <li><strong>B2B traffic</strong>: 60–70% resolution rate (business IP addresses are easier to identify)</li>
         <li><strong>B2C traffic</strong>: 15-25% identification rate (residential IPs are harder to match)</li>
         <li><strong>Mobile traffic</strong>: Lower identification rates due to carrier IP pooling</li>
         <li><strong>VPN users</strong>: Cannot be reliably identified</li>
       </ul>
 
-      <p>Cursive achieves a 70% identification rate for B2B traffic—among the highest in the industry.</p>
+      <p>Cursive achieves a 60–70% resolution rate for B2B traffic—among the highest in the industry.</p>
 
       <h2 id="implementation">How to Implement Visitor Identification</h2>
       <p>Setting up visitor identification typically involves:</p>
@@ -132,7 +132,7 @@ const blogPosts: Record<string, BlogPost> = {
       {
         question: 'How accurate is visitor identification?',
         answer:
-          'For B2B traffic, visitor identification typically achieves 60-70% accuracy. Cursive identifies up to 70% of business visitors. The remaining 30% includes residential IPs, VPN users, and mobile carrier traffic that cannot be reliably matched to companies.',
+          'For B2B traffic, visitor identification typically achieves 60–70% resolution. Cursive resolves 60–70% of business visitors. The remaining 30% includes residential IPs, VPN users, and mobile carrier traffic that cannot be reliably matched to companies.',
       },
       {
         question: 'Is visitor identification legal under GDPR?',

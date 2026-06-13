@@ -20,7 +20,7 @@ export async function GET() {
           name: "Visitor Identification",
           url: "/visitor-identification",
           description:
-            "Identify 70% of anonymous visitors with name, company, email, and browsing behavior in real-time",
+            "Identify 60–70% of anonymous visitors with name, company, email, and browsing behavior in real-time",
         },
         {
           name: "Custom Audience",
@@ -89,7 +89,7 @@ export async function GET() {
         },
       ],
       stats: {
-        visitor_id_rate: "70%",
+        visitor_id_rate: "60–70%",
         consumer_profiles: "280M",
         business_profiles: "140M+",
         intent_signals_monthly: "60B+",

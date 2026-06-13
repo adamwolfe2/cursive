@@ -50,7 +50,7 @@ const steps = [
 ]
 
 const benefits: Array<{ icon: LucideIcon; title: string; body: string }> = [
-  { icon: Database, title: "40–60% match rate", body: "Deterministic, offline-rooted identity — not modeled. Cookie sync averages 2–5%, IP-only 10–15%." },
+  { icon: Database, title: "60–70% resolution rate", body: "Deterministic, offline-rooted identity — not modeled. Cookie sync averages 2–5%, IP-only 10–15%." },
   { icon: Users, title: "Company + person data", body: "See the business and the specific people browsing — job title, seniority, verified work email." },
   { icon: Clock, title: "Real-time, not batched", body: "Visitors resolved the second they land, so you can reach out while intent is hot." },
   { icon: BarChart3, title: "Page-level intent", body: "Know who hit your pricing page. Prioritize the highest-intent visitors first." },
@@ -80,7 +80,7 @@ const plans: Array<{
     icon: Eye,
     description: "Identify the companies and people visiting your site.",
     items: [
-      "40–60% deterministic match rate",
+      "60–70% deterministic resolution rate",
       "Company + person-level detail",
       "One-snippet install, 60 seconds",
       "Identified visitors synced to your portal",
@@ -121,7 +121,7 @@ const plans: Array<{
 const faqs = [
   {
     question: "How accurate is visitor identification?",
-    answer: "Cursive's pixel achieves a 40–60% match rate on US B2B traffic — deterministic, not modeled. Cookie-sync providers average 2–5% and IP-only databases sit around 10–15%. Accuracy on a matched record is 60–80%, driven by geo-framing and an offline-rooted identity graph of 280M+ verified profiles refreshed every 30 days against NCOA.",
+    answer: "Cursive's pixel achieves a 60–70% resolution rate on US B2B traffic — deterministic, not modeled. Cookie-sync providers average 2–5% and IP-only databases sit around 10–15%. Accuracy on a matched record is 60–80%, driven by geo-framing and an offline-rooted identity graph of 280M+ verified profiles refreshed every 30 days against NCOA.",
   },
   {
     question: "How quickly are visitors identified?",
@@ -177,7 +177,7 @@ export default function VisitorIdentificationPage() {
                   </span>
                 </h1>
                 <p className="mt-6 text-lg sm:text-xl text-gray-600 leading-relaxed">
-                  Most B2B sites never know who shows up. The Cursive pixel resolves 40–60% of your
+                  Most B2B sites never know who shows up. The Cursive pixel resolves 60–70% of your
                   anonymous traffic to real companies and people — deterministically, the moment they land.
                 </p>
                 <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center">
@@ -190,7 +190,7 @@ export default function VisitorIdentificationPage() {
                   </Button>
                 </div>
                 <div className="mt-8 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm text-gray-600">
-                  {["60-second setup", "40–60% match rate", "200+ integrations"].map((item) => (
+                  {["60-second setup", "60–70% resolution rate", "200+ integrations"].map((item) => (
                     <span key={item} className="flex items-center gap-2">
                       <CheckCircle2 className="h-4 w-4 text-primary" />
                       {item}
@@ -452,7 +452,7 @@ export default function VisitorIdentificationPage() {
           <div className="mb-12 pb-6 border-b border-gray-200">
             <h1 className="text-2xl text-gray-900 font-bold mb-4">WEBSITE VISITOR IDENTIFICATION</h1>
             <p className="text-gray-700 leading-relaxed">
-              Cursive identifies 40&ndash;60% of anonymous website visitors deterministically against an
+              Cursive identifies 60&ndash;70% of anonymous website visitors deterministically against an
               offline-rooted identity graph of 280M+ verified profiles refreshed every 30 days against NCOA.
               Turn unknown traffic into qualified leads with company and individual-level data, page-level
               tracking, and instant CRM sync. Self-serve from $97/month.
@@ -461,7 +461,7 @@ export default function VisitorIdentificationPage() {
 
           <MachineSection title="Key Metrics">
             <MachineList items={[
-              "40–60% - Pixel match rate on US B2B traffic (deterministic, not modeled)",
+              "60–70% - Pixel resolution rate on US B2B traffic (deterministic, not modeled)",
               "60–80% - Accuracy on a matched record",
               "2–5% - Industry cookie-sync match rate (for context)",
               "10–15% - Industry IP-database match rate (for context)",

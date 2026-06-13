@@ -19,7 +19,7 @@ const capabilities = [
   {
     icon: Eye,
     title: "Identify your visitors",
-    body: "The Visitor Pixel resolves 40–60% of anonymous traffic to real companies and people, deterministically, the moment they land.",
+    body: "The Visitor Pixel resolves 60–70% of anonymous traffic to real companies and people, deterministically, the moment they land.",
   },
   {
     icon: Search,
@@ -66,7 +66,7 @@ const culture = [
 ]
 
 const metrics = [
-  { metric: "40–60%", label: "Of anonymous visitors identified, deterministically" },
+  { metric: "60–70%", label: "Of anonymous visitors identified, deterministically" },
   { metric: "95%+", label: "Email deliverability across every record" },
   { metric: "30 days", label: "Full identity-graph refresh cycle via NCOA" },
   { metric: "60s", label: "To install the pixel and go live" },
@@ -391,7 +391,7 @@ export default function AboutPage() {
             <p className="text-gray-700 mb-4">
               Cursive started because we were tired of paying for lead lists that didn&apos;t convert.
               Instead of another static database, we built two products that move pipeline: the
-              Visitor Pixel, which resolves 40–60% of anonymous website traffic to real companies and
+              Visitor Pixel, which resolves 60–70% of anonymous website traffic to real companies and
               people, and Custom Audiences, a fresh weekly list of buyers actively searching for your
               product. Every record carries a verified work email.
             </p>
@@ -448,7 +448,7 @@ export default function AboutPage() {
 
           <MachineSection title="Results">
             <MachineList items={[
-              "40–60% of anonymous website visitors identified, deterministically",
+              "60–70% of anonymous website visitors identified, deterministically",
               "95%+ email deliverability across every record",
               "30-day full identity-graph refresh cycle via NCOA",
               "60 seconds to install the pixel and go live",

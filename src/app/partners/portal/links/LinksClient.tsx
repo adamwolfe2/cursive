@@ -81,15 +81,15 @@ export function LinksClient({ code }: { code: string }) {
   const swipes = [
     {
       label: 'Cold email',
-      text: `Subject: the leads your site is quietly losing\n\nHi {{first_name}},\n\nMost B2B sites can identify 40–60% of anonymous visitors — by company AND person — but almost nobody turns that on. Cursive installs in 60 seconds and turns that traffic into contactable leads.\n\nQuick way to see what you're missing (free, no signup): ${APP}/visitor-estimate?ref=${code}\n\nIf the number looks big, the pixel is $97/mo: ${APP}/api/funnel/checkout-redirect?offer=pixel_97&ref=${code}\n\n— {{your_name}}`,
+      text: `Subject: the leads your site is quietly losing\n\nHi {{first_name}},\n\nMost B2B sites can identify 60–70% of anonymous visitors — by company AND person — but almost nobody turns that on. Cursive installs in 60 seconds and turns that traffic into contactable leads.\n\nQuick way to see what you're missing (free, no signup): ${APP}/visitor-estimate?ref=${code}\n\nIf the number looks big, the pixel is $97/mo: ${APP}/api/funnel/checkout-redirect?offer=pixel_97&ref=${code}\n\n— {{your_name}}`,
     },
     {
       label: 'LinkedIn post',
-      text: `Your website knows more about your visitors than your CRM does — you're just not capturing it.\n\nCursive identifies 40–60% of anonymous B2B traffic (company + person), installs in 60 seconds, and syncs straight to your pipeline.\n\nSee how many leads your site is losing (free tool): ${APP}/visitor-estimate?ref=${code}`,
+      text: `Your website knows more about your visitors than your CRM does — you're just not capturing it.\n\nCursive identifies 60–70% of anonymous B2B traffic (company + person), installs in 60 seconds, and syncs straight to your pipeline.\n\nSee how many leads your site is losing (free tool): ${APP}/visitor-estimate?ref=${code}`,
     },
     {
       label: 'Short DM / Twitter',
-      text: `Quick one — most B2B sites can ID 40–60% of their anonymous visitors (company + person) and almost nobody turns it on.\n\nCursive does it in a 60-sec install. Free check on what your site's losing: ${APP}/visitor-estimate?ref=${code}`,
+      text: `Quick one — most B2B sites can ID 60–70% of their anonymous visitors (company + person) and almost nobody turns it on.\n\nCursive does it in a 60-sec install. Free check on what your site's losing: ${APP}/visitor-estimate?ref=${code}`,
     },
     {
       label: 'Follow-up email (bump)',
@@ -97,7 +97,7 @@ export function LinksClient({ code }: { code: string }) {
     },
     {
       label: 'SMS / text',
-      text: `{{first_name}} — your site can probably ID 40–60% of its anonymous visitors and turn them into leads. Free 20-sec check: ${APP}/visitor-estimate?ref=${code}`,
+      text: `{{first_name}} — your site can probably ID 60–70% of its anonymous visitors and turn them into leads. Free 20-sec check: ${APP}/visitor-estimate?ref=${code}`,
     },
   ]
 

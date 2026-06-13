@@ -1,8 +1,8 @@
-// Source-of-truth Cursive stats. Pixel match is 40-60% deterministic.
-// We use the midpoint (0.50) for revenue calculations so projections are
+// Source-of-truth Cursive stats. Pixel resolution is 60-70% deterministic.
+// We use the midpoint (0.65) for revenue calculations so projections are
 // neither best- nor worst-case but representative of typical performance.
 export const CURSIVE_STATS = {
-  idRate: 0.50,
+  idRate: 0.65,
   bounceRate: 0.0005,
   intentQualifiedPct: 0.45,
   consumerProfiles: '280M+',
