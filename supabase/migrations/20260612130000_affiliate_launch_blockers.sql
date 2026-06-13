@@ -52,10 +52,10 @@ BEGIN
       USING ERRCODE = 'check_violation';
   END IF;
 
-  -- Owned-workspace match
+  -- Owned-workspace match (users.auth_user_id is UUID; affiliates.user_id is TEXT)
   IF NEW.workspace_id IS NOT NULL AND v_aff_user_id IS NOT NULL THEN
     SELECT workspace_id INTO v_aff_workspace
-    FROM users WHERE auth_user_id = v_aff_user_id LIMIT 1;
+    FROM users WHERE auth_user_id::text = v_aff_user_id LIMIT 1;
     IF v_aff_workspace IS NOT NULL AND NEW.workspace_id = v_aff_workspace THEN
       RAISE EXCEPTION 'self-referral blocked (workspace) for affiliate %', NEW.affiliate_id
         USING ERRCODE = 'check_violation';
@@ -86,7 +86,7 @@ WHERE c.commission_amount > 0
     SELECT r.id
     FROM affiliate_referrals r
     JOIN affiliates a ON a.id = r.affiliate_id
-    LEFT JOIN users u ON u.auth_user_id = a.user_id
+    LEFT JOIN users u ON u.auth_user_id::text = a.user_id
     WHERE (r.referred_email IS NOT NULL AND lower(r.referred_email) = lower(a.email))
        OR (r.referred_user_id IS NOT NULL AND r.referred_user_id = a.user_id)
        OR (r.workspace_id IS NOT NULL AND r.workspace_id = u.workspace_id)
@@ -106,7 +106,7 @@ BEGIN
       SELECT r.id
       FROM affiliate_referrals r
       JOIN affiliates a ON a.id = r.affiliate_id
-      LEFT JOIN users u ON u.auth_user_id = a.user_id
+      LEFT JOIN users u ON u.auth_user_id::text = a.user_id
       WHERE (r.referred_email IS NOT NULL AND lower(r.referred_email) = lower(a.email))
          OR (r.referred_user_id IS NOT NULL AND r.referred_user_id = a.user_id)
          OR (r.workspace_id IS NOT NULL AND r.workspace_id = u.workspace_id)
@@ -124,7 +124,7 @@ WHERE r.status <> 'churned'
     SELECT r2.id
     FROM affiliate_referrals r2
     JOIN affiliates a ON a.id = r2.affiliate_id
-    LEFT JOIN users u ON u.auth_user_id = a.user_id
+    LEFT JOIN users u ON u.auth_user_id::text = a.user_id
     WHERE (r2.referred_email IS NOT NULL AND lower(r2.referred_email) = lower(a.email))
        OR (r2.referred_user_id IS NOT NULL AND r2.referred_user_id = a.user_id)
        OR (r2.workspace_id IS NOT NULL AND r2.workspace_id = u.workspace_id)
