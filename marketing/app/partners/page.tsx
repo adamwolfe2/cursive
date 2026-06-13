@@ -92,9 +92,10 @@ const FAQS = [
   },
 ] as const
 
-// Paste the VSL embed URL here (YouTube/Loom/Vimeo/Wistia embed src). Section
-// stays hidden until set, so deploying with it empty is safe.
-const VSL_EMBED_URL = ''
+// VSL embed (Mux player). autoplay=muted → autoplays on every device incl. iOS,
+// which blocks un-muted autoplay. Section stays hidden if blanked.
+const VSL_EMBED_URL =
+  'https://player.mux.com/hvpl01phq5bdCEbW7G00qcJkUH3HkvpbFWU9KGvV3NITs?metadata-video-title=Cursive+Outbound+Partnership&video-title=Cursive+Outbound+Partnership&autoplay=muted'
 
 export default function PartnersPage() {
   return (
