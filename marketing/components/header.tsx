@@ -217,7 +217,7 @@ export function Header() {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 20, stiffness: 300, mass: 0.8 }}
-              className="fixed top-16 right-0 bottom-0 w-full max-w-sm bg-white z-50 md:hidden overflow-y-auto shadow-2xl"
+              className="fixed top-16 left-0 right-0 bottom-0 w-full bg-white z-50 md:hidden overflow-y-auto shadow-2xl"
             >
               <nav className="flex flex-col p-6 space-y-1">
                 {navLinks.map((link) => (
