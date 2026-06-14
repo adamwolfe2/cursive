@@ -16,7 +16,7 @@ export async function middleware(req: NextRequest) {
       "img-src 'self' data: https: blob:",
       "font-src 'self' data: https://fonts.gstatic.com",
       "connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://cal.com https://app.cal.com https://va.vercel-scripts.com https://vitals.vercel-analytics.com https://leads.meetcursive.com",
-      "frame-src 'self' https://cal.com https://app.cal.com",
+      "frame-src 'self' https://cal.com https://app.cal.com https://player.mux.com",
       "frame-ancestors 'self'",
       "form-action 'self' https://cal.com https://app.cal.com",
       "base-uri 'self'",

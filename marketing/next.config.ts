@@ -52,7 +52,7 @@ const nextConfig: NextConfig = {
               "font-src 'self' https://fonts.gstatic.com",
               "img-src 'self' data: blob: https: http:",
               "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.segment.io https://api.stripe.com https://www.google-analytics.com https://vitals.vercel-insights.com https://api.audiencelab.io https://leads.meetcursive.com",
-              "frame-src 'self' https://js.stripe.com https://hooks.stripe.com https://calendly.com https://cal.com",
+              "frame-src 'self' https://js.stripe.com https://hooks.stripe.com https://calendly.com https://cal.com https://player.mux.com",
               "media-src 'self'",
               "object-src 'none'",
               "base-uri 'self'",
