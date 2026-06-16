@@ -69,6 +69,7 @@ const GROUPS = [
     label: 'Monitoring',
     items: [
       { href: '/admin/analytics',                  label: 'Analytics' },
+      { href: '/admin/launch-funnel',              label: 'Launch Funnel' },
       { href: '/admin/operations-health',          label: 'Ops Health' },
       { href: '/admin/failed-operations',          label: 'Failed Ops' },
       { href: '/admin/failed-jobs',                label: 'Failed Jobs' },
