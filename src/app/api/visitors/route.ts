@@ -21,19 +21,17 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Resolve workspace from the middleware cookie when present, but fall back
-    // to the user record — the cookie isn't always set (notably for funnel
-    // buyers), which made this endpoint 400 and left the visitor list blank
-    // even though the page's server-fetched stats showed visitors.
-    let workspaceId = req.cookies.get('x-workspace-id')?.value
-    if (!workspaceId) {
-      const { data: u } = await supabase
-        .from('users')
-        .select('workspace_id')
-        .eq('auth_user_id', authUser.id)
-        .maybeSingle()
-      workspaceId = u?.workspace_id ?? undefined
-    }
+    // SECURITY (IDOR fix): resolve the workspace from the authenticated user's DB
+    // record ONLY. The x-workspace-id cookie is a bare UUID and was trusted here
+    // without HMAC verification, so a hand-crafted request could set any
+    // workspace's id and read its visitor PII via the admin (RLS-bypassing) client.
+    // Always derive workspace server-side from the verified auth user.
+    const { data: u } = await supabase
+      .from('users')
+      .select('workspace_id')
+      .eq('auth_user_id', authUser.id)
+      .maybeSingle()
+    const workspaceId = u?.workspace_id ?? undefined
     if (!workspaceId) {
       return NextResponse.json({ error: 'No workspace' }, { status: 400 })
     }
