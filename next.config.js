@@ -138,7 +138,7 @@ const nextConfig = {
               //   injecting its own <script> tag). Older browsers fall back to 'unsafe-inline'.
               // 'unsafe-eval' has been intentionally omitted — nothing in this codebase
               //   requires it (Stripe.js, Sentry, Crisp, and Next.js all work without it).
-              "script-src 'self' 'unsafe-inline' https://js.stripe.com https://client.crisp.chat https://browser.sentry-cdn.com https://*.vercel-scripts.com",
+              "script-src 'self' 'unsafe-inline' https://js.stripe.com https://client.crisp.chat https://browser.sentry-cdn.com https://*.vercel-scripts.com https://us-assets.i.posthog.com",
               // 'unsafe-inline' is required for Tailwind utility classes applied as inline
               //   styles and for any CSS-in-JS style injections from third-party widgets.
               "style-src 'self' 'unsafe-inline'",
@@ -153,7 +153,7 @@ const nextConfig = {
               //   signInWithPassword, OAuth token exchange) hit this host, so it
               //   MUST be allowlisted or every account creation fails with
               //   "Failed to fetch".
-              "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://login.meetcursive.com wss://login.meetcursive.com https://api.stripe.com https://*.sentry.io https://sentry.io https://client.crisp.chat wss://client.crisp.chat https://*.mux.com https://*.litix.io https://stats.mux.com https://player.vimeo.com https://*.vimeocdn.com https://www.loom.com",
+              "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://login.meetcursive.com wss://login.meetcursive.com https://api.stripe.com https://*.sentry.io https://sentry.io https://client.crisp.chat wss://client.crisp.chat https://*.mux.com https://*.litix.io https://stats.mux.com https://player.vimeo.com https://*.vimeocdn.com https://www.loom.com https://us.i.posthog.com https://us-assets.i.posthog.com",
               // frame-src: hosted players for the VSL. Safari blocks
               //   silently (blank iframe) if these are missing; Chrome was
               //   permissive about it because of an older CSP cache.

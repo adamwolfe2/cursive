@@ -29,19 +29,60 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ data: null })
     }
 
-    // Fetch the website with a 5s timeout
+    // Fetch the website with a 5s timeout.
+    // SSRF hardening: this endpoint is public, so we must NOT let a public host
+    // 30x-redirect into the internal network/metadata IPs. Follow redirects
+    // manually and re-run isBlockedHost on every hop; cap hops and body size.
     const controller = new AbortController()
     const timeout = setTimeout(() => controller.abort(), 5000)
 
     let html: string
     try {
-      const res = await fetch(url, {
-        signal: controller.signal,
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (compatible; CursiveBot/1.0)',
-        },
-      })
-      html = await res.text()
+      let currentUrl = url
+      let res: Response | null = null
+      for (let hop = 0; hop < 4; hop++) {
+        res = await fetch(currentUrl, {
+          signal: controller.signal,
+          redirect: 'manual',
+          headers: { 'User-Agent': 'Mozilla/5.0 (compatible; CursiveBot/1.0)' },
+        })
+        // Not a redirect → use this response
+        if (res.status < 300 || res.status >= 400) break
+        const location = res.headers.get('location')
+        if (!location) break
+        // Resolve relative redirects against the current URL, then re-validate.
+        const nextUrl = new URL(location, currentUrl).toString()
+        if (isBlockedHost(nextUrl)) {
+          return NextResponse.json({ data: null })
+        }
+        currentUrl = nextUrl
+      }
+      if (!res) return NextResponse.json({ data: null })
+
+      // Cap body read at ~512KB — we only need <head> meta tags.
+      const reader = res.body?.getReader()
+      if (!reader) {
+        html = (await res.text()).slice(0, 512_000)
+      } else {
+        const chunks: Uint8Array[] = []
+        let total = 0
+        const MAX = 512_000
+        while (total < MAX) {
+          const { done, value } = await reader.read()
+          if (done) break
+          chunks.push(value)
+          total += value.length
+        }
+        await reader.cancel().catch(() => {})
+        html = new TextDecoder().decode(
+          chunks.reduce((acc, c) => {
+            const merged = new Uint8Array(acc.length + c.length)
+            merged.set(acc)
+            merged.set(c, acc.length)
+            return merged
+          }, new Uint8Array())
+        )
+      }
     } catch {
       return NextResponse.json({ data: null }) // Silently return nothing
     } finally {
