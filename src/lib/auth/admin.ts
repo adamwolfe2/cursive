@@ -61,45 +61,18 @@ export async function getCurrentAdminEmail(): Promise<string | null> {
 }
 
 /**
- * Require admin authentication
- * Checks platform_admins table first, then falls back to users.role (owner/admin).
- * This ensures both legacy platform_admins and role-based admins can access all routes.
+ * Require admin authentication (PLATFORM admin only).
+ *
+ * SECURITY: This used to fall back to users.role owner/admin. But every customer
+ * is 'owner' of their own workspace, so that fallback let ANY customer reach the
+ * cross-tenant platform admin panel (list/suspend all workspaces, approve partner
+ * payouts → real Stripe transfers, platform revenue, create invoices for arbitrary
+ * workspaces). The fallback is removed: only platform_admins.is_active=true pass.
+ *
+ * For genuinely workspace-scoped admin features (e.g. SDR), use requireAdminRole().
  */
 export async function requireAdmin(): Promise<{ id: string; email: string }> {
-  const supabase = await createClient()
-  // SECURITY: Use getUser() for server-side JWT verification
-  const { data: { user } } = await supabase.auth.getUser()
-
-  if (!user?.id) {
-    throw new Error('Unauthorized: Admin access required')
-  }
-
-  // Check platform_admins table first (legacy path)
-  if (user.email) {
-    const { data: admin } = await supabase
-      .from('platform_admins')
-      .select('id, email')
-      .eq('email', user.email)
-      .eq('is_active', true)
-      .maybeSingle()
-
-    if (admin) {
-      return { id: admin.id, email: admin.email ?? user.email }
-    }
-  }
-
-  // Fall back to users.role check (owner/admin)
-  const { data: userData } = await supabase
-    .from('users')
-    .select('id, email, role')
-    .eq('auth_user_id', user.id)
-    .maybeSingle()
-
-  if (!userData || (userData.role !== 'owner' && userData.role !== 'admin')) {
-    throw new Error('Unauthorized: Admin access required')
-  }
-
-  return { id: userData.id, email: userData.email || user.email || '' }
+  return requirePlatformAdmin()
 }
 
 /**

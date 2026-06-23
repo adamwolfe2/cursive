@@ -266,8 +266,14 @@ export async function middleware(req: NextRequest) {
       return redirectWithCookies(redirectUrl)
     }
 
-    // Admin routes require admin/owner role (user is guaranteed non-null here —
-    // the auth check above already redirects unauthenticated users)
+    // Admin routes: coarse middleware gate on workspace role (owner/admin).
+    // This is intentionally NOT the platform-admin gate — some /api/admin/* routes
+    // (e.g. /api/admin/ops/*, /api/admin/audiencelab/segments/*) are workspace-scoped
+    // and use requireAdminRole(). The real cross-tenant protection lives at the route
+    // level: platform routes call requireAdmin() (platform_admins only) and the
+    // /admin page layout gates on platform_admins. So a workspace owner may pass this
+    // coarse gate but is still rejected by those route/layout gates.
+    // (user is guaranteed non-null — the auth check above redirects unauthenticated.)
     if (isAdminRoute && user) {
       const { data: userRecord } = await supabase
         .from('users')

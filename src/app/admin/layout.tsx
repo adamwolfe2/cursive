@@ -15,7 +15,6 @@ export const metadata: Metadata = {
   },
 }
 import { createClient } from '@/lib/supabase/server'
-import { getUserWithRole } from '@/lib/auth/roles'
 import { createAdminClient } from '@/lib/supabase/admin'
 import AdminNav from './_components/AdminNav'
 import KeyboardShortcuts from '@/components/admin/KeyboardShortcuts'
@@ -33,14 +32,21 @@ export default async function AdminLayout({
     redirect('/login?error=unauthorized')
   }
 
-  const userWithRole = await getUserWithRole(user)
-  if (!userWithRole || (userWithRole.role !== 'owner' && userWithRole.role !== 'admin')) {
+  // SECURITY: platform admins only (platform_admins table). Do NOT gate on
+  // users.role — every customer is 'owner' of their own workspace and would
+  // otherwise reach the cross-tenant admin panel.
+  const adminClient = createAdminClient()
+  const { data: platformAdmin } = await adminClient
+    .from('platform_admins')
+    .select('id, email')
+    .eq('email', user.email ?? '')
+    .eq('is_active', true)
+    .maybeSingle()
+  if (!platformAdmin) {
     redirect('/dashboard?error=admin_required')
   }
 
-  const adminEmail = userWithRole.email || user.email || 'Admin'
-
-  const adminClient = createAdminClient()
+  const adminEmail = platformAdmin.email || user.email || 'Admin'
 
   let needsApprovalCount = 0
   let upcomingBookingsCount = 0
