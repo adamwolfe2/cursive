@@ -109,7 +109,11 @@ export async function createServiceCheckout(
         workspace_id: workspaceId,
         user_id: userId,
         service_tier_id: tier.id,
-        service_tier_slug: tier.slug
+        service_tier_slug: tier.slug,
+        // Carry the ref into SUBSCRIPTION metadata too — renewal invoices read the
+        // subscription, not the session, so without this only the first payment
+        // could be attributed to the partner.
+        affiliate_ref_code: affiliateRefCode ?? '',
       }
     },
     success_url: successUrl || `${baseUrl}/services/success?tier=${tier.slug}&session_id={CHECKOUT_SESSION_ID}`,

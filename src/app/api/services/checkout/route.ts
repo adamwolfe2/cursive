@@ -58,6 +58,11 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Affiliate attribution: pass the cursive_ref cookie so the partner is credited
+    // for this service subscription (first payment AND renewals). Previously this was
+    // never passed, so service purchases silently earned the referring partner nothing.
+    const affiliateRefCode = request.cookies.get('cursive_ref')?.value || undefined
+
     // Create Stripe Checkout session
     const checkoutResult = await createServiceCheckout({
       workspaceId,
@@ -66,7 +71,8 @@ export async function POST(request: NextRequest) {
       negotiatedMonthlyPrice: validated.negotiated_monthly_price,
       billingEmail: user.email || undefined,
       successUrl: validated.success_url,
-      cancelUrl: validated.cancel_url
+      cancelUrl: validated.cancel_url,
+      affiliateRefCode,
     })
 
     return NextResponse.json({

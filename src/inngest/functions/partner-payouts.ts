@@ -135,6 +135,26 @@ async function processPartnerPayout(partner: {
     }
   }
 
+  // Defensive: never auto-pay a partner who has an OPEN manual payout request.
+  // The manual request/approve flow already debited available_balance; the cron
+  // transfers a (possibly stale) balance snapshot, so running both against the same
+  // partner could double-pay. Skipping is always safe — the manual flow or next
+  // week's run settles it. Overpaying is not recoverable.
+  const { data: openManualRequests } = await supabase
+    .from('payout_requests')
+    .select('id')
+    .eq('partner_id', partner.partnerId)
+    .in('status', ['pending', 'approved', 'processing'])
+    .limit(1)
+
+  if (openManualRequests && openManualRequests.length > 0) {
+    return {
+      success: false,
+      amount: 0,
+      error: 'Skipped — partner has an open manual payout request',
+    }
+  }
+
   // Convert to cents for Stripe
   const amountCents = Math.floor(partner.availableBalance * 100)
 

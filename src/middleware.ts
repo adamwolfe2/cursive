@@ -38,6 +38,11 @@ function applyAffiliateCookie(req: NextRequest, res: NextResponse): void {
     sameSite: 'lax',
     maxAge: 60 * 60 * 24 * 30, // 30 days
     path: '/',
+    // Share the cookie across *.meetcursive.com so a ref captured on the marketing
+    // site (www.meetcursive.com) travels to the app (leads.meetcursive.com) where
+    // signup/checkout happens. Host-only cookies silently broke partner attribution
+    // for the Pricing/Homepage links. Omit domain in dev (localhost).
+    ...(process.env.NODE_ENV === 'production' ? { domain: '.meetcursive.com' } : {}),
   })
 }
 
@@ -282,13 +287,20 @@ export async function middleware(req: NextRequest) {
       }
     }
 
-    // Partner routes require partner/admin/owner role
-    if (isPartnerRoute && user) {
+    // Partner routes require partner/admin/owner role.
+    // EXCEPTION: the plural /partners/* portal PAGES self-gate via requireAffiliate
+    // (affiliate lookup by user id / verified email). A freshly-approved affiliate
+    // has no users.role='partner', so applying the role gate here would bounce every
+    // new partner to /dashboard before they ever reach their portal. Skip the gate
+    // for those pages. The singular /partner pages and all /api/partner* routes keep it.
+    // Also use maybeSingle() (not single()) so a user with no users row yet doesn't throw.
+    const isPluralPortalPage = pathname.startsWith('/partners') && !isApiRoute
+    if (isPartnerRoute && user && !isPluralPortalPage) {
       const { data: userData } = await supabase
         .from('users')
         .select('role')
         .eq('auth_user_id', user.id)
-        .single()
+        .maybeSingle()
 
       if (!userData || !['partner', 'admin', 'owner'].includes(userData.role)) {
         if (isApiRoute) {

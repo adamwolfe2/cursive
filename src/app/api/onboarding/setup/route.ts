@@ -349,8 +349,14 @@ export async function POST(request: NextRequest) {
       null
     if (refCode) {
       const { processAffiliateAttribution } = await import('@/lib/affiliate/activation')
-      processAffiliateAttribution(refCode, userProfile.id, validated.email, workspace.id)
-        .catch((err: unknown) => safeError('[Onboarding] Affiliate attribution failed (non-fatal):', err))
+      // MUST await: Vercel freezes the function after the response is sent, which
+      // drops any un-awaited promise. A fire-and-forget here silently loses the
+      // partner's attribution — the referred signup is never credited.
+      try {
+        await processAffiliateAttribution(refCode, userProfile.id, validated.email, workspace.id)
+      } catch (err: unknown) {
+        safeError('[Onboarding] Affiliate attribution failed (non-fatal):', err)
+      }
     }
 
     // 9. Grant free trial credits
