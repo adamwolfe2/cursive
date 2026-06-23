@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation'
+import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { createServiceCheckout } from '@/lib/stripe/service-checkout'
 import { supportsDirectCheckout, VENTURE_STUDIO_CALENDAR_URL } from '@/lib/stripe/service-products'
@@ -65,12 +66,17 @@ export default async function CheckoutPage({ searchParams }: CheckoutPageProps) 
     redirect('/')
   }
 
+  // Affiliate attribution: carry the cursive_ref cookie into the checkout so the
+  // referring partner is credited for this service subscription and its renewals.
+  const affiliateRefCode = (await cookies()).get('cursive_ref')?.value || undefined
+
   try {
     // Create Stripe checkout session
     const checkoutUrl = await createServiceCheckout({
       workspaceId: userData.workspace_id,
       userId: user.id,
       serviceTierSlug: tierSlug,
+      affiliateRefCode,
     })
 
     redirect(checkoutUrl.checkout_url)

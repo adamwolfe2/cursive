@@ -53,6 +53,25 @@ export async function middleware(req: NextRequest) {
     response.headers.set(key, value)
   })
 
+  // First-touch affiliate attribution: capture ?ref= on the marketing site and
+  // store it in a cookie shared across *.meetcursive.com so it travels to the app
+  // (leads.meetcursive.com) where signup/checkout happens. Without this, partner
+  // Pricing/Homepage links (which land on www) never credited the partner.
+  const refCode = req.nextUrl.searchParams.get('ref')
+  if (refCode && !req.cookies.get('cursive_ref')?.value) {
+    const normalized = refCode.toUpperCase().trim()
+    if (/^[A-Z0-9]{8}$/.test(normalized)) {
+      response.cookies.set('cursive_ref', normalized, {
+        httpOnly: false,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 60 * 60 * 24 * 30, // 30 days
+        path: '/',
+        ...(process.env.NODE_ENV === 'production' ? { domain: '.meetcursive.com' } : {}),
+      })
+    }
+  }
+
   return response
 }
 

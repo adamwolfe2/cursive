@@ -14,7 +14,10 @@ import { safeError } from '@/lib/utils/log-sanitizer'
 
 function LoginForm() {
   const searchParams = useSearchParams()
-  const redirect = searchParams.get('redirect') || '/dashboard'
+  // Accept both ?redirect= and ?next= — the partner portal gate (requireAffiliate)
+  // sends ?next=, while the rest of the app uses ?redirect=. Honor either so a
+  // partner who logs in from the portal link lands back on the portal, not /dashboard.
+  const redirect = searchParams.get('redirect') || searchParams.get('next') || '/dashboard'
 
   // Read error params from URL (set by auth callback or middleware on failure)
   const urlError = searchParams.get('error')

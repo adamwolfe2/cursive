@@ -143,15 +143,26 @@ export async function PATCH(
       const referralUrl = `https://leads.meetcursive.com/get-leads?ref=${partnerCode}`
       const dashboardUrl = `${appUrl}/partners/portal`
 
-      sendPartnerApproved(
-        application.email,
-        application.first_name,
-        partnerCode,
-        referralUrl,
-        dashboardUrl
-      ).catch((err) => safeError('[admin/affiliates] Failed to send approval email:', err))
+      // AWAIT the approval email: a fire-and-forget here can be dropped when the
+      // serverless function freezes after responding, leaving a partner approved
+      // with no invite/referral link/portal URL — a silent dead end. If it fails,
+      // the approval still stands (DB is written) but we surface emailSent:false so
+      // the admin can resend.
+      let emailSent = true
+      try {
+        await sendPartnerApproved(
+          application.email,
+          application.first_name,
+          partnerCode,
+          referralUrl,
+          dashboardUrl
+        )
+      } catch (err) {
+        emailSent = false
+        safeError('[admin/affiliates] Failed to send approval email:', err)
+      }
 
-      return NextResponse.json({ success: true, partnerCode })
+      return NextResponse.json({ success: true, partnerCode, emailSent })
     }
 
     if (action === 'reject') {

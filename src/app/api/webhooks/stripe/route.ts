@@ -149,8 +149,10 @@ export async function POST(request: NextRequest) {
         await handleServiceSubscriptionEvent(event)
       } else if (event.type === 'account.updated') {
         // Stripe Connect: affiliate's Express account updated (onboarding completed)
-        handleAffiliateStripeAccountUpdated(event.data.object as Stripe.Account)
-          .catch((err) => safeError('[Stripe Webhook] Affiliate account update failed (non-fatal):', err))
+        // AWAIT: an un-awaited promise is dropped when the function freezes after
+        // the 200 response. Awaiting lets a failure bubble to processingError → 500
+        // → Stripe retries (the handler is idempotent).
+        await handleAffiliateStripeAccountUpdated(event.data.object as Stripe.Account)
       } else if (event.type === 'checkout.session.completed') {
         await handleCheckoutSessionCompleted(event)
       } else if (event.type === 'charge.failed') {
@@ -161,8 +163,9 @@ export async function POST(request: NextRequest) {
         const charge = event.data.object as Stripe.Charge
         const chargeInvoiceId = charge.invoice as string | null
         if (chargeInvoiceId) {
-          handleAffiliateClawback(chargeInvoiceId)
-            .catch((err) => safeError('[Stripe Webhook] Affiliate clawback failed (non-fatal):', err))
+          // AWAIT: a dropped clawback leaves a refunded commission paid out. Awaiting
+          // turns a failure into a 500 so Stripe retries (clawback is idempotent).
+          await handleAffiliateClawback(chargeInvoiceId)
         }
       } else if (event.type === 'charge.dispute.created') {
         await handleChargeDisputeCreated(event)
@@ -173,17 +176,19 @@ export async function POST(request: NextRequest) {
         const disputeChargeId =
           typeof dispute.charge === 'string' ? dispute.charge : dispute.charge?.id ?? null
         if (disputeChargeId) {
-          resolveInvoiceIdForCharge(disputeChargeId)
-            .then((invId) => (invId ? handleAffiliateClawback(invId) : undefined))
-            .catch((err) => safeError('[Stripe Webhook] Affiliate dispute clawback failed (non-fatal):', err))
+          // AWAIT: dispute clawback must not be dropped (chargeback = lost revenue +
+          // fee). Failure → 500 → Stripe retries (idempotent).
+          const invId = await resolveInvoiceIdForCharge(disputeChargeId)
+          if (invId) await handleAffiliateClawback(invId)
         }
       } else if (event.type === 'invoice.voided' || event.type === 'invoice.marked_uncollectible') {
         // Voided / uncollectible invoice — the revenue never settles, so claw back
         // any commission recorded against it.
         const voidedInvoice = event.data.object as Stripe.Invoice
         if (voidedInvoice.id) {
-          handleAffiliateClawback(voidedInvoice.id)
-            .catch((err) => safeError('[Stripe Webhook] Affiliate void clawback failed (non-fatal):', err))
+          // AWAIT: a dropped void clawback leaves commission paid on revenue that
+          // never settled. Failure → 500 → Stripe retries (idempotent).
+          await handleAffiliateClawback(voidedInvoice.id)
         }
       } else if (event.type === 'customer.deleted') {
         await handleCustomerDeleted(event)

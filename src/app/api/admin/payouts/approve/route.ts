@@ -121,14 +121,17 @@ export async function POST(req: NextRequest) {
         })
         .eq('id', payout_id)
 
-      // Update partner balance
-      const newPendingBalance = (payout.partner.pending_balance || 0) - payout.amount
+      // Record the payout. CRITICAL: the money was ALREADY debited from
+      // available_balance when the partner created the request (via
+      // deduct_available_balance). Do NOT touch pending_balance here — the request
+      // never credited it, so decrementing it double-counted the deduction across two
+      // columns and corrupted the partner's pending figure. Only bump lifetime
+      // total_paid_out + last_payout_at; the spendable balance is already correct.
       const newTotalPaidOut = (payout.partner.total_paid_out || 0) + payout.amount
 
       await adminClient
         .from('partners')
         .update({
-          pending_balance: Math.max(0, newPendingBalance),
           total_paid_out: newTotalPaidOut,
           last_payout_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),

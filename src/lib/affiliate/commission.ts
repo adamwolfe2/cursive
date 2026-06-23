@@ -572,7 +572,13 @@ export async function handleAffiliateFunnelChurn(order: {
  */
 export async function handleAffiliateStripeAccountUpdated(account: Stripe.Account): Promise<void> {
   try {
-    if (!account.charges_enabled) return
+    // Payouts require the TRANSFERS capability active + payouts_enabled — NOT
+    // charges_enabled. These accounts are transfers-first (we never charge them);
+    // charges_enabled can flip true while transfers is still pending, which would
+    // mark a partner "ready for payouts" while every stripe.transfers.create fails.
+    const transfersReady =
+      account.capabilities?.transfers === 'active' && account.payouts_enabled === true
+    if (!transfersReady) return
     const admin = createAdminClient()
 
     const { data: affiliate } = await admin

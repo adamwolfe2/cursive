@@ -40,7 +40,12 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const stripe = getStripe()
     const account = await stripe.accounts.retrieve(affiliate.stripe_connect_account_id)
 
-    if (account.charges_enabled) {
+    // Payouts require the TRANSFERS capability active + payouts_enabled — NOT
+    // charges_enabled (these accounts are transfers-first; charges_enabled can be
+    // true while transfers is still pending, falsely marking the partner paid-ready).
+    const transfersReady =
+      account.capabilities?.transfers === 'active' && account.payouts_enabled === true
+    if (transfersReady) {
       await admin
         .from('affiliates')
         .update({ stripe_onboarding_complete: true })

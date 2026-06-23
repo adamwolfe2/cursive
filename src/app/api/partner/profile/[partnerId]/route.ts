@@ -184,15 +184,20 @@ export async function GET(
     // 7. Build response — anonymize if not own profile (and not admin)
     const showRealName = isOwnProfile || isAdmin
 
+    // SECURITY (IDOR fix): never expose another partner's financials. Only the
+    // profile owner or an admin sees earnings / leads sold / conversion / monthly
+    // trend. Any other authenticated partner gets tier + obscured name only —
+    // previously the full revenue figures leaked, letting partners enumerate each
+    // other's earnings.
     const responseData: PartnerProfileData = {
       partner_name: showRealName ? partner.name : obscureName(partner.name),
       tier: tierObj.name,
       is_own_profile: isOwnProfile,
       member_since: partner.created_at,
-      total_leads_sold: totalLeadsSold,
-      total_earnings: totalEarnings,
-      conversion_rate: conversionRate,
-      monthly_trend,
+      total_leads_sold: showRealName ? totalLeadsSold : 0,
+      total_earnings: showRealName ? totalEarnings : 0,
+      conversion_rate: showRealName ? conversionRate : 0,
+      monthly_trend: showRealName ? monthly_trend : [],
     }
 
     return NextResponse.json(responseData)
