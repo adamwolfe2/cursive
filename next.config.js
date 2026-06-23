@@ -148,7 +148,12 @@ const nextConfig = {
               // Video player connect-srcs: Mux (player + analytics + manifest),
               //   Vimeo (player API), and Loom (embed analytics). Required so
               //   Safari (which enforces CSP strictly) lets the players boot.
-              "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.stripe.com https://*.sentry.io https://sentry.io https://client.crisp.chat wss://client.crisp.chat https://*.mux.com https://*.litix.io https://stats.mux.com https://player.vimeo.com https://*.vimeocdn.com https://www.loom.com",
+              // login.meetcursive.com is the Supabase custom auth domain (prod
+              //   NEXT_PUBLIC_SUPABASE_URL). Browser auth fetches (signUp,
+              //   signInWithPassword, OAuth token exchange) hit this host, so it
+              //   MUST be allowlisted or every account creation fails with
+              //   "Failed to fetch".
+              "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://login.meetcursive.com wss://login.meetcursive.com https://api.stripe.com https://*.sentry.io https://sentry.io https://client.crisp.chat wss://client.crisp.chat https://*.mux.com https://*.litix.io https://stats.mux.com https://player.vimeo.com https://*.vimeocdn.com https://www.loom.com",
               // frame-src: hosted players for the VSL. Safari blocks
               //   silently (blank iframe) if these are missing; Chrome was
               //   permissive about it because of an older CSP cache.
@@ -156,7 +161,7 @@ const nextConfig = {
               "media-src 'self' blob: https://*.mux.com https://stream.mux.com https://*.vimeocdn.com https://cdn.idpixel.app",
               "object-src 'none'",
               "base-uri 'self'",
-              "form-action 'self' https://*.supabase.co https://accounts.google.com",
+              "form-action 'self' https://*.supabase.co https://login.meetcursive.com https://accounts.google.com",
               "upgrade-insecure-requests",
             ].join('; '),
           },
