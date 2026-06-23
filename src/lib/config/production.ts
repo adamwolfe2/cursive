@@ -78,11 +78,13 @@ export function getCSPDirectives(nonce?: string): string {
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: https: blob:",
     "font-src 'self' data:",
-    "connect-src 'self' https://*.supabase.co https://api.stripe.com wss://*.supabase.co",
+    // login.meetcursive.com = Supabase custom auth domain (prod NEXT_PUBLIC_SUPABASE_URL).
+    // Required or browser auth calls (signup/login/OAuth) fail with "Failed to fetch".
+    "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://login.meetcursive.com wss://login.meetcursive.com https://api.stripe.com",
     "frame-src 'self' https://js.stripe.com https://hooks.stripe.com",
     "object-src 'none'",
     "base-uri 'self'",
-    "form-action 'self'",
+    "form-action 'self' https://*.supabase.co https://login.meetcursive.com https://accounts.google.com",
     "frame-ancestors 'none'",
     "upgrade-insecure-requests",
   ]
