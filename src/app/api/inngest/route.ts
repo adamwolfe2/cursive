@@ -199,8 +199,11 @@ export const { GET, POST, PUT } = serve({
     // Outbound Webhook Fan-out (delivers to all subscribed endpoints)
     functions.deliverOutboundWebhooks,
 
-    // Reseller / White-Label lead forwarding (subscribes to lead/created)
-    functions.deliverResellerLead,
+    // Reseller / White-Label lead forwarding is intentionally NOT registered
+    // here. It runs under a SEPARATE Inngest app (`cursive-reseller`) served at
+    // /api/inngest-reseller so it can sync on the Free plan even while this
+    // main app's sync is rejected (functions declare concurrency > account cap).
+    // See src/app/api/inngest-reseller/route.ts + src/inngest/reseller-client.ts.
 
     // Post-Purchase Nurture Drip (3-email sequence after credit purchase)
     functions.postPurchaseSequence,

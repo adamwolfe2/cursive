@@ -11,6 +11,7 @@ import { z } from 'zod'
 import { requireReseller } from '@/lib/reseller/auth'
 import { createResellerPixel, listResellerPixels } from '@/lib/reseller/pixel.service'
 import { isSafeDestinationUrl } from '@/lib/reseller/delivery.service'
+import { checkRateLimit } from '@/lib/middleware/rate-limiter'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 const createSchema = z.object({
@@ -34,6 +35,25 @@ const createSchema = z.object({
 export async function POST(request: NextRequest) {
   const auth = await requireReseller(request, 'pixels:write')
   if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status })
+
+  // Rate-limit pixel creation PER API KEY. Each create provisions a real
+  // AudienceLab pixel, so a runaway partner key must not hammer that upstream.
+  // Distributed (Upstash) with per-instance in-memory fallback. Tier 'write' = 30/min.
+  const rl = await checkRateLimit(`reseller-pixels-create:${auth.keyId}`, 'write')
+  if (!rl.success) {
+    return NextResponse.json(
+      { error: 'Rate limit exceeded. Slow down pixel creation and retry shortly.' },
+      {
+        status: 429,
+        headers: {
+          'Retry-After': Math.max(1, Math.ceil((rl.reset - Date.now()) / 1000)).toString(),
+          'X-RateLimit-Limit': rl.limit.toString(),
+          'X-RateLimit-Remaining': rl.remaining.toString(),
+          'X-RateLimit-Reset': Math.ceil(rl.reset / 1000).toString(),
+        },
+      },
+    )
+  }
 
   try {
     const body = await request.json()

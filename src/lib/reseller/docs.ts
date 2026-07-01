@@ -17,6 +17,29 @@ export interface DocEndpoint {
 
 export const RESELLER_API_VERSION = 'v1'
 export const RESELLER_API_BASE = '/api/reseller/v1'
+/** Absolute production base URL — this is what partners call. */
+export const RESELLER_API_ABSOLUTE_BASE = 'https://leads.meetcursive.com/api/reseller/v1'
+export const RESELLER_DOCS_URL = 'https://leads.meetcursive.com/reseller/docs'
+
+/**
+ * Rate limits partners should design around. Enforced server-side; exceeding a
+ * limit returns HTTP 429 with `Retry-After` + `X-RateLimit-*` headers. Back off
+ * and retry after the window.
+ */
+export const RESELLER_RATE_LIMITS = [
+  {
+    scope: 'POST /pixels (pixel creation)',
+    limit: '30 requests / minute per API key',
+    on_exceed: '429 Too Many Requests + Retry-After header',
+    why: 'Each create provisions a real tracking pixel upstream — protects that pipeline from runaway loops.',
+  },
+  {
+    scope: 'Other v1 endpoints',
+    limit: 'Coarse IP throttling applies platform-wide; typical integration traffic is never affected.',
+    on_exceed: '429 Too Many Requests',
+    why: 'Abuse protection only.',
+  },
+]
 
 export const RESELLER_ENDPOINTS: DocEndpoint[] = [
   {
@@ -110,7 +133,81 @@ export const OUTBOUND_WEBHOOK_SCHEMA = {
   throttled_note:
     'When throttled=true (reseller/pixel throttle mode), the reduced payload omits phone, company.title, and location.',
   delivery_note:
-    'Delivered via HTTP POST with up to 5 attempts and exponential backoff (0s, 2s, 6s, 15s, 30s). Respond 2xx to acknowledge. Non-2xx 4xx (except 408/429) are treated as permanent and not retried.',
+    'Delivered via HTTP POST with up to 5 attempts and exponential backoff. Respond 2xx to acknowledge. 4xx (except 408/429) are treated as permanent and NOT retried; 5xx, 408, 429, and network timeouts are retried. A delivery attempt counts toward your cap and is not refunded on failure.',
+}
+
+/**
+ * Copy-paste signature verification. The signed string is `${t}.${raw_body}` —
+ * you MUST use the RAW request body bytes, before any JSON re-serialization, or
+ * the HMAC will not match.
+ */
+export const SIGNATURE_VERIFICATION_SAMPLES = {
+  node: `// Node.js (Express) — verify a Cursive reseller webhook
+import crypto from 'node:crypto'
+
+// IMPORTANT: capture the RAW body (Buffer), not a parsed object.
+// app.use('/hooks/cursive', express.raw({ type: 'application/json' }))
+
+function verifyCursiveSignature(req, signingSecret) {
+  const header = req.get('X-Cursive-Signature') || ''      // "t=1719830400,v1=abc123..."
+  const parts = Object.fromEntries(header.split(',').map((kv) => kv.split('=')))
+  const t = parts.t
+  const received = parts.v1
+  if (!t || !received) return false
+
+  const rawBody = req.body.toString('utf8')                // raw bytes as string
+  const expected = crypto
+    .createHmac('sha256', signingSecret)
+    .update(\`\${t}.\${rawBody}\`)
+    .digest('hex')
+
+  // Constant-time compare; reject if lengths differ.
+  const a = Buffer.from(received)
+  const b = Buffer.from(expected)
+  if (a.length !== b.length) return false
+  if (!crypto.timingSafeEqual(a, b)) return false
+
+  // Optional: reject stale timestamps (replay protection), e.g. > 5 min old.
+  if (Math.abs(Date.now() / 1000 - Number(t)) > 300) return false
+  return true
+}
+
+app.post('/hooks/cursive', (req, res) => {
+  if (!verifyCursiveSignature(req, process.env.CURSIVE_SIGNING_SECRET)) {
+    return res.status(401).send('bad signature')
+  }
+  const payload = JSON.parse(req.body.toString('utf8'))
+  // ... route payload.lead into your product ...
+  res.sendStatus(200)
+})`,
+  python: `# Python (Flask) — verify a Cursive reseller webhook
+import hmac, hashlib, time
+from flask import Flask, request, abort
+
+app = Flask(__name__)
+SIGNING_SECRET = "whsec_...".encode()
+
+def verify_cursive_signature(raw_body: bytes, sig_header: str) -> bool:
+    parts = dict(kv.split("=", 1) for kv in sig_header.split(",") if "=" in kv)
+    t, received = parts.get("t"), parts.get("v1")
+    if not t or not received:
+        return False
+    signed = f"{t}.".encode() + raw_body            # use RAW body bytes
+    expected = hmac.new(SIGNING_SECRET, signed, hashlib.sha256).hexdigest()
+    if not hmac.compare_digest(received, expected): # constant-time compare
+        return False
+    if abs(time.time() - int(t)) > 300:             # optional replay guard
+        return False
+    return True
+
+@app.post("/hooks/cursive")
+def hook():
+    raw = request.get_data()                        # raw bytes, unparsed
+    if not verify_cursive_signature(raw, request.headers.get("X-Cursive-Signature", "")):
+        abort(401)
+    payload = request.get_json()
+    # ... route payload["lead"] into your product ...
+    return "", 200`,
 }
 
 export const RESELLER_QUICKSTART = [
