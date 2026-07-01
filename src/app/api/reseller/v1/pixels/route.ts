@@ -1,0 +1,94 @@
+/**
+ * Reseller API — Pixels collection
+ *   POST /api/reseller/v1/pixels  — create a pixel for an end-customer (idempotent)
+ *   GET  /api/reseller/v1/pixels  — list this reseller's pixels
+ */
+
+export const runtime = 'nodejs'
+
+import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
+import { requireReseller } from '@/lib/reseller/auth'
+import { createResellerPixel, listResellerPixels } from '@/lib/reseller/pixel.service'
+import { isSafeDestinationUrl } from '@/lib/reseller/delivery.service'
+import { safeError } from '@/lib/utils/log-sanitizer'
+
+const createSchema = z.object({
+  website_url: z.string().url().refine((u) => {
+    try {
+      const h = new URL(u).hostname
+      if (h === 'localhost' || /^\d{1,3}(\.\d{1,3}){3}$/.test(h)) return false
+      return h.includes('.')
+    } catch {
+      return false
+    }
+  }, 'Must be a valid public website URL'),
+  website_name: z.string().max(200).optional(),
+  external_customer_ref: z.string().trim().min(1).max(200),
+  destination_url: z.string().url().optional(),
+  signing_secret: z.string().min(16).max(200).optional(),
+  lead_cap_per_period: z.number().int().min(0).nullable().optional(),
+  throttle_mode: z.boolean().nullable().optional(),
+})
+
+export async function POST(request: NextRequest) {
+  const auth = await requireReseller(request, 'pixels:write')
+  if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status })
+
+  try {
+    const body = await request.json()
+    const input = createSchema.parse(body)
+
+    if (input.destination_url && !isSafeDestinationUrl(input.destination_url)) {
+      return NextResponse.json(
+        { error: 'destination_url must be a public HTTPS URL' },
+        { status: 400 },
+      )
+    }
+
+    const result = await createResellerPixel(auth.reseller, {
+      websiteUrl: input.website_url,
+      websiteName: input.website_name,
+      externalCustomerRef: input.external_customer_ref,
+      destinationUrl: input.destination_url,
+      signingSecret: input.signing_secret,
+      leadCapPerPeriod: input.lead_cap_per_period ?? null,
+      throttleMode: input.throttle_mode ?? null,
+    })
+
+    if (!result.ok) {
+      return NextResponse.json({ error: result.error }, { status: result.status })
+    }
+
+    return NextResponse.json(result.data, { status: result.data.existing ? 200 : 201 })
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json({ error: 'Invalid request', details: error.issues.slice(0, 5) }, { status: 400 })
+    }
+    safeError('[ResellerAPI] create pixel error:', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  }
+}
+
+export async function GET(request: NextRequest) {
+  const auth = await requireReseller(request, 'pixels:read')
+  if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status })
+
+  const pixels = await listResellerPixels(auth.reseller.id)
+  return NextResponse.json({
+    pixels: pixels.map((p) => ({
+      pixel_id: p.pixel_id,
+      external_customer_ref: p.external_customer_ref,
+      website_url: p.website_url,
+      domain: p.domain,
+      status: p.status,
+      destination_url: p.destination_url,
+      throttle_mode: p.throttle_mode,
+      lead_cap_per_period: p.lead_cap_per_period,
+      leads_delivered_period: p.leads_delivered_period,
+      leads_delivered_lifetime: p.leads_delivered_lifetime,
+      last_delivered_at: p.last_delivered_at,
+      created_at: p.created_at,
+    })),
+  })
+}

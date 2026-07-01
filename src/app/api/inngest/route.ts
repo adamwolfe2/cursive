@@ -199,6 +199,9 @@ export const { GET, POST, PUT } = serve({
     // Outbound Webhook Fan-out (delivers to all subscribed endpoints)
     functions.deliverOutboundWebhooks,
 
+    // Reseller / White-Label lead forwarding (subscribes to lead/created)
+    functions.deliverResellerLead,
+
     // Post-Purchase Nurture Drip (3-email sequence after credit purchase)
     functions.postPurchaseSequence,
 
