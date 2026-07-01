@@ -233,7 +233,11 @@ async function createChildWorkspace(
     const slug = buildChildSlug(reseller)
     const { data, error } = await supabase
       .from('workspaces')
-      .insert({ slug, name: name.slice(0, 200) })
+      // onboarding_status MUST be set explicitly: the column default
+      // ('not_started') violates the workspaces valid_onboarding_status check
+      // (pending|in_progress|completed|skipped). A reseller child workspace is
+      // headless / fully provisioned, so it is 'completed'.
+      .insert({ slug, name: name.slice(0, 200), onboarding_status: 'completed' })
       .select('id')
       .maybeSingle()
 
