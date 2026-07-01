@@ -85,7 +85,10 @@ export async function middleware(req: NextRequest) {
       // gated and enforces requirePlatformAdmin() at the route.
       pathname.startsWith('/api/reseller/v1') ||
       // Public API reference for partners (no secrets; noindex'd at the page level)
-      pathname.startsWith('/reseller/docs')
+      pathname.startsWith('/reseller/docs') ||
+      // Partner portal page — API-key auth is client-side against /api/reseller/v1
+      // (partners are not Supabase users). Page is public; noindex'd via its layout.
+      pathname.startsWith('/reseller/portal')
     ) {
       return NextResponse.next({
         request: req,
@@ -224,7 +227,9 @@ export async function middleware(req: NextRequest) {
       // gated and enforces requirePlatformAdmin() at the route.
       pathname.startsWith('/api/reseller/v1') ||
       // Public API reference for partners (no secrets; noindex'd at the page level)
-      pathname.startsWith('/reseller/docs')
+      pathname.startsWith('/reseller/docs') ||
+      // Partner portal page — public (API-key auth is client-side).
+      pathname.startsWith('/reseller/portal')
 
     // API routes (except webhooks and cron) require authentication
     const isApiRoute = pathname.startsWith('/api') &&
