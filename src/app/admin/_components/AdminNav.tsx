@@ -54,6 +54,7 @@ const GROUPS = [
     label: 'Partners',
     items: [
       { href: '/admin/affiliates', label: 'Applications' },
+      { href: '/admin/resellers',  label: 'Resellers' },
     ],
   },
   {
