@@ -85,6 +85,10 @@ export async function deliverToPartner(
       },
       body: payloadString,
       signal: controller.signal,
+      // SSRF hardening: never follow redirects — a 30x to a private/metadata IP
+      // would bypass the literal-host guard above. A redirected endpoint is
+      // treated as a delivery failure (partner must give a direct URL).
+      redirect: 'error',
     })
     clearTimeout(timeoutId)
     return {

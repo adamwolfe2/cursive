@@ -15,7 +15,7 @@
 import { inngest } from '../client'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
-import { decideDelivery, recordDelivery } from '@/lib/reseller/metering.service'
+import { decideDelivery, consumeDelivery, recordDelivery } from '@/lib/reseller/metering.service'
 import { buildOutboundPayload } from '@/lib/reseller/payload'
 import { deliverToPartner } from '@/lib/reseller/delivery.service'
 import type { Reseller, ResellerPixel, LeadRow, DeliveryOutcome } from '@/lib/reseller/types'
@@ -44,10 +44,13 @@ export const deliverResellerLead = inngest.createFunction(
     if (!pixelRow) return { skipped: true, reason: 'not_reseller' }
     const pixel = pixelRow as ResellerPixel
 
-    // 2. Load reseller + lead in parallel.
+    // 2. Load reseller + lead in parallel. The lead is fetched scoped to the
+    //    SAME workspace as the reseller pixel — a malformed/replayed event whose
+    //    lead_id belongs to a different workspace resolves to null and is
+    //    skipped, so a reseller can never receive another tenant's lead.
     const [{ data: resellerRow }, { data: leadRow }] = await Promise.all([
       supabase.from('resellers').select('*').eq('id', pixel.reseller_id).maybeSingle(),
-      supabase.from('leads').select(LEAD_COLUMNS).eq('id', lead_id).maybeSingle(),
+      supabase.from('leads').select(LEAD_COLUMNS).eq('id', lead_id).eq('workspace_id', workspace_id).maybeSingle(),
     ])
 
     if (!resellerRow) return { skipped: true, reason: 'reseller_missing' }
@@ -55,32 +58,44 @@ export const deliverResellerLead = inngest.createFunction(
     const reseller = resellerRow as Reseller
     const lead = leadRow as LeadRow
 
-    // 3. Cap + throttle decision (pure).
-    const decision = decideDelivery(reseller, pixel)
-
-    if (!decision.deliver) {
-      const outcome: DeliveryOutcome = decision.reason === 'reseller_cap' || decision.reason === 'pixel_cap'
-        ? 'skipped_cap'
-        : 'skipped_cap' // suspended/inactive also recorded as skipped (not delivered)
-      await logDelivery(supabase, pixel, lead_id, outcome, decision.throttled, null, decision.reason)
-      await recordDelivery(reseller.id, pixel.id, outcome)
-      safeLog(`[ResellerDelivery] lead ${lead_id} not delivered (${decision.reason})`)
-      return { delivered: false, reason: decision.reason }
+    // 3. Cheap pre-check (status + obvious cap). The authoritative, race-safe
+    //    gate is consumeDelivery() below; this avoids a DB txn for clearly-
+    //    blocked cases (suspended/inactive/way-over-cap).
+    const pre = decideDelivery(reseller, pixel)
+    if (!pre.deliver) {
+      await logDelivery(supabase, pixel, lead_id, 'skipped_cap', pre.throttled, null, pre.reason)
+      await recordDelivery(reseller.id, pixel.id, 'skipped_cap')
+      safeLog(`[ResellerDelivery] lead ${lead_id} not delivered (${pre.reason})`)
+      return { delivered: false, reason: pre.reason }
     }
 
-    // 4. No destination configured yet — record so the partner sees the gap.
+    // 4. No destination configured yet — record the gap. Do this BEFORE consuming
+    //    a cap slot so an un-configured pixel never burns the partner's quota.
     if (!pixel.destination_url || !pixel.signing_secret) {
-      await logDelivery(supabase, pixel, lead_id, 'no_destination', decision.throttled, null, 'no_destination')
+      await logDelivery(supabase, pixel, lead_id, 'no_destination', pre.throttled, null, 'no_destination')
+      await recordDelivery(reseller.id, pixel.id, 'no_destination')
       safeLog(`[ResellerDelivery] lead ${lead_id} has no destination configured for pixel ${pixel.pixel_id}`)
       return { delivered: false, reason: 'no_destination' }
     }
 
-    // 5. Build payload (throttled = reduced subset) and deliver with internal retries.
+    // 5. Atomic cap enforcement + slot consumption (race-safe; authoritative).
+    //    Fails closed. If a concurrent worker won the last slot, this returns
+    //    allowed=false and we skip rather than over-deliver past the cap.
+    const consumed = await consumeDelivery(reseller.id, pixel.id)
+    if (!consumed.deliver) {
+      await logDelivery(supabase, pixel, lead_id, 'skipped_cap', consumed.throttled, null, consumed.reason)
+      await recordDelivery(reseller.id, pixel.id, 'skipped_cap')
+      safeLog(`[ResellerDelivery] lead ${lead_id} skipped at atomic gate (${consumed.reason})`)
+      return { delivered: false, reason: consumed.reason }
+    }
+
+    // 6. Build payload (throttled = reduced subset) and deliver with internal retries.
+    //    throttled comes from the RPC (authoritative).
     const payload = buildOutboundPayload({
       lead,
       pixelId: pixel.pixel_id,
       externalCustomerRef: pixel.external_customer_ref,
-      throttled: decision.throttled,
+      throttled: consumed.throttled,
     })
 
     let lastStatus: number | null = null
@@ -110,8 +125,8 @@ export const deliverResellerLead = inngest.createFunction(
       }
     }
 
-    const outcome: DeliveryOutcome = success ? (decision.throttled ? 'throttled' : 'delivered') : 'failed'
-    await logDelivery(supabase, pixel, lead_id, outcome, decision.throttled, lastStatus, lastError, attempts)
+    const outcome: DeliveryOutcome = success ? (consumed.throttled ? 'throttled' : 'delivered') : 'failed'
+    await logDelivery(supabase, pixel, lead_id, outcome, consumed.throttled, lastStatus, lastError, attempts)
     await recordDelivery(reseller.id, pixel.id, outcome)
 
     safeLog(`[ResellerDelivery] lead ${lead_id} -> ${outcome} (status=${lastStatus ?? 'n/a'}, attempts=${attempts})`)

@@ -134,14 +134,110 @@ DROP TRIGGER IF EXISTS trg_reseller_pixels_updated_at ON reseller_pixels;
 CREATE TRIGGER trg_reseller_pixels_updated_at BEFORE UPDATE ON reseller_pixels
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
--- ─── Atomic delivery metering RPC ───────────────────────────────────────────
--- Resets stale period counters (calendar month or day), increments the pixel
--- and reseller counters when the outcome consumed quota, and upserts the daily
--- rollup. Called once per lead-delivery attempt by the Inngest worker.
+-- ─── Atomic cap enforcement + slot consumption RPC ──────────────────────────
+-- Race-safe cap gate. Locks the reseller + pixel rows (FOR UPDATE), applies the
+-- period reset, checks the reseller-wide cap and the effective per-pixel cap
+-- (explicit pixel cap, else the reseller default), and — only if under cap —
+-- increments both counters in the SAME transaction. Concurrent workers can
+-- therefore never both pass a full cap (this fixes the check-then-increment
+-- race). Returns {allowed, throttled, reason}.
 --
+-- A delivery ATTEMPT consumes a slot: a subsequent failed POST is NOT refunded
+-- in v1 (attempts count toward the cap). This is intentional and documented in
+-- the slice spec; failures are rare and the partner controls their endpoint.
+CREATE OR REPLACE FUNCTION reseller_consume_delivery(
+  p_reseller_id       UUID,
+  p_reseller_pixel_id UUID
+) RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  v_period_kind   TEXT;
+  v_cur_period    DATE;
+  v_r_status      TEXT;
+  v_r_cap         INTEGER;
+  v_r_default_cap INTEGER;
+  v_r_default_thr BOOLEAN;
+  v_r_used        INTEGER;
+  v_p_status      TEXT;
+  v_p_cap         INTEGER;
+  v_p_throttle    BOOLEAN;
+  v_p_used        INTEGER;
+  v_eff_cap       INTEGER;
+  v_throttled     BOOLEAN;
+BEGIN
+  -- Lock reseller row.
+  SELECT status, lead_cap_per_period, default_lead_cap_per_period, default_throttle_mode, period_kind
+    INTO v_r_status, v_r_cap, v_r_default_cap, v_r_default_thr, v_period_kind
+    FROM resellers WHERE id = p_reseller_id FOR UPDATE;
+  IF v_r_status IS NULL THEN
+    RETURN jsonb_build_object('allowed', false, 'throttled', false, 'reason', 'reseller_missing');
+  END IF;
+  IF v_r_status <> 'active' THEN
+    RETURN jsonb_build_object('allowed', false, 'throttled', false, 'reason', 'reseller_suspended');
+  END IF;
+
+  -- Lock pixel row (asserting it belongs to this reseller).
+  SELECT status, lead_cap_per_period, throttle_mode
+    INTO v_p_status, v_p_cap, v_p_throttle
+    FROM reseller_pixels
+    WHERE id = p_reseller_pixel_id AND reseller_id = p_reseller_id FOR UPDATE;
+  IF v_p_status IS NULL THEN
+    RETURN jsonb_build_object('allowed', false, 'throttled', false, 'reason', 'pixel_missing');
+  END IF;
+  IF v_p_status <> 'active' THEN
+    RETURN jsonb_build_object('allowed', false, 'throttled', false, 'reason', 'inactive');
+  END IF;
+
+  v_cur_period := CASE WHEN v_period_kind = 'day'
+                       THEN now()::date
+                       ELSE date_trunc('month', now())::date END;
+  v_eff_cap   := COALESCE(v_p_cap, v_r_default_cap);           -- pixel cap else reseller default
+  v_throttled := COALESCE(v_p_throttle, v_r_default_thr, false); -- pixel override else reseller default
+
+  -- Reseller-wide cap (period-aware; stale period counts as 0).
+  IF v_r_cap IS NOT NULL THEN
+    SELECT CASE WHEN period_start < v_cur_period THEN 0 ELSE leads_delivered_period END
+      INTO v_r_used FROM resellers WHERE id = p_reseller_id;
+    IF v_r_used >= v_r_cap THEN
+      RETURN jsonb_build_object('allowed', false, 'throttled', v_throttled, 'reason', 'reseller_cap');
+    END IF;
+  END IF;
+
+  -- Effective per-pixel cap (period-aware).
+  IF v_eff_cap IS NOT NULL THEN
+    SELECT CASE WHEN period_start < v_cur_period THEN 0 ELSE leads_delivered_period END
+      INTO v_p_used FROM reseller_pixels WHERE id = p_reseller_pixel_id;
+    IF v_p_used >= v_eff_cap THEN
+      RETURN jsonb_build_object('allowed', false, 'throttled', v_throttled, 'reason', 'pixel_cap');
+    END IF;
+  END IF;
+
+  -- Under cap → consume one slot on both counters (period-aware reset).
+  UPDATE resellers
+  SET leads_delivered_period =
+        CASE WHEN period_start < v_cur_period THEN 0 ELSE leads_delivered_period END + 1,
+      leads_delivered_lifetime = leads_delivered_lifetime + 1,
+      period_start = v_cur_period
+  WHERE id = p_reseller_id;
+
+  UPDATE reseller_pixels
+  SET leads_delivered_period =
+        CASE WHEN period_start < v_cur_period THEN 0 ELSE leads_delivered_period END + 1,
+      leads_delivered_lifetime = leads_delivered_lifetime + 1,
+      period_start = v_cur_period,
+      last_delivered_at = now()
+  WHERE id = p_reseller_pixel_id AND reseller_id = p_reseller_id;
+
+  RETURN jsonb_build_object('allowed', true, 'throttled', v_throttled, 'reason', null);
+END;
+$$;
+
+-- ─── Daily rollup RPC (reporting/billing; no counter mutation) ───────────────
+-- Buckets a delivery outcome into the per-day rollup. Counters are handled by
+-- reseller_consume_delivery; this only records outcome tallies for reporting.
 -- p_outcome: 'delivered' | 'throttled' | 'skipped_cap' | 'failed' | 'no_destination'
--- 'delivered' and 'throttled' both consume quota (a throttled lead is still a
--- delivered lead, just a reduced payload). Others do not increment meters.
 CREATE OR REPLACE FUNCTION reseller_record_delivery(
   p_reseller_id       UUID,
   p_reseller_pixel_id UUID,
@@ -150,44 +246,7 @@ CREATE OR REPLACE FUNCTION reseller_record_delivery(
 LANGUAGE plpgsql
 SECURITY DEFINER
 AS $$
-DECLARE
-  v_period_kind TEXT;
-  v_cur_period  DATE;
-  v_consumed    BOOLEAN := (p_outcome IN ('delivered', 'throttled'));
 BEGIN
-  SELECT period_kind INTO v_period_kind FROM resellers WHERE id = p_reseller_id;
-  IF v_period_kind IS NULL THEN
-    RETURN; -- reseller vanished; nothing to meter
-  END IF;
-
-  IF v_period_kind = 'day' THEN
-    v_cur_period := now()::date;
-  ELSE
-    v_cur_period := date_trunc('month', now())::date;
-  END IF;
-
-  -- Reseller-level period reset + increment
-  UPDATE resellers
-  SET
-    leads_delivered_period =
-      CASE WHEN period_start < v_cur_period THEN 0 ELSE leads_delivered_period END
-      + (CASE WHEN v_consumed THEN 1 ELSE 0 END),
-    leads_delivered_lifetime = leads_delivered_lifetime + (CASE WHEN v_consumed THEN 1 ELSE 0 END),
-    period_start = v_cur_period
-  WHERE id = p_reseller_id;
-
-  -- Pixel-level period reset + increment
-  UPDATE reseller_pixels
-  SET
-    leads_delivered_period =
-      CASE WHEN period_start < v_cur_period THEN 0 ELSE leads_delivered_period END
-      + (CASE WHEN v_consumed THEN 1 ELSE 0 END),
-    leads_delivered_lifetime = leads_delivered_lifetime + (CASE WHEN v_consumed THEN 1 ELSE 0 END),
-    period_start = v_cur_period,
-    last_delivered_at = CASE WHEN v_consumed THEN now() ELSE last_delivered_at END
-  WHERE id = p_reseller_pixel_id;
-
-  -- Daily rollup upsert
   INSERT INTO reseller_usage_daily (
     reseller_id, reseller_pixel_id, usage_date,
     leads_delivered, leads_throttled, leads_skipped_cap, leads_failed

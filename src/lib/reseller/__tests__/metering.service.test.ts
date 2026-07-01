@@ -4,11 +4,18 @@ import type { Reseller, ResellerPixel } from '../types'
 
 const baseReseller: Pick<
   Reseller,
-  'status' | 'period_kind' | 'lead_cap_per_period' | 'default_throttle_mode' | 'period_start' | 'leads_delivered_period'
+  | 'status'
+  | 'period_kind'
+  | 'lead_cap_per_period'
+  | 'default_lead_cap_per_period'
+  | 'default_throttle_mode'
+  | 'period_start'
+  | 'leads_delivered_period'
 > = {
   status: 'active',
   period_kind: 'month',
   lead_cap_per_period: null,
+  default_lead_cap_per_period: null,
   default_throttle_mode: false,
   period_start: '2026-07-01',
   leads_delivered_period: 0,
@@ -65,6 +72,28 @@ describe('decideDelivery', () => {
     expect(
       decideDelivery(baseReseller, { ...basePixel, lead_cap_per_period: 10, leads_delivered_period: 10 }, now),
     ).toMatchObject({ deliver: false, reason: 'pixel_cap' })
+  })
+
+  it('applies the reseller default cap when the pixel cap is null', () => {
+    // pixel cap null → inherit reseller.default_lead_cap_per_period=5; used 5 → blocked
+    expect(
+      decideDelivery(
+        { ...baseReseller, default_lead_cap_per_period: 5 },
+        { ...basePixel, lead_cap_per_period: null, leads_delivered_period: 5 },
+        now,
+      ),
+    ).toMatchObject({ deliver: false, reason: 'pixel_cap' })
+  })
+
+  it('explicit pixel cap overrides the reseller default cap', () => {
+    // pixel cap 100 (used 10) wins over reseller default 5 → still delivers
+    expect(
+      decideDelivery(
+        { ...baseReseller, default_lead_cap_per_period: 5 },
+        { ...basePixel, lead_cap_per_period: 100, leads_delivered_period: 10 },
+        now,
+      ),
+    ).toMatchObject({ deliver: true })
   })
 
   it('ignores a stale-period count (resets to 0)', () => {

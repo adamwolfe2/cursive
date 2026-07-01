@@ -68,9 +68,15 @@ NEW `deliverResellerLead` Inngest fn (`retries: 5`) subscribes to `lead/created`
 5. `reseller_record_delivery` RPC meters atomically; write `reseller_lead_deliveries` audit row.
 
 ## Metering + limits
-- Reseller-level cap and per-pixel cap, per period (`month` default). Cap reached → stop
-  delivering (data still captured). Soft cap: minor over-delivery at the concurrency boundary
-  is acceptable for v1 (documented). Counter increments are atomic via RPC.
+- Reseller-level cap and per-pixel cap, per period (`month` default). Effective per-pixel cap =
+  explicit pixel cap, else the reseller `default_lead_cap_per_period`. Cap reached → stop
+  delivering (data still captured in `leads`).
+- **Hard cap (atomic):** `reseller_consume_delivery` RPC locks the reseller + pixel rows
+  (`FOR UPDATE`), checks caps, and increments counters in one transaction, so concurrent
+  workers can never both pass a full cap. `decideDelivery` (pure, unit-tested) mirrors the SQL
+  as a cheap pre-check; the RPC is authoritative.
+- A delivery **attempt** consumes a slot; a subsequent failed POST is **not** refunded in v1
+  (attempts count toward the cap — failures are rare and the partner controls their endpoint).
 - Throttle mode → deliver reduced payload (name + company + email only; drop phone, title,
   location, demographics) as a pricing lever.
 

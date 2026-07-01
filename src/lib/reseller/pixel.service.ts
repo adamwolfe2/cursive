@@ -9,7 +9,7 @@
  */
 
 import { createAdminClient } from '@/lib/supabase/admin'
-import { provisionCustomerPixel } from '@/lib/audiencelab/api-client'
+import { provisionCustomerPixel, deletePixel } from '@/lib/audiencelab/api-client'
 import { generateApiKey } from './api-key.service'
 import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
 import type { Reseller, ResellerPixel } from './types'
@@ -152,7 +152,8 @@ export async function createResellerPixel(
   })
   if (alInsertErr) {
     safeError(`${LOG_PREFIX} audiencelab_pixels insert failed:`, alInsertErr)
-    await supabase.from('workspaces').delete().eq('id', workspaceId)
+    // AL SuperPixel was created but our DB row was not — clean up both.
+    await cleanupOrphanedProvision(supabase, workspaceId, pixelId)
     return { ok: false, status: 500, error: 'Failed to persist pixel' }
   }
 
@@ -172,8 +173,11 @@ export async function createResellerPixel(
     throttle_mode: input.throttleMode ?? null,
   })
   if (mapErr) {
-    // Unique violation => a concurrent create won the race; return that one.
+    // Unique violation => a concurrent create for the same external_customer_ref
+    // won the race. Clean up the workspace + pixel THIS call just provisioned
+    // (otherwise orphaned), then return the winner's pixel.
     if ((mapErr as { code?: string }).code === '23505') {
+      await cleanupOrphanedProvision(supabase, workspaceId, pixelId)
       return createResellerPixel(reseller, input)
     }
     safeError(`${LOG_PREFIX} reseller_pixels insert failed:`, mapErr)
@@ -197,6 +201,26 @@ export async function createResellerPixel(
 
 function snippetFrom(installUrl: string | null): string {
   return installUrl ? `<script src="${installUrl}" defer></script>` : ''
+}
+
+/**
+ * Delete a just-provisioned pixel + its child workspace after a create fails or
+ * loses an idempotency race, so nothing is orphaned. audiencelab_pixels has no
+ * ON DELETE CASCADE from workspaces, so the pixel row is removed BEFORE the
+ * workspace. AL-side deletion is best-effort.
+ */
+async function cleanupOrphanedProvision(
+  supabase: ReturnType<typeof createAdminClient>,
+  workspaceId: string,
+  pixelId: string,
+): Promise<void> {
+  try {
+    await deletePixel(pixelId)
+  } catch (err) {
+    safeError(`${LOG_PREFIX} AL pixel cleanup failed (non-fatal):`, err)
+  }
+  await supabase.from('audiencelab_pixels').delete().eq('pixel_id', pixelId).eq('workspace_id', workspaceId)
+  await supabase.from('workspaces').delete().eq('id', workspaceId)
 }
 
 /** Create a headless workspace owned by the reseller (retries slug on collision). */

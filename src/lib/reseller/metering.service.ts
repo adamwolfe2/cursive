@@ -43,11 +43,23 @@ function effectivePeriodCount(
 
 /**
  * Pure cap + throttle decision. No I/O.
+ *
+ * This mirrors the authoritative SQL in reseller_consume_delivery() and is used
+ * as a cheap pre-check (and is unit-tested as the behavior spec). The atomic
+ * enforcement that prevents boundary races lives in the RPC — see consumeDelivery.
+ *
+ * Effective per-pixel cap = explicit pixel cap, else the reseller default cap.
  */
 export function decideDelivery(
   reseller: Pick<
     Reseller,
-    'status' | 'period_kind' | 'lead_cap_per_period' | 'default_throttle_mode' | 'period_start' | 'leads_delivered_period'
+    | 'status'
+    | 'period_kind'
+    | 'lead_cap_per_period'
+    | 'default_lead_cap_per_period'
+    | 'default_throttle_mode'
+    | 'period_start'
+    | 'leads_delivered_period'
   >,
   pixel: Pick<
     ResellerPixel,
@@ -72,10 +84,11 @@ export function decideDelivery(
     }
   }
 
-  // Per-pixel cap.
-  if (pixel.lead_cap_per_period != null) {
+  // Effective per-pixel cap: explicit pixel cap, else reseller default (null = unlimited).
+  const effectivePixelCap = pixel.lead_cap_per_period ?? reseller.default_lead_cap_per_period
+  if (effectivePixelCap != null) {
     const used = effectivePeriodCount(pixel.period_start, pixel.leads_delivered_period, cur)
-    if (used >= pixel.lead_cap_per_period) {
+    if (used >= effectivePixelCap) {
       return { deliver: false, throttled: false, reason: 'pixel_cap' }
     }
   }
@@ -87,7 +100,40 @@ export function decideDelivery(
 }
 
 /**
- * Atomically record a delivery outcome (period-aware counters + daily rollup).
+ * Atomically enforce caps and consume one delivery slot (race-safe).
+ * Delegates to the reseller_consume_delivery RPC which locks the rows, checks
+ * caps, and increments counters in one transaction. Returns the authoritative
+ * decision. Fails CLOSED (deliver:false) if the RPC errors — we would rather
+ * skip a lead than over-deliver past a partner's cap.
+ */
+export async function consumeDelivery(
+  resellerId: string,
+  resellerPixelId: string,
+): Promise<DeliveryDecision> {
+  try {
+    const supabase = createAdminClient()
+    const { data, error } = await supabase.rpc('reseller_consume_delivery', {
+      p_reseller_id: resellerId,
+      p_reseller_pixel_id: resellerPixelId,
+    })
+    if (error || !data) {
+      safeError('[ResellerMetering] consume_delivery RPC failed:', error)
+      return { deliver: false, throttled: false }
+    }
+    const d = data as { allowed?: boolean; throttled?: boolean; reason?: string | null }
+    return {
+      deliver: !!d.allowed,
+      throttled: !!d.throttled,
+      ...(d.reason ? { reason: d.reason as DeliveryDecision['reason'] } : {}),
+    }
+  } catch (err) {
+    safeError('[ResellerMetering] consume_delivery unexpected error:', err)
+    return { deliver: false, throttled: false }
+  }
+}
+
+/**
+ * Record a delivery outcome into the daily rollup (reporting/billing).
  * Never throws — metering failures must not crash the delivery worker.
  */
 export async function recordDelivery(
