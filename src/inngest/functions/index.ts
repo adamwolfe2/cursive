@@ -346,3 +346,6 @@ export { funnelPixelInstallReminder } from './funnel-pixel-install-reminder'
 export { funnelVisitorDigest } from './funnel-visitor-digest'
 export { funnelPixelHealthCheck } from './funnel-pixel-health-check'
 export { funnelFirstVisitor } from './funnel-first-visitor'
+
+// Reseller / White-Label — forwards new leads to a partner's endpoint (caps + throttle + retries)
+export { deliverResellerLead } from './deliver-reseller-lead'

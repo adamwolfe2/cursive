@@ -77,7 +77,15 @@ export async function middleware(req: NextRequest) {
     if (
       pathname.startsWith('/api/webhooks') ||
       pathname.startsWith('/api/cron') ||
-      pathname.startsWith('/api/inngest')
+      pathname.startsWith('/api/inngest') ||
+      // Reseller public API — authenticated at the route level via API key
+      // (Authorization: Bearer rk_live_...), NOT a Supabase session. Must bypass
+      // the session gate so requireReseller() is the auth boundary. NOTE:
+      // /api/reseller/admin/* is intentionally NOT listed — it stays session-
+      // gated and enforces requirePlatformAdmin() at the route.
+      pathname.startsWith('/api/reseller/v1') ||
+      // Public API reference for partners (no secrets; noindex'd at the page level)
+      pathname.startsWith('/reseller/docs')
     ) {
       return NextResponse.next({
         request: req,
@@ -208,7 +216,15 @@ export async function middleware(req: NextRequest) {
       pathname.startsWith('/_next') ||
       pathname.startsWith('/api/webhooks') ||
       pathname.startsWith('/api/cron') ||
-      pathname.startsWith('/api/inngest')
+      pathname.startsWith('/api/inngest') ||
+      // Reseller public API — authenticated at the route level via API key
+      // (Authorization: Bearer rk_live_...), NOT a Supabase session. Must bypass
+      // the session gate so requireReseller() is the auth boundary. NOTE:
+      // /api/reseller/admin/* is intentionally NOT listed — it stays session-
+      // gated and enforces requirePlatformAdmin() at the route.
+      pathname.startsWith('/api/reseller/v1') ||
+      // Public API reference for partners (no secrets; noindex'd at the page level)
+      pathname.startsWith('/reseller/docs')
 
     // API routes (except webhooks and cron) require authentication
     const isApiRoute = pathname.startsWith('/api') &&
