@@ -10,6 +10,7 @@ import { ChevronRight, Users, Radio, Send } from 'lucide-react'
 import { PageHeader } from '@/components/ui/page-header'
 import { Badge } from '@/components/ui/badge'
 import { listResellersWithUsage, getResellerSummary } from '@/lib/reseller/admin.service'
+import NewResellerButton from './_components/NewResellerButton'
 
 function fmt(n: number | null): string {
   return n == null ? '∞' : n.toLocaleString()
@@ -24,6 +25,7 @@ export default async function AdminResellersPage() {
         title="Resellers"
         description="White-label partners, their pixels, usage, and delivery health."
         breadcrumbs={[{ label: 'Admin', href: '/admin' }, { label: 'Resellers' }]}
+        actions={<NewResellerButton />}
       />
 
       <div className="px-6 py-6">
