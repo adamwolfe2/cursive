@@ -14,6 +14,8 @@ import {
 export const metadata: Metadata = {
   title: 'Cursive Reseller API',
   description: 'Programmatically create pixels and route identified leads into your own product.',
+  // Pre-GA: reachable by direct URL for partners, but not indexed by search engines.
+  robots: { index: false, follow: false },
 }
 
 function Code({ children }: { children: React.ReactNode }) {
