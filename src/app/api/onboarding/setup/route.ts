@@ -111,21 +111,25 @@ const partnerSchema = z.object({
 
 const setupSchema = z.discriminatedUnion('role', [businessSchema, partnerSchema])
 
-/** Fire-and-forget: send Inngest event without blocking response */
-function fireInngestEvent(eventData: { name: string; data: Record<string, any> }): void {
+/**
+ * Send an Inngest event. MUST BE AWAITED before the handler responds: a
+ * fire-and-forget send is frozen with the serverless instance at response time
+ * and arrives minutes late or never (proven live in edge-processor 2026-07-02,
+ * same class of bug). Never rejects — event failure must not fail onboarding.
+ */
+function fireInngestEvent(eventData: { name: string; data: Record<string, any> }): Promise<void> {
   try {
     // Lazy-import to avoid module-level init issues
     const { inngest } = require('@/inngest/client')
-
-    // Explicitly void the promise to indicate fire-and-forget pattern
-    void inngest.send(eventData).catch((error: unknown) => {
-      safeError('[Onboarding] Inngest event send failed:', error)
-      // Don't throw - this is intentionally non-blocking
-      return null
-    })
+    return inngest.send(eventData).then(
+      () => undefined,
+      (error: unknown) => {
+        safeError('[Onboarding] Inngest event send failed:', error)
+      },
+    )
   } catch (error) {
     safeError('[Onboarding] Inngest client init failed:', error)
-    // Don't throw - this is intentionally non-blocking
+    return Promise.resolve()
   }
 }
 
@@ -463,7 +467,7 @@ export async function POST(request: NextRequest) {
 
           // 10b. Fire immediate audience provision — gives new user their first leads
           // within minutes instead of waiting for the 6-hour segment puller cron.
-          fireInngestEvent({
+          await fireInngestEvent({
             name: 'audiencelab/provision-workspace-audience',
             data: {
               workspace_id: workspace.id,
@@ -533,8 +537,8 @@ export async function POST(request: NextRequest) {
             if (!claimError) {
               pixelClaimed = true
               safeLog('[Onboarding] Demo pixel claimed:', { pixelId: demoPixel.pixel_id, domain: signupDomain })
-              // Fire trial drip email sequence (fire-and-forget)
-              fireInngestEvent({
+              // Fire trial drip email sequence (awaited — never rejects)
+              await fireInngestEvent({
                 name: 'pixel/provisioned',
                 data: {
                   workspace_id: workspace.id,
@@ -674,8 +678,8 @@ export async function POST(request: NextRequest) {
       safeError('[Onboarding] Welcome email failed:', error)
     })
 
-    // Non-blocking GHL onboard (fire-and-forget, lazy-loaded to avoid blocking)
-    fireInngestEvent({
+    // GHL onboard event (awaited — never rejects, so still cannot fail onboarding)
+    await fireInngestEvent({
       name: 'ghl-admin/onboard-customer',
       data: {
         user_id: authUser.id,
