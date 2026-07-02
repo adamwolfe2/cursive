@@ -43,13 +43,15 @@ function isRetryableStatus(status: number | null): boolean {
   return status === 408 || status === 429
 }
 
+/** 4 retries = 5 total attempts per step, matching the prior backoff loop. */
+const STEP_RETRIES = 4
+
 export const deliverResellerLead = resellerInngest.createFunction(
   {
     id: 'deliver-reseller-lead',
-    // 4 retries = 5 total attempts, matching the prior in-function backoff loop.
     // Between attempts the concurrency slot is FREED (Inngest backoff), unlike the
     // old setTimeout loop which held the slot the whole time.
-    retries: 4,
+    retries: STEP_RETRIES,
     // Account-pool protection: never use more than 3 of the Free plan's 5 slots.
     // Secondary key = per-end-customer fairness (event data only carries
     // workspace_id; each reseller pixel maps 1:1 to a child workspace, so this is
@@ -59,10 +61,16 @@ export const deliverResellerLead = resellerInngest.createFunction(
       { limit: 3 },
       { limit: 2, key: 'event.data.workspace_id' },
     ],
-    timeouts: { finish: '5m' },
+    // Wall-clock bound for a whole run INCLUDING retry backoff. Inngest's default
+    // backoff table is ~15s/30s/60s/120s (+0-30s jitter each), so 4 retries of the
+    // deliver step can legitimately take ~7 minutes end to end. 5m (the previous
+    // value) would CANCEL the run mid-backoff and skip the record-outcome step,
+    // consuming a cap slot with no audit row. 15m clears the worst case with
+    // headroom while still killing zombie runs.
+    timeouts: { finish: '15m' },
   },
   { event: 'lead/created' },
-  async ({ event, step }) => {
+  async ({ event, step, attempt }) => {
     const { lead_id, workspace_id } = event.data as { lead_id: string; workspace_id: string }
     if (!lead_id || !workspace_id) return { skipped: true, reason: 'missing_ids' }
 
@@ -126,8 +134,10 @@ export const deliverResellerLead = resellerInngest.createFunction(
     }
 
     // 4. Atomic cap enforcement + slot consumption — EXACTLY ONCE.
-    //    Memoized: this runs on the first attempt only; every retry replays the
-    //    cached decision, so the meter can never be double-consumed.
+    //    Memoized: once it succeeds, every later retry replays the cached
+    //    decision, so the meter is never double-consumed. A transient RPC error
+    //    THROWS inside the step (see consumeDelivery), so a DB blip is retried
+    //    with backoff instead of silently dropping the lead as cap-blocked.
     const consumed = await step.run('consume-delivery', () =>
       consumeDelivery(reseller.id, pixel.id),
     )
@@ -152,19 +162,21 @@ export const deliverResellerLead = resellerInngest.createFunction(
     //    - retryable 5xx/timeout     → THROW so Inngest retries with backoff,
     //      releasing the concurrency slot between attempts.
     //    If retries are exhausted the StepError surfaces here and we record 'failed'.
-    let result: { success: boolean; statusCode: number | null; error: string | null } | null = null
+    let result: { success: boolean; statusCode: number | null; error: string | null; attempts: number } | null = null
     try {
       result = await step.run('deliver', async () => {
         const r = await deliverToPartner(pixel.destination_url!, pixel.signing_secret!, payload)
         const statusCode = r.statusCode ?? null
-        if (r.success) return { success: true, statusCode, error: null }
+        // `attempt` is the zero-indexed attempt of the request executing THIS
+        // step, so attempt+1 = how many delivery attempts actually happened.
+        if (r.success) return { success: true, statusCode, error: null, attempts: attempt + 1 }
         const errMsg = r.error ?? `HTTP ${statusCode ?? 'error'}`
-        if (isRetryableStatus(statusCode)) {
+        if (!r.permanent && isRetryableStatus(statusCode)) {
           // Throw → Inngest retries this step (frees the concurrency slot).
           throw new Error(`Retryable delivery failure: ${errMsg}`)
         }
-        // Permanent partner-side rejection (4xx) — do not retry; record failed.
-        return { success: false, statusCode, error: errMsg }
+        // Permanent rejection (4xx / unsafe destination) — do not retry.
+        return { success: false, statusCode, error: errMsg, attempts: attempt + 1 }
       })
     } catch (err) {
       // A retryable error that exhausted all attempts. statusCode is unknown at
@@ -173,6 +185,7 @@ export const deliverResellerLead = resellerInngest.createFunction(
         success: false,
         statusCode: null,
         error: err instanceof Error ? err.message : 'delivery failed',
+        attempts: STEP_RETRIES + 1,
       }
     }
 
@@ -180,7 +193,15 @@ export const deliverResellerLead = resellerInngest.createFunction(
     const success = !!result?.success
     const outcome: DeliveryOutcome = success ? (consumed.throttled ? 'throttled' : 'delivered') : 'failed'
     await step.run('record-outcome', () =>
-      recordTerminal(pixel, lead_id, outcome, consumed.throttled, result?.statusCode ?? null, result?.error ?? null),
+      recordTerminal(
+        pixel,
+        lead_id,
+        outcome,
+        consumed.throttled,
+        result?.statusCode ?? null,
+        result?.error ?? null,
+        result?.attempts ?? 0,
+      ),
     )
 
     safeLog(`[ResellerDelivery] lead ${lead_id} -> ${outcome} (status=${result?.statusCode ?? 'n/a'})`)
@@ -200,6 +221,7 @@ async function recordTerminal(
   throttled: boolean,
   responseStatus: number | null,
   error: string | null | undefined,
+  attempts = 0,
 ): Promise<{ recorded: true }> {
   const supabase = createAdminClient()
   const { error: logErr } = await supabase.from('reseller_lead_deliveries').insert({
@@ -210,6 +232,7 @@ async function recordTerminal(
     throttled,
     response_status: responseStatus,
     error_message: error ?? null,
+    attempts,
   })
   if (logErr) safeError('[ResellerDelivery] failed to write delivery audit row:', logErr)
   await recordDelivery(pixel.reseller_id, pixel.id, status)

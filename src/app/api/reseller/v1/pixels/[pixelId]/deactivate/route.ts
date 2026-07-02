@@ -1,7 +1,13 @@
 /**
  * Reseller API — deactivate a pixel
  *   POST /api/reseller/v1/pixels/{pixelId}/deactivate
- * Stops inbound identification (audiencelab_pixels.is_active=false) AND outbound delivery.
+ * Stops OUTBOUND delivery immediately (reseller_pixels.status=inactive) and marks
+ * audiencelab_pixels.is_active=false. CAVEAT: reseller inbound events route by
+ * the ?ws= workspace param (not is_active), and the AL SuperPixel keeps posting
+ * while the snippet is installed — so identification data may continue to be
+ * CAPTURED (never delivered) until the snippet is removed / the AL pixel is
+ * deleted. Documented in /reseller/docs; a hard-stop (AL pixel deletion) is a
+ * deliberate v2 decision because it is destructive and non-reversible.
  */
 
 export const runtime = 'nodejs'

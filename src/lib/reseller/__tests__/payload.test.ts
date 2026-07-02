@@ -46,4 +46,16 @@ describe('buildOutboundPayload', () => {
     const p = buildOutboundPayload({ lead: { ...lead, state_code: 'CA' }, pixelId: 'x', externalCustomerRef: 'y', throttled: false })
     expect(p.lead.location?.state).toBe('CA')
   })
+
+  it('emits null (not empty string) for full_name when no name parts exist', () => {
+    const nameless = { ...lead, full_name: null, first_name: null, last_name: null }
+    const p = buildOutboundPayload({ lead: nameless, pixelId: 'x', externalCustomerRef: 'y', throttled: false })
+    expect(p.lead.full_name).toBeNull()
+  })
+
+  it('derives full_name from parts when full_name is null', () => {
+    const partial = { ...lead, full_name: null }
+    const p = buildOutboundPayload({ lead: partial, pixelId: 'x', externalCustomerRef: 'y', throttled: false })
+    expect(p.lead.full_name).toBe('Jane Doe')
+  })
 })

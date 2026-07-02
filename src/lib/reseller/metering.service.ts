@@ -103,32 +103,34 @@ export function decideDelivery(
  * Atomically enforce caps and consume one delivery slot (race-safe).
  * Delegates to the reseller_consume_delivery RPC which locks the rows, checks
  * caps, and increments counters in one transaction. Returns the authoritative
- * decision. Fails CLOSED (deliver:false) if the RPC errors — we would rather
- * skip a lead than over-deliver past a partner's cap.
+ * decision.
+ *
+ * ERROR SEMANTICS: a transient RPC failure THROWS (it does not fail closed).
+ * The caller runs this inside a retryable Inngest step, so a DB blip is retried
+ * instead of silently dropping the lead as "cap-blocked". Retrying after an RPC
+ * ERROR is safe: the RPC's transaction rolled back, so nothing was consumed.
+ * (Known at-least-once edge: if the RPC COMMITS but the step result is lost
+ * before Inngest persists it, a replay consumes a second slot — that errs
+ * toward under-delivery, never past a partner's cap.)
  */
 export async function consumeDelivery(
   resellerId: string,
   resellerPixelId: string,
 ): Promise<DeliveryDecision> {
-  try {
-    const supabase = createAdminClient()
-    const { data, error } = await supabase.rpc('reseller_consume_delivery', {
-      p_reseller_id: resellerId,
-      p_reseller_pixel_id: resellerPixelId,
-    })
-    if (error || !data) {
-      safeError('[ResellerMetering] consume_delivery RPC failed:', error)
-      return { deliver: false, throttled: false }
-    }
-    const d = data as { allowed?: boolean; throttled?: boolean; reason?: string | null }
-    return {
-      deliver: !!d.allowed,
-      throttled: !!d.throttled,
-      ...(d.reason ? { reason: d.reason as DeliveryDecision['reason'] } : {}),
-    }
-  } catch (err) {
-    safeError('[ResellerMetering] consume_delivery unexpected error:', err)
-    return { deliver: false, throttled: false }
+  const supabase = createAdminClient()
+  const { data, error } = await supabase.rpc('reseller_consume_delivery', {
+    p_reseller_id: resellerId,
+    p_reseller_pixel_id: resellerPixelId,
+  })
+  if (error || !data) {
+    safeError('[ResellerMetering] consume_delivery RPC failed:', error)
+    throw new Error(`reseller_consume_delivery failed: ${error?.message ?? 'empty response'}`)
+  }
+  const d = data as { allowed?: boolean; throttled?: boolean; reason?: string | null }
+  return {
+    deliver: !!d.allowed,
+    throttled: !!d.throttled,
+    ...(d.reason ? { reason: d.reason as DeliveryDecision['reason'] } : {}),
   }
 }
 

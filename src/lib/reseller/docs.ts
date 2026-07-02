@@ -82,7 +82,8 @@ export const RESELLER_ENDPOINTS: DocEndpoint[] = [
   {
     method: 'POST',
     path: '/api/reseller/v1/pixels/{pixel_id}/deactivate',
-    summary: 'Deactivate a pixel. Stops inbound identification AND outbound lead delivery.',
+    summary:
+      'Deactivate a pixel. Immediately stops outbound lead delivery. NOTE: the tracking snippet keeps identifying visitors until it is removed from the site — remove the embed snippet to stop data capture entirely.',
     auth: 'Bearer <api_key> (scope: pixels:write)',
   },
   {
@@ -113,7 +114,7 @@ export const OUTBOUND_WEBHOOK_SCHEMA = {
     'X-Cursive-Timestamp': '<unix_seconds>',
   },
   signature_note:
-    'v1 = HMAC-SHA256(signing_secret, `${t}.${raw_request_body}`), hex-encoded. Recompute and compare in constant time to verify authenticity.',
+    'v1 = HMAC-SHA256(signing_secret, `${t}.${raw_request_body}`), hex-encoded. Recompute and compare in constant time to verify authenticity. Always take `t` from X-Cursive-Signature (it is covered by the HMAC); the standalone X-Cursive-Timestamp header is informational only and is NOT signed.',
   body: {
     event: 'lead.identified',
     pixel_id: 'idp-xxxxxxxx',
@@ -150,7 +151,13 @@ import crypto from 'node:crypto'
 
 function verifyCursiveSignature(req, signingSecret) {
   const header = req.get('X-Cursive-Signature') || ''      // "t=1719830400,v1=abc123..."
-  const parts = Object.fromEntries(header.split(',').map((kv) => kv.split('=')))
+  // Split each pair on the FIRST '=' only, so values containing '=' survive.
+  const parts = Object.fromEntries(
+    header.split(',').map((kv) => {
+      const i = kv.indexOf('=')
+      return i === -1 ? [kv, ''] : [kv.slice(0, i), kv.slice(i + 1)]
+    }),
+  )
   const t = parts.t
   const received = parts.v1
   if (!t || !received) return false

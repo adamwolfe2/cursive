@@ -10,7 +10,7 @@
 
 import { createAdminClient } from '@/lib/supabase/admin'
 import { provisionCustomerPixel, deletePixel } from '@/lib/audiencelab/api-client'
-import { generateApiKey } from './api-key.service'
+import { generateSigningSecret } from './api-key.service'
 import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
 import type { Reseller, ResellerPixel } from './types'
 
@@ -158,7 +158,8 @@ export async function createResellerPixel(
   }
 
   // ── 4. Store the reseller mapping + delivery config ───────────────────────
-  const signingSecret = input.signingSecret ?? (await generateApiKey()).rawKey
+  // whsec_ prefix (never rk_live_) — a signing secret must not look like an API key.
+  const signingSecret = input.signingSecret ?? generateSigningSecret()
   const { error: mapErr } = await supabase.from('reseller_pixels').insert({
     reseller_id: reseller.id,
     workspace_id: workspaceId,
