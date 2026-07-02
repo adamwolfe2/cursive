@@ -46,6 +46,11 @@ function record(name: string, ok: boolean, detail: string) {
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
 
+// Unique per-run suffix: leads have a unique hash key (workspace+email), so a
+// re-run with the same fixed emails would violate idx_leads_hash_key_unique.
+const RUN = Date.now().toString(36)
+const email = (tag: string) => `matrix-${tag}-${RUN}@example.com`
+
 async function main() {
   const pixelId = process.argv[2]
   if (!pixelId) {
@@ -79,8 +84,8 @@ async function main() {
     // ── (e) HMAC + (baseline delivered): active, no cap, no throttle ──────────
     await resetPixel(supabase, original.id, { status: 'active', throttle_mode: false, lead_cap_per_period: null })
     const t0 = Math.floor(Date.now() / 1000)
-    const baseLead = await fireLead(supabase, inngestKey, original.workspace_id, 'matrix-base@example.com')
-    const baseReq = await waitForRequest(token, t0, (b) => b?.lead?.email === 'matrix-base@example.com')
+    const baseLead = await fireLead(supabase, inngestKey, original.workspace_id, email('base'))
+    const baseReq = await waitForRequest(token, t0, (b) => b?.lead?.email === email('base'))
     if (baseReq) {
       const sigOk = verifyHmac(baseReq.rawBody, baseReq.sigHeader, secret)
       record('(e) HMAC signature verifies', sigOk, sigOk ? 'v1 recomputed matches X-Cursive-Signature' : 'signature mismatch')
@@ -96,8 +101,8 @@ async function main() {
     // ── (b) THROTTLE: reduced payload omits phone/title/location ──────────────
     await resetPixel(supabase, original.id, { status: 'active', throttle_mode: true, lead_cap_per_period: null })
     const t1 = Math.floor(Date.now() / 1000)
-    const thLead = await fireLead(supabase, inngestKey, original.workspace_id, 'matrix-throttle@example.com')
-    const thReq = await waitForRequest(token, t1, (b) => b?.lead?.email === 'matrix-throttle@example.com')
+    const thLead = await fireLead(supabase, inngestKey, original.workspace_id, email('throttle'))
+    const thReq = await waitForRequest(token, t1, (b) => b?.lead?.email === email('throttle'))
     if (thReq) {
       const l = thReq.body.lead
       const reduced = !l.phone && !l.company?.title && !l.location && !!thReq.body.throttled
@@ -111,11 +116,13 @@ async function main() {
     await resetPixel(supabase, original.id, { status: 'active', throttle_mode: false, lead_cap_per_period: 2 })
     const capLeads: string[] = []
     for (let i = 1; i <= 3; i++) {
-      capLeads.push(await fireLead(supabase, inngestKey, original.workspace_id, `matrix-cap-${i}@example.com`))
+      capLeads.push(await fireLead(supabase, inngestKey, original.workspace_id, email(`cap-${i}`)))
       await sleep(1500)
     }
-    await sleep(6000) // allow all 3 runs to settle
-    const capStatuses = await Promise.all(capLeads.map((id) => getDeliveryStatus(supabase, id)))
+    // Poll until all 3 runs reach a terminal audit row. Fixed sleeps are NOT
+    // enough: per-workspace concurrency is 2 and each run is several executor
+    // round-trips, so a settle window that is too short reads as a false FAIL.
+    const capStatuses = await waitForTerminalStatuses(supabase, capLeads, 180_000, 'cap')
     const deliveredCount = capStatuses.filter((s) => s === 'delivered').length
     const skippedCount = capStatuses.filter((s) => s === 'skipped_cap').length
     const capOk = deliveredCount === 2 && skippedCount === 1
@@ -124,10 +131,9 @@ async function main() {
     // ── (c) DEACTIVATE: status inactive → no delivery ─────────────────────────
     await resetPixel(supabase, original.id, { status: 'inactive', throttle_mode: false, lead_cap_per_period: null })
     const t3 = Math.floor(Date.now() / 1000)
-    const deacLead = await fireLead(supabase, inngestKey, original.workspace_id, 'matrix-deactivated@example.com')
-    await sleep(6000)
-    const deacReq = await waitForRequest(token, t3, (b) => b?.lead?.email === 'matrix-deactivated@example.com', 4000)
-    const deacStatus = await getDeliveryStatus(supabase, deacLead)
+    const deacLead = await fireLead(supabase, inngestKey, original.workspace_id, email('deactivated'))
+    const [deacStatus] = await waitForTerminalStatuses(supabase, [deacLead], 120_000, 'deactivate')
+    const deacReq = await waitForRequest(token, t3, (b) => b?.lead?.email === email('deactivated'), 4000)
     const deacOk = !deacReq && deacStatus !== 'delivered' && deacStatus !== 'throttled'
     record('(c) deactivate stops delivery', deacOk, `receiver_hit=${!!deacReq} delivery_status=${deacStatus ?? 'none'}`)
 
@@ -136,19 +142,17 @@ async function main() {
     const burstBefore = await getPixel(supabase, pixelId)
     const burstLeads: string[] = []
     for (let i = 0; i < 20; i++) {
-      burstLeads.push(await fireLead(supabase, inngestKey, original.workspace_id, `matrix-burst-${i}@example.com`))
+      burstLeads.push(await fireLead(supabase, inngestKey, original.workspace_id, email(`burst-${i}`)))
     }
-    // Poll until all 20 have a terminal delivery row (or timeout).
-    let burstStatuses: (string | null)[] = []
-    for (let attempt = 0; attempt < 30; attempt++) {
-      await sleep(2000)
-      burstStatuses = await Promise.all(burstLeads.map((id) => getDeliveryStatus(supabase, id)))
-      if (burstStatuses.every((s) => s != null)) break
-    }
+    // Poll until all 20 have a terminal delivery row (or timeout). Budget is
+    // generous ON PURPOSE: per-workspace concurrency 2 x ~4 executor calls per
+    // run means a single-customer burst of 20 legitimately takes minutes, and
+    // any receiver 429 adds a 15s+ retry backoff.
+    const burstStatuses = await waitForTerminalStatuses(supabase, burstLeads, 420_000, 'burst')
     const burstDelivered = burstStatuses.filter((s) => s === 'delivered').length
     const burstAfter = await getPixel(supabase, pixelId)
     const periodDelta = burstAfter.leads_delivered_period - burstBefore.leads_delivered_period
-    const usageDelivered = await getUsageDeliveredToday(supabase, original.id, burstLeads.length)
+    const usageDelivered = await getUsageDeliveredToday(supabase, original.reseller_id, burstLeads.length)
     const burstOk = burstDelivered === 20 && periodDelta >= 20
     record(
       '(d) burst 20 all deliver + counters',
@@ -250,13 +254,18 @@ async function fireLead(supabase: SupabaseClient, inngestKey: string, workspaceI
     .select('id')
     .single()
   if (error || !data) throw new Error(`lead insert failed: ${error?.message}`)
-  const res = await fetch('https://inn.gs/e/' + inngestKey, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name: 'lead/created', data: { lead_id: data.id, workspace_id: workspaceId, source: 'reseller_test_matrix' } }),
-  })
-  if (!res.ok) throw new Error(`fire lead/created failed: ${res.status}`)
-  return data.id as string
+  // Retry the event fire on transient network failure (up to 3 attempts).
+  const body = JSON.stringify({ name: 'lead/created', data: { lead_id: data.id, workspace_id: workspaceId, source: 'reseller_test_matrix' } })
+  for (let i = 0; i < 3; i++) {
+    const res = await fetch('https://inn.gs/e/' + inngestKey, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body,
+    }).catch(() => null)
+    if (res?.ok) return data.id as string
+    if (i < 2) await sleep(2000)
+  }
+  throw new Error('fire lead/created failed after 3 attempts')
 }
 
 type ReceivedReq = { rawBody: string; sigHeader: string; body: any }
@@ -266,12 +275,17 @@ async function waitForRequest(
   token: string,
   sinceUnix: number,
   pred: (body: any) => boolean,
-  timeoutMs = 25000,
+  // Event->run->4 executor round-trips on a cold function is routinely 30-90s;
+  // 25s produced false "no delivery received" failures.
+  timeoutMs = 120000,
 ): Promise<ReceivedReq | null> {
   const deadline = Date.now() + timeoutMs
   while (Date.now() < deadline) {
-    const res = await fetch(`https://webhook.site/token/${token}/requests?sorting=newest&per_page=50`)
-    if (res.ok) {
+    // Tolerate transient network failures — keep polling until the deadline.
+    const res = await fetch(`https://webhook.site/token/${token}/requests?sorting=newest&per_page=50`).catch(
+      () => null,
+    )
+    if (res?.ok) {
       const json = (await res.json()) as { data: Array<{ content: string; headers: Record<string, string[]>; created_at: string }> }
       for (const r of json.data ?? []) {
         let body: any
@@ -292,7 +306,13 @@ async function waitForRequest(
 }
 
 function verifyHmac(rawBody: string, sigHeader: string, secret: string): boolean {
-  const parts = Object.fromEntries(sigHeader.split(',').map((kv) => kv.split('=')))
+  // Split on the FIRST '=' only (values may contain '=').
+  const parts = Object.fromEntries(
+    sigHeader.split(',').map((kv) => {
+      const i = kv.indexOf('=')
+      return i === -1 ? [kv, ''] : [kv.slice(0, i), kv.slice(i + 1)]
+    }),
+  )
   const t = parts.t
   const received = parts.v1
   if (!t || !received) return false
@@ -300,6 +320,24 @@ function verifyHmac(rawBody: string, sigHeader: string, secret: string): boolean
   const a = Buffer.from(received)
   const b = Buffer.from(expected)
   return a.length === b.length && crypto.timingSafeEqual(a, b)
+}
+
+/** Poll until every lead has a terminal reseller_lead_deliveries row (or timeout). */
+async function waitForTerminalStatuses(
+  supabase: SupabaseClient,
+  leadIds: string[],
+  timeoutMs: number,
+  label: string,
+): Promise<(string | null)[]> {
+  const deadline = Date.now() + timeoutMs
+  let statuses: (string | null)[] = leadIds.map(() => null)
+  for (;;) {
+    statuses = await Promise.all(leadIds.map((id) => getDeliveryStatus(supabase, id).catch(() => null)))
+    const done = statuses.filter((s) => s != null).length
+    if (done === leadIds.length || Date.now() >= deadline) return statuses
+    console.log(`  ... ${label}: ${done}/${leadIds.length} terminal, polling`)
+    await sleep(3000)
+  }
 }
 
 async function getDeliveryStatus(supabase: SupabaseClient, leadId: string): Promise<string | null> {

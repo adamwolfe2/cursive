@@ -48,6 +48,19 @@ export async function hashApiKey(rawKey: string): Promise<string> {
   return sha256Hex(rawKey)
 }
 
+const SIGNING_SECRET_PREFIX = 'whsec_'
+
+/**
+ * Generate a per-pixel webhook signing secret. Uses a DISTINCT `whsec_` prefix
+ * (not `rk_live_`) so partners can never confuse an HMAC signing secret with a
+ * bearer API key — and so leaked-credential scanners classify each correctly.
+ */
+export function generateSigningSecret(): string {
+  const raw = new Uint8Array(TOKEN_BYTES)
+  crypto.getRandomValues(raw)
+  return `${SIGNING_SECRET_PREFIX}${base64url(raw)}`
+}
+
 /**
  * Extract a bearer token from an Authorization header value.
  * Accepts "Bearer rk_live_xxx" or a bare "rk_live_xxx".

@@ -59,6 +59,9 @@ export default function ResellerPortalPage() {
     try {
       const res = await fetch('/api/reseller/v1/usage', { headers: { Authorization: `Bearer ${key}` } })
       if (res.status === 401 || res.status === 403) {
+        // Drop the known-bad key so it is not replayed on every refresh.
+        sessionStorage.removeItem(STORAGE_KEY)
+        setApiKey(null)
         setError('Invalid or unauthorized API key.')
         setUsage(null)
         return

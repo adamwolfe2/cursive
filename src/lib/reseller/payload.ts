@@ -30,8 +30,7 @@ export function buildOutboundPayload(params: {
       last_name: lead.last_name ?? null,
       full_name:
         lead.full_name ??
-        [lead.first_name, lead.last_name].filter(Boolean).join(' ') ??
-        null,
+        ([lead.first_name, lead.last_name].filter(Boolean).join(' ') || null),
       company: {
         name: lead.company_name ?? null,
         domain: lead.company_domain ?? null,
