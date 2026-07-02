@@ -17,17 +17,29 @@ import { checkQuota, incrementQuota } from '@/lib/services/al-quota.service'
 const LOG_PREFIX = '[AL EdgeProcessor]'
 
 /**
- * Fire an Inngest event via the REST API (edge-safe, fire-and-forget).
+ * Fire an Inngest event via the REST API (edge-safe).
  * Used instead of the SDK import to maintain Edge runtime compatibility.
+ *
+ * RETURNS A PROMISE THAT MUST BE AWAITED before the request handler responds.
+ * PROVEN IN PROD (2026-07-02): as fire-and-forget, the fetch was FROZEN when
+ * the serverless invocation returned and only completed minutes later when the
+ * next request thawed the instance (event observed at Inngest 4 minutes after
+ * the lead insert) — or would be dropped entirely on instance recycle. That
+ * silently delayed/dropped lead/created + outbound-webhook/deliver +
+ * ghl/sync-contact for REAL pixel traffic. Errors are still swallowed+logged so
+ * event failures never fail ingestion.
  */
-function fireInngestEvent(name: string, data: Record<string, unknown>): void {
+function fireInngestEvent(name: string, data: Record<string, unknown>): Promise<void> {
   const eventKey = process.env.INNGEST_EVENT_KEY
-  if (!eventKey) return
-  fetch('https://inn.gs/e/' + eventKey, {
+  if (!eventKey) return Promise.resolve()
+  return fetch('https://inn.gs/e/' + eventKey, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ name, data }),
-  }).catch((err) => safeError(`${LOG_PREFIX} Inngest event fire failed (${name}):`, err))
+  }).then(
+    () => undefined,
+    (err) => safeError(`${LOG_PREFIX} Inngest event fire failed (${name}):`, err),
+  )
 }
 
 // ============ Edge-Compatible Crypto Helpers ============
@@ -583,26 +595,30 @@ export async function processEventInline(
         created_at: new Date().toISOString(),
       }
 
-      // Triggers: sendLeadEmailNotification, deliverLeadWebhook, sendLeadNotifications
-      fireInngestEvent('lead/created', {
-        lead_id: leadId,
-        workspace_id: targetWorkspaceId,
-        source: `audiencelab_${source}`,
-      })
-
-      // Triggers: deliverOutboundWebhooks (fan-out to all user-configured endpoints)
-      fireInngestEvent('outbound-webhook/deliver', {
-        workspace_id: targetWorkspaceId,
-        event_type: 'lead.received',
-        payload: leadPayload,
-      })
-
-      // Triggers: ghlSyncContact — pushes lead to client's connected GHL account (if any)
-      // The function gracefully no-ops when no GHL OAuth connection is configured.
-      fireInngestEvent('ghl/sync-contact', {
-        workspace_id: targetWorkspaceId,
-        lead_id: leadId,
-      })
+      // AWAITED (allSettled): an un-awaited fire is frozen with the serverless
+      // instance at response time — events then arrive minutes late or never
+      // (observed live 2026-07-02). ~100-300ms cost, new-lead branch only.
+      await Promise.allSettled([
+        // Triggers: sendLeadEmailNotification, deliverLeadWebhook, sendLeadNotifications,
+        // deliverResellerLead (isolated cursive-reseller app)
+        fireInngestEvent('lead/created', {
+          lead_id: leadId,
+          workspace_id: targetWorkspaceId,
+          source: `audiencelab_${source}`,
+        }),
+        // Triggers: deliverOutboundWebhooks (fan-out to all user-configured endpoints)
+        fireInngestEvent('outbound-webhook/deliver', {
+          workspace_id: targetWorkspaceId,
+          event_type: 'lead.received',
+          payload: leadPayload,
+        }),
+        // Triggers: ghlSyncContact — pushes lead to client's connected GHL account (if any)
+        // The function gracefully no-ops when no GHL OAuth connection is configured.
+        fireInngestEvent('ghl/sync-contact', {
+          workspace_id: targetWorkspaceId,
+          lead_id: leadId,
+        }),
+      ])
     }
 
     // Step 7: Mark event as processed
