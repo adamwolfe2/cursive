@@ -354,7 +354,9 @@ async function getDeliveryStatus(supabase: SupabaseClient, leadId: string): Prom
 }
 
 async function assertDeliveryRow(supabase: SupabaseClient, leadId: string, expected: string) {
-  const status = await getDeliveryStatus(supabase, leadId)
+  // The receiver sees the POST before the record-outcome step commits the audit
+  // row — poll briefly instead of asserting instantly (test-ordering race).
+  const [status] = await waitForTerminalStatuses(supabase, [leadId], 45_000, `row:${expected}`)
   record(`delivery row = ${expected}`, status === expected, `lead ${leadId.slice(0, 8)} status=${status ?? 'none'}`)
 }
 
