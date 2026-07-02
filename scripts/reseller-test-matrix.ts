@@ -148,7 +148,9 @@ async function main() {
     // generous ON PURPOSE: per-workspace concurrency 2 x ~4 executor calls per
     // run means a single-customer burst of 20 legitimately takes minutes, and
     // any receiver 429 adds a 15s+ retry backoff.
-    const burstStatuses = await waitForTerminalStatuses(supabase, burstLeads, 420_000, 'burst')
+    // 600s: proven tail — receiver 429s push 1-2 deliveries past 7 min (they
+    // deliver and meter correctly; they are just slow).
+    const burstStatuses = await waitForTerminalStatuses(supabase, burstLeads, 600_000, 'burst')
     const burstDelivered = burstStatuses.filter((s) => s === 'delivered').length
     const burstAfter = await getPixel(supabase, pixelId)
     const periodDelta = burstAfter.leads_delivered_period - burstBefore.leads_delivered_period
