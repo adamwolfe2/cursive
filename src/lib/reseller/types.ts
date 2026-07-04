@@ -12,6 +12,10 @@ export type DeliveryOutcome =
   | 'skipped_cap'
   | 'failed'
   | 'no_destination'
+  // Distinct skip reasons so inactive/suspended skips are not miscounted as
+  // cap skips in the daily rollup (see reseller_record_delivery).
+  | 'skipped_inactive'
+  | 'skipped_suspended'
 
 export interface Reseller {
   id: string

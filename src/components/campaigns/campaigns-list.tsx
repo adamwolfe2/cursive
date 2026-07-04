@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Copy, Trash2, MoreHorizontal } from 'lucide-react'
@@ -65,50 +65,51 @@ export function CampaignsList() {
     return () => document.removeEventListener('mousedown', handleClick)
   }, [openMenuId])
 
-  useEffect(() => {
-    async function fetchCampaigns() {
-      setLoading(true)
-      setError(null)
+  const fetchCampaigns = useCallback(async () => {
+    setLoading(true)
+    setError(null)
 
-      const controller = new AbortController()
-      const timeoutId = setTimeout(() => controller.abort(), 10000) // 10s timeout
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 10000) // 10s timeout
 
-      try {
-        const params = activeTab !== 'all' ? `?status=${activeTab}&includeUsage=true` : '?includeUsage=true'
-        const response = await fetch(`/api/campaigns${params}`, {
-          signal: controller.signal,
-        })
+    try {
+      const params = activeTab !== 'all' ? `?status=${activeTab}&includeUsage=true` : '?includeUsage=true'
+      const response = await fetch(`/api/campaigns${params}`, {
+        signal: controller.signal,
+      })
 
-        clearTimeout(timeoutId)
+      clearTimeout(timeoutId)
 
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}))
-          throw new Error(errorData.error || `Failed to load campaigns (HTTP ${response.status})`)
-        }
-
-        const result = await response.json()
-        setCampaigns(result.data || [])
-        setUsage(result.usage || null)
-      } catch (error) {
-        clearTimeout(timeoutId)
-        if (error instanceof Error) {
-          if (error.name === 'AbortError') {
-            setError('Request timed out. Please try again.')
-          } else {
-            setError(error.message)
-          }
-        } else {
-          setError('Failed to load campaigns')
-        }
-
-        // Still show empty state on error
-        setCampaigns([])
-      } finally {
-        setLoading(false)
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.error || `Failed to load campaigns (HTTP ${response.status})`)
       }
+
+      const result = await response.json()
+      setCampaigns(result.data || [])
+      setUsage(result.usage || null)
+    } catch (error) {
+      clearTimeout(timeoutId)
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          setError('Request timed out. Please try again.')
+        } else {
+          setError(error.message)
+        }
+      } else {
+        setError('Failed to load campaigns')
+      }
+
+      // Still show empty state on error
+      setCampaigns([])
+    } finally {
+      setLoading(false)
     }
-    fetchCampaigns()
   }, [activeTab])
+
+  useEffect(() => {
+    fetchCampaigns()
+  }, [fetchCampaigns])
 
   // Check if at limit
   const atLimit = usage && usage.limit !== null && usage.used >= usage.limit
@@ -295,7 +296,7 @@ export function CampaignsList() {
               <h3 className="mt-4 text-sm font-medium text-red-900">Failed to load campaigns</h3>
               <p className="mt-2 text-sm text-red-700">{error}</p>
               <Button
-                onClick={() => router.refresh()}
+                onClick={() => fetchCampaigns()}
                 variant="outline"
                 className="mt-4"
               >

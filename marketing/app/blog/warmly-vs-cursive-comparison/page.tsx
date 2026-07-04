@@ -248,28 +248,26 @@ export default function WarmlyVsCursiveComparison() {
                   <h4 className="font-bold text-lg mb-4">Cursive Pricing</h4>
                   <div className="space-y-3 text-sm">
                     <div>
-                      <span className="text-gray-600">Free Plan:</span>
-                      <span className="font-bold ml-2">$0/month</span>
+                      <span className="text-gray-600">Visitor Pixel:</span>
+                      <span className="font-bold ml-2">$97/month</span>
                     </div>
                     <div>
                       <span className="text-gray-600">Includes:</span>
                       <ul className="mt-2 ml-4 space-y-1 text-gray-700">
-                        <li>• 50 leads/month</li>
-                        <li>• Basic intent tracking</li>
-                        <li>• Email sequences</li>
+                        <li>• Company + person-level visitor identification</li>
+                        <li>• Intent tracking</li>
                         <li>• CRM integrations</li>
+                        <li>• Month-to-month, cancel anytime</li>
                       </ul>
                     </div>
                     <div className="pt-3 border-t">
-                      <span className="text-gray-600">Pro Plan:</span>
-                      <span className="font-bold ml-2">$50/month</span>
+                      <span className="text-gray-600">Custom Audience:</span>
+                      <span className="font-bold ml-2">$197/month</span>
                     </div>
                     <div>
                       <ul className="ml-4 space-y-1 text-gray-700">
-                        <li>• Unlimited leads</li>
-                        <li>• AI SDR automation</li>
-                        <li>• Advanced intent signals</li>
-                        <li>• Priority support</li>
+                        <li>• Fresh weekly list of in-market prospects</li>
+                        <li>• Or get both in the Bundle for $247/month</li>
                       </ul>
                     </div>
                   </div>
@@ -797,7 +795,7 @@ export default function WarmlyVsCursiveComparison() {
       <DashboardCTA
         headline="Ready to Compare"
         subheadline="For Yourself?"
-        description="Start with our free plan or book a demo to see how Cursive can scale your outbound without hiring more SDRs."
+        description="Start from $97/mo or book a demo to see how Cursive can scale your outbound without hiring more SDRs."
       />
 
       {/* Related Posts */}

@@ -879,14 +879,14 @@ function S11() {
           </div>
           <div className="border border-gray-200 rounded-xl p-6 bg-white">
             <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-gray-400 mb-4">Option 2</p>
-            <h3 className="text-xl font-semibold text-gray-900 mb-3">Start Free Trial</h3>
+            <h3 className="text-xl font-semibold text-gray-900 mb-3">Start for $97/mo</h3>
             <p className="text-gray-600 text-sm leading-relaxed mb-5">
-              14-day free trial. No credit card required. Get your first identified leads in under 5 minutes.
+              Self-serve plans from $97/mo. Cancel anytime. Get your first identified leads in under 5 minutes.
             </p>
             <div className="space-y-2 mb-6">
               {[
-                '14-day free trial',
-                'No credit card required',
+                'Self-serve from $97/mo',
+                'Cancel anytime',
                 'First leads in 5 minutes',
               ].map(item => (
                 <div key={item} className="flex items-center gap-2 text-xs text-gray-600">
@@ -901,7 +901,7 @@ function S11() {
               rel="noopener noreferrer"
               className="block w-full text-center px-6 py-3 border border-gray-300 hover:border-primary hover:text-primary text-gray-700 font-semibold rounded-lg transition-colors"
             >
-              Start Free →
+              Get Started →
             </a>
           </div>
         </div>
@@ -990,7 +990,7 @@ export default function EnterpriseDeckPage() {
   const pct = ((current + 1) / SLIDE_COUNT) * 100
 
   return (
-    <div className="bg-white" style={{ position: 'fixed', inset: 0, zIndex: 100, overflowY: 'auto' }}>
+    <main className="bg-white" style={{ position: 'fixed', inset: 0, zIndex: 100, overflowY: 'auto' }}>
       <style>{`
         @keyframes deckSlideIn {
           from { opacity: 0; transform: translateY(10px); }
@@ -1067,6 +1067,6 @@ export default function EnterpriseDeckPage() {
       >
         Book a Demo
       </a>
-    </div>
+    </main>
   )
 }

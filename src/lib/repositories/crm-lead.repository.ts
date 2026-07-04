@@ -210,10 +210,12 @@ export class CRMLeadRepository {
     leadIds: string[],
     updates: LeadUpdatePayload,
     workspaceId: string
-  ): Promise<void> {
+  ): Promise<number> {
     const supabase = await createClient()
 
-    const { error } = await supabase
+    // Select the updated rows so callers can report the real affected-row
+    // count (ids outside the workspace / already-deleted rows won't match).
+    const { data, error } = await supabase
       .from('leads')
       .update({
         ...updates,
@@ -221,11 +223,14 @@ export class CRMLeadRepository {
       })
       .in('id', leadIds)
       .eq('workspace_id', workspaceId)
+      .select('id')
 
     if (error) {
       safeError('[CRMLeadRepository] Failed to bulk update leads:', error)
       throw new Error('Failed to bulk update leads')
     }
+
+    return data?.length ?? 0
   }
 
   async delete(leadId: string, workspaceId: string): Promise<void> {
@@ -243,18 +248,21 @@ export class CRMLeadRepository {
     }
   }
 
-  async bulkDelete(leadIds: string[], workspaceId: string): Promise<void> {
+  async bulkDelete(leadIds: string[], workspaceId: string): Promise<number> {
     const supabase = await createClient()
 
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('leads')
       .delete()
       .in('id', leadIds)
       .eq('workspace_id', workspaceId)
+      .select('id')
 
     if (error) {
       safeError('[CRMLeadRepository] Failed to bulk delete leads:', error)
       throw new Error('Failed to bulk delete leads')
     }
+
+    return data?.length ?? 0
   }
 }

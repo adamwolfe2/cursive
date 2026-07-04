@@ -64,9 +64,13 @@ function hashString(s: string): number {
  * Create (or return existing) a pixel for a reseller's end-customer.
  * Idempotent on (reseller_id, external_customer_ref).
  */
+/** Max times we re-enter the idempotency path after a unique-violation race. */
+const MAX_CREATE_ATTEMPTS = 3
+
 export async function createResellerPixel(
   reseller: Reseller,
   input: CreateResellerPixelInput,
+  attempt = 0,
 ): Promise<{ ok: true; data: CreatedResellerPixel } | { ok: false; status: number; error: string }> {
   const supabase = createAdminClient()
   const domain = extractDomain(input.websiteUrl)
@@ -126,12 +130,14 @@ export async function createResellerPixel(
   } catch (err) {
     safeError(`${LOG_PREFIX} AL provisioning failed:`, err)
     // Roll back the empty workspace so we don't leak orphans.
-    await supabase.from('workspaces').delete().eq('id', workspaceId)
+    const { error: delErr } = await supabase.from('workspaces').delete().eq('id', workspaceId)
+    if (delErr) safeError(`${LOG_PREFIX} orphan workspace rollback FAILED (id=${workspaceId}):`, delErr)
     return { ok: false, status: 502, error: 'Pixel provisioning failed upstream' }
   }
 
   if (!installUrl && !script) {
-    await supabase.from('workspaces').delete().eq('id', workspaceId)
+    const { error: delErr } = await supabase.from('workspaces').delete().eq('id', workspaceId)
+    if (delErr) safeError(`${LOG_PREFIX} orphan workspace rollback FAILED (id=${workspaceId}):`, delErr)
     return { ok: false, status: 502, error: 'Pixel provisioning returned no install URL' }
   }
 
@@ -179,7 +185,16 @@ export async function createResellerPixel(
     // (otherwise orphaned), then return the winner's pixel.
     if ((mapErr as { code?: string }).code === '23505') {
       await cleanupOrphanedProvision(supabase, workspaceId, pixelId)
-      return createResellerPixel(reseller, input)
+      // Bounded retry: the winner's row now exists, so re-entering hits the
+      // idempotency SELECT and returns it. Cap re-entry so a pathological
+      // delete/insert interleaving can never recurse unbounded.
+      if (attempt + 1 >= MAX_CREATE_ATTEMPTS) {
+        safeError(
+          `${LOG_PREFIX} idempotency race unresolved after ${MAX_CREATE_ATTEMPTS} attempts for customer ${input.externalCustomerRef}`,
+        )
+        return { ok: false, status: 409, error: 'Concurrent create in progress — retry shortly' }
+      }
+      return createResellerPixel(reseller, input, attempt + 1)
     }
     safeError(`${LOG_PREFIX} reseller_pixels insert failed:`, mapErr)
     return { ok: false, status: 500, error: 'Failed to persist reseller mapping' }
@@ -220,8 +235,20 @@ async function cleanupOrphanedProvision(
   } catch (err) {
     safeError(`${LOG_PREFIX} AL pixel cleanup failed (non-fatal):`, err)
   }
-  await supabase.from('audiencelab_pixels').delete().eq('pixel_id', pixelId).eq('workspace_id', workspaceId)
-  await supabase.from('workspaces').delete().eq('id', workspaceId)
+  // Surface delete failures loudly — a swallowed error here leaves an orphaned
+  // workspace + a still-capturing AL pixel that nobody meters or deactivates.
+  const { error: alDelErr } = await supabase
+    .from('audiencelab_pixels')
+    .delete()
+    .eq('pixel_id', pixelId)
+    .eq('workspace_id', workspaceId)
+  if (alDelErr) {
+    safeError(`${LOG_PREFIX} orphan audiencelab_pixels cleanup FAILED (pixel=${pixelId}):`, alDelErr)
+  }
+  const { error: wsDelErr } = await supabase.from('workspaces').delete().eq('id', workspaceId)
+  if (wsDelErr) {
+    safeError(`${LOG_PREFIX} orphan workspace cleanup FAILED (id=${workspaceId}):`, wsDelErr)
+  }
 }
 
 /** Create a headless workspace owned by the reseller (retries slug on collision). */

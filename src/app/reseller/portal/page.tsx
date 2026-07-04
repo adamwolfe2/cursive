@@ -21,6 +21,10 @@ interface PixelUsage {
   status: string
   throttle_mode: boolean | null
   lead_cap_per_period: number | null
+  // Cap actually enforced (explicit pixel cap, else reseller default) + its source,
+  // so the displayed Cap matches Remaining instead of falsely showing "∞".
+  effective_lead_cap_per_period: number | null
+  cap_source: 'pixel' | 'reseller_default' | null
   leads_delivered_period: number
   leads_delivered_lifetime: number
   remaining: number | null
@@ -178,8 +182,8 @@ export default function ResellerPortalPage() {
             <Card icon={<KeyRound className="h-4 w-4" />} label="Remaining" value={fmt(usage.reseller.remaining)} sub={usage.reseller.lead_cap_per_period == null ? 'no account cap' : `cap ${fmt(usage.reseller.lead_cap_per_period)}`} />
           </div>
 
-          <div className="mt-6 overflow-hidden rounded-xl border border-gray-200 bg-white">
-            <table className="w-full text-sm">
+          <div className="mt-6 overflow-x-auto rounded-xl border border-gray-200 bg-white">
+            <table className="w-full min-w-[720px] text-sm">
               <thead>
                 <tr className="border-b border-gray-100 text-left text-[11px] uppercase tracking-wider text-gray-400">
                   <th className="px-4 py-2.5 font-medium">Customer ref</th>
@@ -210,7 +214,12 @@ export default function ResellerPortalPage() {
                       </span>
                     </td>
                     <td className="px-4 py-3 text-gray-600">{p.throttle_mode == null ? 'inherit' : p.throttle_mode ? 'on' : 'off'}</td>
-                    <td className="px-4 py-3 text-gray-600">{fmt(p.lead_cap_per_period)}</td>
+                    <td className="px-4 py-3 text-gray-600">
+                      {fmt(p.effective_lead_cap_per_period)}
+                      {p.cap_source === 'reseller_default' && (
+                        <span className="ml-1 text-[11px] text-gray-400">(default)</span>
+                      )}
+                    </td>
                     <td className="px-4 py-3 text-gray-700">{p.leads_delivered_period.toLocaleString()}</td>
                     <td className="px-4 py-3 text-gray-700">{p.leads_delivered_lifetime.toLocaleString()}</td>
                     <td className="px-4 py-3 text-gray-600">{fmt(p.remaining)}</td>

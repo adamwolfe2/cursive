@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 
 export default function PartnerTermsPage() {
   return (
-    <article className="bg-white text-gray-900">
+    <main className="bg-white text-gray-900">
       <section className="border-b border-gray-100 py-16 sm:py-20">
         <Container className="max-w-3xl">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Legal</p>
@@ -59,6 +59,6 @@ export default function PartnerTermsPage() {
           </div>
         </Container>
       </section>
-    </article>
+    </main>
   )
 }

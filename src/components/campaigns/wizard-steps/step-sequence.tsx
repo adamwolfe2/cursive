@@ -8,6 +8,18 @@ interface StepSequenceProps {
   updateFormData: (updates: Partial<CampaignFormData>) => void
 }
 
+// A datetime-local input yields 'YYYY-MM-DDTHH:mm' (no seconds/timezone), which
+// fails the API's z.string().datetime() (full ISO-8601) validation. We store a
+// full ISO string in formData and convert it back to the local input format for
+// display so the field round-trips correctly.
+function toDatetimeLocalValue(iso: string | undefined): string {
+  if (!iso) return ''
+  const date = new Date(iso)
+  if (Number.isNaN(date.getTime())) return ''
+  const local = new Date(date.getTime() - date.getTimezoneOffset() * 60000)
+  return local.toISOString().slice(0, 16)
+}
+
 export function StepSequence({ formData, updateFormData }: StepSequenceProps) {
   const updateDaysBetween = (index: number, value: number) => {
     const newDays = [...formData.days_between_steps]
@@ -104,8 +116,14 @@ export function StepSequence({ formData, updateFormData }: StepSequenceProps) {
         <FormInput
           id="scheduled_start_at"
           type="datetime-local"
-          value={formData.scheduled_start_at || ''}
-          onChange={(e) => updateFormData({ scheduled_start_at: e.target.value || undefined })}
+          value={toDatetimeLocalValue(formData.scheduled_start_at)}
+          onChange={(e) =>
+            updateFormData({
+              scheduled_start_at: e.target.value
+                ? new Date(e.target.value).toISOString()
+                : undefined,
+            })
+          }
         />
         <p className="mt-1 text-xs text-muted-foreground">
           Leave empty to start sending after approval. Emails will only send during business hours.

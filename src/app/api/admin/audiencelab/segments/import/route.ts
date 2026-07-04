@@ -5,7 +5,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { requireAdminRole } from '@/lib/auth/admin'
+import { requirePlatformAdmin } from '@/lib/auth/admin'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { handleApiError } from '@/lib/utils/api-error-handler'
 import { safeError } from '@/lib/utils/log-sanitizer'
@@ -59,7 +59,7 @@ const CHUNK = 500
 
 export async function POST(request: NextRequest) {
   try {
-    await requireAdminRole()
+    await requirePlatformAdmin()
 
     const text = await request.text()
     if (!text?.trim()) {

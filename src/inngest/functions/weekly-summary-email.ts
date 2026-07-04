@@ -33,6 +33,13 @@ interface WorkspaceWithUser {
   user_name: string
   daily_credit_limit: number
   daily_credits_used: number
+  /**
+   * Funnel/managed buyer (workspace.settings.source === 'funnel_order'). These
+   * buyers paid a flat fee and have NO credit concept, so the summary must not
+   * show credit rows or a "credits running low — purchase more" nudge (their
+   * creditsRemaining resolves to 0, firing a false, off-brand upsell).
+   */
+  is_funnel: boolean
 }
 
 interface WeeklyStats {
@@ -102,12 +109,17 @@ export const weeklySummaryEmail = inngest.createFunction(
       const workspaceIds = Array.from(workspaceMap.keys())
       const { data: workspaces } = await supabase
         .from('workspaces')
-        .select('id, name')
+        .select('id, name, settings')
         .in('id', workspaceIds)
 
       const workspaceNameMap = new Map<string, string>()
+      const workspaceFunnelMap = new Map<string, boolean>()
       for (const ws of workspaces || []) {
         workspaceNameMap.set(ws.id, ws.name)
+        workspaceFunnelMap.set(
+          ws.id,
+          (ws as { settings?: { source?: string } | null }).settings?.source === 'funnel_order'
+        )
       }
 
       const result: WorkspaceWithUser[] = []
@@ -120,6 +132,7 @@ export const weeklySummaryEmail = inngest.createFunction(
           user_name: user.full_name || user.email.split('@')[0],
           daily_credit_limit: user.daily_credit_limit,
           daily_credits_used: user.daily_credits_used,
+          is_funnel: workspaceFunnelMap.get(wsId) ?? false,
         })
       })
 
@@ -219,6 +232,7 @@ export const weeklySummaryEmail = inngest.createFunction(
               userName: ws.user_name,
               workspaceName: ws.workspace_name,
               stats,
+              isFunnel: ws.is_funnel,
             })
 
             const result = await sendEmail({
@@ -406,10 +420,13 @@ function buildWeeklySummaryEmail({
   userName,
   workspaceName,
   stats,
+  isFunnel = false,
 }: {
   userName: string
   workspaceName: string
   stats: WeeklyStats
+  /** Funnel/managed buyer — suppress all credit chrome (rows + low-credit nudge). */
+  isFunnel?: boolean
 }): string {
   const dashboardUrl = `${APP_URL}/dashboard`
   const billingUrl = `${APP_URL}/settings/billing`
@@ -417,7 +434,8 @@ function buildWeeklySummaryEmail({
   const logoUrl = `${APP_URL}/cursive-logo.png`
   const currentYear = new Date().getFullYear()
 
-  const lowCredits = stats.creditsRemaining < 20
+  // Funnel buyers have no credit concept — never surface the low-credit upsell.
+  const lowCredits = !isFunnel && stats.creditsRemaining < 20
   const leadsUrl = `${APP_URL}/leads`
   const analyticsUrl = `${APP_URL}/analytics`
 
@@ -515,6 +533,36 @@ function buildWeeklySummaryEmail({
       </td>
     </tr>`
     : ''
+
+  // Credit rows — marketplace only. Funnel buyers pay a flat fee and have no
+  // credit concept, so showing "Credits Used / Remaining" (which resolve to 0)
+  // is confusing and off-brand.
+  const creditRowsHtml = isFunnel
+    ? ''
+    : `
+                <!-- Credits Used -->
+                <tr>
+                  <td style="padding: 14px 20px; border-bottom: 1px solid #f3f4f6; background-color: #f9fafb;">
+                    <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                      <tr>
+                        <td style="font-size: 13px; color: #6b7280; line-height: 1.4;">Credits Used (Today)</td>
+                        <td style="font-size: 22px; font-weight: 700; color: #111827; text-align: right; line-height: 1.4;">${stats.creditsUsed}</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+                <!-- Credits Remaining -->
+                <tr>
+                  <td style="padding: 14px 20px; border-bottom: 1px solid #f3f4f6; background-color: #f9fafb;">
+                    <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+                      <tr>
+                        <td style="font-size: 13px; color: #6b7280; line-height: 1.4;">Credits Remaining</td>
+                        <td style="font-size: 22px; font-weight: 700; color: ${lowCredits ? '#f59e0b' : '#22c55e'}; text-align: right; line-height: 1.4;">${stats.creditsRemaining}</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>`
 
   const lowCreditNudge = lowCredits
     ? `
@@ -627,29 +675,7 @@ function buildWeeklySummaryEmail({
                   </td>
                 </tr>
 
-                <!-- Credits Used -->
-                <tr>
-                  <td style="padding: 14px 20px; border-bottom: 1px solid #f3f4f6; background-color: #f9fafb;">
-                    <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
-                      <tr>
-                        <td style="font-size: 13px; color: #6b7280; line-height: 1.4;">Credits Used (Today)</td>
-                        <td style="font-size: 22px; font-weight: 700; color: #111827; text-align: right; line-height: 1.4;">${stats.creditsUsed}</td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-
-                <!-- Credits Remaining -->
-                <tr>
-                  <td style="padding: 14px 20px; border-bottom: 1px solid #f3f4f6; background-color: #f9fafb;">
-                    <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
-                      <tr>
-                        <td style="font-size: 13px; color: #6b7280; line-height: 1.4;">Credits Remaining</td>
-                        <td style="font-size: 22px; font-weight: 700; color: ${lowCredits ? '#f59e0b' : '#22c55e'}; text-align: right; line-height: 1.4;">${stats.creditsRemaining}</td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
+                ${creditRowsHtml}
 
                 <!-- Meetings Booked -->
                 <tr>

@@ -5,7 +5,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { requireAdminRole } from '@/lib/auth/admin'
+import { requirePlatformAdmin } from '@/lib/auth/admin'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
@@ -13,7 +13,7 @@ export const runtime = 'edge'
 
 export async function GET(request: NextRequest) {
   try {
-    await requireAdminRole()
+    await requirePlatformAdmin()
 
     const platformWorkspaceId = process.env.PLATFORM_WORKSPACE_ID || process.env.NEXT_PUBLIC_PLATFORM_WORKSPACE_ID
 

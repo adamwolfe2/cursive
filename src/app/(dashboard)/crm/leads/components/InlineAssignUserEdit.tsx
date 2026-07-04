@@ -3,7 +3,7 @@
 
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   useFloating,
   autoUpdate,
@@ -42,6 +42,14 @@ export function InlineAssignUserEdit({
   const [isOpen, setIsOpen] = useState(false)
   const [selectedUser, setSelectedUser] = useState(currentUser)
   const updateMutation = useUpdateLead()
+
+  // Resync to the source-of-truth prop when it changes externally; skip while a
+  // mutation is in flight so the optimistic value isn't clobbered by stale props.
+  useEffect(() => {
+    if (!updateMutation.isPending) {
+      setSelectedUser(currentUser)
+    }
+  }, [currentUser, updateMutation.isPending])
 
   const { refs, floatingStyles, context } = useFloating({
     open: isOpen,

@@ -57,8 +57,8 @@ export default async function ReferralsPage() {
           </p>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white">
-          <table className="w-full text-sm">
+        <div className="overflow-x-auto rounded-2xl border border-gray-200 bg-white">
+          <table className="w-full min-w-[640px] text-sm">
             <thead className="bg-gray-50 text-left text-xs uppercase tracking-wide text-gray-400">
               <tr>
                 <th className="px-5 py-3 font-medium">Referral</th>

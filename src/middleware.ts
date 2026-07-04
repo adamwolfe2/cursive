@@ -61,6 +61,26 @@ export async function middleware(req: NextRequest) {
       return NextResponse.next()
     }
 
+    // Serve robots.txt and sitemap.xml publicly so crawlers actually receive
+    // the app's Disallow-all policy (src/app/robots.ts) instead of a 307 to the
+    // auth-walled /login page. Without this, Google treats the redirect as "no
+    // robots.txt" and crawls everything — the opposite of the intended policy.
+    // The app domain (leads.meetcursive.com) is intentionally Disallow-all.
+    if (pathname === '/robots.txt' || pathname === '/sitemap.xml') {
+      return NextResponse.next()
+    }
+
+    // Legacy auth aliases → canonical public routes. Without these, /sign-in and
+    // /sign-up fall through to the generic non-public redirect and 307 to
+    // /login?redirect=%2Fsign-in — a soft-404 that bounces the user back to a
+    // route that does not exist. Map them to the real pages (like /my-leads).
+    if (pathname === '/sign-in') {
+      return NextResponse.redirect(new URL('/login', req.url), 308)
+    }
+    if (pathname === '/sign-up') {
+      return NextResponse.redirect(new URL('/signup', req.url), 308)
+    }
+
     if (pathname === '/my-leads') {
       const url = new URL('/leads?tab=assigned', req.url)
       return NextResponse.redirect(url, 308)

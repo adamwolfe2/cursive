@@ -136,6 +136,9 @@ export const { GET, POST, PUT } = serve({
     // Operations Health Monitoring
     functions.monitorOperationsHealth,
 
+    // Alert Monitoring (every 5 minutes — webhook backlogs, platform alerts, email failures)
+    functions.checkAlerts,
+
     // Bulk Upload Processing
     functions.processBulkUpload,
     functions.importLeadFromAudienceLabs,

@@ -23,7 +23,8 @@ const bodySchema = z.object({
   reseller_id: z.string().uuid().optional(),
   name: z.string().min(1).max(200).optional(),
   key_name: z.string().max(200).optional(),
-  scopes: z.array(z.string()).optional(),
+  // Constrain to the scopes requireReseller enforces and the DB default grants.
+  scopes: z.array(z.enum(['pixels:read', 'pixels:write'])).optional(),
   period_kind: z.enum(['month', 'day']).optional(),
   lead_cap_per_period: z.number().int().min(0).nullable().optional(),
   default_lead_cap_per_period: z.number().int().min(0).nullable().optional(),

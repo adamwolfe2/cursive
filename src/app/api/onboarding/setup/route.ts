@@ -295,7 +295,12 @@ export async function POST(request: NextRequest) {
           is_partner: false,
           // Daily lead distribution segments.
           // normalizedIndustry already has "(waitlist)" stripped — see above.
-          industry_segment: normalizedIndustry.toLowerCase().replace(/\s+/g, '_'),
+          // Use the SAME slug normalizer as isSupportedIndustry (waitlist-validation.ts):
+          // collapse every non-alphanumeric run to a single "_" and trim edges. The old
+          // /\s+/ normalizer preserved "&", producing "logistics_&_shipping" for
+          // "Logistics & Shipping" while the support gate produced "logistics_shipping" —
+          // a divergence that could yield zero leads with no unsupported-industry banner.
+          industry_segment: normalizedIndustry.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/(^_|_$)/g, ''),
           location_segment: validated.targetLocations?.toLowerCase().replace(/\s+/g, '_').split(',')[0] || 'us',
           daily_lead_limit: 10, // Free tier gets 10 daily leads
           is_active: true,
@@ -441,7 +446,11 @@ export async function POST(request: NextRequest) {
           })
           // Alert ops — without targeting, the provision event is skipped and this
           // user may receive zero leads until targeting is manually created.
-          sendSlackAlert({
+          // AWAITED: a fire-and-forget alert freezes with the serverless instance
+          // at response time and may never reach Slack — exactly when this critical
+          // alert is needed (proven frozen-fetch class, 2026-07-02). The .catch
+          // keeps alert failure from failing onboarding.
+          await sendSlackAlert({
             type: 'system_error',
             severity: 'critical',
             message: `CRITICAL: user_targeting insert failed for new signup ${validated.email} (${validated.companyName}) — user will receive ZERO leads until targeting is fixed. workspace_id=${workspace.id}`,
@@ -482,7 +491,11 @@ export async function POST(request: NextRequest) {
         // Non-fatal: user can set targeting later from dashboard, but ops must know
         targetingFailed = true
         safeError('[Onboarding] CRITICAL: User targeting creation threw unexpectedly — provision event skipped, user may receive zero leads:', targetingError instanceof Error ? targetingError.message : targetingError)
-        sendSlackAlert({
+        // AWAITED: a fire-and-forget alert may freeze with the serverless instance
+        // and never reach Slack — exactly when this critical alert is needed
+        // (frozen-fetch class, 2026-07-02). The .catch keeps alert failure from
+        // failing onboarding.
+        await sendSlackAlert({
           type: 'system_error',
           severity: 'critical',
           message: `CRITICAL: user_targeting creation threw for new signup ${validated.email} (${validated.companyName}) — provision event skipped, user may receive ZERO leads. workspace_id=${workspace.id}`,

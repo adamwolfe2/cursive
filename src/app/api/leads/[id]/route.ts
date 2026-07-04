@@ -8,6 +8,7 @@ import { getCurrentUser } from '@/lib/auth/helpers'
 import { LeadRepository } from '@/lib/repositories/lead.repository'
 import { handleApiError, unauthorized, notFound, success } from '@/lib/utils/api-error-handler'
 import { z } from 'zod'
+import { LEAD_STATUSES } from '@/types/crm.types'
 
 const updateLeadSchema = z.object({
   first_name: z.string().optional(),
@@ -19,7 +20,8 @@ const updateLeadSchema = z.object({
   city: z.string().optional(),
   state: z.string().optional(),
   country: z.string().optional(),
-  status: z.enum(['new', 'contacted', 'qualified', 'lost', 'converted']).optional(),
+  // Aligned to the DB `lead_status` enum (single source of truth in crm.types).
+  status: z.enum(LEAD_STATUSES).optional(),
   source: z.string().optional(),
   intent_score: z.number().min(0).max(100).optional(),
   notes: z.string().optional(),

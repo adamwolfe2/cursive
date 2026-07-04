@@ -72,6 +72,38 @@ const config: Config = {
           foreground: 'hsl(var(--card-foreground))',
           elevated: 'hsl(var(--card-elevated))',
         },
+        // Canonical brand blue ramp (#007AFF @ 500). Additive — does NOT
+        // override Tailwind's default `blue`; later phases migrate blue-*/indigo-* here.
+        brand: {
+          50: 'hsl(var(--brand-50))',
+          100: 'hsl(var(--brand-100))',
+          200: 'hsl(var(--brand-200))',
+          300: 'hsl(var(--brand-300))',
+          400: 'hsl(var(--brand-400))',
+          500: 'hsl(var(--brand-500))',
+          600: 'hsl(var(--brand-600))',
+          700: 'hsl(var(--brand-700))',
+          800: 'hsl(var(--brand-800))',
+          900: 'hsl(var(--brand-900))',
+          950: 'hsl(var(--brand-950))',
+          DEFAULT: 'hsl(var(--brand-500))',
+          foreground: 'hsl(var(--primary-foreground))',
+        },
+        // Canonical neutral gray ramp (hue-220 tint). Additive alias namespace
+        // `ink` to avoid clobbering Tailwind's default `gray`.
+        ink: {
+          50: 'hsl(var(--gray-50))',
+          100: 'hsl(var(--gray-100))',
+          200: 'hsl(var(--gray-200))',
+          300: 'hsl(var(--gray-300))',
+          400: 'hsl(var(--gray-400))',
+          500: 'hsl(var(--gray-500))',
+          600: 'hsl(var(--gray-600))',
+          700: 'hsl(var(--gray-700))',
+          800: 'hsl(var(--gray-800))',
+          900: 'hsl(var(--gray-900))',
+          950: 'hsl(var(--gray-950))',
+        },
       },
       borderRadius: {
         lg: 'var(--radius)',
@@ -108,6 +140,8 @@ const config: Config = {
         'ease-in': 'var(--ease-in)',
         'ease-out': 'var(--ease-out)',
         'ease-in-out': 'var(--ease-in-out)',
+        'out-quart': 'var(--ease-out-quart)',
+        'out-expo': 'var(--ease-out-expo)',
       },
       zIndex: {
         'dropdown': 'var(--z-dropdown)',

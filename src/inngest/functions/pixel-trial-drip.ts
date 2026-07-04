@@ -119,7 +119,7 @@ export const pixelTrialDrip = inngest.createFunction(
     retries: 2,
     timeouts: { finish: '15m' },
     cancelOn: [{ event: 'subscription/created', match: 'data.workspace_id' }],
-    concurrency: { limit: 20 },
+    concurrency: { limit: 5 },
   },
   { event: 'pixel/provisioned' },
   async ({ event, step }) => {

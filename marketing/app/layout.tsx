@@ -54,7 +54,7 @@ export default function RootLayout({
         {/* RSS Feed discovery */}
         <link rel="alternate" type="application/rss+xml" title="Cursive Blog" href="https://www.meetcursive.com/feed.xml" />
         {/* Crisp Chat — functional, loads unconditionally for support */}
-        <Script id="crisp-chat" strategy="afterInteractive">
+        <Script id="crisp-chat" strategy="lazyOnload">
           {`
             window.$crisp=[];
             window.CRISP_WEBSITE_ID="74f01aba-2977-4100-92ed-3297d60c6fcb";
@@ -71,9 +71,18 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${dancingScript.variable} font-sans antialiased`}
       >
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-black focus:shadow-lg focus:ring-2 focus:ring-black focus:outline-none"
+        >
+          Skip to content
+        </a>
         <ClientLayout>
           <Header />
-          <main className="pt-16">{children}</main>
+          {/* Skip-link target. Not a <main> landmark: pages/components supply
+              the single <main> (see BlogPostLayout, human-home-page, etc.) to
+              avoid nested/duplicate main landmarks. */}
+          <div id="main" className="pt-16">{children}</div>
           <Footer />
           <ExitIntentPopup />
           <CookieConsent />

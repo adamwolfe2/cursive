@@ -8,6 +8,7 @@ import { handleApiError, unauthorized, notFound } from '@/lib/utils/api-error-ha
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { LEAD_STATUSES } from '@/types/crm.types'
 
 // Use edge runtime
 
@@ -23,7 +24,11 @@ const updateLeadSchema = z.object({
   city: z.string().optional(),
   state: z.string().optional(),
   source: z.string().optional(),
-  status: z.string().optional(),
+  status: z.enum(LEAD_STATUSES).optional(),
+  // Inline CRM editors persist tags + assignment through this route; without
+  // these keys Zod silently strips them and the update becomes a no-op.
+  tags: z.array(z.string()).optional(),
+  assigned_user_id: z.string().uuid().nullable().optional(),
 })
 
 export async function PATCH(

@@ -291,7 +291,7 @@ export default function LeadDatabasePage() {
                   {preview.credit_cost.toFixed(2)}
                 </div>
                 <div className="text-xs text-muted-foreground">
-                  {preview.credit_cost_per_lead} credits/lead × 25 leads
+                  {preview.credit_cost_per_lead} credits/lead × {Math.min(25, preview.count)} leads
                 </div>
               </div>
             </div>
@@ -313,7 +313,9 @@ export default function LeadDatabasePage() {
             {/* Sample Leads */}
             {preview.sample.length > 0 && (
               <div>
-                <h3 className="font-medium mb-3">Sample Leads (10 of {preview.count})</h3>
+                <h3 className="font-medium mb-3">
+                  Sample Leads ({Math.min(5, preview.sample.length)} of {preview.count.toLocaleString()})
+                </h3>
                 <div className="space-y-2">
                   {preview.sample.slice(0, 5).map((lead, idx) => (
                     <div
@@ -354,7 +356,7 @@ export default function LeadDatabasePage() {
               <Users className="mr-2 h-4 w-4" />
               {pulling
                 ? 'Pulling Leads...'
-                : `Pull 25 Leads (${preview.credit_cost.toFixed(2)} credits)`}
+                : `Pull ${Math.min(25, preview.count)} Leads (${preview.credit_cost.toFixed(2)} credits)`}
             </Button>
           </CardContent>
         </Card>

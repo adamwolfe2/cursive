@@ -42,26 +42,34 @@ export function generateSoftwareApplicationSchema() {
     applicationCategory: 'BusinessApplication',
     operatingSystem: 'Web',
     offers: {
-      '@type': 'Offer',
-      price: '1000',
+      '@type': 'AggregateOffer',
       priceCurrency: 'USD',
-      priceSpecification: {
-        '@type': 'UnitPriceSpecification',
-        price: '1000.00',
-        priceCurrency: 'USD',
-        referenceQuantity: {
-          '@type': 'QuantitativeValue',
-          value: '1',
-          unitCode: 'MON',
+      lowPrice: '97',
+      highPrice: '247',
+      offerCount: '3',
+      offers: [
+        {
+          '@type': 'Offer',
+          name: 'Visitor Pixel',
+          price: '97',
+          priceCurrency: 'USD',
+          availability: 'https://schema.org/InStock',
         },
-      },
-    },
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: '4.8',
-      ratingCount: '127',
-      bestRating: '5',
-      worstRating: '1',
+        {
+          '@type': 'Offer',
+          name: 'Custom Audience',
+          price: '197',
+          priceCurrency: 'USD',
+          availability: 'https://schema.org/InStock',
+        },
+        {
+          '@type': 'Offer',
+          name: 'Pixel + Audience Bundle',
+          price: '247',
+          priceCurrency: 'USD',
+          availability: 'https://schema.org/InStock',
+        },
+      ],
     },
     description: 'AI-powered B2B lead generation platform that identifies anonymous website visitors and automates multi-channel outreach.',
     featureList: [

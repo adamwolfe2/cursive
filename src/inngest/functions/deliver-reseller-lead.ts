@@ -46,6 +46,19 @@ function isRetryableStatus(status: number | null): boolean {
 /** 4 retries = 5 total attempts per step, matching the prior backoff loop. */
 const STEP_RETRIES = 4
 
+/**
+ * Map a block reason to the audit/rollup status. Inactive and suspended skips
+ * must NOT be counted as 'skipped_cap' — otherwise a deactivated pixel (which
+ * keeps capturing by design) inflates leads_skipped_cap forever and partners
+ * conclude their caps are too low. Cap reasons (reseller_cap/pixel_cap) and any
+ * unexpected reason fall through to 'skipped_cap'.
+ */
+function skipStatusForReason(reason: string | null | undefined): DeliveryOutcome {
+  if (reason === 'inactive') return 'skipped_inactive'
+  if (reason === 'reseller_suspended') return 'skipped_suspended'
+  return 'skipped_cap'
+}
+
 export const deliverResellerLead = resellerInngest.createFunction(
   {
     id: 'deliver-reseller-lead',
@@ -117,7 +130,7 @@ export const deliverResellerLead = resellerInngest.createFunction(
     const pre = decideDelivery(reseller, pixel)
     if (!pre.deliver) {
       await step.run('record-precheck-block', () =>
-        recordTerminal(pixel, lead_id, 'skipped_cap', pre.throttled, null, pre.reason),
+        recordTerminal(pixel, lead_id, skipStatusForReason(pre.reason), pre.throttled, null, pre.reason),
       )
       safeLog(`[ResellerDelivery] lead ${lead_id} not delivered (${pre.reason})`)
       return { delivered: false, reason: pre.reason }
@@ -143,7 +156,7 @@ export const deliverResellerLead = resellerInngest.createFunction(
     )
     if (!consumed.deliver) {
       await step.run('record-cap-block', () =>
-        recordTerminal(pixel, lead_id, 'skipped_cap', consumed.throttled, null, consumed.reason),
+        recordTerminal(pixel, lead_id, skipStatusForReason(consumed.reason), consumed.throttled, null, consumed.reason),
       )
       safeLog(`[ResellerDelivery] lead ${lead_id} skipped at atomic gate (${consumed.reason})`)
       return { delivered: false, reason: consumed.reason }

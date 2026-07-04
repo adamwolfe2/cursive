@@ -1,21 +1,69 @@
+export const runtime = 'nodejs'
 export const maxDuration = 10
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { isBlockedHost } from '@/lib/utils/ssrf-guard'
+import { isBlockedHost, resolvesToBlockedAddress } from '@/lib/utils/ssrf-guard'
+import { checkRateLimit } from '@/lib/middleware/rate-limiter'
 
 const requestSchema = z.object({
   url: z.string().url(),
 })
 
 /**
+ * SSRF guard for a single hop: require https, reject literal internal hosts,
+ * then resolve DNS and reject if the host points at an internal/metadata IP.
+ * Shares resolvesToBlockedAddress with the reseller outbound-delivery path so
+ * both enforce identical DNS-level rules.
+ *
+ * Residual risk: a fast-flux DNS-rebind TOCTOU between this resolve and the
+ * actual connect remains theoretically possible (accepted — matches the
+ * reseller delivery path). resolvesToBlockedAddress throws on resolver failure;
+ * the caller treats any throw as "return no data".
+ */
+async function isHopBlocked(urlStr: string): Promise<boolean> {
+  let hostname: string
+  try {
+    const parsed = new URL(urlStr)
+    if (parsed.protocol !== 'https:') return true // https only — reject http/other
+    hostname = parsed.hostname
+  } catch {
+    return true
+  }
+  if (isBlockedHost(urlStr)) return true
+  return resolvesToBlockedAddress(hostname)
+}
+
+/**
  * Lightweight website enrichment.
  * Fetches a URL, extracts meta tags and visible text, returns company info.
  * Used on the client onboarding form for auto-fill.
- * No auth required — the client form is public.
+ * No auth required — the client form is public, so it is per-IP rate limited
+ * and SSRF-hardened (https only, literal + DNS-resolution host checks).
  */
 export async function POST(req: NextRequest) {
   try {
+    // Public/unauthenticated endpoint — throttle per-IP to blunt SSRF probing
+    // and enrichment-cost abuse.
+    const clientIp =
+      req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+      req.headers.get('x-real-ip') ||
+      'unknown'
+    const rate = await checkRateLimit(clientIp, 'ext', 60)
+    if (!rate.success) {
+      return NextResponse.json(
+        { error: 'Rate limit exceeded. Please try again later.' },
+        {
+          status: 429,
+          headers: {
+            'Retry-After': String(Math.ceil((rate.reset - Date.now()) / 1000)),
+            'X-RateLimit-Limit': String(rate.limit),
+            'X-RateLimit-Remaining': String(rate.remaining),
+          },
+        }
+      )
+    }
+
     const body = await req.json()
     const parsed = requestSchema.safeParse(body)
 
@@ -25,14 +73,15 @@ export async function POST(req: NextRequest) {
 
     const { url } = parsed.data
 
-    if (isBlockedHost(url)) {
+    if (await isHopBlocked(url)) {
       return NextResponse.json({ data: null })
     }
 
     // Fetch the website with a 5s timeout.
     // SSRF hardening: this endpoint is public, so we must NOT let a public host
     // 30x-redirect into the internal network/metadata IPs. Follow redirects
-    // manually and re-run isBlockedHost on every hop; cap hops and body size.
+    // manually and re-run the full guard (https + literal + DNS) on every hop;
+    // cap hops and body size.
     const controller = new AbortController()
     const timeout = setTimeout(() => controller.abort(), 5000)
 
@@ -52,7 +101,7 @@ export async function POST(req: NextRequest) {
         if (!location) break
         // Resolve relative redirects against the current URL, then re-validate.
         const nextUrl = new URL(location, currentUrl).toString()
-        if (isBlockedHost(nextUrl)) {
+        if (await isHopBlocked(nextUrl)) {
           return NextResponse.json({ data: null })
         }
         currentUrl = nextUrl

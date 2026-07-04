@@ -285,8 +285,10 @@ export async function POST(_req: NextRequest) {
       )
     }
 
-    // Fire first-leads notification (fire-and-forget — don't fail the request)
-    inngest.send({
+    // Fire first-leads notification. Await so the send actually completes
+    // before the serverless invocation can freeze (proven frozen-fetch class,
+    // 2026-07-02); keep the catch so a send failure logs but never fails the request.
+    await inngest.send({
       name: 'workspace/first-leads-arrived',
       data: {
         workspaceId: userProfile.workspace_id,
@@ -297,7 +299,10 @@ export async function POST(_req: NextRequest) {
         industry: userProfile.industry_segment ?? null,
         location: userProfile.location_segment ?? null,
       },
-    }).catch(() => null)
+    }).catch((err) => {
+      safeError('[PopulateInitialLeads] first-leads-arrived send failed:', err)
+      return null
+    })
 
     // Revalidate the dashboard + leads pages so the user sees the new leads
     // immediately when the setup wizard redirects them. Without this, the

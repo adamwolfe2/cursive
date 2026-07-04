@@ -6,13 +6,13 @@
 export const runtime = 'edge'
 
 import { NextResponse } from 'next/server'
-import { requireAdminRole } from '@/lib/auth/admin'
+import { requirePlatformAdmin } from '@/lib/auth/admin'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { handleApiError } from '@/lib/utils/api-error-handler'
 
 export async function GET() {
   try {
-    await requireAdminRole()
+    await requirePlatformAdmin()
     const db = createAdminClient()
 
     const [

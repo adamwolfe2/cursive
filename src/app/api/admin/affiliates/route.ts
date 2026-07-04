@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { requirePlatformAdmin } from '@/lib/auth/admin'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { z } from 'zod'
@@ -12,32 +12,11 @@ import { z } from 'zod'
 const VALID_STATUSES = ['pending', 'approved', 'rejected', 'all'] as const
 const statusSchema = z.enum(VALID_STATUSES).default('all')
 
-async function checkAdminAccess(): Promise<boolean> {
-  try {
-    // SECURITY: Use getUser() for server-side JWT verification (not getSession which trusts local cache)
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user?.id) return false
-
-    const admin = createAdminClient()
-    const { data: dbUser } = await admin
-      .from('users')
-      .select('role')
-      .eq('auth_user_id', user.id)
-      .maybeSingle()
-
-    return dbUser?.role === 'owner' || dbUser?.role === 'admin'
-  } catch {
-    return false
-  }
-}
-
 export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
-    const isAdmin = await checkAdminAccess()
-    if (!isAdmin) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    // SECURITY: cross-tenant platform route — every customer is 'owner' of their
+    // own workspace, so gate on platform_admins.is_active only, not users.role.
+    await requirePlatformAdmin()
 
     const rawStatus = request.nextUrl.searchParams.get('status') ?? 'all'
     const statusResult = statusSchema.safeParse(rawStatus)
@@ -85,6 +64,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ applications: applications || [], stats })
   } catch (error) {
     safeError('[admin/affiliates] Error:', error)
+    if (error instanceof Error && error.message.includes('Unauthorized')) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
     return NextResponse.json({ error: 'Failed to load affiliates' }, { status: 500 })
   }
 }

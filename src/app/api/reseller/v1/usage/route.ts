@@ -37,15 +37,29 @@ export async function GET(request: NextRequest) {
     pixels: pixels.map((p) => {
       const pStale = p.period_start < curPeriod
       const used = pStale ? 0 : p.leads_delivered_period
+      // Effective cap = explicit pixel cap, else the reseller default. This is
+      // exactly what enforcement applies (reseller_consume_delivery / decideDelivery),
+      // so `remaining` here matches the gate instead of falsely reporting "unlimited".
+      const effectiveCap = p.lead_cap_per_period ?? r.default_lead_cap_per_period
+      const capSource =
+        p.lead_cap_per_period != null
+          ? 'pixel'
+          : r.default_lead_cap_per_period != null
+            ? 'reseller_default'
+            : null
       return {
         pixel_id: p.pixel_id,
         external_customer_ref: p.external_customer_ref,
         status: p.status,
         throttle_mode: p.throttle_mode,
+        // Raw explicit pixel cap (null = inherits reseller default).
         lead_cap_per_period: p.lead_cap_per_period,
+        // Cap actually enforced, plus where it comes from.
+        effective_lead_cap_per_period: effectiveCap,
+        cap_source: capSource,
         leads_delivered_period: used,
         leads_delivered_lifetime: p.leads_delivered_lifetime,
-        remaining: p.lead_cap_per_period == null ? null : Math.max(0, p.lead_cap_per_period - used),
+        remaining: effectiveCap == null ? null : Math.max(0, effectiveCap - used),
       }
     }),
   })

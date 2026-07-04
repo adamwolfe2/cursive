@@ -21,9 +21,13 @@ export function WaitingPoller({ sessionId }: { sessionId: string }) {
           { cache: 'no-store' }
         )
         if (res.ok) {
-          const json = (await res.json()) as { portal_url?: string }
-          if (json.portal_url) {
-            window.location.assign(json.portal_url)
+          // The order is ready. For security the login link is NOT returned
+          // here (it would leak via Referer/history) — it's emailed to the
+          // buyer. Stop polling and show the "check your email" state.
+          const json = (await res.json()) as { ready?: boolean }
+          if (json.ready) {
+            setExhausted(true)
+            clearInterval(handle)
             return
           }
         }

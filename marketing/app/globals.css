@@ -5,15 +5,110 @@
   --font-cursive: var(--font-dancing-script);
   --font-family-cursive: var(--font-dancing-script), cursive;
 
+  /* Brand primary (#007AFF) — kept as-is for backward compatibility */
   --color-primary: #007AFF;
   --color-primary-dark: #0066DD;
   --color-primary-hover: #0066DD;
   --color-primary-light: #3395FF;
+
+  /* ===== Canonical brand blue ramp (#007AFF @ 500) — mirrors app ===== */
+  /* Additive: does NOT override Tailwind's default `blue`. Later phases
+     migrate blue-*/indigo-* usages onto `brand-*`. */
+  --color-brand-50: #f0f7ff;
+  --color-brand-100: #d6eaff;
+  --color-brand-200: #b3d7ff;
+  --color-brand-300: #7abaff;
+  --color-brand-400: #3d9bff;
+  --color-brand-500: #007AFF;
+  --color-brand-600: #0063e6;
+  --color-brand-700: #084fba;
+  --color-brand-800: #0d4091;
+  --color-brand-900: #113574;
+  --color-brand-950: #0c1f45;
+
+  /* ===== Semantic tokens (light only) — net-new utilities ===== */
+  --color-background: #ffffff;
+  --color-surface: #ffffff;   /* card/surface */
+  --color-foreground: #1d2025; /* gray-900 */
+  --color-muted: #f3f4f6;      /* gray-100 */
+  --color-muted-foreground: #6b7280; /* gray-500 */
+  --color-border: #e5e7eb;     /* gray-200 */
+  --color-ring: #007AFF;       /* brand-500 */
+  --color-primary-foreground: #ffffff;
+  --color-success: #16a34a;
+  --color-warning: #d97706;
+  --color-danger: #dc2626;
 }
 
 :root {
   --background: #ffffff;
-  --foreground: #0f172a;
+  --foreground: #0f172a; /* existing body text (slate-900) — left unchanged for phase 1 */
+
+  /* ===== Canonical neutral gray ramp (hue-220 tint) — mirrors app ===== */
+  /* Plain custom properties (not @theme) so Tailwind's default `gray`
+     utilities keep their exact current values. Available for raw CSS + later phases. */
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #a0a5b1;
+  --gray-500: #6b7280;
+  --gray-600: #4d5460;
+  --gray-700: #3a3f4b;
+  --gray-800: #272c34;
+  --gray-900: #1d2025;
+  --gray-950: #111318;
+
+  /* ===== Radius scale (mirrors app) ===== */
+  --radius-sm: 0.375rem;
+  --radius: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+
+  /* ===== Shadow scale (subtle, layered — mirrors app) ===== */
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+
+  /* ===== Spacing scale (mirrors app) ===== */
+  --space-0: 0;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+
+  /* ===== Z-index scale (mirrors app) ===== */
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
+  --z-toast: 1080;
+
+  /* ===== Motion tokens (mirrors app) ===== */
+  --transition-fast: 150ms;
+  --transition-base: 200ms;
+  --transition-slow: 300ms;
+  --duration-fast: 150ms;
+  --duration-base: 200ms;
+  --duration-slow: 300ms;
+  --ease-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 body {

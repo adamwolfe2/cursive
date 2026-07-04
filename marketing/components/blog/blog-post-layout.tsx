@@ -72,6 +72,7 @@ export function BlogPostLayout({ post, relatedPosts = [] }: BlogPostLayoutProps)
         dangerouslySetInnerHTML={{ __html: JSON.stringify(blogSchema) }}
       />
 
+      <main>
       <article className="bg-white">
         {/* Header Section */}
         <div className="border-b border-gray-200">
@@ -252,6 +253,7 @@ export function BlogPostLayout({ post, relatedPosts = [] }: BlogPostLayoutProps)
           </div>
         </div>
       </article>
+      </main>
     </>
   )
 }

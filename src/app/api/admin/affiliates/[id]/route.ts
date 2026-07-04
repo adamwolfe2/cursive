@@ -4,20 +4,8 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { requirePlatformAdmin } from '@/lib/auth/admin'
 import { createAdminClient } from '@/lib/supabase/admin'
-
-async function checkAdminAccess(): Promise<boolean> {
-  try {
-    // SECURITY: Use getUser() for server-side JWT verification (not getSession which trusts local cache)
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user?.id) return false
-    const admin = createAdminClient()
-    const { data: dbUser } = await admin.from('users').select('role').eq('auth_user_id', user.id).maybeSingle()
-    return dbUser?.role === 'owner' || dbUser?.role === 'admin'
-  } catch { return false }
-}
 import {
   sendPartnerApproved,
   sendPartnerRejected,
@@ -36,7 +24,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> {
   try {
-    if (!await checkAdminAccess()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    await requirePlatformAdmin()
     const { id } = await params
     const admin = createAdminClient()
 
@@ -64,6 +52,9 @@ export async function GET(
     return NextResponse.json({ application, affiliate })
   } catch (error) {
     safeError('[admin/affiliates/[id]] GET error:', error)
+    if (error instanceof Error && error.message.includes('Unauthorized')) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
     return NextResponse.json({ error: 'Failed' }, { status: 500 })
   }
 }
@@ -73,7 +64,7 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> {
   try {
-    if (!await checkAdminAccess()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    await requirePlatformAdmin()
     const { id } = await params
     const body = await request.json()
     const parseResult = patchSchema.safeParse(body)
@@ -221,6 +212,9 @@ export async function PATCH(
     return NextResponse.json({ error: 'Unknown action' }, { status: 400 })
   } catch (error) {
     safeError('[admin/affiliates/[id]] PATCH error:', error)
+    if (error instanceof Error && error.message.includes('Unauthorized')) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
     return NextResponse.json({ error: 'Failed' }, { status: 500 })
   }
 }

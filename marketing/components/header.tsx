@@ -5,7 +5,7 @@ import { Container } from "@/components/ui/container"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import { Menu, X, ChevronDown, Eye, Users, Mail, Target, Database, Shield, Building2, ShoppingCart, Code, Briefcase, Home, Store, BookOpen, BarChart3, FileText } from "lucide-react"
 import { GET_LEADS_URL, BOOKING_URL } from "@/lib/cta"
 
@@ -86,7 +86,27 @@ const navLinks: NavLink[] = [
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  // Mobile accordion state (independent of desktop to avoid cross-regression)
   const [openDropdown, setOpenDropdown] = useState<string | null>(null)
+  // Desktop mega-menu state (disclosure pattern: click/focus/hover to open)
+  const [desktopDropdown, setDesktopDropdown] = useState<string | null>(null)
+  const navRef = useRef<HTMLElement>(null)
+
+  // Close desktop dropdown on outside click (touch + mouse)
+  useEffect(() => {
+    if (!desktopDropdown) return
+    function handlePointerDown(e: MouseEvent | TouchEvent) {
+      if (navRef.current && !navRef.current.contains(e.target as Node)) {
+        setDesktopDropdown(null)
+      }
+    }
+    document.addEventListener("mousedown", handlePointerDown)
+    document.addEventListener("touchstart", handlePointerDown)
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown)
+      document.removeEventListener("touchstart", handlePointerDown)
+    }
+  }, [desktopDropdown])
 
   return (
     <>
@@ -110,19 +130,38 @@ export function Header() {
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center gap-8">
-              {navLinks.map((link) => (
+            <nav ref={navRef} className="hidden md:flex items-center gap-8">
+              {navLinks.map((link) => {
+                const menuId = `nav-dropdown-${link.label.toLowerCase()}`
+                const isOpen = desktopDropdown === link.label
+                return (
                 <div
                   key={link.label}
                   className="relative"
-                  onMouseEnter={() => link.dropdown && setOpenDropdown(link.label)}
-                  onMouseLeave={() => setOpenDropdown(null)}
+                  onMouseEnter={() => link.dropdown && setDesktopDropdown(link.label)}
+                  onMouseLeave={() => link.dropdown && setDesktopDropdown(null)}
+                  onBlur={(e) => {
+                    // Close when focus leaves the group entirely (keyboard nav)
+                    if (link.dropdown && !e.currentTarget.contains(e.relatedTarget as Node)) {
+                      setDesktopDropdown(null)
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    if (link.dropdown && e.key === "Escape" && isOpen) {
+                      setDesktopDropdown(null)
+                      e.currentTarget.querySelector("button")?.focus()
+                    }
+                  }}
                 >
                   {link.dropdown ? (
                     <button
+                      type="button"
                       className="flex items-center gap-1 text-gray-700 hover:text-primary transition-colors"
                       aria-haspopup="true"
-                      aria-expanded={openDropdown === link.label}
+                      aria-expanded={isOpen}
+                      aria-controls={menuId}
+                      onClick={() => setDesktopDropdown(isOpen ? null : link.label)}
+                      onFocus={() => setDesktopDropdown(link.label)}
                     >
                       {link.label}
                       <ChevronDown className="w-4 h-4" />
@@ -134,8 +173,9 @@ export function Header() {
                   )}
 
                   {/* Dropdown Menu - Mega Menu Style */}
-                  {link.dropdown && openDropdown === link.label && (
+                  {link.dropdown && isOpen && (
                     <motion.div
+                      id={menuId}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 10 }}
@@ -173,7 +213,8 @@ export function Header() {
                     </motion.div>
                   )}
                 </div>
-              ))}
+                )
+              })}
             </nav>
 
             {/* Desktop CTA Buttons */}
@@ -191,6 +232,8 @@ export function Header() {
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="md:hidden p-2 text-gray-700 hover:text-primary transition-colors"
               aria-label="Toggle menu"
+              aria-expanded={mobileMenuOpen}
+              aria-controls="mobile-menu-panel"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -213,6 +256,7 @@ export function Header() {
 
             {/* Menu Panel */}
             <motion.div
+              id="mobile-menu-panel"
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}

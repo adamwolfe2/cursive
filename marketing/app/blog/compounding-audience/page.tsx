@@ -57,7 +57,7 @@ const relatedPosts = [
     href: "/blog/attribution-moat",
   },
   {
-    title: "Get Started Free",
+    title: "Get Started",
     description: "See how many named leads your site is generating today — and what a full compounding audience would look like.",
     href: "/get-leads",
   },
@@ -495,7 +495,7 @@ export default function BlogPost() {
               </p>
               <div className="flex gap-4 justify-center flex-wrap">
                 <Button asChild size="lg">
-                  <Link href="/get-leads">Get Started Free</Link>
+                  <Link href="/get-leads">Get Started</Link>
                 </Button>
                 <Button asChild variant="outline" size="lg">
                   <Link href="/visitor-estimate">Run Free Estimate</Link>

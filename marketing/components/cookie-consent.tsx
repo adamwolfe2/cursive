@@ -87,7 +87,7 @@ export function CookieConsent() {
             {/* Close button — treated as decline */}
             <button
               onClick={decline}
-              className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 transition-colors"
+              className="absolute top-3 right-3 p-2 -m-2 text-gray-400 hover:text-gray-600 transition-colors"
               aria-label="Close cookie banner"
             >
               <X className="w-4 h-4" />

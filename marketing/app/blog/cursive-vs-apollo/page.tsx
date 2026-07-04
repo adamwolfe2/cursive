@@ -18,7 +18,7 @@ const faqs = [
   },
   {
     question: "Is Apollo cheaper than Cursive?",
-    answer: "Apollo's entry-level pricing is lower, with a free tier and paid plans starting at $49/user/month. However, Apollo's visitor identification is limited to company-level, has no intent data, and its outreach is template-based. When you factor in the tools you need alongside Apollo to match Cursive's capabilities (visitor ID, intent data, AI personalization), the total stack cost typically exceeds Cursive's $499-999/month all-in-one pricing."
+    answer: "Apollo's entry-level pricing is lower, with a free tier and paid plans starting at $49/user/month. However, Apollo's visitor identification is limited to company-level, has no intent data, and its outreach is template-based. When you factor in the tools you need alongside Apollo to match Cursive's capabilities (visitor ID, intent data, AI personalization), the total stack cost typically exceeds Cursive's self-serve pricing, which runs $97–$247/mo all-in-one."
   },
   {
     question: "Can I use both Apollo and Cursive together?",
@@ -192,7 +192,7 @@ export default function BlogPost() {
                   <tr className="bg-gray-50">
                     <td className="border border-gray-300 p-3 font-bold">Starting Price</td>
                     <td className="border border-gray-300 p-3 text-green-600">Free tier / $49/user/mo</td>
-                    <td className="border border-gray-300 p-3">$499/month</td>
+                    <td className="border border-gray-300 p-3">From $97/mo</td>
                   </tr>
                   <tr>
                     <td className="border border-gray-300 p-3 font-bold">Built-in Dialer</td>
@@ -534,9 +534,8 @@ export default function BlogPost() {
               automation capabilities. For a 5-person team on Professional, you are looking at $395/month.
             </p>
             <p>
-              Cursive offers per-account pricing starting at $499/month (Growth) to $999/month (Scale). The price
-              includes unlimited users, visitor identification, intent data, enrichment, and multi-channel outreach.
-              There are no per-user charges and no credit limits on core features. Visit the
+              Cursive offers three self-serve monthly plans: Visitor Pixel at $97/mo, Custom Audience at $197/mo, and
+              the Bundle at $247/mo. Plans are month-to-month, cancel anytime, with no per-user charges. Visit the
               <Link href="/pricing"> pricing page</Link> for current plan details.
             </p>
 
@@ -584,8 +583,8 @@ export default function BlogPost() {
                   <h5 className="font-bold text-lg mb-4 text-primary">Cursive (All-in-One)</h5>
                   <div className="space-y-3 text-sm">
                     <div className="flex justify-between">
-                      <span>Growth plan (unlimited users):</span>
-                      <span className="font-bold">$499/mo ($5,988/yr)</span>
+                      <span>Bundle plan (all features):</span>
+                      <span className="font-bold">$247/mo ($2,964/yr)</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Visitor identification:</span>
@@ -601,7 +600,7 @@ export default function BlogPost() {
                     </div>
                     <div className="border-t pt-3 flex justify-between text-lg">
                       <span className="font-bold">Total Annual:</span>
-                      <span className="font-bold text-green-600">$5,988-11,988</span>
+                      <span className="font-bold text-green-600">$1,164-2,964</span>
                     </div>
                     <p className="text-xs text-primary mt-2">
                       All capabilities included. No per-user charges.
@@ -1048,7 +1047,7 @@ export default function BlogPost() {
               "Apollo response rates: 1-3% (cold). Cursive response rates: 20-30% (warm)",
               "Apollo: company-level visitor tracking only. Cursive: person-level identification",
               "Apollo: template-based email sequences. Cursive: AI behavior-based personalization",
-              "Apollo starting price: Free/$49 per user/month. Cursive: $499/month all-in-one"
+              "Apollo starting price: Free/$49 per user/month. Cursive: self-serve from $97/mo (Visitor Pixel), $197/mo (Custom Audience), or $247/mo (Bundle)"
             ]} />
           </MachineSection>
 
@@ -1085,7 +1084,7 @@ export default function BlogPost() {
           <MachineSection title="Related Resources">
             <MachineList items={[
               { label: "Cursive Platform", href: "/platform", description: "Visitor identification, intent data, AI outreach" },
-              { label: "Pricing", href: "/pricing", description: "Transparent pricing starting at $499/month" },
+              { label: "Pricing", href: "/pricing", description: "Transparent pricing from $97/mo" },
               { label: "Visitor Identification", href: "/visitor-identification", description: "70% person-level identification rate" },
               { label: "Free Audit", href: "/free-audit", description: "See how many visitors Cursive can identify on your site" },
               { label: "Cursive vs Instantly", href: "/blog/cursive-vs-instantly", description: "Full-stack vs email-only outreach" },

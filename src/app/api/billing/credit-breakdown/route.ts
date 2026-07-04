@@ -65,7 +65,10 @@ export async function GET() {
 
     const categoryMap: Record<string, { credits: number; count: number }> = {}
 
-    const marketplaceCredits = (purchases ?? []).reduce((sum, p) => sum + (p.credits_used || p.total_price || 0), 0)
+    // Credit-denominated metric: only count credits actually spent. A card/Stripe
+    // purchase has credits_used = 0 (total_price is a DOLLAR figure, not credits),
+    // so falling back to total_price would pollute a "credits" total with dollars.
+    const marketplaceCredits = (purchases ?? []).reduce((sum, p) => sum + (p.credits_used || 0), 0)
     const marketplaceCount = (purchases ?? []).length
 
     if (marketplaceCount > 0) {
@@ -100,7 +103,7 @@ export async function GET() {
     for (const p of purchases ?? []) {
       const day = p.created_at.split('T')[0]
       if (day in dailyMap) {
-        dailyMap[day] += p.credits_used || p.total_price || 0
+        dailyMap[day] += p.credits_used || 0
       }
     }
 
@@ -119,7 +122,7 @@ export async function GET() {
     const top_purchases: TopPurchase[] = (allPurchases ?? []).slice(0, 5).map((p) => ({
       id: p.id,
       description: `${p.total_leads} lead${p.total_leads !== 1 ? 's' : ''} purchased`,
-      credits: p.credits_used || p.total_price || 0,
+      credits: p.credits_used || 0,
       created_at: p.created_at,
     }))
 

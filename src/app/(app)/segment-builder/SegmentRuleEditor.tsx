@@ -27,6 +27,32 @@ import {
   SENIORITY_LEVELS,
 } from './types'
 
+// Option lists per field, shared by the single- and multi-value controls.
+function getFieldOptions(
+  field: FilterRule['field']
+): { value: string; label: string }[] {
+  switch (field) {
+    case 'industry':
+      return INDUSTRIES.map((ind) => ({ value: ind, label: ind }))
+    case 'state':
+      return US_STATES.map((state) => ({ value: state.code, label: state.name }))
+    case 'company_size':
+      return COMPANY_SIZES.map((size) => ({ value: size, label: `${size} employees` }))
+    case 'job_title':
+      return JOB_TITLES.map((title) => ({ value: title, label: title }))
+    case 'seniority':
+      return SENIORITY_LEVELS.map((level) => ({ value: level, label: level }))
+    default:
+      return []
+  }
+}
+
+// Normalize a filter value (string | string[]) to an array for multi-select.
+function toValueArray(value: string | string[]): string[] {
+  if (Array.isArray(value)) return value
+  return value ? [value] : []
+}
+
 interface SegmentRuleEditorProps {
   filters: FilterRule[]
   segmentName: string
@@ -112,9 +138,14 @@ export function SegmentRuleEditor({
                 {/* Operator */}
                 <Select
                   value={filter.operator}
-                  onValueChange={(value: any) =>
-                    onUpdateFilter(filter.id, { operator: value })
-                  }
+                  onValueChange={(value: any) => {
+                    // Keep the value shape consistent with the operator:
+                    // 'in' holds an array (multi-select), others a single string.
+                    const values = toValueArray(filter.value)
+                    const nextValue =
+                      value === 'in' ? values : values[0] ?? ''
+                    onUpdateFilter(filter.id, { operator: value, value: nextValue })
+                  }}
                 >
                   <SelectTrigger className="w-[120px]">
                     <SelectValue />
@@ -125,47 +156,51 @@ export function SegmentRuleEditor({
                   </SelectContent>
                 </Select>
 
-                {/* Value Selector */}
-                <Select
-                  value={Array.isArray(filter.value) ? filter.value[0] : filter.value}
-                  onValueChange={(value) => onUpdateFilter(filter.id, { value })}
-                >
-                  <SelectTrigger className="flex-1">
-                    <SelectValue placeholder="Select value..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {filter.field === 'industry' &&
-                      INDUSTRIES.map((ind) => (
-                        <SelectItem key={ind} value={ind}>
-                          {ind}
+                {/* Value Selector — multi-select chips for 'is one of', single Select otherwise */}
+                {filter.operator === 'in' ? (
+                  <div className="flex flex-1 flex-wrap gap-2">
+                    {getFieldOptions(filter.field).map((opt) => {
+                      const selectedValues = toValueArray(filter.value)
+                      const isSelected = selectedValues.includes(opt.value)
+                      return (
+                        <button
+                          key={opt.value}
+                          type="button"
+                          aria-pressed={isSelected}
+                          onClick={() => {
+                            const next = isSelected
+                              ? selectedValues.filter((v) => v !== opt.value)
+                              : [...selectedValues, opt.value]
+                            onUpdateFilter(filter.id, { value: next })
+                          }}
+                          className={`rounded-full border px-3 py-1 text-sm transition-colors ${
+                            isSelected
+                              ? 'border-primary bg-primary text-primary-foreground'
+                              : 'border-border bg-background text-foreground hover:bg-muted'
+                          }`}
+                        >
+                          {opt.label}
+                        </button>
+                      )
+                    })}
+                  </div>
+                ) : (
+                  <Select
+                    value={Array.isArray(filter.value) ? filter.value[0] : filter.value}
+                    onValueChange={(value) => onUpdateFilter(filter.id, { value })}
+                  >
+                    <SelectTrigger className="flex-1">
+                      <SelectValue placeholder="Select value..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {getFieldOptions(filter.field).map((opt) => (
+                        <SelectItem key={opt.value} value={opt.value}>
+                          {opt.label}
                         </SelectItem>
                       ))}
-                    {filter.field === 'state' &&
-                      US_STATES.map((state) => (
-                        <SelectItem key={state.code} value={state.code}>
-                          {state.name}
-                        </SelectItem>
-                      ))}
-                    {filter.field === 'company_size' &&
-                      COMPANY_SIZES.map((size) => (
-                        <SelectItem key={size} value={size}>
-                          {size} employees
-                        </SelectItem>
-                      ))}
-                    {filter.field === 'job_title' &&
-                      JOB_TITLES.map((title) => (
-                        <SelectItem key={title} value={title}>
-                          {title}
-                        </SelectItem>
-                      ))}
-                    {filter.field === 'seniority' &&
-                      SENIORITY_LEVELS.map((level) => (
-                        <SelectItem key={level} value={level}>
-                          {level}
-                        </SelectItem>
-                      ))}
-                  </SelectContent>
-                </Select>
+                    </SelectContent>
+                  </Select>
+                )}
 
                 {/* Remove Button */}
                 <Button

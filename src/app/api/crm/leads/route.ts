@@ -120,7 +120,10 @@ export async function POST(req: NextRequest) {
       created_at: new Date().toISOString(),
     })
 
-    inngest.send({
+    // AWAITED: an un-awaited send freezes with the serverless instance at
+    // response time and arrives late or never (proven live 2026-07-02). The
+    // .catch keeps event-send failure from failing the request.
+    await inngest.send({
       name: 'lead/created' as const,
       data: { lead_id: lead.id, workspace_id: user.workspaceId, source: validated.source },
     }).catch((err) => safeError('[Create Lead] Inngest send failed:', err))

@@ -43,9 +43,10 @@ type CreateDealFormData = z.infer<typeof createDealSchema>
 interface CreateDealDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
+  onSuccess?: () => void
 }
 
-export function CreateDealDialog({ open, onOpenChange }: CreateDealDialogProps) {
+export function CreateDealDialog({ open, onOpenChange, onSuccess }: CreateDealDialogProps) {
   const toast = useToast()
   const queryClient = useQueryClient()
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -91,6 +92,7 @@ export function CreateDealDialog({ open, onOpenChange }: CreateDealDialogProps) 
       toast.success('Deal created successfully')
       queryClient.invalidateQueries({ queryKey: ['crm', 'deals'] })
       reset()
+      onSuccess?.()
       onOpenChange(false)
     },
     onError: (error: Error) => {

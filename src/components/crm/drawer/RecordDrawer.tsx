@@ -47,7 +47,7 @@ export function RecordDrawer({
           {/* Drawer */}
           <motion.aside
             className={cn(
-              'fixed right-0 top-0 z-50 flex h-full w-96 flex-col border-l border-zinc-200/60 bg-white/95 backdrop-blur-xl shadow-2xl',
+              'fixed right-0 top-0 z-50 flex h-full w-full max-w-96 flex-col border-l border-zinc-200/60 bg-white/95 backdrop-blur-xl shadow-2xl',
               className
             )}
             {...drawerAnimation}

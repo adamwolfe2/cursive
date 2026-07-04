@@ -73,10 +73,17 @@ export default async function WebsiteVisitorsPage() {
       .gte('created_at', since30)
       .not('intent_score_calculated', 'is', null)
       .limit(500),
+    // Filter to the ACTIVE pixel + newest-first-limit-1: a workspace that ever
+    // changed its pixel/domain keeps the old row (deactivated), so an unfiltered
+    // maybeSingle() errors to null on multiple rows and falsely shows "no pixel"
+    // to a live workspace. Mirrors the dashboard's sibling query.
     admin
       .from('audiencelab_pixels')
       .select('pixel_id, domain, trial_status, trial_ends_at, is_active')
       .eq('workspace_id', workspaceId)
+      .eq('is_active', true)
+      .order('created_at', { ascending: false })
+      .limit(1)
       .maybeSingle(),
     // Server-render the first page of visitors too — the client-side /api/visitors
     // fetch was unreliable (cookie dependency), leaving the list blank while the

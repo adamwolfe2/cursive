@@ -11,6 +11,7 @@ import type { Lead } from './lead-card'
 interface LeadsPageTabsProps {
   dailyLeadsProps: {
     leads: Lead[]
+    loadError?: boolean
     todayCount: number
     weekCount: number
     monthCount: number
@@ -44,9 +45,17 @@ function LeadsPageTabsInner({
   const searchParams = useSearchParams()
   const router = useRouter()
 
-  // Managed buyers: just their leads, no marketplace tab chrome.
+  // Managed / funnel buyers: their only leads nav is "Your Audience"
+  // (/leads?tab=all) plus the dashboard CTAs (/leads). Both must show the FULL
+  // audience they paid for — NOT the marketplace "Today" slice, which
+  // leads/page.tsx filters to `delivered_at = today` and is therefore empty on
+  // any day after delivery (audience leads are stamped delivered_at once). The
+  // old managed branch rendered DailyLeadsView, whose internal tab defaults to
+  // "today", so a paid buyer landed on 0 rows and thought nothing was delivered.
+  // AllLeadsTable is a single clean, paginated list of every lead in the
+  // workspace, so the delivered audience is always visible on first paint.
   if (managed) {
-    return <DailyLeadsView {...dailyLeadsProps} />
+    return <AllLeadsTable workspaceId={allLeadsProps.workspaceId} />
   }
 
   const tabParam = searchParams.get('tab') as TabValue | null

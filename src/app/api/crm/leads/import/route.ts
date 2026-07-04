@@ -137,9 +137,12 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Emit lead/created events for all imported leads (non-blocking)
+    // Emit lead/created events for all imported leads.
+    // AWAITED: an un-awaited send freezes with the serverless instance at
+    // response time and arrives late or never (proven live 2026-07-02). The
+    // .catch keeps event-send failure from failing the import response.
     if (createdLeadIds.length > 0) {
-      inngest.send(createdLeadIds.map((id) => ({
+      await inngest.send(createdLeadIds.map((id) => ({
         name: 'lead/created' as const,
         data: { lead_id: id, workspace_id: user.workspace_id, source: 'import' },
       }))).catch((err) => safeError('[Lead Import] Inngest send failed:', err))

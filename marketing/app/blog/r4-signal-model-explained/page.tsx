@@ -591,7 +591,7 @@ export default function BlogPost() {
               </p>
               <div className="flex gap-4 justify-center flex-wrap">
                 <Button asChild size="lg">
-                  <Link href="/get-leads">Get Started Free</Link>
+                  <Link href="/get-leads">Get Started</Link>
                 </Button>
                 <Button asChild variant="outline" size="lg">
                   <Link href="/visitor-estimate">Run Free Estimate</Link>
@@ -661,7 +661,7 @@ export default function BlogPost() {
             intent list is not just list size — it is the difference between a sales team that trusts and
             scales the workflow and one that abandons it.
 
-            <MachineLink href="/get-leads">Get Started Free with Cursive</MachineLink>
+            <MachineLink href="/get-leads">Get Started with Cursive</MachineLink>
             <MachineLink href="/visitor-estimate">Run a Free Visitor Estimate</MachineLink>
             <MachineLink href="/blog/why-intent-data-fails">Why Intent Data Fails</MachineLink>
             <MachineLink href="/blog/intent-score-acceleration">Intent Score Acceleration</MachineLink>

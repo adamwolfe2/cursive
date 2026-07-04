@@ -328,6 +328,7 @@ export function ExitIntentPopup() {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="Enter your work email"
+                        aria-label="Work email"
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
                         required
                         disabled={isSubmitting}

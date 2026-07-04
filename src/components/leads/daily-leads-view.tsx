@@ -24,6 +24,8 @@ import {
   ChevronRight,
   Target,
   CheckSquare,
+  AlertTriangle,
+  RefreshCw,
 } from 'lucide-react'
 import { cn } from '@/lib/design-system'
 import { useDashboard } from '@/lib/contexts/dashboard-context'
@@ -39,6 +41,9 @@ import { EnrichLeadPanel } from '@/components/leads/EnrichLeadPanel'
 
 interface DailyLeadsViewProps {
   leads: Lead[]
+  /** True when the server-side leads query failed — render an error state
+   *  instead of a false "no leads today" empty state. */
+  loadError?: boolean
   todayCount: number
   weekCount: number
   monthCount: number
@@ -60,6 +65,7 @@ const ENRICHMENT_FILTERS = [
 
 export function DailyLeadsView({
   leads: initialLeads,
+  loadError = false,
   todayCount,
   weekCount,
   monthCount,
@@ -523,7 +529,25 @@ export function DailyLeadsView({
 
       {/* Tab content */}
       {tab === 'today' &&
-        (filteredToday.length === 0 ? (
+        (loadError ? (
+          <div className="rounded-xl border border-red-200 bg-red-50 py-14 text-center">
+            <AlertTriangle className="mx-auto mb-3 h-12 w-12 text-red-500" />
+            <h3 className="mb-1 font-semibold text-red-900">
+              Couldn&apos;t load your leads
+            </h3>
+            <p className="mx-auto max-w-sm text-sm text-red-700">
+              This is a temporary loading problem, not an empty day. Your delivered
+              leads are safe — please retry.
+            </p>
+            <button
+              onClick={() => router.refresh()}
+              className="mt-4 inline-flex items-center gap-1.5 rounded-lg border border-red-300 px-3 py-2 text-sm font-medium text-red-700 transition-colors hover:bg-red-100"
+            >
+              <RefreshCw className="h-3.5 w-3.5" />
+              Retry
+            </button>
+          </div>
+        ) : filteredToday.length === 0 ? (
           <div className="rounded-xl border border-dashed border-border bg-card py-14 text-center">
             <Calendar className="mx-auto mb-3 h-12 w-12 text-muted-foreground/40" />
             <h3 className="mb-1 font-semibold text-foreground">

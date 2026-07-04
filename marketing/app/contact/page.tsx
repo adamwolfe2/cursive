@@ -13,6 +13,7 @@ import { HumanView, MachineView, MachineContent, MachineSection, MachineList } f
 import Link from "next/link"
 import { Breadcrumbs } from "@/components/Breadcrumbs"
 import { GET_LEADS_URL, BOOKING_URL } from "@/lib/cta"
+import { trackFormSubmission, trackLeadCaptured } from "@/lib/analytics"
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
@@ -131,6 +132,10 @@ export default function ContactPage() {
 
       setStatus("success")
       setFormData({ name: "", email: "", company: "", message: "" })
+
+      // Track conversion events
+      trackFormSubmission("contact_form")
+      trackLeadCaptured("contact_form")
     } catch (error) {
       setStatus("error")
       setErrorMessage("An unexpected error occurred. Please try again later.")
@@ -481,7 +486,7 @@ export default function ContactPage() {
                       <IconChip Icon={Calendar} />
                       <h3 className="mt-5 text-lg font-medium text-gray-900">Book a call</h3>
                       <p className="mt-3 text-sm text-gray-600 leading-relaxed">
-                        Grab a 15-minute slot. We&apos;ll answer questions and walk you through a live demo.
+                        Grab a 30-minute slot. We&apos;ll answer questions and walk you through a live demo.
                       </p>
                       <span className="mt-3 inline-flex items-center gap-1 text-sm text-primary">
                         View available times <ArrowRight className="w-3.5 h-3.5" />
@@ -550,7 +555,7 @@ export default function ContactPage() {
           <DashboardCTA
             headline="Prefer to"
             subheadline="Talk Live?"
-            description="Book a 15-minute call and we'll answer all your questions. Or just pick a plan from $97/mo and start today."
+            description="Book a 30-minute call and we'll answer all your questions. Or just pick a plan from $97/mo and start today."
           />
         </main>
       </HumanView>
@@ -597,7 +602,7 @@ export default function ContactPage() {
               {
                 label: "Book a Call",
                 href: "https://cal.com/cursiveteam/30min",
-                description: "Schedule a 15-minute intro call. We'll answer questions and show you a demo."
+                description: "Schedule a 30-minute intro call. We'll answer questions and show you a demo."
               },
               {
                 label: "Email",

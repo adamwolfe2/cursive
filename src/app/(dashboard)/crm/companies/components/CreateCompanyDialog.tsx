@@ -52,9 +52,10 @@ type CreateCompanyFormData = z.infer<typeof createCompanySchema>
 interface CreateCompanyDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
+  onSuccess?: () => void
 }
 
-export function CreateCompanyDialog({ open, onOpenChange }: CreateCompanyDialogProps) {
+export function CreateCompanyDialog({ open, onOpenChange, onSuccess }: CreateCompanyDialogProps) {
   const toast = useToast()
   const queryClient = useQueryClient()
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -96,6 +97,7 @@ export function CreateCompanyDialog({ open, onOpenChange }: CreateCompanyDialogP
       toast.success('Company created successfully')
       queryClient.invalidateQueries({ queryKey: ['crm', 'companies'] })
       reset()
+      onSuccess?.()
       onOpenChange(false)
     },
     onError: (error: Error) => {

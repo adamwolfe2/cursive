@@ -150,7 +150,7 @@ export async function provisionFunnelWorkspace(
     }
   }
 
-  // 1. Existing platform user with this email? Reuse their workspace entirely.
+  // 1. Existing platform user with this email?
   const { data: existingUser } = await admin
     .from('users')
     .select('id, auth_user_id, workspace_id')
@@ -158,17 +158,48 @@ export async function provisionFunnelWorkspace(
     .maybeSingle()
 
   if (existingUser?.workspace_id) {
-    await linkOrderToWorkspace(admin, order.id, existingUser.workspace_id)
-    safeLog('[funnel/provision] reused existing user workspace', {
-      order_id: order.id,
-      workspace_id: existingUser.workspace_id,
-    })
-    return {
-      workspaceId: existingUser.workspace_id,
-      userId: existingUser.id,
-      authUserId: existingUser.auth_user_id,
-      created: false,
+    // SECURITY (P0 account-takeover fix): the Stripe checkout email is fully
+    // buyer-controlled and UNVERIFIED. We must NEVER auto-link a paid funnel
+    // order to — or mint a session into — a pre-existing workspace on the
+    // strength of that email. Doing so let an attacker pay $97, type a victim's
+    // email at checkout, and be handed a real session as the victim (full
+    // cross-tenant takeover).
+    //
+    // The ONLY safe reuse is a workspace that is itself funnel-sourced
+    // (settings.source === 'funnel_order') — i.e. a prior funnel purchase by the
+    // same pay-first buyer, which lives on the same restricted funnel surface at
+    // the same (un)trust level. For ANY other (marketplace/admin) workspace we
+    // refuse: create/link nothing and return null. The buyer must prove they own
+    // the mailbox by clicking a REAL magic link (see dashboard-login) — the
+    // funnel never grants a browser session to an email that already owns a
+    // non-funnel workspace.
+    const { data: existingWs } = await admin
+      .from('workspaces')
+      .select('settings')
+      .eq('id', existingUser.workspace_id)
+      .maybeSingle()
+    const existingSource =
+      (existingWs?.settings as { source?: string } | null)?.source ?? null
+
+    if (existingSource === 'funnel_order') {
+      await linkOrderToWorkspace(admin, order.id, existingUser.workspace_id)
+      safeLog('[funnel/provision] reused existing funnel workspace', {
+        order_id: order.id,
+        workspace_id: existingUser.workspace_id,
+      })
+      return {
+        workspaceId: existingUser.workspace_id,
+        userId: existingUser.id,
+        authUserId: existingUser.auth_user_id,
+        created: false,
+      }
     }
+
+    safeLog(
+      '[funnel/provision] refused reuse — email already owns a non-funnel workspace (unverified email, no auto-link/session)',
+      { order_id: order.id }
+    )
+    return null
   }
 
   // 2. Fresh provision — auth user first (public.users.auth_user_id is NOT NULL).
@@ -290,13 +321,13 @@ export async function pushFunnelAudienceToWorkspace(
     return false
   }
 
-  // Claim the push first (idempotent) so a retry/double-deliver can't enqueue
-  // twice. An admin force-sync (a deliberate, real Studio audience) bypasses it.
-  if (!opts.force) {
-    const claimed = await markAudiencePushed(order.id)
-    if (!claimed) return false
-  }
-
+  // Send FIRST, then claim (send-then-mark). Burning the idempotency marker
+  // before the send meant a failed/aborted inngest.send left audience_pushed_at
+  // set with no event ever emitted — permanently blocking every non-force
+  // retry (buyer route AND admin deliver) and silently losing a paid audience.
+  // Now the marker is only set after the send resolves, so a failure leaves the
+  // order re-pushable. The forward-only guard at the top of this function still
+  // prevents a successful double-push. An admin force-sync bypasses the marker.
   try {
     await inngest.send({
       name: 'audiencelab/provision-workspace-audience',
@@ -310,15 +341,19 @@ export async function pushFunnelAudienceToWorkspace(
         ...(opts.audienceId ? { audienceId: opts.audienceId } : {}),
       },
     })
-    safeLog('[funnel/provision] audience push enqueued', {
-      order_id: order.id,
-      workspace_id: order.workspace_id,
-    })
-    return true
   } catch (err) {
     safeError('[funnel/provision] inngest send failed:', err)
     return false
   }
+
+  if (!opts.force) {
+    await markAudiencePushed(order.id)
+  }
+  safeLog('[funnel/provision] audience push enqueued', {
+    order_id: order.id,
+    workspace_id: order.workspace_id,
+  })
+  return true
 }
 
 /**

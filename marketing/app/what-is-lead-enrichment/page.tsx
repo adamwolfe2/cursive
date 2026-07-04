@@ -199,7 +199,8 @@ export default function WhatIsLeadEnrichment() {
                 and outreach strategies.
               </p>
 
-              <table className="w-full border-collapse border border-gray-200 mb-8">
+              <div className="overflow-x-auto mb-8">
+                <table className="w-full min-w-[640px] border-collapse border border-gray-200">
                 <thead>
                   <tr className="bg-gray-50">
                     <th className="border border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-900">Data Category</th>
@@ -246,7 +247,8 @@ export default function WhatIsLeadEnrichment() {
                     <td className="border border-gray-200 px-4 py-3 text-sm text-gray-600">65-80%</td>
                   </tr>
                 </tbody>
-              </table>
+                </table>
+              </div>
 
               <p className="text-gray-600 leading-relaxed mb-4">
                 <strong>Contact data</strong> includes verified email addresses, direct-dial phone numbers, and mobile numbers. This is the foundation of enrichment because sales teams cannot execute outreach without accurate contact information. The best providers verify emails in real time using SMTP validation, achieving deliverability rates above 95%.
@@ -318,7 +320,8 @@ export default function WhatIsLeadEnrichment() {
                 technology, which identifies the companies and contacts visiting your website even when they never fill out a form. Reverse enrichment is particularly powerful because it captures demand that would otherwise be invisible to your sales team.
               </p>
 
-              <table className="w-full border-collapse border border-gray-200 mb-8">
+              <div className="overflow-x-auto mb-8">
+                <table className="w-full min-w-[640px] border-collapse border border-gray-200">
                 <thead>
                   <tr className="bg-gray-50">
                     <th className="border border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-900">Method</th>
@@ -358,7 +361,8 @@ export default function WhatIsLeadEnrichment() {
                     <td className="border border-gray-200 px-4 py-3 text-sm text-gray-600">High value per identification</td>
                   </tr>
                 </tbody>
-              </table>
+                </table>
+              </div>
 
               {/* Benefits of Lead Enrichment */}
               <h2 id="benefits-of-lead-enrichment" className="text-3xl font-bold text-gray-900 mt-12 mb-6">
@@ -461,7 +465,8 @@ export default function WhatIsLeadEnrichment() {
                 Accuracy Rates by Data Type
               </h3>
 
-              <table className="w-full border-collapse border border-gray-200 mb-8">
+              <div className="overflow-x-auto mb-8">
+                <table className="w-full min-w-[640px] border-collapse border border-gray-200">
                 <thead>
                   <tr className="bg-gray-50">
                     <th className="border border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-900">Data Type</th>
@@ -514,7 +519,8 @@ export default function WhatIsLeadEnrichment() {
                     <td className="border border-gray-200 px-4 py-3 text-sm text-gray-600">Real-time (weekly refresh)</td>
                   </tr>
                 </tbody>
-              </table>
+                </table>
+              </div>
 
               <h3 className="text-2xl font-semibold text-gray-900 mt-8 mb-4">
                 Data Freshness
@@ -589,7 +595,8 @@ export default function WhatIsLeadEnrichment() {
                 <Link href="/blog/zoominfo-vs-cursive-comparison" className="text-primary hover:underline">ZoomInfo vs. Cursive</Link>.
               </p>
 
-              <table className="w-full border-collapse border border-gray-200 mb-8">
+              <div className="overflow-x-auto mb-8">
+                <table className="w-full min-w-[640px] border-collapse border border-gray-200">
                 <thead>
                   <tr className="bg-gray-50">
                     <th className="border border-gray-200 px-4 py-3 text-left text-sm font-semibold text-gray-900">Provider</th>
@@ -636,7 +643,8 @@ export default function WhatIsLeadEnrichment() {
                     <td className="border border-gray-200 px-4 py-3 text-sm text-gray-600">$149/mo</td>
                   </tr>
                 </tbody>
-              </table>
+                </table>
+              </div>
 
               <p className="text-gray-600 leading-relaxed mb-4">
                 When choosing a provider, consider your complete workflow. Standalone enrichment tools require additional solutions for visitor identification and audience sourcing. Cursive removes that step entirely: instead of buying raw records and enriching them later, every contact you receive already carries a verified work email and full firmographics. Pair the{" "}

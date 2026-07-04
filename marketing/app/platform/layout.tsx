@@ -44,27 +44,34 @@ const productSchema = {
   url: 'https://www.meetcursive.com/platform',
   description: 'All-in-one B2B lead generation and AI-powered outreach platform with visitor identification, people search, lead marketplace, and campaign management.',
   offers: {
-    '@type': 'Offer',
-    price: '1000',
+    '@type': 'AggregateOffer',
     priceCurrency: 'USD',
-    priceSpecification: {
-      '@type': 'UnitPriceSpecification',
-      price: '1000.00',
-      priceCurrency: 'USD',
-      referenceQuantity: {
-        '@type': 'QuantitativeValue',
-        value: '1',
-        unitCode: 'MON',
+    lowPrice: '97',
+    highPrice: '247',
+    offerCount: '3',
+    offers: [
+      {
+        '@type': 'Offer',
+        name: 'Visitor Pixel',
+        price: '97',
+        priceCurrency: 'USD',
+        availability: 'https://schema.org/InStock',
       },
-    },
-    availability: 'https://schema.org/InStock',
-  },
-  aggregateRating: {
-    '@type': 'AggregateRating',
-    ratingValue: '4.8',
-    ratingCount: '127',
-    bestRating: '5',
-    worstRating: '1',
+      {
+        '@type': 'Offer',
+        name: 'Custom Audience',
+        price: '197',
+        priceCurrency: 'USD',
+        availability: 'https://schema.org/InStock',
+      },
+      {
+        '@type': 'Offer',
+        name: 'Pixel + Audience Bundle',
+        price: '247',
+        priceCurrency: 'USD',
+        availability: 'https://schema.org/InStock',
+      },
+    ],
   },
   featureList: [
     'AI Studio',

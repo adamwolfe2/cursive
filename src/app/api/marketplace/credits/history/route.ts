@@ -56,12 +56,28 @@ export async function GET(req: NextRequest) {
       .order('created_at', { ascending: false })
     if (dateFilter) enrichmentsQuery = enrichmentsQuery.gte('created_at', dateFilter)
 
-    // Execute all three queries in parallel
-    const [creditsResult, purchasesResult, enrichmentsResult] = await Promise.all([
-      balanceQuery,
-      purchasesQuery,
-      enrichmentsQuery,
-    ])
+    // Marketplace lead purchases paid with credits are a whole class of debits
+    // that never touch enrichment_log. Omitting them made every historical
+    // running balance fail to reconcile and understated total credits used.
+    // Only credits_used counts here (card/Stripe purchases spend 0 credits;
+    // for 'mixed' payments credits_used is the credit portion).
+    let marketplaceQuery = adminClient
+      .from('marketplace_purchases')
+      .select('id, total_leads, credits_used, payment_method, created_at, completed_at')
+      .eq('buyer_workspace_id', workspaceId)
+      .eq('status', 'completed')
+      .in('payment_method', ['credits', 'mixed'])
+      .order('created_at', { ascending: false })
+    if (dateFilter) marketplaceQuery = marketplaceQuery.gte('created_at', dateFilter)
+
+    // Execute all queries in parallel
+    const [creditsResult, purchasesResult, enrichmentsResult, marketplaceResult] =
+      await Promise.all([
+        balanceQuery,
+        purchasesQuery,
+        enrichmentsQuery,
+        marketplaceQuery,
+      ])
 
     const actualCurrentBalance = creditsResult.data?.balance ?? 0
 
@@ -77,6 +93,12 @@ export async function GET(req: NextRequest) {
       // Non-fatal — proceed with just purchases
     }
     const enrichments = enrichmentsResult.data
+
+    if (marketplaceResult.error) {
+      safeError('[Credit History] Failed to fetch marketplace purchases:', marketplaceResult.error)
+      // Non-fatal — proceed without marketplace debits
+    }
+    const marketplacePurchases = marketplaceResult.data
 
     // Build combined transaction list
     type Transaction = {
@@ -112,6 +134,18 @@ export async function GET(req: NextRequest) {
         description: `Lead enrichment`,
         credits_in: 0,
         credits_out: enrichment.credits_used || 1,
+        type: 'usage',
+      })
+    }
+
+    // Add marketplace lead-purchase transactions (credits out)
+    for (const mp of marketplacePurchases || []) {
+      transactions.push({
+        id: `marketplace-${mp.id}`,
+        date: mp.completed_at || mp.created_at,
+        description: `Marketplace lead purchase — ${mp.total_leads} lead${mp.total_leads !== 1 ? 's' : ''}`,
+        credits_in: 0,
+        credits_out: mp.credits_used || 0,
         type: 'usage',
       })
     }

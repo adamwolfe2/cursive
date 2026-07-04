@@ -34,7 +34,7 @@ export function ViewToggle() {
     <div className="inline-flex items-center bg-gray-100 rounded-full p-1 gap-1 border border-gray-200">
       <button
         onClick={(e) => handleViewChange(e, 'human')}
-        className={`relative px-4 py-1.5 text-sm font-medium rounded-full transition-colors ${
+        className={`relative px-4 py-2.5 text-sm font-medium rounded-full transition-colors ${
           view === 'human'
             ? 'text-white'
             : 'text-gray-600 hover:text-gray-900'
@@ -52,7 +52,7 @@ export function ViewToggle() {
       </button>
       <button
         onClick={(e) => handleViewChange(e, 'machine')}
-        className={`relative px-4 py-1.5 text-sm font-medium rounded-full transition-colors ${
+        className={`relative px-4 py-2.5 text-sm font-medium rounded-full transition-colors ${
           view === 'machine'
             ? 'text-white'
             : 'text-gray-600 hover:text-gray-900'

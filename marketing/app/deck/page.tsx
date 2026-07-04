@@ -949,7 +949,7 @@ function PixelInstallModal({ onClose }: { onClose: () => void }) {
             <div className="bg-primary/5 border border-primary/20 rounded-lg p-3 mb-4 text-xs text-gray-600 space-y-1">
               <p className="font-semibold text-gray-700 mb-1.5">What happens next:</p>
               <p>→ Prospect installs snippet before &lt;/head&gt; on their site</p>
-              <p>→ They sign up at <strong>leads.meetcursive.com</strong> to claim their trial</p>
+              <p>→ They sign up at <strong>leads.meetcursive.com</strong> on a plan from $97/mo</p>
               <p>→ Identified leads appear in their dashboard within minutes</p>
             </div>
 
@@ -1159,7 +1159,7 @@ function DeckGate({ onUnlock }: { onUnlock: () => void }) {
                 'Works on WordPress, Webflow, Shopify — any stack',
                 'No engineering sprint. One script tag in your <head>.',
                 'See your first identified visitor within 5 minutes',
-                '14-day free trial. No credit card required.',
+                'Self-serve plans from $97/mo. Cancel anytime.',
               ].map(item => (
                 <div key={item} className="flex items-start gap-2.5 text-sm text-gray-600">
                   <span className="text-primary font-bold flex-shrink-0 mt-0.5">✓</span>
@@ -1258,7 +1258,7 @@ export default function DeckPage() {
   const pct = ((current + 1) / SLIDE_COUNT) * 100
 
   return (
-    <div className="bg-white" style={{ position: 'fixed', inset: 0, zIndex: 100, overflowY: 'auto' }}>
+    <main className="bg-white" style={{ position: 'fixed', inset: 0, zIndex: 100, overflowY: 'auto' }}>
       <style>{`
         @keyframes deckSlideIn {
           from { opacity: 0; transform: translateY(10px); }
@@ -1325,6 +1325,6 @@ export default function DeckPage() {
           />
         ))}
       </div>
-    </div>
+    </main>
   )
 }

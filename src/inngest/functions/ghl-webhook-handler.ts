@@ -29,7 +29,7 @@ export const ghlWebhookHandler = inngest.createFunction(
     name: 'GHL Inbound Webhook Router',
     retries: 3,
     timeouts: { finish: '1m' },
-    concurrency: [{ limit: 10 }],
+    concurrency: [{ limit: 5 }],
   },
   { event: 'ghl/webhook.received' },
   async ({ event, step }) => {

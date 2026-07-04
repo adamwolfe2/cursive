@@ -152,15 +152,42 @@ export const leadEnrichment = inngest.createFunction(
       void (async () => {
         try {
           const adminLog = createAdminClient()
-          await adminLog.from('enrichment_log').insert({
-            workspace_id,
-            lead_id,
-            credits_charged: 1,
-            enrichment_source: 'clay',
-            fields_enriched: fieldsEnriched.length > 0 ? fieldsEnriched : null,
-          })
-        } catch {
-          // Non-blocking — don't let logging failures disrupt enrichment
+
+          // enrichment_log.user_id and status are NOT NULL (migration
+          // 20260219000003). This automated pipeline has no acting user, so
+          // attribute the row to the workspace's owner/earliest user. Without
+          // both fields the insert violates NOT NULL and is lost — leaving the
+          // usage side of the credit ledger permanently empty.
+          const { data: wsUser } = await adminLog
+            .from('users')
+            .select('id')
+            .eq('workspace_id', workspace_id)
+            .order('created_at', { ascending: true })
+            .limit(1)
+            .maybeSingle()
+
+          const { error: logError } = await adminLog
+            .from('enrichment_log')
+            .insert({
+              workspace_id,
+              lead_id,
+              user_id: wsUser?.id ?? null,
+              status: 'success',
+              credits_used: 1,
+              credits_charged: 1,
+              enrichment_source: 'clay',
+              fields_enriched: fieldsEnriched.length > 0 ? fieldsEnriched : null,
+            })
+
+          if (logError) {
+            // Surface (don't swallow) — a schema mismatch here silently erases
+            // enrichment usage history for billing transparency.
+            logger.error('Failed to write enrichment_log:', logError)
+          }
+        } catch (err) {
+          // Non-blocking — don't let logging failures disrupt enrichment,
+          // but log so the failure is visible.
+          logger.error('Failed to write enrichment_log:', err)
         }
       })()
     })

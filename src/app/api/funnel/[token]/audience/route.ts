@@ -94,16 +94,20 @@ export async function POST(
     // into the buyer's dashboard, instead of waiting for a manual admin
     // delivery. Reuses the idempotent Phase 4 push (guards on
     // audience_pushed_at), so a later "mark delivered" never double-pushes.
-    // Fire-and-forget + non-fatal: the Google Sheet remains the canonical
-    // deliverable, so submit must succeed regardless.
-    pushFunnelAudienceToWorkspace(updated).catch((err) =>
+    //
+    // AWAITED (not fire-and-forget): a serverless lambda freezes the instant the
+    // response is returned, dropping any un-awaited promise — the same incident
+    // pattern that silently lost audience pushes and admin alerts before. Each
+    // call keeps its own .catch so a failure logs but never 500s the buyer's
+    // submit (the Google Sheet remains the canonical deliverable).
+    await pushFunnelAudienceToWorkspace(updated).catch((err) =>
       safeError('[funnel/audience] auto audience push failed:', err)
     )
 
-    // Notify admin via Slack (existing channel) + email (new). Both are
-    // fire-and-forget — buyer's submit must succeed regardless of admin
-    // notification infrastructure.
-    sendSlackAlert({
+    // Notify admin via Slack (existing channel) + email (new). Awaited for the
+    // same reason — ops must actually learn an ICP was submitted (the '24h or
+    // free' guarantee) — but non-fatal via .catch.
+    await sendSlackAlert({
       type: 'pipeline_update',
       severity: 'info',
       message: `Funnel audience submitted — needs fulfillment (${order.offer_slug})`,
@@ -115,7 +119,7 @@ export async function POST(
       },
     }).catch((err) => safeError('[funnel/audience] slack alert failed:', err))
 
-    sendFunnelAdminNotificationEmail(updated).catch((err) =>
+    await sendFunnelAdminNotificationEmail(updated).catch((err) =>
       safeError('[funnel/audience] admin email failed:', err)
     )
 

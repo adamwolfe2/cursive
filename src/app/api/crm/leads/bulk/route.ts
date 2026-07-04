@@ -45,12 +45,12 @@ export async function POST(request: NextRequest) {
           .enum(['new', 'contacted', 'qualified', 'won', 'lost'])
           .parse(validated.data.status)
 
-        await repo.bulkUpdate(validated.ids, { status }, workspaceId)
+        const count = await repo.bulkUpdate(validated.ids, { status }, workspaceId)
 
         return NextResponse.json({
           success: true,
-          message: `Updated status for ${validated.ids.length} leads`,
-          count: validated.ids.length,
+          message: `Updated status for ${count} leads`,
+          count,
         })
       }
 
@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
           .nullable()
           .parse(validated.data.assigned_user_id)
 
-        await repo.bulkUpdate(
+        const count = await repo.bulkUpdate(
           validated.ids,
           { assigned_user_id: assignedUserId },
           workspaceId
@@ -69,8 +69,8 @@ export async function POST(request: NextRequest) {
 
         return NextResponse.json({
           success: true,
-          message: `Assigned ${validated.ids.length} leads`,
-          count: validated.ids.length,
+          message: `Assigned ${count} leads`,
+          count,
         })
       }
 
@@ -104,8 +104,8 @@ export async function POST(request: NextRequest) {
 
         return NextResponse.json({
           success: true,
-          message: `Added tags to ${validated.ids.length} leads`,
-          count: validated.ids.length,
+          message: `Added tags to ${leads?.length ?? 0} leads`,
+          count: leads?.length ?? 0,
         })
       }
 
@@ -139,18 +139,18 @@ export async function POST(request: NextRequest) {
 
         return NextResponse.json({
           success: true,
-          message: `Removed tags from ${validated.ids.length} leads`,
-          count: validated.ids.length,
+          message: `Removed tags from ${leads?.length ?? 0} leads`,
+          count: leads?.length ?? 0,
         })
       }
 
       case 'delete': {
-        await repo.bulkDelete(validated.ids, workspaceId)
+        const count = await repo.bulkDelete(validated.ids, workspaceId)
 
         return NextResponse.json({
           success: true,
-          message: `Deleted ${validated.ids.length} leads`,
-          count: validated.ids.length,
+          message: `Deleted ${count} leads`,
+          count,
         })
       }
 

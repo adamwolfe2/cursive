@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
-import { createAdminClient } from '@/lib/supabase/admin'
 import { redirect } from 'next/navigation'
 import { LeadsPageTabs } from '@/components/leads/leads-page-tabs'
 import { safeError } from '@/lib/utils/log-sanitizer'
@@ -18,7 +17,7 @@ export default async function LeadsPage() {
   const { data: userProfile, error: profileError } = await supabase
     .from('users')
     .select(
-      'id, workspace_id, industry_segment, location_segment, daily_lead_limit, plan, full_name, email'
+      'id, workspace_id, industry_segment, location_segment, daily_lead_limit, plan, full_name, email, workspaces(settings)'
     )
     .eq('auth_user_id', user.id)
     .maybeSingle()
@@ -64,20 +63,35 @@ export default async function LeadsPage() {
         .gte('delivered_at', `${monthStart}T00:00:00`),
     ])
 
-  // Funnel buyers (workspace has a funnel_orders row) get the simplified
-  // single-view leads page — no Today/Assigned/All tabs.
-  const { data: funnelOrderRow } = await createAdminClient()
-    .from('funnel_orders')
-    .select('id')
-    .eq('workspace_id', userProfile.workspace_id)
-    .limit(1)
-    .maybeSingle()
+  // Distinguish a real query failure from a genuinely empty day. Without this,
+  // a failed leads query (e.g. column drift) renders as an innocent empty view.
+  if (todaysLeadsResult.error || weekCountResult.error || monthCountResult.error) {
+    safeError('[LeadsPage]', 'Failed to fetch leads:', {
+      today: todaysLeadsResult.error,
+      week: weekCountResult.error,
+      month: monthCountResult.error,
+    })
+  }
+  const leadsLoadError = Boolean(
+    todaysLeadsResult.error || weekCountResult.error || monthCountResult.error
+  )
+
+  // Funnel buyers get the simplified single-view leads page — no Today/Assigned/
+  // All tabs. Gate on the workspace being FUNNEL-SOURCED (settings.source ===
+  // 'funnel_order'), NOT on the mere existence of a funnel_orders row: an
+  // existing marketplace customer who buys the add-on has a funnel_orders row
+  // but must keep their full tabbed leads UX.
+  const workspaceSettings = (
+    userProfile as { workspaces?: { settings?: { source?: string } | null } | null }
+  ).workspaces?.settings
+  const managed = workspaceSettings?.source === 'funnel_order'
 
   return (
     <LeadsPageTabs
-      managed={!!funnelOrderRow}
+      managed={managed}
       dailyLeadsProps={{
         leads: todaysLeadsResult.data || [],
+        loadError: leadsLoadError,
         todayCount: todaysLeadsResult.count || 0,
         weekCount: weekCountResult.count || 0,
         monthCount: monthCountResult.count || 0,

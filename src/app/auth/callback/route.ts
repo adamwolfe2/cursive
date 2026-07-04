@@ -145,9 +145,16 @@ export async function GET(request: NextRequest) {
         .eq('auth_user_id', authUser.id)
         .maybeSingle()
 
-      // Redirect to welcome page if no user profile exists
+      // Redirect to welcome page if no user profile exists.
+      // Preserve any query params carried in `next` (especially ?source=marketplace)
+      // so marketplace signups route to the marketplace surface instead of the
+      // business /setup wizard. The path is hardcoded to /welcome, so there is no
+      // open-redirect risk — only the (URL-encoded) query params are carried over.
       if (!user || !user.workspace_id) {
-        redirectUrl = '/welcome?returning=true'
+        const nextQuery = next.includes('?') ? next.split('?')[1] : ''
+        const welcomeParams = new URLSearchParams(nextQuery)
+        welcomeParams.set('returning', 'true')
+        redirectUrl = `/welcome?${welcomeParams.toString()}`
       }
     }
 

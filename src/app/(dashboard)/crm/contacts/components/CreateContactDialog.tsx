@@ -45,9 +45,10 @@ type CreateContactFormData = z.infer<typeof createContactSchema>
 interface CreateContactDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
+  onSuccess?: () => void
 }
 
-export function CreateContactDialog({ open, onOpenChange }: CreateContactDialogProps) {
+export function CreateContactDialog({ open, onOpenChange, onSuccess }: CreateContactDialogProps) {
   const toast = useToast()
   const queryClient = useQueryClient()
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -89,6 +90,7 @@ export function CreateContactDialog({ open, onOpenChange }: CreateContactDialogP
       toast.success('Contact created successfully')
       queryClient.invalidateQueries({ queryKey: ['crm', 'contacts'] })
       reset()
+      onSuccess?.()
       onOpenChange(false)
     },
     onError: (error: Error) => {

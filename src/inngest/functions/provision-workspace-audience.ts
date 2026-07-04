@@ -60,6 +60,56 @@ import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 const LOG_PREFIX = '[AL Provision Workspace]'
 const MAX_INITIAL_LEADS = 200 // First-time pull cap — generous for new users
 
+/**
+ * Resolve a funnel order's audience-building banner to a terminal state.
+ *
+ * The dashboard's "Building your audience — 95%" bar is driven purely by
+ * `funnel_orders.audience_delivered_at` being null (dashboard/page.tsx). If a
+ * provision run finishes with ZERO deliverable leads — empty segment, unfiltered
+ * abort, ICP post-filter dropped everything, or a hard config failure — nothing
+ * ever stamps `audience_delivered_at`, so the paid buyer's bar freezes at 95%
+ * forever with no error state (only a manual admin markOrderDelivered recovers).
+ *
+ * This stamps `audience_delivered_at` on ANY terminal outcome so the bar always
+ * resolves. Forward-only (`.is(..., null)`) so it never clobbers a real delivery
+ * timestamp, and scoped to `workspace_id` — non-funnel signup provisions have no
+ * funnel_orders row, so this is a safe no-op for them. Ops is still alerted via
+ * Slack on the failure paths, so a zero-result run is visible for follow-up.
+ */
+async function resolveFunnelAudienceTerminal(
+  workspaceId: string,
+  reason: string
+): Promise<void> {
+  try {
+    const supabase = createAdminClient()
+    const { data: updated, error } = await supabase
+      .from('funnel_orders')
+      .update({ audience_delivered_at: new Date().toISOString() })
+      .eq('workspace_id', workspaceId)
+      .is('audience_delivered_at', null)
+      .select('id')
+
+    if (error) {
+      safeError(
+        `${LOG_PREFIX} terminal audience-resolution flip failed (non-fatal)`,
+        error
+      )
+      return
+    }
+
+    if (updated && updated.length > 0) {
+      safeLog(
+        `${LOG_PREFIX} Resolved audience-building banner to terminal state (${reason}) for ${updated.length} funnel order(s) on workspace ${workspaceId}`
+      )
+    }
+  } catch (err) {
+    safeError(
+      `${LOG_PREFIX} terminal audience-resolution flip threw (non-fatal)`,
+      err
+    )
+  }
+}
+
 export const provisionWorkspaceAudience = inngest.createFunction(
   {
     id: 'provision-workspace-audience',
@@ -114,6 +164,10 @@ export const provisionWorkspaceAudience = inngest.createFunction(
         metadata: { workspace_id, user_id },
       }).catch((err) => safeError(`${LOG_PREFIX} Slack alert failed:`, err))
       safeLog(`${LOG_PREFIX} AUDIENCELAB_ACCOUNT_API_KEY not configured, skipping`)
+      // Don't freeze a funnel buyer's dashboard at 95% because of a config gap.
+      await step.run('resolve-terminal-no-api-key', () =>
+        resolveFunnelAudienceTerminal(workspace_id, 'no_api_key')
+      )
       return { skipped: true, reason: 'No API key' }
     }
 
@@ -204,6 +258,9 @@ export const provisionWorkspaceAudience = inngest.createFunction(
 
     if (!audienceResult.audienceId) {
       safeLog(`${LOG_PREFIX} No audience created (empty segment or AL unavailable)`)
+      await step.run('resolve-terminal-no-audience', () =>
+        resolveFunnelAudienceTerminal(workspace_id, 'empty_segment_or_create_failed')
+      )
       return { skipped: true, reason: 'Empty segment or audience creation failed' }
     }
 
@@ -272,12 +329,18 @@ export const provisionWorkspaceAudience = inngest.createFunction(
     }
 
     if (aborted) {
+      await step.run('resolve-terminal-unfiltered', () =>
+        resolveFunnelAudienceTerminal(workspace_id, 'unfiltered_response')
+      )
       return { skipped: true, reason: 'unfiltered_response' }
     }
 
     if (audienceTotalRecords === 0) {
       safeLog(
         `${LOG_PREFIX} Audience ${audienceResult.audienceId} never materialized (still 0 records after ${AUDIENCE_POLL_DELAYS_SECONDS.length} polls) — accepting empty segment`
+      )
+      await step.run('resolve-terminal-empty-poll', () =>
+        resolveFunnelAudienceTerminal(workspace_id, 'empty_segment_after_poll')
       )
       return { skipped: true, reason: 'empty_segment_after_poll' }
     }
@@ -534,6 +597,16 @@ export const provisionWorkspaceAudience = inngest.createFunction(
           )
         }
       })
+    }
+
+    // If the audience materialized but every record was dropped by the ICP
+    // post-filter / quality gate / dedupe, we still finished with 0 leads.
+    // Resolve the banner so the buyer isn't frozen at 95% (ops already has the
+    // insert/skip counts logged above for follow-up).
+    if (insertResult.inserted === 0) {
+      await step.run('resolve-terminal-zero-insert', () =>
+        resolveFunnelAudienceTerminal(workspace_id, 'zero_leads_inserted')
+      )
     }
 
     // ─── Step 5: Auto-advance ops_stage to 'trial' on cal booking ────

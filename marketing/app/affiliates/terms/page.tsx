@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function AffiliateTermsPage() {
   return (
-    <div className="min-h-screen bg-white">
+    <main className="min-h-screen bg-white">
       <div className="max-w-3xl mx-auto px-6 py-16">
         <div className="mb-8">
           <Link href="/affiliates" className="text-sm text-gray-400 hover:text-primary transition-colors">
@@ -153,6 +153,6 @@ export default function AffiliateTermsPage() {
           </div>
         </div>
       </div>
-    </div>
+    </main>
   )
 }

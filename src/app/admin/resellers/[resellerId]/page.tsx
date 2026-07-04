@@ -12,6 +12,7 @@ import { getResellerDetail, type DeliveryRow } from '@/lib/reseller/admin.servic
 import type { DeliveryOutcome } from '@/lib/reseller/types'
 import PixelActions from '../_components/PixelActions'
 import KeyManager from '../_components/KeyManager'
+import ResellerControls from '../_components/ResellerControls'
 
 function fmt(n: number | null): string {
   return n == null ? '∞' : n.toLocaleString()
@@ -21,6 +22,8 @@ const OUTCOME_VARIANT: Record<DeliveryOutcome, 'success' | 'info' | 'warning' | 
   delivered: 'success',
   throttled: 'info',
   skipped_cap: 'warning',
+  skipped_inactive: 'muted',
+  skipped_suspended: 'warning',
   no_destination: 'muted',
   failed: 'destructive',
 }
@@ -46,6 +49,18 @@ export default async function AdminResellerDetailPage({ params }: { params: Prom
       />
 
       <div className="space-y-8 px-6 py-6">
+        {/* Reseller kill switch + cap editor */}
+        <ResellerControls
+          reseller={{
+            id: reseller.id,
+            name: reseller.name,
+            status: reseller.status,
+            lead_cap_per_period: reseller.lead_cap_per_period,
+            default_lead_cap_per_period: reseller.default_lead_cap_per_period,
+            default_throttle_mode: reseller.default_throttle_mode,
+          }}
+        />
+
         {/* Reseller stats */}
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           <Stat label="Reseller cap / period" value={fmt(reseller.lead_cap_per_period)} />

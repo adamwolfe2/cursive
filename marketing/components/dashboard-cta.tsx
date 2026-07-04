@@ -31,10 +31,10 @@ export function DashboardCTA({
           transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
           className="text-center relative z-10 mb-16"
         >
-          <h2 className="text-5xl lg:text-7xl font-light text-gray-900 mb-4 leading-tight">
+          <h2 className="text-3xl sm:text-4xl lg:text-7xl font-light text-gray-900 mb-4 leading-tight">
             {headline}
           </h2>
-          <p className="font-cursive text-6xl lg:text-7xl text-gray-500 mb-6">
+          <p className="font-cursive text-4xl sm:text-5xl lg:text-7xl text-gray-500 mb-6">
             {subheadline}
           </p>
           <p className="text-xl text-gray-600 mb-10 max-w-2xl mx-auto">
@@ -45,6 +45,8 @@ export function DashboardCTA({
             size="lg"
             href={ctaUrl}
             target="_blank"
+            trackingLabel={ctaText}
+            trackingLocation="dashboard_cta"
             className="bg-primary text-white hover:bg-primary-dark text-lg px-10 py-5 mb-4"
           >
             {ctaText}

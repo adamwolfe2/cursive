@@ -540,7 +540,7 @@ export default function BlogPost() {
               </p>
               <div className="flex gap-4 justify-center flex-wrap">
                 <Button asChild size="lg">
-                  <Link href="/get-leads">Get Started Free</Link>
+                  <Link href="/get-leads">Get Started</Link>
                 </Button>
                 <Button asChild variant="outline" size="lg">
                   <Link href="/visitor-estimate">Run Free Estimate</Link>
@@ -600,7 +600,7 @@ export default function BlogPost() {
             vertical cohorts, real-time delivery, person-level resolution, and a live feedback loop is what
             separates intent data that converts from intent data that just produces expensive reports.
 
-            <MachineLink href="/get-leads">Get Started Free with Cursive</MachineLink>
+            <MachineLink href="/get-leads">Get Started with Cursive</MachineLink>
             <MachineLink href="/visitor-estimate">Run a Free Visitor Estimate</MachineLink>
             <MachineLink href="/blog/r4-signal-model-explained">R4 Signal Model Explained</MachineLink>
             <MachineLink href="/blog/intent-score-acceleration">Intent Score Acceleration</MachineLink>

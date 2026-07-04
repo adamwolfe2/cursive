@@ -17,7 +17,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { useBulkSelection } from '@/lib/hooks/use-bulk-selection'
 import { BulkActionToolbar } from './BulkActionToolbar'
 import { useDebounce } from '@/hooks/use-debounce'
-import { Search, X, Inbox, ArrowRight, RefreshCw } from 'lucide-react'
+import { Search, X, Inbox, ArrowRight, RefreshCw, AlertTriangle } from 'lucide-react'
 
 type UserLeadAssignmentUpdate = Database['public']['Tables']['user_lead_assignments']['Update']
 
@@ -66,6 +66,7 @@ const PAGE_SIZE = 25
 export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTableProps) {
   const [assignments, setAssignments] = useState<LeadAssignment[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [filter, setFilter] = useState<string>('all')
   const [searchInput, setSearchInput] = useState('')
   const [selectedLead, setSelectedLead] = useState<LeadAssignment | null>(null)
@@ -175,11 +176,16 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
 
       if (error) {
         safeError('[MyLeadsTable]', 'Failed to fetch assignments:', error)
+        setError('We could not load your leads. This is a temporary issue, not an empty list.')
       } else {
         setAssignments((data as unknown as LeadAssignment[]) || [])
         setTotalCount(count ?? 0)
         setNewLeadCount(0)
+        setError(null)
       }
+    } catch (err) {
+      safeError('[MyLeadsTable]', 'Exception fetching assignments:', err)
+      setError('We could not load your leads. This is a temporary issue, not an empty list.')
     } finally {
       setLoading(false)
     }
@@ -381,6 +387,23 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
         <div className="flex items-center justify-center">
           <div className="h-6 w-6 animate-spin rounded-full border-2 border-zinc-300 border-t-blue-600" />
         </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="rounded-lg border border-red-200 bg-red-50 p-12 text-center">
+        <AlertTriangle className="mx-auto h-12 w-12 text-red-500" />
+        <p className="mt-4 text-sm font-medium text-red-900">Failed to load your leads</p>
+        <p className="mt-1 text-sm text-red-700">{error}</p>
+        <button
+          onClick={fetchAssignments}
+          className="mt-4 inline-flex items-center gap-1.5 rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 transition-colors"
+        >
+          <RefreshCw className="h-3.5 w-3.5" />
+          Retry
+        </button>
       </div>
     )
   }

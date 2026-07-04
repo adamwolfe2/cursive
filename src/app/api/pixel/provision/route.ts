@@ -17,7 +17,8 @@ async function firePixelProvisionedEvent(data: {
   workspace_id: string
   pixel_id: string
   domain: string
-  trial_ends_at: string
+  // null for funnel/paid workspaces (active, no trial clock)
+  trial_ends_at: string | null
 }) {
   const eventKey = process.env.INNGEST_EVENT_KEY
   if (!eventKey) return
@@ -103,6 +104,37 @@ async function backfillOrphanedEvents(
   }
 }
 
+/**
+ * A funnel/paid workspace must NOT be put on a 14-day trial: the buyer already
+ * pays $97-247/mo, so a trial countdown + day-15 "trial ended, reactivate"
+ * message is a false churn trigger on a paying subscriber. Detect it so pixel
+ * provisioning stamps trial_status:'active', trial_ends_at:null — matching the
+ * portal path (provisionFunnelPixel in order.service.ts). Detection: a funnel
+ * order bound to the workspace, or a workspace stamped settings.source ===
+ * 'funnel_order'.
+ */
+async function isFunnelPaidWorkspace(
+  admin: SupabaseClient,
+  workspaceId: string
+): Promise<boolean> {
+  const { data: ws } = await admin
+    .from('workspaces')
+    .select('settings')
+    .eq('id', workspaceId)
+    .maybeSingle()
+  if ((ws?.settings as { source?: string } | null)?.source === 'funnel_order') {
+    return true
+  }
+
+  const { data: order } = await admin
+    .from('funnel_orders')
+    .select('id')
+    .eq('workspace_id', workspaceId)
+    .limit(1)
+    .maybeSingle()
+  return !!order
+}
+
 const provisionSchema = z.object({
   website_url: z.string().url().refine((url) => {
     try {
@@ -157,6 +189,25 @@ export async function POST(request: NextRequest) {
     const domain = new URL(validated.website_url).hostname.replace(/^www\./, '')
     const websiteName = validated.website_name || domain
 
+    // Funnel/paid workspaces provision as 'active' (no trial clock); everyone
+    // else gets the standard fresh 14-day trial. A replaced pixel always wins
+    // (inherits its own status below) so changing a URL never resets the clock.
+    const freshTrialEndsAt = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
+    // Lazily resolved + memoized: idempotent-return paths don't touch the pixel
+    // status, so they must not pay for (or depend on) the funnel lookup. Only
+    // the fresh-insert / claim paths below call this before writing a status.
+    let _trialDefaults: { status: 'active' | 'trial'; endsAt: string | null } | undefined
+    const getTrialDefaults = async () => {
+      if (!_trialDefaults) {
+        const isFunnelPaid = await isFunnelPaidWorkspace(adminSupabase, user.workspace_id)
+        _trialDefaults = {
+          status: isFunnelPaid ? 'active' : 'trial',
+          endsAt: isFunnelPaid ? null : freshTrialEndsAt,
+        }
+      }
+      return _trialDefaults
+    }
+
     // ─── Deterministic claim-by-ID path ─────────────────────────────────
     // If the signup flow passed a specific pixel_id (from the post-sales-call
     // recap email link), claim THAT exact pixel, regardless of whether the
@@ -186,13 +237,13 @@ export async function POST(request: NextRequest) {
 
         // Claimable → claim it, backfill orphaned events, return
         if (claimablePixel.workspace_id === null) {
-          const trialEndsAt = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
+          const { status: defaultTrialStatus, endsAt: trialEndsAt } = await getTrialDefaults()
 
           const { data: claimedRows, error: claimErr } = await adminSupabase
             .from('audiencelab_pixels')
             .update({
               workspace_id: user.workspace_id,
-              trial_status: 'trial',
+              trial_status: defaultTrialStatus,
               trial_ends_at: trialEndsAt,
               is_active: true,
               label: claimablePixel.label || websiteName,
@@ -343,9 +394,9 @@ export async function POST(request: NextRequest) {
     if (demoPixel) {
       // If we just deactivated a replaced pixel, inherit its trial state so
       // the user doesn't get a fresh 14-day trial just by changing their URL.
-      const trialEndsAt = replacedPixel?.trial_ends_at
-        ?? new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
-      const trialStatus = replacedPixel?.trial_status ?? 'trial'
+      const { status: defaultTrialStatus, endsAt: defaultTrialEndsAt } = await getTrialDefaults()
+      const trialEndsAt = replacedPixel?.trial_ends_at ?? defaultTrialEndsAt
+      const trialStatus = replacedPixel?.trial_status ?? defaultTrialStatus
 
       const { error: claimError } = await adminSupabase
         .from('audiencelab_pixels')
@@ -379,7 +430,7 @@ export async function POST(request: NextRequest) {
         sendSlackAlert({
           type: 'pipeline_update',
           severity: 'info',
-          message: `Demo pixel claimed by ${domain} — ${backfill.assigned} orphan events backfilled (${backfill.processed} processed into leads) — trial ends ${trialEndsAt.split('T')[0]}`,
+          message: `Demo pixel claimed by ${domain} — ${backfill.assigned} orphan events backfilled (${backfill.processed} processed into leads) — ${trialEndsAt ? `trial ends ${trialEndsAt.split('T')[0]}` : 'active (paid, no trial)'}`,
           metadata: {
             workspace_id: user.workspace_id,
             user: user.full_name || user.email,
@@ -428,10 +479,11 @@ export async function POST(request: NextRequest) {
     const snippet = result.script || `<script src="${installUrl}" defer></script>`
 
     // Inherit trial status from a replaced pixel so changing the URL never
-    // resets the trial clock. New users get a fresh 14-day trial.
-    const trialEndsAt = replacedPixel?.trial_ends_at
-      ?? new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
-    const trialStatus = replacedPixel?.trial_status ?? 'trial'
+    // resets the trial clock. Funnel/paid workspaces provision 'active' (no
+    // trial); other new users get a fresh 14-day trial.
+    const { status: defaultTrialStatus, endsAt: defaultTrialEndsAt } = await getTrialDefaults()
+    const trialEndsAt = replacedPixel?.trial_ends_at ?? defaultTrialEndsAt
+    const trialStatus = replacedPixel?.trial_status ?? defaultTrialStatus
 
     // Store in audiencelab_pixels (install_url is primary, snippet is derived/optional)
     const { error: insertError } = await adminSupabase
@@ -503,7 +555,7 @@ export async function POST(request: NextRequest) {
     sendSlackAlert({
       type: 'pipeline_update',
       severity: 'info',
-      message: `New pixel provisioned for ${domain} — trial ends ${trialEndsAt.split('T')[0]}`,
+      message: `New pixel provisioned for ${domain} — ${trialEndsAt ? `trial ends ${trialEndsAt.split('T')[0]}` : 'active (paid, no trial)'}`,
       metadata: {
         workspace_id: user.workspace_id,
         user: user.full_name || user.email,

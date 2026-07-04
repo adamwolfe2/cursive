@@ -19,7 +19,7 @@ export const shopifyWebhookHandler = inngest.createFunction(
     name: 'Shopify Inbound Webhook Router',
     retries: 3,
     timeouts: { finish: '2m' },
-    concurrency: [{ limit: 10 }],
+    concurrency: [{ limit: 5 }],
   },
   { event: 'shopify/webhook.received' },
   async ({ event }) => {

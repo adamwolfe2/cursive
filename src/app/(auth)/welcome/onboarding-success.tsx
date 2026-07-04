@@ -6,12 +6,13 @@
 
 'use client'
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Check, Mail, RefreshCw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/client'
+import { isSupportedIndustry } from '@/lib/utils/waitlist-validation'
 import {
   checkmarkVariants,
   staggerContainerVariants,
@@ -24,6 +25,9 @@ import type { UserType } from '@/types/waitlist.types'
 const MAX_RESENDS = 3
 const COOLDOWN_SECONDS = 60
 const POLL_INTERVAL_MS = 5000
+// Surface the "still waiting?" guidance early (~60s) instead of after 10 minutes,
+// while continuing to poll quietly in the background up to MAX_POLL_CHECKS.
+const SHOW_GUIDANCE_AFTER_CHECKS = 12
 const MAX_POLL_CHECKS = 120
 
 interface OnboardingSuccessProps {
@@ -43,9 +47,6 @@ export function OnboardingSuccess({ userType, email, isMarketplace, targetIndust
 
   // Check if email confirmation is needed
   const needsConfirmation = requiresConfirmation ?? !!email
-
-  // Stable Supabase client — created once, outside the polling effect
-  const supabaseRef = useRef(createClient())
 
   // Resend state
   const [resendCount, setResendCount] = useState(0)
@@ -81,27 +82,51 @@ export function OnboardingSuccess({ userType, email, isMarketplace, targetIndust
     return () => clearInterval(timer)
   }, [cooldown])
 
-  // Poll for email confirmation
+  // Poll for email confirmation.
+  //
+  // We poll the server endpoint /api/auth/user (which reads the @supabase/ssr
+  // cookie-based session) rather than the browser client's getUser() (which reads
+  // localStorage). The confirmation link is handled by /auth/callback and sets
+  // auth COOKIES — cookies are shared across all tabs of the same browser, so the
+  // origin tab detects confirmation as soon as the user clicks the link in another
+  // tab of the same browser. The old localStorage-based getUser() never received a
+  // token in the origin tab (signUp returned no session there), so `confirmed`
+  // never flipped and the user was stranded on a spinner for ~10 minutes.
   useEffect(() => {
     if (!needsConfirmation || confirmed) return
     let checks = 0
+    let cancelled = false
     const interval = setInterval(async () => {
       checks++
+      // Surface guidance early (~60s) but keep polling in the background.
+      if (checks === SHOW_GUIDANCE_AFTER_CHECKS) {
+        setPollExpired(true)
+      }
+      // Stop polling entirely after the hard cap.
       if (checks > MAX_POLL_CHECKS) {
         clearInterval(interval)
         setPollExpired(true)
         return
       }
-      const { data } = await supabaseRef.current.auth.getUser()
-      if (data.user) {
-        setConfirmed(true)
-        clearInterval(interval)
-        setTimeout(() => {
-          router.push(isMarketplace ? '/marketplace' : '/setup')
-        }, 2000)
+      try {
+        const res = await fetch('/api/auth/user')
+        if (!res.ok) return
+        const { user } = await res.json()
+        if (user && !cancelled) {
+          setConfirmed(true)
+          clearInterval(interval)
+          setTimeout(() => {
+            router.push(isMarketplace ? '/marketplace' : '/setup')
+          }, 2000)
+        }
+      } catch {
+        // Network hiccup — keep polling
       }
     }, POLL_INTERVAL_MS)
-    return () => clearInterval(interval)
+    return () => {
+      cancelled = true
+      clearInterval(interval)
+    }
   }, [needsConfirmation, confirmed, isMarketplace, router])
 
   // Resend handler
@@ -208,8 +233,12 @@ export function OnboardingSuccess({ userType, email, isMarketplace, targetIndust
 
         {needsConfirmation && (
           <motion.div variants={staggerItemVariants} className="space-y-6">
-            {/* Targeting summary — reassures user their preferences are set */}
-            {isBusinessPath && targetIndustry && (
+            {/* Targeting summary — reassures user their preferences are set.
+                Only promise "first batch within the hour" when the chosen industry
+                actually maps to a real audience segment (isSupportedIndustry). For a
+                captured-but-unsupported industry we show honest "setting up" copy
+                instead of a false leads-arriving promise. */}
+            {isBusinessPath && targetIndustry && isSupportedIndustry(targetIndustry) ? (
               <div className="rounded-lg border border-blue-100 bg-blue-50 px-4 py-3 text-left">
                 <p className="text-xs font-semibold text-blue-700 uppercase tracking-wider mb-1.5">
                   Your lead targeting is active
@@ -226,7 +255,24 @@ export function OnboardingSuccess({ userType, email, isMarketplace, targetIndust
                   Adjust targeting preferences →
                 </a>
               </div>
-            )}
+            ) : isBusinessPath && targetIndustry ? (
+              <div className="rounded-lg border border-blue-100 bg-blue-50 px-4 py-3 text-left">
+                <p className="text-xs font-semibold text-blue-700 uppercase tracking-wider mb-1.5">
+                  Setting up your lead targeting
+                </p>
+                <p className="text-sm text-blue-900">
+                  We&apos;re building your audience for{' '}
+                  <strong>{targetIndustry}</strong>
+                  {targetLocations && (
+                    <> in <strong>{targetLocations}</strong></>
+                  )}
+                  . We&apos;ll notify you the moment your first leads are ready.
+                </p>
+                <a href="/settings" className="text-xs text-blue-600 hover:underline mt-1 block">
+                  Adjust targeting preferences →
+                </a>
+              </div>
+            ) : null}
 
             {/* Pixel status — context-aware for call prospects vs regular signups */}
             {isBusinessPath && isCallProspect ? (

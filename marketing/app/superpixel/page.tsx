@@ -1,11 +1,11 @@
-import type { Metadata } from 'next'
+import { generateMetadata } from '@/lib/seo/metadata'
 import { SuperPixelView } from './SuperPixelView'
 
-export const metadata: Metadata = {
+export const metadata = generateMetadata({
   title: "Cursive Super Pixel — 40–60% Deterministic Visitor Match",
   description: "97% of your website visitors leave without buying. The Cursive Super Pixel matches 40–60% of them deterministically against an offline-rooted identity graph of 280M+ verified profiles, refreshed every 30 days against NCOA. The engine behind the $97/mo Visitor Pixel — self-serve, live in 60 seconds.",
-  robots: { index: true, follow: true },
-}
+  canonical: 'https://www.meetcursive.com/superpixel',
+})
 
 // Structured data preserved + updated to self-serve pricing.
 const productSchema = {

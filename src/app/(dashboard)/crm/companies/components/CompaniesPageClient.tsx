@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { EnhancedCompaniesTable } from '@/components/crm/table/EnhancedCompaniesTable'
 import { RecordDrawer } from '@/components/crm/drawer/RecordDrawer'
 import { CreateCompanyDialog } from './CreateCompanyDialog'
@@ -16,10 +16,15 @@ interface CompaniesPageClientProps {
 
 export function CompaniesPageClient({ initialData }: CompaniesPageClientProps) {
   const router = useRouter()
-  const [companies] = useState<Company[]>(initialData)
+  const [companies, setCompanies] = useState<Company[]>(initialData)
   const [selectedCompany, setSelectedCompany] = useState<string | null>(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
+
+  // Sync fresh server data into state after router.refresh() (useState ignores prop changes)
+  useEffect(() => {
+    setCompanies(initialData)
+  }, [initialData])
 
   const handleRowClick = (company: Company) => {
     setSelectedCompany(company.id)
@@ -76,6 +81,7 @@ export function CompaniesPageClient({ initialData }: CompaniesPageClientProps) {
           if (!open) handleDialogClose(false)
           else setCreateDialogOpen(true)
         }}
+        onSuccess={() => handleDialogClose(true)}
       />
 
       {/* Record Drawer */}

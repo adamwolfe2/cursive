@@ -65,7 +65,7 @@ export const processEnrichmentJob = inngest.createFunction(
     retries: 3,
     timeouts: { finish: "5m" },
     concurrency: {
-      limit: 10, // Max 10 concurrent enrichment jobs
+      limit: 5, // Capped at Free-plan account concurrency limit (5)
     },
   },
   { event: 'enrichment/process' },

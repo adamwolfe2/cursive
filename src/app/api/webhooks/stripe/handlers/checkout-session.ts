@@ -357,7 +357,21 @@ async function handleFunnelOrderCompleted(session: Stripe.Checkout.Session): Pro
     safeError('[Stripe Webhook] funnel workspace provision failed (non-fatal)', provisionErr)
   }
 
-  // Confirmation email — non-fatal if it fails (Stripe is the source of truth)
+  // Confirmation email carries the buyer's durable portal + one-click dashboard
+  // links. Since the checkout-success page no longer returns the portal token
+  // (that leaked via Referer/history — P1 fix), this email is now the ONLY
+  // durable delivery of the login link, so a silent drop locks a paying buyer
+  // out of fulfillment. On failure we therefore (1) alert ops (matching the
+  // credit branch) and (2) THROW so Stripe records a non-2xx and retries.
+  //
+  // Throwing is safe because the entire funnel path is idempotent:
+  //   - createOrderFromCheckoutSession dedups on stripe_session_id (reissues
+  //     the token if missing) — no duplicate order on retry
+  //   - provisionFunnelWorkspace reuses an existing workspace / returns null for
+  //     a pre-existing email — no duplicate workspace
+  //   - affiliate attribution is UNIQUE(affiliate_id, referred_email) guarded
+  //   - the funnel_email_captures mark is `.is('converted_at', null)` guarded
+  // so a full webhook re-run re-attempts only the email.
   try {
     await sendFunnelConfirmationEmail({
       to: order.customer_email,
@@ -367,7 +381,21 @@ async function handleFunnelOrderCompleted(session: Stripe.Checkout.Session): Pro
       offerSlug: order.offer_slug,
     })
   } catch (emailErr) {
-    safeError('[Stripe Webhook] funnel-confirmation email failed (non-fatal)', emailErr)
+    safeError('[Stripe Webhook] funnel-confirmation email failed', emailErr)
+    await sendSlackAlert({
+      type: 'stripe_payment',
+      severity: 'critical',
+      message: `Funnel confirmation email FAILED for order ${order.id} (${order.offer_slug}) — buyer has no portal/login link until this send succeeds. Webhook will 500 so Stripe retries.`,
+      metadata: {
+        order_id: order.id,
+        offer: order.offer_slug,
+        stripe_session_id: order.stripe_session_id,
+      },
+    }).catch((err) => safeError('[Stripe Webhook] Slack alert failed:', err))
+
+    throw new Error(
+      `Funnel confirmation email failed for order ${order.id} — retrying via Stripe`
+    )
   }
 
   safeLog('[Stripe Webhook] Funnel order processed', {

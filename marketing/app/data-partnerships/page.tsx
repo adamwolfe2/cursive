@@ -94,7 +94,7 @@ export default function DataPartnershipsPage() {
         ]}
       />
 
-      <article className="bg-white text-gray-900">
+      <main className="bg-white text-gray-900">
         {/* ── Hero ────────────────────────────────────────────────────────── */}
         <section className="relative border-b border-gray-100 pt-20 pb-16 sm:pt-24 sm:pb-20 overflow-hidden">
           {/* Subtle brand-color wash so the page reads as Cursive at first glance
@@ -427,7 +427,7 @@ export default function DataPartnershipsPage() {
             </div>
           </Container>
         </section>
-      </article>
+      </main>
     </>
   )
 }

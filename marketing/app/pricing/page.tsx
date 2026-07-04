@@ -197,7 +197,7 @@ export default function PricingPage() {
         ]}
       />
 
-      <article className="bg-white text-gray-900">
+      <main className="bg-white text-gray-900">
         {/* ── Hero ────────────────────────────────────────────────────────── */}
         <section className="relative border-b border-gray-100 pt-20 pb-14 sm:pt-24 sm:pb-16 overflow-hidden">
           <div
@@ -345,7 +345,7 @@ export default function PricingPage() {
             </div>
           </Container>
         </section>
-      </article>
+      </main>
     </>
   )
 }

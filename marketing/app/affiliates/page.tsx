@@ -105,7 +105,7 @@ const AUDIENCE_SIZES = [
 // ── Earnings Calculator ────────────────────────────────────────────────────────
 
 function calcEarnings(activations: number) {
-  const avgMonthlyRevenue = 99 // $99/mo avg plan
+  const avgMonthlyRevenue = 97 // $97/mo entry plan (offer tiers: $97 / $197 / $247)
   let bonus = 0
   for (const m of MILESTONES) {
     if (activations >= m.activations) bonus = m.bonus
@@ -440,7 +440,7 @@ function ApplicationForm() {
 
 export default function AffiliatesPage() {
   return (
-    <>
+    <main>
       {/* ── HERO ──────────────────────────────────────────── */}
       <section className="relative py-24 bg-white">
         <Container>
@@ -792,6 +792,6 @@ export default function AffiliatesPage() {
           <ApplicationForm />
         </Container>
       </section>
-    </>
+    </main>
   )
 }

@@ -58,47 +58,59 @@ export function BulkActionsToolbar({
 
   const handleUpdateStatus = async (status: LeadStatus) => {
     setBulkActionInProgress(true)
-    await bulkUpdateMutation.mutateAsync({
-      ids: selectedLeadIds,
-      action: 'update_status',
-      data: { status },
-    })
-    setBulkActionInProgress(false)
-    clearSelection()
+    try {
+      await bulkUpdateMutation.mutateAsync({
+        ids: selectedLeadIds,
+        action: 'update_status',
+        data: { status },
+      })
+      clearSelection()
+    } finally {
+      setBulkActionInProgress(false)
+    }
   }
 
   const handleAssignUser = async (userId: string) => {
     setBulkActionInProgress(true)
-    await bulkUpdateMutation.mutateAsync({
-      ids: selectedLeadIds,
-      action: 'assign_user',
-      data: { assigned_user_id: userId },
-    })
-    setBulkActionInProgress(false)
-    clearSelection()
+    try {
+      await bulkUpdateMutation.mutateAsync({
+        ids: selectedLeadIds,
+        action: 'assign',
+        data: { assigned_user_id: userId },
+      })
+      clearSelection()
+    } finally {
+      setBulkActionInProgress(false)
+    }
   }
 
   const handleAddTag = async (tag: string) => {
     setBulkActionInProgress(true)
-    await bulkUpdateMutation.mutateAsync({
-      ids: selectedLeadIds,
-      action: 'add_tag',
-      data: { tag },
-    })
-    setBulkActionInProgress(false)
-    clearSelection()
+    try {
+      await bulkUpdateMutation.mutateAsync({
+        ids: selectedLeadIds,
+        action: 'add_tags',
+        data: { tags: [tag] },
+      })
+      clearSelection()
+    } finally {
+      setBulkActionInProgress(false)
+    }
   }
 
   const handleDelete = async () => {
     setBulkActionInProgress(true)
-    await bulkUpdateMutation.mutateAsync({
-      ids: selectedLeadIds,
-      action: 'delete',
-      data: {},
-    })
-    setBulkActionInProgress(false)
-    clearSelection()
-    setShowDeleteDialog(false)
+    try {
+      await bulkUpdateMutation.mutateAsync({
+        ids: selectedLeadIds,
+        action: 'delete',
+        data: {},
+      })
+      clearSelection()
+      setShowDeleteDialog(false)
+    } finally {
+      setBulkActionInProgress(false)
+    }
   }
 
   // Don't show toolbar if no leads selected

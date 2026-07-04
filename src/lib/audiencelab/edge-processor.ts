@@ -16,6 +16,9 @@ import { checkQuota, incrementQuota } from '@/lib/services/al-quota.service'
 
 const LOG_PREFIX = '[AL EdgeProcessor]'
 
+// Log the missing-key condition once per cold start rather than on every event.
+let missingEventKeyLogged = false
+
 /**
  * Fire an Inngest event via the REST API (edge-safe).
  * Used instead of the SDK import to maintain Edge runtime compatibility.
@@ -31,13 +34,34 @@ const LOG_PREFIX = '[AL EdgeProcessor]'
  */
 function fireInngestEvent(name: string, data: Record<string, unknown>): Promise<void> {
   const eventKey = process.env.INNGEST_EVENT_KEY
-  if (!eventKey) return Promise.resolve()
+  if (!eventKey) {
+    // Missing key silently drops ALL downstream delivery (lead/created,
+    // outbound-webhook/deliver, ghl/sync-contact). Make it observable — log
+    // once per cold start so it can't masquerade as "no traffic".
+    if (!missingEventKeyLogged) {
+      missingEventKeyLogged = true
+      safeError(`${LOG_PREFIX} INNGEST_EVENT_KEY missing — dropping event (${name}) and all downstream delivery until configured`)
+    }
+    return Promise.resolve()
+  }
   return fetch('https://inn.gs/e/' + eventKey, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ name, data }),
   }).then(
-    () => undefined,
+    async (res) => {
+      // fetch only rejects on network failure; a 401 (bad/rotated key) or other
+      // non-2xx RESOLVES — so an un-checked res would drop the event silently.
+      if (!res.ok) {
+        let bodySnippet = ''
+        try {
+          bodySnippet = (await res.text()).slice(0, 200)
+        } catch {
+          bodySnippet = '<unreadable body>'
+        }
+        safeError(`${LOG_PREFIX} Inngest event rejected (${name}): HTTP ${res.status} ${bodySnippet}`)
+      }
+    },
     (err) => safeError(`${LOG_PREFIX} Inngest event fire failed (${name}):`, err),
   )
 }

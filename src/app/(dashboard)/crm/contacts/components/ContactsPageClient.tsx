@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { EnhancedContactsTable } from '@/components/crm/table/EnhancedContactsTable'
 import { RecordDrawer } from '@/components/crm/drawer/RecordDrawer'
 import { CreateContactDialog } from './CreateContactDialog'
@@ -16,10 +16,15 @@ interface ContactsPageClientProps {
 
 export function ContactsPageClient({ initialData }: ContactsPageClientProps) {
   const router = useRouter()
-  const [contacts] = useState<Contact[]>(initialData)
+  const [contacts, setContacts] = useState<Contact[]>(initialData)
   const [selectedContact, setSelectedContact] = useState<string | null>(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
+
+  // Sync fresh server data into state after router.refresh() (useState ignores prop changes)
+  useEffect(() => {
+    setContacts(initialData)
+  }, [initialData])
 
   const handleRowClick = (contact: Contact) => {
     setSelectedContact(contact.id)
@@ -80,6 +85,7 @@ export function ContactsPageClient({ initialData }: ContactsPageClientProps) {
           if (!open) handleDialogClose(false)
           else setCreateDialogOpen(true)
         }}
+        onSuccess={() => handleDialogClose(true)}
       />
 
       {/* Record Drawer */}

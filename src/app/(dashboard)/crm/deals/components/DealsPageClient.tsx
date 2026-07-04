@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { DragDropKanbanBoard } from '@/components/crm/board/DragDropKanbanBoard'
 import { RecordDrawer } from '@/components/crm/drawer/RecordDrawer'
 import { CreateDealDialog } from './CreateDealDialog'
@@ -21,6 +21,11 @@ export function DealsPageClient({ initialData }: DealsPageClientProps) {
   const [selectedDeal, setSelectedDeal] = useState<string | null>(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
+
+  // Sync fresh server data into state after router.refresh() (useState ignores prop changes)
+  useEffect(() => {
+    setDeals(initialData)
+  }, [initialData])
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -183,6 +188,7 @@ export function DealsPageClient({ initialData }: DealsPageClientProps) {
           if (!open) handleDialogClose(false)
           else setCreateDialogOpen(true)
         }}
+        onSuccess={() => handleDialogClose(true)}
       />
 
       {/* Record Drawer */}

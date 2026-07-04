@@ -43,6 +43,15 @@ export function InlineStatusEdit({ leadId, currentStatus }: InlineStatusEditProp
   const updateMutation = useUpdateLead()
   const successTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
+  // Resync local state when the source-of-truth prop changes (e.g. bulk edit,
+  // concurrent change, server normalization). Skip while a mutation is in
+  // flight so we don't clobber the optimistic value with stale props.
+  useEffect(() => {
+    if (!updateMutation.isPending) {
+      setSelectedStatus(currentStatus)
+    }
+  }, [currentStatus, updateMutation.isPending])
+
   const { refs, floatingStyles, context } = useFloating({
     open: isOpen,
     onOpenChange: setIsOpen,

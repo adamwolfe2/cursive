@@ -330,7 +330,10 @@ async function createLeadFromPush(
   })
 
   // Fire outbound webhook: lead.received
-  inngest.send({
+  // AWAITED: an un-awaited send is frozen with the serverless instance at
+  // response time and arrives late or never (proven live 2026-07-02). The
+  // .catch keeps event-send failure from failing ingestion.
+  await inngest.send({
     name: 'outbound-webhook/deliver' as const,
     data: {
       workspace_id: workspaceId,

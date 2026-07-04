@@ -99,7 +99,7 @@ const VSL_EMBED_URL =
 
 export default function PartnersPage() {
   return (
-    <article className="bg-white text-gray-900">
+    <main className="bg-white text-gray-900">
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden border-b border-gray-100 pt-20 pb-16 sm:pt-24">
         <div
@@ -149,6 +149,7 @@ export default function PartnersPage() {
                 src={VSL_EMBED_URL}
                 title="Cursive Partner Program — how it works"
                 className="absolute inset-0 h-full w-full"
+                loading="lazy"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
                 allowFullScreen
               />
@@ -322,7 +323,7 @@ export default function PartnersPage() {
           </div>
         </Container>
       </section>
-    </article>
+    </main>
   )
 }
 

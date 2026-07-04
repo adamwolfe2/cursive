@@ -13,11 +13,11 @@ import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, Ma
 const faqs = [
   {
     question: "What is the main difference between 6sense and Cursive?",
-    answer: "6sense is an enterprise ABM platform focused on account-level intent and predictive analytics, requiring significant budget ($60k+/year) and implementation time (3-6 months). Cursive is a visitor identification platform focused on person-level tracking, real-time intent signals, and automated outreach, with transparent pricing ($99-$999/mo) and 5-minute setup."
+    answer: "6sense is an enterprise ABM platform focused on account-level intent and predictive analytics, requiring significant budget ($60k+/year) and implementation time (3-6 months). Cursive is a visitor identification platform focused on person-level tracking, real-time intent signals, and automated outreach, with transparent pricing ($97-$247/mo) and 5-minute setup."
   },
   {
     question: "Is Cursive cheaper than 6sense?",
-    answer: "Yes, significantly. Cursive costs $99-$999/month with transparent pricing and monthly billing. 6sense typically costs $60k-$150k+ per year with annual contracts required. For a small team, Cursive is 50-100x more affordable while delivering comparable visitor identification and intent capabilities."
+    answer: "Yes, significantly. Cursive costs $97-$247/month with transparent pricing and monthly billing. 6sense typically costs $60k-$150k+ per year with annual contracts required. For a small team, Cursive is 50-100x more affordable while delivering comparable visitor identification and intent capabilities."
   },
   {
     question: "Can Cursive replace 6sense for ABM?",
@@ -29,7 +29,7 @@ const faqs = [
   },
   {
     question: "Which platform is better for startups and SMBs?",
-    answer: "Cursive is far better suited for startups and SMBs due to its affordable pricing ($99-$999/mo), quick setup (5 minutes), and immediate ROI. 6sense targets enterprise customers with complex sales cycles and requires significant budget ($60k+) and dedicated resources for implementation. Most companies under $10M revenue find 6sense cost-prohibitive."
+    answer: "Cursive is far better suited for startups and SMBs due to its affordable pricing ($97-$247/mo), quick setup (5 minutes), and immediate ROI. 6sense targets enterprise customers with complex sales cycles and requires significant budget ($60k+) and dedicated resources for implementation. Most companies under $10M revenue find 6sense cost-prohibitive."
   }
 ]
 
@@ -124,7 +124,7 @@ export default function BlogPost() {
                   <tr>
                     <td className="border border-gray-300 p-3 font-bold">Starting Price</td>
                     <td className="border border-gray-300 p-3">$60k+/year</td>
-                    <td className="border border-gray-300 p-3 text-green-600 font-bold">$99/month</td>
+                    <td className="border border-gray-300 p-3 text-green-600 font-bold">$97/month</td>
                   </tr>
                   <tr className="bg-gray-50">
                     <td className="border border-gray-300 p-3 font-bold">Setup Time</td>
@@ -507,15 +507,15 @@ export default function BlogPost() {
                 </div>
                 <div className="bg-green-50 rounded p-3 mt-3">
                   <div className="flex justify-between font-bold">
-                    <span>ROI on $999/mo plan:</span>
-                    <span className="text-green-600">8,000%</span>
+                    <span>ROI on $247/mo plan:</span>
+                    <span className="text-green-600">32,000%</span>
                   </div>
                 </div>
               </div>
             </div>
 
             <p>
-              Even with conservative assumptions, Cursive delivers 80x ROI. 6sense can deliver strong ROI for enterprises
+              Even with conservative assumptions, Cursive delivers 320x ROI. 6sense can deliver strong ROI for enterprises
               with large TAMs and multi-million dollar deal sizes, but for most growth-stage companies, Cursive's
               person-level identification and built-in outreach delivers faster time-to-value.
             </p>
@@ -588,7 +588,7 @@ export default function BlogPost() {
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-start gap-2">
                     <Check className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
-                    <span><strong>Need affordable pricing ($99-$999/mo)</strong></span>
+                    <span><strong>Need affordable pricing ($97-$247/mo)</strong></span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Check className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
@@ -621,7 +621,7 @@ export default function BlogPost() {
             <div className="not-prose bg-primary/5 rounded-xl p-6 my-8 border border-primary/20">
               <p className="text-sm italic mb-2">
                 &quot;We were paying $75k/year for 6sense but only using it for visitor identification. The predictive scoring
-                was interesting but didn't translate to meetings. We switched to Cursive at $399/mo and our meeting rate
+                was interesting but didn't translate to meetings. We switched to Cursive at $247/mo and our meeting rate
                 went up 3x because we could actually reach out to individual visitors with personalized messages.&quot;
               </p>
               <p className="text-sm font-bold">— VP Sales, B2B SaaS (Series B)</p>
@@ -676,7 +676,7 @@ export default function BlogPost() {
               Cursive is built for growth-stage B2B companies that want to convert their website traffic into pipeline
               <em>today</em>. With <Link href="/visitor-identification">70%+ identification rates</Link>,
               <Link href="/intent-audiences">real-time intent signals</Link>, and AI-powered automated outreach—all at
-              $99-$999/month—Cursive delivers immediate ROI without the enterprise price tag or implementation timeline.
+              $97-$247/month—Cursive delivers immediate ROI without the enterprise price tag or implementation timeline.
             </p>
 
             <p>
@@ -736,12 +736,12 @@ export default function BlogPost() {
           <h1 className="text-2xl font-bold mb-4">6sense vs Cursive: Complete Comparison (2026)</h1>
 
           <p className="text-gray-700 mb-6">
-            6sense is an enterprise ABM platform ($60k-150k+/year) focused on account-level intent and predictive analytics. Cursive is a visitor identification platform ($99-999/month) focused on person-level tracking and automated outreach. Published: February 5, 2026.
+            6sense is an enterprise ABM platform ($60k-150k+/year) focused on account-level intent and predictive analytics. Cursive is a visitor identification platform ($97-247/month) focused on person-level tracking and automated outreach. Published: February 5, 2026.
           </p>
 
           <MachineSection title="Quick Comparison">
             <MachineList items={[
-              "Price: 6sense $60k+/year. Cursive $99-999/month",
+              "Price: 6sense $60k+/year. Cursive $97-247/month",
               "Setup: 6sense 3-6 months. Cursive 5 minutes",
               "Person-Level ID: 6sense limited. Cursive 70%+ match rate",
               "Intent Data: 6sense account-level predictive. Cursive person-level real-time",
@@ -770,8 +770,8 @@ export default function BlogPost() {
           <MachineSection title="Cost Comparison (Annual)">
             <MachineList items={[
               "6sense Year 1: platform $60k-150k + implementation $20k-50k + integrations $15k+ + team (3-6 months) $50k+ = $145k-265k total",
-              "Cursive Year 1: platform $1,188-11,988 + implementation $0 + integrations $0 = $1,188-11,988 total",
-              "Savings with Cursive: $133,000-253,000 in Year 1"
+              "Cursive Year 1: platform $1,164-2,964 + implementation $0 + integrations $0 = $1,164-2,964 total",
+              "Savings with Cursive: $142,000-264,000 in Year 1"
             ]} />
           </MachineSection>
 

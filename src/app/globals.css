@@ -55,6 +55,36 @@
     --info-foreground: 0 0% 100%;
     --info-muted: 199 89% 96%;
 
+    /* ========== SCALE: BRAND BLUE RAMP ========== */
+    /* Canonical blue ramp built around #007AFF (= brand-500).
+       HSL triplets — consume via hsl(var(--brand-N)) or the Tailwind `brand` color. */
+    --brand-50: 211 100% 97%;   /* #f0f7ff */
+    --brand-100: 211 100% 92%;  /* #d6eaff */
+    --brand-200: 211 100% 85%;  /* #b3d7ff */
+    --brand-300: 211 100% 74%;  /* #7abaff */
+    --brand-400: 211 100% 62%;  /* #3d9bff */
+    --brand-500: 211 100% 50%;  /* #007AFF — the brand */
+    --brand-600: 214 100% 45%;  /* #0063e6 */
+    --brand-700: 216 92% 38%;   /* #084fba */
+    --brand-800: 217 84% 31%;   /* #0d4091 */
+    --brand-900: 218 75% 26%;   /* #113574 */
+    --brand-950: 220 70% 16%;   /* #0c1f45 */
+
+    /* ========== SCALE: NEUTRAL GRAY RAMP ========== */
+    /* Hue-220 tinted neutral ramp (white -> near-black). Aligns with existing
+       semantic neutrals (foreground = gray-900, border = gray-200, etc.). */
+    --gray-50: 220 20% 98%;   /* #f9fafb */
+    --gray-100: 220 16% 96%;  /* #f3f4f6 */
+    --gray-200: 220 13% 91%;  /* #e5e7eb */
+    --gray-300: 220 12% 84%;  /* #d1d5db */
+    --gray-400: 220 10% 66%;  /* #a0a5b1 */
+    --gray-500: 220 9% 46%;   /* #6b7280 */
+    --gray-600: 220 11% 34%;  /* #4d5460 */
+    --gray-700: 220 13% 26%;  /* #3a3f4b */
+    --gray-800: 220 14% 18%;  /* #272c34 */
+    --gray-900: 220 13% 13%;  /* #1d2025 */
+    --gray-950: 222 18% 8%;   /* #111318 */
+
     /* ========== UI COLORS ========== */
     /* Muted - Subtle backgrounds */
     --muted: 220 14% 96%;
@@ -111,6 +141,13 @@
     --ease-in: cubic-bezier(0.4, 0, 1, 1);
     --ease-out: cubic-bezier(0, 0, 0.2, 1);
     --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+    /* Exponential ease-out curves (no bounce) — preferred for entrances */
+    --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    /* Duration aliases (mirror --transition-* ; shared vocabulary with marketing) */
+    --duration-fast: 150ms;
+    --duration-base: 200ms;
+    --duration-slow: 300ms;
 
     /* ========== Z-INDEX SCALE ========== */
     --z-dropdown: 1000;

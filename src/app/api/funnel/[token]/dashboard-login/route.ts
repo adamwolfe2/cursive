@@ -25,11 +25,38 @@ import {
   portalUrlForToken,
 } from '@/lib/funnel/order.service'
 import { provisionFunnelWorkspace } from '@/lib/funnel/workspace-provision'
+import { sendMagicLoginLinkEmail } from '@/lib/email/templates/magic-login-link'
 import { APP_URL } from '@/lib/config/urls'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 function loginError(reason: string): NextResponse {
   return NextResponse.redirect(new URL(`/login?error=${reason}`, APP_URL))
+}
+
+/**
+ * Deliver a REAL magic link to the buyer's mailbox (Supabase generateLink +
+ * our email template), rather than server-consuming it and handing the session
+ * to whoever holds the portal token. Used for any order NOT bound to a
+ * funnel-provisioned workspace — so an unverified Stripe email can never obtain
+ * a session for a pre-existing (marketplace/admin) account.
+ */
+async function sendMailboxMagicLink(
+  admin: ReturnType<typeof createAdminClient>,
+  email: string
+): Promise<void> {
+  const { data, error } = await admin.auth.admin.generateLink({
+    type: 'magiclink',
+    email,
+  })
+  const tokenHash = data?.properties?.hashed_token
+  if (error || !tokenHash) {
+    safeError('[funnel/dashboard-login] mailbox generateLink failed:', error)
+    return
+  }
+  const loginUrl = `${APP_URL}/auth/confirm?token_hash=${encodeURIComponent(
+    tokenHash
+  )}&next=/dashboard`
+  await sendMagicLoginLinkEmail({ to: email, loginUrl })
 }
 
 export async function GET(
@@ -47,22 +74,47 @@ export async function GET(
       )
     }
 
-    let { order } = result.data
-
-    // Ensure the dashboard workspace + auth user exist (idempotent). Covers
-    // orders created before provisioning ran, or a provisioning hiccup at
-    // checkout.
-    if (!order.workspace_id) {
-      const provisioned = await provisionFunnelWorkspace(order)
-      if (!provisioned) {
-        // Can't reach the dashboard — fall back to the token portal, which
-        // delivers fulfillment without an account.
-        return NextResponse.redirect(new URL(portalUrlForToken(token), APP_URL))
-      }
-    }
+    const { order } = result.data
 
     const email = normalizeEmail(order.customer_email)
     const admin = createAdminClient()
+
+    // Ensure the dashboard workspace + auth user exist (idempotent). Covers
+    // orders created before provisioning ran, or a provisioning hiccup at
+    // checkout. Returns null when provisioning REFUSES (email already owns a
+    // non-funnel workspace — see workspace-provision P0 fix).
+    let workspaceId = order.workspace_id
+    if (!workspaceId) {
+      const provisioned = await provisionFunnelWorkspace(order)
+      workspaceId = provisioned?.workspaceId ?? null
+    }
+
+    // SECURITY (P0 account-takeover fix): a server-consumed one-click session is
+    // only safe when this order is bound to a workspace THIS funnel flow
+    // provisioned (settings.source === 'funnel_order'). The Stripe email is
+    // buyer-controlled and unverified, so for a pre-existing (marketplace/admin)
+    // workspace — or when provisioning refused/failed — we must NOT hand the
+    // browser a session. Instead deliver a REAL magic link to the mailbox so
+    // only its owner can authenticate.
+    let funnelSourced = false
+    if (workspaceId) {
+      const { data: ws } = await admin
+        .from('workspaces')
+        .select('settings')
+        .eq('id', workspaceId)
+        .maybeSingle()
+      funnelSourced =
+        (ws?.settings as { source?: string } | null)?.source === 'funnel_order'
+    }
+
+    if (!funnelSourced) {
+      await sendMailboxMagicLink(admin, email).catch((e) =>
+        safeError('[funnel/dashboard-login] mailbox magic link failed:', e)
+      )
+      return NextResponse.redirect(
+        new URL('/login?reason=magic_link_sent', APP_URL)
+      )
+    }
 
     // Mint a single-use magic link for this buyer.
     const { data: linkData, error: linkErr } =

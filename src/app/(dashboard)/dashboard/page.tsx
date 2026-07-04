@@ -694,7 +694,7 @@ export default async function DashboardPage({
 
   const { data: userData, error: userError } = await supabase
     .from('users')
-    .select('id, auth_user_id, workspace_id, email, full_name, plan, role, daily_lead_limit, industry_segment, location_segment, workspaces(id, name, industry_vertical, created_at)')
+    .select('id, auth_user_id, workspace_id, email, full_name, plan, role, daily_lead_limit, industry_segment, location_segment, workspaces(id, name, industry_vertical, created_at, settings)')
     .eq('auth_user_id', user.id)
     .maybeSingle()
 
@@ -702,7 +702,7 @@ export default async function DashboardPage({
     id: string; auth_user_id: string; workspace_id: string; email: string
     full_name: string | null; plan: string | null; role: string
     daily_lead_limit: number | null; industry_segment: string | null; location_segment: string | null
-    workspaces: { id: string; name: string; industry_vertical: string | null; created_at: string } | null
+    workspaces: { id: string; name: string; industry_vertical: string | null; created_at: string; settings: { source?: string } | null } | null
   } | null
 
   if (userError || !userProfile?.workspace_id) redirect('/welcome')
@@ -816,20 +816,51 @@ export default async function DashboardPage({
   // (identified visitors + their weekly audience). This early-return bypasses
   // the entire lead-marketplace dashboard — daily-lead quotas, enrichment
   // credits, targeting prompts, CRM upsells, stacked onboarding checklists —
-  // none of which apply to the funnel offer. A workspace is a funnel buyer iff
-  // it has a funnel_orders row (admin / marketplace workspaces have none and
-  // keep the existing dashboard untouched).
-  if (funnelOrderRow) {
+  // none of which apply to the funnel offer.
+  //
+  // Gate on the workspace being FUNNEL-SOURCED (settings.source ===
+  // 'funnel_order'), NOT on the mere existence of a funnel_orders row. An
+  // existing marketplace customer who buys the pixel add-on has a funnel_orders
+  // row but a full marketplace workspace — they must keep their Today/Assigned/
+  // All leads + full dashboard, not be collapsed into the minimal funnel view.
+  const isFunnelWorkspace =
+    userProfile.workspaces?.settings?.source === 'funnel_order'
+  if (isFunnelWorkspace && funnelOrderRow) {
+    const funnelAdmin = createAdminClient()
+    // Real pixel-visitor sources ONLY. The purchased managed audience
+    // ('audiencelab_pull') and the generic segment puller ('audiencelab') are
+    // cold ICP contacts, NOT people who visited the buyer's site — seeding them
+    // into the "live identified visitors" feed overstated pixel performance and
+    // blurred bought-list vs. real-visitor. This list mirrors the /website-visitors
+    // page's `source ilike %pixel%/%superpixel%` filter so the two surfaces agree.
+    const PIXEL_VISITOR_SOURCES = [
+      'superpixel',
+      'audiencelab_superpixel',
+      'audiencelab_pixel_v4',
+    ]
+    const funnelSince30 = new Date(Date.now() - 30 * 86_400_000).toISOString()
+
     // Server-render the Live Visitor Leads feed seed with the admin client
     // (bypasses RLS). The client-side feed query was unreliable and left the
     // card blank even when leads existed.
-    const { data: feedSeed } = await createAdminClient()
-      .from('leads')
-      .select('id, first_name, last_name, company:company_name, job_title, email, phone, city, state, source, created_at')
-      .eq('workspace_id', workspaceId)
-      .in('source', ['superpixel', 'audiencelab_superpixel', 'audiencelab_pixel_v4', 'audiencelab', 'audiencelab_pull'])
-      .order('created_at', { ascending: false })
-      .limit(10)
+    const [{ data: feedSeed }, { count: identifiedVisitorCount }] = await Promise.all([
+      funnelAdmin
+        .from('leads')
+        .select('id, first_name, last_name, company:company_name, job_title, email, phone, city, state, source, created_at')
+        .eq('workspace_id', workspaceId)
+        .in('source', PIXEL_VISITOR_SOURCES)
+        .order('created_at', { ascending: false })
+        .limit(10),
+      // "Visitors identified" — reconciled to the /website-visitors page total
+      // (identified pixel leads over the last 30 days) so the dashboard tile and
+      // the page it links to never show divergent numbers.
+      funnelAdmin
+        .from('leads')
+        .select('id', { count: 'exact', head: true })
+        .eq('workspace_id', workspaceId)
+        .or('source.ilike.%pixel%,source.ilike.%superpixel%')
+        .gte('created_at', funnelSince30),
+    ])
 
     // Frontload ROI: when a funnel buyer opens the dashboard, kick an immediate
     // AL visitor pull AFTER the response (non-blocking) if we haven't synced in a
@@ -866,7 +897,7 @@ export default async function DashboardPage({
         hasVerifiedPixel={hasVerifiedPixel}
         isPixelExpired={isPixelExpired}
         isActiveTrial={isActiveTrial}
-        visitorCount={visitorCountTotal || pixelEventCount}
+        visitorCount={identifiedVisitorCount ?? 0}
         totalLeads={totalCount}
         visitorLeads={(feedSeed ?? []) as unknown as FeedLead[]}
         meetingsThisMonth={meetingsThisMonth}
@@ -874,7 +905,13 @@ export default async function DashboardPage({
         audienceBuilding={audienceBuilding}
         includesAudience={funnelOrderRow.offer_slug !== 'pixel_97'}
         audienceSubmittedAt={funnelOrderRow.audience_submitted_at}
-        audienceReceivedAt={funnelOrderRow.audience_pushed_at}
+        // "Audience received" must reflect real receipt, not enqueue. audience_pushed_at
+        // is stamped the instant the Inngest event is queued (workspace-provision.ts),
+        // so it lit green simultaneously with "submitted". Drive it off the real
+        // materialized-and-inserted signal instead. (Companion change required in
+        // AudienceProgress.tsx — see report — so the time-estimated build steps
+        // don't render ahead of this now-honest milestone.)
+        audienceReceivedAt={funnelOrderRow.audience_delivered_at}
       />
     )
   }

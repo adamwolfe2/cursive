@@ -299,7 +299,7 @@ export default function AdminAuditLogsPage() {
       </div>
 
       {/* ---- Summary Cards ---- */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         <div className="bg-white border border-zinc-200 rounded-lg p-4">
           <div className="text-[12px] text-zinc-500 uppercase tracking-wide">Events Today</div>
           <div className="text-2xl font-semibold text-zinc-900 mt-1">{todayTotal}</div>

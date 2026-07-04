@@ -11,6 +11,7 @@
  */
 
 import { hmacSha256Hex } from '@/lib/utils/crypto'
+import { isBlockedIpv4, resolvesToBlockedAddress } from '@/lib/utils/ssrf-guard'
 import type { OutboundLeadPayload } from './types'
 
 const DELIVERY_TIMEOUT_MS = 10_000
@@ -21,7 +22,8 @@ const DELIVERY_TIMEOUT_MS = 10_000
  * otherwise smuggle mapped forms like [::ffff:127.0.0.1]), and the cloud
  * metadata IP. DNS is not resolved here (pure/sync, edge-safe) — the resolved
  * addresses are additionally checked at delivery time (see
- * resolvesToBlockedAddress). WHATWG URL canonicalizes decimal/octal IPv4 forms
+ * resolvesToBlockedAddress in @/lib/utils/ssrf-guard). WHATWG URL canonicalizes
+ * decimal/octal IPv4 forms
  * (e.g. https://2130706433 -> 127.0.0.1) before these checks run.
  */
 export function isSafeDestinationUrl(raw: string): boolean {
@@ -41,53 +43,6 @@ export function isSafeDestinationUrl(raw: string): boolean {
   if (isBlockedIpv4(host)) return false
   if (!host.includes('.')) return false // require a dotted hostname
   return true
-}
-
-/** Loopback / private / link-local / metadata / unspecified IPv4 literals. */
-function isBlockedIpv4(host: string): boolean {
-  if (!/^\d{1,3}(\.\d{1,3}){3}$/.test(host)) return false // not an IPv4 literal
-  if (host === '169.254.169.254') return true // cloud metadata
-  if (/^127\./.test(host)) return true
-  if (/^10\./.test(host)) return true
-  if (/^192\.168\./.test(host)) return true
-  if (/^169\.254\./.test(host)) return true
-  if (/^172\.(1[6-9]|2\d|3[01])\./.test(host)) return true
-  if (/^0\./.test(host)) return true // 0.0.0.0/8 (unspecified/broadcast tricks)
-  if (/^100\.(6[4-9]|[7-9]\d|1[01]\d|12[0-7])\./.test(host)) return true // CGNAT 100.64/10
-  return false
-}
-
-/** Blocked IPv6 addresses (loopback, ULA, link-local, mapped-private, unspecified). */
-function isBlockedIpv6(addr: string): boolean {
-  const a = addr.toLowerCase()
-  if (a === '::' || a === '::1') return true
-  if (a.startsWith('fc') || a.startsWith('fd')) return true // ULA fc00::/7
-  if (/^fe[89ab]/.test(a)) return true // link-local fe80::/10
-  // IPv4-mapped (::ffff:a.b.c.d) — recheck the embedded IPv4.
-  const mapped = a.match(/^::ffff:(\d{1,3}(?:\.\d{1,3}){3})$/)
-  if (mapped) return isBlockedIpv4(mapped[1])
-  return false
-}
-
-/**
- * DNS-resolution SSRF check (Node runtime only; the delivery function runs on
- * nodejs). Resolves the hostname the same way fetch/undici will (dns.lookup)
- * and rejects if ANY resolved address is private/loopback/link-local/metadata.
- * This defeats plain DNS-pointing attacks; a fast-flux TOCTOU rebind between
- * this check and the actual connect remains theoretically possible and is an
- * accepted residual risk for v1 (partner endpoints are contract-gated).
- *
- * Throws on resolver failure so the caller's retry machinery handles transient
- * DNS errors; returns true (blocked) only on a definitive private resolution.
- */
-export async function resolvesToBlockedAddress(hostname: string): Promise<boolean> {
-  // IP literals were already validated synchronously; lookup would just echo them.
-  if (/^\d{1,3}(\.\d{1,3}){3}$/.test(hostname)) return isBlockedIpv4(hostname)
-  const dns = await import('node:dns/promises')
-  const addrs = await dns.lookup(hostname, { all: true, verbatim: true })
-  return addrs.some((a) =>
-    a.family === 4 ? isBlockedIpv4(a.address) : isBlockedIpv6(a.address),
-  )
 }
 
 async function signPayload(secret: string, payloadString: string): Promise<{ header: string; timestamp: number }> {
@@ -153,12 +108,25 @@ export async function deliverToPartner(
     }
   } catch (err) {
     clearTimeout(timeoutId)
-    const msg =
-      err instanceof Error && err.name === 'AbortError'
-        ? 'Request timed out after 10s'
-        : err instanceof Error
-          ? err.message
-          : 'Unknown error'
+    if (err instanceof Error && err.name === 'AbortError') {
+      // Transient timeout — throw so Inngest retries.
+      throw new Error('Request timed out after 10s')
+    }
+    const msg = err instanceof Error ? err.message : 'Unknown error'
+    const causeMsg =
+      err instanceof Error && err.cause instanceof Error ? err.cause.message : ''
+    // `redirect: 'error'` makes undici REJECT (not return) when the partner
+    // endpoint responds with a 30x. A redirect is a permanent misconfiguration —
+    // the partner must supply a direct URL — so it can NEVER succeed. Treat it as
+    // a permanent failure instead of throwing: otherwise it is retried 5x over
+    // ~7min of backoff, starving the shared concurrency budget for no reason.
+    if (/redirect/i.test(msg) || /redirect/i.test(causeMsg)) {
+      return {
+        success: false,
+        permanent: true,
+        error: 'Endpoint redirected — provide a direct destination URL',
+      }
+    }
     // Throw so Inngest retries transient network failures.
     throw new Error(msg)
   }

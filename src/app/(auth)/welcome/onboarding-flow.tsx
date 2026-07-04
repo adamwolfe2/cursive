@@ -184,6 +184,20 @@ export function OnboardingFlow({
           emailRedirectTo: `${siteUrl}/auth/callback?next=${encodeURIComponent(nextUrl)}`,
           data: {
             full_name: `${data.firstName} ${data.lastName}`,
+            // Persist the quiz answers server-side (in user_metadata, keyed to the
+            // auth user) so AutoSubmitOnboarding can recover the real industry /
+            // location / lead-need even when the confirmation email is opened on a
+            // DIFFERENT device where localStorage is empty. Without this, cross-device
+            // confirmation fabricates industry:'Other' → wrong workspace + zero leads.
+            onboarding: {
+              role: 'business' as const,
+              firstName: data.firstName,
+              lastName: data.lastName,
+              companyName: data.companyName,
+              industry: data.industry,
+              targetLocations: data.targetLocations,
+              monthlyLeadNeed: data.monthlyLeadNeed,
+            },
           },
         },
       })

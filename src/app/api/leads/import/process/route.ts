@@ -151,7 +151,10 @@ export async function POST(req: NextRequest) {
     }
 
     if (insertedIds.length > 0) {
-      inngest.send(insertedIds.map((leadId) => ({
+      // AWAITED: an un-awaited send freezes with the serverless instance at
+      // response time and arrives late or never (proven live 2026-07-02). The
+      // .catch keeps event-send failure from failing the import response.
+      await inngest.send(insertedIds.map((leadId) => ({
         name: 'lead/created' as const,
         data: { lead_id: leadId, workspace_id: workspaceId, source: options?.source || 'csv_import' },
       }))).catch((err) => safeError('[Import Process] Inngest send failed:', err))

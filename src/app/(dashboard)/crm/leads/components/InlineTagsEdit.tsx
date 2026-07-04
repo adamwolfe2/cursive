@@ -3,7 +3,7 @@
 
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import {
   useFloating,
   autoUpdate,
@@ -39,6 +39,14 @@ export function InlineTagsEdit({
   const [inputValue, setInputValue] = useState('')
   const updateMutation = useUpdateLead()
   const inputRef = useRef<HTMLInputElement>(null)
+
+  // Resync to the source-of-truth prop when it changes externally; skip while a
+  // mutation is in flight so the optimistic tag list isn't clobbered by stale props.
+  useEffect(() => {
+    if (!updateMutation.isPending) {
+      setTags(currentTags)
+    }
+  }, [currentTags, updateMutation.isPending])
 
   const { refs, floatingStyles, context } = useFloating({
     open: isOpen,

@@ -54,9 +54,9 @@ const ctaConfig: Record<
     icon: Sparkles,
     title: 'Get weekly lead gen insights',
     description:
-      'Join 5,000+ marketers receiving our weekly newsletter with actionable tactics for visitor identification and lead generation.',
+      'Get our weekly newsletter with actionable tactics for visitor identification and lead generation.',
     buttonText: 'Subscribe Now',
-    buttonHref: '/newsletter',
+    buttonHref: '/blog',
     accentColor: 'bg-primary/5 border-primary/20',
   },
 }

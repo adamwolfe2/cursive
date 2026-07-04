@@ -60,9 +60,12 @@ export async function GET() {
       .lt('created_at', thirtyDaysAgoISO)
 
     // ── Aggregate workspace spend (last 30 days) ──────────────────────────────
+    // Credit-denominated metric: only count credits actually redeemed. Card/Stripe
+    // purchases have credits_used = 0 (total_price is DOLLARS), so a total_price
+    // fallback would mix dollars into a credits total.
     const workspaceSpend: Record<string, number> = {}
     for (const p of recentPurchases ?? []) {
-      const credits = p.credits_used || p.total_price || 0
+      const credits = p.credits_used || 0
       workspaceSpend[p.buyer_workspace_id] = (workspaceSpend[p.buyer_workspace_id] || 0) + credits
     }
 
@@ -94,15 +97,26 @@ export async function GET() {
       }))
 
     // ── Platform totals ───────────────────────────────────────────────────────
+    // Redeemed = credits actually spent on marketplace purchases (credits only,
+    // never dollar total_price).
     const total_credits_redeemed = (allPurchases ?? []).reduce(
-      (sum, p) => sum + (p.credits_used || p.total_price || 0),
+      (sum, p) => sum + (p.credits_used || 0),
       0
     )
 
-    // Credits issued: from workspace credits_balance sum (approximate) — use purchases as issued proxy
-    // We can sum all-time credits_used as "redeemed" and treat it as our known issued figure
-    // A more accurate "issued" would require a separate credit_issuance log; use purchases for now
-    const total_credits_issued = total_credits_redeemed // placeholder — same data source
+    // Issued = credits granted to workspaces (purchased + earned via referral),
+    // read from the per-workspace cumulative counters. This is a DISTINCT figure
+    // from redeemed; reporting them as equal hid outstanding credit liability.
+    // workspace_credits has one row per workspace, so this is a small aggregate.
+    const { data: creditTotals } = await adminClient
+      .from('workspace_credits')
+      .select('total_purchased, total_earned')
+      .limit(100000)
+
+    const total_credits_issued = (creditTotals ?? []).reduce(
+      (sum, w) => sum + (Number(w.total_purchased) || 0) + (Number(w.total_earned) || 0),
+      0
+    )
 
     // ── Daily velocity (last 30 days) ─────────────────────────────────────────
     const dailyMap: Record<string, number> = {}
@@ -114,7 +128,7 @@ export async function GET() {
     for (const p of recentPurchases ?? []) {
       const day = (p.created_at as string).split('T')[0]
       if (day in dailyMap) {
-        dailyMap[day] += p.credits_used || p.total_price || 0
+        dailyMap[day] += p.credits_used || 0
       }
     }
     const daily_velocity = Object.entries(dailyMap)

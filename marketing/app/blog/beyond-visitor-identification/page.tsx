@@ -88,18 +88,18 @@ export default function BlogPost() {
 
               <h2>What the Intelligence Layer Actually Does</h2>
               <p>
-                The Intelligence Layer is not a single feature. It is a tiered research process that runs automatically on each identified visitor, building progressively deeper context depending on how much you invest per lead.
+                The Intelligence Layer is not a single feature. It is a tiered research process that runs automatically on each identified visitor, building progressively deeper context on the visitors that matter most.
               </p>
 
               <h3>Auto-Tier (free on every lead)</h3>
               <p>
-                Tech stack detection via BuiltWith shows you what software James is already paying for — before you write a single word. If he is on HubSpot, your Salesforce pitch needs work. If he is on Intercom, you know the team cares about customer communication tooling. Email quality scoring via EmailRep tells you whether the contact is deliverable before you add it to a sequence. Both run automatically on every identified visitor. No credits, no clicks required.
+                Tech stack detection via BuiltWith shows you what software James is already paying for — before you write a single word. If he is on HubSpot, your Salesforce pitch needs work. If he is on Intercom, you know the team cares about customer communication tooling. Email quality scoring via EmailRep tells you whether the contact is deliverable before you add it to a sequence. Both run automatically on every identified visitor. No setup, no clicks required.
               </p>
               <p>
                 This alone eliminates a category of waste: sending sequences to undeliverable addresses, or pitching the wrong product because you did not know what they were already using. The auto-tier is not glamorous. It is infrastructure — the foundation that makes everything else more efficient.
               </p>
 
-              <h3>Intelligence Pack (2 credits, ~$1)</h3>
+              <h3>Intelligence Pack</h3>
               <p>
                 Pull James's full LinkedIn work history via Proxycurl. Understand his career trajectory, what he has accomplished, how long he has been in his current role. Pull his social profiles via FullContact — Twitter, GitHub, personal site — to understand how he communicates publicly. Pull news mentions via Serper — has his company been in the press recently? Did he speak at a conference? Did his company raise a round?
               </p>
@@ -107,7 +107,7 @@ export default function BlogPost() {
                 Every one of these is a natural conversation hook. The difference between "I noticed you visited our site" and "I saw the piece in TechCrunch about Meridian's Series B — the scaling challenges that come 18 months after a round are exactly where we typically help." One of those emails gets deleted. The other gets a reply.
               </p>
 
-              <h3>Deep Research (10 credits, ~$5)</h3>
+              <h3>Deep Research</h3>
               <p>
                 Perplexity AI reads everything — the LinkedIn history, the social profiles, the news mentions — and synthesizes it into two things: a research brief (a 3-paragraph dossier on this specific person) and a personalized outreach angle (a single sentence explaining the most compelling reason to reach out to this person, today, given everything the AI knows about them).
               </p>
@@ -134,10 +134,10 @@ export default function BlogPost() {
                 If raw visitor identification converts at 2% and intelligence-augmented outreach converts at 6%, the math is simple.
               </p>
               <p>
-                If your ACV is $20,000 and you have 50 qualified visitors per month, the difference between 2% and 6% conversion is 2 additional deals per month — $40,000 in added monthly revenue. The cost of running Deep Research on all 50 visitors: $250 per month (50 visits at $5 each). The ROI: 160x.
+                If your ACV is $20,000 and you have 50 qualified visitors per month, the difference between 2% and 6% conversion is 2 additional deals per month — $40,000 in added monthly revenue. The Intelligence Layer is included in your Cursive subscription — a flat monthly cost, with no per-lead fees for running enrichment on every identified visitor.
               </p>
               <p>
-                You do not need to run Deep Research on every visitor. Run it on the top 10 per day — the ones who hit your pricing page, visited three or more times, or match your ICP by title and company size. That is $50 per day, $1,500 per month — against whatever your deal size is.
+                Prioritize the highest-intent visitors first — the ones who hit your pricing page, visited three or more times, or match your ICP by title and company size — then work down the list. Because enrichment is bundled into the subscription rather than billed per lead, running it broadly does not change your monthly cost.
               </p>
 
               <div className="not-prose overflow-x-auto my-8">
@@ -157,12 +157,12 @@ export default function BlogPost() {
                     </tr>
                     <tr className="bg-gray-50">
                       <td className="border border-gray-300 p-3 font-medium">Intelligence Pack</td>
-                      <td className="border border-gray-300 p-3 font-bold">~$1 per lead</td>
+                      <td className="border border-gray-300 p-3 font-bold">Included</td>
                       <td className="border border-gray-300 p-3">LinkedIn history + social profiles + news mentions</td>
                     </tr>
                     <tr>
                       <td className="border border-gray-300 p-3 font-medium">Deep Research</td>
-                      <td className="border border-gray-300 p-3 font-bold">~$5 per lead</td>
+                      <td className="border border-gray-300 p-3 font-bold">Included</td>
                       <td className="border border-gray-300 p-3">AI research brief + personalized outreach angle</td>
                     </tr>
                   </tbody>
@@ -193,12 +193,12 @@ export default function BlogPost() {
             <div className="max-w-3xl mx-auto text-center">
               <h2 className="text-3xl font-bold mb-4">See the Intelligence Layer in Action</h2>
               <p className="text-xl mb-8 text-white/90">
-                Start free at leads.meetcursive.com. Install the SuperPixel in under 2 minutes and get automatic enrichment on every identified visitor.
+                Get started at leads.meetcursive.com from $97/mo. Install the SuperPixel in under 2 minutes and get automatic enrichment on every identified visitor.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button size="lg" variant="default" className="bg-white text-primary hover:bg-white/90" asChild>
                   <a href="https://leads.meetcursive.com/get-leads" target="_blank" rel="noopener noreferrer">
-                    Start Free
+                    Get Started
                   </a>
                 </Button>
                 <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10" asChild>
@@ -240,9 +240,9 @@ export default function BlogPost() {
 
           <MachineSection title="Intelligence Layer — Three Tiers">
             <MachineList items={[
-              "Auto Tier (free, every lead): Tech stack detection via BuiltWith. Email deliverability via EmailRep. Runs automatically — no credits, no clicks.",
-              "Intelligence Pack (2 credits, ~$1): Full LinkedIn work history via Proxycurl. Social profiles via FullContact. News and press mentions via Serper. Each is a natural conversation hook.",
-              "Deep Research (10 credits, ~$5): Perplexity AI synthesizes all data into a 3-paragraph research brief and a single AI-written personalized outreach angle.",
+              "Auto Tier (every lead): Tech stack detection via BuiltWith. Email deliverability via EmailRep. Runs automatically — no setup, no clicks.",
+              "Intelligence Pack: Full LinkedIn work history via Proxycurl. Social profiles via FullContact. News and press mentions via Serper. Each is a natural conversation hook.",
+              "Deep Research: Perplexity AI synthesizes all data into a 3-paragraph research brief and a single AI-written personalized outreach angle.",
             ]} />
           </MachineSection>
 
@@ -258,8 +258,8 @@ export default function BlogPost() {
             <MachineList items={[
               "Raw ID converts at 2%. Intelligence-augmented outreach converts at 6%.",
               "With 50 qualified visitors/month at $20k ACV: 2% = 1 deal/mo, 6% = 3 deals/mo. Delta = $40k/month.",
-              "Cost of Deep Research on all 50: $250/month. ROI: 160x.",
-              "Run Deep Research only on top-10 daily visitors (pricing page, 3+ visits, ICP match) = $1,500/month cost.",
+              "The Intelligence Layer is included in the Cursive subscription — a flat monthly cost with no per-lead enrichment fees.",
+              "Prioritize highest-intent visitors first; because enrichment is bundled into the subscription, running it broadly does not change your monthly cost.",
             ]} />
           </MachineSection>
 
@@ -275,7 +275,7 @@ export default function BlogPost() {
             <MachineList items={[
               { label: "Cursive vs RB2B Comparison", href: "/cursive-vs-rb2b", description: "14-feature side-by-side breakdown" },
               { label: "RB2B Alternative", href: "/blog/rb2b-alternative", description: "Why teams switch from RB2B to Cursive" },
-              { label: "Start Free", href: "https://leads.meetcursive.com/get-leads", description: "Create a Cursive account" },
+              { label: "Get Started", href: "https://leads.meetcursive.com/get-leads", description: "Create a Cursive account" },
             ]} />
           </MachineSection>
         </MachineContent>

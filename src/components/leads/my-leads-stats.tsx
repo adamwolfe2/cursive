@@ -9,6 +9,8 @@
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { safeError } from '@/lib/utils/log-sanitizer'
+import { AlertTriangle, RefreshCw } from 'lucide-react'
 
 interface MyLeadsStatsProps {
   userId: string
@@ -31,48 +33,72 @@ export function MyLeadsStats({ userId, workspaceId, refreshKey = 0 }: MyLeadsSta
     convertedLeads: 0,
   })
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
+  const [retryKey, setRetryKey] = useState(0)
 
   useEffect(() => {
+    let cancelled = false
+
     async function fetchStats() {
+      setLoading(true)
+      setError(false)
       const supabase = createClient()
 
-      const [totalResult, newResult, contactedResult, convertedResult] = await Promise.all([
-        supabase
-          .from('user_lead_assignments')
-          .select('*', { count: 'exact', head: true })
-          .eq('user_id', userId)
-          .eq('workspace_id', workspaceId),
-        supabase
-          .from('user_lead_assignments')
-          .select('*', { count: 'exact', head: true })
-          .eq('user_id', userId)
-          .eq('workspace_id', workspaceId)
-          .eq('status', 'new'),
-        supabase
-          .from('user_lead_assignments')
-          .select('*', { count: 'exact', head: true })
-          .eq('user_id', userId)
-          .eq('workspace_id', workspaceId)
-          .eq('status', 'contacted'),
-        supabase
-          .from('user_lead_assignments')
-          .select('*', { count: 'exact', head: true })
-          .eq('user_id', userId)
-          .eq('workspace_id', workspaceId)
-          .eq('status', 'converted'),
-      ])
+      try {
+        const [totalResult, newResult, contactedResult, convertedResult] = await Promise.all([
+          supabase
+            .from('user_lead_assignments')
+            .select('*', { count: 'exact', head: true })
+            .eq('user_id', userId)
+            .eq('workspace_id', workspaceId),
+          supabase
+            .from('user_lead_assignments')
+            .select('*', { count: 'exact', head: true })
+            .eq('user_id', userId)
+            .eq('workspace_id', workspaceId)
+            .eq('status', 'new'),
+          supabase
+            .from('user_lead_assignments')
+            .select('*', { count: 'exact', head: true })
+            .eq('user_id', userId)
+            .eq('workspace_id', workspaceId)
+            .eq('status', 'contacted'),
+          supabase
+            .from('user_lead_assignments')
+            .select('*', { count: 'exact', head: true })
+            .eq('user_id', userId)
+            .eq('workspace_id', workspaceId)
+            .eq('status', 'converted'),
+        ])
 
-      setStats({
-        totalLeads: totalResult.count ?? 0,
-        newLeads: newResult.count ?? 0,
-        contactedLeads: contactedResult.count ?? 0,
-        convertedLeads: convertedResult.count ?? 0,
-      })
-      setLoading(false)
+        if (cancelled) return
+
+        // A rejected fetch throws; a query-level error surfaces on `.error`.
+        if (totalResult.error || newResult.error || contactedResult.error || convertedResult.error) {
+          throw totalResult.error || newResult.error || contactedResult.error || convertedResult.error
+        }
+
+        setStats({
+          totalLeads: totalResult.count ?? 0,
+          newLeads: newResult.count ?? 0,
+          contactedLeads: contactedResult.count ?? 0,
+          convertedLeads: convertedResult.count ?? 0,
+        })
+      } catch (err) {
+        if (cancelled) return
+        safeError('[MyLeadsStats]', 'Failed to fetch stats:', err)
+        setError(true)
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
     }
 
     fetchStats()
-  }, [userId, workspaceId, refreshKey])
+
+    return () => {
+      cancelled = true
+    }
+  }, [userId, workspaceId, refreshKey, retryKey])
 
   const statCards = [
     {
@@ -128,6 +154,24 @@ export function MyLeadsStats({ userId, workspaceId, refreshKey = 0 }: MyLeadsSta
             <div className="mt-2 h-8 w-16 bg-zinc-200 rounded"></div>
           </div>
         ))}
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center gap-3 rounded-lg border border-red-200 bg-red-50 p-6 text-center sm:flex-row sm:justify-between sm:text-left">
+        <div className="flex items-center gap-2.5">
+          <AlertTriangle className="h-5 w-5 shrink-0 text-red-500" />
+          <p className="text-sm text-red-800">Couldn&apos;t load your lead stats.</p>
+        </div>
+        <button
+          onClick={() => setRetryKey((k) => k + 1)}
+          className="inline-flex items-center gap-1.5 rounded-md border border-red-300 px-3 py-1.5 text-sm font-medium text-red-700 hover:bg-red-100 transition-colors"
+        >
+          <RefreshCw className="h-3.5 w-3.5" />
+          Retry
+        </button>
       </div>
     )
   }

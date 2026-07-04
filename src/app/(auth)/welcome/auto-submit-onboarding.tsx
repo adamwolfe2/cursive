@@ -110,25 +110,47 @@ export function AutoSubmitOnboarding({ isMarketplace, isReturning }: AutoSubmitO
             return
           }
 
-          // Create onboarding data from Google account using correct API schema fields.
-          // Split full_name into firstName/lastName to match the businessSchema.
-          const rawName: string = user.user_metadata?.full_name || user.user_metadata?.name || ''
-          const nameParts = rawName.trim().split(/\s+/).filter(Boolean)
-          const firstName = nameParts[0] || user.email?.split('@')[0] || 'User'
-          const lastName = nameParts.slice(1).join(' ') || 'Account'
-          // Use email domain (without TLD) as company name for B2B signups
-          const emailDomainPart = user.email?.split('@')[1]?.split('.')[0] || ''
-          const companyName = emailDomainPart
-            ? emailDomainPart.charAt(0).toUpperCase() + emailDomainPart.slice(1)
-            : rawName || 'My Business'
-          onboardingData = {
-            role: 'business',
-            firstName,
-            lastName,
-            email: user.email,
-            companyName,
-            industry: 'Other',
-            monthlyLeadNeed: '25-50 leads', // sensible default for OAuth direct signups
+          // ── Cross-device recovery ─────────────────────────────────────────
+          // The quiz persists the user's real answers into user_metadata.onboarding
+          // at signUp (see onboarding-flow.tsx). When the confirmation email is
+          // opened on a DIFFERENT device (localStorage empty here), recover them
+          // from the server-side metadata so the workspace gets the real industry /
+          // location / lead-need instead of a fabricated 'Other'.
+          const savedOnboarding = user.user_metadata?.onboarding
+          if (savedOnboarding && savedOnboarding.industry) {
+            onboardingData = {
+              role: savedOnboarding.role || 'business',
+              firstName: savedOnboarding.firstName,
+              lastName: savedOnboarding.lastName,
+              email: user.email,
+              companyName: savedOnboarding.companyName,
+              industry: savedOnboarding.industry,
+              targetLocations: savedOnboarding.targetLocations,
+              monthlyLeadNeed: savedOnboarding.monthlyLeadNeed || '25-50 leads',
+            }
+          } else {
+            // Last resort: no stored answers anywhere (true OAuth-direct signup, or
+            // a plain /signup with no quiz). Create a basic workspace from the
+            // account info and route the user to /setup to capture real targeting.
+            // Split full_name into firstName/lastName to match the businessSchema.
+            const rawName: string = user.user_metadata?.full_name || user.user_metadata?.name || ''
+            const nameParts = rawName.trim().split(/\s+/).filter(Boolean)
+            const firstName = nameParts[0] || user.email?.split('@')[0] || 'User'
+            const lastName = nameParts.slice(1).join(' ') || 'Account'
+            // Use email domain (without TLD) as company name for B2B signups
+            const emailDomainPart = user.email?.split('@')[1]?.split('.')[0] || ''
+            const companyName = emailDomainPart
+              ? emailDomainPart.charAt(0).toUpperCase() + emailDomainPart.slice(1)
+              : rawName || 'My Business'
+            onboardingData = {
+              role: 'business',
+              firstName,
+              lastName,
+              email: user.email,
+              companyName,
+              industry: 'Other',
+              monthlyLeadNeed: '25-50 leads', // sensible default for OAuth direct signups
+            }
           }
         } else {
           // Remove the isMarketplace flag before sending to API

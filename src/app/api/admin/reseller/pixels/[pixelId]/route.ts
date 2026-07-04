@@ -54,7 +54,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       .from('reseller_pixels')
       .update(patch)
       .eq('id', pixelId)
-      .select('id, status, lead_cap_per_period, throttle_mode, destination_url')
+      .select('id, status, lead_cap_per_period, throttle_mode, destination_url, pixel_id, workspace_id')
       .maybeSingle()
 
     if (error) {
@@ -63,7 +63,30 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     }
     if (!data) return NextResponse.json({ error: 'Pixel not found' }, { status: 404 })
 
-    return NextResponse.json({ success: true, pixel: data })
+    // Keep the underlying AudienceLab pixel in sync with the reseller pixel status,
+    // matching the self-serve deactivateResellerPixel path. Without this, an
+    // admin-deactivated pixel keeps ingesting/attributing inbound events
+    // (resolveEventAttribution gates on audiencelab_pixels.is_active=true) — a
+    // state divergence from the API deactivate. Sync both directions.
+    if (input.status !== undefined) {
+      const { error: alError } = await supabase
+        .from('audiencelab_pixels')
+        .update({ is_active: input.status === 'active' })
+        .eq('pixel_id', data.pixel_id)
+        .eq('workspace_id', data.workspace_id)
+      if (alError) safeError('[AdminReseller] audiencelab is_active sync failed:', alError)
+    }
+
+    return NextResponse.json({
+      success: true,
+      pixel: {
+        id: data.id,
+        status: data.status,
+        lead_cap_per_period: data.lead_cap_per_period,
+        throttle_mode: data.throttle_mode,
+        destination_url: data.destination_url,
+      },
+    })
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json({ error: 'Invalid request', details: error.issues.slice(0, 5) }, { status: 400 })

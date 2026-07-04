@@ -25,9 +25,9 @@ import {
   SelectValue,
 } from '@/components/ui/select-radix'
 import { useToast } from '@/lib/hooks/use-toast'
-import type { LeadTableRow } from '@/types/crm.types'
+import { LEAD_STATUSES, LEAD_STATUS_OPTIONS, type LeadTableRow } from '@/types/crm.types'
 
-const statusOptions = ['new', 'contacted', 'qualified', 'proposal', 'negotiation', 'won', 'lost', 'converted'] as const
+const statusOptions = LEAD_STATUSES
 
 const editLeadSchema = z.object({
   first_name: z.string().optional(),
@@ -241,14 +241,11 @@ export function EditLeadDialog({ open, onOpenChange, lead, onSuccess }: EditLead
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="new">New</SelectItem>
-                  <SelectItem value="contacted">Contacted</SelectItem>
-                  <SelectItem value="qualified">Qualified</SelectItem>
-                  <SelectItem value="proposal">Proposal</SelectItem>
-                  <SelectItem value="negotiation">Negotiation</SelectItem>
-                  <SelectItem value="won">Won</SelectItem>
-                  <SelectItem value="lost">Lost</SelectItem>
-                  <SelectItem value="converted">Converted</SelectItem>
+                  {LEAD_STATUS_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>

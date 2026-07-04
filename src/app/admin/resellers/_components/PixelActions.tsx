@@ -53,7 +53,9 @@ export default function PixelActions({ pixel }: PixelActionsProps) {
     patch({
       lead_cap_per_period: cap.trim() === '' ? null : Math.max(0, parseInt(cap, 10) || 0),
       throttle_mode: throttle,
-      ...(destination.trim() ? { destination_url: destination.trim() } : {}),
+      // Always send destination_url so a blanked field explicitly clears it
+      // (null). Omitting the key would silently keep a stale/compromised endpoint.
+      destination_url: destination.trim() ? destination.trim() : null,
     })
 
   return (

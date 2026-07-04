@@ -43,7 +43,7 @@ const leadEnrichmentFAQs = [
   },
   {
     question: 'Which lead enrichment providers are best for B2B?',
-    answer: 'Top B2B lead enrichment providers: Cursive (visitor identification + enrichment + intent data, $1k/mo platform); Clearbit/Breeze (HubSpot-native enrichment, strong for SMB-mid market); ZoomInfo (largest database, $15-50k/yr enterprise contracts); Apollo.io (budget-friendly, 200M+ contacts, $49-$99/user/mo); Lusha (LinkedIn-focused, $29-$79/user/mo); and Cognism (EMEA-specialized, $15-40k/yr). Choose based on ICP geography, deal size, and budget.',
+    answer: 'Top B2B lead enrichment providers: Cursive (visitor identification + enrichment + intent data, $97-$247/mo platform); Clearbit/Breeze (HubSpot-native enrichment, strong for SMB-mid market); ZoomInfo (largest database, $15-50k/yr enterprise contracts); Apollo.io (budget-friendly, 200M+ contacts, $49-$99/user/mo); Lusha (LinkedIn-focused, $29-$79/user/mo); and Cognism (EMEA-specialized, $15-40k/yr). Choose based on ICP geography, deal size, and budget.',
   },
   {
     question: 'How accurate is lead enrichment data?',

@@ -64,7 +64,7 @@ export function useLeads(filters: LeadFilters) {
 
 // Update a single lead
 async function updateLead(id: string, updates: LeadUpdatePayload): Promise<LeadTableRow> {
-  const response = await fetch(`/api/crm/leads?id=${id}`, {
+  const response = await fetch(`/api/crm/leads/${id}`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(updates),
@@ -104,8 +104,14 @@ export function useUpdateLead() {
   })
 }
 
+interface BulkUpdateResult {
+  success: boolean
+  message: string
+  count: number
+}
+
 // Bulk update leads
-async function bulkUpdateLeads(ids: string[], action: string, data: Record<string, unknown>): Promise<void> {
+async function bulkUpdateLeads(ids: string[], action: string, data: Record<string, unknown>): Promise<BulkUpdateResult> {
   const response = await fetch('/api/crm/leads/bulk', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -116,6 +122,8 @@ async function bulkUpdateLeads(ids: string[], action: string, data: Record<strin
     const error = await response.json()
     throw new Error(error.error || 'Failed to perform bulk operation')
   }
+
+  return response.json()
 }
 
 // Hook for bulk operations
@@ -126,11 +134,13 @@ export function useBulkUpdateLeads() {
   return useMutation({
     mutationFn: ({ ids, action, data }: { ids: string[]; action: string; data: Record<string, unknown> }) =>
       bulkUpdateLeads(ids, action, data),
-    onSuccess: (_, variables) => {
+    onSuccess: (result) => {
       queryClient.invalidateQueries({ queryKey: ['crm-leads'] })
+      // Use the server-reported affected-row count, not the requested id count,
+      // so the toast never overstates how many leads actually changed.
       toast({
         title: 'Bulk update complete',
-        message: `Updated ${variables.ids.length} lead(s) successfully.`,
+        message: `Updated ${result.count} lead(s) successfully.`,
       })
     },
     onError: (error: Error) => {

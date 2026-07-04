@@ -191,8 +191,31 @@ export interface PaginatedResult<T> {
 // CRM LEADS (Marketplace Leads in CRM Interface)
 // ============================================================================
 
-// Lead status enum (imported from database types)
-export type LeadStatus = 'new' | 'contacted' | 'qualified' | 'proposal' | 'negotiation' | 'won' | 'lost'
+// Lead status enum — single source of truth, mirrors the DB `lead_status` enum
+// (supabase/migrations/archive/20260125000001_lead_status_notes.sql).
+export const LEAD_STATUSES = [
+  'new',
+  'contacted',
+  'qualified',
+  'proposal',
+  'negotiation',
+  'won',
+  'lost',
+] as const
+
+export type LeadStatus = (typeof LEAD_STATUSES)[number]
+
+// Value + human label pairs for status selectors. Reuse everywhere a status
+// picker is rendered so the dialog, inline editor, and bulk actions never drift.
+export const LEAD_STATUS_OPTIONS: { value: LeadStatus; label: string }[] = [
+  { value: 'new', label: 'New' },
+  { value: 'contacted', label: 'Contacted' },
+  { value: 'qualified', label: 'Qualified' },
+  { value: 'proposal', label: 'Proposal' },
+  { value: 'negotiation', label: 'Negotiation' },
+  { value: 'won', label: 'Won' },
+  { value: 'lost', label: 'Lost' },
+]
 
 // LeadTableRow represents a marketplace lead with joined user data
 export interface LeadTableRow {

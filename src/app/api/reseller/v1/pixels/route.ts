@@ -10,6 +10,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { requireReseller } from '@/lib/reseller/auth'
 import { createResellerPixel, listResellerPixels } from '@/lib/reseller/pixel.service'
+import { currentPeriodStart } from '@/lib/reseller/metering.service'
 import { isSafeDestinationUrl } from '@/lib/reseller/delivery.service'
 import { checkRateLimit } from '@/lib/middleware/rate-limiter'
 import { safeError } from '@/lib/utils/log-sanitizer'
@@ -94,21 +95,42 @@ export async function GET(request: NextRequest) {
   const auth = await requireReseller(request, 'pixels:read')
   if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status })
 
-  const pixels = await listResellerPixels(auth.reseller.id)
+  const r = auth.reseller
+  const curPeriod = currentPeriodStart(r.period_kind)
+  const pixels = await listResellerPixels(r.id)
   return NextResponse.json({
-    pixels: pixels.map((p) => ({
-      pixel_id: p.pixel_id,
-      external_customer_ref: p.external_customer_ref,
-      website_url: p.website_url,
-      domain: p.domain,
-      status: p.status,
-      destination_url: p.destination_url,
-      throttle_mode: p.throttle_mode,
-      lead_cap_per_period: p.lead_cap_per_period,
-      leads_delivered_period: p.leads_delivered_period,
-      leads_delivered_lifetime: p.leads_delivered_lifetime,
-      last_delivered_at: p.last_delivered_at,
-      created_at: p.created_at,
-    })),
+    pixels: pixels.map((p) => {
+      // Reset the delivered count to 0 once the stored period is stale, so this
+      // list agrees with GET /usage right after a period rollover instead of
+      // reporting last period's number as the current one.
+      const pStale = p.period_start < curPeriod
+      const used = pStale ? 0 : p.leads_delivered_period
+      // Effective cap = explicit pixel cap, else the reseller default (what
+      // enforcement actually applies). Report both plus its source.
+      const effectiveCap = p.lead_cap_per_period ?? r.default_lead_cap_per_period
+      const capSource =
+        p.lead_cap_per_period != null
+          ? 'pixel'
+          : r.default_lead_cap_per_period != null
+            ? 'reseller_default'
+            : null
+      return {
+        pixel_id: p.pixel_id,
+        external_customer_ref: p.external_customer_ref,
+        website_url: p.website_url,
+        domain: p.domain,
+        status: p.status,
+        destination_url: p.destination_url,
+        throttle_mode: p.throttle_mode,
+        lead_cap_per_period: p.lead_cap_per_period,
+        effective_lead_cap_per_period: effectiveCap,
+        cap_source: capSource,
+        leads_delivered_period: used,
+        leads_delivered_lifetime: p.leads_delivered_lifetime,
+        remaining: effectiveCap == null ? null : Math.max(0, effectiveCap - used),
+        last_delivered_at: p.last_delivered_at,
+        created_at: p.created_at,
+      }
+    }),
   })
 }

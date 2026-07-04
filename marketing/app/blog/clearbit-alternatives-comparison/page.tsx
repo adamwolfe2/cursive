@@ -26,7 +26,7 @@ const faqs = [
   },
   {
     question: "What's the most affordable Clearbit alternative?",
-    answer: "Hunter.io and Apollo.io offer the most budget-friendly options, with free tiers and plans starting under $50/month. However, they have more limited data coverage compared to enterprise alternatives. Cursive offers transparent pricing starting at $99/month for visitor identification."
+    answer: "Hunter.io and Apollo.io offer the most budget-friendly options, with free tiers and plans starting under $50/month. However, they have more limited data coverage compared to enterprise alternatives. Cursive offers transparent self-serve pricing from $97/mo for visitor identification."
   },
   {
     question: "Can I use multiple data enrichment tools together?",
@@ -144,7 +144,7 @@ export default function BlogPost() {
                     </li>
                     <li className="flex items-center gap-2">
                       <Check className="w-4 h-4 text-green-600" />
-                      Transparent pricing starting at $99/mo
+                      Transparent pricing from $97/mo
                     </li>
                   </ul>
                 </div>
@@ -166,7 +166,7 @@ export default function BlogPost() {
               <div className="bg-white rounded-lg p-4">
                 <div className="flex justify-between items-center mb-2">
                   <span className="font-bold">Pricing:</span>
-                  <span className="text-lg font-bold text-primary">$99 - $999/mo</span>
+                  <span className="text-lg font-bold text-primary">$97 - $247/mo</span>
                 </div>
                 <p className="text-sm text-gray-600">
                   <strong>Best for:</strong> B2B SaaS companies that want to convert website traffic into pipeline through
@@ -768,7 +768,7 @@ export default function BlogPost() {
                   <tr className="bg-primary/5 border-2 border-primary">
                     <td className="border border-gray-300 p-3 font-bold">Cursive</td>
                     <td className="border border-gray-300 p-3">Visitor ID + Intent</td>
-                    <td className="border border-gray-300 p-3">$99/mo</td>
+                    <td className="border border-gray-300 p-3">$97/mo</td>
                     <td className="border border-gray-300 p-3">85%+ match rate</td>
                     <td className="border border-gray-300 p-3 text-green-600 font-bold">Yes</td>
                   </tr>
@@ -866,7 +866,7 @@ export default function BlogPost() {
             <h3>If You're Budget-Conscious:</h3>
             <p>
               Start with <strong>Hunter.io</strong> for email-only needs, <strong>Apollo.io</strong> for
-              all-in-one on a budget, or <strong>Cursive</strong> at $99/mo for visitor identification.
+              all-in-one on a budget, or <strong>Cursive</strong> at $97/mo for visitor identification.
             </p>
 
             <h3>If You Need Intent Data:</h3>
@@ -975,7 +975,7 @@ export default function BlogPost() {
 
           <MachineSection title="Key Takeaways">
             <MachineList items={[
-              "Cursive - Best for real-time visitor identification & intent-based outreach ($99-$999/mo)",
+              "Cursive - Best for real-time visitor identification & intent-based outreach ($97-$247/mo)",
               "ZoomInfo - Largest proprietary database (100M+ contacts) with enterprise pricing ($15k-$50k+/year)",
               "Apollo.io - All-in-one platform with generous free tier (Free-$149/user/mo)",
               "Lusha - Specializes in phone numbers with 70%+ connect rate ($29-$79/user/mo)",
@@ -1003,7 +1003,7 @@ export default function BlogPost() {
 
           <MachineSection title="1. Cursive - Real-Time Visitor Identification">
             <p className="text-gray-700 mb-3">
-              <strong>Pricing:</strong> $99-$999/mo | <strong>Best for:</strong> B2B SaaS converting website traffic into pipeline
+              <strong>Pricing:</strong> $97-$247/mo | <strong>Best for:</strong> B2B SaaS converting website traffic into pipeline
             </p>
             <div className="space-y-4">
               <div>
@@ -1012,7 +1012,7 @@ export default function BlogPost() {
                   "Real-time visitor identification (85%+ match rate)",
                   "Intent signal tracking and scoring",
                   "Automated outreach workflows",
-                  "Transparent pricing starting at $99/mo"
+                  "Transparent pricing from $97/mo"
                 ]} />
               </div>
               <div>
@@ -1233,7 +1233,7 @@ export default function BlogPost() {
               "Real-time visitor identification: 85%+ match rate for anonymous website visitors",
               "Intent signal tracking: Behavioral scoring based on page views, time on site, and content engagement",
               "Automated outreach: Trigger personalized campaigns based on visitor behavior and intent",
-              "Transparent pricing: $99-$999/mo vs Clearbit's $50k+ annual enterprise contracts",
+              "Transparent pricing: $97-$247/mo vs Clearbit's $50k+ annual enterprise contracts",
               "Use case focus: Converting website traffic into pipeline vs broad contact enrichment"
             ]} />
             <p className="text-gray-700 mt-4">
@@ -1257,7 +1257,7 @@ export default function BlogPost() {
               </div>
               <div>
                 <p className="font-bold text-gray-900 mb-2">For Budget-Conscious Teams:</p>
-                <p className="text-gray-700">Start with Hunter.io for email-only needs (free tier), Apollo.io for all-in-one on a budget (free-$149/mo), or Cursive at $99/mo for visitor identification.</p>
+                <p className="text-gray-700">Start with Hunter.io for email-only needs (free tier), Apollo.io for all-in-one on a budget (free-$149/mo), or Cursive at $97/mo for visitor identification.</p>
               </div>
               <div>
                 <p className="font-bold text-gray-900 mb-2">For Intent Data:</p>
@@ -1283,7 +1283,7 @@ export default function BlogPost() {
             </p>
             <MachineList items={[
               { label: "Platform Overview", href: "/platform", description: "Visitor identification, intent data, and AI-powered outreach" },
-              { label: "Pricing", href: "/pricing", description: "Transparent pricing starting at $99/month" },
+              { label: "Pricing", href: "/pricing", description: "Transparent pricing from $97/mo" },
               { label: "Visitor Identification", href: "/visitor-identification", description: "85%+ identification rate for B2B traffic" },
               { label: "Intent Audiences", href: "/intent-audiences", description: "Behavioral scoring and segmentation" },
               { label: "Audience Builder", href: "/audience-builder", description: "Segment and target your ideal customers" },

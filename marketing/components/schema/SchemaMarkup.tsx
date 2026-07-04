@@ -50,22 +50,15 @@ export function SoftwareApplicationSchema() {
     url: BASE_URL,
     offers: {
       "@type": "Offer",
-      price: "1000",
+      price: "97",
       priceCurrency: "USD",
       priceSpecification: {
         "@type": "UnitPriceSpecification",
-        price: "1000",
+        price: "97",
         priceCurrency: "USD",
         unitText: "MONTH",
       },
       availability: "https://schema.org/InStock",
-    },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "4.8",
-      reviewCount: "127",
-      bestRating: "5",
-      worstRating: "1",
     },
     description:
       "AI-powered B2B data and outbound platform for visitor identification, audience building, and multi-channel campaign automation.",

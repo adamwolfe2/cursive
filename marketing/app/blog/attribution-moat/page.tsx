@@ -556,7 +556,7 @@ export default function BlogPost() {
               </p>
               <div className="flex gap-4 justify-center flex-wrap">
                 <Button asChild size="lg">
-                  <Link href="/get-leads">Get Started Free</Link>
+                  <Link href="/get-leads">Get Started</Link>
                 </Button>
                 <Button asChild variant="outline" size="lg">
                   <Link href="/visitor-estimate">Run Free Estimate</Link>
