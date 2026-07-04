@@ -733,7 +733,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">6sense vs Cursive: Complete Comparison (2026)</h1>
+          <h2 className="text-2xl font-semibold mb-4">6sense vs Cursive: Complete Comparison (2026)</h2>
 
           <p className="text-gray-700 mb-6">
             6sense is an enterprise ABM platform ($60k-150k+/year) focused on account-level intent and predictive analytics. Cursive is a visitor identification platform ($97-247/month) focused on person-level tracking and automated outreach. Published: February 5, 2026.

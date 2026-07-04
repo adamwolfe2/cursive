@@ -371,7 +371,7 @@ export default function FinancialServicesPage() {
         <MachineContent>
           {/* Header */}
           <div className="mb-12 pb-6 border-b border-gray-200">
-            <h1 className="text-2xl text-gray-900 font-bold mb-4">CURSIVE FOR FINANCIAL SERVICES</h1>
+            <h2 className="text-2xl text-foreground font-semibold mb-4">CURSIVE FOR FINANCIAL SERVICES</h2>
             <p className="text-gray-700 leading-relaxed">
               Identity and intent data platform for banks, credit unions, wealth management firms,
               insurance companies, and fintech. Acquire high-net-worth clients and businesses with

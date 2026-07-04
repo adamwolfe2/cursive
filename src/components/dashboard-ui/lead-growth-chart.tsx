@@ -61,7 +61,7 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
           {data.payload.fullDate || data.payload.label}
         </p>
         <div className="flex items-center gap-2 mt-1">
-          <span className="font-semibold text-sm bg-gradient-cursive bg-clip-text text-transparent">
+          <span className="font-semibold text-sm text-brand-600">
             {data.value} leads
           </span>
         </div>
@@ -114,7 +114,7 @@ export function LeadGrowthChart({
           <Button variant="outline" size="icon" className="size-8 border-blue-200">
             <TrendingUp className="size-4 text-blue-600" />
           </Button>
-          <h3 className="font-medium text-sm sm:text-base bg-gradient-cursive bg-clip-text text-transparent">
+          <h3 className="font-medium text-sm sm:text-base text-brand-600">
             {title}
           </h3>
         </div>

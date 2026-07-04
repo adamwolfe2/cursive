@@ -866,7 +866,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">Cursive vs ZoomInfo: Which B2B Data Platform Should You Choose? (2026)</h1>
+          <h2 className="text-2xl font-semibold mb-4">Cursive vs ZoomInfo: Which B2B Data Platform Should You Choose? (2026)</h2>
 
           <p className="text-gray-700 mb-6">
             Cursive vs ZoomInfo head-to-head comparison. Covers pricing, visitor identification, data coverage, intent data, AI outreach, contract terms, and which platform is right for your team. Published: February 18, 2026.

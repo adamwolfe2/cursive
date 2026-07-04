@@ -152,7 +152,7 @@ export function DemoVisitorTracking() {
           <motion.div
             key={totalToday}
             initial={{ color: "#007AFF" }}
-            animate={{ color: "#111827" }}
+            animate={{ color: "var(--color-foreground)" }}
             transition={{ duration: 0.4 }}
             className="text-xl text-gray-900 font-light tabular-nums"
           >
@@ -169,7 +169,7 @@ export function DemoVisitorTracking() {
           <motion.div
             key={liveCount}
             initial={{ color: "#10B981" }}
-            animate={{ color: "#111827" }}
+            animate={{ color: "var(--color-foreground)" }}
             transition={{ duration: 0.4 }}
             className="text-xl text-gray-900 font-light tabular-nums"
           >

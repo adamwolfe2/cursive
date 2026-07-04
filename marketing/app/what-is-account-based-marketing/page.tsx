@@ -875,7 +875,7 @@ export default function WhatIsAccountBasedMarketing() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">What is Account-Based Marketing (ABM)? Complete Guide (2026)</h1>
+          <h2 className="text-2xl font-semibold mb-4">What is Account-Based Marketing (ABM)? Complete Guide (2026)</h2>
 
           <p className="text-gray-700 mb-6">
             Account-Based Marketing (ABM) is a strategic B2B marketing approach that focuses resources on a defined set of target accounts, using personalized campaigns across multiple channels to engage specific buying committees and drive revenue from high-value opportunities. Published: January 15, 2026.

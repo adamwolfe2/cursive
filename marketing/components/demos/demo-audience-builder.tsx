@@ -180,7 +180,7 @@ export function DemoAudienceBuilder() {
           <motion.div
             key={totalMatched}
             initial={{ scale: 1.3, color: "#10B981" }}
-            animate={{ scale: 1, color: "#111827" }}
+            animate={{ scale: 1, color: "var(--color-foreground)" }}
             transition={{ duration: 0.4 }}
             className="text-xl font-light"
           >

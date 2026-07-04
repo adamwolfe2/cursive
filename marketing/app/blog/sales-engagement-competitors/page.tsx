@@ -422,7 +422,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">10 Best Sales Engagement Competitors to Consider in 2026</h1>
+          <h2 className="text-2xl font-semibold mb-4">10 Best Sales Engagement Competitors to Consider in 2026</h2>
 
           <p className="text-gray-700 mb-6">
             Comprehensive comparison of the 10 leading sales engagement competitors with features, pricing models, and ideal use cases. Published: April 3, 2026. Reading time: 10 minutes.

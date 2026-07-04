@@ -532,7 +532,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">Cursive vs Clearbit: The Best Clearbit Replacement (2026)</h1>
+          <h2 className="text-2xl font-semibold mb-4">Cursive vs Clearbit: The Best Clearbit Replacement (2026)</h2>
 
           <p className="text-gray-700 mb-6">
             Clearbit was acquired by HubSpot in November 2023 and its standalone features are being sunset. Cursive is the modern replacement for visitor identification and enrichment. Published: February 7, 2026.

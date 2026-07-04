@@ -924,7 +924,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">Cursive vs Instantly: Visitor ID + Email Outreach Combined (2026)</h1>
+          <h2 className="text-2xl font-semibold mb-4">Cursive vs Instantly: Visitor ID + Email Outreach Combined (2026)</h2>
 
           <p className="text-gray-700 mb-6">
             Instantly is a dedicated cold email platform at $97/mo. Cursive combines visitor identification, AI email, LinkedIn, SMS, and direct mail to replace your entire outreach stack. Published: February 7, 2026.

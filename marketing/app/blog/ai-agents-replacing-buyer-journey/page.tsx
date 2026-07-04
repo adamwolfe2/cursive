@@ -251,7 +251,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">Your Next Lead Won't Fill Out a Form — They'll Send an AI Agent</h1>
+          <h2 className="text-2xl font-semibold mb-4">Your Next Lead Won't Fill Out a Form — They'll Send an AI Agent</h2>
 
           <p className="text-gray-700 mb-6">
             AI browser agents are reshaping how B2B buyers evaluate and purchase software. The form-fill era is ending. Here's what replaces it and what your go-to-market team needs to do about it. Published: February 15, 2026.

@@ -292,7 +292,7 @@ export default function ResourcesPage() {
       <MachineView>
         <MachineContent>
           <div className="mb-12 pb-6 border-b border-gray-200">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">CURSIVE RESOURCES — VISITOR IDENTIFICATION & LEAD GENERATION GUIDES</h1>
+            <h2 className="text-2xl font-semibold text-foreground mb-4">CURSIVE RESOURCES — VISITOR IDENTIFICATION & LEAD GENERATION GUIDES</h2>
             <p className="text-gray-700 leading-relaxed">
               Guides, comparisons, and definitions on visitor identification, intent data, and B2B
               lead generation. Learn how to turn anonymous website traffic into qualified pipeline

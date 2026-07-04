@@ -751,7 +751,7 @@ export default function WhatIsLeadEnrichment() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">What is Lead Enrichment? Complete Guide (2026)</h1>
+          <h2 className="text-2xl font-semibold mb-4">What is Lead Enrichment? Complete Guide (2026)</h2>
 
           <p className="text-gray-700 mb-6">
             Lead enrichment is the process of enhancing existing lead records with additional data points from third-party sources, including contact details, company information, technographic data, and behavioral signals. By filling gaps in CRM data, enrichment enables sales and marketing teams to prioritize, personalize, and convert more prospects. Published: January 15, 2026.

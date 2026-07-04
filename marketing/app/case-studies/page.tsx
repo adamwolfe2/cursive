@@ -292,7 +292,7 @@ export default function CaseStudiesPage() {
       <MachineView>
         <MachineContent>
           <div className="mb-12 pb-6 border-b border-gray-200">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">CURSIVE CASE STUDIES — CUSTOMER RESULTS &amp; METRICS</h1>
+            <h2 className="text-2xl font-semibold text-foreground mb-4">CURSIVE CASE STUDIES — CUSTOMER RESULTS &amp; METRICS</h2>
             <p className="text-gray-700 leading-relaxed">
               Real results from B2B teams running on Cursive&apos;s two products: the Visitor Pixel
               ($97/mo), which identifies anonymous website visitors, and Custom Audiences ($197/mo),

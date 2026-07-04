@@ -726,7 +726,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">Best Amplemarket Alternatives: 7 Sales Engagement Tools Compared (2026)</h1>
+          <h2 className="text-2xl font-semibold mb-4">Best Amplemarket Alternatives: 7 Sales Engagement Tools Compared (2026)</h2>
 
           <p className="text-gray-700 mb-6">
             Amplemarket is an AI-powered sales engagement platform for cold outreach at $1,000-$2,000+/mo, but it has no website visitor identification and no real-time intent signals. Published: February 20, 2026.

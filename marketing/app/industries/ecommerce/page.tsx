@@ -259,7 +259,7 @@ export default function EcommercePage() {
         <MachineContent>
           {/* Header */}
           <div className="mb-12 pb-6 border-b border-gray-200">
-            <h1 className="text-2xl text-gray-900 font-bold mb-4">ECOMMERCE MARKETING SOLUTIONS</h1>
+            <h2 className="text-2xl text-foreground font-semibold mb-4">ECOMMERCE MARKETING SOLUTIONS</h2>
             <p className="text-gray-700 leading-relaxed">
               Turn anonymous shoppers into named customers. Cursive identifies eCommerce website
               visitors, recovers abandoned carts, and builds high-intent audiences you can activate

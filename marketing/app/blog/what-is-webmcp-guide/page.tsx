@@ -236,7 +236,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">What Is WebMCP? A Practical Guide for B2B Marketers</h1>
+          <h2 className="text-2xl font-semibold mb-4">What Is WebMCP? A Practical Guide for B2B Marketers</h2>
 
           <p className="text-gray-700 mb-6">
             WebMCP is a web standard from Google and Microsoft that lets your website tell AI agents exactly what it can do through structured tools instead of screenshotting and scraping HTML. Published: February 15, 2026.

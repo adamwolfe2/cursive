@@ -359,7 +359,7 @@ export default function EducationPage() {
         <MachineContent>
           {/* Header */}
           <div className="mb-12 pb-6 border-b border-gray-200">
-            <h1 className="text-2xl text-gray-900 font-bold mb-4">CURSIVE FOR EDUCATION</h1>
+            <h2 className="text-2xl text-foreground font-semibold mb-4">CURSIVE FOR EDUCATION</h2>
             <p className="text-gray-700 leading-relaxed">
               Student recruitment and enrollment marketing for colleges, universities, online education
               providers, and K-12 schools. Identify prospective students and families with verified contact

@@ -466,7 +466,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">What Is B2B Data? Definition, Types, and How to Use It (2026)</h1>
+          <h2 className="text-2xl font-semibold mb-4">What Is B2B Data? Definition, Types, and How to Use It (2026)</h2>
 
           <p className="text-gray-700 mb-6">
             B2B data is structured information about businesses and the professionals within them used for sales and marketing prospecting. Published: February 20, 2026.

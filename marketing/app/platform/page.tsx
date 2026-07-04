@@ -373,7 +373,7 @@ export default function PlatformPage() {
         <MachineContent>
           {/* Header */}
           <div className="mb-12 pb-6 border-b border-gray-200">
-            <h1 className="text-2xl text-gray-900 font-bold mb-4">THE CURSIVE PLATFORM</h1>
+            <h2 className="text-2xl text-foreground font-semibold mb-4">THE CURSIVE PLATFORM</h2>
             <p className="text-gray-700 leading-relaxed">
               The Cursive platform is two self-serve products — the Visitor Pixel and the Custom
               Audience — built on one verified identity data layer. The Visitor Pixel resolves

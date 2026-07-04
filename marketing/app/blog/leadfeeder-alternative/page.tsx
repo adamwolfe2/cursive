@@ -1070,7 +1070,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">Leadfeeder Alternatives: 8 Better Visitor Tracking Tools (2026)</h1>
+          <h2 className="text-2xl font-semibold mb-4">Leadfeeder Alternatives: 8 Better Visitor Tracking Tools (2026)</h2>
 
           <p className="text-gray-700 mb-6">
             Comprehensive comparison of Leadfeeder alternatives with person-level identification, higher match rates, and built-in outreach automation for B2B teams. Published: February 7, 2026.

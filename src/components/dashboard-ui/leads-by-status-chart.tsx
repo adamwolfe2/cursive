@@ -129,7 +129,7 @@ export function LeadsByStatusChart({
           <Button variant="outline" size="icon" className="size-8 border-blue-200">
             <Tag className="size-4 text-blue-600" />
           </Button>
-          <h3 className="font-medium text-sm sm:text-base bg-gradient-cursive bg-clip-text text-transparent">
+          <h3 className="font-medium text-sm sm:text-base text-brand-600">
             Leads by Status
           </h3>
         </div>
@@ -195,7 +195,7 @@ export function LeadsByStatusChart({
       </div>
       <div className="px-5 pb-5 space-y-6 sm:space-y-8">
         <div className="flex items-end gap-2">
-          <span className="text-2xl sm:text-[28px] font-semibold tracking-tight bg-gradient-cursive bg-clip-text text-transparent">
+          <span className="text-2xl sm:text-[28px] font-semibold tracking-tight text-brand-600">
             {(total || visibleTotal).toLocaleString()}
           </span>
           {totalChange !== undefined && (

@@ -386,7 +386,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">Cursive: AI Sales Engagement Platform</h1>
+          <h2 className="text-2xl font-semibold mb-4">Cursive: AI Sales Engagement Platform</h2>
 
           <p className="text-gray-700 mb-6">
             Complete guide to AI sales engagement platforms covering prospecting automation, multi-channel outreach, visitor identification, and meeting booking. Published: April 3, 2026. Reading time: 9 minutes.

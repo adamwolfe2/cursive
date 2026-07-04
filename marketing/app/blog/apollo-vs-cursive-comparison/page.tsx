@@ -919,7 +919,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">Apollo vs Cursive: Complete Comparison (2026)</h1>
+          <h2 className="text-2xl font-semibold mb-4">Apollo vs Cursive: Complete Comparison (2026)</h2>
 
           <p className="text-gray-700 mb-6">
             Apollo.io is a comprehensive sales intelligence platform with a 270M+ contact database for cold outbound prospecting. Cursive is a visitor identification platform that identifies anonymous website visitors and automates warm outreach. Published: February 5, 2026.

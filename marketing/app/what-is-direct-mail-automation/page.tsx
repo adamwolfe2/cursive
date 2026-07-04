@@ -710,7 +710,7 @@ export default function WhatIsDirectMailAutomation() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">What is Direct Mail Automation? Complete Guide (2026)</h1>
+          <h2 className="text-2xl font-semibold mb-4">What is Direct Mail Automation? Complete Guide (2026)</h2>
 
           <p className="text-gray-700 mb-6">
             Direct mail automation uses software to trigger, personalize, and send physical mail pieces -- postcards, letters, handwritten notes, and dimensional packages -- based on digital signals and behavioral data. It combines the tangible impact of physical mail with the precision of digital marketing. Published: January 15, 2026.

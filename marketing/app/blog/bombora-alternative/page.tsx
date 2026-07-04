@@ -907,7 +907,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">Best Bombora Alternatives: Intent Data Tools Compared — $1k/mo vs $25k+/yr (2026)</h1>
+          <h2 className="text-2xl font-semibold mb-4">Best Bombora Alternatives: Intent Data Tools Compared — $1k/mo vs $25k+/yr (2026)</h2>
 
           <p className="text-gray-700 mb-6">
             Bombora&apos;s Company Surge is the leading third-party B2B intent data product, but $25,000–$150,000/year enterprise pricing, company-level-only signals, no visitor identification, and no outreach automation are driving B2B teams to seek alternatives. Published: February 19, 2026.

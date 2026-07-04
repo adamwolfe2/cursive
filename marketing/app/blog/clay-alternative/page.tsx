@@ -1043,7 +1043,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">Clay Alternatives: Easier Data Enrichment + Outbound Tools (2026)</h1>
+          <h2 className="text-2xl font-semibold mb-4">Clay Alternatives: Easier Data Enrichment + Outbound Tools (2026)</h2>
 
           <p className="text-gray-700 mb-6">
             Compare the best Clay alternatives for data enrichment, lead building, and outbound automation. Find simpler platforms that combine enrichment with visitor identification and outreach. Published: February 7, 2026.

@@ -899,7 +899,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">Best Overloop Alternatives: Cold Email Tools vs Cursive Self-Serve Plans (2026)</h1>
+          <h2 className="text-2xl font-semibold mb-4">Best Overloop Alternatives: Cold Email Tools vs Cursive Self-Serve Plans (2026)</h2>
 
           <p className="text-gray-700 mb-6">
             Compare the top Overloop (formerly Prospect.io) alternatives for sales automation and cold email outreach. Overloop charges $99-$149/user/month for email sequences and LinkedIn automation with no visitor identification or AI personalization. Published: February 19, 2026.

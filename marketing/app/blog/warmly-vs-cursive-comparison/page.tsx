@@ -826,7 +826,7 @@ export default function WarmlyVsCursiveComparison() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">Warmly vs Cursive Comparison: Which Intent Platform is Right for You?</h1>
+          <h2 className="text-2xl font-semibold mb-4">Warmly vs Cursive Comparison: Which Intent Platform is Right for You?</h2>
 
           <p className="text-gray-700 mb-6">
             Warmly focuses on real-time website visitor engagement and warm outreach to active visitors. Cursive specializes in identifying companies researching topics across the web and automating outreach at scale. Published: February 1, 2026.

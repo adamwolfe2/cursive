@@ -359,7 +359,7 @@ export default function TechnologyPage() {
         <MachineContent>
           {/* Header */}
           <div className="mb-12 pb-6 border-b border-gray-200">
-            <h1 className="text-2xl text-gray-900 font-bold mb-4">TECHNOLOGY INDUSTRY MARKETING SOLUTIONS</h1>
+            <h2 className="text-2xl text-foreground font-semibold mb-4">TECHNOLOGY INDUSTRY MARKETING SOLUTIONS</h2>
             <p className="text-gray-700 leading-relaxed">
               Pipeline acceleration for technology companies. Identify the companies and people evaluating
               your product, surface in-market buyers to your ICP, and reach verified decision-makers with

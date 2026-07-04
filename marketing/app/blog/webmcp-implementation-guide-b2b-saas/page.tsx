@@ -539,7 +539,7 @@ return {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">How to Implement WebMCP on Your B2B SaaS Website (With Real Code)</h1>
+          <h2 className="text-2xl font-semibold mb-4">How to Implement WebMCP on Your B2B SaaS Website (With Real Code)</h2>
 
           <p className="text-gray-700 mb-6">
             Definitive implementation guide for WebMCP on B2B SaaS sites. Covers declarative forms, imperative tool registration, llms.txt, /api/ai-info endpoints, and testing with Chrome 146. Framework-agnostic concepts with Next.js/React examples. Published: February 15, 2026.

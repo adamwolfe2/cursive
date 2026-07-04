@@ -290,7 +290,7 @@ export default function FreeAuditPage() {
       <MachineView>
         <MachineContent>
           <div className="mb-12 pb-6 border-b border-gray-200">
-            <h1 className="text-2xl text-gray-900 font-bold mb-4">FREE WEBSITE VISITOR AUDIT</h1>
+            <h2 className="text-2xl text-foreground font-semibold mb-4">FREE WEBSITE VISITOR AUDIT</h2>
             <p className="text-gray-700 leading-relaxed">
               Cursive&apos;s free visitor audit identifies the last 100 people who visited your website —
               with real names, job titles, verified work emails, the pages they viewed, and intent scores.

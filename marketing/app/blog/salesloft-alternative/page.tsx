@@ -1012,7 +1012,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">Best Salesloft Alternatives: Sales Engagement Platforms Compared (2026)</h1>
+          <h2 className="text-2xl font-semibold mb-4">Best Salesloft Alternatives: Sales Engagement Platforms Compared (2026)</h2>
 
           <p className="text-gray-700 mb-6">
             Salesloft is an enterprise sales engagement platform for cadence management, but per-user pricing ($75-$125/user/mo), no visitor identification, no built-in contact data, and a cold-first model push many teams toward more integrated alternatives. Published: February 20, 2026.

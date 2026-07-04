@@ -679,7 +679,7 @@ export default function AnalyticsPage() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">Marketing Analytics & Attribution: The Complete B2B Dashboard Guide (2026)</h1>
+          <h2 className="text-2xl font-semibold mb-4">Marketing Analytics & Attribution: The Complete B2B Dashboard Guide (2026)</h2>
 
           <p className="text-gray-700 mb-6">
             Build marketing analytics dashboards that prove ROI. Learn multi-touch attribution modeling, pipeline metrics, and how to measure what actually drives B2B revenue. Published: February 5, 2026.

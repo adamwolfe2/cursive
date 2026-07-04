@@ -584,7 +584,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">Best Klenty Alternatives: Intent-Based Outreach vs Cold Sequences (2026)</h1>
+          <h2 className="text-2xl font-semibold mb-4">Best Klenty Alternatives: Intent-Based Outreach vs Cold Sequences (2026)</h2>
 
           <p className="text-gray-700 mb-6">
             Klenty is a sales engagement platform with strong CRM integrations and multi-channel sequences, but per-seat pricing, no visitor identification, and cold-list dependency are pushing teams toward better alternatives. Published: February 19, 2026.

@@ -310,7 +310,7 @@ export default function IntegrationsPage() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">Cursive Integrations - Connect to 50+ Tools</h1>
+          <h2 className="text-2xl font-semibold mb-4">Cursive Integrations - Connect to 50+ Tools</h2>
 
           <p className="text-gray-700 mb-6">
             Seamlessly sync Cursive visitor identification and intent data with your existing marketing stack. 50+ integrations including CRMs, ad platforms, email tools, analytics, automation platforms, and data warehouses. Native integrations, webhooks, Zapier, and CSV export available.

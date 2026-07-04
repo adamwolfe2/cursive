@@ -735,7 +735,7 @@ export default function WhatIsWebsiteVisitorIdentificationPage() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">What is Website Visitor Identification? Complete Guide (2026)</h1>
+          <h2 className="text-2xl font-semibold mb-4">What is Website Visitor Identification? Complete Guide (2026)</h2>
 
           <p className="text-gray-700 mb-6">
             Website visitor identification is the process of revealing the companies and individuals who browse your website without filling out a form. It uses technologies like reverse IP lookup, device fingerprinting, and cookie matching to de-anonymize traffic and provide firmographic and contact data for sales and marketing teams. Published: January 15, 2026.

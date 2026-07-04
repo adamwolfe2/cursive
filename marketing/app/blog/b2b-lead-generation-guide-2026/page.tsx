@@ -495,7 +495,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">B2B Lead Generation Guide 2026: Strategies, Tools, and Complete Playbook</h1>
+          <h2 className="text-2xl font-semibold mb-4">B2B Lead Generation Guide 2026: Strategies, Tools, and Complete Playbook</h2>
 
           <p className="text-gray-700 mb-6">
             Complete B2B lead generation playbook covering inbound vs outbound, visitor identification, intent data, cold email, LinkedIn, AI automation, key metrics, and recommended tools. Published: February 20, 2026.

@@ -402,7 +402,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">15 Best Sales Prospecting Tools for B2B Teams in 2026</h1>
+          <h2 className="text-2xl font-semibold mb-4">15 Best Sales Prospecting Tools for B2B Teams in 2026</h2>
 
           <p className="text-gray-700 mb-6">
             Comprehensive comparison of 15 B2B sales prospecting tools covering data providers, sales engagement platforms, visitor identification, and AI-powered outreach. Published: April 3, 2026. Reading time: 14 minutes.

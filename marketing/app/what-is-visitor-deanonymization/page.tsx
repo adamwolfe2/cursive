@@ -625,7 +625,7 @@ export default function WhatIsVisitorDeanonymization() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">What is Visitor Deanonymization? Complete Technical Guide (2026)</h1>
+          <h2 className="text-2xl font-semibold mb-4">What is Visitor Deanonymization? Complete Technical Guide (2026)</h2>
 
           <p className="text-gray-700 mb-6">
             Visitor deanonymization is the technical process of resolving anonymous website visitor sessions into identified individual or company profiles. It works by matching device fingerprints, IP signals, cookies, and behavioral patterns against databases of known business contacts. Published: January 15, 2026.

@@ -1016,7 +1016,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">Best Hunter.io Alternatives: 7 Email Finding &amp; B2B Data Tools Compared (2026)</h1>
+          <h2 className="text-2xl font-semibold mb-4">Best Hunter.io Alternatives: 7 Email Finding &amp; B2B Data Tools Compared (2026)</h2>
 
           <p className="text-gray-700 mb-6">
             Looking for Hunter.io alternatives? Compare the 7 best email finding and B2B data tools with phone numbers, visitor identification, AI outreach automation, and more. Find the best alternative to Hunter.io for B2B prospecting in 2026. Published: February 18, 2026.

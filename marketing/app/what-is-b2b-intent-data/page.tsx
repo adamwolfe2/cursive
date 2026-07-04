@@ -689,7 +689,7 @@ export default function WhatIsB2BIntentDataPage() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">What is B2B Intent Data? Complete Guide (2026)</h1>
+          <h2 className="text-2xl font-semibold mb-4">What is B2B Intent Data? Complete Guide (2026)</h2>
 
           <p className="text-gray-700 mb-6">
             B2B intent data is information that reveals when companies or individuals are actively researching products, services, or topics related to a potential purchase. It is derived from online behavioral signals such as web searches, content consumption, review site visits, and competitor research. Published: January 15, 2026.

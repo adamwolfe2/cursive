@@ -81,7 +81,7 @@ export function DemoIntentHeatmap() {
           <motion.div
             key={totalSignals}
             initial={{ color: "#007AFF" }}
-            animate={{ color: "#111827" }}
+            animate={{ color: "var(--color-foreground)" }}
             transition={{ duration: 0.4 }}
             className="text-2xl text-gray-900 font-light tabular-nums"
           >

@@ -591,7 +591,7 @@ export default function IntentAudiencesPage() {
       <MachineView>
         <MachineContent>
           <div className="mb-12 pb-6 border-b border-gray-200">
-            <h1 className="text-2xl text-gray-900 font-bold mb-4">CURSIVE INTENT DATA &amp; AUDIENCES</h1>
+            <h2 className="text-2xl text-foreground font-semibold mb-4">CURSIVE INTENT DATA &amp; AUDIENCES</h2>
             <p className="text-gray-700 leading-relaxed">
               Intent data is the behavioral signal that someone is actively researching a product or service
               right now. Cursive turns it into the Custom Audience ($197/month): a fresh weekly list of

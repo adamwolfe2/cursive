@@ -1034,7 +1034,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">Cursive vs Apollo: Visitor ID vs Prospecting Database (2026)</h1>
+          <h2 className="text-2xl font-semibold mb-4">Cursive vs Apollo: Visitor ID vs Prospecting Database (2026)</h2>
 
           <p className="text-gray-700 mb-6">
             Apollo.io is a 200M+ contact prospecting database for cold outreach. Cursive identifies anonymous website visitors in real-time and automates warm, personalized outreach. Published: February 7, 2026.

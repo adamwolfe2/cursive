@@ -125,11 +125,11 @@ body {
 
 .prose h1, .prose h2, .prose h3, .prose h4 {
   font-weight: 400;
-  color: #111827;
+  color: var(--gray-900);
 }
 
 .prose p {
-  color: #6b7280;
+  color: var(--gray-500);
 }
 
 .prose a {
@@ -146,13 +146,13 @@ body {
   list-style: disc;
   padding-left: 1.5rem;
   margin: 1rem 0;
-  color: #374151;
+  color: var(--gray-700);
 }
 .prose ol {
   list-style: decimal;
   padding-left: 1.5rem;
   margin: 1rem 0;
-  color: #374151;
+  color: var(--gray-700);
 }
 .prose li {
   margin: 0.375rem 0;
@@ -175,11 +175,11 @@ body {
   scroll-margin-top: 6rem;
 }
 .prose code {
-  background: #f3f4f6;
+  background: var(--gray-100);
   padding: 0.125rem 0.375rem;
   border-radius: 0.25rem;
   font-size: 0.875em;
-  color: #111827;
+  color: var(--gray-900);
 }
 
 /* Cursive font utility */

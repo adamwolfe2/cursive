@@ -408,7 +408,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">Email Finder: Find Professional Email Addresses by Name and Company for Free</h1>
+          <h2 className="text-2xl font-semibold mb-4">Email Finder: Find Professional Email Addresses by Name and Company for Free</h2>
 
           <p className="text-gray-700 mb-6">
             Comprehensive guide to email finder tools, how they work, and how to use found contacts for B2B outreach. Published: April 3, 2026. Reading time: 10 minutes.

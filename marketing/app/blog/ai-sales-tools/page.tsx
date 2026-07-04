@@ -466,7 +466,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">The 15 Best AI Sales Tools to Dominate in 2026</h1>
+          <h2 className="text-2xl font-semibold mb-4">The 15 Best AI Sales Tools to Dominate in 2026</h2>
 
           <p className="text-gray-700 mb-6">
             Comprehensive comparison of 15 AI sales tools covering lead generation, outreach automation, conversation intelligence, and CRM-native AI. Published: April 3, 2026. Reading time: 8 minutes.

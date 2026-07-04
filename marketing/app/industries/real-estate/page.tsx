@@ -364,7 +364,7 @@ export default function RealEstatePage() {
         <MachineContent>
           {/* Header */}
           <div className="mb-12 pb-6 border-b border-gray-200">
-            <h1 className="text-2xl text-gray-900 font-bold mb-4">REAL ESTATE MARKETING SOLUTIONS</h1>
+            <h2 className="text-2xl text-foreground font-semibold mb-4">REAL ESTATE MARKETING SOLUTIONS</h2>
             <p className="text-gray-700 leading-relaxed">
               Lead generation and direct mail automation for real estate professionals. Identify prospective buyers and sellers visiting your listings, automate farming campaigns, and convert more leads with targeted outreach. Self-serve from $97/month.
             </p>

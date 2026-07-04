@@ -342,7 +342,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">Best Sales Automation Tools in 2026: 15 Platforms We Tested</h1>
+          <h2 className="text-2xl font-semibold mb-4">Best Sales Automation Tools in 2026: 15 Platforms We Tested</h2>
 
           <p className="text-gray-700 mb-6">
             Comprehensive comparison of 15 sales automation platforms tested across prospecting, outreach, CRM management, and conversation intelligence. Published: April 3, 2026. Reading time: 9 minutes.

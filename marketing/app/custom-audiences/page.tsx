@@ -454,7 +454,7 @@ export default function CustomAudiencesPage() {
         <MachineContent>
           {/* Header */}
           <div className="mb-12 pb-6 border-b border-gray-200">
-            <h1 className="text-2xl text-gray-900 font-bold mb-4">CURSIVE CUSTOM AUDIENCE</h1>
+            <h2 className="text-2xl text-foreground font-semibold mb-4">CURSIVE CUSTOM AUDIENCE</h2>
             <p className="text-gray-700 leading-relaxed">
               A fresh weekly list of in-market B2B buyers built to your exact ICP. Cursive finds people
               actively searching for what you sell, verifies a work email on every record, and delivers

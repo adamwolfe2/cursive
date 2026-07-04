@@ -707,7 +707,7 @@ export default function WhatIsAISDRPage() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">What is an AI SDR? Complete Guide to AI Sales Development (2026)</h1>
+          <h2 className="text-2xl font-semibold mb-4">What is an AI SDR? Complete Guide to AI Sales Development (2026)</h2>
 
           <p className="text-gray-700 mb-6">
             An AI SDR (Sales Development Representative) is an AI-powered software agent that automates prospecting, outreach, and qualification tasks traditionally performed by human SDRs. AI SDRs use machine learning to research prospects, write personalized emails, send multi-channel sequences, handle responses, qualify leads, and book meetings. Published: January 15, 2026.

@@ -1035,7 +1035,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">Best RB2B Alternatives: 7 Website Visitor ID Tools Compared (2026)</h1>
+          <h2 className="text-2xl font-semibold mb-4">Best RB2B Alternatives: 7 Website Visitor ID Tools Compared (2026)</h2>
 
           <p className="text-gray-700 mb-6">
             RB2B popularized website visitor identification for B2B teams, but lower match rates, missing outreach automation, and limited intent data have many companies searching for better alternatives. Published: February 7, 2026.

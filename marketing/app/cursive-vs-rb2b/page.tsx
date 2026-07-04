@@ -327,7 +327,7 @@ export default function CursiveVsRb2bPage() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">Cursive vs. RB2B: Visitor Identification vs. Enrichment (2026)</h1>
+          <h2 className="text-2xl font-semibold mb-4">Cursive vs. RB2B: Visitor Identification vs. Enrichment (2026)</h2>
 
           <p className="text-gray-700 mb-6">
             RB2B identifies website visitors and delivers their name and LinkedIn URL to Slack. Cursive identifies the same visitors and enriches every record with a verified work email plus LinkedIn history, social profiles, tech stack, and news mentions — and adds a weekly in-market Custom Audience matched to your ICP. Enrichment is included on every plan. This page compares the two tools.

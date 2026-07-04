@@ -759,7 +759,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">Apollo.io vs ZoomInfo: Head-to-Head Comparison (2026) — And Why Cursive Is Better Than Both</h1>
+          <h2 className="text-2xl font-semibold mb-4">Apollo.io vs ZoomInfo: Head-to-Head Comparison (2026) — And Why Cursive Is Better Than Both</h2>
 
           <p className="text-gray-700 mb-6">
             Apollo.io and ZoomInfo are the two most commonly compared B2B contact databases. Apollo wins on price and bundled outreach tools; ZoomInfo wins on data depth and enterprise features. Both share a fundamental blind spot: they are static databases that cannot identify which of your website visitors is actively researching your solution right now. Published: February 20, 2026.

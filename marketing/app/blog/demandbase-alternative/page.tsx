@@ -1090,7 +1090,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">Demandbase Alternatives: Affordable ABM Platforms for 2026</h1>
+          <h2 className="text-2xl font-semibold mb-4">Demandbase Alternatives: Affordable ABM Platforms for 2026</h2>
 
           <p className="text-gray-700 mb-6">
             Compare affordable Demandbase alternatives for account-based marketing. Find ABM platforms with visitor identification, intent data, and AI outreach starting at a fraction of the cost. Published: February 7, 2026.

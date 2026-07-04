@@ -1009,7 +1009,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">Best Instantly AI Alternatives: Cold Email Tools Compared (2026)</h1>
+          <h2 className="text-2xl font-semibold mb-4">Best Instantly AI Alternatives: Cold Email Tools Compared (2026)</h2>
 
           <p className="text-gray-700 mb-6">
             Instantly AI (instantly.ai) is a high-volume cold email platform with no visitor identification, no intent data, and a cold-only sending model. Teams seeking warm-lead generation or multi-channel outreach beyond email blasts frequently look for alternatives. Published: February 20, 2026.

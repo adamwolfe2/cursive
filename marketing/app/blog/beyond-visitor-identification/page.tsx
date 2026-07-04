@@ -224,7 +224,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">Beyond Visitor Identification: Why Your Pixel Data Needs an AI Intelligence Layer</h1>
+          <h2 className="text-2xl font-semibold mb-4">Beyond Visitor Identification: Why Your Pixel Data Needs an AI Intelligence Layer</h2>
 
           <p className="text-gray-700 mb-6">
             Most visitor identification tools solve a narrow problem: they tell you who visited your site. But knowing who visited is the beginning, not the end. The gap between identification and conversation is where deals are won or lost. This article explains the Intelligence Layer — the tier of AI-powered research that transforms a name and LinkedIn URL into a complete sales dossier. Published: February 25, 2026.

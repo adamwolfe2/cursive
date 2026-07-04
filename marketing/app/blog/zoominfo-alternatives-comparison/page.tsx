@@ -1110,7 +1110,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">8 Best ZoomInfo Alternatives & Competitors for 2026 (Cheaper Options)</h1>
+          <h2 className="text-2xl font-semibold mb-4">8 Best ZoomInfo Alternatives & Competitors for 2026 (Cheaper Options)</h2>
 
           <p className="text-gray-700 mb-6">
             Tired of ZoomInfo&apos;s $15k-$40k+ annual contracts? Compare 8 affordable ZoomInfo alternatives for B2B data, intent signals, and prospecting. Published: February 1, 2026.

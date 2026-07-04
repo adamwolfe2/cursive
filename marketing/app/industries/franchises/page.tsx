@@ -322,7 +322,7 @@ export default function FranchisesPage() {
         <MachineContent>
           {/* Header */}
           <div className="mb-12 pb-6 border-b border-gray-200">
-            <h1 className="text-2xl text-gray-900 font-bold mb-4">CURSIVE FOR FRANCHISES</h1>
+            <h2 className="text-2xl text-foreground font-semibold mb-4">CURSIVE FOR FRANCHISES</h2>
             <p className="text-gray-700 leading-relaxed">
               Cursive delivers local leads at scale for franchise systems. Identify the buyers near
               each location and route verified contacts to the right franchisee — with territory-based

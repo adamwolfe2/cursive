@@ -570,7 +570,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">Best Reply.io Alternatives: Why Teams Are Switching to Intent-Based Outreach (2026)</h1>
+          <h2 className="text-2xl font-semibold mb-4">Best Reply.io Alternatives: Why Teams Are Switching to Intent-Based Outreach (2026)</h2>
 
           <p className="text-gray-700 mb-6">
             Reply.io is a sales engagement platform with multi-channel sequencing and the Jason AI SDR, but per-seat pricing, cold-list dependency, and no visitor identification are pushing teams toward better options. Published: February 19, 2026.

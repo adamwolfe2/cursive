@@ -1019,7 +1019,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">Best lemlist Alternatives: Cold Email + LinkedIn Outreach Compared (2026)</h1>
+          <h2 className="text-2xl font-semibold mb-4">Best lemlist Alternatives: Cold Email + LinkedIn Outreach Compared (2026)</h2>
 
           <p className="text-gray-700 mb-6">
             lemlist is a cold email and LinkedIn personalization tool ($59-$99/user/mo) known for image/video personalization and lemwarm deliverability — but no visitor identification, no contact database, no intent data, and a cold-first model push teams toward more complete alternatives. Published: February 20, 2026.

@@ -343,7 +343,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">AI SDR vs Human BDR: When to Use Each for B2B Sales</h1>
+          <h2 className="text-2xl font-semibold mb-4">AI SDR vs Human BDR: When to Use Each for B2B Sales</h2>
 
           <p className="text-gray-700 mb-6">
             90-day controlled experiment comparing AI SDR against 3 experienced human BDRs. Same ICP, same messaging, same time period. Published: February 1, 2026.

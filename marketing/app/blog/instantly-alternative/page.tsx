@@ -1023,7 +1023,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">Instantly Alternatives: Cold Email + Visitor ID Combined (2026)</h1>
+          <h2 className="text-2xl font-semibold mb-4">Instantly Alternatives: Cold Email + Visitor ID Combined (2026)</h2>
 
           <p className="text-gray-700 mb-6">
             Compare the best Instantly alternatives that combine cold email outreach with visitor identification and intent data. Published: February 7, 2026.

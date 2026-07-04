@@ -998,7 +998,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">Best Lusha Alternatives: 7 B2B Contact Data Tools Compared (2026)</h1>
+          <h2 className="text-2xl font-semibold mb-4">Best Lusha Alternatives: 7 B2B Contact Data Tools Compared (2026)</h2>
 
           <p className="text-gray-700 mb-6">
             Lusha is a popular B2B contact data tool for individual SDRs, but credit limits, per-user pricing, and lack of visitor identification or outreach automation push growing teams toward more complete alternatives. Published: February 18, 2026.

@@ -211,7 +211,7 @@ export default function FAQPage() {
       <MachineView>
         <MachineContent>
           <div className="mb-12 pb-6 border-b border-gray-200">
-            <h1 className="text-2xl text-gray-900 font-bold mb-4">FREQUENTLY ASKED QUESTIONS</h1>
+            <h2 className="text-2xl text-foreground font-semibold mb-4">FREQUENTLY ASKED QUESTIONS</h2>
             <p className="text-gray-700 leading-relaxed">
               Common questions about Cursive&apos;s self-serve plans: the Visitor Pixel ($97/month),
               Custom Audience ($197/month), and the Pixel + Audience Bundle ($247/month). Covers how

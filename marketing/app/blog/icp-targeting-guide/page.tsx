@@ -571,7 +571,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">The 5-Step Framework for Perfect ICP Targeting</h1>
+          <h2 className="text-2xl font-semibold mb-4">The 5-Step Framework for Perfect ICP Targeting</h2>
 
           <p className="text-gray-700 mb-6">
             A practical guide for B2B marketers to define, target, and refine their Ideal Customer Profile (ICP) using data-driven strategies. Published: January 21, 2026. Author: Adam Wolfe, Founder of Cursive.

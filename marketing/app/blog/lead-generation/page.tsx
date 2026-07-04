@@ -712,7 +712,7 @@ export default function LeadGenerationPage() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">B2B Lead Generation: Intent-Based Strategies That Build Pipeline</h1>
+          <h2 className="text-2xl font-semibold mb-4">B2B Lead Generation: Intent-Based Strategies That Build Pipeline</h2>
 
           <p className="text-gray-700 mb-6">
             Proven B2B lead generation strategies that prioritize intent over volume. Build predictable pipeline using visitor identification, intent data, and multi-channel outreach. Published: February 5, 2026.

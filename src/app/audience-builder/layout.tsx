@@ -1,12 +1,5 @@
 import Image from 'next/image'
 import type { Metadata } from 'next'
-import { Dancing_Script } from 'next/font/google'
-
-const dancingScript = Dancing_Script({
-  variable: '--font-dancing-script',
-  subsets: ['latin'],
-  weight: ['400', '700'],
-})
 
 export const metadata: Metadata = {
   title: 'Audience Builder — Free AI Chatbot | Cursive',
@@ -22,7 +15,7 @@ export const metadata: Metadata = {
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <div className={`min-h-screen bg-white ${dancingScript.variable}`}>
+    <div className="min-h-screen bg-white">
       <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/80 backdrop-blur-md">
         <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4 sm:px-6">
           <a

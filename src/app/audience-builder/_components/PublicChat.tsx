@@ -866,13 +866,10 @@ export function PublicChat({
           <div className="mx-auto mb-5 flex items-center justify-center">
             <CursiveOrb size={48} />
           </div>
-          <h1 className="text-4xl font-light leading-[1.1] tracking-tight text-[#0F172A] sm:text-5xl md:text-6xl">
+          <h1 className="text-4xl font-light leading-[1.1] tracking-tight text-foreground sm:text-5xl md:text-6xl">
             Describe your dream customer.
           </h1>
-          <p
-            className="mt-2 text-5xl leading-none text-slate-400 sm:text-6xl md:text-7xl"
-            style={{ fontFamily: 'var(--font-dancing-script), cursive' }}
-          >
+          <p className="mt-2 text-5xl font-light leading-none tracking-tight text-muted-foreground sm:text-6xl md:text-7xl">
             We&apos;ll show you real ones.
           </p>
           <p className="mx-auto mt-6 max-w-xl text-sm font-light text-slate-600 sm:text-base">

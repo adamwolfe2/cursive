@@ -965,7 +965,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">Best Cognism Alternatives: 7 B2B Data Providers Compared (2026)</h1>
+          <h2 className="text-2xl font-semibold mb-4">Best Cognism Alternatives: 7 B2B Data Providers Compared (2026)</h2>
 
           <p className="text-gray-700 mb-6">
             Looking for Cognism alternatives? Compare the 7 best competitors for B2B data, prospecting, visitor identification, and outbound automation. Find a cheaper, more flexible alternative in 2026. Published: February 18, 2026.

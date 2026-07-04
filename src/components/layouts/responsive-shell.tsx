@@ -23,7 +23,7 @@ export function ResponsiveShell({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
-    <div className="flex h-screen bg-gradient-cursive-soft">
+    <div className="flex h-screen bg-background">
       {/* Desktop Sidebar - Hidden on mobile */}
       <aside className="hidden lg:block lg:w-64 border-r border-blue-100/50 bg-white/80 backdrop-blur-sm">
         {sidebar}
@@ -132,7 +132,7 @@ export function ResponsiveHeader({
 
           {/* Title & Description */}
           <div className="min-w-0 flex-1">
-            <h1 className="text-xl sm:text-2xl font-bold bg-gradient-cursive bg-clip-text text-transparent truncate">
+            <h1 className="text-xl sm:text-2xl font-semibold text-foreground truncate">
               {title}
             </h1>
             {description && (

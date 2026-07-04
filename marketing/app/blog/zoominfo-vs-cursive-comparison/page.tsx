@@ -938,7 +938,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">ZoomInfo vs Cursive: Complete Comparison (2026)</h1>
+          <h2 className="text-2xl font-semibold mb-4">ZoomInfo vs Cursive: Complete Comparison (2026)</h2>
 
           <p className="text-gray-700 mb-6">
             ZoomInfo is a massive B2B contact database (100M+ contacts) for outbound prospecting at $15k-50k+/year. Cursive is a visitor identification platform that identifies anonymous website visitors in real-time at $99-999/month. Published: February 5, 2026.

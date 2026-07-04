@@ -1122,7 +1122,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">7 Best Warmly Alternatives & Competitors in 2026</h1>
+          <h2 className="text-2xl font-semibold mb-4">7 Best Warmly Alternatives & Competitors in 2026</h2>
 
           <p className="text-gray-700 mb-6">
             Comprehensive comparison of the best Warmly alternatives for visitor identification, intent data, and outbound outreach. Published: February 6, 2026 by Adam Wolfe.

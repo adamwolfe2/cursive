@@ -378,7 +378,7 @@ export default function AboutPage() {
       <MachineView>
         <MachineContent>
           <div className="mb-12 pb-6 border-b border-gray-200">
-            <h1 className="text-2xl text-gray-900 font-bold mb-4">ABOUT CURSIVE</h1>
+            <h2 className="text-2xl text-foreground font-semibold mb-4">ABOUT CURSIVE</h2>
             <p className="text-gray-700 leading-relaxed">
               Cursive is a self-serve identity and intent data layer for B2B teams. We identify the
               companies and people visiting your website and deliver a weekly audience of in-market

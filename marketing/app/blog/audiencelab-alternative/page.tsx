@@ -1050,7 +1050,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">Best AudienceLab Alternatives: Visitor ID Tools That Include AI Outreach (2026)</h1>
+          <h2 className="text-2xl font-semibold mb-4">Best AudienceLab Alternatives: Visitor ID Tools That Include AI Outreach (2026)</h2>
 
           <p className="text-gray-700 mb-6">
             AudienceLab is a website visitor identification platform that reveals individual visitors from anonymous traffic using IP matching and identity graph data. Its primary limitation is that it stops at identification — no intent data, no AI outreach automation, no direct mail. Published: February 18, 2026.

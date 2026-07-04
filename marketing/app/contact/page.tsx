@@ -565,7 +565,7 @@ export default function ContactPage() {
         <MachineContent>
           {/* Header */}
           <div className="mb-12 pb-6 border-b border-gray-200">
-            <h1 className="text-2xl text-gray-900 font-bold mb-4">CONTACT CURSIVE</h1>
+            <h2 className="text-2xl text-foreground font-semibold mb-4">CONTACT CURSIVE</h2>
             <p className="text-gray-700 leading-relaxed">
               Cursive is self-serve. Most teams pick a plan and go live in minutes without talking to
               sales. You can also message the team or book a call. Plans: Visitor Pixel $97/mo, Custom

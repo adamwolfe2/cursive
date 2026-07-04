@@ -585,7 +585,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">How to Scale Outbound Sales Without Hiring More SDRs</h1>
+          <h2 className="text-2xl font-semibold mb-4">How to Scale Outbound Sales Without Hiring More SDRs</h2>
 
           <p className="text-gray-700 mb-6">
             Comprehensive guide to scaling B2B outbound from 10 to 200+ emails/day without sacrificing quality, deliverability, or personalization. Based on 500+ outbound programs managed at Cursive. Published: January 14, 2026.

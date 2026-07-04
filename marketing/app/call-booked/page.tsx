@@ -257,7 +257,7 @@ export default function CallBookedPage() {
       <MachineView>
         <MachineContent>
           <div className="mb-12 pb-6 border-b border-gray-200">
-            <h1 className="text-2xl text-gray-900 font-bold mb-4">CALL BOOKED — CONFIRMATION</h1>
+            <h2 className="text-2xl text-foreground font-semibold mb-4">CALL BOOKED — CONFIRMATION</h2>
             <p className="text-gray-700 leading-relaxed">
               Your call with the Cursive team is confirmed. A calendar invite has been sent to your
               email — accept it to lock in the time. While you wait, you can install the Cursive

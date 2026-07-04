@@ -398,7 +398,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">The 25 Best Lead Generation Software Tools for 2026</h1>
+          <h2 className="text-2xl font-semibold mb-4">The 25 Best Lead Generation Software Tools for 2026</h2>
 
           <p className="text-gray-700 mb-6">
             Comprehensive comparison of 25 B2B lead generation software tools covering visitor identification, contact databases, enrichment, and AI-powered outreach. Published: April 3, 2026. Reading time: 18 minutes.

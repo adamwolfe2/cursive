@@ -841,7 +841,7 @@ export default function AudienceTargetingPage() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">B2B Audience Targeting: The Complete Guide to Data-Driven Segmentation (2026)</h1>
+          <h2 className="text-2xl font-semibold mb-4">B2B Audience Targeting: The Complete Guide to Data-Driven Segmentation (2026)</h2>
 
           <p className="text-gray-700 mb-6">
             Master B2B audience targeting with data-driven segmentation strategies. Learn how to build your ICP, use firmographic and intent data, and create high-converting audience segments at scale. Published: January 27, 2026.

@@ -479,7 +479,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">Website Visitor Identification Guide: How to Identify Anonymous Visitors (2026)</h1>
+          <h2 className="text-2xl font-semibold mb-4">Website Visitor Identification Guide: How to Identify Anonymous Visitors (2026)</h2>
 
           <p className="text-gray-700 mb-6">
             Complete guide to website visitor identification: how it works technically, identification rates compared across providers, implementation steps, use cases, outreach playbook, and legal considerations. Published: February 20, 2026.

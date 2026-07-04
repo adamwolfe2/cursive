@@ -1001,7 +1001,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">Best LeadIQ Alternatives: B2B Prospecting Tools Compared — $75/user vs $1k/mo All-In (2026)</h1>
+          <h2 className="text-2xl font-semibold mb-4">Best LeadIQ Alternatives: B2B Prospecting Tools Compared — $75/user vs $1k/mo All-In (2026)</h2>
 
           <p className="text-gray-700 mb-6">
             LeadIQ&apos;s LinkedIn Chrome extension and contact data are popular for outbound prospecting, but credit limits, outdated data, no visitor identification, and no outreach automation drive teams to seek alternatives. Published: February 19, 2026.

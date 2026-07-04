@@ -99,9 +99,9 @@ export function LeadsTableClient() {
 function TableSkeleton() {
   return (
     <div className="space-y-4">
-      <div className="rounded-lg border border-blue-100/50 bg-white/80 backdrop-blur-sm overflow-hidden shadow-sm">
+      <div className="rounded-lg border border-border bg-white/80 backdrop-blur-sm overflow-hidden shadow-sm">
         {/* Table Header Skeleton */}
-        <div className="h-12 border-b border-blue-100/50 bg-gradient-cursive-soft flex items-center gap-4 px-6">
+        <div className="h-12 border-b border-border bg-brand-50 flex items-center gap-4 px-6">
           <div className="shimmer-cursive h-4 w-4 rounded" />
           <div className="shimmer-cursive h-4 w-32 rounded" />
           <div className="shimmer-cursive h-4 w-48 rounded" />
@@ -115,7 +115,7 @@ function TableSkeleton() {
         {Array.from({ length: 10 }).map((_, i) => (
           <div
             key={i}
-            className="h-14 border-b border-blue-50/50 flex items-center gap-4 px-6 hover:bg-gradient-cursive-subtle/50 transition-colors"
+            className="h-14 border-b border-border flex items-center gap-4 px-6 hover:bg-brand-50/50 transition-colors"
           >
             <div className="shimmer-cursive h-4 w-4 rounded" />
             <div className="shimmer-cursive h-6 w-6 rounded-full" />

@@ -598,7 +598,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">Best Qualified Alternatives: 6 Visitor Intelligence Tools Compared (2026)</h1>
+          <h2 className="text-2xl font-semibold mb-4">Best Qualified Alternatives: 6 Visitor Intelligence Tools Compared (2026)</h2>
 
           <p className="text-gray-700 mb-6">
             Qualified.com is a website visitor routing and chat platform at $3,500-$7,500+/mo that only captures the 1-5% of visitors who engage with its chat widget. This guide compares alternatives that identify all anonymous visitors without requiring engagement. Published: February 20, 2026.

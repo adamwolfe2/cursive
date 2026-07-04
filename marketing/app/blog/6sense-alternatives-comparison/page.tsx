@@ -1133,7 +1133,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">7 Best 6sense Alternatives & Competitors in 2026</h1>
+          <h2 className="text-2xl font-semibold mb-4">7 Best 6sense Alternatives & Competitors in 2026</h2>
 
           <p className="text-gray-700 mb-6">
             Comparison of affordable 6sense alternatives for intent data, visitor identification, and ABM without enterprise contracts ($50k-$100k+/year). Published: February 6, 2026. Author: Adam Wolfe.

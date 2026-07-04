@@ -358,7 +358,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">12 Best Outreach Platforms for 2026 (Pricing and Features Compared)</h1>
+          <h2 className="text-2xl font-semibold mb-4">12 Best Outreach Platforms for 2026 (Pricing and Features Compared)</h2>
 
           <p className="text-gray-700 mb-6">
             Comprehensive comparison of 12 leading outreach platforms by pricing, features, channels, and use case. Published: April 3, 2026. Reading time: 10 minutes.

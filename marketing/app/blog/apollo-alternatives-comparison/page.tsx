@@ -931,7 +931,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">7 Best Apollo.io Alternatives & Competitors in 2026</h1>
+          <h2 className="text-2xl font-semibold mb-4">7 Best Apollo.io Alternatives & Competitors in 2026</h2>
 
           <p className="text-gray-700 mb-6">
             Looking for Apollo.io alternatives? Compare the 7 best competitors for B2B prospecting, intent data, and outbound automation. Find the right tool for your sales team in 2026. Published: February 6, 2026.

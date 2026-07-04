@@ -89,3 +89,8 @@ Phase-1 drift to clean in later phases: gradient-text anti-pattern (.text-gradie
 
 ## NEXT SESSION START HERE
 Branch audit/2026-07-03 is UNCOMMITTED (large — security+platform+marketing+SSRF+tokens). Options: parallel-review already passed → safe to `/cap` (commit+push, no deploy) then deploy manually. Manual prod steps still pending: apply 20260703000000 migration, re-sync main Inngest app after deploy, rotate DB password, marketing trust-decision on testimonials/case-studies. Then UI Phases 2-10.
+
+## UPDATE 2026-07-04 (post-cap)
+- Branch COMMITTED + PUSHED (c4f1e9c0) · PR #119 open (base main).
+- Reseller RPC lockdown migration 20260703000000 APPLIED TO PROD via aside/Supabase SQL editor ("Success. No rows returned"). reseller_consume_delivery + reseller_record_delivery now service_role-only + search_path pinned; delivery-taxonomy columns added. Item #2 DONE.
+- STILL PENDING (Adam): merge PR #119 + deploy; after deploy re-sync main Inngest app (PUT /api/inngest → modified:true); rotate Cursive DB password (coordinate with Vercel env); marketing testimonials/case-studies real-vs-placeholder decision.

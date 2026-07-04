@@ -82,7 +82,7 @@ export default function LaunchCampaignsDemo() {
               </motion.div>
               <motion.div
                 animate={{
-                  color: isActive ? '#111827' : '#9CA3AF',
+                  color: isActive ? 'var(--color-foreground)' : 'var(--color-muted-foreground)',
                 }}
                 transition={{ duration: 0.4 }}
                 className="text-sm font-medium"

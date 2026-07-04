@@ -369,7 +369,7 @@ export default function B2BSoftwarePage() {
         <MachineContent>
           {/* Header */}
           <div className="mb-12 pb-6 border-b border-gray-200">
-            <h1 className="text-2xl text-gray-900 font-bold mb-4">B2B SOFTWARE LEAD GENERATION</h1>
+            <h2 className="text-2xl text-foreground font-semibold mb-4">B2B SOFTWARE LEAD GENERATION</h2>
             <p className="text-gray-700 leading-relaxed">
               Cursive helps SaaS and B2B software companies fill pipeline by identifying the companies
               and people evaluating them and delivering a weekly audience of in-market buyers — each with

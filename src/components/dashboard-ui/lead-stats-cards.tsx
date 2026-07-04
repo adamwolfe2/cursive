@@ -44,7 +44,7 @@ export function LeadStatsCards({ stats, isLoading = false }: LeadStatsCardsProps
           return (
             <div
               key={index}
-              className="p-4 sm:p-6 space-y-4 hover:bg-gradient-cursive-subtle/30 transition-colors"
+              className="p-4 sm:p-6 space-y-4 hover:bg-brand-50 transition-colors"
             >
               <div className="flex items-center gap-1.5 text-muted-foreground">
                 <IconComponent className="size-4 sm:size-[18px] text-blue-600" />
@@ -53,7 +53,7 @@ export function LeadStatsCards({ stats, isLoading = false }: LeadStatsCardsProps
                 </span>
               </div>
 
-              <p className="text-2xl sm:text-[28px] font-semibold tracking-tight bg-gradient-cursive bg-clip-text text-transparent">
+              <p className="text-2xl sm:text-[28px] font-semibold tracking-tight text-brand-600">
                 {typeof stat.value === 'number' ? stat.value.toLocaleString() : stat.value}
               </p>
 

@@ -1037,7 +1037,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">Best DataShopper Alternatives: 7 B2B Data Tools Compared (2026)</h1>
+          <h2 className="text-2xl font-semibold mb-4">Best DataShopper Alternatives: 7 B2B Data Tools Compared (2026)</h2>
 
           <p className="text-gray-700 mb-6">
             DataShopper.io is a B2B data marketplace offering pay-per-record contact list purchasing by industry, title, company size, and geography. Teams seeking alternatives cite static data decay, no visitor identification, no intent signals, and the need for separate outreach tools. This guide compares the 7 best DataShopper alternatives in 2026. Published: February 18, 2026.

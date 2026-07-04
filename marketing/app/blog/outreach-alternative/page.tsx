@@ -1011,7 +1011,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">Best Outreach.io Alternatives: Sales Engagement Tools Compared (2026)</h1>
+          <h2 className="text-2xl font-semibold mb-4">Best Outreach.io Alternatives: Sales Engagement Tools Compared (2026)</h2>
 
           <p className="text-gray-700 mb-6">
             Outreach.io is an enterprise sales engagement platform ($100-$150/user/mo) used for cadence management, AI forecasting, and deal intelligence — but no visitor identification, no contact database, and cold-first workflow push teams toward more integrated, affordable alternatives. Published: February 20, 2026.

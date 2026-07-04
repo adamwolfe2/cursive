@@ -464,7 +464,7 @@ export default function BlogPost() {
 
       <MachineView>
         <MachineContent>
-          <h1 className="text-2xl font-bold mb-4">The 12 Best AI Sales Assistants for 2026</h1>
+          <h2 className="text-2xl font-semibold mb-4">The 12 Best AI Sales Assistants for 2026</h2>
 
           <p className="text-gray-700 mb-6">
             Comprehensive comparison of AI sales assistant platforms for 2026, covering prospecting, CRM automation, outreach, and meeting intelligence. Published: April 3, 2026. Reading time: 10 minutes.
