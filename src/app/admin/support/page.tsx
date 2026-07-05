@@ -297,7 +297,7 @@ export default function AdminSupportPage() {
               <div className="flex gap-2">
                 <a
                   href={`mailto:${selectedMessage.email}?subject=Re: ${selectedMessage.subject || 'Your message'}`}
-                  className="flex-1 h-9 px-4 flex items-center justify-center gap-2 text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-colors"
+                  className="flex-1 h-9 px-4 flex items-center justify-center gap-2 text-sm font-medium bg-primary text-primary-foreground shadow-enterprise-sm hover:bg-primary/90 rounded-lg transition-colors"
                 >
                   <Mail className="h-4 w-4" />
                   Reply

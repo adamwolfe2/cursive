@@ -7,6 +7,7 @@ import { debounce } from '@/lib/utils'
 import { useToast } from '@/lib/hooks/use-toast'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { BulkIntelligenceAction } from '@/components/intelligence'
+import { Button } from '@/components/ui/button'
 
 interface Tag {
   id: string
@@ -218,9 +219,9 @@ export function LeadsTableToolbar({
     <div className="space-y-4">
       {/* Bulk Actions Bar */}
       {selectedCount > 0 && (
-        <div className="rounded-lg bg-blue-50 border border-blue-200 px-4 py-3">
+        <div className="rounded-lg bg-primary/5 border border-primary/30 px-4 py-3">
           <div className="flex items-center justify-between">
-            <span className="text-[13px] font-medium text-blue-900">
+            <span className="text-[13px] font-medium text-primary">
               {selectedCount} lead{selectedCount > 1 ? 's' : ''} selected
             </span>
             <div className="flex items-center gap-2">
@@ -346,10 +347,12 @@ export function LeadsTableToolbar({
               />
 
               {/* Delete Button */}
-              <button
+              <Button
+                variant="destructive"
+                size="sm"
                 onClick={onBulkDelete}
                 disabled={isDeleting}
-                className="inline-flex items-center gap-2 rounded-md bg-red-600 px-3 py-1.5 text-[13px] font-medium text-white hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="gap-2"
               >
                 {isDeleting ? (
                   <>
@@ -374,13 +377,14 @@ export function LeadsTableToolbar({
                     Delete
                   </>
                 )}
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => table.resetRowSelection()}
-                className="text-[13px] font-medium text-zinc-600 hover:text-zinc-900"
               >
                 Clear
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -536,9 +540,11 @@ export function LeadsTableToolbar({
           </div>
 
           {/* Refresh */}
-          <button
+          <Button
+            variant="outline"
+            size="sm"
             onClick={onRefresh}
-            className="inline-flex items-center gap-2 rounded-md border border-zinc-300 bg-white px-3 py-2 text-[13px] font-medium text-zinc-700 hover:bg-zinc-50"
+            className="gap-2"
           >
             <svg
               className="h-4 w-4"
@@ -554,13 +560,15 @@ export function LeadsTableToolbar({
               />
             </svg>
             Refresh
-          </button>
+          </Button>
 
           {/* Export */}
-          <button
+          <Button
+            variant="default"
+            size="sm"
             onClick={handleExport}
             disabled={isExporting}
-            className="inline-flex items-center gap-2 rounded-md bg-blue-600 px-3 py-2 text-[13px] font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="gap-2"
           >
             {isExporting ? (
               <>
@@ -585,7 +593,7 @@ export function LeadsTableToolbar({
                 Export CSV
               </>
             )}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

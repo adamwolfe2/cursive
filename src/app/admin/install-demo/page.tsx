@@ -13,6 +13,7 @@
 'use client'
 
 import { useState } from 'react'
+import { Button } from '@/components/ui/button'
 
 type Result = {
   install: { id: string; isNew: boolean }
@@ -166,13 +167,14 @@ export default function InstallDemoPage() {
           />
         </Field>
 
-        <button
+        <Button
           type="submit"
           disabled={loading}
-          className="w-full rounded-md bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+          loading={loading}
+          className="w-full"
         >
           {loading ? 'Provisioning…' : 'Run install'}
-        </button>
+        </Button>
       </form>
 
       {error && (
@@ -228,7 +230,7 @@ export default function InstallDemoPage() {
               href={result.portalUrl}
               target="_blank"
               rel="noreferrer"
-              className="inline-block rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+              className="inline-block rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-enterprise-sm hover:bg-primary/90"
             >
               Open portal as installer →
             </a>

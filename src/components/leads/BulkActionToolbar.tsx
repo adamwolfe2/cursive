@@ -5,6 +5,8 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { toast } from 'sonner'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { BulkIntelligenceAction } from '@/components/intelligence'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 
 interface BulkActionToolbarProps {
   selectedCount: number
@@ -163,39 +165,38 @@ export function BulkActionToolbar({
           transition={{ type: 'spring', damping: 24, stiffness: 300 }}
           className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2"
         >
-          <div className="flex items-center gap-3 rounded-xl border border-zinc-200 bg-white px-4 py-3 shadow-lg shadow-black/10">
+          <div className="flex items-center gap-3 rounded-xl border border-border bg-card px-4 py-3 shadow-enterprise-lg">
             {/* Lead count */}
-            <span className="text-sm font-semibold text-zinc-900 whitespace-nowrap">
+            <span className="text-sm font-semibold text-foreground whitespace-nowrap">
               {selectedCount} {selectedCount === 1 ? 'lead' : 'leads'} selected
             </span>
 
-            <div className="h-4 w-px bg-zinc-200" />
+            <div className="h-4 w-px bg-border" />
 
             {/* Inline delete confirmation — shown when actionState === 'delete_confirm' */}
             {actionState === 'delete_confirm' ? (
               <div className="flex items-center gap-2">
-                <span className="text-xs font-medium text-red-700">
+                <span className="text-xs font-medium text-destructive">
                   Permanently delete {selectedCount} lead{selectedCount !== 1 ? 's' : ''}?
                 </span>
-                <button
+                <Button
+                  variant="destructive"
+                  size="sm"
                   onClick={() => { void handleDelete() }}
                   disabled={loading}
-                  className="rounded-md bg-red-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-red-700 disabled:opacity-50 transition-colors"
                 >
                   {loading ? 'Deleting…' : 'Yes, Delete'}
-                </button>
-                <button
-                  onClick={() => setActionState('idle')}
-                  className="text-xs text-zinc-500 hover:text-zinc-700"
-                >
+                </Button>
+                <Button variant="ghost" size="sm" onClick={() => setActionState('idle')}>
                   Cancel
-                </button>
+                </Button>
               </div>
             ) : actionState === 'tag' ? (
               <div className="flex items-center gap-2">
-                <input
+                <Input
                   autoFocus
                   type="text"
+                  inputSize="sm"
                   placeholder="Tag name…"
                   value={tagInput}
                   onChange={(e) => setTagInput(e.target.value)}
@@ -203,60 +204,67 @@ export function BulkActionToolbar({
                     if (e.key === 'Enter') { void handleTag() }
                     if (e.key === 'Escape') { setActionState('idle'); setTagInput('') }
                   }}
-                  className="h-8 w-40 rounded-md border border-zinc-300 px-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-40"
                   disabled={loading}
                 />
-                <button
+                <Button
+                  variant="default"
+                  size="sm"
                   onClick={() => { void handleTag() }}
                   disabled={loading || !tagInput.trim()}
-                  className="rounded-md bg-blue-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-700 disabled:opacity-50 transition-colors"
                 >
                   {loading ? 'Applying…' : 'Apply'}
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
                   onClick={() => { setActionState('idle'); setTagInput('') }}
-                  className="text-xs text-zinc-500 hover:text-zinc-700"
                 >
                   Cancel
-                </button>
+                </Button>
               </div>
             ) : (
               <div className="flex items-center gap-2">
                 {/* Archive */}
-                <button
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={() => { void handleArchive() }}
                   disabled={loading}
-                  className="rounded-md border border-zinc-200 bg-white px-3 py-1.5 text-xs font-medium text-zinc-700 hover:bg-zinc-50 disabled:opacity-50 transition-colors"
                 >
                   {loading && actionState === 'archive' ? 'Archiving…' : 'Archive'}
-                </button>
+                </Button>
 
                 {/* Unarchive */}
-                <button
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={() => { void handleUnarchive() }}
                   disabled={loading}
-                  className="rounded-md border border-zinc-200 bg-white px-3 py-1.5 text-xs font-medium text-zinc-700 hover:bg-zinc-50 disabled:opacity-50 transition-colors"
                 >
                   {loading && actionState === 'unarchive' ? 'Unarchiving…' : 'Unarchive'}
-                </button>
+                </Button>
 
                 {/* Tag */}
-                <button
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={() => setActionState('tag')}
                   disabled={loading}
-                  className="rounded-md border border-zinc-200 bg-white px-3 py-1.5 text-xs font-medium text-zinc-700 hover:bg-zinc-50 disabled:opacity-50 transition-colors"
                 >
                   Tag
-                </button>
+                </Button>
 
                 {/* Export CSV */}
-                <button
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={() => { void handleExportCSV() }}
                   disabled={loading}
-                  className="rounded-md border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-medium text-blue-700 hover:bg-blue-100 disabled:opacity-50 transition-colors"
+                  className="border-primary/30 text-primary hover:bg-primary/5 hover:text-primary"
                 >
                   {loading ? 'Exporting…' : 'Export CSV'}
-                </button>
+                </Button>
 
                 {/* Bulk Intelligence Enrichment */}
                 <BulkIntelligenceAction
@@ -265,22 +273,26 @@ export function BulkActionToolbar({
                 />
 
                 {/* Delete */}
-                <button
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={() => setActionState('delete_confirm')}
                   disabled={loading}
-                  className="rounded-md border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-100 disabled:opacity-50 transition-colors"
+                  className="border-destructive/30 text-destructive hover:bg-destructive-muted hover:text-destructive"
                 >
                   Delete
-                </button>
+                </Button>
 
                 {/* Clear */}
-                <button
+                <Button
+                  variant="ghost"
+                  size="sm"
                   onClick={onClear}
                   disabled={loading}
-                  className="text-xs text-zinc-400 hover:text-zinc-700 transition-colors disabled:opacity-50"
+                  className="text-muted-foreground"
                 >
                   Clear
-                </button>
+                </Button>
               </div>
             )}
           </div>

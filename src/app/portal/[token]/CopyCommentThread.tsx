@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import type { CopyComment } from '@/types/copy-comments'
+import { Button } from '@/components/ui/button'
 
 interface Props {
   token: string
@@ -144,7 +145,7 @@ export default function CopyCommentThread({
           <button
             type="button"
             onClick={() => openForm(null)}
-            className="text-xs font-medium text-blue-600 hover:text-blue-700"
+            className="text-xs font-medium text-primary hover:text-brand-700"
           >
             + Add comment
           </button>
@@ -193,7 +194,7 @@ export default function CopyCommentThread({
       {showForm && (
         <div className="mt-2 rounded-lg border border-gray-200 bg-gray-50 p-2.5 space-y-2">
           {quotedText && (
-            <div className="rounded border-l-2 border-blue-400 bg-white px-2.5 py-1.5">
+            <div className="rounded border-l-2 border-brand-400 bg-white px-2.5 py-1.5">
               <p className="text-[11px] uppercase tracking-wider text-gray-400 font-semibold mb-0.5">
                 Quoting
               </p>
@@ -211,17 +212,17 @@ export default function CopyCommentThread({
             rows={3}
             autoFocus
             placeholder={replyParent ? 'Write a reply…' : 'What would you like changed? Be as specific as you want.'}
-            className="w-full rounded-md border border-gray-200 bg-white px-2.5 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+            className="w-full rounded-md border border-gray-200 bg-white px-2.5 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent resize-none"
           />
           <div className="flex items-center gap-2">
-            <button
+            <Button
               type="button"
+              size="sm"
               onClick={submit}
               disabled={submitting || !draft.trim()}
-              className="inline-flex items-center gap-1.5 rounded-md bg-blue-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-700 disabled:opacity-50 transition-colors"
             >
               {submitting ? 'Saving…' : replyParent ? 'Reply' : 'Post comment'}
-            </button>
+            </Button>
             <button
               type="button"
               onClick={cancel}
@@ -262,13 +263,13 @@ function CommentBubble({
           ? 'bg-gray-50 border border-gray-100 opacity-70'
           : isAdmin
             ? 'bg-amber-50 border border-amber-100'
-            : 'bg-blue-50 border border-blue-100'
+            : 'bg-brand-50 border border-brand-100'
       } ${compact ? 'px-2.5 py-1.5' : 'px-3 py-2'}`}
     >
       <div className="flex items-center gap-2 mb-1">
         <span
           className={`text-[11px] font-semibold ${
-            isAdmin ? 'text-amber-800' : 'text-blue-800'
+            isAdmin ? 'text-amber-800' : 'text-brand-800'
           }`}
         >
           {label}

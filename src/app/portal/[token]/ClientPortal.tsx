@@ -15,6 +15,7 @@ import type { CopyComment } from '@/types/copy-comments'
 import { commentKey, groupCommentsByEmail } from '@/types/copy-comments'
 import CopyCommentThread from './CopyCommentThread'
 import InlineEmailEditor from '@/components/inline-edit/InlineEmailEditor'
+import { Button } from '@/components/ui/button'
 
 // ---------------------------------------------------------------------------
 // Portal email viewer — client-friendly spintax rendering (Preview / Variants)
@@ -167,7 +168,7 @@ function highlightSpintax(text: string): ReactNode {
       parts.push(
         <span
           key={key}
-          className="mx-0.5 inline-flex items-center rounded bg-blue-100 px-1 text-sm font-medium text-blue-700"
+          className="mx-0.5 inline-flex items-center rounded bg-brand-100 px-1 text-sm font-medium text-brand-700"
         >
           {match[4].split('|').join(' | ')}
         </span>
@@ -227,7 +228,7 @@ function PortalEmailViewer({
             onClick={() => setMode(tab)}
             className={`px-4 py-2 text-xs font-medium transition-colors ${
               mode === tab
-                ? 'border-b-2 border-blue-600 bg-white text-blue-700'
+                ? 'border-b-2 border-primary bg-white text-brand-700'
                 : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'
             }`}
           >
@@ -250,7 +251,7 @@ function PortalEmailViewer({
               <button
                 type="button"
                 onClick={() => setSeed((s) => s + 1)}
-                className="inline-flex items-center gap-1 rounded bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700 transition-colors hover:bg-blue-100"
+                className="inline-flex items-center gap-1 rounded bg-brand-50 px-2.5 py-1 text-xs font-medium text-brand-700 transition-colors hover:bg-brand-100"
               >
                 <svg
                   className="h-3 w-3"
@@ -453,8 +454,8 @@ function StepIcon({
 
   if (state === 'active') {
     return (
-      <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border-2 border-blue-600 bg-blue-50">
-        <div className="h-3 w-3 animate-pulse rounded-full bg-blue-600" />
+      <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border-2 border-primary bg-brand-50">
+        <div className="h-3 w-3 animate-pulse rounded-full bg-primary" />
       </div>
     )
   }
@@ -518,7 +519,7 @@ function StepShell({
             </span>
           )}
           {state === 'active' && (
-            <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700">
+            <span className="inline-flex items-center rounded-full bg-brand-50 px-2 py-0.5 text-xs font-medium text-brand-700">
               Action needed
             </span>
           )}
@@ -566,7 +567,7 @@ function ContractStep({ client }: { client: PortalClient }) {
               href={`https://mail.google.com/mail/u/0/#search/${encodeURIComponent(`from:admin@rabbitsign.com "${client.company_name}"`)}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-xs font-medium text-blue-600 hover:text-blue-700 hover:underline"
+              className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:text-brand-700 hover:underline"
             >
               View signed contract in email →
             </a>
@@ -587,7 +588,7 @@ function ContractStep({ client }: { client: PortalClient }) {
               href={`https://mail.google.com/mail/u/0/#search/${encodeURIComponent(`from:admin@rabbitsign.com "${client.company_name}"`)}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 whitespace-nowrap rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+              className="inline-flex items-center gap-2 whitespace-nowrap rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary/90"
             >
               Find Signing Email in Gmail
               <svg
@@ -648,7 +649,7 @@ function InvoiceStep({ client }: { client: PortalClient }) {
               href={client.stripe_invoice_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-xs font-medium text-blue-600 hover:text-blue-700 hover:underline"
+              className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:text-brand-700 hover:underline"
             >
               View invoice / receipt →
             </a>
@@ -664,7 +665,7 @@ function InvoiceStep({ client }: { client: PortalClient }) {
             href={client.stripe_invoice_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 whitespace-nowrap rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+            className="inline-flex items-center gap-2 whitespace-nowrap rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary/90"
           >
             {client.setup_fee != null
               ? `Pay Invoice (${formatCurrency(client.setup_fee)})`
@@ -815,7 +816,7 @@ function DomainsStep({
               href={approvalUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-xs font-medium text-blue-600 hover:text-blue-700 hover:underline"
+              className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:text-brand-700 hover:underline"
             >
               View domains &amp; sender names →
             </a>
@@ -840,7 +841,7 @@ function DomainsStep({
               href={approvalUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm font-medium text-blue-700 transition-colors hover:bg-blue-100"
+              className="inline-flex items-center gap-2 rounded-lg border border-brand-200 bg-brand-50 px-4 py-3 text-sm font-medium text-brand-700 transition-colors hover:bg-brand-100"
             >
               <svg
                 className="h-4 w-4 flex-shrink-0"
@@ -856,7 +857,7 @@ function DomainsStep({
                 />
               </svg>
               View Domains &amp; Sender Names
-              <span className="text-xs font-normal text-blue-600/70">
+              <span className="text-xs font-normal text-primary/70">
                 (opens in new tab)
               </span>
             </a>
@@ -910,39 +911,43 @@ function DomainsStep({
                 onChange={(e) => setNotes(e.target.value)}
                 rows={3}
                 placeholder="e.g. Please use first name only, or change domain to example.io..."
-                className="w-full resize-none rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full resize-none rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-ring"
               />
             </div>
           )}
 
           <div className="flex flex-wrap gap-3">
-            <button
+            <Button
+              type="button"
+              variant="success"
               onClick={handleApprove}
               disabled={submitting}
-              className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-emerald-700 disabled:opacity-50"
+              leftIcon={
+                <svg
+                  className="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2.5}
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M4.5 12.75l6 6 9-13.5"
+                  />
+                </svg>
+              }
             >
-              <svg
-                className="h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={2.5}
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M4.5 12.75l6 6 9-13.5"
-                />
-              </svg>
               Approve All
-            </button>
-            <button
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
               onClick={handleRequestChanges}
               disabled={submitting}
-              className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:opacity-50"
             >
               {showNotes ? 'Submit Changes' : 'Request Changes'}
-            </button>
+            </Button>
             {showNotes && (
               <button
                 type="button"
@@ -1188,7 +1193,7 @@ function CopyStep({
     >
       {isGenerating ? (
         <div className="flex items-start gap-3">
-          <div className="mt-0.5 h-4 w-4 flex-shrink-0 animate-spin rounded-full border-2 border-blue-400 border-t-transparent" />
+          <div className="mt-0.5 h-4 w-4 flex-shrink-0 animate-spin rounded-full border-2 border-brand-400 border-t-transparent" />
           <p className="text-sm text-gray-500">
             Our AI is writing personalized email sequences tailored to your
             business — check back soon.
@@ -1266,7 +1271,7 @@ function CopyStep({
                           }`}
                         >
                           <div className="mb-2.5 flex flex-wrap items-center gap-2">
-                            <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700">
+                            <span className="inline-flex items-center rounded-full bg-brand-50 px-2 py-0.5 text-xs font-medium text-brand-700">
                               Email {email.step}
                             </span>
                             <span className="text-xs text-gray-400">
@@ -1286,7 +1291,7 @@ function CopyStep({
                             {/* Apply Feedback button — only active when there are open comments. */}
                             <div className="ml-auto flex items-center gap-2">
                               {isRegenerating ? (
-                                <span className="inline-flex items-center gap-1.5 text-xs text-blue-700">
+                                <span className="inline-flex items-center gap-1.5 text-xs text-brand-700">
                                   <svg
                                     className="h-3.5 w-3.5 animate-spin"
                                     viewBox="0 0 24 24"
@@ -1321,7 +1326,7 @@ function CopyStep({
                                   className={`inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs font-medium transition-colors ${
                                     openCount === 0
                                       ? 'cursor-not-allowed border-gray-200 bg-gray-50 text-gray-400'
-                                      : 'border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100'
+                                      : 'border-brand-200 bg-brand-50 text-brand-700 hover:bg-brand-100'
                                   }`}
                                   title={
                                     openCount === 0
@@ -1448,7 +1453,7 @@ function CopyStep({
                 onChange={(e) => setNotes(e.target.value)}
                 rows={4}
                 placeholder="e.g. Make the tone more conversational. Also update the CTA in email 2 to book a call instead..."
-                className="w-full resize-none rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full resize-none rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-ring"
               />
             </div>
           )}
@@ -1459,37 +1464,41 @@ function CopyStep({
               submit additional bulk feedback. */}
           {!isApproved && (
             <div className="flex flex-wrap gap-3">
-              <button
+              <Button
+                type="button"
+                variant="success"
                 onClick={handleApprove}
                 disabled={submitting}
-                className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-emerald-700 disabled:opacity-50"
+                leftIcon={
+                  <svg
+                    className="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={2.5}
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M4.5 12.75l6 6 9-13.5"
+                    />
+                  </svg>
+                }
               >
-                <svg
-                  className="h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={2.5}
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M4.5 12.75l6 6 9-13.5"
-                  />
-                </svg>
                 Approve Copy
-              </button>
-              <button
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
                 onClick={handleRequestChanges}
                 disabled={submitting}
-                className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:opacity-50"
               >
                 {showNotes
                   ? 'Submit Changes'
                   : isChangesRequested
                     ? 'Submit More Changes'
                     : 'Request Changes'}
-              </button>
+              </Button>
               {showNotes && (
                 <button
                   type="button"
@@ -1544,9 +1553,9 @@ function SetupStep({
             <span className="font-medium text-gray-900">14–21 days</span>.
           </p>
           {client.start_timeline && (
-            <div className="flex items-center gap-3 rounded-lg border border-blue-100 bg-blue-50 px-4 py-3">
+            <div className="flex items-center gap-3 rounded-lg border border-brand-100 bg-brand-50 px-4 py-3">
               <svg
-                className="h-4 w-4 flex-shrink-0 text-blue-600"
+                className="h-4 w-4 flex-shrink-0 text-primary"
                 fill="none"
                 viewBox="0 0 24 24"
                 strokeWidth={1.5}
@@ -1558,7 +1567,7 @@ function SetupStep({
                   d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"
                 />
               </svg>
-              <p className="text-sm text-blue-900">
+              <p className="text-sm text-brand-900">
                 <span className="font-medium">Expected launch: </span>
                 {client.start_timeline}
               </p>
@@ -1639,9 +1648,9 @@ function PackageSidebar({ client }: { client: PortalClient }) {
             if (!pkg) return null
             return (
               <li key={slug} className="flex items-start gap-2.5">
-                <div className="mt-0.5 flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-blue-100">
+                <div className="mt-0.5 flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-brand-100">
                   <svg
-                    className="h-2.5 w-2.5 text-blue-600"
+                    className="h-2.5 w-2.5 text-primary"
                     fill="none"
                     viewBox="0 0 24 24"
                     strokeWidth={3}
@@ -1817,7 +1826,7 @@ export function ClientPortal({
               Questions? Our team is here to help.{' '}
               <a
                 href="mailto:support@meetcursive.com"
-                className="font-medium text-blue-600 transition-colors hover:text-blue-700"
+                className="font-medium text-primary transition-colors hover:text-brand-700"
               >
                 support@meetcursive.com
               </a>

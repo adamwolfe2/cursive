@@ -4,6 +4,7 @@ import * as React from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import {
   Table,
@@ -194,11 +195,7 @@ export function EnhancedContactsTable({
             variant={currentPage === i ? 'default' : 'outline'}
             size="sm"
             onClick={() => setCurrentPage(i)}
-            className={cn(
-              'h-8 w-8 p-0',
-              currentPage === i &&
-                'bg-blue-600 text-white hover:bg-blue-700 border-blue-600'
-            )}
+            className="h-8 w-8 p-0"
           >
             {i}
           </Button>
@@ -228,11 +225,7 @@ export function EnhancedContactsTable({
             variant={currentPage === pageNum ? 'default' : 'outline'}
             size="sm"
             onClick={() => setCurrentPage(pageNum)}
-            className={cn(
-              'h-8 w-8 p-0',
-              currentPage === pageNum &&
-                'bg-blue-600 text-white hover:bg-blue-700 border-blue-600'
-            )}
+            className="h-8 w-8 p-0"
           >
             {pageNum}
           </Button>
@@ -286,7 +279,7 @@ export function EnhancedContactsTable({
               <Button
                 size="sm"
                 onClick={onCreateClick}
-                className="h-9 bg-blue-600 text-white hover:bg-blue-700"
+                className="h-9"
               >
                 <Plus className="mr-2 h-4 w-4" />
                 New Contact
@@ -310,10 +303,11 @@ export function EnhancedContactsTable({
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
             <Input
+              inputSize="sm"
               placeholder="Search contacts..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 h-9 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+              className="pl-9 h-9"
             />
           </div>
 
@@ -325,8 +319,8 @@ export function EnhancedContactsTable({
                 Status
                 {statusFilter !== 'all' && (
                   <Badge
-                    variant="secondary"
-                    className="ml-2 h-5 rounded-sm px-1 text-xs bg-blue-100 text-blue-700"
+                    variant="default"
+                    className="ml-2 h-5 rounded-sm px-1 text-xs"
                   >
                     1
                   </Badge>
@@ -362,8 +356,8 @@ export function EnhancedContactsTable({
                 Seniority
                 {seniorityFilter !== 'all' && (
                   <Badge
-                    variant="secondary"
-                    className="ml-2 h-5 rounded-sm px-1 text-xs bg-blue-100 text-blue-700"
+                    variant="default"
+                    className="ml-2 h-5 rounded-sm px-1 text-xs"
                   >
                     1
                   </Badge>
@@ -398,8 +392,8 @@ export function EnhancedContactsTable({
             <span className="text-xs text-gray-500">Active filters:</span>
             {statusFilter !== 'all' && (
               <Badge
-                variant="secondary"
-                className="gap-1 bg-blue-50 text-blue-700 hover:bg-blue-100 cursor-pointer"
+                variant="default"
+                className="gap-1 cursor-pointer hover:bg-primary/20"
                 onClick={() => setStatusFilter('all')}
               >
                 Status: {statusFilter}
@@ -408,8 +402,8 @@ export function EnhancedContactsTable({
             )}
             {seniorityFilter !== 'all' && (
               <Badge
-                variant="secondary"
-                className="gap-1 bg-blue-50 text-blue-700 hover:bg-blue-100 cursor-pointer"
+                variant="default"
+                className="gap-1 cursor-pointer hover:bg-primary/20"
                 onClick={() => setSeniorityFilter('all')}
               >
                 Seniority: {seniorityFilter}
@@ -434,7 +428,7 @@ export function EnhancedContactsTable({
           <TableHeader>
             <TableRow className="hover:bg-transparent border-gray-200">
               <TableHead className="w-12">
-                <input type="checkbox" className="rounded border-gray-300" />
+                <Checkbox />
               </TableHead>
               <TableHead className="min-w-[200px]">Name</TableHead>
               <TableHead className="hidden md:table-cell">Title</TableHead>
@@ -479,15 +473,15 @@ export function EnhancedContactsTable({
                 return (
                   <TableRow
                     key={contact.id}
-                    className="cursor-pointer border-gray-100 hover:bg-blue-50/50 transition-colors"
+                    className="cursor-pointer border-gray-100 hover:bg-primary/5 transition-colors"
                     onClick={() => onRowClick?.(contact)}
                   >
                     <TableCell onClick={(e) => e.stopPropagation()}>
-                      <input type="checkbox" className="rounded border-gray-300" />
+                      <Checkbox />
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-3">
-                        <Avatar className="h-8 w-8 bg-blue-100 text-blue-700 border border-blue-200">
+                        <Avatar className="h-8 w-8 bg-primary/10 text-primary border border-primary/20">
                           <AvatarFallback className="text-xs font-medium">
                             {getInitials(contact)}
                           </AvatarFallback>

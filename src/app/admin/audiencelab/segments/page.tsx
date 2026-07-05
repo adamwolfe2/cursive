@@ -12,6 +12,7 @@ import { Upload, RefreshCw, Search, X } from 'lucide-react'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Select } from '@/components/ui/select'
 
 interface Segment {
   segment_id: string
@@ -229,7 +230,7 @@ export default function SegmentCatalogPage() {
       {importResult && (
         <div className="mb-4 flex items-center justify-between bg-zinc-50 border border-zinc-200 rounded-lg px-4 py-3 text-sm text-zinc-700">
           <span>{importResult}</span>
-          <button onClick={() => setImportResult(null)}><X size={14} className="text-zinc-400" /></button>
+          <Button variant="ghost" size="icon-xs" onClick={() => setImportResult(null)} aria-label="Dismiss"><X size={14} className="text-muted-foreground" /></Button>
         </div>
       )}
 
@@ -261,22 +262,18 @@ export default function SegmentCatalogPage() {
             className="pl-9"
           />
         </div>
-        <select
+        <Select
           value={typeFilter}
           onChange={e => setTypeFilter(e.target.value)}
-          className="border border-zinc-200 rounded-lg px-3 py-2 text-sm text-zinc-700 bg-white min-w-[110px]"
-        >
-          <option value="all">All Types</option>
-          {types.map(t => <option key={t} value={t}>{t}</option>)}
-        </select>
-        <select
+          className="min-w-[110px]"
+          options={[{ value: 'all', label: 'All Types' }, ...types.map(t => ({ value: t, label: t }))]}
+        />
+        <Select
           value={categoryFilter}
           onChange={e => setCategoryFilter(e.target.value)}
-          className="border border-zinc-200 rounded-lg px-3 py-2 text-sm text-zinc-700 bg-white min-w-[180px] max-w-[260px]"
-        >
-          <option value="all">All Categories</option>
-          {categories.map(c => <option key={c} value={c}>{c}</option>)}
-        </select>
+          className="min-w-[180px] max-w-[260px]"
+          options={[{ value: 'all', label: 'All Categories' }, ...categories.map(c => ({ value: c, label: c }))]}
+        />
       </div>
 
       {/* Segment Table */}
@@ -331,7 +328,7 @@ export default function SegmentCatalogPage() {
           <div className="bg-white rounded-lg p-6 max-w-lg w-full mx-4 space-y-4" onClick={e => e.stopPropagation()}>
             <div className="flex items-start justify-between">
               <h3 className="text-base font-semibold text-zinc-900">{selected.name}</h3>
-              <button onClick={() => setSelected(null)}><X size={16} className="text-zinc-400" /></button>
+              <Button variant="ghost" size="icon-xs" onClick={() => setSelected(null)} aria-label="Close"><X size={16} className="text-muted-foreground" /></Button>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-xs font-mono text-zinc-500">#{selected.segment_id}</span>

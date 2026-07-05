@@ -98,7 +98,7 @@ function formatDate(dateString: string): string {
 function MilestoneIcon({ status }: { status: MilestoneItem['status'] }) {
   if (status === 'complete') {
     return (
-      <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-blue-600">
+      <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary">
         <svg
           className="h-4 w-4 text-white"
           fill="none"
@@ -118,8 +118,8 @@ function MilestoneIcon({ status }: { status: MilestoneItem['status'] }) {
 
   if (status === 'in_progress') {
     return (
-      <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border-2 border-blue-600 bg-blue-50">
-        <div className="h-2.5 w-2.5 rounded-full bg-blue-600 animate-pulse" />
+      <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border-2 border-primary bg-brand-50">
+        <div className="h-2.5 w-2.5 rounded-full bg-primary animate-pulse" />
       </div>
     )
   }
@@ -158,7 +158,7 @@ export function PortalDashboard({ client }: { client: PortalClient }) {
           <h2 className="text-lg font-semibold text-gray-900">
             Onboarding Progress
           </h2>
-          <span className="text-sm font-medium text-blue-600">
+          <span className="text-sm font-medium text-primary">
             {progressPercent}% complete
           </span>
         </div>
@@ -167,7 +167,7 @@ export function PortalDashboard({ client }: { client: PortalClient }) {
         <div className="mb-6">
           <div className="h-2 w-full overflow-hidden rounded-full bg-gray-100">
             <div
-              className="h-full rounded-full bg-blue-600 transition-all duration-700 ease-out"
+              className="h-full rounded-full bg-primary transition-all duration-700 ease-out"
               style={{ width: `${progressPercent}%` }}
             />
           </div>
@@ -189,7 +189,7 @@ export function PortalDashboard({ client }: { client: PortalClient }) {
                     <div
                       className={`w-0.5 flex-1 my-1 ${
                         milestone.status === 'complete'
-                          ? 'bg-blue-600'
+                          ? 'bg-primary'
                           : 'bg-gray-200'
                       }`}
                     />
@@ -203,13 +203,13 @@ export function PortalDashboard({ client }: { client: PortalClient }) {
                       milestone.status === 'complete'
                         ? 'text-gray-900'
                         : milestone.status === 'in_progress'
-                          ? 'text-blue-700'
+                          ? 'text-brand-700'
                           : 'text-gray-400'
                     }`}
                   >
                     {milestone.label}
                     {milestone.status === 'in_progress' && (
-                      <span className="ml-2 inline-flex items-center rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700">
+                      <span className="ml-2 inline-flex items-center rounded-full bg-brand-50 px-2 py-0.5 text-xs font-medium text-brand-700">
                         In progress
                       </span>
                     )}
@@ -238,9 +238,9 @@ export function PortalDashboard({ client }: { client: PortalClient }) {
                 if (!pkg) return null
                 return (
                   <li key={slug} className="flex items-start gap-3">
-                    <div className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded bg-blue-50">
+                    <div className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded bg-brand-50">
                       <svg
-                        className="h-3 w-3 text-blue-600"
+                        className="h-3 w-3 text-primary"
                         fill="none"
                         viewBox="0 0 24 24"
                         strokeWidth={2.5}
@@ -307,10 +307,10 @@ export function PortalDashboard({ client }: { client: PortalClient }) {
 
       {/* Timeline */}
       {client.start_timeline && (
-        <div className="rounded-xl border border-blue-100 bg-blue-50 p-5">
+        <div className="rounded-xl border border-brand-100 bg-brand-50 p-5">
           <div className="flex items-start gap-3">
             <svg
-              className="mt-0.5 h-5 w-5 flex-shrink-0 text-blue-600"
+              className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary"
               fill="none"
               viewBox="0 0 24 24"
               strokeWidth={1.5}
@@ -323,10 +323,10 @@ export function PortalDashboard({ client }: { client: PortalClient }) {
               />
             </svg>
             <div>
-              <p className="text-sm font-medium text-blue-900">
+              <p className="text-sm font-medium text-brand-900">
                 Estimated Launch Timeline
               </p>
-              <p className="mt-0.5 text-sm text-blue-700">
+              <p className="mt-0.5 text-sm text-brand-700">
                 {client.start_timeline}
               </p>
             </div>
@@ -348,7 +348,7 @@ export function PortalDashboard({ client }: { client: PortalClient }) {
           Our team is here to help. Reach out anytime at{' '}
           <a
             href="mailto:support@meetcursive.com"
-            className="font-medium text-blue-600 hover:text-blue-700 transition-colors"
+            className="font-medium text-primary hover:text-brand-700 transition-colors"
           >
             support@meetcursive.com
           </a>

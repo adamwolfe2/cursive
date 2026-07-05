@@ -5,6 +5,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
 import Image from 'next/image'
 import { toast } from 'sonner'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 
 interface ZapierIntegrationProps {
   user: any
@@ -151,30 +153,30 @@ export function ZapierIntegration({ user, isPro }: ZapierIntegrationProps) {
 
           <div className="mt-4 flex flex-wrap gap-3">
             {!hasWebhook ? (
-              <button
+              <Button
                 onClick={handleGenerate}
                 disabled={generateWebhookMutation.isPending || !isPro}
-                className="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
               >
                 {generateWebhookMutation.isPending
                   ? 'Generating...'
                   : 'Generate Webhook'}
-              </button>
+              </Button>
             ) : (
               <>
-                <button
+                <Button
+                  variant="outline"
                   onClick={() => setShowWebhook(!showWebhook)}
-                  className="rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 transition-colors"
                 >
                   {showWebhook ? 'Hide' : 'Show'} Webhook URL
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="outline"
                   onClick={handleRevoke}
                   disabled={revokeWebhookMutation.isPending}
-                  className="rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-50 disabled:opacity-50 transition-colors"
+                  className="border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
                 >
                   {revokeWebhookMutation.isPending ? 'Revoking...' : 'Revoke'}
-                </button>
+                </Button>
               </>
             )}
           </div>
@@ -187,18 +189,15 @@ export function ZapierIntegration({ user, isPro }: ZapierIntegrationProps) {
             Webhook URL
           </h4>
           <div className="flex gap-3">
-            <input
+            <Input
               type="text"
               value={user?.zapier_webhook_url || ''}
               readOnly
-              className="block flex-1 rounded-lg border-zinc-300 bg-zinc-50 text-sm font-mono shadow-sm"
+              className="flex-1 bg-muted font-mono"
             />
-            <button
-              onClick={copyWebhookUrl}
-              className="rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 transition-colors"
-            >
+            <Button variant="outline" onClick={copyWebhookUrl}>
               Copy
-            </button>
+            </Button>
           </div>
 
           <div className="mt-4 rounded-lg bg-blue-50 border border-blue-200 p-4">

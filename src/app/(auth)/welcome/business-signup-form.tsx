@@ -21,6 +21,8 @@ import {
 import { businessFormSchema, industryOptions, businessQ1Options, type BusinessFormData } from '@/lib/utils/waitlist-validation'
 import { BackButton } from '@/components/waitlist/back-button'
 import { ProgressBar } from '@/components/waitlist/progress-bar'
+import { Input } from '@/components/ui/input'
+import { Select } from '@/components/ui/select'
 import type { VSLAnswers } from '@/types/waitlist.types'
 
 interface BusinessSignupFormProps {
@@ -208,40 +210,42 @@ export function BusinessSignupForm({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="firstName" className="block text-sm font-medium text-foreground mb-1.5">First name *</label>
-                  <input {...register('firstName')} id="firstName" type="text" className="w-full h-10 px-3 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="John" aria-required="true" aria-invalid={!!errors.firstName} aria-describedby={errors.firstName ? 'firstName-error' : undefined} />
+                  <Input {...register('firstName')} id="firstName" type="text" error={errors.firstName?.message} placeholder="John" aria-required="true" aria-invalid={!!errors.firstName} aria-describedby={errors.firstName ? 'firstName-error' : undefined} />
                   {errors.firstName && <p id="firstName-error" className="text-xs text-destructive mt-1" role="alert">{errors.firstName.message}</p>}
                 </div>
                 <div>
                   <label htmlFor="lastName" className="block text-sm font-medium text-foreground mb-1.5">Last name *</label>
-                  <input {...register('lastName')} id="lastName" type="text" className="w-full h-10 px-3 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="Smith" aria-required="true" aria-invalid={!!errors.lastName} aria-describedby={errors.lastName ? 'lastName-error' : undefined} />
+                  <Input {...register('lastName')} id="lastName" type="text" error={errors.lastName?.message} placeholder="Smith" aria-required="true" aria-invalid={!!errors.lastName} aria-describedby={errors.lastName ? 'lastName-error' : undefined} />
                   {errors.lastName && <p id="lastName-error" className="text-xs text-destructive mt-1" role="alert">{errors.lastName.message}</p>}
                 </div>
               </div>
 
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-foreground mb-1.5">Work email *</label>
-                <input {...register('email')} id="email" type="email" className="w-full h-10 px-3 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="john@company.com" aria-required="true" aria-invalid={!!errors.email} aria-describedby={errors.email ? 'email-error' : undefined} />
+                <Input {...register('email')} id="email" type="email" error={errors.email?.message} placeholder="john@company.com" aria-required="true" aria-invalid={!!errors.email} aria-describedby={errors.email ? 'email-error' : undefined} />
                 {errors.email && <p id="email-error" className="text-xs text-destructive mt-1" role="alert">{errors.email.message}</p>}
               </div>
 
               <div>
                 <label htmlFor="password" className="block text-sm font-medium text-foreground mb-1.5">Password *</label>
-                <input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full h-10 px-3 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="Min. 8 characters" aria-required="true" aria-invalid={!!passwordError} aria-describedby={passwordError ? 'password-error' : undefined} />
+                <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} error={passwordError || undefined} placeholder="Min. 8 characters" aria-required="true" aria-invalid={!!passwordError} aria-describedby={passwordError ? 'password-error' : undefined} />
                 {passwordError && <p id="password-error" className="text-xs text-destructive mt-1" role="alert">{passwordError}</p>}
               </div>
 
               <div>
                 <label htmlFor="companyName" className="block text-sm font-medium text-foreground mb-1.5">Company name *</label>
-                <input {...register('companyName')} id="companyName" type="text" className="w-full h-10 px-3 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="Your company name" aria-required="true" aria-invalid={!!errors.companyName} aria-describedby={errors.companyName ? 'companyName-error' : undefined} />
+                <Input {...register('companyName')} id="companyName" type="text" error={errors.companyName?.message} placeholder="Your company name" aria-required="true" aria-invalid={!!errors.companyName} aria-describedby={errors.companyName ? 'companyName-error' : undefined} />
                 {errors.companyName && <p id="companyName-error" className="text-xs text-destructive mt-1" role="alert">{errors.companyName.message}</p>}
               </div>
 
               <div>
                 <label htmlFor="industry" className="block text-sm font-medium text-foreground mb-1.5">Industry *</label>
-                <select
+                <Select
                   {...register('industry')}
                   id="industry"
-                  className="w-full h-10 px-3 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                  error={errors.industry?.message}
+                  placeholder="Select an industry"
+                  options={industryOptions.map((industry) => ({ value: industry, label: industry }))}
                   aria-required="true"
                   aria-invalid={!!errors.industry}
                   aria-describedby={errors.industry ? 'industry-error' : undefined}
@@ -250,12 +254,7 @@ export function BusinessSignupForm({
                     register('industry').onChange(e)
                     setShowWaitlist(e.target.value === 'Other (waitlist)')
                   }}
-                >
-                  <option value="">Select an industry</option>
-                  {industryOptions.map((industry) => (
-                    <option key={industry} value={industry}>{industry}</option>
-                  ))}
-                </select>
+                />
                 {errors.industry && <p id="industry-error" className="text-xs text-destructive mt-1" role="alert">{errors.industry.message}</p>}
                 {/* When user picks "Other (waitlist)", show an inline waitlist form
                     instead of creating an empty workspace with no leads. */}
@@ -360,17 +359,21 @@ export function BusinessSignupForm({
                 <label htmlFor="targetLocations" className="block text-sm font-medium text-foreground mb-1.5">
                   Target locations <span className="text-muted-foreground">(optional)</span>
                 </label>
-                <input {...register('targetLocations')} id="targetLocations" type="text" className="w-full h-10 px-3 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="e.g., California, Northeast US, National" aria-required="false" />
+                <Input {...register('targetLocations')} id="targetLocations" type="text" placeholder="e.g., California, Northeast US, National" aria-required="false" />
               </div>
 
               <div>
                 <label htmlFor="monthlyLeadNeed" className="block text-sm font-medium text-foreground mb-1.5">How many leads do you need per month? *</label>
-                <select {...register('monthlyLeadNeed')} id="monthlyLeadNeed" className="w-full h-10 px-3 text-sm border border-input bg-background rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" aria-required="true" aria-invalid={!!errors.monthlyLeadNeed} aria-describedby={errors.monthlyLeadNeed ? 'monthlyLeadNeed-error' : undefined}>
-                  <option value="">Select lead volume</option>
-                  {businessQ1Options.map((option) => (
-                    <option key={option} value={option}>{option}</option>
-                  ))}
-                </select>
+                <Select
+                  {...register('monthlyLeadNeed')}
+                  id="monthlyLeadNeed"
+                  error={errors.monthlyLeadNeed?.message}
+                  placeholder="Select lead volume"
+                  options={businessQ1Options.map((option) => ({ value: option, label: option }))}
+                  aria-required="true"
+                  aria-invalid={!!errors.monthlyLeadNeed}
+                  aria-describedby={errors.monthlyLeadNeed ? 'monthlyLeadNeed-error' : undefined}
+                />
                 {errors.monthlyLeadNeed && <p id="monthlyLeadNeed-error" className="text-xs text-destructive mt-1" role="alert">{errors.monthlyLeadNeed.message}</p>}
               </div>
 

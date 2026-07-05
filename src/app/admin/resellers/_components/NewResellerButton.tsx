@@ -4,6 +4,8 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Plus, Loader2, Copy, Check, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Select } from '@/components/ui/select'
 
 export default function NewResellerButton() {
   const router = useRouter()
@@ -77,44 +79,48 @@ export default function NewResellerButton() {
           <div className="w-full max-w-md rounded-xl bg-white p-5 shadow-xl" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between">
               <h3 className="text-base font-semibold text-zinc-900">New reseller</h3>
-              <button onClick={close} className="text-zinc-400 hover:text-zinc-700">
+              <Button variant="ghost" size="icon-xs" onClick={close} aria-label="Close">
                 <X className="h-4 w-4" />
-              </button>
+              </Button>
             </div>
 
             {!minted ? (
               <div className="mt-4 space-y-3">
                 <div>
                   <label className="block text-[11px] font-medium text-zinc-500">Name</label>
-                  <input
+                  <Input
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Acme Partner"
-                    className="mt-1 w-full rounded-md border border-zinc-200 px-2.5 py-1.5 text-sm"
+                    inputSize="sm"
+                    className="mt-1"
                     autoFocus
                   />
                 </div>
                 <div className="flex gap-3">
                   <div className="flex-1">
                     <label className="block text-[11px] font-medium text-zinc-500">Period</label>
-                    <select
+                    <Select
                       value={periodKind}
                       onChange={(e) => setPeriodKind(e.target.value as 'month' | 'day')}
-                      className="mt-1 w-full rounded-md border border-zinc-200 px-2.5 py-1.5 text-sm"
-                    >
-                      <option value="month">Monthly</option>
-                      <option value="day">Daily</option>
-                    </select>
+                      selectSize="sm"
+                      className="mt-1"
+                      options={[
+                        { value: 'month', label: 'Monthly' },
+                        { value: 'day', label: 'Daily' },
+                      ]}
+                    />
                   </div>
                   <div className="flex-1">
                     <label className="block text-[11px] font-medium text-zinc-500">Default pixel cap</label>
-                    <input
+                    <Input
                       type="number"
                       min={0}
                       value={defaultCap}
                       onChange={(e) => setDefaultCap(e.target.value)}
                       placeholder="unlimited"
-                      className="mt-1 w-full rounded-md border border-zinc-200 px-2.5 py-1.5 text-sm"
+                      inputSize="sm"
+                      className="mt-1"
                     />
                   </div>
                 </div>

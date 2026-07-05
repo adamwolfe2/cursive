@@ -14,6 +14,7 @@ import { cn } from '@/lib/design-system'
 import type { Database } from '@/types/database.types'
 import type { RealtimeChannel } from '@supabase/supabase-js'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Button } from '@/components/ui/button'
 import { useBulkSelection } from '@/lib/hooks/use-bulk-selection'
 import { BulkActionToolbar } from './BulkActionToolbar'
 import { useDebounce } from '@/hooks/use-debounce'
@@ -397,13 +398,14 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
         <AlertTriangle className="mx-auto h-12 w-12 text-red-500" />
         <p className="mt-4 text-sm font-medium text-red-900">Failed to load your leads</p>
         <p className="mt-1 text-sm text-red-700">{error}</p>
-        <button
+        <Button
+          variant="default"
           onClick={fetchAssignments}
-          className="mt-4 inline-flex items-center gap-1.5 rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 transition-colors"
+          className="mt-4 gap-1.5"
         >
           <RefreshCw className="h-3.5 w-3.5" />
           Retry
-        </button>
+        </Button>
       </div>
     )
   }
@@ -472,23 +474,26 @@ export function MyLeadsTable({ userId, workspaceId, onLeadChange }: MyLeadsTable
               : `No ${filter} leads at the moment.`}
           </p>
           {searchQuery.trim() ? (
-            <button
+            <Button
+              variant="default"
               onClick={() => setSearchInput('')}
-              className="mt-4 inline-flex items-center gap-1.5 rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 transition-colors"
+              className="mt-4"
             >
               Clear Search
-            </button>
+            </Button>
           ) : filter === 'all' ? (
             <div className="mt-4 flex flex-col items-center gap-3">
               <p className="text-xs text-zinc-400">New leads appear here automatically as they are identified</p>
               <div className="flex items-center gap-2">
-                <button
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={fetchAssignments}
-                  className="inline-flex items-center gap-1.5 rounded-md border border-zinc-200 px-3 py-1.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50 transition-colors"
+                  className="gap-1.5"
                 >
                   <RefreshCw className="h-3.5 w-3.5" />
                   Refresh
-                </button>
+                </Button>
                 <a
                   href="/my-leads/preferences"
                   className="inline-flex items-center gap-1.5 rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 transition-colors"
@@ -720,12 +725,13 @@ const LeadDetailModal = memo(function LeadDetailModal({
           <p className="text-zinc-600 mb-4">
             The lead data could not be loaded. It may have been deleted.
           </p>
-          <button
+          <Button
+            variant="default"
             onClick={onClose}
-            className="w-full px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90"
+            className="w-full"
           >
             Close
-          </button>
+          </Button>
         </div>
       </div>
     )
@@ -867,16 +873,13 @@ const LeadDetailModal = memo(function LeadDetailModal({
 
         {/* Footer */}
         <div className="flex justify-end gap-3 px-6 py-4 border-t border-zinc-200 bg-zinc-50">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-zinc-700 bg-white border border-zinc-200 rounded-lg hover:bg-zinc-50"
-          >
+          <Button variant="outline" onClick={onClose}>
             Close
-          </button>
+          </Button>
           {lead.email && (
             <a
               href={`mailto:${lead.email}`}
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700"
+              className="inline-flex items-center rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
             >
               Send Email
             </a>

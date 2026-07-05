@@ -21,21 +21,21 @@ interface StatusBadgeProps {
 }
 
 const variantStyles: Record<StatusVariant, string> = {
-  default: 'bg-zinc-100 text-zinc-700',
-  success: 'bg-blue-100 text-blue-700',
-  warning: 'bg-amber-100 text-amber-700',
-  error: 'bg-red-100 text-red-700',
-  info: 'bg-blue-100 text-blue-700',
-  pending: 'bg-zinc-100 text-zinc-500',
+  default: 'bg-muted text-muted-foreground',
+  success: 'bg-success-muted text-success',
+  warning: 'bg-warning-muted text-warning',
+  error: 'bg-destructive-muted text-destructive',
+  info: 'bg-info-muted text-info',
+  pending: 'bg-muted text-muted-foreground',
 }
 
 const dotStyles: Record<StatusVariant, string> = {
-  default: 'bg-zinc-500',
-  success: 'bg-blue-500',
-  warning: 'bg-amber-500',
-  error: 'bg-red-500',
-  info: 'bg-blue-500',
-  pending: 'bg-zinc-400',
+  default: 'bg-muted-foreground',
+  success: 'bg-success',
+  warning: 'bg-warning',
+  error: 'bg-destructive',
+  info: 'bg-info',
+  pending: 'bg-muted-foreground',
 }
 
 export function StatusBadge({

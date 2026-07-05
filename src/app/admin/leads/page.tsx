@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useAdminAuth } from '@/hooks/use-admin-auth'
 import { useToast } from '@/lib/hooks/use-toast'
 import { getErrorMessage } from '@/lib/utils/error-helpers'
+import { Button } from '@/components/ui/button'
 
 interface Lead {
   id: string
@@ -411,20 +412,23 @@ Jane,Smith,jane@example.com,555-987-6543,456 Oak Ave,Dallas,TX,75201,roofing,loo
                       </td>
                       <td className="px-5 py-3">
                         <div className="flex gap-2">
-                          <button
+                          <Button
+                            size="sm"
                             onClick={() => handleApprove(lead.id)}
                             disabled={actionLoading === lead.id}
-                            className="h-8 px-3 text-[12px] font-medium bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="text-[12px]"
                           >
                             {actionLoading === lead.id ? 'Processing...' : 'Approve'}
-                          </button>
-                          <button
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
                             onClick={() => setRejectDialogOpen(lead.id)}
                             disabled={actionLoading === lead.id}
-                            className="h-8 px-3 text-[12px] font-medium border border-red-300 text-red-700 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="text-[12px] border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
                           >
                             Reject
-                          </button>
+                          </Button>
                         </div>
                       </td>
                     </tr>

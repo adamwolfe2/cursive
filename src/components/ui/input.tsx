@@ -13,7 +13,7 @@ const inputVariants = cva(
       variant: {
         default: 'border-input',
         error: 'border-destructive focus-visible:ring-destructive',
-        success: 'border-success focus-visual:ring-success',
+        success: 'border-success focus-visible:ring-success',
       },
       inputSize: {
         // Mobile-first: 44px minimum for touch targets, smaller on desktop

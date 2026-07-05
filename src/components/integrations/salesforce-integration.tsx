@@ -5,6 +5,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
 import Image from 'next/image'
 import { toast } from 'sonner'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 
 interface CrmConnectionStatus {
   connected: boolean
@@ -205,38 +207,38 @@ export function SalesforceIntegration({ workspaceId, isPro }: SalesforceIntegrat
 
           <div className="mt-4 flex flex-wrap gap-3">
             {!isConnected && !isExpired ? (
-              <button
+              <Button
                 onClick={handleConnect}
                 disabled={connecting || !isPro || isLoading}
-                className="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
               >
                 {connecting ? 'Connecting...' : 'Connect Salesforce'}
-              </button>
+              </Button>
             ) : isExpired ? (
               <>
-                <button
+                <Button
                   onClick={handleConnect}
                   disabled={connecting || !isPro}
-                  className="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
                 >
                   {connecting ? 'Reconnecting...' : 'Reconnect'}
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="outline"
                   onClick={handleDisconnect}
                   disabled={disconnectMutation.isPending}
-                  className="rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-50 disabled:opacity-50 transition-colors"
+                  className="border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
                 >
                   {disconnectMutation.isPending ? 'Disconnecting...' : 'Disconnect'}
-                </button>
+                </Button>
               </>
             ) : (
-              <button
+              <Button
+                variant="outline"
                 onClick={handleDisconnect}
                 disabled={disconnectMutation.isPending}
-                className="rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-50 disabled:opacity-50 transition-colors"
+                className="border-destructive/40 text-destructive hover:bg-destructive/10 hover:text-destructive"
               >
                 {disconnectMutation.isPending ? 'Disconnecting...' : 'Disconnect'}
-              </button>
+              </Button>
             )}
           </div>
         </div>
@@ -271,15 +273,9 @@ export function SalesforceIntegration({ workspaceId, isPro }: SalesforceIntegrat
             <div>
               <span className="text-sm text-zinc-500">Features:</span>
               <div className="mt-2 flex flex-wrap gap-2">
-                <span className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium bg-blue-100 text-blue-800">
-                  Bi-directional Sync
-                </span>
-                <span className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium bg-blue-100 text-blue-800">
-                  Field Mapping
-                </span>
-                <span className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium bg-blue-100 text-blue-800">
-                  Auto-refresh Tokens
-                </span>
+                <Badge>Bi-directional Sync</Badge>
+                <Badge>Field Mapping</Badge>
+                <Badge>Auto-refresh Tokens</Badge>
               </div>
             </div>
           </div>

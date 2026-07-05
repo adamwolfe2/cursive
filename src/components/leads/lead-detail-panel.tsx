@@ -11,6 +11,7 @@ import { formatDate, cn } from '@/lib/utils'
 import { formatPhone } from './lead-card'
 import { useToast } from '@/lib/hooks/use-toast'
 import { IntelligenceTab, TechStackChips } from '@/components/intelligence'
+import { Button } from '@/components/ui/button'
 
 interface LeadDetailPanelProps {
   lead: Lead
@@ -258,16 +259,18 @@ export function LeadDetailPanel({
                         </div>
                         <div className="flex items-center gap-2">
                           {lead.email && (
-                            <button
+                            <Button
+                              variant="default"
+                              size="sm"
                               onClick={() => {
                                 setEmailError(null)
                                 setShowEmailModal(true)
                               }}
-                              className="inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors"
+                              className="gap-1.5"
                             >
                               <EnvelopeIcon className="h-4 w-4" />
                               Send Email
-                            </button>
+                            </Button>
                           )}
                           <button
                             onClick={onClose}
@@ -777,17 +780,18 @@ export function LeadDetailPanel({
               )}
             </div>
             <div className="px-6 py-4 border-t border-zinc-200 flex items-center justify-end gap-3">
-              <button
+              <Button
+                variant="ghost"
                 onClick={() => setShowEmailModal(false)}
                 disabled={emailSending}
-                className="rounded-md px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-100 transition-colors disabled:opacity-50"
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="default"
                 onClick={handleQuickSend}
                 disabled={emailSending || !emailSubject.trim() || !emailBody.trim()}
-                className="inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="gap-2"
               >
                 {emailSending ? (
                   <>
@@ -800,7 +804,7 @@ export function LeadDetailPanel({
                 ) : (
                   'Send Email'
                 )}
-              </button>
+              </Button>
             </div>
           </div>
         </div>

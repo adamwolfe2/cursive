@@ -63,7 +63,7 @@ export function WaitingPoller({ sessionId }: { sessionId: string }) {
           </>
         ) : (
           <>
-            <div className="mx-auto mb-6 h-10 w-10 animate-spin rounded-full border-2 border-blue-400 border-t-transparent" />
+            <div className="mx-auto mb-6 h-10 w-10 animate-spin rounded-full border-2 border-brand-400 border-t-transparent" />
             <h1 className="mb-3 text-xl font-semibold text-gray-900">
               Getting your account ready…
             </h1>

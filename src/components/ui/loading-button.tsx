@@ -29,10 +29,10 @@ export function LoadingButton({
 }: LoadingButtonProps) {
   const variantStyles = {
     primary: 'bg-primary text-primary-foreground hover:bg-primary/90',
-    secondary: 'bg-zinc-100 text-zinc-900 hover:bg-zinc-200',
-    outline: 'border border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50',
-    destructive: 'bg-red-600 text-white hover:bg-red-700',
-    ghost: 'text-zinc-700 hover:bg-zinc-100',
+    secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
+    outline: 'border border-border bg-background text-foreground hover:bg-accent hover:text-accent-foreground',
+    destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
+    ghost: 'text-foreground hover:bg-accent hover:text-accent-foreground',
   }
 
   const sizeStyles = {
@@ -48,7 +48,7 @@ export function LoadingButton({
       className={cn(
         'inline-flex items-center justify-center gap-2 sm:gap-2 rounded-lg font-medium transition-colors',
         'disabled:opacity-50 disabled:cursor-not-allowed',
-        'focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
         variantStyles[variant],
         sizeStyles[size],
         fullWidth && 'w-full',

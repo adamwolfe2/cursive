@@ -5,6 +5,7 @@ import { CheckCircle, XCircle, Clock, AlertCircle, ExternalLink, MessageSquare }
 import { useRouter } from 'next/navigation'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { useToast } from '@/lib/hooks/use-toast'
+import { Button } from '@/components/ui/button'
 
 interface FeatureRequest {
   id: string
@@ -377,38 +378,40 @@ export function RequestsManagementClient({ initialRequests }: RequestsManagement
 
               {/* Status Update Buttons */}
               <div className="flex gap-3">
-                <button
+                <Button
+                  variant="success"
                   onClick={() => handleUpdateStatus(selectedRequest.id, 'approved')}
                   disabled={updating || selectedRequest.status === 'approved'}
-                  className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  leftIcon={<CheckCircle className="h-4 w-4" />}
+                  className="flex-1"
                 >
-                  <CheckCircle className="h-4 w-4" />
                   Approve
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={() => handleUpdateStatus(selectedRequest.id, 'in_review')}
                   disabled={updating || selectedRequest.status === 'in_review'}
-                  className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  leftIcon={<Clock className="h-4 w-4" />}
+                  className="flex-1"
                 >
-                  <Clock className="h-4 w-4" />
                   In Review
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="destructive"
                   onClick={() => handleUpdateStatus(selectedRequest.id, 'rejected')}
                   disabled={updating || selectedRequest.status === 'rejected'}
-                  className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  leftIcon={<XCircle className="h-4 w-4" />}
+                  className="flex-1"
                 >
-                  <XCircle className="h-4 w-4" />
                   Reject
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={() => handleUpdateStatus(selectedRequest.id, 'completed')}
                   disabled={updating || selectedRequest.status === 'completed'}
-                  className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  leftIcon={<CheckCircle className="h-4 w-4" />}
+                  className="flex-1"
                 >
-                  <CheckCircle className="h-4 w-4" />
                   Complete
-                </button>
+                </Button>
               </div>
             </div>
           </div>

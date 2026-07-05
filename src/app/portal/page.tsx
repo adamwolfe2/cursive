@@ -40,7 +40,7 @@ export default async function PortalPage() {
 
   return (
     <>
-      <div className="mb-6 rounded-lg border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-800">
+      <div className="mb-6 rounded-lg border border-brand-100 bg-brand-50 px-4 py-3 text-sm text-brand-800">
         Looking for your onboarding portal?{' '}
         <span className="font-medium">Use the link in your invitation email</span> — no account required.
       </div>
@@ -76,7 +76,7 @@ function NoOnboardingFound() {
       </p>
       <a
         href="https://meetcursive.com"
-        className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-700 transition-colors"
+        className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-white hover:bg-primary/90 transition-colors"
       >
         Visit meetcursive.com
         <svg

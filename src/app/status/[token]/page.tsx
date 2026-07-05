@@ -76,7 +76,7 @@ export default async function ClientStatusPage(props: { params: Promise<{ token:
   const progressPercent = Math.round((completedCount / milestones.length) * 100)
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-brand-50/30 to-slate-50">
       <header className="border-b border-gray-200 bg-white">
         <div className="mx-auto max-w-lg px-4 py-4 flex items-center justify-between">
           <Image src="/cursive-logo.png" alt="Cursive" width={100} height={32} className="h-7 w-auto" />
@@ -101,7 +101,7 @@ export default async function ClientStatusPage(props: { params: Promise<{ token:
             </div>
             <div className="h-2 w-full overflow-hidden rounded-full bg-gray-100">
               <div
-                className="h-full rounded-full bg-blue-600 transition-all duration-500"
+                className="h-full rounded-full bg-primary transition-all duration-500"
                 style={{ width: `${progressPercent}%` }}
               />
             </div>
@@ -113,16 +113,16 @@ export default async function ClientStatusPage(props: { params: Promise<{ token:
               <div key={i} className="flex items-center gap-3">
                 <div className="flex-shrink-0">
                   {milestone.status === 'complete' ? (
-                    <CheckCircle className="h-5 w-5 text-blue-600" />
+                    <CheckCircle className="h-5 w-5 text-primary" />
                   ) : milestone.status === 'in_progress' ? (
-                    <Loader2 className="h-5 w-5 text-blue-500 animate-spin" />
+                    <Loader2 className="h-5 w-5 text-primary animate-spin" />
                   ) : (
                     <Clock className="h-5 w-5 text-gray-300" />
                   )}
                 </div>
                 <span className={`text-sm ${
                   milestone.status === 'complete' ? 'text-gray-900'
-                    : milestone.status === 'in_progress' ? 'text-blue-700 font-medium'
+                    : milestone.status === 'in_progress' ? 'text-brand-700 font-medium'
                     : 'text-gray-400'
                 }`}>
                   {milestone.label}
@@ -132,8 +132,8 @@ export default async function ClientStatusPage(props: { params: Promise<{ token:
           </div>
 
           {client.start_timeline && (
-            <div className="mt-6 rounded-md bg-blue-50 border border-blue-100 px-4 py-3">
-              <p className="text-xs text-blue-700">
+            <div className="mt-6 rounded-md bg-brand-50 border border-brand-100 px-4 py-3">
+              <p className="text-xs text-brand-700">
                 Estimated launch timeline: <span className="font-medium">{client.start_timeline}</span>
               </p>
             </div>
@@ -141,7 +141,7 @@ export default async function ClientStatusPage(props: { params: Promise<{ token:
 
           <div className="mt-6 pt-4 border-t border-gray-100 text-center">
             <p className="text-xs text-gray-400">
-              Questions? Contact <a href="mailto:support@meetcursive.com" className="text-blue-600 hover:text-blue-700">support@meetcursive.com</a>
+              Questions? Contact <a href="mailto:support@meetcursive.com" className="text-primary hover:text-brand-700">support@meetcursive.com</a>
             </p>
           </div>
         </div>

@@ -27,7 +27,7 @@ export default function TokenPortalLayout({
             className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
           >
             Need help?{' '}
-            <span className="font-medium text-blue-600 hover:text-blue-700">
+            <span className="font-medium text-primary hover:text-brand-700">
               support@meetcursive.com
             </span>
           </a>

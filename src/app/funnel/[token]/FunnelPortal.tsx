@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import type { FunnelOrder } from '@/lib/funnel/order.service'
 import { FUNNEL_EVENTS, trackFunnel } from '@/lib/funnel/tracking'
+import { Button } from '@/components/ui/button'
 
 // ─── "Test my install" button ─────────────────────────────────────────────
 
@@ -60,11 +61,11 @@ function TestInstallButton({ token }: { token: string }) {
         type="button"
         onClick={runCheck}
         disabled={state.kind === 'checking'}
-        className="inline-flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-3.5 py-2 text-xs font-medium text-blue-700 transition-colors hover:bg-blue-100 disabled:opacity-50"
+        className="inline-flex items-center gap-2 rounded-lg border border-brand-200 bg-brand-50 px-3.5 py-2 text-xs font-medium text-brand-700 transition-colors hover:bg-brand-100 disabled:opacity-50"
       >
         {state.kind === 'checking' ? (
           <>
-            <span className="h-3 w-3 animate-spin rounded-full border-2 border-blue-300 border-t-transparent" />
+            <span className="h-3 w-3 animate-spin rounded-full border-2 border-brand-300 border-t-transparent" />
             Checking your site…
           </>
         ) : (
@@ -122,13 +123,15 @@ function SubscriptionBanner({
             and everything resumes automatically.
           </p>
         </div>
-        <button
+        <Button
           type="button"
+          variant="destructive"
+          size="sm"
           onClick={onManageBilling}
-          className="inline-flex shrink-0 items-center justify-center rounded-md bg-red-600 px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-red-700"
+          className="shrink-0"
         >
           Update card →
-        </button>
+        </Button>
       </div>
     )
   }
@@ -168,7 +171,7 @@ function CancelledScreen({ customerEmail }: { customerEmail: string }) {
       </p>
       <a
         href="/get-leads"
-        className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+        className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary/90"
       >
         Re-subscribe
       </a>
@@ -192,8 +195,8 @@ function StepIcon({ state }: { state: StepState }) {
   }
   if (state === 'active') {
     return (
-      <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border-2 border-blue-600 bg-blue-50">
-        <div className="h-3 w-3 animate-pulse rounded-full bg-blue-600" />
+      <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border-2 border-primary bg-brand-50">
+        <div className="h-3 w-3 animate-pulse rounded-full bg-primary" />
       </div>
     )
   }
@@ -240,7 +243,7 @@ function StepShell({
             </span>
           )}
           {state === 'active' && (
-            <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700">
+            <span className="inline-flex items-center rounded-full bg-brand-50 px-2 py-0.5 text-xs font-medium text-brand-700">
               Action needed
             </span>
           )}
@@ -375,7 +378,7 @@ function PixelStep({
         onSubmit={handleSubmit}
         className="flex flex-col gap-3 sm:flex-row sm:items-stretch"
       >
-        <div className="flex flex-1 items-stretch overflow-hidden rounded-lg border border-gray-300 focus-within:border-transparent focus-within:ring-2 focus-within:ring-blue-500">
+        <div className="flex flex-1 items-stretch overflow-hidden rounded-lg border border-gray-300 focus-within:border-transparent focus-within:ring-2 focus-within:ring-ring">
           <span className="flex select-none items-center bg-gray-50 px-3 text-xs font-medium text-gray-500">
             https://
           </span>
@@ -402,13 +405,9 @@ function PixelStep({
             className="flex-1 border-0 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-0 disabled:opacity-50"
           />
         </div>
-        <button
-          type="submit"
-          disabled={submitting || !websiteUrl}
-          className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
-        >
+        <Button type="submit" disabled={submitting || !websiteUrl}>
           {submitting ? 'Generating…' : 'Create pixel'}
-        </button>
+        </Button>
       </form>
       <p className="mt-2 text-xs text-gray-400">
         Don&apos;t worry about https:// — we add it automatically.
@@ -637,13 +636,9 @@ function AudienceStep({
           </Field>
         </div>
 
-        <button
-          type="submit"
-          disabled={submitting}
-          className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
-        >
+        <Button type="submit" disabled={submitting}>
           {submitting ? 'Submitting…' : 'Build my audience'}
-        </button>
+        </Button>
         {error && (
           <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">
             {error}
@@ -655,7 +650,7 @@ function AudienceStep({
 }
 
 const inputClass =
-  'w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500'
+  'w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-transparent focus:outline-none focus:ring-2 focus:ring-ring'
 
 function Field({
   label,
@@ -694,9 +689,9 @@ function NextStepInstallPixel({
   const [copied, setCopied] = useState(false)
 
   return (
-    <div className="mt-5 rounded-xl border border-blue-200 bg-blue-50 p-5">
+    <div className="mt-5 rounded-xl border border-brand-200 bg-brand-50 p-5">
       <div className="mb-3 flex items-start gap-3">
-        <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white">
+        <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-white">
           !
         </div>
         <div>
@@ -712,7 +707,7 @@ function NextStepInstallPixel({
       </div>
 
       {/* Snippet box */}
-      <div className="overflow-hidden rounded-lg border border-blue-100 bg-gray-900 p-3">
+      <div className="overflow-hidden rounded-lg border border-brand-100 bg-gray-900 p-3">
         <div className="mb-1.5 flex items-center justify-between">
           <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">
             Your pixel snippet
@@ -737,7 +732,7 @@ function NextStepInstallPixel({
       {/* Three install methods */}
       <ul className="mt-4 space-y-2 text-xs text-gray-700">
         <li className="flex items-start gap-2">
-          <span className="mt-0.5 inline-flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-blue-600 text-[10px] font-bold text-white">
+          <span className="mt-0.5 inline-flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white">
             1
           </span>
           <span>
@@ -747,7 +742,7 @@ function NextStepInstallPixel({
           </span>
         </li>
         <li className="flex items-start gap-2">
-          <span className="mt-0.5 inline-flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-blue-600 text-[10px] font-bold text-white">
+          <span className="mt-0.5 inline-flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white">
             2
           </span>
           <span>
@@ -756,7 +751,7 @@ function NextStepInstallPixel({
           </span>
         </li>
         <li className="flex items-start gap-2">
-          <span className="mt-0.5 inline-flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-blue-600 text-[10px] font-bold text-white">
+          <span className="mt-0.5 inline-flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white">
             3
           </span>
           <span>
@@ -798,7 +793,7 @@ function DeliveryStep({
             href={order.audience_sheet_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-4 py-2.5 text-sm font-medium text-blue-700 transition-colors hover:bg-blue-100"
+            className="inline-flex items-center gap-2 rounded-lg border border-brand-200 bg-brand-50 px-4 py-2.5 text-sm font-medium text-brand-700 transition-colors hover:bg-brand-100"
           >
             Open Audience Sheet
             <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
@@ -808,7 +803,7 @@ function DeliveryStep({
         </div>
       ) : submitted ? (
         <div className="flex items-start gap-3">
-          <div className="mt-0.5 h-4 w-4 flex-shrink-0 animate-spin rounded-full border-2 border-blue-400 border-t-transparent" />
+          <div className="mt-0.5 h-4 w-4 flex-shrink-0 animate-spin rounded-full border-2 border-brand-400 border-t-transparent" />
           <p className="text-sm text-gray-500">
             We&apos;re building your first audience — expect your Google Sheet
             link via email within 12-24 hours.
@@ -1025,7 +1020,7 @@ export function FunnelPortal({
             buyer can reach their dashboard at any point and never dead-ends. */}
         <a
           href={`/api/funnel/${token}/dashboard-login`}
-          className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
+          className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary/90"
         >
           Open your dashboard
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
@@ -1071,7 +1066,7 @@ export function FunnelPortal({
               Questions?{' '}
               <a
                 href="mailto:support@meetcursive.com"
-                className="font-medium text-blue-600 transition-colors hover:text-blue-700"
+                className="font-medium text-primary transition-colors hover:text-brand-700"
               >
                 support@meetcursive.com
               </a>
@@ -1135,7 +1130,7 @@ function BillingSaveFlow({
         <div className="mt-5 flex flex-col gap-2">
           <a
             href="mailto:support@meetcursive.com?subject=Help%20with%20my%20Cursive%20account"
-            className="inline-flex w-full items-center justify-center rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
+            className="inline-flex w-full items-center justify-center rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary/90"
           >
             Email us — we&apos;ll make it right
           </a>

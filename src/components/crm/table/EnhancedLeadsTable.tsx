@@ -237,8 +237,8 @@ export const EnhancedLeadsTable = React.forwardRef<EnhancedLeadsTableHandle, Enh
           </Button>
           <span className="text-sm sm:text-base font-semibold text-gray-900">Leads</span>
           <Badge
-            variant="secondary"
-            className="ml-1 text-[10px] sm:text-xs bg-blue-50 text-blue-700 border-blue-200"
+            variant="default"
+            className="ml-1 text-[10px] sm:text-xs"
           >
             {filteredLeads.length}
           </Badge>
@@ -248,10 +248,11 @@ export const EnhancedLeadsTable = React.forwardRef<EnhancedLeadsTableHandle, Enh
           <div className="relative flex-1 sm:flex-none">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 sm:size-4 text-gray-400" />
             <Input
+              inputSize="sm"
               placeholder="Search leads..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 sm:pl-10 w-full sm:w-[200px] lg:w-[240px] h-9 sm:h-9 text-sm border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+              className="pl-9 sm:pl-10 w-full sm:w-[200px] lg:w-[240px] h-9 sm:h-9 text-sm"
             />
           </div>
 
@@ -262,12 +263,12 @@ export const EnhancedLeadsTable = React.forwardRef<EnhancedLeadsTableHandle, Enh
                 size="sm"
                 className={cn(
                   'h-9 gap-2 border-gray-200',
-                  hasActiveFilters && 'border-blue-500 bg-blue-50 text-blue-700'
+                  hasActiveFilters && 'border-primary bg-primary/10 text-primary'
                 )}
               >
                 <Filter className="size-4" />
                 <span className="hidden sm:inline">Filter</span>
-                {hasActiveFilters && <span className="size-2 rounded-full bg-blue-600" />}
+                {hasActiveFilters && <span className="size-2 rounded-full bg-primary" />}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-[220px]">
@@ -341,7 +342,7 @@ export const EnhancedLeadsTable = React.forwardRef<EnhancedLeadsTableHandle, Enh
           <Button
             size="sm"
             onClick={() => setCreateDialogOpen(true)}
-            className="h-9 gap-2 bg-blue-600 hover:bg-blue-700 text-white"
+            className="h-9 gap-2"
           >
             <Plus className="size-4" />
             <span className="hidden sm:inline">New Lead</span>
@@ -355,8 +356,8 @@ export const EnhancedLeadsTable = React.forwardRef<EnhancedLeadsTableHandle, Enh
           <span className="text-[10px] sm:text-xs text-gray-600 font-medium">Active Filters:</span>
           {statusFilter !== 'all' && (
             <Badge
-              variant="secondary"
-              className="gap-1 cursor-pointer text-[10px] sm:text-xs h-6 bg-blue-100 text-blue-700 border-blue-200 hover:bg-blue-200"
+              variant="default"
+              className="gap-1 cursor-pointer text-[10px] sm:text-xs h-6 hover:bg-primary/20"
               onClick={() => setStatusFilter('all')}
             >
               {statusFilter.charAt(0).toUpperCase() + statusFilter.slice(1)}
@@ -365,8 +366,8 @@ export const EnhancedLeadsTable = React.forwardRef<EnhancedLeadsTableHandle, Enh
           )}
           {sourceFilter !== 'all' && (
             <Badge
-              variant="secondary"
-              className="gap-1 cursor-pointer text-[10px] sm:text-xs h-6 bg-blue-100 text-blue-700 border-blue-200 hover:bg-blue-200"
+              variant="default"
+              className="gap-1 cursor-pointer text-[10px] sm:text-xs h-6 hover:bg-primary/20"
               onClick={() => setSourceFilter('all')}
             >
               {sourceFilter}
@@ -452,8 +453,8 @@ export const EnhancedLeadsTable = React.forwardRef<EnhancedLeadsTableHandle, Enh
                     key={lead.id}
                     onClick={() => onRowClick?.(lead)}
                     className={cn(
-                      'cursor-pointer hover:bg-blue-50/50 transition-colors border-gray-100',
-                      isSelected && 'bg-blue-50/70'
+                      'cursor-pointer hover:bg-primary/5 transition-colors border-gray-100',
+                      isSelected && 'bg-primary/10'
                     )}
                   >
                     <TableCell className="px-3" onClick={(e) => e.stopPropagation()}>
@@ -553,14 +554,14 @@ export const EnhancedLeadsTable = React.forwardRef<EnhancedLeadsTableHandle, Enh
 
       {/* Floating Selection Bar */}
       {selectedLeadIds.size > 0 && (
-        <div className="flex items-center gap-3 px-4 sm:px-6 py-2.5 border-t border-blue-100 bg-blue-50/80">
-          <span className="text-xs font-semibold text-blue-700">
+        <div className="flex items-center gap-3 px-4 sm:px-6 py-2.5 border-t border-primary/20 bg-primary/5">
+          <span className="text-xs font-semibold text-primary">
             {selectedLeadIds.size} lead{selectedLeadIds.size !== 1 ? 's' : ''} selected
           </span>
           <Button
             variant="ghost"
             size="sm"
-            className="h-7 text-xs text-blue-600 hover:text-blue-800 hover:bg-blue-100"
+            className="h-7 text-xs text-primary hover:text-primary hover:bg-primary/10"
             onClick={clearSelection}
           >
             <X className="size-3.5 mr-1" />
@@ -632,7 +633,7 @@ export const EnhancedLeadsTable = React.forwardRef<EnhancedLeadsTableHandle, Enh
                   className={cn(
                     'size-8',
                     currentPage === pageNum
-                      ? 'bg-blue-600 hover:bg-blue-700 text-white border-blue-600'
+                      ? ''
                       : 'border-gray-200 text-gray-700 hover:bg-gray-100'
                   )}
                   onClick={() => goToPage(pageNum)}

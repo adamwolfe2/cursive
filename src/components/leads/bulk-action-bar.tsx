@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Download, Zap, XCircle, AlertCircle } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
 interface BulkActionBarProps {
   selectedCount: number
@@ -47,37 +48,39 @@ export function BulkActionBar({
           {selectedCount} selected
         </span>
         <div className="flex items-center gap-2 ml-auto">
-          <button
-            onClick={onSelectAll}
-            className="text-xs text-gray-600 border border-gray-200 rounded-lg px-2.5 py-1.5 bg-white hover:bg-gray-50 transition-colors"
-          >
+          <Button variant="outline" size="xs" onClick={onSelectAll}>
             Select all {totalCount}
-          </button>
+          </Button>
           {selectedCount > 0 && (
             <>
-              <button
+              <Button
+                variant="ghost"
+                size="xs"
                 onClick={onClear}
-                className="text-xs text-gray-500 hover:text-gray-700 flex items-center gap-1"
+                leftIcon={<XCircle className="h-3.5 w-3.5" />}
               >
-                <XCircle className="h-3.5 w-3.5" /> Clear
-              </button>
-              <button
+                Clear
+              </Button>
+              <Button
+                variant="outline"
+                size="xs"
                 onClick={onExport}
-                className="inline-flex items-center gap-1.5 text-xs text-gray-700 border border-gray-200 rounded-lg px-3 py-1.5 bg-white hover:bg-gray-50 transition-colors"
+                leftIcon={<Download className="h-3 w-3" />}
               >
-                <Download className="h-3 w-3" /> Export {selectedCount}
-              </button>
+                Export {selectedCount}
+              </Button>
               {selectedUnenrichedCount > 0 && (
-                <button
+                <Button
+                  variant="default"
+                  size="xs"
                   onClick={handleEnrichClick}
                   disabled={bulkEnriching || creditsRemaining < selectedUnenrichedCount}
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-white bg-gradient-to-r from-blue-500 to-primary rounded-lg px-3 py-1.5 hover:opacity-90 transition-opacity disabled:opacity-50"
+                  leftIcon={<Zap className="h-3 w-3" />}
                 >
-                  <Zap className="h-3 w-3" />
                   {bulkEnriching
                     ? `Enriching ${bulkEnrichProgress}/${selectedUnenrichedCount}${bulkEnrichErrors > 0 ? ` (${bulkEnrichErrors} failed)` : ''}…`
                     : `Enrich ${selectedUnenrichedCount} (${selectedUnenrichedCount} cr)`}
-                </button>
+                </Button>
               )}
             </>
           )}
@@ -86,20 +89,20 @@ export function BulkActionBar({
 
       {/* Bulk enrich progress bar */}
       {bulkEnriching && selectedUnenrichedCount > 0 && (
-        <div className="rounded-lg border border-blue-100 bg-blue-50/60 px-4 py-2">
+        <div className="rounded-lg border border-primary/20 bg-primary/5 px-4 py-2">
           <div className="flex items-center justify-between mb-1.5">
-            <span className="text-xs text-blue-700 font-medium">
+            <span className="text-xs text-primary font-medium">
               Enriching leads... {bulkEnrichProgress}/{selectedUnenrichedCount}
             </span>
             {bulkEnrichErrors > 0 && (
-              <span className="flex items-center gap-1 text-xs text-amber-600">
+              <span className="flex items-center gap-1 text-xs text-warning">
                 <AlertCircle className="h-3 w-3" /> {bulkEnrichErrors} failed
               </span>
             )}
           </div>
-          <div className="h-1.5 bg-blue-100 rounded-full overflow-hidden">
+          <div className="h-1.5 bg-primary/15 rounded-full overflow-hidden">
             <div
-              className="h-full bg-blue-500 rounded-full transition-all duration-300"
+              className="h-full bg-primary rounded-full transition-all duration-300"
               style={{ width: `${(bulkEnrichProgress / selectedUnenrichedCount) * 100}%` }}
             />
           </div>
@@ -108,27 +111,25 @@ export function BulkActionBar({
 
       {/* Confirmation dialog */}
       {showConfirm && (
-        <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 flex items-center justify-between gap-3">
+        <div className="rounded-lg border border-warning/30 bg-warning-muted px-4 py-3 flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <AlertCircle className="h-4 w-4 text-amber-600 shrink-0" />
-            <p className="text-sm text-amber-800">
+            <AlertCircle className="h-4 w-4 text-warning shrink-0" />
+            <p className="text-sm text-warning">
               This will use <strong>{selectedUnenrichedCount} credits</strong> to enrich {selectedUnenrichedCount} leads.
               You have {creditsRemaining} credits remaining.
             </p>
           </div>
           <div className="flex items-center gap-2 shrink-0">
-            <button
-              onClick={() => setShowConfirm(false)}
-              className="text-xs text-gray-600 border border-gray-200 rounded-lg px-3 py-1.5 bg-white hover:bg-gray-50 transition-colors"
-            >
+            <Button variant="outline" size="xs" onClick={() => setShowConfirm(false)}>
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="default"
+              size="xs"
               onClick={() => { setShowConfirm(false); onBulkEnrich() }}
-              className="text-xs font-semibold text-white bg-primary rounded-lg px-3 py-1.5 hover:bg-primary/90 transition-colors"
             >
               Confirm
-            </button>
+            </Button>
           </div>
         </div>
       )}

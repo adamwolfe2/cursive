@@ -69,7 +69,7 @@ function Centered({
       <p className="mb-8 max-w-sm text-base text-gray-500">{children}</p>
       <a
         href="mailto:support@meetcursive.com"
-        className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+        className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-primary/90"
       >
         Contact support@meetcursive.com
       </a>

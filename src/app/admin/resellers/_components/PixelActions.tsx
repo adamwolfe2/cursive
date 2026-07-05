@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Power, PowerOff, SlidersHorizontal, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 
 interface PixelActionsProps {
   pixel: {
@@ -86,12 +87,13 @@ export default function PixelActions({ pixel }: PixelActionsProps) {
       {editing && (
         <div className="mt-1 w-72 rounded-lg border border-zinc-200 bg-white p-3 shadow-sm">
           <label className="block text-[11px] font-medium text-zinc-500">Cap / period (blank = inherit)</label>
-          <input
+          <Input
             type="number"
             min={0}
             value={cap}
             onChange={(e) => setCap(e.target.value)}
-            className="mt-1 w-full rounded-md border border-zinc-200 px-2 py-1 text-sm"
+            inputSize="sm"
+            className="mt-1"
             placeholder="inherit reseller default"
           />
           <label className="mt-2 flex items-center gap-2 text-sm text-zinc-700">
@@ -99,11 +101,12 @@ export default function PixelActions({ pixel }: PixelActionsProps) {
             Throttle (reduced payload)
           </label>
           <label className="mt-2 block text-[11px] font-medium text-zinc-500">Destination URL (https)</label>
-          <input
+          <Input
             type="url"
             value={destination}
             onChange={(e) => setDestination(e.target.value)}
-            className="mt-1 w-full rounded-md border border-zinc-200 px-2 py-1 text-sm"
+            inputSize="sm"
+            className="mt-1"
             placeholder="https://partner.example.com/hooks/cursive"
           />
           <div className="mt-3 flex justify-end gap-2">

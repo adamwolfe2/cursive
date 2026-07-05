@@ -436,7 +436,7 @@ export const LeadCard = memo(function LeadCard({
               {!managed && !isEnriched && creditsRemaining > 0 && (
                 <button
                   onClick={() => onEnrich(lead)}
-                  className="inline-flex items-center gap-1 text-xs bg-gradient-to-r from-blue-500 to-primary text-white rounded-full px-2.5 py-1 font-medium hover:opacity-90 transition-opacity"
+                  className="inline-flex items-center gap-1 text-xs bg-primary text-primary-foreground rounded-full px-2.5 py-1 font-medium hover:bg-primary/90 transition-colors"
                 >
                   <Zap className="h-2.5 w-2.5" /> Enrich
                   {creditsRemaining <= 5 && (
