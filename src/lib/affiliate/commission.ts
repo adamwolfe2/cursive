@@ -428,7 +428,43 @@ export async function resolveInvoiceIdForCharge(chargeId: string): Promise<strin
  * lock — a duplicate refund/dispute/void webhook inserts nothing and we never
  * reverse earnings or cash twice.
  */
-export async function handleAffiliateClawback(invoiceId: string): Promise<void> {
+/**
+ * How much commission a refund justifies clawing back, in cents.
+ *
+ * Pure. `amountRefunded` is Stripe's CUMULATIVE `charge.amount_refunded`, and
+ * `alreadyClawed` is the absolute total of clawbacks already recorded for the
+ * invoice — so a partial -> partial -> full sequence sums to exactly the
+ * original commission and never more.
+ *
+ * Returns 0 when nothing further is owed (including over-clawed states).
+ */
+export function prorateClawback(params: {
+  commissionAmount: number
+  amountRefunded: number
+  chargeAmount: number
+  alreadyClawed: number
+}): number {
+  const { commissionAmount, amountRefunded, chargeAmount, alreadyClawed } = params
+  if (chargeAmount <= 0) return 0
+  const ratio = Math.min(amountRefunded / chargeAmount, 1)
+  const targetTotal = Math.round(commissionAmount * ratio)
+  return Math.max(targetTotal - alreadyClawed, 0)
+}
+
+/**
+ * Claw back commission on a refund or chargeback.
+ *
+ * `refund` is optional. Omitted (chargebacks, and any caller that does not
+ * know the amounts) means a FULL clawback — the original behaviour. When it
+ * is supplied, the clawback is prorated against the CUMULATIVE amount
+ * refunded on the charge, minus whatever has already been clawed back for
+ * this invoice. That makes partial -> partial -> full sequences add up to
+ * exactly the original commission and never more.
+ */
+export async function handleAffiliateClawback(
+  invoiceId: string,
+  refund?: { amountRefunded: number; chargeAmount: number }
+): Promise<void> {
   try {
     const admin = createAdminClient()
 
@@ -452,18 +488,68 @@ export async function handleAffiliateClawback(invoiceId: string): Promise<void> 
 
     if (commission.status !== 'paid') return
 
+    // How much of the commission this refund justifies clawing back in total.
+    // charge.refunded fires on PARTIAL refunds too, and this used to reverse
+    // 100% of the commission regardless — a $50 goodwill refund on a $5,000
+    // invoice wiped out the partner's entire $2,000.
+    const isPartial =
+      !!refund && refund.chargeAmount > 0 && refund.amountRefunded < refund.chargeAmount
+
+    let clawAmount = commission.commission_amount
+    let clawKey = `clawback_${invoiceId}`
+
+    if (isPartial) {
+      // Net off anything already clawed back for this invoice, so a sequence of
+      // partial refunds (and an eventual full one) never over-claws.
+      const { data: priorRows, error: priorError } = await admin
+        .from('affiliate_commissions')
+        .select('commission_amount')
+        .eq('referral_id', commission.referral_id)
+        .like('stripe_invoice_id', `clawback_${invoiceId}%`)
+
+      if (priorError) {
+        throw new Error(
+          `[affiliate-clawback] Could not read prior clawbacks for invoice ${invoiceId}: ${priorError.message}`
+        )
+      }
+
+      const alreadyClawed = (priorRows ?? []).reduce(
+        (sum, r) => sum + Math.abs(r.commission_amount as number),
+        0
+      )
+
+      clawAmount = prorateClawback({
+        commissionAmount: commission.commission_amount,
+        amountRefunded: refund!.amountRefunded,
+        chargeAmount: refund!.chargeAmount,
+        alreadyClawed,
+      })
+
+      if (clawAmount <= 0) {
+        safeLog(
+          `[affiliate-clawback] Invoice ${invoiceId}: nothing further to claw (already ${alreadyClawed})`
+        )
+        return
+      }
+
+      // Key on the cumulative refunded amount so a replayed webhook for the
+      // same refund state collides (23505 -> skip), while a LATER, larger
+      // refund gets its own row.
+      clawKey = `clawback_${invoiceId}_${refund!.amountRefunded}`
+    }
+
     // Insert the negative clawback row FIRST — it is our idempotency lock
-    // (UNIQUE(stripe_invoice_id) on `clawback_<invoiceId>`). Starts 'pending'
-    // (carry-forward); promoted to 'reversed' below if we recover the cash.
+    // (UNIQUE(stripe_invoice_id)). Starts 'pending' (carry-forward); promoted
+    // to 'reversed' below if we recover the cash.
     const { data: clawRow, error: clawError } = await admin
       .from('affiliate_commissions')
       .insert({
         affiliate_id: commission.affiliate_id,
         referral_id: commission.referral_id,
-        stripe_invoice_id: `clawback_${invoiceId}`,
+        stripe_invoice_id: clawKey,
         invoice_amount: 0,
         commission_rate: 0,
-        commission_amount: -commission.commission_amount,
+        commission_amount: -clawAmount,
         status: 'pending',
       })
       .select('id')
@@ -501,7 +587,7 @@ export async function handleAffiliateClawback(invoiceId: string): Promise<void> 
         const reversal = await stripe.transfers.createReversal(
           commission.stripe_transfer_id,
           {
-            amount: commission.commission_amount,
+            amount: clawAmount,
             metadata: {
               type: 'commission_clawback',
               commissionId: commission.id,
@@ -509,8 +595,11 @@ export async function handleAffiliateClawback(invoiceId: string): Promise<void> 
               invoiceId,
             },
           },
-          // One reversal per commission, ever — a duplicate webhook can't double-reverse.
-          { idempotencyKey: `reversal_${commission.id}` }
+          // Keyed on the clawback ROW, not the commission: a partial refund can
+          // legitimately be followed by another one, and each needs its own
+          // reversal. The row id is unique per clawback, so a duplicate webhook
+          // still can't double-reverse (it never gets a row — 23505 above).
+          { idempotencyKey: `reversal_${clawRow.id}` }
         )
 
         // Cash recovered → settle the negative row as 'reversed' (terminal) so it
@@ -523,11 +612,11 @@ export async function handleAffiliateClawback(invoiceId: string): Promise<void> 
         // Debit lifetime earnings once (this row is terminal — cron won't net it).
         await admin.rpc('affiliate_add_earnings', {
           p_affiliate_id: commission.affiliate_id,
-          p_delta: -commission.commission_amount,
+          p_delta: -clawAmount,
         })
 
         safeLog(
-          `[affiliate-clawback] Reversed $${(commission.commission_amount / 100).toFixed(2)} cash for commission ${commission.id}`
+          `[affiliate-clawback] Reversed $${(clawAmount / 100).toFixed(2)} cash for commission ${commission.id}${isPartial ? ' (prorated partial refund)' : ''}`
         )
         return
       } catch (revErr) {

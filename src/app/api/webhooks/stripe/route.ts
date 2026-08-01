@@ -165,7 +165,12 @@ export async function POST(request: NextRequest) {
         if (chargeInvoiceId) {
           // AWAIT: a dropped clawback leaves a refunded commission paid out. Awaiting
           // turns a failure into a 500 so Stripe retries (clawback is idempotent).
-          await handleAffiliateClawback(chargeInvoiceId)
+          // Pass the amounts so a PARTIAL refund claws back a proportional slice
+          // rather than the partner's entire commission.
+          await handleAffiliateClawback(chargeInvoiceId, {
+            amountRefunded: charge.amount_refunded,
+            chargeAmount: charge.amount,
+          })
         }
       } else if (event.type === 'charge.dispute.created') {
         await handleChargeDisputeCreated(event)
