@@ -23,6 +23,16 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey, {
   },
 })
 
+// These become real auth users on whatever env .env.local points at, so the
+// password must not live in the source tree.
+const TEST_PASSWORD = process.env.SEED_TEST_PASSWORD
+if (!TEST_PASSWORD) {
+  console.error(
+    '❌ SEED_TEST_PASSWORD env var is required. Run: SEED_TEST_PASSWORD="..." npx tsx scripts/seed-test-users.ts'
+  )
+  process.exit(1)
+}
+
 // Test workspaces from seed-leads.ts
 const WORKSPACES = [
   {
@@ -51,7 +61,7 @@ const WORKSPACES = [
 const TEST_USERS = [
   {
     email: 'buyer@healthcare.com',
-    password: 'TestPass123!',
+    password: TEST_PASSWORD,
     workspaceId: '00000000-0000-0000-0000-000000000001',
     fullName: 'Healthcare Buyer',
     role: 'owner',
@@ -59,7 +69,7 @@ const TEST_USERS = [
   },
   {
     email: 'partner@healthcare.com',
-    password: 'TestPass123!',
+    password: TEST_PASSWORD,
     workspaceId: '00000000-0000-0000-0000-000000000001',
     fullName: 'Healthcare Partner',
     role: 'member',
@@ -67,7 +77,7 @@ const TEST_USERS = [
   },
   {
     email: 'buyer@hvac.com',
-    password: 'TestPass123!',
+    password: TEST_PASSWORD,
     workspaceId: '00000000-0000-0000-0000-000000000002',
     fullName: 'HVAC Buyer',
     role: 'owner',
@@ -75,7 +85,7 @@ const TEST_USERS = [
   },
   {
     email: 'partner@hvac.com',
-    password: 'TestPass123!',
+    password: TEST_PASSWORD,
     workspaceId: '00000000-0000-0000-0000-000000000002',
     fullName: 'HVAC Partner',
     role: 'member',
@@ -83,7 +93,7 @@ const TEST_USERS = [
   },
   {
     email: 'buyer@d2d.com',
-    password: 'TestPass123!',
+    password: TEST_PASSWORD,
     workspaceId: '00000000-0000-0000-0000-000000000003',
     fullName: 'D2D Buyer',
     role: 'owner',
@@ -91,7 +101,7 @@ const TEST_USERS = [
   },
   {
     email: 'partner@solar.com',
-    password: 'TestPass123!',
+    password: TEST_PASSWORD,
     workspaceId: '00000000-0000-0000-0000-000000000004',
     fullName: 'Solar Partner',
     role: 'member',

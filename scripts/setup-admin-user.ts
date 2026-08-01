@@ -25,8 +25,17 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey, {
 async function setupAdminUser() {
   console.log('🔧 Setting up admin user: adam@meetcursive.com\n')
 
-  const adminEmail = 'adam@meetcursive.com'
-  const adminPassword = 'AdminPass123!' // Default - you should change this after first login
+  const adminEmail = process.env.ADMIN_EMAIL ?? 'adam@meetcursive.com'
+  // Never hardcode this. This script loads .env.local itself and calls
+  // auth.admin.updateUserById — with a prod-pointed env it silently RESET the
+  // live admin's password to whatever was committed here.
+  const adminPassword = process.env.ADMIN_PASSWORD
+  if (!adminPassword) {
+    console.error(
+      'ADMIN_PASSWORD env var is required. Run: ADMIN_PASSWORD="..." npx tsx scripts/setup-admin-user.ts'
+    )
+    process.exit(1)
+  }
   const adminWorkspaceId = '00000000-0000-0000-0000-000000000000' // Fixed admin workspace ID
 
   // Step 1: Check if admin already exists in platform_admins table
@@ -76,7 +85,7 @@ async function setupAdminUser() {
     if (updateError) {
       console.log('⚠️  Could not reset password:', updateError.message)
     } else {
-      console.log('✅ Password reset to default (change after login)')
+      console.log('✅ Password reset to the value in ADMIN_PASSWORD')
     }
   } else {
     console.log('⚠️  No auth user found, creating one...')
@@ -171,15 +180,15 @@ async function setupAdminUser() {
 
   // Step 3: Verify admin can bypass waitlist
   console.log('\n📋 Admin Access Summary:')
-  console.log('   Email: adam@meetcursive.com')
-  console.log('   Default Password: AdminPass123!')
+  console.log(`   Email: ${adminEmail}`)
+  console.log('   Password: (the value you passed in ADMIN_PASSWORD)')
   console.log('   Waitlist Bypass: ✅ Enabled (automatic)')
   console.log('   Admin Dashboard: ✅ /admin')
   console.log('')
   console.log('🎯 You can now:')
   console.log('   1. Go to https://leads.meetcursive.com')
   console.log('   2. Click "Login" or go directly to /login')
-  console.log('   3. Login with adam@meetcursive.com / AdminPass123!')
+  console.log(`   3. Login with ${adminEmail} and that password`)
   console.log('   4. Access admin panel at /admin')
   console.log('   5. Regular users will see the waitlist')
 

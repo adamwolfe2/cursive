@@ -104,8 +104,9 @@ idempotency key, which Stripe does not dedupe. Real duplicated cash.
   `ADMIN_PASSWORD` from env. All three call `updateUserById`, and one loads
   `.env.local` itself — running it against a prod-pointed env silently reset the
   live admin password to a value in the source tree.
-  **→ Rotate that account. `Idie9epla!` reads like a real password, not a
-  placeholder — rotate anywhere else it is reused.**
+  **→ Rotate that account. One of the committed values reads like a real
+  password, not a placeholder — rotate it anywhere else it is reused. (The
+  literal is intentionally not repeated here; see commit `12cf1f50`.)**
 - **Demo-pixel rate limit made real** (`6c2ec9cb`) — unauthenticated, `CORS: *`,
   sends branded email to a body-supplied address. Its 10/hour cap was a module-level
   `Map`; every cold lambda started empty, so it never applied across replicas. Now
