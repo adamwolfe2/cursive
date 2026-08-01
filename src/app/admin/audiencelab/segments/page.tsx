@@ -114,12 +114,21 @@ export default function SegmentCatalogPage() {
   const loadStats = async () => {
     try {
       const res = await fetch('/api/admin/audiencelab/segments/stats')
-      if (!res.ok) return
+      if (!res.ok) {
+        safeError(`[segments] stats fetch failed (${res.status})`)
+        return
+      }
       const data = await res.json()
       setStats({ total: data.total, b2b: data.b2b, b2c: data.b2c, categories: data.categories })
       setTypes(data.types ?? [])
       setCategories(data.categoryList ?? [])
-    } catch {}
+    } catch (err) {
+      // Stats are decorative here, but silently showing zeros made a broken
+      // endpoint look like an empty catalog.
+      safeError(
+        `[segments] stats load error: ${err instanceof Error ? err.message : String(err)}`
+      )
+    }
   }
 
   const loadSegments = useCallback(async () => {

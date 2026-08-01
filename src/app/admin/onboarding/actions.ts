@@ -353,6 +353,23 @@ export async function regenerateCopy(
       safeError(
         `[regenerateCopy] runner dispatch failed for ${clientId}: ${msg}`
       )
+      // Recovery. The client is sitting at copy_approval_status='regenerating';
+      // if we don't reset it they are stuck in that state forever with no
+      // trace. Unstick FIRST, then record why — and keep the two independent
+      // so a logging failure can't skip the reset (it previously could).
+      const supabaseInner = createAdminClient()
+      const { error: resetError } = await supabaseInner
+        .from('onboarding_clients')
+        .update({ copy_approval_status: 'needs_edits' })
+        .eq('id', clientId)
+      // PostgREST resolves with {error} rather than rejecting, so this has to
+      // be checked explicitly — a try/catch around it never fires.
+      if (resetError) {
+        safeError(
+          `[regenerateCopy] CRITICAL: ${clientId} left stuck in 'regenerating' — reset failed: ${resetError.message}`
+        )
+      }
+
       try {
         const repo = new OnboardingClientRepository()
         await repo.appendAutomationLog(clientId, {
@@ -361,12 +378,13 @@ export async function regenerateCopy(
           error: msg,
           timestamp: new Date().toISOString(),
         })
-        const supabaseInner = createAdminClient()
-        await supabaseInner
-          .from('onboarding_clients')
-          .update({ copy_approval_status: 'needs_edits' })
-          .eq('id', clientId)
-      } catch {}
+      } catch (logErr) {
+        safeError(
+          `[regenerateCopy] automation log append failed for ${clientId}: ${
+            logErr instanceof Error ? logErr.message : String(logErr)
+          }`
+        )
+      }
     }
   })
 
