@@ -158,6 +158,15 @@ export async function processPendingCommissions(): Promise<{
     return acc
   }, {})
 
+  // Item ids per partner, so a failed credit can put exactly that partner's
+  // items back in the queue.
+  const partnerItemIds = items.reduce<Record<string, string[]>>((acc, item) => {
+    if (item.partner_id) {
+      ;(acc[item.partner_id] ||= []).push(item.id)
+    }
+    return acc
+  }, {})
+
   // Use atomic database function to prevent race conditions
   for (const [partnerId, amount] of Object.entries(partnerTotals)) {
     const { error: balanceError } = await supabase.rpc('move_pending_to_available', {
@@ -167,6 +176,23 @@ export async function processPendingCommissions(): Promise<{
 
     if (balanceError) {
       safeError(`[Commission] Failed to update partner ${partnerId} balance:`, balanceError)
+
+      // The status flip above already moved these items out of
+      // 'pending_holdback', so without this revert the next daily run would
+      // never pick them up again and the partner would simply never be
+      // credited — a permanent, silent underpayment. Put them back so the
+      // next run retries.
+      const { error: revertError } = await supabase
+        .from('marketplace_purchase_items')
+        .update({ commission_status: 'pending_holdback' })
+        .in('id', partnerItemIds[partnerId] ?? [])
+
+      if (revertError) {
+        safeError(
+          `[Commission] CRITICAL: could not revert ${partnerItemIds[partnerId]?.length ?? 0} items for partner ${partnerId} to pending_holdback — $${amount} will never be credited without manual repair:`,
+          revertError
+        )
+      }
     }
   }
 
