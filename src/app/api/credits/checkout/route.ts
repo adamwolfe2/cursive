@@ -9,7 +9,7 @@ import { MarketplaceRepository } from '@/lib/repositories/marketplace.repository
 import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { STRIPE_CONFIG } from '@/lib/stripe/config'
-import { CREDIT_PACKAGES } from '@/lib/constants/credit-packages'
+import { CREDIT_PACKAGES, packagePriceCents } from '@/lib/constants/credit-packages'
 import { z } from 'zod'
 import Stripe from 'stripe'
 
@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
               description: `${selectedPackage.credits} credits for lead generation`,
               images: [],
             },
-            unit_amount: selectedPackage.price,
+            unit_amount: packagePriceCents(selectedPackage),
           },
           quantity: 1,
         },
@@ -100,7 +100,7 @@ export async function POST(request: NextRequest) {
       userId: user.userId,
       credits: selectedPackage.credits,
       packageName: selectedPackage.name,
-      amountPaid: selectedPackage.price / 100, // Convert cents to dollars for DB
+      amountPaid: selectedPackage.price, // already dollars
       pricePerCredit: selectedPackage.pricePerCredit,
     })
 

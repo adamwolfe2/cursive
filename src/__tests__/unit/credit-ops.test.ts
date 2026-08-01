@@ -11,6 +11,7 @@ import { describe, it, expect } from 'vitest'
 import {
   CREDIT_PACKAGES,
   FREE_TRIAL_CREDITS,
+  packagePriceCents,
   validateCreditPurchase,
   type _CreditPackage,
 } from '@/lib/constants/credit-packages'
@@ -98,6 +99,35 @@ describe('CREDIT_PACKAGES definitions', () => {
 // ---------------------------------------------------------------------------
 // FREE_TRIAL_CREDITS
 // ---------------------------------------------------------------------------
+
+describe('packagePriceCents — dollars/cents boundary', () => {
+  // Regression guard. /api/credits/checkout passed `price` straight into
+  // Stripe's `unit_amount`, which is denominated in cents — every package
+  // sold for 1/100th of list price (Enterprise: $29.99 instead of $2,999).
+  it('converts whole dollars to cents', () => {
+    expect(packagePriceCents({ price: 99 })).toBe(9900)
+    expect(packagePriceCents({ price: 2999 })).toBe(299900)
+  })
+
+  it('every package price is dollars, consistent with credits × pricePerCredit', () => {
+    for (const pkg of CREDIT_PACKAGES) {
+      // Within $1 to allow the usual .99 rounding on list prices.
+      expect(Math.abs(pkg.credits * pkg.pricePerCredit - pkg.price)).toBeLessThanOrEqual(1)
+    }
+  })
+
+  it('no package would charge under $1 — the signature of the cents bug', () => {
+    for (const pkg of CREDIT_PACKAGES) {
+      expect(packagePriceCents(pkg)).toBeGreaterThanOrEqual(100)
+    }
+  })
+
+  it('returns an integer for every package (Stripe rejects fractional cents)', () => {
+    for (const pkg of CREDIT_PACKAGES) {
+      expect(Number.isInteger(packagePriceCents(pkg))).toBe(true)
+    }
+  })
+})
 
 describe('FREE_TRIAL_CREDITS', () => {
   it('has 100 credits', () => {

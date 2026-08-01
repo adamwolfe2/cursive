@@ -5,10 +5,27 @@ export interface CreditPackage {
   id: string
   name: string
   credits: number
+  /**
+   * Price in WHOLE US DOLLARS — not cents.
+   * Invariant: `price ≈ credits * pricePerCredit`.
+   * Stripe's `unit_amount` is in cents, so never pass this field directly.
+   * Use {@link packagePriceCents}.
+   */
   price: number
   pricePerCredit: number
   savings: number
   popular?: boolean
+}
+
+/**
+ * Package price in cents, for Stripe `unit_amount` / `amount`.
+ *
+ * Exists because `price` is in dollars and was once handed straight to
+ * Stripe as cents, charging 1/100th of list price on the
+ * /api/credits/checkout path.
+ */
+export function packagePriceCents(pkg: Pick<CreditPackage, 'price'>): number {
+  return Math.round(pkg.price * 100)
 }
 
 export const CREDIT_PACKAGES: CreditPackage[] = [

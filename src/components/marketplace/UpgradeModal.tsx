@@ -179,7 +179,8 @@ export function UpgradeModal({
     checkoutMutate(selectedPackageId)
   }, [selectedPackageId, checkoutMutate])
 
-  const formatPrice = (cents: number) => `$${(cents / 100).toFixed(0)}`
+  // CreditPackage.price is whole dollars, not cents.
+  const formatPrice = (dollars: number) => `$${dollars.toLocaleString()}`
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose() }}>
