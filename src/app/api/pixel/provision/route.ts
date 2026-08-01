@@ -12,7 +12,7 @@ import { processEventInline } from '@/lib/audiencelab/edge-processor'
 
 // Note: edge runtime — fire Inngest events via HTTP API, not SDK
 
-/** Fire a pixel/provisioned event to Inngest (edge-safe, non-blocking) */
+/** Fire a pixel/provisioned event to Inngest (edge-safe; must be awaited) */
 async function firePixelProvisionedEvent(data: {
   workspace_id: string
   pixel_id: string
@@ -23,14 +23,19 @@ async function firePixelProvisionedEvent(data: {
   const eventKey = process.env.INNGEST_EVENT_KEY
   if (!eventKey) return
 
-  fetch('https://inn.gs/e/' + eventKey, {
+  // Must be awaited — both here and at every call site. A serverless function
+  // freezes the moment the response is returned, so an un-awaited fetch is
+  // simply dropped and the whole pixel drip / trial-countdown sequence never
+  // fires. The .catch keeps this non-throwing, so awaiting it cannot break the
+  // provisioning response.
+  await fetch('https://inn.gs/e/' + eventKey, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       name: 'pixel/provisioned',
       data,
     }),
-  }).catch((err) => safeError('[PixelProvision] Fire-and-forget failed:', err)) // fire-and-forget, errors logged only
+  }).catch((err) => safeError('[PixelProvision] event send failed:', err))
 }
 
 /**
@@ -266,7 +271,7 @@ export async function POST(request: NextRequest) {
               user.workspace_id,
             )
 
-            firePixelProvisionedEvent({
+            await firePixelProvisionedEvent({
               workspace_id: user.workspace_id,
               pixel_id: claimablePixel.pixel_id,
               domain: claimablePixel.domain || domain,
@@ -420,7 +425,7 @@ export async function POST(request: NextRequest) {
           user.workspace_id,
         )
 
-        firePixelProvisionedEvent({
+        await firePixelProvisionedEvent({
           workspace_id: user.workspace_id,
           pixel_id: demoPixel.pixel_id,
           domain: demoPixel.domain || domain,
@@ -543,8 +548,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Fire pixel drip email sequence (non-blocking)
-    firePixelProvisionedEvent({
+    // Fire pixel drip email sequence
+    await firePixelProvisionedEvent({
       workspace_id: user.workspace_id,
       pixel_id: result.pixel_id,
       domain,

@@ -109,21 +109,26 @@ export async function POST(req: NextRequest) {
     if (existingDemo) {
       // Re-send the email even for existing pixels (e.g. second call with a new contact)
       if (emailToSend && existingDemo.snippet) {
-        sendPostCallRecapEmail({
-          to: emailToSend,
-          domain: existingDemo.domain,
-          snippet: existingDemo.snippet,
-          pixelId: existingDemo.pixel_id,
-        }).catch(err => safeError('[provision-demo] email send failed:', err))
-
-        inngest.send({
-          name: 'pixel/demo.created',
-          data: {
-            prospect_email: emailToSend,
+        // Awaited: these sit immediately before the response, and a serverless
+        // function freezes on return — un-awaited, the prospect's snippet email
+        // was simply never sent. Both .catch, so awaiting can't fail the route.
+        await Promise.allSettled([
+          sendPostCallRecapEmail({
+            to: emailToSend,
             domain: existingDemo.domain,
-            pixel_id: existingDemo.pixel_id,
-          },
-        }).catch(err => safeError('[provision-demo] inngest send failed:', err))
+            snippet: existingDemo.snippet,
+            pixelId: existingDemo.pixel_id,
+          }).catch(err => safeError('[provision-demo] email send failed:', err)),
+
+          inngest.send({
+            name: 'pixel/demo.created',
+            data: {
+              prospect_email: emailToSend,
+              domain: existingDemo.domain,
+              pixel_id: existingDemo.pixel_id,
+            },
+          }).catch(err => safeError('[provision-demo] inngest send failed:', err)),
+        ])
       }
       return NextResponse.json(
         {
@@ -177,21 +182,24 @@ export async function POST(req: NextRequest) {
 
     // Send post-call recap email to prospect if provided
     if (emailToSend) {
-      sendPostCallRecapEmail({
-        to: emailToSend,
-        domain,
-        snippet,
-        pixelId: result.pixel_id,
-      }).catch(err => safeError('[provision-demo] email send failed:', err))
-
-      inngest.send({
-        name: 'pixel/demo.created',
-        data: {
-          prospect_email: emailToSend,
+      // Awaited for the same reason as the idempotent branch above.
+      await Promise.allSettled([
+        sendPostCallRecapEmail({
+          to: emailToSend,
           domain,
-          pixel_id: result.pixel_id,
-        },
-      }).catch(err => safeError('[provision-demo] inngest send failed:', err))
+          snippet,
+          pixelId: result.pixel_id,
+        }).catch(err => safeError('[provision-demo] email send failed:', err)),
+
+        inngest.send({
+          name: 'pixel/demo.created',
+          data: {
+            prospect_email: emailToSend,
+            domain,
+            pixel_id: result.pixel_id,
+          },
+        }).catch(err => safeError('[provision-demo] inngest send failed:', err)),
+      ])
     }
 
     return NextResponse.json(
