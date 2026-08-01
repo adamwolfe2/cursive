@@ -44,6 +44,16 @@ vi.mock('@/lib/auth/fast-auth', () => ({
   fastAuth: (request: any) => mockGetCurrentUser(),
 }))
 
+// Mock the rate limiter — same reason as tests/unit/api/service-request.test.ts.
+// The limiter's in-memory store is module-level and shared across every test in
+// the vitest worker, and this file makes ~20 requests as one user against the
+// 'ai-generate-email' bucket. Unmocked, whether it passes depends on what other
+// files in the same worker burned first. Rate limiting has its own suites.
+vi.mock('@/lib/middleware/rate-limiter', () => ({
+  withRateLimit: vi.fn().mockResolvedValue(null), // null = not rate limited
+  getRequestIdentifier: vi.fn().mockReturnValue('test-identifier'),
+}))
+
 // Mock Supabase server client
 vi.mock('@/lib/supabase/server', () => ({
   createClient: () => mockCreateClient(),

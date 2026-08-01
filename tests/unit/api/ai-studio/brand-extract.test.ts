@@ -44,6 +44,24 @@ vi.mock('@/lib/auth/helpers', () => ({
   getCurrentUser: () => mockGetCurrentUser(),
 }))
 
+// Mock the rate limiter.
+//
+// The route calls withRateLimit('ai-generate-email', <user id>), and the
+// limiter's in-memory store is MODULE-level — shared by every test running in
+// the same vitest worker. This file makes ~20 requests as the same user, so
+// whether it passed depended entirely on how much of that key's budget other
+// test files in the same worker had already burned. It failed when run on its
+// own, and passed in a full run only by luck of worker scheduling.
+//
+// These tests cover auth, validation and workspace handling; rate limiting has
+// its own dedicated suites (src/__tests__/unit/rate-limiter.test.ts and
+// tests/unit/security/rate-limiting.test.ts). Stubbing it here makes this file
+// deterministic rather than order-dependent.
+vi.mock('@/lib/middleware/rate-limiter', () => ({
+  withRateLimit: vi.fn().mockResolvedValue(null), // null = not limited
+  getRequestIdentifier: vi.fn().mockReturnValue('test-identifier'),
+}))
+
 // Mock Supabase server client
 vi.mock('@/lib/supabase/server', () => ({
   createClient: () => mockCreateClient(),
