@@ -23,9 +23,19 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey, {
 async function createAdminAccount() {
   console.log('Creating admin account...')
 
-  const adminEmail = 'adam@meetcursive.com'
-  const adminPassword = 'Idie9epla!'
-  const adminName = 'Adam Wolfe'
+  const adminEmail = process.env.ADMIN_EMAIL ?? 'adam@meetcursive.com'
+  // Never hardcode this. The script previously shipped a real password in
+  // the source tree, and it also runs auth.admin.updateUserById — so anyone
+  // executing it against a prod-pointed env silently RESET the live admin's
+  // password to the committed value.
+  const adminPassword = process.env.ADMIN_PASSWORD
+  if (!adminPassword) {
+    console.error(
+      'ADMIN_PASSWORD env var is required. Run: ADMIN_PASSWORD="..." npx tsx scripts/create-admin-account.ts'
+    )
+    process.exit(1)
+  }
+  const adminName = process.env.ADMIN_NAME ?? 'Adam Wolfe'
 
   try {
     // 1. Check if user already exists in auth
@@ -200,7 +210,7 @@ async function createAdminAccount() {
     console.log('✅ ADMIN ACCOUNT CREATED SUCCESSFULLY')
     console.log('='.repeat(60))
     console.log(`Email:     ${adminEmail}`)
-    console.log(`Password:  ${adminPassword}`)
+    console.log(`Password:  (from ADMIN_PASSWORD env var)`)
     console.log(`Role:      owner`)
     console.log(`Plan:      pro`)
     console.log(`Workspace: ${workspaceId}`)
