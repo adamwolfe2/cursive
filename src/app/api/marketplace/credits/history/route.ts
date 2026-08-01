@@ -7,6 +7,11 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import {
+  computeRunningBalances,
+  totalCreditsIn,
+  totalCreditsOut,
+} from '@/lib/marketplace/running-balance'
 
 export async function GET(req: NextRequest) {
   try {
@@ -150,27 +155,15 @@ export async function GET(req: NextRequest) {
       })
     }
 
-    // Sort all transactions by date descending
-    transactions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    const totalIn = totalCreditsIn(transactions)
+    const totalOut = totalCreditsOut(transactions)
 
-    // Compute running balance using the real current balance as the anchor.
-    // Walk transactions newest-to-oldest, assigning per-row balance.
-    const totalIn = transactions.reduce((sum, t) => sum + t.credits_in, 0)
-    const totalOut = transactions.reduce((sum, t) => sum + t.credits_out, 0)
-
-    // Start from the actual current balance (from workspace_credits), not just the
-    // period-filtered sum. This ensures the balance column is correct even when
-    // the date filter excludes older transactions.
-    let runningBalance = actualCurrentBalance
-
-    type TransactionWithBalance = Transaction & { balance: number }
-    const transactionsWithBalance: TransactionWithBalance[] = transactions.map((t) => {
-      const entry = { ...t, balance: runningBalance }
-      // Walk backwards: balance before this transaction was:
-      //   balance_before = runningBalance - credits_in + credits_out
-      runningBalance = runningBalance - t.credits_in + t.credits_out
-      return entry
-    })
+    // Sorts newest-first and anchors on the real workspace balance, so the
+    // balance column stays correct even when a date filter hides older rows.
+    const transactionsWithBalance = computeRunningBalances(
+      transactions,
+      actualCurrentBalance
+    )
 
     // Apply pagination after computing balances
     const total = transactionsWithBalance.length

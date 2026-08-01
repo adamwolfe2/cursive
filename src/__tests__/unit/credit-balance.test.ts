@@ -15,38 +15,10 @@
  */
 
 import { describe, it, expect } from 'vitest'
-
-// ─── Types ───────────────────────────────────────────────────────────────────
-
-interface Transaction {
-  id: string
-  date: string
-  credits_in: number
-  credits_out: number
-}
-
-interface TransactionWithBalance extends Transaction {
-  balance: number
-}
-
-// ─── Algorithm (verbatim from credits/history/route.ts) ──────────────────────
-
-function computeRunningBalances(
-  transactions: Transaction[],
-  currentBalance: number
-): TransactionWithBalance[] {
-  // Sort newest first
-  const sorted = [...transactions].sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-  )
-
-  let runningBalance = currentBalance
-  return sorted.map((t) => {
-    const entry = { ...t, balance: runningBalance }
-    runningBalance = runningBalance - t.credits_in + t.credits_out
-    return entry
-  })
-}
+import {
+  computeRunningBalances,
+  type CreditTransaction as Transaction,
+} from '@/lib/marketplace/running-balance'
 
 // ─── Tests ───────────────────────────────────────────────────────────────────
 
@@ -171,6 +143,16 @@ describe('Running Balance Calculation', () => {
 
     expect(result[0].balance).toBe(250) // after +200 → 250
     expect(result[1].balance).toBe(50)  // before +200 → 250 - 200 = 50
+  })
+
+  it('does not mutate or reorder the caller\'s array', () => {
+    const transactions: Transaction[] = [
+      { id: '1', date: '2026-01-01', credits_in: 100, credits_out: 0 },
+      { id: '2', date: '2026-03-01', credits_in: 0, credits_out: 10 },
+    ]
+    const snapshot = JSON.stringify(transactions)
+    computeRunningBalances(transactions, 90)
+    expect(JSON.stringify(transactions)).toBe(snapshot)
   })
 
   it('preserves transaction metadata (id, date, credits) in output', () => {
