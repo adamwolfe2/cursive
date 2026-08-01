@@ -36,18 +36,11 @@ describe('sanitizeCsvValue', () => {
       expect(sanitizeCsvValue('\r=SUM(A1)')).toBe("'=SUM(A1)")
     })
 
-    // ponytail/bug: a value that is ONLY tab/CR-prefixed (no other dangerous
-    // char after the whitespace) sails through UNQUOTED, because trim() eats
-    // the very prefix DANGEROUS_PREFIXES is supposed to catch. The '\t' and
-    // '\r' entries in DANGEROUS_PREFIXES are dead code as currently ordered
-    // (trim happens before the check, not after). Left source untouched per
-    // instructions; flagging for a human decision (swap trim() for a
-    // non-mutating leading-char check, or drop \t/\r from the prefix list).
-    it.todo(
-      'should still quote-prefix a value whose ONLY dangerous signal is a leading tab (currently does NOT, because trim() removes it first)'
-    )
-
-    test('actual behavior: a lone tab/CR-prefixed value is NOT quoted (documents the dead-code bug above)', () => {
+    // Resolved: '\t' and '\r' were removed from DANGEROUS_PREFIXES. They could
+    // never match (trim() runs first) and did not need to — trim also strips
+    // them from the RETURNED value, so the exported cell carries no leading
+    // tab/CR to exploit. Quoting here would be noise, not safety.
+    it('strips a lone leading tab/CR rather than quoting it — nothing to neutralize', () => {
       expect(sanitizeCsvValue('\tvalue')).toBe('value')
       expect(sanitizeCsvValue('\rvalue')).toBe('value')
     })
@@ -140,13 +133,16 @@ describe('isPotentialCsvInjection', () => {
     expect(isPotentialCsvInjection('@macro')).toBe(true)
   })
 
-  it.todo(
-    'should flag a lone tab/CR-prefixed value as potential injection (currently does NOT -- same trim()-before-check bug as sanitizeCsvValue)'
-  )
-
-  it('actual behavior: a lone tab/CR-prefixed value is NOT flagged (documents the dead-code bug above)', () => {
+  // See the note in sanitizeCsvValue: trim() removes a leading tab/CR from the
+  // exported value, so there is no injection to flag.
+  it('does not flag a lone tab/CR-prefixed value', () => {
     expect(isPotentialCsvInjection('\tvalue')).toBe(false)
     expect(isPotentialCsvInjection('\rvalue')).toBe(false)
+  })
+
+  it('still flags a tab-prefixed formula, via the formula char', () => {
+    expect(isPotentialCsvInjection('\t=SUM(A1)')).toBe(true)
+    expect(isPotentialCsvInjection('\r+1+1')).toBe(true)
   })
 
   it('does not flag safe values', () => {

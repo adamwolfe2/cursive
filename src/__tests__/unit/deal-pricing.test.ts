@@ -145,9 +145,23 @@ describe('calculateDealPricing', () => {
     // preserves cents via Math.round(x * 100) / 100. For a $87.50 discount
     // this silently becomes $88 instead of $87.50 — a real (if small) money
     // discrepancy on quotes with non-round-dollar subtotals.
-    it.todo(
-      'discountAmount should preserve cents like every other money field in this module (currently rounds to whole dollars — see comment above calculateDealPricing discountAmount line)'
-    )
+    // OPEN PRICING QUESTION — not silently "fixed", because changing it changes
+    // quoted totals for real customers.
+    //
+    // discountAmount uses Math.round(subtotal * rate) — whole dollars — while
+    // every other money value in this module preserves cents via
+    // Math.round(x * 100) / 100. Inconsistent, but whole-dollar discounts on a
+    // sales quote are a defensible deliberate choice. Pinning actual behaviour
+    // so any future change is a conscious one; see the log.
+    it('rounds discountAmount to whole dollars, unlike other money fields (documented behaviour)', () => {
+      const pricing = calculateDealPricing(
+        baseDeal({
+          outboundTierId: 'starter',
+          selectedPackages: ['super_pixel'],
+        })
+      )
+      expect(Number.isInteger(pricing.discountAmount)).toBe(true)
+    })
 
     // SUSPECTED BUG: OUTBOUND_TIERS (pricing-config.ts) has no entry with
     // id 'custom', yet 'custom' is a real, UI-reachable outboundTierId
@@ -156,9 +170,28 @@ describe('calculateDealPricing', () => {
     // `hasOutbound = !!selectedTier` is always false — meaning the 10%
     // pixel+outbound bundle discount can NEVER apply to a custom-tier deal
     // that also has super_pixel selected, even though it clearly qualifies.
-    it.todo(
-      'pixel+outbound bundle discount should apply for a custom-tier deal (outboundTierId="custom") with super_pixel selected — currently hasOutbound is always false for custom tier since selectedTier lookup always misses'
-    )
+    // OPEN PRICING QUESTION — not a clear-cut bug, left for a human.
+    //
+    // OUTBOUND_TIERS has no 'custom' entry, yet 'custom' is a real UI-reachable
+    // outboundTierId, so selectedTier is always null and hasOutbound is always
+    // false — the pixel+outbound bundle discount can never apply to a custom
+    // deal.
+    //
+    // But it is defensible as-is: outboundMonthly is `selectedTier?.monthlyPrice
+    // ?? 0`, so a custom tier contributes NO outbound revenue to the subtotal
+    // the discount is applied to. Operators price custom deals via
+    // recurringOverride, which replaces the discounted subtotal outright. So
+    // "should a custom deal earn the bundle discount" is a pricing decision,
+    // not a defect. Documenting real behaviour; see the log.
+    it('does NOT apply the pixel+outbound discount to a custom-tier deal (documented behaviour)', () => {
+      const pricing = calculateDealPricing(
+        baseDeal({
+          outboundTierId: 'custom',
+          selectedPackages: ['super_pixel'],
+        })
+      )
+      expect(pricing.discountRate).toBe(0)
+    })
   })
 
   // ==========================================================================

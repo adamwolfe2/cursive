@@ -6,7 +6,14 @@
  * Characters that can trigger formula execution in Excel/Google Sheets
  * = (formula), + (addition), - (subtraction/negation), @ (macro), \t (tab), \r (carriage return)
  */
-const DANGEROUS_PREFIXES = ['=', '+', '-', '@', '\t', '\r'] as const
+// OWASP's formula-injection prefix list also names TAB and CR. They are
+// deliberately NOT here: every code path in this file trims the value before
+// testing it AND returns the trimmed string, so a leading tab or CR is removed
+// from the exported cell rather than needing to be neutralized. Leaving them in
+// the list made them look load-bearing when they could never match — and adding
+// a pre-trim check would only quote values whose dangerous character is already
+// gone. Any prefix added here must be one that survives .trim().
+const DANGEROUS_PREFIXES = ['=', '+', '-', '@'] as const
 
 /**
  * Sanitize a single CSV value to prevent injection attacks
