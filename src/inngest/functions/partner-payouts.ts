@@ -9,6 +9,20 @@ import { sendPayoutCompletedEmail } from '@/lib/email/service'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 /**
+ * Thrown when the Stripe transfer succeeded but the atomic balance debit did
+ * not. Must escape the transfer try/catch so Inngest retries the step with a
+ * fresh balance read — Stripe's idempotency key makes the retried transfer a
+ * no-op, while leaving the balance un-debited would pay the partner again on
+ * the next weekly run under a new key.
+ */
+class PayoutBalanceNotDebitedError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = 'PayoutBalanceNotDebitedError'
+  }
+}
+
+/**
  * Weekly partner payout job
  * Runs every Monday at 2 AM UTC
  */
@@ -118,13 +132,30 @@ async function processPartnerPayout(partner: {
   const weekStart = getWeekStart()
   const idempotencyKey = `payout-${partner.partnerId}-${weekStart}`
 
-  // Check if payout already exists for this week
-  const { data: existingPayout } = await supabase
+  // Check if payout already exists for this week.
+  //
+  // WARNING (see AUTONOMOUS_IMPROVEMENT_LOG.md): payout_requests has no
+  // `idempotency_key` or `stripe_transfer_id` column in any migration, so
+  // this query currently returns a PostgREST error and `data: null` — the
+  // weekly idempotency guard is inert and Stripe's own 24h idempotency key
+  // is the only thing preventing a duplicate transfer. The error was being
+  // discarded; surfacing it so the condition is visible in logs rather than
+  // silent. Deliberately not changing the behaviour here — repointing this
+  // at the `payouts` table (which does have both columns) is a schema
+  // decision for a human.
+  const { data: existingPayout, error: existingPayoutError } = await supabase
     .from('payout_requests')
     .select('id, stripe_transfer_id')
     .eq('partner_id', partner.partnerId)
     .eq('idempotency_key', idempotencyKey)
+    .eq('status', 'completed')
     .maybeSingle()
+
+  if (existingPayoutError) {
+    safeError(
+      `[Payout] CRITICAL: weekly idempotency lookup failed for partner ${partner.partnerId} — duplicate-payout guard is NOT active: ${existingPayoutError.message}`
+    )
+  }
 
   if (existingPayout) {
     return {
@@ -188,8 +219,12 @@ async function processPartnerPayout(partner: {
       })
 
     if (insertError) {
-      safeError('Failed to insert payout record:', insertError)
-      // Don't fail - transfer already succeeded
+      safeError(
+        `[Payout] CRITICAL: money left the platform but no payout record was written for partner ${partner.partnerId} (transfer ${transfer.id}, $${partner.availableBalance}):`,
+        insertError
+      )
+      // Deliberately not failing — the transfer already succeeded and
+      // retrying would not un-send it. This needs manual reconciliation.
     }
 
     // Atomically update partner balance: decrement by payout amount (not reset to 0)
@@ -204,7 +239,9 @@ async function processPartnerPayout(partner: {
       // that arrived between when we read the balance and when the RPC ran.
       // Instead, throw so Inngest retries the entire step with a fresh balance read.
       safeError('[Payout] Failed to update partner balance atomically — will retry:', balanceError)
-      throw new Error(`Atomic payout RPC failed for partner ${partner.partnerId}: ${balanceError.message}`)
+      throw new PayoutBalanceNotDebitedError(
+        `Atomic payout RPC failed for partner ${partner.partnerId}: ${balanceError.message}`
+      )
     }
 
     // Mark commissions as paid
@@ -246,6 +283,15 @@ async function processPartnerPayout(partner: {
       transferId: transfer.id,
     }
   } catch (error) {
+    // The balance-RPC failure is thrown from INSIDE this try. Swallowing it
+    // here converted "retry me" into a plain {success:false} return, so
+    // Inngest never retried and available_balance was never debited — the
+    // same balance was then paid again on the next weekly run under a new
+    // idempotency key, which Stripe does not dedupe. Let it escape.
+    if (error instanceof PayoutBalanceNotDebitedError) {
+      throw error
+    }
+
     safeError(`Stripe transfer failed for partner ${partner.partnerId}:`, error)
 
     // Record failed payout attempt
