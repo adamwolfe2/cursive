@@ -8,6 +8,7 @@ import { provisionCustomerPixel } from '@/lib/audiencelab/api-client'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { sendPostCallRecapEmail } from '@/lib/email/templates/pixel-delivery'
+import { checkRateLimit } from '@/lib/middleware/rate-limiter'
 import { inngest } from '@/inngest/client'
 
 export const maxDuration = 60 // Vercel Pro allows up to 60s
@@ -18,21 +19,17 @@ const CORS = {
   'Access-Control-Allow-Headers': 'Content-Type',
 }
 
-// Rate limit: max 10 provisioning requests per IP per hour (expensive AudienceLab API call)
-const provisionDemoRateLimitMap = new Map<string, number[]>()
-const PROVISION_DEMO_MAX = 10
-const PROVISION_DEMO_WINDOW_MS = 60 * 60 * 1000
-
-function checkProvisionDemoRateLimit(ip: string): boolean {
-  const now = Date.now()
-  const timestamps = (provisionDemoRateLimitMap.get(ip) || []).filter(
-    (t) => now - t < PROVISION_DEMO_WINDOW_MS
-  )
-  if (timestamps.length >= PROVISION_DEMO_MAX) return false
-  timestamps.push(now)
-  provisionDemoRateLimitMap.set(ip, timestamps)
-  return true
-}
+// Rate limit: max 10 provisioning requests per IP per hour (expensive
+// AudienceLab call, and this endpoint also sends branded email to an
+// attacker-supplied address).
+//
+// This used to be a module-level Map. On Vercel every cold lambda starts with
+// an empty one, so the "10/hour" cap was never actually enforced — the only
+// real ceiling was middleware's 30/min per IP, i.e. tens of thousands of
+// emails a day from our sending domain via one rotating-IP host. The 'auth'
+// tier is 10 requests, so a 3600s window reproduces the intended limit while
+// sharing state across replicas through Upstash.
+const PROVISION_DEMO_WINDOW_SECONDS = 60 * 60
 
 export async function OPTIONS() {
   return new NextResponse(null, { status: 204, headers: CORS })
@@ -60,7 +57,8 @@ export async function POST(req: NextRequest) {
     // Rate limit: prevent abuse of this free, unauthenticated AudienceLab provisioning endpoint
     const forwardedFor = req.headers.get('x-forwarded-for')
     const ip = forwardedFor ? forwardedFor.split(',')[0].trim() : 'unknown'
-    if (!checkProvisionDemoRateLimit(ip)) {
+    const limit = await checkRateLimit(ip, 'auth', PROVISION_DEMO_WINDOW_SECONDS)
+    if (!limit.success) {
       return NextResponse.json(
         { error: 'Too many requests. Please try again later.' },
         { status: 429, headers: CORS }
