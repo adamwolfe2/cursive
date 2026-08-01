@@ -49,7 +49,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       affiliate_id: affiliate.id,
       ip_hash: ipHash,
       user_agent: request.headers.get('user-agent') || null,
-      referer: referer || null,
+      // Public endpoint writing through the service-role client, so cap the
+      // one free-form field rather than storing whatever was posted.
+      referer: referer ? String(referer).slice(0, 2048) : null,
     })
 
     return NextResponse.json({ success: true })

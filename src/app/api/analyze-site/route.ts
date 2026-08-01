@@ -20,7 +20,10 @@ export async function GET(req: NextRequest) {
 
   try {
     const cleanDomain = domain.replace(/^https?:\/\//, '').split('/')[0]
-    const url = `https://api.microlink.io?url=https://${cleanDomain}&screenshot=true`
+    // split('/') strips a path but leaves '&' and '?' intact, so a domain like
+    // "x&url=http://169.254.169.254" injected a second url= param into
+    // Microlink's query string. Encode it.
+    const url = `https://api.microlink.io?url=https://${encodeURIComponent(cleanDomain)}&screenshot=true`
 
     const controller = new AbortController()
     const timeout = setTimeout(() => controller.abort(), 10000)

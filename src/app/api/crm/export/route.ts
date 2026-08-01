@@ -10,6 +10,7 @@ import { createClient } from '@/lib/supabase/server'
 import { logDataExport } from '@/lib/services/audit.service'
 import { z } from 'zod'
 import { sanitizeSearchTerm } from '@/lib/utils/sanitize-search'
+import { withRateLimit, getRequestIdentifier } from '@/lib/middleware/rate-limiter'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 // Allow up to 30s for large exports (Vercel Pro default is 60s)
@@ -67,6 +68,16 @@ export async function POST(request: NextRequest) {
     if (!user) {
       return unauthorized()
     }
+
+    // Bulk exfil guard. 10k rows per POST with no per-user limit meant a
+    // stolen session could drain the CRM at ~300k rows/min. /api/leads/export
+    // already gates itself this way.
+    const rateLimited = await withRateLimit(
+      request,
+      'lead-export',
+      getRequestIdentifier(request, user.id)
+    )
+    if (rateLimited) return rateLimited
 
     // 2. Validate input
     const body = await request.json()

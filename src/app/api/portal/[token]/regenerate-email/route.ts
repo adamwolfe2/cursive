@@ -10,6 +10,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { runRegen } from '@/lib/services/onboarding/email-regen-runner'
+import { withRateLimit, getRequestIdentifier } from '@/lib/middleware/rate-limiter'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 const bodySchema = z.object({
@@ -41,6 +42,17 @@ export async function POST(
     if (new Date(tokenRecord.expires_at) < new Date()) {
       return NextResponse.json({ error: 'This portal link has expired' }, { status: 403 })
     }
+
+    // Anyone holding a valid portal link — a churned client, a forwarded
+    // email — could otherwise fire 90-second Anthropic jobs at middleware's
+    // 30/min. Keyed on the client, not the IP, so one link can't be spread
+    // across hosts.
+    const rateLimited = await withRateLimit(
+      request,
+      'ai-generate-email',
+      getRequestIdentifier(request, tokenRecord.client_id)
+    )
+    if (rateLimited) return rateLimited
 
     // 2. Validate body
     const json = await request.json().catch(() => null)

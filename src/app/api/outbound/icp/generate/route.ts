@@ -13,6 +13,7 @@ import { z } from 'zod'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 import { generateIcpFromProduct } from '@/lib/services/outbound/icp-generator.service'
+import { withRateLimit, getRequestIdentifier } from '@/lib/middleware/rate-limiter'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 // Anthropic Haiku usually responds in 2-5s, but cold-start + auth can push the
@@ -29,6 +30,16 @@ export async function POST(request: NextRequest) {
     const user = await getCurrentUser()
     if (!user) return unauthorized()
     if (!user.workspace_id) return unauthorized('No workspace')
+
+    // Every sibling AI route rate-limits; this one didn't, so the only ceiling
+    // was middleware's 30/min per IP — enough for one logged-in user to drive
+    // tens of thousands of billed Anthropic calls a day.
+    const rateLimited = await withRateLimit(
+      request,
+      'ai-qualify',
+      getRequestIdentifier(request, user.id)
+    )
+    if (rateLimited) return rateLimited
 
     const body = await request.json()
     const { product_text } = bodySchema.parse(body)

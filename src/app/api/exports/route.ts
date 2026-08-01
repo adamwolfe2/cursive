@@ -18,6 +18,7 @@ import {
   type ExportOptions,
 } from '@/lib/services/export.service'
 import { logDataExport } from '@/lib/services/audit.service'
+import { withRateLimit, getRequestIdentifier } from '@/lib/middleware/rate-limiter'
 
 const exportSchema = z.object({
   type: z.enum([
@@ -49,6 +50,14 @@ export async function POST(request: NextRequest) {
   try {
     const user = await getCurrentUser()
     if (!user) return unauthorized()
+
+    // Matches /api/leads/export — see the note in /api/crm/export.
+    const rateLimited = await withRateLimit(
+      request,
+      'lead-export',
+      getRequestIdentifier(request, user.id)
+    )
+    if (rateLimited) return rateLimited
 
     const body = await request.json()
     const validated = exportSchema.parse(body)
