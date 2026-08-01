@@ -104,8 +104,11 @@ export async function POST(
       stripe_payment_intent_id: paymentIntentId,
     })
 
-    // Update lead: assign to buyer's workspace, guard against double-sell
-    const { error: updateError } = await supabase
+    // Update lead: assign to buyer's workspace, guard against double-sell.
+    // .select() is load-bearing: an UPDATE that matches ZERO rows is not an
+    // error in PostgREST, so the .is('sold_at', null) guard below only tells
+    // us anything if we count what came back.
+    const { data: claimedLeads, error: updateError } = await supabase
       .from('leads')
       .update({
         workspace_id: user.workspace_id, // Assign to buyer's workspace
@@ -115,10 +118,34 @@ export async function POST(
       })
       .eq('id', leadId)
       .is('sold_at', null) // Guard: only update if not already sold
+      .select('id')
 
     if (updateError) {
       safeError('[Confirm Purchase] Failed to update lead:', updateError)
       throw new Error('Failed to assign purchased lead to buyer')
+    }
+
+    if (!claimedLeads || claimedLeads.length === 0) {
+      // Lost the race. The sold_at check at PaymentIntent-creation time lets
+      // two buyers hold a valid intent for one lead, and idempotency here is
+      // keyed on the payment intent (different per buyer) so both reach this
+      // point. Previously both were told success: the second buyer was
+      // charged, the partner was credited twice, and the lead stayed with the
+      // first buyer.
+      //
+      // REVIEW: this now fails loudly instead of lying, but the capture is not
+      // yet reversed — refunding automatically is a money-moving side effect
+      // left for a human to decide. See AUTONOMOUS_IMPROVEMENT_LOG.md.
+      safeError(
+        `[Confirm Purchase] DOUBLE-SELL: lead ${leadId} was already sold; buyer ${buyerId} was charged on payment intent ${paymentIntentId} and needs a refund. Purchase row ${purchase.id} also credited the partner.`
+      )
+      return NextResponse.json(
+        {
+          error:
+            'This lead was purchased by someone else moments ago. Your payment has been flagged for refund — support has been notified.',
+        },
+        { status: 409 }
+      )
     }
 
     return NextResponse.json({ success: true, purchaseId: purchase.id })
