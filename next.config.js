@@ -133,9 +133,17 @@ const nextConfig = {
               // 'unsafe-inline' is required for:
               //   - Crisp chat bootstrap (dangerouslySetInnerHTML inline script)
               //   - Next.js inline hydration chunks injected at runtime
-              // 'strict-dynamic' is added so modern browsers ignore 'unsafe-inline' and
-              //   instead trust only scripts loaded by already-trusted scripts (e.g. Crisp
-              //   injecting its own <script> tag). Older browsers fall back to 'unsafe-inline'.
+              //
+              // ⚠️ KNOWN GAP: this comment previously claimed "'strict-dynamic' is
+              //   added so modern browsers ignore 'unsafe-inline'". It is NOT in the
+              //   directive below and never was, so script-src currently provides no
+              //   XSS mitigation for injected inline script. Corrected rather than
+              //   silently patched: adding 'strict-dynamic' requires a per-request
+              //   nonce (without one it also blocks 'self' scripts), which needs
+              //   middleware changes and real browser verification against Stripe,
+              //   Crisp, Sentry, PostHog and Vercel scripts. Tracked in
+              //   AUTONOMOUS_IMPROVEMENT_LOG.md.
+              //
               // 'unsafe-eval' has been intentionally omitted — nothing in this codebase
               //   requires it (Stripe.js, Sentry, Crisp, and Next.js all work without it).
               "script-src 'self' 'unsafe-inline' https://js.stripe.com https://client.crisp.chat https://browser.sentry-cdn.com https://*.vercel-scripts.com https://us-assets.i.posthog.com",
