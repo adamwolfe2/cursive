@@ -145,8 +145,13 @@ async function recordCommissionForReferral(
   const commissionAmount = Math.floor((invoiceAmount * rate) / 100)
   if (commissionAmount <= 0) return
 
-  // Idempotency guard — UNIQUE(stripe_invoice_id). Null result = webhook retry.
-  const { data: commission } = await admin
+  // Idempotency guard — UNIQUE(stripe_invoice_id).
+  // The error MUST be inspected: PostgREST resolves with {data:null, error}
+  // rather than rejecting, so treating any null result as "already processed"
+  // silently swallowed FK violations, check failures and connection resets,
+  // and the partner was simply never paid — with the webhook returning 200 so
+  // Stripe never retried.
+  const { data: commission, error: commissionError } = await admin
     .from('affiliate_commissions')
     .insert({
       affiliate_id: affiliate.id,
@@ -159,6 +164,16 @@ async function recordCommissionForReferral(
     })
     .select('id')
     .maybeSingle()
+
+  if (commissionError) {
+    if (commissionError.code === '23505') {
+      safeLog(`[affiliate-commission] Invoice ${invoiceId} already processed — skipping (webhook retry)`)
+      return
+    }
+    throw new Error(
+      `[affiliate-commission] Failed to record commission for invoice ${invoiceId}: ${commissionError.message}`
+    )
+  }
 
   if (!commission) {
     safeLog(`[affiliate-commission] Invoice ${invoiceId} already processed — skipping (webhook retry)`)
@@ -256,12 +271,26 @@ export async function handleAffiliateInvoicePayment(
   try {
     const admin = createAdminClient()
 
-    const { data: referral } = await admin
+    // First-touch attribution. Nothing constrains affiliate_referrals to one
+    // row per workspace (the only unique key is affiliate_id + referred_email),
+    // so a workspace referred by two partners — or one buyer attributed under
+    // two emails — made maybeSingle() fail with PGRST116 and return null. The
+    // error was discarded and every renewal invoice for that workspace then
+    // silently paid no commission at all, forever, with nothing logged.
+    const { data: referral, error: referralError } = await admin
       .from('affiliate_referrals')
       .select('id, affiliate_id, status')
       .eq('workspace_id', workspaceId)
       .in('status', ['lead', 'activated', 'paying'])
+      .order('attributed_at', { ascending: true })
+      .limit(1)
       .maybeSingle()
+
+    if (referralError) {
+      throw new Error(
+        `[affiliate-commission] Referral lookup failed for workspace ${workspaceId}: ${referralError.message}`
+      )
+    }
 
     if (!referral) return
 
@@ -426,7 +455,7 @@ export async function handleAffiliateClawback(invoiceId: string): Promise<void> 
     // Insert the negative clawback row FIRST — it is our idempotency lock
     // (UNIQUE(stripe_invoice_id) on `clawback_<invoiceId>`). Starts 'pending'
     // (carry-forward); promoted to 'reversed' below if we recover the cash.
-    const { data: clawRow } = await admin
+    const { data: clawRow, error: clawError } = await admin
       .from('affiliate_commissions')
       .insert({
         affiliate_id: commission.affiliate_id,
@@ -439,6 +468,19 @@ export async function handleAffiliateClawback(invoiceId: string): Promise<void> 
       })
       .select('id')
       .maybeSingle()
+
+    // Same trap as recordCommissionForReferral: only a unique violation means
+    // "already clawed back". Any other error previously logged as a duplicate
+    // and returned, leaving the partner paid on refunded revenue.
+    if (clawError) {
+      if (clawError.code === '23505') {
+        safeLog(`[affiliate-clawback] Duplicate clawback for invoice ${invoiceId} — already processed`)
+        return
+      }
+      throw new Error(
+        `[affiliate-clawback] Failed to record clawback for invoice ${invoiceId}: ${clawError.message}`
+      )
+    }
 
     if (!clawRow) {
       safeLog(`[affiliate-clawback] Duplicate clawback for invoice ${invoiceId} — already processed`)
