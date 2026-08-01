@@ -8,18 +8,6 @@ const BLOCKED_HOSTNAMES = new Set([
   'metadata.google.internal',
 ])
 
-const PRIVATE_IP_PATTERNS = [
-  /^127\./,           // IPv4 loopback
-  /^10\./,            // Private class A
-  /^172\.(1[6-9]|2\d|3[01])\./,  // Private class B (172.16-31.x.x)
-  /^192\.168\./,      // Private class C
-  /^169\.254\./,      // Link-local
-  /^0\./,             // This network
-  /^::1$/,            // IPv6 loopback
-  /^fc[0-9a-f]{2}:/i, // IPv6 unique local
-  /^fe[89ab][0-9a-f]:/i, // IPv6 link-local
-]
-
 /**
  * Returns true if the URL is safe to use as an outbound webhook destination.
  * Rejects:
@@ -84,6 +72,17 @@ export function isBlockedIpv6(addr: string): boolean {
   // IPv4-mapped (::ffff:a.b.c.d) — recheck the embedded IPv4.
   const mapped = a.match(/^::ffff:(\d{1,3}(?:\.\d{1,3}){3})$/)
   if (mapped) return isBlockedIpv4(mapped[1])
+  // Same address in hex form. WHATWG URL normalizes "::ffff:10.0.0.1" to
+  // "::ffff:a00:1", so anything derived from new URL().hostname arrives here
+  // in a form the dotted pattern above can never match.
+  const mappedHex = a.match(/^::ffff:([0-9a-f]{1,4}):([0-9a-f]{1,4})$/)
+  if (mappedHex) {
+    const hi = parseInt(mappedHex[1], 16)
+    const lo = parseInt(mappedHex[2], 16)
+    return isBlockedIpv4(
+      `${hi >> 8}.${hi & 0xff}.${lo >> 8}.${lo & 0xff}`
+    )
+  }
   return false
 }
 
@@ -128,10 +127,17 @@ export function isValidWebhookUrl(urlString: string): boolean {
   // Block known internal hostnames
   if (BLOCKED_HOSTNAMES.has(hostname)) return false
 
-  // Block private/loopback IP ranges
-  for (const pattern of PRIVATE_IP_PATTERNS) {
-    if (pattern.test(hostname)) return false
-  }
+  // URL.hostname returns IPv6 literals bracketed ("[::1]", "[fc00::1]").
+  // Matching the bracketed form against bare-address checks silently passed
+  // every IPv6 loopback/ULA/link-local host straight through.
+  const host =
+    hostname.startsWith('[') && hostname.endsWith(']')
+      ? hostname.slice(1, -1)
+      : hostname
+
+  // Delegate to the canonical checks rather than keeping a second, thinner
+  // copy of the range list here — the local copy was missing CGNAT entirely.
+  if (isBlockedIpv4(host) || isBlockedIpv6(host)) return false
 
   return true
 }

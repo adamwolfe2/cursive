@@ -202,27 +202,42 @@ describe('isValidWebhookUrl', () => {
     expect(isValidWebhookUrl('https://172.32.0.1/webhook')).toBe(true)
   })
 
-  // KNOWN GAP: unlike isBlockedHost/isBlockedIpv4, isValidWebhookUrl's
-  // PRIVATE_IP_PATTERNS list has no 100.64.0.0/10 (CGNAT) entry, so a CGNAT
-  // literal is currently accepted as a "valid" webhook URL. Documenting
-  // actual behavior per instructions rather than asserting the safer
-  // behavior. See report for details — worth a production fix.
-  it('KNOWN BUG: does not reject CGNAT 100.64.0.0/10 (unlike isBlockedHost)', () => {
-    expect(isValidWebhookUrl('https://100.64.0.1/webhook')).toBe(true)
+  // Regression: isValidWebhookUrl kept its own thinner copy of the private
+  // range list, which had no CGNAT entry.
+  it('rejects CGNAT 100.64.0.0/10', () => {
+    expect(isValidWebhookUrl('https://100.64.0.1/webhook')).toBe(false)
+    expect(isValidWebhookUrl('https://100.127.255.254/webhook')).toBe(false)
   })
-  it.todo('should reject CGNAT range 100.64.0.0/10 once PRIVATE_IP_PATTERNS is fixed')
 
-  // KNOWN BUG: new URL().hostname returns IPv6 hosts WITH brackets
-  // (e.g. "[::1]", "[fc00::1]"), but PRIVATE_IP_PATTERNS' IPv6 regexes
-  // (/^::1$/, /^fc[0-9a-f]{2}:/i, /^fe[89ab][0-9a-f]:/i) are anchored to
-  // the unbracketed form and therefore never match. isBlockedHost handles
-  // this correctly (checks '::1' AND '[::1]'); isValidWebhookUrl does not.
-  // This is a real SSRF bypass: IPv6 loopback/ULA/link-local webhook URLs
-  // pass validation.
-  it('KNOWN BUG: does not reject bracketed IPv6 loopback/ULA/link-local', () => {
-    expect(isValidWebhookUrl('https://[::1]/webhook')).toBe(true)
-    expect(isValidWebhookUrl('https://[fc00::1]/webhook')).toBe(true)
-    expect(isValidWebhookUrl('https://[fe80::1]/webhook')).toBe(true)
+  it('accepts 100.128.x — just outside CGNAT', () => {
+    expect(isValidWebhookUrl('https://100.128.0.1/webhook')).toBe(true)
   })
-  it.todo('should reject bracketed IPv6 loopback/ULA/link-local hosts (SSRF bypass)')
+
+  // Regression for a live SSRF bypass: URL.hostname returns IPv6 literals
+  // bracketed ("[::1]"), so bare-address patterns never matched and every
+  // IPv6 internal host passed validation.
+  it('rejects bracketed IPv6 loopback / ULA / link-local', () => {
+    expect(isValidWebhookUrl('https://[::1]/webhook')).toBe(false)
+    expect(isValidWebhookUrl('https://[fc00::1]/webhook')).toBe(false)
+    expect(isValidWebhookUrl('https://[fd12:3456::1]/webhook')).toBe(false)
+    expect(isValidWebhookUrl('https://[fe80::1]/webhook')).toBe(false)
+    expect(isValidWebhookUrl('https://[::]/webhook')).toBe(false)
+  })
+
+  // new URL() rewrites [::ffff:10.0.0.1] to [::ffff:a00:1], so the guard has
+  // to recognise the hex-normalized mapped form, not just the dotted one.
+  it('rejects bracketed IPv4-mapped IPv6 pointing at a private address', () => {
+    expect(isValidWebhookUrl('https://[::ffff:10.0.0.1]/webhook')).toBe(false)
+    expect(isValidWebhookUrl('https://[::ffff:169.254.169.254]/webhook')).toBe(false)
+    expect(isValidWebhookUrl('https://[::ffff:127.0.0.1]/webhook')).toBe(false)
+    expect(isValidWebhookUrl('https://[::ffff:192.168.1.1]/webhook')).toBe(false)
+  })
+
+  it('still accepts an IPv4-mapped IPv6 pointing at a public address', () => {
+    expect(isValidWebhookUrl('https://[::ffff:8.8.8.8]/webhook')).toBe(true)
+  })
+
+  it('still accepts a public IPv6 host', () => {
+    expect(isValidWebhookUrl('https://[2606:4700:4700::1111]/webhook')).toBe(true)
+  })
 })
