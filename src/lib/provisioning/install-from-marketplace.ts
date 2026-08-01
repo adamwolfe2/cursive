@@ -118,7 +118,7 @@ export async function provisionFromInstall(
   // 3. Create auth user + user profile for the installer
   // The magic-link generator will reuse this auth user; creating it here first
   // lets us tie the API key to a real users row.
-  const { authUserId, userId } = await ensureUser(admin, {
+  const { userId } = await ensureUser(admin, {
     email: params.installerEmail,
     fullName: params.installerName ?? params.externalName,
     workspaceId: workspace.id,

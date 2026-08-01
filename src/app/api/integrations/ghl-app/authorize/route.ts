@@ -33,7 +33,7 @@ const GHL_SCOPES = [
   'contacts.write',
 ]
 
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   const clientId = process.env.GHL_APP_CLIENT_ID
   const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://leads.meetcursive.com').replace(/\/$/, '')
   const redirectUri = `${baseUrl}/api/integrations/ghl-app/callback`

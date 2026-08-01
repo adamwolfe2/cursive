@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 // Stripe webhooks normally land within 1-3s, but cold lambdas + retries
 // can occasionally push it to 30-90s. Generous window so we never fall
@@ -9,7 +9,8 @@ const MAX_ATTEMPTS = 150 // 5 minutes at 2s interval
 const INTERVAL_MS = 2000
 
 export function WaitingPoller({ sessionId }: { sessionId: string }) {
-  const [attempts, setAttempts] = useState(0)
+  // Attempt count is never rendered — a ref avoids a wasted re-render every 2s.
+  const attempts = useRef(0)
   const [exhausted, setExhausted] = useState(false)
 
   useEffect(() => {
@@ -31,14 +32,11 @@ export function WaitingPoller({ sessionId }: { sessionId: string }) {
             return
           }
         }
-        setAttempts((n) => {
-          const next = n + 1
-          if (next >= MAX_ATTEMPTS) {
-            setExhausted(true)
-            clearInterval(handle)
-          }
-          return next
-        })
+        attempts.current += 1
+        if (attempts.current >= MAX_ATTEMPTS) {
+          setExhausted(true)
+          clearInterval(handle)
+        }
       } catch {
         // try again next tick
       }

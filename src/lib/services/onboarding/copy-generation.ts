@@ -40,8 +40,6 @@ import {
 // Haiku is ~3x cheaper at similar quality on bounded structured tasks.
 const MODEL_SONNET = 'claude-sonnet-4-20250514'
 const MODEL_HAIKU = 'claude-haiku-4-5-20251001'
-// Default for unattributed calls.
-const MODEL = MODEL_SONNET
 
 // Pricing (per 1M tokens)
 const SONNET_INPUT_PER_TOKEN = 3.0 / 1_000_000
@@ -62,9 +60,6 @@ export function isCreditBalanceError(err: unknown): boolean {
   const msg = err instanceof Error ? err.message : String(err ?? '')
   return /credit balance is too low/i.test(msg)
 }
-
-const INPUT_COST_PER_TOKEN = SONNET_INPUT_PER_TOKEN
-const OUTPUT_COST_PER_TOKEN = SONNET_OUTPUT_PER_TOKEN
 
 // ---------------------------------------------------------------------------
 // Per-position word caps (precision doctrine)

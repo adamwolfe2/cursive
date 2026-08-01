@@ -5,7 +5,7 @@
 
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 interface SyncLog {
   id: string
@@ -34,7 +34,7 @@ export function InstallSyncPanel({ installId }: { installId: string }) {
   const [resyncing, setResyncing] = useState(false)
   const [resyncMessage, setResyncMessage] = useState<string | null>(null)
 
-  async function refresh() {
+  const refresh = useCallback(async () => {
     try {
       const res = await fetch(`/api/integrations/sync-log?install_id=${installId}`)
       const json = await res.json()
@@ -46,11 +46,11 @@ export function InstallSyncPanel({ installId }: { installId: string }) {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Network error')
     }
-  }
+  }, [installId])
 
   useEffect(() => {
     refresh()
-  }, [installId])
+  }, [refresh])
 
   async function handleResync() {
     setResyncing(true)

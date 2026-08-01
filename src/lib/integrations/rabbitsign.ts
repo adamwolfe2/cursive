@@ -222,8 +222,6 @@ export function buildContractFields(params: {
   startDate: string
   notes?: string
 }): Record<string, string> {
-  const domainAnnual = params.domainAnnualCost ?? params.infraMonthly * 12
-  const inboxMonthly = params.inboxMonthlyCost ?? params.infraMonthly
   const domains = params.domains ?? 0
   const inboxes = params.inboxes ?? 0
   const emailsPerMonth = params.emailsPerMonth ?? 0
@@ -231,12 +229,6 @@ export function buildContractFields(params: {
   const effectiveDateFormatted = new Date(params.startDate + 'T00:00:00').toLocaleDateString(
     'en-US', { year: 'numeric', month: 'long', day: 'numeric' }
   )
-
-  const cadenceLabel: Record<string, string> = {
-    monthly: 'Month-to-Month',
-    quarterly: 'Quarterly',
-    annual: 'Annual',
-  }
 
   const engagementType = params.outboundTierName
     ? `Outbound Email Activation — ${params.outboundTierName} Tier`

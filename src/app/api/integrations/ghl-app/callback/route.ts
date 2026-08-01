@@ -166,7 +166,6 @@ async function handleAgencyInstall(params: {
 
   // Provision each location (sequentially to respect GHL rate limits;
   // could batch if ever needed)
-  let firstInstallerEmail: string | null = null
   let firstWorkspaceId: string | null = null
   let firstPortalUrl: string | null = null
   let succeeded = 0
@@ -239,7 +238,6 @@ async function handleAgencyInstall(params: {
       // Track first install for the redirect
       if (!firstWorkspaceId) {
         firstWorkspaceId = result.workspace.id
-        firstInstallerEmail = installerEmail
         firstPortalUrl = result.portalUrl
       }
 
@@ -269,7 +267,7 @@ async function handleAgencyInstall(params: {
     return NextResponse.redirect(firstPortalUrl)
   }
 
-  return NextResponse.redirect(new URL('/dashboard?ghl_installed=1', params.baseUrl))
+  return NextResponse.redirect(new URL('/dashboard?ghl_installed=1', baseUrl))
 }
 
 // ---------------------------------------------------------------------------
@@ -281,7 +279,7 @@ async function handleLocationInstall(params: {
   tokenResp: Awaited<ReturnType<typeof exchangeGhlCode>>
   baseUrl: string
 }): Promise<NextResponse> {
-  const { tokenResp, baseUrl } = params
+  const { tokenResp } = params
   const admin = createAdminClient()
   const locationId = tokenResp.locationId!
 
