@@ -3,6 +3,7 @@
  * Database access layer for partner attribution and credits
  */
 
+import type { SupabaseClient } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/server'
 import type {
   PartnerAnalytics,
@@ -194,9 +195,11 @@ export class PartnerRepository {
   async creditPartnerForSale(
     leadPurchaseId: string,
     partnerId: string,
-    commissionAmount: number
+    commissionAmount: number,
+    /** Webhooks have no session, so they pass the admin client instead. */
+    client?: SupabaseClient<any, any, any>
   ): Promise<void> {
-    const supabase = await createClient()
+    const supabase = client ?? (await createClient())
 
     const { error } = await supabase.rpc('credit_partner_for_sale', {
       p_lead_purchase_id: leadPurchaseId,
@@ -222,8 +225,11 @@ export class PartnerRepository {
     partner_commission: number
     platform_fee: number
     stripe_payment_intent_id: string | null
-  }): Promise<LeadPurchase> {
-    const supabase = await createClient()
+  },
+    /** Webhooks have no session, so they pass the admin client instead. */
+    client?: SupabaseClient<any, any, any>
+  ): Promise<LeadPurchase> {
+    const supabase = client ?? (await createClient())
 
     const { data, error } = await supabase
       .from('lead_purchases')
@@ -244,12 +250,21 @@ export class PartnerRepository {
       throw new Error('Failed to record lead purchase')
     }
 
+    // maybeSingle() returns null rows without an error, and the caller has
+    // already been charged by this point — read it rather than crash on
+    // `data.id` two lines down.
+    if (!data) {
+      safeError('[PartnerRepository] Purchase insert returned no row')
+      throw new Error('Failed to record lead purchase')
+    }
+
     // If there's a partner, credit them
     if (purchase.partner_id && purchase.partner_commission > 0) {
       await this.creditPartnerForSale(
         data.id,
         purchase.partner_id,
-        purchase.partner_commission
+        purchase.partner_commission,
+        client
       )
     }
 

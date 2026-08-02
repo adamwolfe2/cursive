@@ -11,7 +11,7 @@ import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { unauthorized } from '@/lib/utils/api-error-handler'
 import { getStripeClient } from '@/lib/stripe/client'
-import { PartnerRepository } from '@/lib/db/repositories/partner.repository'
+import { fulfilLeadPurchase } from '@/lib/marketplace/lead-fulfilment'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { z } from 'zod'
 
@@ -72,73 +72,28 @@ export async function POST(
 
     const supabase = await createClient()
 
-    // Check if already recorded (idempotency)
-    const { data: existingPurchase } = await supabase
-      .from('lead_purchases')
-      .select('id')
-      .eq('stripe_payment_intent_id', paymentIntentId)
-      .maybeSingle()
+    // Fulfilment itself is shared with the payment_intent.succeeded webhook,
+    // which now runs the same path if the buyer's browser never gets here.
+    // This route keeps the auth checks above; the webhook has Stripe's
+    // signature instead.
+    const result = await fulfilLeadPurchase({
+      supabase,
+      paymentIntentId,
+      leadId,
+      buyerUserId: buyerId,
+      buyerWorkspaceId: user.workspace_id,
+      partnerId,
+      amountInCents: paymentIntent.amount,
+    })
 
-    if (existingPurchase) {
+    if (result.status === 'already_recorded') {
       return NextResponse.json({ success: true, alreadyRecorded: true })
     }
 
-    // Use the actual Stripe payment amount (not hardcoded)
-    const purchasePrice = paymentIntent.amount / 100 // Stripe uses cents
-    const PARTNER_COMMISSION_RATE = 0.70
-    const partnerCommission = partnerId !== 'none'
-      ? Math.round(purchasePrice * PARTNER_COMMISSION_RATE * 100) / 100
-      : 0
-    const platformFee = Math.round((purchasePrice - partnerCommission) * 100) / 100
-
-    // Record purchase using repository
-    // This automatically credits the partner via credit_partner_for_sale() database function
-    const partnerRepo = new PartnerRepository()
-    const purchase = await partnerRepo.recordLeadPurchase({
-      lead_id: leadId,
-      buyer_user_id: buyerId,
-      partner_id: partnerId !== 'none' ? partnerId : null,
-      purchase_price: purchasePrice,
-      partner_commission: partnerCommission,
-      platform_fee: platformFee,
-      stripe_payment_intent_id: paymentIntentId,
-    })
-
-    // Update lead: assign to buyer's workspace, guard against double-sell.
-    // .select() is load-bearing: an UPDATE that matches ZERO rows is not an
-    // error in PostgREST, so the .is('sold_at', null) guard below only tells
-    // us anything if we count what came back.
-    const { data: claimedLeads, error: updateError } = await supabase
-      .from('leads')
-      .update({
-        workspace_id: user.workspace_id, // Assign to buyer's workspace
-        status: 'new', // Set as new lead in CRM
-        assigned_user_id: buyerId, // Assign to the purchaser
-        sold_at: new Date().toISOString(),
-      })
-      .eq('id', leadId)
-      .is('sold_at', null) // Guard: only update if not already sold
-      .select('id')
-
-    if (updateError) {
-      safeError('[Confirm Purchase] Failed to update lead:', updateError)
-      throw new Error('Failed to assign purchased lead to buyer')
-    }
-
-    if (!claimedLeads || claimedLeads.length === 0) {
-      // Lost the race. The sold_at check at PaymentIntent-creation time lets
-      // two buyers hold a valid intent for one lead, and idempotency here is
-      // keyed on the payment intent (different per buyer) so both reach this
-      // point. Previously both were told success: the second buyer was
-      // charged, the partner was credited twice, and the lead stayed with the
-      // first buyer.
-      //
-      // REVIEW: this now fails loudly instead of lying, but the capture is not
-      // yet reversed — refunding automatically is a money-moving side effect
-      // left for a human to decide. See AUTONOMOUS_IMPROVEMENT_LOG.md.
-      safeError(
-        `[Confirm Purchase] DOUBLE-SELL: lead ${leadId} was already sold; buyer ${buyerId} was charged on payment intent ${paymentIntentId} and needs a refund. Purchase row ${purchase.id} also credited the partner.`
-      )
+    if (result.status === 'double_sell') {
+      // Fails loudly instead of lying, but the capture is not reversed —
+      // refunding automatically is a money-moving side effect left for a
+      // human to decide. See AUTONOMOUS_IMPROVEMENT_LOG.md.
       return NextResponse.json(
         {
           error:
@@ -148,7 +103,7 @@ export async function POST(
       )
     }
 
-    return NextResponse.json({ success: true, purchaseId: purchase.id })
+    return NextResponse.json({ success: true, purchaseId: result.purchaseId })
   } catch (error) {
     safeError('[Confirm Purchase] Error:', error)
     return NextResponse.json(

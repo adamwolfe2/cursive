@@ -20,6 +20,7 @@ import {
   handleChargeRefunded,
   handleChargeDisputeCreated,
   handleCustomerDeleted,
+  handlePaymentIntentSucceeded,
   handleServiceSubscriptionEvent,
   SERVICE_SUBSCRIPTION_EVENTS,
 } from './handlers'
@@ -177,6 +178,10 @@ export async function POST(request: NextRequest) {
         await handleAffiliateStripeAccountUpdated(event.data.object as Stripe.Account)
       } else if (event.type === 'checkout.session.completed') {
         await handleCheckoutSessionCompleted(event)
+      } else if (event.type === 'payment_intent.succeeded') {
+        // Marketplace lead fulfilment fallback — without this the buyer's
+        // browser is the only thing that can complete a paid purchase.
+        await handlePaymentIntentSucceeded(event)
       } else if (event.type === 'charge.failed') {
         await handleChargeFailed(event)
       } else if (event.type === 'charge.refunded') {
