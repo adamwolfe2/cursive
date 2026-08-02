@@ -12,6 +12,7 @@ import {
 } from '@/lib/affiliate/commission'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 import { STRIPE_CONFIG } from '@/lib/stripe/config'
+import { classifyWebhookEvent } from '@/lib/stripe/webhook-idempotency'
 import {
   getStripe,
   handleCheckoutSessionCompleted,
@@ -78,35 +79,53 @@ export async function POST(request: NextRequest) {
     const adminClient = createAdminClient()
     const processingStartTime = Date.now()
 
-    // Check if this event has already been processed
-    // IMPORTANT: Only skip if error_message IS NULL (meaning it succeeded or is in-progress).
-    // If error_message is set, the previous attempt failed — delete it and allow Stripe to retry,
-    // otherwise Stripe gets a 200 "duplicate" response and never retries failed payments.
+    // Check whether this event has already been HANDLED. A row existing is not
+    // enough: it is inserted before the handler runs, so a lambda that dies
+    // mid-handler leaves one behind with no error recorded. Treating that as
+    // "already processed" made every later redelivery return 200 duplicate,
+    // and the payment was never fulfilled. See classifyWebhookEvent.
     const { data: existingEvent } = await adminClient
       .from('webhook_events')
-      .select('id, processed_at, error_message')
+      .select('id, created_at, processed_at, error_message')
       .eq('stripe_event_id', event.id)
       .maybeSingle()
 
-    if (existingEvent && existingEvent.error_message === null) {
-      // Previously processed successfully (or currently in-progress) — skip
+    const disposition = classifyWebhookEvent(existingEvent)
+
+    if (disposition === 'skip') {
       safeLog('[Stripe Webhook] Duplicate event detected, skipping', {
         eventId: event.id,
         eventType: event.type,
-        originallyProcessedAt: existingEvent.processed_at,
+        originallyProcessedAt: existingEvent!.processed_at,
       })
       return NextResponse.json({
         received: true,
         duplicate: true,
-        originallyProcessedAt: existingEvent.processed_at,
+        originallyProcessedAt: existingEvent!.processed_at,
       })
     }
 
-    // If a previous attempt failed (error_message set), delete it so we can retry cleanly
-    if (existingEvent?.error_message) {
-      safeLog('[Stripe Webhook] Previous attempt failed, retrying', {
+    if (disposition === 'in-flight') {
+      // A sibling instance holds this event. Answer non-2xx so Stripe comes
+      // back: by then it is either finished (skip) or stale (reprocessed).
+      // A 200 here would be the last delivery we ever see.
+      safeLog('[Stripe Webhook] Event already in flight, deferring to retry', {
+        eventId: event.id,
+        eventType: event.type,
+        startedAt: existingEvent!.created_at,
+      })
+      return NextResponse.json(
+        { received: false, inFlight: true },
+        { status: 409 }
+      )
+    }
+
+    // Failed, or abandoned mid-flight — clear it so this delivery runs clean.
+    if (existingEvent) {
+      safeLog('[Stripe Webhook] Previous attempt did not complete, retrying', {
         eventId: event.id,
         previousError: existingEvent.error_message,
+        abandoned: existingEvent.processed_at === null,
       })
       await adminClient.from('webhook_events').delete().eq('stripe_event_id', event.id)
     }
@@ -119,6 +138,9 @@ export async function POST(request: NextRequest) {
         stripe_event_id: event.id,
         event_type: event.type,
         payload: event as any, // Store full payload for debugging
+        // Explicit NULL overrides the column DEFAULT NOW(). Stamped only when
+        // the handler finishes, so an unfinished row stays visibly unfinished.
+        processed_at: null,
       })
 
     if (insertError) {
@@ -224,6 +246,9 @@ export async function POST(request: NextRequest) {
     await adminClient
       .from('webhook_events')
       .update({
+        // Stamped here and nowhere else — this is what makes an abandoned row
+        // distinguishable from a completed one.
+        processed_at: new Date().toISOString(),
         processing_duration_ms: processingDuration,
         error_message: processingError?.message || null,
         resource_id: event.type === 'checkout.session.completed'

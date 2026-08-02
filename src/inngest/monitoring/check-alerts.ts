@@ -27,7 +27,10 @@ async function checkAlertRules(): Promise<AlertResult[]> {
     .from('webhook_events')
     .select('id', { count: 'exact', head: true })
     .is('processed_at', null)
-    .lt('received_at', fiveMinutesAgo)
+    // was `received_at`, which does not exist on webhook_events — PostgREST
+    // rejected the query, supabase-js resolved with {count: null}, and this
+    // rule silently never fired.
+    .lt('created_at', fiveMinutesAgo)
 
   if (failedWebhooks && failedWebhooks > 5) {
     results.push({
