@@ -257,3 +257,129 @@ enforce `requirePlatformAdmin()`; `fastAuth` HMAC-verifies the workspace cookie
 against the JWT; the credits double-grant race is genuinely closed by a DB
 constraint. The API route layer itself is in good shape — the real gaps were one
 layer down in the RPCs.
+
+---
+---
+
+# Session 2 — 2026-08-01
+
+**Branch:** `audit/2026-07-03` (still nothing pushed, merged, or deployed)
+**Baseline for this session:** `76131369` (end of session 1)
+**Commits added:** 6, all local
+
+| | Session 1 end | Now |
+|---|---|---|
+| Tests | 1928 (1879 pass, 49 skip) | **1948 (1899 pass, 0 fail, 49 skip)** |
+| Type errors | 0 | **0** |
+| Lint | 0 errors, 0 warnings | **0 errors, 0 warnings** |
+
+Worked the Priority 1 list. Two items came back with a different answer than
+the session 1 write-up had — noted below, because the corrected diagnosis
+matters more than the fix.
+
+## Fixed
+
+### Credentials (`23987783`)
+- **A fourth hardcoded admin password.** `scripts/setup-admin-user.ts` is the
+  same class as the three removed in `4d80b1f1` and was missed: it loads
+  `.env.local` itself and calls `auth.admin.updateUserById`, so running it
+  against a prod-pointed env reset the live admin password to `AdminPass123!`.
+  Now requires `ADMIN_PASSWORD`.
+- **`scripts/seed-test-users.ts`** created six real auth users on that same env
+  with a committed password. Now requires `SEED_TEST_PASSWORD`.
+- **The session 1 report leaked the password it had just removed** — quoting
+  the literal in this file re-committed it. Redacted to a commit reference.
+  Rotation is still required and is still yours; the value is in history at
+  `12cf1f50` regardless of anything done in the tree.
+
+### Webhook poison pill (`cc6a9769`)
+`webhook_events` rows are inserted before the handler runs, and `processed_at`
+defaulted to `NOW()` at insert — so a lambda that died mid-handler was
+indistinguishable from one that succeeded. Every Stripe redelivery of that
+event returned `200 {duplicate:true}`. Money captured, never fulfilled, no
+retry left.
+
+`processed_at` is now stamped only on completion, which is the meaning
+`checkAlertRules()` already assumed. Disposition extracted as the pure
+`classifyWebhookEvent()`: finished-clean skips, finished-with-error retries,
+unfinished-and-fresh returns **409** so Stripe comes back (a 200 would be the
+last delivery we ever see), unfinished-and-stale is taken over after 15 min.
+The alert queried `received_at`, which does not exist on that table — now
+`created_at`, so it can fire for the first time. 9 tests.
+
+### Marketplace fulfilment no longer depends on a browser (`ca0daf1d`)
+Added the missing `payment_intent.succeeded` branch. Fulfilment extracted to
+`fulfilLeadPurchase()` and called from both the route and the webhook, so the
+two cannot drift on money; idempotency is keyed on the payment intent inside
+the shared path, so running both — and Stripe redelivering on top — is safe.
+The handler validates metadata strictly on `lead_id` + `buyer_user_id`, since
+`checkout.session.completed` carries a different `lead_purchase` shape for
+bulk orders and must never be fulfilled here.
+
+Two smaller things found while extracting: the idempotency lookup discarded
+its own error (supabase-js resolves with `{data:null,error}`, so a failed
+lookup read as "no purchase yet" and would record a second one), and
+`recordLeadPurchase` dereferenced `data.id` after a `maybeSingle()` that can
+return null without erroring — after the buyer has been charged. 11 tests.
+
+### `/api/checkout` deleted (`07caf5c9`)
+Session metadata with no `type`, so `handleCheckoutSessionCompleted` returned
+early: charge, no fulfilment. It also selected the lead with
+`.eq('workspace_id', user.workspaceId)` — a lead the buyer's own workspace
+already owns, which the real flow returns 403 for. Zero callers repo-wide,
+but live and authenticated. Fixing it meant designing a second fulfilment path
+next to the working one; deleted instead.
+
+## Corrected findings
+
+### `payout_requests` is missing **three** columns, not two (`69895cdc`)
+`failure_reason` is absent too, so the failed-transfer branch never recorded
+anything either — and it discarded its own error, which is why nobody noticed.
+Migration written for all three plus the partial unique index, mirroring
+`payouts`. **Not applied.** That insert now surfaces its error.
+
+**Open question that needs the live DB, and it changes the fix:** the archived
+`20260213_critical_security_fixes.sql` makes `payout_requests.workspace_id`
+NOT NULL and backfills it from `partners.workspace_id` — but **no migration in
+this repo ever adds `workspace_id` to `partners`**. Either it was added out of
+band, or that migration never ran. If it ran, the cron's insert needs
+`workspace_id` threaded through `getPartnersEligibleForPayout()` before it can
+write at all. If it did not, the three missing columns are the whole story.
+Deliberately not guessed at — the verification query is in the migration
+header.
+
+### Auto-recharge: worse than an idempotency bug (`5ad50d34`)
+The session 1 note said a genuine `credits-low` within 24h of a purchase is
+dropped. It cannot be: **nothing in the codebase ever sends
+`marketplace/credits-low`.** The only live trigger is `credit-purchased`,
+which fires immediately after credits are bought — when the balance is at its
+highest — so the `balance >= threshold` check skips every time. A workspace
+can switch auto-recharge on in settings and it will never once recharge.
+
+Not wired up: the missing half is an emitter on the credit-consumption path,
+and that automatically charges a saved card. Documented at the trigger,
+including what to revisit about the idempotency key once a producer exists.
+
+## Still needs your decision
+
+Unchanged from session 1: the RPC lockdown migration, the Stripe reconciliation
+for the 100x undercharge, double-sell refunds, the CSP nonce, the demo-pixel
+recipient, the two deal-pricing questions, and `commission.test.ts`.
+
+Added by this session:
+1. **Rotate the admin password.** Still outstanding, still yours.
+2. **Apply `20260801120000_payout_requests_idempotency.sql`** — after running
+   the queries in its header, especially the `workspace_id` one.
+3. **Reconcile weekly partner transfers against `payout_requests`.** Transfers
+   that succeeded at Stripe have no row on that table, so any payout total
+   read from it is wrong for every automated payout ever made.
+4. **Decide whether auto-recharge should exist.** It is enabled in the settings
+   API and advertised to workspaces, and it has never fired.
+
+## Not touched this session
+
+Priority 2 (RLS policy correctness, `chrome-extension/`, `marketing/`,
+performance, E2E) and Priority 3 are untouched. The commission-engine
+disagreement (70% in the lead path vs 30/50 in `COMMISSION_CONFIG`) is now
+documented at the constant in `lead-fulfilment.ts` but not reconciled — they
+appear to govern two different programmes, and merging them is a product call.
