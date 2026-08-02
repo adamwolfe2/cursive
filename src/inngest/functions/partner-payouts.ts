@@ -294,8 +294,12 @@ async function processPartnerPayout(partner: {
 
     safeError(`Stripe transfer failed for partner ${partner.partnerId}:`, error)
 
-    // Record failed payout attempt
-    await supabase
+    // Record failed payout attempt. `failure_reason` is a third column missing
+    // from payout_requests (the table only has `rejection_reason`, for the
+    // manual review flow), so this insert has never landed either — and the
+    // error was discarded, which is why nobody noticed. See
+    // 20260801120000_payout_requests_idempotency.sql.
+    const { error: failureInsertError } = await supabase
       .from('payout_requests')
       .insert({
         partner_id: partner.partnerId,
@@ -304,6 +308,13 @@ async function processPartnerPayout(partner: {
         status: 'failed',
         failure_reason: error instanceof Error ? error.message : 'Unknown error',
       })
+
+    if (failureInsertError) {
+      safeError(
+        `[Payout] CRITICAL: failed payout for partner ${partner.partnerId} could not be recorded either — no trace of this attempt exists on payout_requests:`,
+        failureInsertError
+      )
+    }
 
     return {
       success: false,
