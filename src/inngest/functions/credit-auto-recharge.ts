@@ -33,10 +33,26 @@ export const creditAutoRecharge = inngest.createFunction(
     name: 'Credit Auto-Recharge',
     retries: 3,
     timeouts: { finish: '2m' },
-    // Deduplicate by workspace so we don't stack multiple recharges at once
+    // Deduplicate by workspace so we don't stack multiple recharges at once.
+    //
+    // Inngest's window is a fixed 24h per unique key, so the two triggers below
+    // share one slot per workspace per day. That does not bite today, for a
+    // worse reason — see the note on the triggers.
     idempotency: 'event.data.workspace_id',
   },
   [
+    // NOT WIRED UP: nothing in the codebase ever sends 'marketplace/credits-low'
+    // (grep it — the only hits are this file, the event-schema declaration, and
+    // two comments). So auto-recharge runs only on 'credit-purchased', i.e.
+    // immediately after credits are bought, which is the moment the balance is
+    // at its highest. The `balance >= threshold` check below then skips every
+    // time. A workspace can switch auto-recharge on and it will never fire.
+    //
+    // The missing half is an emitter on the credit-consumption path. Not added
+    // here: it charges a saved card automatically, and turning on a
+    // money-moving trigger is not a call to make unattended. Once it exists,
+    // revisit the idempotency key above — a genuine credits-low would then be
+    // swallowed for 24h by an unrelated purchase on the same workspace.
     { event: 'marketplace/credit-purchased' },
     { event: 'marketplace/credits-low' },
   ],
