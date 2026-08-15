@@ -4,6 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
+import { sanitizeCsvValue } from '@/lib/utils/csv-sanitizer'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized, badRequest } from '@/lib/utils/api-error-handler'
 import { createClient } from '@/lib/supabase/server'
@@ -238,11 +239,11 @@ function escapeCSVValue(value: any): string {
 
   // Handle arrays (e.g., tags)
   if (Array.isArray(value)) {
-    const str = value.join('; ')
+    const str = sanitizeCsvValue(value.join('; '))
     return `"${str.replace(/"/g, '""')}"`
   }
 
-  const str = String(value)
+  const str = sanitizeCsvValue(String(value))
 
   if (str.includes(',') || str.includes('"') || str.includes('\n') || str.includes('\r')) {
     return `"${str.replace(/"/g, '""')}"`

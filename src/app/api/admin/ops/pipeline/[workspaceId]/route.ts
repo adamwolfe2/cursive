@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { requireAdminRole, logAdminAction } from '@/lib/auth/admin'
+import { requirePlatformAdmin, logAdminAction } from '@/lib/auth/admin'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
@@ -17,7 +17,7 @@ export async function PATCH(
   { params }: { params: Promise<{ workspaceId: string }> }
 ) {
   try {
-    await requireAdminRole()
+    await requirePlatformAdmin()
 
     const { workspaceId } = await params
     const body = await request.json()

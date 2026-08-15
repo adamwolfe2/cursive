@@ -18,6 +18,7 @@ import {
   getOrderVisitors,
 } from '@/lib/funnel/order.service'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { sanitizeCsvValue } from '@/lib/utils/csv-sanitizer'
 
 const DEFAULT_LIMIT = 50
 const MAX_LIMIT = 200
@@ -106,7 +107,7 @@ function toCsv(rows: Awaited<ReturnType<typeof getOrderVisitors>>['recent']): st
   ]
   const escape = (v: string | null | undefined): string => {
     if (v == null) return ''
-    const s = String(v)
+    const s = sanitizeCsvValue(String(v))
     if (/[",\n\r]/.test(s)) return `"${s.replace(/"/g, '""')}"`
     return s
   }

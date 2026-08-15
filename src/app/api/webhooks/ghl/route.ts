@@ -20,6 +20,18 @@ type GHLWebhookEvent = {
   data?: Record<string, unknown>
 }
 
+// Constant-time comparison of two equal-length hex strings. Edge runtime has no
+// Node crypto.timingSafeEqual, so this avoids the byte-by-byte short-circuit of
+// `===`, which leaks a timing side-channel on the HMAC.
+function timingSafeEqualHex(a: string, b: string): boolean {
+  if (a.length !== b.length) return false
+  let mismatch = 0
+  for (let i = 0; i < a.length; i++) {
+    mismatch |= a.charCodeAt(i) ^ b.charCodeAt(i)
+  }
+  return mismatch === 0
+}
+
 async function verifySignature(
   body: string,
   signature: string | null,
@@ -41,7 +53,7 @@ async function verifySignature(
     .map((b) => b.toString(16).padStart(2, '0'))
     .join('')
 
-  return expected === signature
+  return timingSafeEqualHex(expected, signature)
 }
 
 export async function POST(req: NextRequest) {

@@ -2,7 +2,7 @@ export const maxDuration = 10
 
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { isBlockedHost } from '@/lib/utils/ssrf-guard'
+import { assertPublicUrl } from '@/lib/utils/ssrf-guard'
 
 const requestSchema = z.object({
   url: z.string().url(),
@@ -25,7 +25,10 @@ export async function POST(req: NextRequest) {
 
     const { url } = parsed.data
 
-    if (isBlockedHost(url)) {
+    // SSRF: string check + DNS resolution (blocks names that resolve to internal
+    // IPs, e.g. 169.254.169.254.nip.io or an attacker domain with a private A record).
+    const guard = await assertPublicUrl(url, { allowHttp: true })
+    if (!guard.ok) {
       return NextResponse.json({ data: null })
     }
 
@@ -50,9 +53,11 @@ export async function POST(req: NextRequest) {
         if (res.status < 300 || res.status >= 400) break
         const location = res.headers.get('location')
         if (!location) break
-        // Resolve relative redirects against the current URL, then re-validate.
+        // Resolve relative redirects against the current URL, then re-validate
+        // with DNS resolution (a public host can 30x into an internal IP).
         const nextUrl = new URL(location, currentUrl).toString()
-        if (isBlockedHost(nextUrl)) {
+        const hopGuard = await assertPublicUrl(nextUrl, { allowHttp: true })
+        if (!hopGuard.ok) {
           return NextResponse.json({ data: null })
         }
         currentUrl = nextUrl

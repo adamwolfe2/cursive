@@ -9,6 +9,7 @@ import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { inngest } from '@/inngest/client'
+import { verifyUnsubscribeToken } from '@/lib/utils/unsubscribe-token'
 
 const emailSchema = z.string().email()
 
@@ -55,10 +56,19 @@ async function suppress(email: string): Promise<void> {
 
 export async function GET(request: NextRequest) {
   const raw = request.nextUrl.searchParams.get('email') ?? ''
+  const token = request.nextUrl.searchParams.get('t')
   const parsed = emailSchema.safeParse(raw.toLowerCase().trim())
   if (!parsed.success) {
     return new NextResponse('Invalid unsubscribe link.', {
       status: 400,
+      headers: { 'Content-Type': 'text/plain' },
+    })
+  }
+  // SECURITY: require the HMAC token bound to this email. Without it, anyone could
+  // suppress an arbitrary recipient (or a prefetch/CSRF GET could fire it).
+  if (!verifyUnsubscribeToken(parsed.data, token)) {
+    return new NextResponse('Invalid or expired unsubscribe link.', {
+      status: 403,
       headers: { 'Content-Type': 'text/plain' },
     })
   }
@@ -80,6 +90,10 @@ export async function POST(request: NextRequest) {
     const parsed = emailSchema.safeParse(String(body?.email ?? '').toLowerCase().trim())
     if (!parsed.success) {
       return NextResponse.json({ error: 'Invalid email' }, { status: 400 })
+    }
+    // SECURITY: require the HMAC token bound to this email (see GET).
+    if (!verifyUnsubscribeToken(parsed.data, String(body?.t ?? body?.token ?? ''))) {
+      return NextResponse.json({ error: 'Invalid or expired unsubscribe link' }, { status: 403 })
     }
     await suppress(parsed.data)
     return NextResponse.json({ success: true })

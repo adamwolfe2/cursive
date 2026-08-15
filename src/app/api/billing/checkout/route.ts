@@ -10,9 +10,12 @@ import { withRateLimit, getRequestIdentifier } from '@/lib/middleware/rate-limit
 import { getSubscriptionLink } from '@/lib/stripe/payment-links'
 import { z } from 'zod'
 
+// SECURITY: no client-supplied priceId. The price is resolved server-side from
+// the subscription_plans catalog by (planName, billingPeriod). Trusting a client
+// priceId let a caller pass any cheaper/legacy/100%-off recurring price in the
+// Stripe account and still receive the top-tier ('pro', 1000 credits) grant.
 const checkoutSchema = z.object({
-  priceId: z.string().optional(),
-  planName: z.string().optional(),
+  planName: z.string().min(1),
   billingPeriod: z.enum(['monthly', 'yearly']).default('monthly'),
 })
 
@@ -30,35 +33,30 @@ export async function POST(request: NextRequest) {
 
     // 2. Validate input with Zod
     const body = await request.json()
-    const { priceId, planName, billingPeriod } = checkoutSchema.parse(body)
+    const { planName, billingPeriod } = checkoutSchema.parse(body)
 
-    // 3. Get price ID - either from request or from database plan
-    let finalPriceId = priceId
+    // 3. Resolve price ID ONLY from the server-side subscription_plans catalog.
+    const supabase = await createClient()
+    const priceColumn = billingPeriod === 'monthly'
+      ? 'stripe_price_id_monthly'
+      : 'stripe_price_id_yearly'
 
-    if (!finalPriceId && planName) {
-      // Look up price ID from subscription_plans table
-      const supabase = await createClient()
-      const priceColumn = billingPeriod === 'monthly'
-        ? 'stripe_price_id_monthly'
-        : 'stripe_price_id_yearly'
+    const { data: plan, error: planError } = await supabase
+      .from('subscription_plans')
+      .select(`name, ${priceColumn}`)
+      .eq('name', planName)
+      .maybeSingle()
 
-      const { data: plan, error: planError } = await supabase
-        .from('subscription_plans')
-        .select(`name, ${priceColumn}`)
-        .eq('name', planName)
-        .maybeSingle()
-
-      if (planError || !plan) {
-        return NextResponse.json(
-          { error: 'Plan not found' },
-          { status: 404 }
-        )
-      }
-
-      finalPriceId = billingPeriod === 'monthly'
-        ? (plan as any).stripe_price_id_monthly
-        : (plan as any).stripe_price_id_yearly
+    if (planError || !plan) {
+      return NextResponse.json(
+        { error: 'Plan not found' },
+        { status: 404 }
+      )
     }
+
+    let finalPriceId: string | undefined = billingPeriod === 'monthly'
+      ? (plan as any).stripe_price_id_monthly
+      : (plan as any).stripe_price_id_yearly
 
     if (!finalPriceId) {
       // Yearly Stripe price ID is not yet configured in the database or request.
@@ -71,7 +69,6 @@ export async function POST(request: NextRequest) {
     }
 
     // 4. Check if user already has an active subscription
-    const supabase = await createClient()
     const { data: existingSubscription } = await supabase
       .from('subscriptions')
       .select('status, plan_id')

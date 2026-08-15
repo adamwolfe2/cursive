@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { sanitizeCsvValue } from "@/lib/utils/csv-sanitizer"
 import { createClient } from "@/lib/supabase/server"
 import { safeError } from "@/lib/utils/log-sanitizer"
 import { getCurrentUser } from "@/lib/auth/helpers"
@@ -88,7 +89,7 @@ export async function GET(request: NextRequest) {
       const status =
         payout.status.charAt(0).toUpperCase() + payout.status.slice(1)
       const description = payout.notes
-        ? `"${String(payout.notes).replace(/"/g, '""')}"`
+        ? `"${sanitizeCsvValue(String(payout.notes)).replace(/"/g, '""')}"`
         : "Partner payout"
       const reference = payout.id
 

@@ -19,6 +19,7 @@ import { getCurrentUser } from '@/lib/auth/helpers'
 import { withRateLimit } from '@/lib/middleware/rate-limiter'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { checkSpendLimit, recordSpend } from '@/lib/services/api-spend-guard'
+import { assertPublicUrl } from '@/lib/utils/ssrf-guard'
 
 const MODEL = 'claude-sonnet-4-20250514'
 const INPUT_COST_PER_TOKEN = 3.0 / 1_000_000
@@ -118,11 +119,18 @@ async function fetchSiteMetadata(domain: string): Promise<{
 /** Fetch the landing page HTML and strip to plain text (first ~6KB). */
 async function fetchLandingPageText(url: string): Promise<string | null> {
   try {
+    // SSRF: resolve DNS and reject internal/metadata destinations. The Zod refine
+    // on the route only string-matched literals; a hostname resolving to a
+    // private IP (or metadata.google.internal) must be blocked here.
+    const guard = await assertPublicUrl(url, { allowHttp: true })
+    if (!guard.ok) return null
+
     const controller = new AbortController()
     const timeout = setTimeout(() => controller.abort(), 6000)
 
     const res = await fetch(url, {
       signal: controller.signal,
+      redirect: 'manual',
       headers: {
         'User-Agent': 'Mozilla/5.0 (compatible; CursiveBot/1.0; +https://meetcursive.com)',
       },
@@ -130,6 +138,8 @@ async function fetchLandingPageText(url: string): Promise<string | null> {
     })
     clearTimeout(timeout)
 
+    // A redirect could point at an internal IP; do not follow it.
+    if (res.status >= 300 && res.status < 400) return null
     if (!res.ok) return null
 
     const html = await res.text()

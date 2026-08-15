@@ -84,12 +84,24 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'sample_not_found' }, { status: 404 })
   }
 
+  // ── Load lead early (needed for server-side verification below) ────
+  const { data: leadRow } = await admin
+    .from('audience_builder_leads')
+    .select('id, email, first_name, last_name, company, unlock_tier, qualifier_answers, call_booked_at, marked_qualified_at')
+    .eq('id', payload.lead_id)
+    .maybeSingle()
+
+  if (!leadRow) {
+    return NextResponse.json({ error: 'lead_not_found' }, { status: 404 })
+  }
+
   // ── Decide how many to unmask based on trigger ─────────────────────
   // tier 0 → 1 (qualifier):  3 already unmasked → reveal 5 more = 8 total unmasked
   // tier 1 → 2 (call booked): all unmasked + export unlocked
   const currentRevealed = sampleView.revealed_count ?? 3
   let targetRevealed = currentRevealed
   let newUnlockTier: number | null = null
+  let verifiedCallBookedAt: string | null = leadRow.call_booked_at ?? null
 
   if (body.trigger === 'qualifier') {
     if (!body.qualifier_answers) {
@@ -101,8 +113,47 @@ export async function POST(req: NextRequest) {
     targetRevealed = Math.min(sampleView.sample_count ?? 15, 8)
     newUnlockTier = 1
   } else if (body.trigger === 'call_booked') {
+    // SECURITY: never trust the client's assertion that a call was booked. The
+    // tier-2 unmask returns ALL profiles fully unmasked (real names + business
+    // emails) and unlocks export — the most sensitive step. Require a booking
+    // that was recorded by the HMAC-verified Cal.com webhook (cal_bookings)
+    // whose attendee email matches this lead. Without it, deny the promotion.
+    if (!leadRow.email) {
+      return NextResponse.json(
+        { error: 'call_not_verified', message: 'No verified booking is associated with this lead.' },
+        { status: 403 }
+      )
+    }
+    const { data: booking } = await admin
+      .from('cal_bookings')
+      .select('booking_uid, start_time')
+      .eq('attendee_email', leadRow.email)
+      .in('status', ['upcoming', 'completed'])
+      .order('created_at', { ascending: false })
+      .maybeSingle()
+    if (!booking) {
+      return NextResponse.json(
+        { error: 'call_not_verified', message: 'No verified booking found for this lead yet. Please try again shortly after booking.' },
+        { status: 403 }
+      )
+    }
+    verifiedCallBookedAt = leadRow.call_booked_at ?? booking.start_time ?? new Date().toISOString()
     targetRevealed = sampleView.sample_count ?? 15
     newUnlockTier = 2
+  }
+
+  // ── Replay guard: one reveal per (sample_view, tier). If the lead already
+  //    holds this tier and the sample view is already revealed to this depth,
+  //    the caller already has this data — refuse to re-pull PII (cost + harvest).
+  if (
+    newUnlockTier !== null &&
+    (leadRow.unlock_tier ?? 0) >= newUnlockTier &&
+    (sampleView.revealed_count ?? 3) >= targetRevealed
+  ) {
+    return NextResponse.json(
+      { error: 'already_revealed', message: 'This tier has already been revealed for this sample.' },
+      { status: 409 }
+    )
   }
 
   // ── Re-pull from AL (we don't store PII) ──────────────────────────
@@ -141,17 +192,7 @@ export async function POST(req: NextRequest) {
     .update({ revealed_count: targetRevealed })
     .eq('id', sampleView.id)
 
-  // Load current lead to promote tier if appropriate
-  const { data: leadRow } = await admin
-    .from('audience_builder_leads')
-    .select('id, email, first_name, last_name, company, unlock_tier, qualifier_answers, call_booked_at, marked_qualified_at')
-    .eq('id', payload.lead_id)
-    .maybeSingle()
-
-  if (!leadRow) {
-    return NextResponse.json({ error: 'lead_not_found' }, { status: 404 })
-  }
-
+  // Promote tier if appropriate (leadRow was loaded and verified above).
   const leadUpdate: Record<string, unknown> = {}
   if (newUnlockTier !== null && (leadRow.unlock_tier ?? 0) < newUnlockTier) {
     leadUpdate.unlock_tier = newUnlockTier
@@ -161,7 +202,8 @@ export async function POST(req: NextRequest) {
     if (!leadRow.marked_qualified_at) leadUpdate.marked_qualified_at = new Date().toISOString()
   }
   if (body.trigger === 'call_booked' && !leadRow.call_booked_at) {
-    leadUpdate.call_booked_at = new Date().toISOString()
+    // Stamp from the verified booking, never from the request itself.
+    leadUpdate.call_booked_at = verifiedCallBookedAt
   }
 
   if (Object.keys(leadUpdate).length > 0) {

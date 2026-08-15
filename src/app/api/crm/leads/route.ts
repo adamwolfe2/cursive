@@ -22,12 +22,19 @@ export async function GET(req: NextRequest) {
 
     const { searchParams } = new URL(req.url)
 
+    // SECURITY: orderBy is interpolated into PostgREST .order(); allowlist it so a
+    // caller cannot enumerate the schema or build an ordering oracle on hidden columns.
+    const ALLOWED_ORDER_BY = ['created_at', 'updated_at', 'lead_score', 'company_name', 'first_name', 'last_name', 'status']
+    const rawOrderBy = searchParams.get('orderBy') || 'created_at'
+    const orderBy = ALLOWED_ORDER_BY.includes(rawOrderBy) ? rawOrderBy : 'created_at'
+    const orderDirection: 'asc' | 'desc' = searchParams.get('orderDirection') === 'asc' ? 'asc' : 'desc'
+
     const filters: LeadFilters = {
       page: Math.max(1, parseInt(searchParams.get('page') ?? '1', 10) || 1),
       pageSize: Math.min(100, Math.max(1, parseInt(searchParams.get('pageSize') ?? '50', 10) || 50)),
       search: searchParams.get('search') || undefined,
-      orderBy: searchParams.get('orderBy') || 'created_at',
-      orderDirection: (searchParams.get('orderDirection') as 'asc' | 'desc') || 'desc',
+      orderBy,
+      orderDirection,
     }
 
     const status = searchParams.get('status')

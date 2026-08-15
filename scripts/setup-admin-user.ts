@@ -25,8 +25,15 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey, {
 async function setupAdminUser() {
   console.log('🔧 Setting up admin user: adam@meetcursive.com\n')
 
-  const adminEmail = 'adam@meetcursive.com'
-  const adminPassword = 'AdminPass123!' // Default - you should change this after first login
+  const adminEmail = process.env.ADMIN_EMAIL || 'adam@meetcursive.com'
+  // SECURITY: never hardcode a password. Require ADMIN_PASSWORD from the
+  // environment and fail closed if it is missing or too weak. This prevents a
+  // predictable, committed default from becoming a live platform-admin login.
+  const adminPassword = process.env.ADMIN_PASSWORD
+  if (!adminPassword || adminPassword.length < 16) {
+    console.error('❌ Set a strong ADMIN_PASSWORD env var (>= 16 chars) before running this script.')
+    process.exit(1)
+  }
   const adminWorkspaceId = '00000000-0000-0000-0000-000000000000' // Fixed admin workspace ID
 
   // Step 1: Check if admin already exists in platform_admins table
@@ -171,15 +178,15 @@ async function setupAdminUser() {
 
   // Step 3: Verify admin can bypass waitlist
   console.log('\n📋 Admin Access Summary:')
-  console.log('   Email: adam@meetcursive.com')
-  console.log('   Default Password: AdminPass123!')
+  console.log(`   Email: ${adminEmail}`)
+  console.log('   Password: (the ADMIN_PASSWORD you supplied — not printed)')
   console.log('   Waitlist Bypass: ✅ Enabled (automatic)')
   console.log('   Admin Dashboard: ✅ /admin')
   console.log('')
   console.log('🎯 You can now:')
   console.log('   1. Go to https://leads.meetcursive.com')
   console.log('   2. Click "Login" or go directly to /login')
-  console.log('   3. Login with adam@meetcursive.com / AdminPass123!')
+  console.log(`   3. Login with ${adminEmail} and your ADMIN_PASSWORD`)
   console.log('   4. Access admin panel at /admin')
   console.log('   5. Regular users will see the waitlist')
 

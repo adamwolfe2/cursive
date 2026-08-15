@@ -4,6 +4,7 @@
  */
 
 import { createClient } from '@/lib/supabase/server'
+import { sanitizeCsvValue } from '@/lib/utils/csv-sanitizer'
 
 export type ExportFormat = 'csv' | 'json'
 
@@ -44,11 +45,16 @@ export async function exportLeads(
 ): Promise<ExportResult> {
   const supabase = await createClient()
 
-  const exportColumns = (options.fields || [
+  // SECURITY: `fields` is interpolated into the PostgREST select expression, so
+  // it must be intersected with a server-side allowlist. A raw client string
+  // like `*` or `workspaces(*)` would otherwise pull unauthorized columns/joins.
+  const ALLOWED_LEAD_COLUMNS = [
     'email', 'first_name', 'last_name', 'full_name', 'title',
     'company_name', 'company_domain', 'phone', 'linkedin_url',
     'status', 'timezone', 'created_at',
-  ]).join(', ')
+  ]
+  const requested = options.fields?.filter((f) => ALLOWED_LEAD_COLUMNS.includes(f))
+  const exportColumns = (requested && requested.length > 0 ? requested : ALLOWED_LEAD_COLUMNS).join(', ')
 
   let query = supabase
     .from('leads')
@@ -446,7 +452,9 @@ function escapeCSVValue(value: any): string {
     return ''
   }
 
-  const str = String(value)
+  // Neutralize spreadsheet formula triggers (=, +, -, @, tab, CR) BEFORE quoting
+  // so an exported cell like `=HYPERLINK(...)` cannot execute when opened.
+  const str = sanitizeCsvValue(String(value))
 
   // Escape quotes and wrap in quotes if necessary
   if (str.includes(',') || str.includes('"') || str.includes('\n') || str.includes('\r')) {

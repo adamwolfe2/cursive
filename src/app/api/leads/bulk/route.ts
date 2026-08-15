@@ -2,6 +2,7 @@
 // POST /api/leads/bulk - Perform bulk actions on leads
 
 import { NextRequest, NextResponse } from 'next/server'
+import { sanitizeCsvValue } from '@/lib/utils/csv-sanitizer'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
@@ -291,7 +292,7 @@ export async function POST(request: NextRequest) {
         const csv = [
           headers.join(','),
           ...rows.map((row: string[]) =>
-            row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(',')
+            row.map((cell) => `"${sanitizeCsvValue(String(cell)).replace(/"/g, '""')}"`).join(',')
           ),
         ].join('\n')
 

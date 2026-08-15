@@ -11,6 +11,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
+import { sanitizeCsvValue } from '@/lib/utils/csv-sanitizer'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { requireAdmin } from '@/lib/auth/admin'
 import { getPartnerTier } from '@/lib/services/partner-tier.service'
@@ -54,7 +55,7 @@ function obscureName(name: string): string {
 }
 
 function escapeCsvField(value: string | number): string {
-  const str = String(value)
+  const str = sanitizeCsvValue(String(value))
   // Wrap in quotes if contains comma, quote, or newline
   if (str.includes(',') || str.includes('"') || str.includes('\n')) {
     return `"${str.replace(/"/g, '""')}"`

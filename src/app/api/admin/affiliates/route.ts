@@ -4,38 +4,22 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { requirePlatformAdmin } from '@/lib/auth/admin'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { z } from 'zod'
 
 const VALID_STATUSES = ['pending', 'approved', 'rejected', 'all'] as const
 const statusSchema = z.enum(VALID_STATUSES).default('all')
 
-async function checkAdminAccess(): Promise<boolean> {
-  try {
-    // SECURITY: Use getUser() for server-side JWT verification (not getSession which trusts local cache)
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user?.id) return false
-
-    const admin = createAdminClient()
-    const { data: dbUser } = await admin
-      .from('users')
-      .select('role')
-      .eq('auth_user_id', user.id)
-      .maybeSingle()
-
-    return dbUser?.role === 'owner' || dbUser?.role === 'admin'
-  } catch {
-    return false
-  }
-}
-
 export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
-    const isAdmin = await checkAdminAccess()
-    if (!isAdmin) {
+    // SECURITY: platform-admin only. This route reads ALL affiliate applicants'
+    // PII cross-tenant, so a workspace owner/admin must NOT pass. requireAdminRole()
+    // (workspace role) is insufficient — every customer is 'owner' of their workspace.
+    try {
+      await requirePlatformAdmin()
+    } catch {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 

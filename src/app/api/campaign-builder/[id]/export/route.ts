@@ -7,6 +7,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
+import { sanitizeCsvValue } from '@/lib/utils/csv-sanitizer'
 import { z } from 'zod'
 import { CampaignBuilderRepository } from '@/lib/repositories/campaign-builder.repository'
 import { exportCampaignToEmailBison } from '@/lib/integrations/emailbison'
@@ -105,9 +106,9 @@ function formatExport(draft: CampaignDraft, format: 'csv' | 'json' | 'manual'): 
     const rows = emails.map((email) => [
       email.step.toString(),
       email.day.toString(),
-      `"${email.subject.replace(/"/g, '""')}"`, // Escape quotes
-      `"${email.body.replace(/"/g, '""')}"`,
-      `"${(email.personalization_notes || '').replace(/"/g, '""')}"`,
+      `"${sanitizeCsvValue(email.subject).replace(/"/g, '""')}"`, // Escape quotes + formula triggers
+      `"${sanitizeCsvValue(email.body).replace(/"/g, '""')}"`,
+      `"${sanitizeCsvValue(email.personalization_notes || '').replace(/"/g, '""')}"`,
     ])
 
     return [headers.join(','), ...rows.map((row) => row.join(','))].join('\n')

@@ -10,6 +10,7 @@ import { inngest } from '../client'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { sendEmail } from '@/lib/email/resend-client'
 import { APP_URL, CAL_BOOKING_URL } from '@/lib/config/urls'
+import { signUnsubscribeToken } from '@/lib/utils/unsubscribe-token'
 
 const FROM = 'Adam at Cursive <adam@meetcursive.com>'
 
@@ -31,7 +32,8 @@ function fmtDollar(n?: number): string {
 }
 
 function unsubscribeUrl(email: string): string {
-  return `${APP_URL}/api/unsubscribe?email=${encodeURIComponent(email)}`
+  const token = signUnsubscribeToken(email)
+  return `${APP_URL}/api/unsubscribe?email=${encodeURIComponent(email)}&t=${token}`
 }
 
 function shell(email: string, bodyHtml: string): string {
