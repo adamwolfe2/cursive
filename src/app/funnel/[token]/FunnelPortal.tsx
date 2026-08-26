@@ -497,6 +497,30 @@ function AudienceStep({
     )
   }
 
+  // Audience builds cost real money per order, so they unlock on conversion
+  // rather than at signup. Say so here — the API returns 402 for this case and
+  // a form that silently fails is worse than a form that isn't offered yet.
+  if (FUNNEL_TRIAL_DAYS > 0 && !order.first_paid_at) {
+    const convertsOn = order.trial_ends_at
+      ? new Date(order.trial_ends_at).toLocaleDateString('en-US', {
+          month: 'long',
+          day: 'numeric',
+        })
+      : null
+    return (
+      <StepShell number={3} title="Tell Us Who To Find" state="locked" locked={true}>
+        <p className="text-sm text-gray-500">
+          Your weekly audience unlocks when your trial converts
+          {convertsOn ? ` on ${convertsOn}` : ''}. Your pixel is live right
+          now — every visitor it identifies is already showing up above.
+        </p>
+        <p className="mt-2 text-xs text-gray-400">
+          Nothing to do here yet. We&apos;ll email you the moment it opens up.
+        </p>
+      </StepShell>
+    )
+  }
+
   if (submitted) {
     const delivered = !!order.audience_delivered_at
     const includesPixel = order.offer_slug !== 'audience_197'

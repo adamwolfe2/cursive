@@ -17,6 +17,9 @@ export const SERVICE_SUBSCRIPTION_EVENTS = [
   'customer.subscription.deleted',
   'invoice.payment_succeeded',
   'invoice.payment_failed',
+  // Trial conversion warning (funnel). Stripe only sends this once, ~3 days
+  // before the first charge.
+  'customer.subscription.trial_will_end',
 ] as const
 
 /**

@@ -18,10 +18,12 @@ import {
   findOrderByStripeSubscriptionId,
   findOrderByStripeCustomerId,
   setSubscriptionState,
+  markFirstPaid,
   type FunnelOrder,
 } from './order.service'
 import { sendFunnelSubscriptionCancelledEmail } from '@/lib/email/templates/funnel-subscription-cancelled'
 import { sendFunnelPaymentFailedEmail } from '@/lib/email/templates/funnel-payment-failed'
+import { sendFunnelTrialEndingEmail } from '@/lib/email/templates/funnel-trial-ending'
 import {
   handleAffiliateFunnelInvoice,
   handleAffiliateFunnelChurn,
@@ -49,6 +51,9 @@ export async function handleFunnelSubscriptionEvent(
 
     case 'invoice.payment_succeeded':
       return await handleInvoicePaymentSucceeded(event.data.object as Stripe.Invoice)
+
+    case 'customer.subscription.trial_will_end':
+      return await handleTrialWillEnd(event.data.object as Stripe.Subscription)
 
     case 'customer.subscription.created':
       // Already handled at checkout.session.completed time; nothing to do.
@@ -126,6 +131,20 @@ async function handleSubscriptionUpdated(sub: Stripe.Subscription): Promise<bool
   const order = await findOrderByStripeSubscriptionId(sub.id)
   if (!order) return true
 
+  // A buyer who cancels mid-trial arrives here as status:'trialing' +
+  // cancel_at_period_end:true, which maps to 'active' and used to hit the
+  // idempotency return below — leaving them in every nudge cron and still
+  // able to trigger a full audience build. 'paused' already drops them from
+  // the crons and shows the right portal banner.
+  if (sub.cancel_at_period_end && order.subscription_state === 'active') {
+    await setSubscriptionState(order.id, 'paused')
+    safeLog('[funnel/sub] cancel_at_period_end → paused', {
+      order_id: order.id,
+      status: sub.status,
+    })
+    return true
+  }
+
   // Map Stripe status → our internal state
   const nextState = mapStripeStatus(sub.status)
   if (nextState === order.subscription_state) return true // idempotent
@@ -197,6 +216,18 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice): Promise<b
     })
   }
 
+  // Stamp the first REAL payment. The $0 trial-start invoice also fires this
+  // event, so the amount check is what separates "signed up" from "paid us".
+  // Write-once at the DB level, so renewals never move the date.
+  const amountPaid = invoice.amount_paid || 0
+  if (amountPaid > 0 && !order.first_paid_at) {
+    await markFirstPaid(order.id, new Date().toISOString())
+    safeLog('[funnel/sub] first payment recorded', {
+      order_id: order.id,
+      amount_paid: amountPaid,
+    })
+  }
+
   // Affiliate commission — every successful funnel invoice (incl. renewals)
   // pays the attributed partner at their live ramp rate. AWAITED so the
   // serverless function doesn't freeze before the DB write completes (the
@@ -214,6 +245,47 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice): Promise<b
   return true
 }
 
+// ─── customer.subscription.trial_will_end ──────────────────────────────
+
+/**
+ * Fires ~3 days before the first charge. Without it, a cold-traffic buyer's
+ * first signal that they are being billed is the charge itself — which is how
+ * trials generate disputes rather than customers.
+ */
+async function handleTrialWillEnd(sub: Stripe.Subscription): Promise<boolean> {
+  if (!isFunnelSubscription(sub)) return false
+
+  const order = await findOrderByStripeSubscriptionId(sub.id)
+  if (!order) return true
+
+  // Already cancelled or cancelling — no point warning about a charge that
+  // will never happen.
+  if (order.subscription_state === 'cancelled' || sub.cancel_at_period_end) {
+    return true
+  }
+
+  const trialEnd = sub.trial_end ? new Date(sub.trial_end * 1000) : null
+
+  try {
+    await sendFunnelTrialEndingEmail({
+      to: order.customer_email,
+      customerName: order.customer_name,
+      monthlyPriceCents: order.monthly_price_cents,
+      trialEndsAt: trialEnd,
+    })
+  } catch (emailErr) {
+    // Non-fatal: a missed warning must not 500 the webhook and trigger a
+    // retry storm on an event Stripe only sends once.
+    safeError('[funnel/sub] trial-ending email failed:', emailErr)
+  }
+
+  safeLog('[funnel/sub] trial ending warning sent', {
+    order_id: order.id,
+    trial_end: trialEnd?.toISOString() ?? null,
+  })
+  return true
+}
+
 // ─── Helpers ───────────────────────────────────────────────────────────
 
 function mapStripeStatus(status: Stripe.Subscription.Status): FunnelOrder['subscription_state'] {
@@ -222,8 +294,12 @@ function mapStripeStatus(status: Stripe.Subscription.Status): FunnelOrder['subsc
     case 'trialing':
       return 'active'
     case 'past_due':
-    case 'unpaid':
       return 'past_due'
+    // 'unpaid' means Stripe exhausted every retry. Mapping it to 'past_due'
+    // left non-payers with a live pixel forever whenever the dashboard's
+    // dunning setting was anything other than "cancel".
+    case 'unpaid':
+      return 'cancelled'
     case 'paused':
       return 'paused'
     case 'canceled':

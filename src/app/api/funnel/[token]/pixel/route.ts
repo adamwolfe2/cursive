@@ -13,6 +13,7 @@ import { z } from 'zod'
 import {
   getOrderByToken,
   provisionFunnelPixel,
+  isOrderEntitled,
 } from '@/lib/funnel/order.service'
 import { provisionCustomerPixel } from '@/lib/audiencelab/api-client'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
@@ -64,6 +65,16 @@ export async function POST(
 
     const { order } = lookup.data
     orderId = order.id
+
+    // Entitlement chokepoint. Token revocation is the primary gate, but a
+    // partially-applied cancel (token revoke failed, state flipped) must not
+    // leave a cancelled buyer able to provision a billable AudienceLab pixel.
+    if (!isOrderEntitled(order)) {
+      return NextResponse.json(
+        { error: 'This subscription is no longer active.' },
+        { status: 403 }
+      )
+    }
 
     // Plan must include pixel
     if (order.offer_slug === 'audience_197') {

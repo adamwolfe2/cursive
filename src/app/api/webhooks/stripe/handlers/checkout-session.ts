@@ -14,7 +14,11 @@ import {
   creditPurchaseMetadataSchema,
   leadPurchaseMetadataSchema,
 } from './types'
-import { createOrderFromCheckoutSession } from '@/lib/funnel/order.service'
+import {
+  createOrderFromCheckoutSession,
+  countPriorOrdersForEmail,
+  setTrialEndsAt,
+} from '@/lib/funnel/order.service'
 import { provisionFunnelWorkspace } from '@/lib/funnel/workspace-provision'
 import { sendFunnelConfirmationEmail } from '@/lib/email/templates/funnel-confirmation'
 import { APP_URL } from '@/lib/config/urls'
@@ -324,6 +328,48 @@ async function handleFunnelOrderCompleted(session: Stripe.Checkout.Session): Pro
   }
 
   const { order, portalUrl } = result
+
+  // ── Trial bookkeeping ──────────────────────────────────────────────────
+  // The funnel is pay-first with no email field, so a repeat trialer cannot be
+  // detected when the Checkout session is created — only here, once Stripe has
+  // told us who they are. A returning buyer still gets full access; they just
+  // pay today instead of restarting a free 14 days (and a fresh pixel, and a
+  // fresh lead pull) on every signup.
+  if (order.stripe_subscription_id) {
+    try {
+      const stripe = getStripe()
+      const priorOrders = await countPriorOrdersForEmail(
+        order.customer_email,
+        order.id
+      )
+
+      if (priorOrders > 0) {
+        // Ends the trial immediately, which bills them now at the normal rate.
+        const converted = await stripe.subscriptions.update(
+          order.stripe_subscription_id,
+          { trial_end: 'now' }
+        )
+        await setTrialEndsAt(order.id, null)
+        safeLog('[Stripe Webhook] repeat buyer — trial ended immediately', {
+          order_id: order.id,
+          prior_orders: priorOrders,
+          subscription_status: converted.status,
+        })
+      } else {
+        const sub = await stripe.subscriptions.retrieve(
+          order.stripe_subscription_id
+        )
+        await setTrialEndsAt(
+          order.id,
+          sub.trial_end ? new Date(sub.trial_end * 1000).toISOString() : null
+        )
+      }
+    } catch (trialErr) {
+      // Non-fatal. Fulfillment must not depend on trial bookkeeping — the
+      // worst case is a duplicate trial or a missing trial_ends_at date.
+      safeError('[Stripe Webhook] trial bookkeeping failed (non-fatal)', trialErr)
+    }
+  }
 
   // Mark any pricing-gate email capture for this buyer as converted, so the
   // founder re-engagement cron never emails someone who actually bought.

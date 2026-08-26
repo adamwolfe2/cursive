@@ -58,6 +58,11 @@ export interface FunnelOrder {
   subscription_cancelled_at: string | null
   subscription_past_due_at: string | null
 
+  // Trial vs. paid. An order row means "signed up", NOT "paid us" — these two
+  // are the only honest source of truth for whether money has changed hands.
+  trial_ends_at: string | null
+  first_paid_at: string | null
+
   pixel_website_url: string | null
   pixel_domain: string | null
   pixel_audiencelab_id: string | null
@@ -446,6 +451,79 @@ export async function setSubscriptionState(
  * row is is_active=false. If they ever resubscribe we create a fresh pixel
  * + fresh token; we don't try to revive the old one.
  */
+/**
+ * Has this buyer actually paid us anything yet? A trialing order looks
+ * identical to a paid one in every other column, so anything that spends real
+ * money must gate on this and not on `status` or `subscription_state`.
+ */
+export function hasPaid(order: FunnelOrder): boolean {
+  return Boolean(order.first_paid_at)
+}
+
+/**
+ * Single entitlement chokepoint. Every surface that serves a buyer (portal,
+ * pixel provisioning, audience submission, dashboard-login) calls this, so
+ * revoking access can never again be half-applied across four call sites.
+ */
+export function isOrderEntitled(order: FunnelOrder): boolean {
+  return order.subscription_state !== 'cancelled'
+}
+
+/** Records the trial conversion date captured from the Stripe subscription. */
+export async function setTrialEndsAt(
+  orderId: string,
+  trialEndsAt: string | null
+): Promise<void> {
+  const supabase = createAdminClient()
+  const { error } = await supabase
+    .from('funnel_orders')
+    .update({ trial_ends_at: trialEndsAt })
+    .eq('id', orderId)
+  if (error) safeError('[funnel/order] setTrialEndsAt failed:', error)
+}
+
+/**
+ * Stamps the first real payment. Write-once: `.is('first_paid_at', null)`
+ * means a webhook re-delivery or a renewal never moves the date, so
+ * "have they ever paid" stays stable.
+ */
+export async function markFirstPaid(
+  orderId: string,
+  paidAt: string
+): Promise<void> {
+  const supabase = createAdminClient()
+  const { error } = await supabase
+    .from('funnel_orders')
+    .update({ first_paid_at: paidAt })
+    .eq('id', orderId)
+    .is('first_paid_at', null)
+  if (error) safeError('[funnel/order] markFirstPaid failed:', error)
+}
+
+/**
+ * Counts earlier orders for the same email. Drives one-trial-per-person:
+ * the funnel is pay-first with no email field, so we cannot dedupe at
+ * session-create time — we detect it on the webhook and end the trial there.
+ */
+export async function countPriorOrdersForEmail(
+  email: string,
+  excludeOrderId: string
+): Promise<number> {
+  const supabase = createAdminClient()
+  const { count, error } = await supabase
+    .from('funnel_orders')
+    .select('id', { count: 'exact', head: true })
+    .eq('customer_email', normalizeEmail(email))
+    .neq('id', excludeOrderId)
+  if (error) {
+    safeError('[funnel/order] countPriorOrdersForEmail failed:', error)
+    // Fail OPEN: a lookup blip must never block a legitimate new buyer's
+    // trial. Worst case someone gets a second trial.
+    return 0
+  }
+  return count ?? 0
+}
+
 export async function cancelAndDisableOrder(orderId: string): Promise<FunnelOrder | null> {
   const supabase = createAdminClient()
 
@@ -471,6 +549,19 @@ export async function cancelAndDisableOrder(orderId: string): Promise<FunnelOrde
     .eq('order_id', orderId)
   if (tokenErr) {
     safeError('[funnel/order] token revoke failed (non-fatal):', tokenErr)
+  }
+
+  // 4. Strip the auto-provisioned workspace's entitlements. Without this the
+  // buyer keeps a permanent, password-resettable dashboard login carrying
+  // every lead we already pushed — cancelling only ever closed the portal.
+  if (updated.workspace_id) {
+    const { error: wsErr } = await supabase
+      .from('workspaces')
+      .update({ visible_features: [], has_pixel_access: false })
+      .eq('id', updated.workspace_id)
+    if (wsErr) {
+      safeError('[funnel/order] workspace entitlement strip failed (non-fatal):', wsErr)
+    }
   }
 
   safeLog('[funnel/order] cancelled + disabled', { order_id: orderId })

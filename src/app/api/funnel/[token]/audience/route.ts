@@ -9,8 +9,13 @@
 export const runtime = 'nodejs'
 
 import { NextRequest, NextResponse } from 'next/server'
+import { FUNNEL_TRIAL_DAYS } from '@/lib/stripe/funnel-products'
 import { z } from 'zod'
-import { getOrderByToken, recordAudienceSubmitted } from '@/lib/funnel/order.service'
+import {
+  getOrderByToken,
+  recordAudienceSubmitted,
+  hasPaid,
+} from '@/lib/funnel/order.service'
 import { pushFunnelAudienceToWorkspace } from '@/lib/funnel/workspace-provision'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { sendFunnelAdminNotificationEmail } from '@/lib/email/templates/funnel-admin-notification'
@@ -46,6 +51,22 @@ export async function POST(
       return NextResponse.json(
         { error: 'Your plan does not include a managed audience.' },
         { status: 409 }
+      )
+    }
+
+    // The managed audience is the expensive deliverable (a live AudienceLab
+    // segment, up to 200 records, plus enrichment). A $0 trialer who never
+    // converts would otherwise cost us that on day one, repeatably. The pixel
+    // stays free during the trial — that is the part that proves the product.
+    if (FUNNEL_TRIAL_DAYS > 0 && !hasPaid(order)) {
+      return NextResponse.json(
+        {
+          error:
+            'Your weekly audience unlocks when your trial converts. Your pixel is live now — visitors are being identified in the meantime.',
+          reason: 'trial_not_converted',
+          trial_ends_at: order.trial_ends_at,
+        },
+        { status: 402 }
       )
     }
 
