@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import { AudienceCycleCountdown } from './AudienceCycleCountdown'
 
 export const metadata = {
   title: 'Cursive — Find the people searching for your product',
@@ -13,6 +14,7 @@ export default function GetLeadsLayout({
 }) {
   return (
     <div className="min-h-screen bg-white">
+      <AudienceCycleCountdown />
       <header className="border-b border-gray-100 bg-white">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4 sm:px-6">
           <Image

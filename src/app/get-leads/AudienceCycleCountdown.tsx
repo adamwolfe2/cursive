@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { FUNNEL_TRIAL_DAYS } from '@/lib/stripe/funnel-products'
 
 /**
  * Countdown to the next weekly audience build.
@@ -72,20 +73,19 @@ export function AudienceCycleCountdown() {
   }, [])
 
   return (
-    <div className="mx-auto mb-10 max-w-2xl rounded-xl border border-gray-200 bg-white px-5 py-4">
-      <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-between">
+    <div className="sticky top-0 z-50 w-full bg-blue-600 text-white shadow-sm">
+      <div className="mx-auto flex max-w-5xl flex-col items-center gap-2 px-4 py-2.5 sm:flex-row sm:justify-between sm:gap-4 sm:px-6">
         <div className="text-center sm:text-left">
-          <p className="text-sm font-semibold text-gray-900">
-            Next audience build
+          <p className="text-sm font-semibold leading-tight">
+            Free {FUNNEL_TRIAL_DAYS}-day trial — $0 today, cancel any time
           </p>
-          <p className="mt-0.5 text-xs text-gray-500">
-            We rebuild every active account&apos;s buyer list every Monday.
-            Your pixel starts identifying visitors the moment you install it.
+          <p className="mt-0.5 text-[11px] leading-tight text-blue-100">
+            Next audience build in
           </p>
         </div>
 
         <div
-          className="flex items-center gap-2"
+          className="flex items-center gap-1.5"
           aria-live="off"
           suppressHydrationWarning
         >
@@ -100,7 +100,8 @@ export function AudienceCycleCountdown() {
               <TimeCell value={remaining.seconds} label="sec" />
             </>
           ) : (
-            <span className="text-xs text-gray-400">Loading…</span>
+            // Same footprint as the live cells so the bar does not jump on hydrate.
+            <span className="text-xs text-blue-100">&nbsp;</span>
           )}
         </div>
       </div>
@@ -110,11 +111,11 @@ export function AudienceCycleCountdown() {
 
 function TimeCell({ value, label }: { value: number; label: string }) {
   return (
-    <div className="flex min-w-[3rem] flex-col items-center rounded-lg bg-gray-50 px-2.5 py-1.5">
-      <span className="text-lg font-semibold tabular-nums leading-none text-gray-900">
+    <div className="flex min-w-[2.75rem] flex-col items-center rounded-md bg-white/15 px-2 py-1">
+      <span className="text-base font-semibold tabular-nums leading-none text-white">
         {String(value).padStart(2, '0')}
       </span>
-      <span className="mt-0.5 text-[10px] uppercase tracking-wide text-gray-400">
+      <span className="mt-0.5 text-[9px] uppercase tracking-wide text-blue-100">
         {label}
       </span>
     </div>
@@ -122,5 +123,5 @@ function TimeCell({ value, label }: { value: number; label: string }) {
 }
 
 function Separator() {
-  return <span className="text-sm font-medium text-gray-300">:</span>
+  return <span className="text-sm font-medium text-blue-200">:</span>
 }

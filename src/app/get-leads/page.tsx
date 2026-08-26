@@ -5,7 +5,6 @@ import {
   FUNNEL_TRIAL_DAYS,
   isSelfHostedVideoUrl,
 } from '@/lib/stripe/funnel-products'
-import { AudienceCycleCountdown } from './AudienceCycleCountdown'
 import { CheckoutButtons } from './CheckoutButtons'
 import { FunnelTelemetry } from './FunnelTelemetry'
 import { Testimonials } from './Testimonials'
@@ -95,8 +94,6 @@ export default function GetLeadsPage() {
           )}
         </div>
       </div>
-
-      <AudienceCycleCountdown />
 
       {/* Social proof wall — warms cold traffic before the pricing reveal. */}
       <Testimonials />
