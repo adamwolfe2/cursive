@@ -5,6 +5,7 @@ import {
   FUNNEL_TRIAL_DAYS,
   isSelfHostedVideoUrl,
 } from '@/lib/stripe/funnel-products'
+import { AudienceCycleCountdown } from './AudienceCycleCountdown'
 import { CheckoutButtons } from './CheckoutButtons'
 import { FunnelTelemetry } from './FunnelTelemetry'
 import { Testimonials } from './Testimonials'
@@ -49,9 +50,8 @@ export default function GetLeadsPage() {
         </h1>
         <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-gray-500 sm:text-lg">
           280M verified consumers, a 15M-domain organic network, refreshed
-          every 30 days. Try the whole thing free for {FUNNEL_TRIAL_DAYS} days
-          — pixel installs in 60 seconds, first audience delivered within 24
-          hours.
+          every 30 days. Try it free for {FUNNEL_TRIAL_DAYS} days — your pixel
+          installs in 60 seconds and starts identifying visitors today.
         </p>
       </div>
 
@@ -96,6 +96,8 @@ export default function GetLeadsPage() {
         </div>
       </div>
 
+      <AudienceCycleCountdown />
+
       {/* Social proof wall — warms cold traffic before the pricing reveal. */}
       <Testimonials />
 
@@ -106,8 +108,9 @@ export default function GetLeadsPage() {
           <span className="text-gray-900">for {FUNNEL_TRIAL_DAYS} days.</span>
         </h2>
         <p className="mx-auto mt-4 max-w-xl text-base text-gray-500">
-          See real buyers in your account before you pay anything. Pixel is
-          live in 60 seconds. Audience delivered within 24 hours.
+          See real buyers in your account before you pay anything. Your pixel
+          is live in 60 seconds; your managed audience starts when the trial
+          converts.
         </p>
         {/* Risk reversal — lowers the cost of saying yes. */}
         <div className="mx-auto mt-6 flex max-w-2xl flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-gray-600">
@@ -115,7 +118,7 @@ export default function GetLeadsPage() {
             <GuaranteeIcon /> {FUNNEL_TRIAL_DAYS} days free, cancel any time
           </span>
           <span className="inline-flex items-center gap-1.5">
-            <GuaranteeIcon /> First audience in 24h or it&apos;s free
+            <GuaranteeIcon /> Visitors identified from day one
           </span>
           <span className="inline-flex items-center gap-1.5">
             <GuaranteeIcon /> Live in 60 seconds

@@ -36,9 +36,9 @@ const PLAN_FEATURES: Record<string, Omit<PlanCardConfig, 'offer'>> = {
     features: [
       `Full access free for ${FUNNEL_TRIAL_DAYS} days`,
       'Everything in Visitor Pixel',
-      'Weekly Custom Audience delivered as Google Sheet',
+      'Weekly Custom Audience delivered as a Google Sheet',
       'Audience refreshed every week with new in-market buyers',
-      'Priority audience updates within 24 hours',
+      'Audience rebuilt every Monday once your trial converts',
     ],
     highlight: true,
   },
@@ -50,7 +50,7 @@ const PLAN_FEATURES: Record<string, Omit<PlanCardConfig, 'offer'>> = {
       'Fresh weekly list of people searching for your product',
       'Delivered to Google Sheets (same link, new rows)',
       'Built around your ICP, titles, industries, and geo',
-      'First audience delivered within 24 hours',
+      'First audience builds when your trial converts, then weekly',
     ],
   },
 }
