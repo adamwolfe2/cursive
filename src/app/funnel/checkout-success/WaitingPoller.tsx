@@ -52,9 +52,9 @@ export function WaitingPoller({ sessionId }: { sessionId: string }) {
               Almost there — check your email
             </h1>
             <p className="text-sm text-gray-500">
-              Your payment went through. We&apos;ve sent your setup portal link
-              to the email you used at checkout. Reply to that email if you
-              don&apos;t see it.
+              You&apos;re all set — nothing was charged today. We&apos;ve sent
+              your setup portal link to the email you used at checkout. Reply
+              to that email if you don&apos;t see it.
             </p>
           </>
         ) : (

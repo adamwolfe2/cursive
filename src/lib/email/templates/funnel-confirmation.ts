@@ -41,6 +41,8 @@ function offerSummary(slug: FunnelOfferSlug): string {
   }
 }
 
+import { FUNNEL_TRIAL_DAYS } from '@/lib/stripe/funnel-products'
+
 export async function sendFunnelConfirmationEmail(
   data: FunnelConfirmationEmailData
 ) {
@@ -49,6 +51,11 @@ export async function sendFunnelConfirmationEmail(
 
   const headline = offerHeadline(offerSlug)
   const summary = offerSummary(offerSlug)
+  // Trial buyers have not paid. State the terms here or day-15 becomes a dispute.
+  const trialLine =
+    FUNNEL_TRIAL_DAYS > 0
+      ? `Your ${FUNNEL_TRIAL_DAYS}-day free trial has started — $0 charged today. Billing begins on day ${FUNNEL_TRIAL_DAYS + 1}; cancel any time before then from the Manage billing link in your portal and you pay nothing.`
+      : ''
 
   // Secondary CTA — one-click into the dashboard (no password). Only rendered
   // when a workspace was provisioned for this buyer.
@@ -74,6 +81,10 @@ export async function sendFunnelConfirmationEmail(
     <p class="email-text">
       ${escapeForEmail(summary)}
     </p>
+${trialLine ? `
+    <p class="email-text" style="font-size:14px;color:#374151;">
+      ${escapeForEmail(trialLine)}
+    </p>` : ''}
 
     <!-- Primary CTA: setup portal -->
     <table cellpadding="0" cellspacing="0" role="presentation" style="margin:24px 0 12px;">
@@ -118,6 +129,7 @@ export async function sendFunnelConfirmationEmail(
         `Hi ${firstName} — you're all set.`,
         '',
         summary,
+        ...(trialLine ? [trialLine] : []),
         '',
         `Open your setup portal: ${portalUrl}`,
         ...(dashboardUrl ? ['', `Open your dashboard (no password): ${dashboardUrl}`] : []),

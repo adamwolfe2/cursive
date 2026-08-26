@@ -1,5 +1,7 @@
 'use client'
 
+import { FUNNEL_TRIAL_DAYS } from '@/lib/stripe/funnel-products'
+
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import type { FunnelOrder } from '@/lib/funnel/order.service'
@@ -260,11 +262,14 @@ function PaymentStep({ order }: { order: FunnelOrder }) {
   return (
     <StepShell number={1} title="Payment" state="complete" locked={false}>
       <p className="text-sm font-medium text-emerald-700">
-        Payment received — thank you!
+        {FUNNEL_TRIAL_DAYS > 0
+          ? `Free trial started — ${FUNNEL_TRIAL_DAYS} days, $0 charged today.`
+          : 'Payment received — thank you!'}
       </p>
       <p className="mt-1 text-xs text-gray-500">
-        Charged ${(order.monthly_price_cents / 100).toLocaleString()} /
-        month. Manage billing any time via the link in your receipt email.
+        {FUNNEL_TRIAL_DAYS > 0
+          ? `Your card is on file but has not been charged. Billing starts on day ${FUNNEL_TRIAL_DAYS + 1} at $${(order.monthly_price_cents / 100).toLocaleString()}/month. Cancel any time before then and you pay nothing — use the Manage billing link below.`
+          : `Charged $${(order.monthly_price_cents / 100).toLocaleString()} / month. Manage billing any time via the link in your receipt email.`}
       </p>
     </StepShell>
   )
