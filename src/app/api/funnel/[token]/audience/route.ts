@@ -94,30 +94,41 @@ export async function POST(
     // into the buyer's dashboard, instead of waiting for a manual admin
     // delivery. Reuses the idempotent Phase 4 push (guards on
     // audience_pushed_at), so a later "mark delivered" never double-pushes.
-    // Fire-and-forget + non-fatal: the Google Sheet remains the canonical
-    // deliverable, so submit must succeed regardless.
-    pushFunnelAudienceToWorkspace(updated).catch((err) =>
-      safeError('[funnel/audience] auto audience push failed:', err)
-    )
+    //
+    // Notify admin via Slack (existing channel) + email (new).
+    //
+    // All three are AWAITED (not fire-and-forget) — this repo has proven live
+    // that an un-awaited promise can be frozen mid-flight the instant a
+    // serverless invocation returns its response (see commit 49896c02), so
+    // the work either never completes or lands minutes late. Promise.allSettled
+    // still keeps the buyer's submit non-fatal: any individual failure here is
+    // logged, never thrown, and never blocks the response below.
+    const results = await Promise.allSettled([
+      pushFunnelAudienceToWorkspace(updated),
+      sendSlackAlert({
+        type: 'pipeline_update',
+        severity: 'info',
+        message: `Funnel audience submitted — needs fulfillment (${order.offer_slug})`,
+        metadata: {
+          order_id: order.id,
+          email: order.customer_email,
+          solution: parsed.data.solution.slice(0, 120),
+          titles: parsed.data.titles.join(', ').slice(0, 200),
+        },
+      }),
+      sendFunnelAdminNotificationEmail(updated),
+    ])
 
-    // Notify admin via Slack (existing channel) + email (new). Both are
-    // fire-and-forget — buyer's submit must succeed regardless of admin
-    // notification infrastructure.
-    sendSlackAlert({
-      type: 'pipeline_update',
-      severity: 'info',
-      message: `Funnel audience submitted — needs fulfillment (${order.offer_slug})`,
-      metadata: {
-        order_id: order.id,
-        email: order.customer_email,
-        solution: parsed.data.solution.slice(0, 120),
-        titles: parsed.data.titles.join(', ').slice(0, 200),
-      },
-    }).catch((err) => safeError('[funnel/audience] slack alert failed:', err))
-
-    sendFunnelAdminNotificationEmail(updated).catch((err) =>
-      safeError('[funnel/audience] admin email failed:', err)
-    )
+    const [pushResult, slackResult, emailResult] = results
+    if (pushResult.status === 'rejected') {
+      safeError('[funnel/audience] auto audience push failed:', pushResult.reason)
+    }
+    if (slackResult.status === 'rejected') {
+      safeError('[funnel/audience] slack alert failed:', slackResult.reason)
+    }
+    if (emailResult.status === 'rejected') {
+      safeError('[funnel/audience] admin email failed:', emailResult.reason)
+    }
 
     return NextResponse.json({ order: updated })
   } catch (err) {

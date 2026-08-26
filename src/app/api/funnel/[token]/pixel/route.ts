@@ -45,8 +45,14 @@ export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ token: string }> }
 ) {
+  // Hoisted above the try so the catch block can attach context to the
+  // failure alert below — otherwise an AudienceLab outage or provisioning
+  // exception is a bare 500 with no signal that new buyers are blocked.
+  let token: string | undefined
+  let orderId: string | undefined
+
   try {
-    const { token } = await params
+    ;({ token } = await params)
     const lookup = await getOrderByToken(token)
 
     if (!lookup.ok) {
@@ -57,6 +63,7 @@ export async function POST(
     }
 
     const { order } = lookup.data
+    orderId = order.id
 
     // Plan must include pixel
     if (order.offer_slug === 'audience_197') {
@@ -183,6 +190,16 @@ export async function POST(
     })
   } catch (err) {
     safeError('[funnel/pixel] error:', err)
+    sendSlackAlert({
+      type: 'pipeline_update',
+      severity: 'critical',
+      message: 'Funnel pixel provisioning threw — buyer blocked from getting their pixel',
+      metadata: {
+        order_id: orderId ?? 'unknown',
+        token: token ?? 'unknown',
+        error: err instanceof Error ? err.message : String(err),
+      },
+    }).catch((alertErr) => safeError('[funnel/pixel] failure alert failed:', alertErr))
     return NextResponse.json(
       { error: 'Could not generate your pixel. Please try again.' },
       { status: 500 }

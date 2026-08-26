@@ -66,10 +66,19 @@ export async function sendEmail({
       text,
     })
 
-    return { success: true, data: result }
+    // Resend SDK v4 does NOT throw on API errors (bad from-address, 429
+    // rate limit, 5xx) — it resolves with { data: null, error }. Without
+    // this check every rejected send was reported as success and logged
+    // nowhere.
+    if (result.error) {
+      safeError('[Email] Failed to send:', { subject, error: result.error })
+      return { success: false as const, error: result.error }
+    }
+
+    return { success: true as const, data: result }
   } catch (error) {
     safeError('[Email] Failed to send:', { subject, error })
-    return { success: false, error }
+    return { success: false as const, error }
   }
 }
 

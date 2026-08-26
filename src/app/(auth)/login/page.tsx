@@ -24,6 +24,12 @@ function LoginForm() {
   const urlReason = searchParams.get('reason')
   const initialError = urlError === 'auth_callback_error'
     ? 'Sign-in failed. Please try again.'
+    : urlError === 'link_expired'
+    ? 'Your login link has expired. Use "Email me a login link instead" below to get a new one.'
+    : urlError === 'invalid_link'
+    ? 'That login link is no longer valid. Use "Email me a login link instead" below to get a new one.'
+    : urlError === 'login_failed'
+    ? 'We could not sign you in with that link. Use "Email me a login link instead" below, or sign in with your password.'
     : urlReason === 'middleware_error'
     ? 'A session error occurred. Please sign in again.'
     : urlReason === 'invalid_session'
