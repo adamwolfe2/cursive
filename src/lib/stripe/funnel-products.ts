@@ -177,18 +177,6 @@ export const FUNNEL_VSL_ASPECT_RATIO = (() => {
 })()
 
 /**
- * Seconds a visitor must spend before pricing unlocks (proxy for "watched the
- * VSL"). Env-configurable so it can be A/B-tested without a redeploy. Default
- * 30 (down from a rigid 60 — a full minute of blurred pricing bounces mobile
- * traffic). Clamped to a sane range.
- */
-export const FUNNEL_GATE_SECONDS = (() => {
-  const raw = Number.parseInt(process.env.FUNNEL_GATE_SECONDS ?? '', 10)
-  if (Number.isNaN(raw)) return 60
-  return Math.min(180, Math.max(0, raw))
-})()
-
-/**
  * Detect if the VSL URL points at a self-hosted video file vs an iframe-style
  * embed. Used by the landing page to choose <video> vs <iframe>. Checks the
  * pathname (not the full URL) so query strings don't trip the check.

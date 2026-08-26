@@ -1,6 +1,5 @@
 import {
   FUNNEL_OFFERS,
-  FUNNEL_GATE_SECONDS,
   FUNNEL_VSL_ASPECT_RATIO,
   FUNNEL_VSL_URL,
   FUNNEL_TRIAL_DAYS,
@@ -8,7 +7,6 @@ import {
 } from '@/lib/stripe/funnel-products'
 import { CheckoutButtons } from './CheckoutButtons'
 import { FunnelTelemetry } from './FunnelTelemetry'
-import { PricingGate } from './PricingGate'
 import { Testimonials } from './Testimonials'
 
 export const dynamic = 'force-dynamic'
@@ -16,7 +14,8 @@ export const dynamic = 'force-dynamic'
 /**
  * VSL Funnel Landing Page — entry point shared from EmailBison cold-email replies.
  *
- * Public, unauthenticated. Single CTA per pricing tier → POSTs to
+ * Public, unauthenticated. Pricing is visible immediately (no video timer,
+ * no email wall). Single CTA per pricing tier → POSTs to
  * /api/funnel/checkout → Stripe Checkout → webhook creates the order +
  * portal token + emails the buyer the post-pay link.
  */
@@ -124,12 +123,12 @@ export default function GetLeadsPage() {
         </div>
       </div>
 
-      {/* Cards — gated until 20s of video has played. Extra top padding
-          so the bundle card's negative translate doesn't get clipped. */}
+      {/* Cards — always visible. The timer/email gate was removed: cold
+          traffic promised a free trial bounces at a blurred paywall, and
+          the trial itself is the qualifier now. Extra top padding so the
+          bundle card's negative translate doesn't get clipped. */}
       <div className="pt-6">
-        <PricingGate unlockAfterSeconds={FUNNEL_GATE_SECONDS}>
-          <CheckoutButtons offers={offers} />
-        </PricingGate>
+        <CheckoutButtons offers={offers} />
       </div>
 
       {/* Trust strip */}

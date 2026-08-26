@@ -201,7 +201,7 @@ export default async function FunnelAnalyticsPage({ searchParams }: PageProps) {
           Daily volume
         </h2>
         <p className="mb-5 text-xs text-gray-500">
-          Landing views vs. pricing-unlocked vs. checkout-initiated, day by day.
+          Landing views vs. plan-selected vs. checkout-initiated, day by day.
         </p>
         <div className="overflow-hidden rounded-lg border border-gray-100">
           <table className="w-full text-xs">
@@ -209,7 +209,7 @@ export default async function FunnelAnalyticsPage({ searchParams }: PageProps) {
               <tr className="text-left font-semibold uppercase tracking-wide text-gray-500">
                 <th className="px-4 py-2">Day</th>
                 <th className="px-4 py-2 text-right">Landed</th>
-                <th className="px-4 py-2 text-right">Pricing</th>
+                <th className="px-4 py-2 text-right">Plan selected</th>
                 <th className="px-4 py-2 text-right">Checkout</th>
                 <th className="px-4 py-2 text-right">Conv. %</th>
               </tr>
@@ -234,7 +234,7 @@ export default async function FunnelAnalyticsPage({ searchParams }: PageProps) {
                         {d.landing}
                       </td>
                       <td className="px-4 py-2 text-right text-gray-800">
-                        {d.pricing}
+                        {d.planSelected}
                       </td>
                       <td className="px-4 py-2 text-right text-gray-800">
                         {d.checkout}

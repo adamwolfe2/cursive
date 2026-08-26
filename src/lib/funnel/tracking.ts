@@ -73,7 +73,6 @@ export const FUNNEL_STEPS: ReadonlyArray<{
 }> = [
   { label: 'Landing viewed', event: FUNNEL_EVENTS.LANDING_VIEWED },
   { label: 'VSL loaded', event: FUNNEL_EVENTS.VSL_LOADED },
-  { label: 'Pricing unlocked', event: FUNNEL_EVENTS.PRICING_UNLOCKED },
   { label: 'Plan selected', event: FUNNEL_EVENTS.PLAN_SELECTED },
   { label: 'Checkout initiated', event: FUNNEL_EVENTS.CHECKOUT_INITIATED },
   { label: 'Paid', serverSide: true },

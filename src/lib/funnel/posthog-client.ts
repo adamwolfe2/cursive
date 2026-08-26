@@ -70,7 +70,7 @@ export interface FunnelStepCount {
 const STEP_LABELS: Record<FunnelEventName, string> = {
   [FUNNEL_EVENTS.LANDING_VIEWED]: 'Landed on /get-leads',
   [FUNNEL_EVENTS.VSL_LOADED]: 'VSL loaded',
-  [FUNNEL_EVENTS.PRICING_UNLOCKED]: 'Pricing unlocked (gate passed)',
+  [FUNNEL_EVENTS.PRICING_UNLOCKED]: 'Pricing unlocked (legacy gate, removed)',
   [FUNNEL_EVENTS.PLAN_SELECTED]: 'Selected a plan',
   [FUNNEL_EVENTS.CHECKOUT_INITIATED]: 'Initiated checkout (Stripe)',
   [FUNNEL_EVENTS.CHECKOUT_FALLBACK_SHOWN]: 'Saw popup-blocked fallback',
@@ -93,7 +93,6 @@ const STEP_LABELS: Record<FunnelEventName, string> = {
 /** Ordered funnel steps from acquisition → activation. */
 const FUNNEL_ORDER: FunnelEventName[] = [
   FUNNEL_EVENTS.LANDING_VIEWED,
-  FUNNEL_EVENTS.PRICING_UNLOCKED,
   FUNNEL_EVENTS.PLAN_SELECTED,
   FUNNEL_EVENTS.CHECKOUT_INITIATED,
   FUNNEL_EVENTS.PORTAL_VIEWED,
@@ -168,7 +167,7 @@ export async function getOfferBreakdown(
 export interface DailyVolume {
   day: string
   landing: number
-  pricing: number
+  planSelected: number
   checkout: number
 }
 
@@ -178,12 +177,12 @@ export async function getDailyVolume(daysBack = 30): Promise<DailyVolume[]> {
     select
       toStartOfDay(timestamp) as day,
       countIf(event = '${FUNNEL_EVENTS.LANDING_VIEWED}') as landing,
-      countIf(event = '${FUNNEL_EVENTS.PRICING_UNLOCKED}') as pricing,
+      countIf(event = '${FUNNEL_EVENTS.PLAN_SELECTED}') as planSelected,
       countIf(event = '${FUNNEL_EVENTS.CHECKOUT_INITIATED}') as checkout
     from events
     where event in (
         '${FUNNEL_EVENTS.LANDING_VIEWED}',
-        '${FUNNEL_EVENTS.PRICING_UNLOCKED}',
+        '${FUNNEL_EVENTS.PLAN_SELECTED}',
         '${FUNNEL_EVENTS.CHECKOUT_INITIATED}'
       )
       and timestamp >= now() - interval ${Number(daysBack)} day
@@ -194,7 +193,7 @@ export async function getDailyVolume(daysBack = 30): Promise<DailyVolume[]> {
   return (data?.results ?? []).map((row) => ({
     day: String(row[0] ?? '').slice(0, 10),
     landing: Number(row[1] ?? 0),
-    pricing: Number(row[2] ?? 0),
+    planSelected: Number(row[2] ?? 0),
     checkout: Number(row[3] ?? 0),
   }))
 }
