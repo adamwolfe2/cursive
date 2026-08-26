@@ -3,6 +3,7 @@ import {
   FUNNEL_GATE_SECONDS,
   FUNNEL_VSL_ASPECT_RATIO,
   FUNNEL_VSL_URL,
+  FUNNEL_TRIAL_DAYS,
   isSelfHostedVideoUrl,
 } from '@/lib/stripe/funnel-products'
 import { CheckoutButtons } from './CheckoutButtons'
@@ -49,8 +50,9 @@ export default function GetLeadsPage() {
         </h1>
         <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-gray-500 sm:text-lg">
           280M verified consumers, a 15M-domain organic network, refreshed
-          every 30 days. Pixel installs in 60 seconds. Audience delivered
-          within 24 hours.
+          every 30 days. Try the whole thing free for {FUNNEL_TRIAL_DAYS} days
+          — pixel installs in 60 seconds, first audience delivered within 24
+          hours.
         </p>
       </div>
 
@@ -101,14 +103,18 @@ export default function GetLeadsPage() {
       {/* Pricing header — Attio-style */}
       <div className="mb-8 text-center">
         <h2 className="text-3xl font-semibold tracking-tight text-gray-900 sm:text-4xl">
-          <span className="text-gray-400">Start today</span>{' '}
-          <span className="text-gray-900">for real buyers.</span>
+          <span className="text-gray-400">Try it free</span>{' '}
+          <span className="text-gray-900">for {FUNNEL_TRIAL_DAYS} days.</span>
         </h2>
         <p className="mx-auto mt-4 max-w-xl text-base text-gray-500">
-          Pixel is live in 60 seconds. Audience delivered within 24 hours.
+          See real buyers in your account before you pay anything. Pixel is
+          live in 60 seconds. Audience delivered within 24 hours.
         </p>
         {/* Risk reversal — lowers the cost of saying yes. */}
         <div className="mx-auto mt-6 flex max-w-2xl flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-gray-600">
+          <span className="inline-flex items-center gap-1.5">
+            <GuaranteeIcon /> {FUNNEL_TRIAL_DAYS} days free, cancel any time
+          </span>
           <span className="inline-flex items-center gap-1.5">
             <GuaranteeIcon /> First audience in 24h or it&apos;s free
           </span>

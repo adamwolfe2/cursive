@@ -54,6 +54,20 @@ export const FUNNEL_OFFERS: Record<FunnelOfferSlug, FunnelOfferConfig> = {
   },
 }
 
+/**
+ * Free-trial length applied to every funnel subscription at Stripe Checkout.
+ * Card is still collected up front (Stripe's default for a trialing
+ * subscription), and the first charge lands on day 15 unless they cancel.
+ * Set FUNNEL_TRIAL_DAYS=0 to turn the trial off without a code change.
+ */
+export const FUNNEL_TRIAL_DAYS: number = (() => {
+  const raw = process.env.FUNNEL_TRIAL_DAYS
+  if (raw === undefined || raw === '') return 14
+  const n = Number(raw)
+  // Stripe accepts 1-730; anything else (including 0) means "no trial".
+  return Number.isInteger(n) && n >= 1 && n <= 730 ? n : 0
+})()
+
 export function getFunnelOffer(slug: string): FunnelOfferConfig | null {
   if (slug !== 'pixel_97' && slug !== 'audience_197' && slug !== 'bundle_247') {
     return null

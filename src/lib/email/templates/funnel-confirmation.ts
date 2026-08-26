@@ -68,7 +68,7 @@ export async function sendFunnelConfirmationEmail(
 
   const content = `
     <p class="email-text" style="font-size:16px;color:#111827;">
-      Hi ${escapeForEmail(firstName)} — payment received, you're all set.
+      Hi ${escapeForEmail(firstName)} — you're all set.
     </p>
 
     <p class="email-text">
@@ -115,7 +115,7 @@ export async function sendFunnelConfirmationEmail(
         content,
       }),
       text: [
-        `Hi ${firstName} — payment received, you're all set.`,
+        `Hi ${firstName} — you're all set.`,
         '',
         summary,
         '',

@@ -1,7 +1,10 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import type { FunnelOfferConfig } from '@/lib/stripe/funnel-products'
+import {
+  FUNNEL_TRIAL_DAYS,
+  type FunnelOfferConfig,
+} from '@/lib/stripe/funnel-products'
 import { FUNNEL_EVENTS, trackFunnel } from '@/lib/funnel/tracking'
 
 function formatPrice(cents: number): string {
@@ -21,16 +24,17 @@ const PLAN_FEATURES: Record<string, Omit<PlanCardConfig, 'offer'>> = {
     tagline: 'See who lands on your site',
     audience: 'For teams just starting to identify visitors.',
     features: [
+      `Full access free for ${FUNNEL_TRIAL_DAYS} days`,
       'Identify companies + people visiting your site',
       'Live install in 60 seconds (paste 1 snippet)',
       'Unlimited identified visitor events',
-      'Cancel any time',
     ],
   },
   bundle_247: {
     tagline: 'Everything top-of-funnel',
     audience: 'For teams ready to combine traffic + intent in one feed.',
     features: [
+      `Full access free for ${FUNNEL_TRIAL_DAYS} days`,
       'Everything in Visitor Pixel',
       'Weekly Custom Audience delivered as Google Sheet',
       'Audience refreshed every week with new in-market buyers',
@@ -42,6 +46,7 @@ const PLAN_FEATURES: Record<string, Omit<PlanCardConfig, 'offer'>> = {
     tagline: 'In-market buyers, weekly',
     audience: 'For teams who want a fresh list of prospects without a pixel.',
     features: [
+      `Full access free for ${FUNNEL_TRIAL_DAYS} days`,
       'Fresh weekly list of people searching for your product',
       'Delivered to Google Sheets (same link, new rows)',
       'Built around your ICP, titles, industries, and geo',
@@ -65,7 +70,9 @@ export function CheckoutButtons({ offers }: { offers: FunnelOfferConfig[] }) {
       </div>
 
       <p className="text-center text-xs text-gray-400">
-        Have a discount code? Apply it on the Stripe checkout page.
+        {FUNNEL_TRIAL_DAYS > 0
+          ? `Card required to start — you are not charged until day ${FUNNEL_TRIAL_DAYS + 1}. Cancel any time in one click. Have a discount code? Apply it on the Stripe checkout page.`
+          : 'Have a discount code? Apply it on the Stripe checkout page.'}
       </p>
     </div>
   )
@@ -115,11 +122,26 @@ function PlanCard({ card }: { card: PlanCardConfig }) {
       </div>
 
       <div className="mt-3 flex items-baseline gap-1 sm:mt-4">
-        <span className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
-          {formatPrice(offer.monthlyPriceCents)}
-        </span>
+        {FUNNEL_TRIAL_DAYS > 0 ? (
+          <>
+            <span className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
+              Free
+            </span>
+            <span className="text-sm font-medium text-gray-500">
+              for {FUNNEL_TRIAL_DAYS} days
+            </span>
+          </>
+        ) : (
+          <span className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
+            {formatPrice(offer.monthlyPriceCents)}
+          </span>
+        )}
       </div>
-      <p className="mt-1 text-xs text-gray-500">Per month, billed monthly</p>
+      <p className="mt-1 text-xs text-gray-500">
+        {FUNNEL_TRIAL_DAYS > 0
+          ? `Then ${formatPrice(offer.monthlyPriceCents)}/month. Cancel any time before day ${FUNNEL_TRIAL_DAYS + 1} and pay nothing.`
+          : 'Per month, billed monthly'}
+      </p>
 
       <p className="mt-5 text-sm font-semibold text-gray-900 sm:mt-6">{tagline}</p>
       <p className="mt-1.5 text-sm leading-relaxed text-gray-500">{audience}</p>
@@ -175,7 +197,11 @@ function PlanCard({ card }: { card: PlanCardConfig }) {
               : 'border border-gray-300 bg-white text-gray-900 hover:bg-gray-50'
           }`}
         >
-          {submitting ? 'Opening checkout…' : 'Get started'}
+          {submitting
+            ? 'Opening checkout…'
+            : FUNNEL_TRIAL_DAYS > 0
+              ? `Start ${FUNNEL_TRIAL_DAYS}-day free trial`
+              : 'Get started'}
         </button>
       </form>
 

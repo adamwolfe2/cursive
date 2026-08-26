@@ -15,6 +15,7 @@ import Stripe from 'stripe'
 import {
   FUNNEL_PORTAL_BASE_URL,
   getFunnelOffer,
+  FUNNEL_TRIAL_DAYS,
 } from '@/lib/stripe/funnel-products'
 import { checkRateLimit } from '@/lib/middleware/rate-limiter'
 import { safeError } from '@/lib/utils/log-sanitizer'
@@ -77,6 +78,11 @@ async function handleCheckoutRedirect(req: NextRequest, offerSlug: string): Prom
         ...(affiliateRef ? { affiliate_ref_code: affiliateRef } : {}),
       },
       subscription_data: {
+        // 14-day free trial. Stripe still collects the card at checkout,
+        // so the subscription auto-converts on day 15 with no second step.
+        ...(FUNNEL_TRIAL_DAYS > 0
+          ? { trial_period_days: FUNNEL_TRIAL_DAYS }
+          : {}),
         metadata: {
           type: 'funnel_order',
           offer_slug: offer.slug,
