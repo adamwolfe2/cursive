@@ -63,6 +63,7 @@ export interface FunnelOrder {
   pixel_audiencelab_id: string | null
   pixel_snippet: string | null
   pixel_install_url: string | null
+  pixel_platform: string | null
   pixel_provisioned_at: string | null
   pixel_last_event_at: string | null
   pixel_install_reminded_at: string | null
@@ -764,6 +765,8 @@ export async function provisionFunnelPixel(
     audiencelab_id: string
     snippet: string
     install_url: string | null
+    /** Detected site platform for tailored install steps; null = show picker. */
+    platform?: string | null
   }
 ): Promise<FunnelOrder | null> {
   const supabase = createAdminClient()
@@ -833,6 +836,7 @@ export async function provisionFunnelPixel(
       pixel_audiencelab_id: data.audiencelab_id,
       pixel_snippet: data.snippet,
       pixel_install_url: data.install_url,
+      pixel_platform: data.platform ?? null,
       pixel_provisioned_at: new Date().toISOString(),
       status: nextStatus,
     })
@@ -985,4 +989,25 @@ export function offerForOrder(order: FunnelOrder) {
 
 export function portalUrlForToken(token: string): string {
   return `${FUNNEL_PORTAL_BASE_URL}/funnel/${token}`
+}
+
+/**
+ * Persist the buyer's site platform (install-instruction selection only).
+ * Presentation state: no status transition, no guard needed.
+ */
+export async function setFunnelOrderPlatform(
+  orderId: string,
+  platform: string
+): Promise<boolean> {
+  const supabase = createAdminClient()
+  const { error } = await supabase
+    .from('funnel_orders')
+    .update({ pixel_platform: platform })
+    .eq('id', orderId)
+
+  if (error) {
+    safeError('[funnel/order] setFunnelOrderPlatform failed:', error)
+    return false
+  }
+  return true
 }

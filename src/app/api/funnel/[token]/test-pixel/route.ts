@@ -4,8 +4,10 @@
  * Server-side install verifier. Fetches the buyer's domain (https only)
  * and checks the HTML for the pixel script tag (by the pixel's install URL
  * hostname). Returns one of three states:
- *   - installed:  snippet detected on the page
- *   - missing:    page loaded but no snippet found
+ *   - installed:   snippet detected on the page
+ *   - unconfirmed: page loaded but no snippet found in the source. Deliberately
+ *                  NOT "missing" — GTM and client-injected installs are
+ *                  invisible here yet work fine. First inbound event is truth.
  *   - unreachable: domain couldn't be fetched
  *
  * Bounded: 15s timeout, max 5MB response. Never follows non-https redirects.
@@ -132,10 +134,16 @@ export async function POST(
       })
     }
 
+    // NOT a hard "missing". A correct install is routinely invisible in the
+    // server HTML: Google Tag Manager injects at runtime, and client-side
+    // loaders (e.g. next/script's default afterInteractive strategy) attach the
+    // tag only after hydration. Telling those buyers their working pixel is
+    // broken is worse than saying we could not confirm it. The authoritative
+    // signal is the first inbound event, not a substring match.
     return NextResponse.json({
-      state: 'missing',
+      state: 'unconfirmed',
       message:
-        'Your pixel snippet wasn\'t detected on the page we fetched. Make sure it\'s pasted before </head> on every page (or fires on All Pages via GTM).',
+        'We could not see the snippet in your page source. If you installed it through a tag manager or a client-side script loader, that is expected — it may already be working, and we will confirm the moment your first visitor is identified. Otherwise, check the snippet is on every page before the closing </head>.',
       checked_url: targetUrl,
     })
   } catch (err) {

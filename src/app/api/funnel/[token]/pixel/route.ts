@@ -12,8 +12,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import {
   getOrderByToken,
-  provisionFunnelPixel,
+  provisionFunnelPixel, setFunnelOrderPlatform,
 } from '@/lib/funnel/order.service'
+import { detectPlatformForUrl, PLATFORM_GUIDES } from '@/lib/funnel/platform-detect'
 import { provisionCustomerPixel } from '@/lib/audiencelab/api-client'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
@@ -139,12 +140,18 @@ export async function POST(
     // with a forward-only state guard. Returns null if order moved past
     // awaiting_pixel via a concurrent request, in which case we return the
     // pre-advanced snapshot.
+    // Identify their stack so the portal can show install steps for THEIR
+    // platform. Bounded + non-fatal: a slow or hostile site must never delay
+    // or fail pixel provisioning, so a null here just means "show the picker".
+    const platform = await detectPlatformForUrl(websiteUrl)
+
     const updated = await provisionFunnelPixel(order.id, {
       website_url: websiteUrl,
       domain,
       audiencelab_id: result.pixel_id,
       snippet,
       install_url: installUrl ?? null,
+      platform,
     })
 
     if (!updated) {
@@ -187,5 +194,58 @@ export async function POST(
       { error: 'Could not generate your pixel. Please try again.' },
       { status: 500 }
     )
+  }
+}
+
+/**
+ * PATCH /api/funnel/[token]/pixel
+ *
+ * Buyer-supplied platform override for the install guide. Presentation-only:
+ * it selects which instructions to render and never affects pixel routing,
+ * fulfilment, or billing. Validated against the known slugs so the column
+ * cannot be used as free-text storage.
+ */
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: Promise<{ token: string }> }
+) {
+  try {
+    const { token } = await params
+    const lookup = await getOrderByToken(token)
+    if (!lookup.ok) {
+      return NextResponse.json(
+        { error: 'Link no longer valid' },
+        { status: lookup.error === 'not_found' ? 404 : 403 }
+      )
+    }
+
+    const json = await req.json().catch(() => null)
+    const parsed = z
+      .object({
+        platform: z.enum(
+          PLATFORM_GUIDES.map((p) => p.slug) as [string, ...string[]]
+        ),
+      })
+      .safeParse(json)
+
+    if (!parsed.success) {
+      return NextResponse.json({ error: 'Unknown platform' }, { status: 400 })
+    }
+
+    const saved = await setFunnelOrderPlatform(
+      lookup.data.order.id,
+      parsed.data.platform
+    )
+    if (!saved) {
+      return NextResponse.json(
+        { error: 'Could not save your platform. Please try again.' },
+        { status: 500 }
+      )
+    }
+
+    return NextResponse.json({ platform: parsed.data.platform })
+  } catch (err) {
+    safeError('[funnel/pixel] PATCH platform failed:', err)
+    return NextResponse.json({ error: 'Could not save.' }, { status: 500 })
   }
 }

@@ -23,6 +23,10 @@ import { FUNNEL_TIER_FEATURES } from '@/lib/workspaces/feature-flags'
 import { inngest } from '@/inngest/client'
 import type { FunnelOrder } from './order.service'
 import { randomBytes } from 'node:crypto'
+import { getPlanLimits } from '@/lib/auth/roles'
+
+/** Funnel buyers are paying customers; keep plan + credit limit derived from one constant. */
+const FUNNEL_BUYER_PLAN = 'pro' as const
 
 export interface ProvisionResult {
   workspaceId: string
@@ -247,7 +251,11 @@ export async function provisionFunnelWorkspace(
       email,
       full_name: order.customer_name ?? null,
       role: 'owner',
-      plan: 'pro',
+      plan: FUNNEL_BUYER_PLAN,
+      // Without this the row takes the column default (3 — the FREE allowance)
+      // while plan says 'pro', so a paying buyer silently gets free-tier
+      // enrichment. Derive it from the plan so the two can never disagree.
+      daily_credit_limit: getPlanLimits(FUNNEL_BUYER_PLAN).dailyCreditLimit,
       stripe_customer_id: order.stripe_customer_id ?? null,
       stripe_subscription_id: order.stripe_subscription_id ?? null,
     })

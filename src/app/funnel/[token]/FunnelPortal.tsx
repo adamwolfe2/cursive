@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import type { FunnelOrder } from '@/lib/funnel/order.service'
 import { FUNNEL_EVENTS, trackFunnel } from '@/lib/funnel/tracking'
 import { Button } from '@/components/ui/button'
+import { PlatformInstallGuide } from '@/components/funnel/PlatformInstallGuide'
+import type { PlatformSlug } from '@/lib/funnel/platform-detect'
 
 // ─── "Test my install" button ─────────────────────────────────────────────
 
@@ -12,7 +14,7 @@ type TestInstallState =
   | { kind: 'idle' }
   | { kind: 'checking' }
   | { kind: 'installed'; message: string }
-  | { kind: 'missing'; message: string }
+  | { kind: 'unconfirmed'; message: string }
   | { kind: 'unreachable'; message: string }
   | { kind: 'error'; message: string }
 
@@ -41,8 +43,10 @@ function TestInstallButton({ token }: { token: string }) {
       })
       if (json.state === 'installed') {
         setState({ kind: 'installed', message: json.message ?? '' })
-      } else if (json.state === 'missing') {
-        setState({ kind: 'missing', message: json.message ?? '' })
+      } else if (json.state === 'unconfirmed' || json.state === 'missing') {
+        // 'missing' accepted for one deploy cycle: a cached client bundle may
+        // still be talking to the new route, or vice versa.
+        setState({ kind: 'unconfirmed', message: json.message ?? '' })
       } else {
         setState({ kind: 'unreachable', message: json.message ?? '' })
       }
@@ -83,7 +87,7 @@ function TestInstallButton({ token }: { token: string }) {
           ✓ {state.message}
         </p>
       )}
-      {state.kind === 'missing' && (
+      {state.kind === 'unconfirmed' && (
         <p className="mt-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
           {state.message}
         </p>
@@ -332,33 +336,22 @@ function PixelStep({
     return (
       <StepShell number={2} title="Set up your pixel" state="complete" locked={false}>
         <p className="mb-3 text-sm font-medium text-emerald-700">
-          Pixel created for {order.pixel_domain}. Paste the snippet below into
-          your site&apos;s <code className="rounded bg-gray-100 px-1 py-0.5 text-xs">&lt;/head&gt;</code>{' '}
-          (or add it via Google Tag Manager) and you&apos;re live.
+          Pixel created for {order.pixel_domain}. Add the snippet to your site
+          using the steps below and you&apos;re live.
         </p>
-        <div className="overflow-hidden rounded-lg border border-gray-200 bg-gray-900 p-4">
-          <div className="mb-2 flex items-center justify-between">
-            <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">
-              Your pixel snippet
-            </p>
-            <button
-              type="button"
-              onClick={() => {
-                if (order.pixel_snippet) {
-                  navigator.clipboard.writeText(order.pixel_snippet)
-                  setCopied(true)
-                  setTimeout(() => setCopied(false), 1500)
-                }
-              }}
-              className="rounded bg-gray-800 px-2 py-1 text-[11px] font-medium text-gray-200 hover:bg-gray-700"
-            >
-              {copied ? 'Copied!' : 'Copy'}
-            </button>
-          </div>
-          <code className="block whitespace-pre-wrap break-all font-mono text-[12px] leading-relaxed text-emerald-300">
-            {order.pixel_snippet}
-          </code>
-        </div>
+        <PlatformInstallGuide
+          snippet={order.pixel_snippet ?? ''}
+          platform={order.pixel_platform}
+          onPlatformChange={(slug: PlatformSlug) => {
+            // Presentation-only preference; a failure here must not interrupt
+            // the install, so we deliberately swallow it.
+            fetch(`/api/funnel/${token}/pixel`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ platform: slug }),
+            }).catch(() => {})
+          }}
+        />
         <p className="mt-3 text-xs text-gray-500">
           Pixel ID: {order.pixel_audiencelab_id} · Identified visitors start
           flowing within a few minutes of traffic.
