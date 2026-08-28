@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import { SUPPORT_EMAIL } from '@/lib/config/urls'
 
 export const metadata = {
   title: 'Cursive API — Developer Documentation',
@@ -376,7 +377,7 @@ export default function DevelopersPage() {
         {/* Footer */}
         <div className="mt-16 pt-8 border-t border-gray-200 text-center">
           <p className="text-sm text-gray-500">
-            Questions? Contact <a href="mailto:support@meetcursive.com" className="text-blue-600 hover:underline">support@meetcursive.com</a>
+            Questions? Contact <a href={`mailto:${SUPPORT_EMAIL}`} className="text-blue-600 hover:underline">{SUPPORT_EMAIL}</a>
           </p>
         </div>
       </main>

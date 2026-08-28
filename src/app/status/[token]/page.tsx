@@ -2,6 +2,7 @@ import { createAdminClient } from '@/lib/supabase/server'
 import { verifyStatusToken } from '@/lib/utils/status-token'
 import Image from 'next/image'
 import { CheckCircle, Clock, Loader2 } from 'lucide-react'
+import { SUPPORT_EMAIL } from '@/lib/config/urls'
 
 interface MilestoneItem {
   label: string
@@ -141,7 +142,7 @@ export default async function ClientStatusPage(props: { params: Promise<{ token:
 
           <div className="mt-6 pt-4 border-t border-gray-100 text-center">
             <p className="text-xs text-gray-400">
-              Questions? Contact <a href="mailto:support@meetcursive.com" className="text-primary hover:text-brand-700">support@meetcursive.com</a>
+              Questions? Contact <a href={`mailto:${SUPPORT_EMAIL}`} className="text-primary hover:text-brand-700">{SUPPORT_EMAIL}</a>
             </p>
           </div>
         </div>

@@ -16,6 +16,7 @@ import { commentKey, groupCommentsByEmail } from '@/types/copy-comments'
 import CopyCommentThread from './CopyCommentThread'
 import InlineEmailEditor from '@/components/inline-edit/InlineEmailEditor'
 import { Button } from '@/components/ui/button'
+import { SUPPORT_EMAIL } from '@/lib/config/urls'
 
 // ---------------------------------------------------------------------------
 // Portal email viewer — client-friendly spintax rendering (Preview / Variants)
@@ -1825,10 +1826,10 @@ export function ClientPortal({
             <p className="text-sm text-gray-500">
               Questions? Our team is here to help.{' '}
               <a
-                href="mailto:support@meetcursive.com"
+                href={`mailto:${SUPPORT_EMAIL}`}
                 className="font-medium text-primary transition-colors hover:text-brand-700"
               >
-                support@meetcursive.com
+                ${SUPPORT_EMAIL}
               </a>
             </p>
           </div>

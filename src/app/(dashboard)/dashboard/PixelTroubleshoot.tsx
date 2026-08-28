@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { SUPPORT_EMAIL } from '@/lib/config/urls'
 
 /**
  * Pixel-install assurance (#8).
@@ -83,7 +84,7 @@ export function PixelTroubleshoot() {
           View snippet &amp; install help
         </Link>
         <a
-          href="mailto:support@meetcursive.com?subject=Pixel%20not%20firing"
+          href="mailto:${SUPPORT_EMAIL}?subject=Pixel%20not%20firing"
           className="text-xs font-medium text-amber-700 hover:underline"
         >
           Still stuck? Email us

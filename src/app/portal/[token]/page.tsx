@@ -1,4 +1,5 @@
 import { ClientPortal, type PortalApprovals } from './ClientPortal'
+import { SUPPORT_EMAIL } from '@/lib/config/urls'
 
 interface PageProps {
   params: Promise<{ token: string }>
@@ -96,10 +97,10 @@ function ExpiredLink() {
         and we&apos;ll send you a fresh link.
       </p>
       <a
-        href="mailto:support@meetcursive.com"
+        href={`mailto:${SUPPORT_EMAIL}`}
         className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm font-medium text-white hover:bg-primary/90 transition-colors"
       >
-        Contact support@meetcursive.com
+        Contact ${SUPPORT_EMAIL}
       </a>
     </div>
   )
@@ -118,10 +119,10 @@ function InvalidLink() {
         We could not find an onboarding portal for this link. Please double-check the URL or reach out for a fresh one.
       </p>
       <a
-        href="mailto:support@meetcursive.com"
+        href={`mailto:${SUPPORT_EMAIL}`}
         className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm font-medium text-white hover:bg-primary/90 transition-colors"
       >
-        Contact support@meetcursive.com
+        Contact ${SUPPORT_EMAIL}
       </a>
     </div>
   )

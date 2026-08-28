@@ -16,6 +16,7 @@ import {
   Info,
 } from 'lucide-react'
 import { PixelInstallTabs } from '@/components/pixel/PixelInstallTabs'
+import { SUPPORT_EMAIL } from '@/lib/config/urls'
 
 interface PixelStatus {
   has_pixel: boolean
@@ -508,7 +509,7 @@ export default function PixelSettingsPage() {
                       It can take up to 5 minutes for the first event to appear
                       after installation.{' '}
                       <a
-                        href="mailto:support@meetcursive.com"
+                        href={`mailto:${SUPPORT_EMAIL}`}
                         className="underline"
                       >
                         Get help
@@ -587,10 +588,10 @@ export default function PixelSettingsPage() {
                   <p className="mt-3 text-xs text-amber-700">
                     Still not working? Contact us at{' '}
                     <a
-                      href="mailto:support@meetcursive.com"
+                      href={`mailto:${SUPPORT_EMAIL}`}
                       className="underline"
                     >
-                      support@meetcursive.com
+                      ${SUPPORT_EMAIL}
                     </a>
                   </p>
                 </div>

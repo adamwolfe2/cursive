@@ -7,6 +7,7 @@ import { FUNNEL_EVENTS, trackFunnel } from '@/lib/funnel/tracking'
 import { Button } from '@/components/ui/button'
 import { PlatformInstallGuide } from '@/components/funnel/PlatformInstallGuide'
 import type { PlatformSlug } from '@/lib/funnel/platform-detect'
+import { SUPPORT_EMAIL } from '@/lib/config/urls'
 
 // ─── "Test my install" button ─────────────────────────────────────────────
 
@@ -293,7 +294,6 @@ function PixelStep({
   const [websiteUrl, setWebsiteUrl] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [copied, setCopied] = useState(false)
 
   const provisioned = !!order.pixel_snippet
 
@@ -1058,10 +1058,10 @@ export function FunnelPortal({
             <p className="text-sm text-gray-500">
               Questions?{' '}
               <a
-                href="mailto:support@meetcursive.com"
+                href={`mailto:${SUPPORT_EMAIL}`}
                 className="font-medium text-primary transition-colors hover:text-brand-700"
               >
-                support@meetcursive.com
+                ${SUPPORT_EMAIL}
               </a>
             </p>
           </div>
@@ -1122,7 +1122,7 @@ function BillingSaveFlow({
 
         <div className="mt-5 flex flex-col gap-2">
           <a
-            href="mailto:support@meetcursive.com?subject=Help%20with%20my%20Cursive%20account"
+            href="mailto:${SUPPORT_EMAIL}?subject=Help%20with%20my%20Cursive%20account"
             className="inline-flex w-full items-center justify-center rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary/90"
           >
             Email us — we&apos;ll make it right

@@ -1,5 +1,6 @@
 import { getOrderByToken, offerForOrder } from '@/lib/funnel/order.service'
 import { FunnelPortal } from './FunnelPortal'
+import { SUPPORT_EMAIL } from '@/lib/config/urls'
 
 interface PageProps {
   params: Promise<{ token: string }>
@@ -68,10 +69,10 @@ function Centered({
       <h1 className="mb-3 text-2xl font-semibold text-gray-900">{title}</h1>
       <p className="mb-8 max-w-sm text-base text-gray-500">{children}</p>
       <a
-        href="mailto:support@meetcursive.com"
+        href={`mailto:${SUPPORT_EMAIL}`}
         className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-primary/90"
       >
-        Contact support@meetcursive.com
+        Contact ${SUPPORT_EMAIL}
       </a>
     </div>
   )

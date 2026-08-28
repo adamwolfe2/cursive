@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import { SUPPORT_EMAIL } from '@/lib/config/urls'
 
 export const metadata = {
   title: 'Onboarding Portal | Cursive',
@@ -23,12 +24,12 @@ export default function TokenPortalLayout({
             priority
           />
           <a
-            href="mailto:support@meetcursive.com"
+            href={`mailto:${SUPPORT_EMAIL}`}
             className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
           >
             Need help?{' '}
             <span className="font-medium text-primary hover:text-brand-700">
-              support@meetcursive.com
+              ${SUPPORT_EMAIL}
             </span>
           </a>
         </div>

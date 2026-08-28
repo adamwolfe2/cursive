@@ -1,6 +1,7 @@
 'use client'
 
 import { PACKAGES, type PackageSlug } from '@/types/onboarding'
+import { SUPPORT_EMAIL } from '@/lib/config/urls'
 
 interface PortalClient {
   company_name: string
@@ -347,10 +348,10 @@ export function PortalDashboard({ client }: { client: PortalClient }) {
         <p className="text-sm text-gray-500">
           Our team is here to help. Reach out anytime at{' '}
           <a
-            href="mailto:support@meetcursive.com"
+            href={`mailto:${SUPPORT_EMAIL}`}
             className="font-medium text-primary hover:text-brand-700 transition-colors"
           >
-            support@meetcursive.com
+            ${SUPPORT_EMAIL}
           </a>
         </p>
       </div>

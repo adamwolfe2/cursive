@@ -16,7 +16,7 @@ import { sendEmail } from '@/lib/email/service'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 import { createOnFailureHandler } from '@/inngest/utils/on-failure-handler'
 
-import { APP_URL } from '@/lib/config/urls'
+import { APP_URL, SUPPORT_EMAIL } from '@/lib/config/urls'
 const UPGRADE_URL = `${APP_URL}/settings/billing`
 const _DASHBOARD_URL = `${APP_URL}/leads`
 
@@ -129,7 +129,7 @@ function trialEmailDayOf({ userName, trialEndsAt: _trialEndsAt }: { userName: st
 <p style="margin:0 0 16px;font-size:15px;color:#374151;line-height:1.6;">Today is the last day of your Cursive trial. After midnight tonight, your pixel will stop identifying website visitors.</p>
 <p style="margin:0 0 24px;font-size:15px;color:#374151;line-height:1.6;">Upgrade now — takes 30 seconds — and your pixel stays live without interruption.</p>
 <table cellpadding="0" cellspacing="0" role="presentation"><tr><td style="border-radius:8px;background:#6366f1;"><a href="${UPGRADE_URL}" style="display:inline-block;padding:14px 32px;font-size:15px;font-weight:600;color:#ffffff;text-decoration:none;border-radius:8px;">Upgrade Now — 30 seconds &rarr;</a></td></tr></table>
-<p style="margin:20px 0 0;font-size:13px;color:#9ca3af;">Still have questions? <a href="mailto:support@meetcursive.com" style="color:#6366f1;">Email us</a> and we'll help you decide.</p>
+<p style="margin:20px 0 0;font-size:13px;color:#9ca3af;">Still have questions? <a href="mailto:${SUPPORT_EMAIL}" style="color:#6366f1;">Email us</a> and we'll help you decide.</p>
 </td></tr>
 <tr><td style="background:#f9fafb;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 12px 12px;padding:16px 36px;">
 <p style="margin:0;font-size:12px;color:#d1d5db;">&copy; ${new Date().getFullYear()} Cursive &middot; <a href="${APP_URL}/settings/notifications" style="color:#d1d5db;text-decoration:none;">Manage notifications</a></p>

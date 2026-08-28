@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import { SUPPORT_EMAIL } from '@/lib/config/urls'
 
 export const metadata = {
   title: 'Cursive — Find the people searching for your product',
@@ -24,12 +25,12 @@ export default function GetLeadsLayout({
             priority
           />
           <a
-            href="mailto:support@meetcursive.com"
+            href={`mailto:${SUPPORT_EMAIL}`}
             className="text-sm text-gray-500 transition-colors hover:text-gray-700"
           >
             Questions?{' '}
             <span className="font-medium text-blue-600 hover:text-blue-700">
-              support@meetcursive.com
+              ${SUPPORT_EMAIL}
             </span>
           </a>
         </div>

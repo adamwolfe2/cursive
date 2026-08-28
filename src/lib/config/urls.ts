@@ -38,5 +38,14 @@ export const EMAILBISON_URL =
 // Contact
 // ---------------------------------------------------------------------------
 
-/** Primary support / contact email */
-export const SUPPORT_EMAIL = 'hello@meetcursive.com'
+/**
+ * Primary support / contact email — the single source of truth for every
+ * customer-facing "get help" address.
+ *
+ * Env-overridable so the address can be repointed from Vercel without a
+ * deploy. Anything hardcoded elsewhere is drift: support@ was scattered
+ * across the portal surfaces, bypassed this constant, and bounced on a real
+ * customer because no such mailbox exists.
+ */
+export const SUPPORT_EMAIL =
+  process.env.NEXT_PUBLIC_SUPPORT_EMAIL || 'hello@meetcursive.com'
