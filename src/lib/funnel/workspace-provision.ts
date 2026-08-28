@@ -150,7 +150,7 @@ export async function provisionFunnelWorkspace(
     }
   }
 
-  // 1. Existing platform user with this email? Reuse their workspace entirely.
+  // 1. Existing platform user with this email?
   const { data: existingUser } = await admin
     .from('users')
     .select('id, auth_user_id, workspace_id')
@@ -158,8 +158,38 @@ export async function provisionFunnelWorkspace(
     .maybeSingle()
 
   if (existingUser?.workspace_id) {
+    // SECURITY (P0 account takeover): the Stripe checkout email is fully
+    // buyer-controlled and UNVERIFIED. We must NEVER auto-link a paid funnel
+    // order to — or mint a session into — a pre-existing workspace on the
+    // strength of that email. Doing so let an attacker pay for the offer, type
+    // a victim's email at checkout, retrieve the portal token from
+    // /api/funnel/by-session with their own Stripe session id, and be handed a
+    // real dashboard session as the victim via /dashboard-login.
+    //
+    // The ONLY safe reuse is a workspace that is itself funnel-sourced
+    // (settings.source === 'funnel_order') — a prior funnel purchase by the
+    // same pay-first buyer, at the same (un)trust level on the same restricted
+    // surface. For ANY other (marketplace/admin) workspace we refuse: link
+    // nothing, create nothing, return null. The buyer must prove they own the
+    // mailbox via a real emailed magic link instead.
+    const { data: existingWs } = await admin
+      .from('workspaces')
+      .select('settings')
+      .eq('id', existingUser.workspace_id)
+      .maybeSingle()
+    const existingSource =
+      (existingWs?.settings as { source?: string } | null)?.source ?? null
+
+    if (existingSource !== 'funnel_order') {
+      safeLog(
+        '[funnel/provision] refused reuse — email already owns a non-funnel workspace (unverified email, no auto-link/session)',
+        { order_id: order.id }
+      )
+      return null
+    }
+
     await linkOrderToWorkspace(admin, order.id, existingUser.workspace_id)
-    safeLog('[funnel/provision] reused existing user workspace', {
+    safeLog('[funnel/provision] reused existing funnel workspace', {
       order_id: order.id,
       workspace_id: existingUser.workspace_id,
     })
