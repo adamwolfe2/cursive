@@ -303,3 +303,29 @@ export async function verifyWorkspaceOwnership(brandWorkspaceId: string): Promis
 
   return workspace.workspace_id === user.workspace_id
 }
+
+/**
+ * Resolve the workspace a page should render.
+ *
+ * Most dashboard pages look their workspace up themselves
+ * (`users.workspace_id where auth_user_id = <caller>`) rather than going through
+ * getCurrentUser(), so they render the ADMIN's workspace during an impersonation
+ * session. Wrap the id they resolved in this to get the impersonated workspace
+ * when one is active.
+ *
+ * Gated on the impersonation cookie so ordinary requests do no extra work, and
+ * getActiveImpersonationSession() independently verifies the caller is a real
+ * platform admin with an active session — a forged cookie resolves to nothing.
+ */
+export async function effectiveWorkspaceId<T extends string | null | undefined>(
+  ownWorkspaceId: T
+): Promise<string | T> {
+  try {
+    const impersonationCookie = (await cookies()).get(IMPERSONATION_COOKIE)?.value
+    if (!impersonationCookie) return ownWorkspaceId
+    const impersonation = await getActiveImpersonationSession()
+    return impersonation?.workspaceId ?? ownWorkspaceId
+  } catch {
+    return ownWorkspaceId
+  }
+}

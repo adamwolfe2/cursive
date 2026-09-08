@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
+import { effectiveWorkspaceId } from '@/lib/auth/helpers'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { redirect } from 'next/navigation'
 import { LeadsPageTabs } from '@/components/leads/leads-page-tabs'
@@ -31,6 +32,13 @@ export default async function LeadsPage() {
     redirect('/welcome')
   }
 
+  // Honour an active admin impersonation session — this page resolves its own
+  // workspace rather than going through getCurrentUser(). New object, no mutation.
+  const profile = {
+    ...userProfile,
+    workspace_id: await effectiveWorkspaceId(userProfile.workspace_id),
+  }
+
   const today = new Date().toISOString().split('T')[0]
   const startOfWeek = new Date()
   startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay())
@@ -47,7 +55,7 @@ export default async function LeadsPage() {
           'id, first_name, last_name, full_name, email, phone, company_name, company_domain, job_title, city, state, country, delivered_at, intent_score_calculated, freshness_score, enrichment_status, verification_status, status, tags, source',
           { count: 'exact' }
         )
-        .eq('workspace_id', userProfile.workspace_id)
+        .eq('workspace_id', profile.workspace_id)
         .gte('delivered_at', `${today}T00:00:00`)
         .lte('delivered_at', `${today}T23:59:59`)
         .order('delivered_at', { ascending: false })
@@ -55,12 +63,12 @@ export default async function LeadsPage() {
       supabase
         .from('leads')
         .select('id', { count: 'exact', head: true })
-        .eq('workspace_id', userProfile.workspace_id)
+        .eq('workspace_id', profile.workspace_id)
         .gte('delivered_at', `${weekStart}T00:00:00`),
       supabase
         .from('leads')
         .select('id', { count: 'exact', head: true })
-        .eq('workspace_id', userProfile.workspace_id)
+        .eq('workspace_id', profile.workspace_id)
         .gte('delivered_at', `${monthStart}T00:00:00`),
     ])
 
@@ -69,7 +77,7 @@ export default async function LeadsPage() {
   const { data: funnelOrderRow } = await createAdminClient()
     .from('funnel_orders')
     .select('id')
-    .eq('workspace_id', userProfile.workspace_id)
+    .eq('workspace_id', profile.workspace_id)
     .limit(1)
     .maybeSingle()
 
@@ -88,10 +96,10 @@ export default async function LeadsPage() {
       }}
       assignedLeadsProps={{
         userId: userProfile.id,
-        workspaceId: userProfile.workspace_id,
+        workspaceId: profile.workspace_id,
       }}
       allLeadsProps={{
-        workspaceId: userProfile.workspace_id,
+        workspaceId: profile.workspace_id,
       }}
     />
   )

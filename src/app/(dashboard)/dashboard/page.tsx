@@ -14,6 +14,7 @@ import type { Metadata } from 'next'
 import { unstable_cache } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { effectiveWorkspaceId } from '@/lib/auth/helpers'
 import { after } from 'next/server'
 import { inngest } from '@/inngest/client'
 import { CreditService } from '@/lib/services/credit.service'
@@ -698,14 +699,21 @@ export default async function DashboardPage({
     .eq('auth_user_id', user.id)
     .maybeSingle()
 
-  const userProfile = userData as {
+  const rawUserProfile = userData as {
     id: string; auth_user_id: string; workspace_id: string; email: string
     full_name: string | null; plan: string | null; role: string
     daily_lead_limit: number | null; industry_segment: string | null; location_segment: string | null
     workspaces: { id: string; name: string; industry_vertical: string | null; created_at: string } | null
   } | null
 
-  if (userError || !userProfile?.workspace_id) redirect('/welcome')
+  if (userError || !rawUserProfile?.workspace_id) redirect('/welcome')
+
+  // Honour an active admin impersonation session — this page resolves its own
+  // workspace rather than going through getCurrentUser(). New object, no mutation.
+  const userProfile = {
+    ...rawUserProfile,
+    workspace_id: await effectiveWorkspaceId(rawUserProfile.workspace_id),
+  }
 
   const workspaceId = userProfile.workspace_id
 
