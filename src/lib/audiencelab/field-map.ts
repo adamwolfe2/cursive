@@ -588,10 +588,26 @@ export function extractIpAddress(raw: Record<string, any>): string | null {
 
 /**
  * Unwrap SuperPixel webhook payload into an array of events.
- * Handles wrapped ({ result: [...] }), array, and single-object payloads.
+ * Handles wrapped ({ result: [...] }), batched ({ events: [...] }), array,
+ * and single-object payloads.
+ *
+ * The live AL SuperPixel wire format is a BATCH wrapper:
+ *   { events: [ { edid, pixel_id, event_type, hem_sha256, resolution: {...},
+ *                 events: [ { event: 'page_view', properties: {...} } ] } ] }
+ * The elements of the OUTER `events` array are the per-visitor envelopes the
+ * rest of the pipeline expects (they carry pixel_id / hem_sha256 / resolution).
+ * Each envelope also has its own INNER `events` array of raw actions, which
+ * carries no identity — so we must only unwrap the outer wrapper. A payload
+ * that identifies itself as an event (pixel_id / event_key / hem_sha256 at the
+ * top level) is an envelope, not a wrapper, and is returned as-is.
  */
 export function unwrapWebhookPayload(payload: any): Record<string, any>[] {
   if (Array.isArray(payload)) return payload
   if (payload?.result && Array.isArray(payload.result)) return payload.result
+  const isEventEnvelope =
+    payload?.pixel_id != null ||
+    payload?.event_key != null ||
+    payload?.hem_sha256 != null
+  if (Array.isArray(payload?.events) && !isEventEnvelope) return payload.events
   return [payload]
 }
