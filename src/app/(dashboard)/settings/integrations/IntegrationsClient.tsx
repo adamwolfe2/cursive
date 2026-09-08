@@ -115,6 +115,7 @@ export default function IntegrationsClient() {
   const [webhookSettingsLoaded, setWebhookSettingsLoaded] = useState(false)
   const [confirmRegenerateSecret, setConfirmRegenerateSecret] = useState(false)
   const [confirmRegenerateApiKey, setConfirmRegenerateApiKey] = useState(false)
+  const [newApiKey, setNewApiKey] = useState<string | null>(null)
 
   // Fetch current user
   const { data: userData, isLoading } = useQuery({
@@ -128,11 +129,31 @@ export default function IntegrationsClient() {
 
   const user = userData?.data
 
-  // Generate API key mutation
+  // Existing workspace API keys (metadata only — the secret is never re-shown)
+  const { data: apiKeysData } = useQuery({
+    queryKey: ['workspace', 'api-keys'],
+    queryFn: async () => {
+      const response = await fetch('/api/workspace/api-keys')
+      if (!response.ok) throw new Error('Failed to fetch API keys')
+      return response.json()
+    },
+    enabled: !!user,
+  })
+
+  const existingApiKeys: Array<{ id: string; name: string; key_prefix: string; is_active: boolean }> =
+    apiKeysData?.data?.api_keys ?? []
+  const activeApiKey = existingApiKeys.find((k) => k.is_active) ?? null
+
+  // Generate API key mutation.
+  // Uses the workspace key service (hashed storage, scopes, revocation). The
+  // secret is returned exactly once at creation, so we hold it in state to
+  // display; it can never be fetched again.
   const generateApiKeyMutation = useMutation({
     mutationFn: async () => {
-      const response = await fetch('/api/integrations/api-key', {
+      const response = await fetch('/api/workspace/api-keys', {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: 'Default API Key' }),
       })
       if (!response.ok) {
         const error = await response.json()
@@ -140,9 +161,11 @@ export default function IntegrationsClient() {
       }
       return response.json()
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['user', 'me'] })
-      toast.success('API key generated successfully!')
+    onSuccess: (json) => {
+      const key = json?.data?.api_key?.key ?? null
+      if (key) setNewApiKey(key)
+      queryClient.invalidateQueries({ queryKey: ['workspace', 'api-keys'] })
+      toast.success('API key generated. Copy it now — it is shown only once.')
     },
     onError: (error: Error) => {
       toast.error(error.message || 'Failed to generate API key')
@@ -661,7 +684,7 @@ export default function IntegrationsClient() {
           )}
         </div>
 
-        {user?.api_key && isPro ? (
+        {newApiKey ? (
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-zinc-700 mb-2">
@@ -670,13 +693,13 @@ export default function IntegrationsClient() {
               <div className="flex gap-3">
                 <input
                   type="text"
-                  value={user.api_key}
+                  value={newApiKey}
                   readOnly
                   className="block flex-1 rounded-lg border-zinc-300 bg-zinc-50 shadow-sm text-sm font-mono"
                 />
                 <button
                   onClick={() => {
-                    navigator.clipboard.writeText(user.api_key)
+                    navigator.clipboard.writeText(newApiKey)
                     toast.success('API key copied to clipboard!')
                   }}
                   className="rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 transition-colors"
@@ -684,6 +707,26 @@ export default function IntegrationsClient() {
                   Copy
                 </button>
               </div>
+              <p className="text-sm text-amber-700 mt-2">
+                Copy this key now. For your security it is stored hashed and cannot be shown again.
+              </p>
+            </div>
+          </div>
+        ) : activeApiKey ? (
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-zinc-700 mb-2">
+                Your API Key
+              </label>
+              <input
+                type="text"
+                value={`${activeApiKey.key_prefix}${'.'.repeat(8)}`}
+                readOnly
+                className="block w-full rounded-lg border-zinc-300 bg-zinc-50 shadow-sm text-sm font-mono"
+              />
+              <p className="text-sm text-zinc-500 mt-2">
+                Keys are shown in full only when created. Lost it? Regenerate below.
+              </p>
             </div>
 
             <button
@@ -698,32 +741,20 @@ export default function IntegrationsClient() {
           <div>
             <button
               onClick={() => generateApiKeyMutation.mutate()}
-              disabled={!isPro || generateApiKeyMutation.isPending}
+              disabled={generateApiKeyMutation.isPending}
               className="rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
             >
               {generateApiKeyMutation.isPending ? 'Generating...' : 'Generate API Key'}
             </button>
-
-            {!isPro && (
-              <p className="text-sm text-zinc-500 mt-3">
-                <Link
-                  href="/settings/billing"
-                  className="text-primary hover:text-primary/90 font-medium"
-                >
-                  Upgrade to Pro
-                </Link>{' '}
-                to generate API keys
-              </p>
-            )}
           </div>
         )}
 
-        {user?.api_key && isPro && (
+        {(newApiKey || activeApiKey) && (
           <div className="mt-6 pt-6 border-t border-zinc-200">
             <h3 className="text-sm font-medium text-zinc-900 mb-3">Example Usage</h3>
             <pre className="text-xs bg-zinc-900 text-zinc-100 p-4 rounded-lg overflow-x-auto">
               {`curl -X GET "https://api.meetcursive.com/v1/leads" \\
-  -H "Authorization: Bearer ${user.api_key}" \\
+  -H "Authorization: Bearer ${newApiKey ?? 'YOUR_API_KEY'}" \\
   -H "Content-Type: application/json"`}
             </pre>
             <p className="text-sm text-zinc-500 mt-3">

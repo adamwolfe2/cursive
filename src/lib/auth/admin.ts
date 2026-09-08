@@ -13,7 +13,7 @@ import { sanitizeSearchTerm } from '@/lib/utils/sanitize-search'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 // Cookie name for impersonation session
-const IMPERSONATION_COOKIE = 'cursive_impersonation_session'
+export const IMPERSONATION_COOKIE = 'cursive_impersonation_session'
 
 /**
  * Check if current user is a platform admin

@@ -426,11 +426,16 @@ export async function POST(request: NextRequest) {
     // This is what unblocks the first-visitor "aha" email and flips the
     // silent-pixel health checks to "healthy". Without it the column stays
     // null forever. Fire-and-forget — never block event ingestion on it.
-    if (pixelId && insertedIds.length > 0) {
+    // Keyed by workspace_id, NOT the event's pixel_id: AL posts a pixel_id from
+    // a different namespace than the pixel-registry id we store at provisioning
+    // (verified against AL's /pixels list), so `pixel_audiencelab_id = pixelId`
+    // never matched and the column stayed null forever — which in turn kept the
+    // first-visitor email unsent and the silent-pixel health check red.
+    if (workspaceId && insertedIds.length > 0) {
       supabase
         .from('funnel_orders')
         .update({ pixel_last_event_at: new Date().toISOString() })
-        .eq('pixel_audiencelab_id', pixelId)
+        .eq('workspace_id', workspaceId)
         .then(({ error }) => {
           if (error) safeError(`${LOG_PREFIX} pixel_last_event_at stamp failed (non-fatal):`, error)
         })

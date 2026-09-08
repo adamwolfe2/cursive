@@ -4,6 +4,7 @@ import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { safeError, safeWarn } from '@/lib/utils/log-sanitizer'
 import type { User, UserWithPixelData } from '@/types'
+import { IMPERSONATION_COOKIE, getActiveImpersonationSession } from '@/lib/auth/admin'
 
 /**
  * Get the current authenticated user
@@ -80,21 +81,49 @@ export async function getCurrentUser(): Promise<UserWithPixelData | null> {
 
   if (!user) return null
 
+  // ADMIN IMPERSONATION
+  // "Switch Into Account" writes a super_admin_sessions row and a cookie, but
+  // nothing ever read it here — so every surface kept resolving the admin's own
+  // workspace while the banner claimed otherwise. An admin viewing a customer
+  // saw their own leads and counts under the customer's name.
+  //
+  // getCurrentUser is the single chokepoint every dashboard page and API route
+  // resolves a workspace through, so the substitution belongs here. The session
+  // lookup verifies the caller is a real platform admin with an ACTIVE session,
+  // so a normal user cannot reach this branch. Gated on the cookie first so
+  // ordinary requests do not pay for the extra queries.
+  let effectiveUser = user
+  const impersonationCookie = (await cookies()).get(IMPERSONATION_COOKIE)?.value
+  if (impersonationCookie) {
+    const impersonation = await getActiveImpersonationSession()
+    if (impersonation?.workspaceId) {
+      const { data: members } = await supabase
+        .from('users')
+        .select('*')
+        .eq('workspace_id', impersonation.workspaceId)
+
+      // "as if you were the owner" — prefer the owner so plan, role and limits
+      // match what the customer actually sees.
+      const target = members?.find((m) => m.role === 'owner') ?? members?.[0] ?? null
+      effectiveUser = target ?? { ...user, workspace_id: impersonation.workspaceId }
+    }
+  }
+
   // Fetch pixel trial status — stored in audiencelab_pixels, not on users table
   let trial_status: string | null = null
   let trial_ends_at: string | null = null
-  if (user.workspace_id) {
+  if (effectiveUser.workspace_id) {
     const { data: pixel } = await supabase
       .from('audiencelab_pixels')
       .select('trial_status, trial_ends_at')
-      .eq('workspace_id', user.workspace_id)
+      .eq('workspace_id', effectiveUser.workspace_id)
       .limit(1)
       .maybeSingle()
     trial_status = pixel?.trial_status ?? null
     trial_ends_at = pixel?.trial_ends_at ?? null
   }
 
-  return { ...(user as User), trial_status, trial_ends_at } as UserWithPixelData
+  return { ...(effectiveUser as User), trial_status, trial_ends_at } as UserWithPixelData
 }
 
 /**

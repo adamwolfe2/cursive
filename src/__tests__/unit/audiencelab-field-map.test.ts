@@ -563,6 +563,55 @@ describe('unwrapWebhookPayload', () => {
     const payload = { event: 'a' }
     expect(unwrapWebhookPayload(payload)).toEqual([{ event: 'a' }])
   })
+
+  // Regression: the live AL SuperPixel wire format is a { events: [...] } batch.
+  // Before this was handled, unwrap returned [wrapper] — the wrapper carries no
+  // pixel_id / hem_sha256 / resolution, so every real visitor event was stored
+  // as event_type 'unknown' with "No identifiable information" and no lead was
+  // ever created. Shape below is a trimmed copy of a real production payload.
+  const LIVE_BATCH = {
+    events: [
+      {
+        edid: '54ba15f5dc3fadd9418e63142611a7ee',
+        events: [
+          {
+            event: 'page_view',
+            properties: { url: 'https://runceleste.com/', path: '/' },
+            received_at: '2026-09-08T16:33:35Z',
+          },
+        ],
+        full_url: 'https://runceleste.com/',
+        pixel_id: '6f0057a5-24a3-4541-9b4a-230e1e93e8b3',
+        event_key: '67e7689d40084815c0b52d58bed3f591',
+        event_type: 'page_view',
+        hem_sha256: '0f6ddf6db3ed4076557453e6ebc7758e',
+        resolution: { FIRST_NAME: 'Marie', LAST_NAME: 'Matteson', JOB_TITLE: 'Health Coach' },
+      },
+    ],
+  }
+
+  it('unwraps the live { events: [...] } batch to the per-visitor envelopes', () => {
+    const out = unwrapWebhookPayload(LIVE_BATCH)
+    expect(out).toHaveLength(1)
+    expect(out[0].pixel_id).toBe('6f0057a5-24a3-4541-9b4a-230e1e93e8b3')
+    expect(out[0].hem_sha256).toBe('0f6ddf6db3ed4076557453e6ebc7758e')
+    expect(out[0].resolution.FIRST_NAME).toBe('Marie')
+  })
+
+  it('yields a real event type and identity from the live batch', () => {
+    const [envelope] = unwrapWebhookPayload(LIVE_BATCH)
+    expect(extractEventType(envelope)).toBe('page_view')
+    const identity = normalizeALPayload(envelope)
+    expect(identity.first_name).toBe('Marie')
+    expect(identity.last_name).toBe('Matteson')
+  })
+
+  it('does not unwrap an envelope that has its own inner events array', () => {
+    // A single envelope posted directly must NOT be flattened to its inner
+    // action list, which carries no identity fields.
+    const envelope = LIVE_BATCH.events[0]
+    expect(unwrapWebhookPayload(envelope)).toEqual([envelope])
+  })
 })
 
 describe('coerceEmployeeCount (AL range string -> integer column)', () => {
