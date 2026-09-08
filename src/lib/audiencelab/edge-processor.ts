@@ -137,6 +137,33 @@ async function checkDuplicate(
  * This function never throws — all errors are caught and logged.
  * The event is marked as processed regardless of partial failures.
  */
+/**
+ * Bump the per-workspace pixel visitor counters.
+ *
+ * Keyed by workspace, not pixel: the pixel_id carried in SuperPixel webhook
+ * events comes from a different namespace than the AL pixel-registry id stored
+ * at provisioning, so the two never join. Non-fatal — a counter failure must
+ * never block lead ingestion.
+ */
+async function bumpPixelCounters(
+  supabase: ReturnType<typeof createAdminClient>,
+  workspaceId: string | null,
+  events: number,
+  identified: number
+): Promise<void> {
+  if (!workspaceId) return
+  try {
+    const { error } = await supabase.rpc('increment_pixel_visitor_counts', {
+      p_workspace_id: workspaceId,
+      p_events: events,
+      p_identified: identified,
+    })
+    if (error) safeError(`${LOG_PREFIX} visitor counter bump failed:`, error)
+  } catch (err) {
+    safeError(`${LOG_PREFIX} unexpected error bumping visitor counters:`, err)
+  }
+}
+
 export async function processEventInline(
   eventId: string,
   workspaceId: string,
@@ -168,13 +195,15 @@ export async function processEventInline(
         .from('audiencelab_events')
         .update({ processed: true, error: 'No identifiable information' })
         .eq('id', eventId)
+      // Still a real visit — it counts toward the total, just not the identified tally.
+      await bumpPixelCounters(supabase, workspaceId || rawEvent.workspace_id, 1, 0)
       return { success: true, error: 'no_identifiable_info' }
     }
 
     // Step 3: Upsert identity
     let identityId: string | null = null
     let existingLeadId: string | null = null
-    let _isNewIdentity = false
+    let isNewIdentity = false
 
     // Find existing identity by priority: profile_id > uid > hem_sha256 > primary_email
     let existingIdentity: { id: string; visit_count: number; lead_id: string | null } | null = null
@@ -299,7 +328,7 @@ export async function processEventInline(
       }
 
       identityId = inserted!.id
-      _isNewIdentity = true
+      isNewIdentity = true
     }
 
     // Step 4: Create or update lead
@@ -630,6 +659,11 @@ export async function processEventInline(
         identity_id: identityId,
       })
       .eq('id', eventId)
+
+    // Counters the dashboard, pixel status API and trial drip emails read.
+    // A repeat visit by a known person bumps the total but not the identified
+    // tally, which counts distinct people.
+    await bumpPixelCounters(supabase, targetWorkspaceId, 1, isNewIdentity ? 1 : 0)
 
     safeLog(`${LOG_PREFIX} Processed event ${eventId}: identity=${identityId}, lead=${leadId}, new_lead=${isNewLead}`)
 
