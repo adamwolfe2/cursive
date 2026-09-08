@@ -16,6 +16,7 @@
  *   pnpm exec tsx scripts/backfill-superpixel-batches.ts            # dry run
  *   pnpm exec tsx scripts/backfill-superpixel-batches.ts --apply
  *   pnpm exec tsx scripts/backfill-superpixel-batches.ts --apply --limit=50
+ *   pnpm exec tsx scripts/backfill-superpixel-batches.ts --apply --workspace=<uuid>
  */
 
 import { createAdminClient } from '../src/lib/supabase/admin'
@@ -25,6 +26,8 @@ import { processEventInline } from '../src/lib/audiencelab/edge-processor'
 const APPLY = process.argv.includes('--apply')
 const limitArg = process.argv.find((a) => a.startsWith('--limit='))
 const LIMIT = limitArg ? parseInt(limitArg.split('=')[1], 10) : Infinity
+const wsArg = process.argv.find((a) => a.startsWith('--workspace='))
+const WORKSPACE = wsArg ? wsArg.split('=')[1] : null
 const PAGE = 200
 
 type EventRow = {
@@ -73,11 +76,15 @@ async function main() {
   let processedCount = 0
 
   while (processedCount < LIMIT) {
-    const { data, error } = await supabase
+    let query = supabase
       .from('audiencelab_events')
       .select('id, raw, workspace_id, source, raw_headers')
       .eq('source', 'superpixel')
       .is('pixel_id', null)
+
+    if (WORKSPACE) query = query.eq('workspace_id', WORKSPACE)
+
+    const { data, error } = await query
       .order('created_at', { ascending: true })
       .range(offset, offset + PAGE - 1)
 
