@@ -10,6 +10,7 @@ import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { effectiveWorkspaceId } from '@/lib/auth/helpers'
 import { WebsiteVisitorsClient } from './WebsiteVisitorsClient'
 
 export const metadata: Metadata = {
@@ -30,7 +31,9 @@ export default async function WebsiteVisitorsPage() {
     .eq('auth_user_id', user.id)
     .maybeSingle()
 
-  const workspaceId = userData?.workspace_id
+  // Honour an active admin impersonation session — this page resolves its own
+  // workspace rather than going through getCurrentUser().
+  const workspaceId = await effectiveWorkspaceId(userData?.workspace_id)
   if (!workspaceId) redirect('/welcome')
 
   const admin = createAdminClient()
