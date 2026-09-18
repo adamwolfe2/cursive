@@ -336,6 +336,7 @@ export { icpAudienceBuilder } from './icp-audience-builder'
 // AudienceLab DFY Fulfillment Automation
 // Weekly Monday refresh of DFY client audiences (net-new leads)
 export { alAudienceRefresh } from './al-audience-refresh'
+export { icpAudienceSync } from './icp-audience-sync'
 // Hourly founder re-engagement for pricing-gate email captures that didn't buy
 export { funnelReengagement } from './funnel-reengagement'
 // Every-5-min poller for pending batch enrichment jobs

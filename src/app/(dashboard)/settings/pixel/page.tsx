@@ -217,7 +217,7 @@ export default function PixelSettingsPage() {
     // 1. If stored snippet already contains a <script tag, use it as-is
     // 2. Otherwise wrap install_url in a script tag
     // No hardcoded CDN fallback: if AL didn't give us a URL, we don't guess a version.
-    const _installSnippet = (() => {
+    const installSnippet = (() => {
       if (data.pixel!.snippet && data.pixel!.snippet.includes('<script')) {
         return data.pixel!.snippet
       }
@@ -700,7 +700,7 @@ export default function PixelSettingsPage() {
               everything else
             </p>
 
-            <PixelInstallTabs pixelId={data.pixel!.pixel_id} />
+            <PixelInstallTabs snippet={installSnippet} />
 
             <div className="mt-4 rounded-lg border border-primary/20 bg-primary/5 p-4">
               <h3 className="mb-2 text-sm font-semibold text-primary">

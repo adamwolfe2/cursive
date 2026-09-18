@@ -56,7 +56,10 @@ export async function middleware(req: NextRequest) {
     if (
       pathname.startsWith('/_next/static') ||
       pathname.startsWith('/_next/image') ||
-      pathname.match(/\.(ico|png|jpg|jpeg|gif|webp|svg)$/)
+      pathname.match(/\.(ico|png|jpg|jpeg|gif|webp|svg)$/) ||
+      // Public pixel loader + resolver, loaded on customer sites (anonymous visitors)
+      pathname === '/pixel.js' ||
+      pathname.startsWith('/api/pixel/script/')
     ) {
       return NextResponse.next()
     }

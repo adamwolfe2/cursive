@@ -880,3 +880,16 @@ describe('unwrapWebhookPayload', () => {
     expect(unwrapWebhookPayload({})).toEqual([{}])
   })
 })
+
+describe('normalizeALPayload business email key', () => {
+  it('reads the singular BUSINESS_EMAIL that live SuperPixel events send', () => {
+    const n = normalizeALPayload({
+      resolution: {
+        FIRST_NAME: 'Dana',
+        PERSONAL_EMAILS: 'dana@gmail.com',
+        BUSINESS_EMAIL: 'dana@acme.com',
+      },
+    })
+    expect(n.business_emails).toEqual(['dana@acme.com'])
+  })
+})
