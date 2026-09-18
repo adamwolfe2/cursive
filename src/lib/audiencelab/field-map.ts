@@ -354,7 +354,7 @@ function parseCsvToArray(val: any): string[] {
  * AL payloads may nest identity fields under resolution.*, event_data.*, or event.data.*.
  * Top-level keys always win (they're checked first).
  */
-function flattenPayload(raw: Record<string, any>): Record<string, any> {
+export function flattenPayload(raw: Record<string, any>): Record<string, any> {
   const merged: Record<string, any> = {}
 
   // Layer in nested sources (lowest priority first)
@@ -398,7 +398,12 @@ export function normalizeALPayload(raw: Record<string, any>): NormalizedIdentity
 
   // Parse multi-value email fields
   const personalEmails = parseEmailList(flat.PERSONAL_EMAILS || flat.personal_emails)
-  const businessEmails = parseEmailList(flat.BUSINESS_EMAILS || flat.business_emails)
+  // Live SuperPixel payloads send the singular BUSINESS_EMAIL (verified against
+  // stored events: 133 of 336 on one pixel). Reading only the plural dropped
+  // every work email we were sent.
+  const businessEmails = parseEmailList(
+    flat.BUSINESS_EMAILS || flat.business_emails || flat.BUSINESS_EMAIL || flat.business_email
+  )
 
   // AL's authoritative verification signal lives in *_VERIFIED_EMAILS. Real-time
   // pixel/webhook events carry these but OMIT *_EMAIL_VALIDATION_STATUS, so

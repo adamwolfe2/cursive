@@ -689,6 +689,52 @@ export async function createCustomAudience(
 }
 
 /**
+ * Intent + firmographic audience — the request shape AudienceLab actually honors.
+ *
+ * Verified live 2026-09-18: AL ignores `filters.business.*` (the shape
+ * createAudience/buildWorkspaceAudienceFilters send) and returns the unfiltered
+ * 500k universe. It honors `filters.businessProfile.{industry,seniority,jobTitle}`
+ * with lowercase taxonomy values, plus `segment: ["b2b_<n>"]` intent topics.
+ */
+export interface ALIntentAudienceRequest {
+  segment: string[]
+  days_back: number
+  filters: {
+    businessProfile?: { industry?: string[]; seniority?: string[]; jobTitle?: string[]; excludeJobTitle?: string[] }
+    state?: string[]
+  }
+}
+
+export async function previewIntentAudience(
+  params: ALIntentAudienceRequest & { limit?: number; score?: Array<'low' | 'medium' | 'high'> }
+): Promise<ALAudiencePreviewResponse> {
+  return alFetch<ALAudiencePreviewResponse>('/audiences/preview', {
+    method: 'POST',
+    body: JSON.stringify({
+      segment: params.segment,
+      days_back: params.days_back,
+      filters: params.filters,
+      ...(params.limit !== undefined && { limit: params.limit }),
+      ...(params.score && params.score.length > 0 && { score: params.score }),
+    }),
+  })
+}
+
+export async function createIntentAudience(
+  params: ALIntentAudienceRequest & { name: string }
+): Promise<ALAudienceCreateResponse> {
+  return alFetch<ALAudienceCreateResponse>('/audiences', {
+    method: 'POST',
+    body: JSON.stringify({
+      name: params.name,
+      segment: params.segment,
+      days_back: params.days_back,
+      filters: params.filters,
+    }),
+  })
+}
+
+/**
  * Fetch paginated records from a created audience.
  * API returns { data: [...], total_records, page, page_size, total_pages }
  *

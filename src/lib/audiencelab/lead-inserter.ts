@@ -11,6 +11,8 @@ import { safeError } from '@/lib/utils/log-sanitizer'
 import type { ALEnrichedProfile } from './api-client'
 import { assessLeadQuality } from '@/lib/services/lead-quality.service'
 import { maybeEnrichTopUp } from '@/lib/services/lead-enrichment.service'
+import type { IcpProfile } from '@/lib/icp/profile'
+import { scoreIcpFit, icpInputFromALRecord } from '@/lib/icp/score'
 
 export const MIN_QUALITY_SCORE = 20
 
@@ -62,14 +64,19 @@ function boolField(val: unknown): boolean | null {
   return ['Y', 'y', 'true', 'TRUE', 'Yes', 'yes', true].includes(val as string | boolean)
 }
 
-function extractEmail(record: ALEnrichedProfile): string | null {
-  const bve = record.BUSINESS_VERIFIED_EMAILS
-  const pve = record.PERSONAL_VERIFIED_EMAILS
+/** AL multi-value email fields arrive as arrays or comma-separated strings. */
+function firstEmail(val: unknown): string | null {
+  const list = Array.isArray(val) ? val.filter((v): v is string => typeof v === 'string') : parseCSV(val)
+  return list.map(e => e.trim()).find(e => e.includes('@')) || null
+}
+
+/** Verified work email, then verified personal, then unverified personal, then unverified work. */
+export function extractEmail(record: ALEnrichedProfile): string | null {
   return (
-    (Array.isArray(bve) ? bve[0] : typeof bve === 'string' && bve.length > 0 ? bve : null) ||
-    (Array.isArray(pve) ? pve[0] : typeof pve === 'string' && pve.length > 0 ? pve : null) ||
-    parseCSV(record.PERSONAL_EMAILS)[0] ||
-    record.BUSINESS_EMAIL ||
+    firstEmail(record.BUSINESS_VERIFIED_EMAILS) ||
+    firstEmail(record.PERSONAL_VERIFIED_EMAILS) ||
+    firstEmail(record.PERSONAL_EMAILS) ||
+    firstEmail(record.BUSINESS_EMAIL) ||
     null
   )
 }
@@ -90,11 +97,13 @@ export interface InsertLeadOptions {
    * "never deliver an unverified lead" guarantee.
    */
   markVerified?: boolean
+  /** Workspace ICP: records below icp.minScore are skipped; score becomes intent_score_calculated. */
+  icp?: IcpProfile | null
 }
 
 export interface InsertLeadResult {
   leadId: string | null
-  /** 'inserted' | 'skipped_quality' | 'skipped_no_email' | 'skipped_duplicate' | 'error' */
+  /** 'inserted' | 'skipped_quality' | 'skipped_icp' | 'skipped_no_email' | 'skipped_duplicate' | 'error' */
   outcome: string
 }
 
@@ -132,17 +141,33 @@ export async function insertLeadFromALRecord(
   record: ALEnrichedProfile,
   options: InsertLeadOptions
 ): Promise<InsertLeadResult> {
-  const { workspaceId, assignedUserId, sourceTag, extraTags = [], industries = [], markVerified = false } = options
+  const { workspaceId, assignedUserId, sourceTag, extraTags = [], industries = [], markVerified = false, icp = null } = options
 
   const qualityScore = scoreALProfile(record)
   if (qualityScore < MIN_QUALITY_SCORE) {
     return { leadId: null, outcome: 'skipped_quality' }
   }
 
+  const icpInput = icp ? icpInputFromALRecord(record as Record<string, unknown>) : null
+  const icpFit = icp && icpInput ? scoreIcpFit(icpInput, icp) : null
+  if (icpFit && !icpFit.isMatch) {
+    return { leadId: null, outcome: 'skipped_icp' }
+  }
+
   const email = extractEmail(record)
   if (!email) {
     return { leadId: null, outcome: 'skipped_no_email' }
   }
+  const workEmail = icpInput?.workEmail?.toLowerCase() || null
+  const icpFields: Record<string, unknown> = icpFit
+    ? {
+        intent_score_calculated: icpFit.score,
+        ...(workEmail && workEmail !== email.toLowerCase() && { secondary_email: workEmail }),
+        ...(icpInput?.linkedinUrl && { individual_linkedin_url: icpInput.linkedinUrl }),
+        ...(icpInput?.seniority && { seniority_level: icpInput.seniority }),
+        ...(record.DEPARTMENT && { department: record.DEPARTMENT }),
+      }
+    : {}
 
   const supabase = createAdminClient()
 
@@ -227,7 +252,14 @@ export async function insertLeadFromALRecord(
       verified_at: markVerified ? new Date().toISOString() : null,
       assigned_user_id: assignedUserId || null,
       enrichment_method: 'audiencelab_pull',
-      tags: ['audiencelab', sourceTag, ...extraTags, ...industries.map(i => i.toLowerCase())],
+      tags: [
+        'audiencelab',
+        sourceTag,
+        ...extraTags,
+        ...industries.map(i => i.toLowerCase()),
+        ...(icpFit ? ['icp-match'] : []),
+      ],
+      ...icpFields,
       company_data: {
         name: record.COMPANY_NAME || null,
         industry: record.COMPANY_INDUSTRY || industries[0] || null,

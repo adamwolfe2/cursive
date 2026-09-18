@@ -10,7 +10,10 @@
  */
 
 import { createAdminClient } from '@/lib/supabase/admin'
-import { normalizeALPayload, extractEventType, isLeadWorthy, isVerifiedEmail } from '@/lib/audiencelab/field-map'
+import { normalizeALPayload, extractEventType, isLeadWorthy, isVerifiedEmail, flattenPayload } from '@/lib/audiencelab/field-map'
+import { loadWorkspaceIcp } from '@/lib/icp/profile'
+import { scoreIcpFit, icpInputFromALRecord } from '@/lib/icp/score'
+import { resolveLeadContact } from '@/lib/icp/contact'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 import { checkQuota, incrementQuota } from '@/lib/services/al-quota.service'
 
@@ -336,6 +339,18 @@ export async function processEventInline(
     let leadId: string | null = existingLeadId
     let isNewLead = false
 
+    // Workspace ICP: score the visitor and, for B2B workspaces, deliver the work email.
+    const icp = targetWorkspaceId ? await loadWorkspaceIcp(supabase, targetWorkspaceId) : null
+    const icpInput = icp ? icpInputFromALRecord(flattenPayload(rawEvent.raw || {})) : null
+    const icpFit = icp && icpInput ? scoreIcpFit(icpInput, icp) : null
+    const contact = resolveLeadContact(normalized, icp, icpInput)
+    const icpFields: Record<string, unknown> = icpFit
+      ? {
+          intent_score_calculated: icpFit.score,
+          ...(icpInput?.linkedinUrl && { individual_linkedin_url: icpInput.linkedinUrl }),
+        }
+      : {}
+
     if (existingLeadId) {
       // Update existing lead with fresh data
       const updateFields: Record<string, any> = {
@@ -363,12 +378,13 @@ export async function processEventInline(
       if (normalized.landing_url) updateFields.page_url = normalized.landing_url
       if (normalized.dnc_mobile) updateFields.dnc_mobile = normalized.dnc_mobile
       if (normalized.dnc_landline) updateFields.dnc_landline = normalized.dnc_landline
+      Object.assign(updateFields, icpFields)
 
       await supabase
         .from('leads')
         .update(updateFields)
         .eq('id', existingLeadId)
-    } else if (normalized.primary_email) {
+    } else if (contact.email) {
       // Check lead-worthiness (all events including auth must pass quality gate)
       const worthy = isLeadWorthy({
         eventType,
@@ -378,13 +394,13 @@ export async function processEventInline(
         hasPhone: normalized.phones.length > 0,
         hasName: !!(normalized.first_name && normalized.last_name),
         hasCompany: !!normalized.company_name?.trim(),
-      })
+      }) || contact.b2bQualified
 
       if (worthy) {
         // Check for duplicates via hash key (covers same email+company+phone combo globally)
         const dedupResult = await checkDuplicate(
           supabase,
-          normalized.primary_email,
+          contact.email,
           normalized.company_domain,
           normalized.phones[0] || null
         )
@@ -397,7 +413,7 @@ export async function processEventInline(
           const { data: emailMatch, error: emailErr } = await supabase
             .from('leads')
             .select('id, workspace_id')
-            .eq('email', normalized.primary_email.toLowerCase())
+            .eq('email', contact.email.toLowerCase())
             .limit(1)
             .maybeSingle()
 
@@ -441,7 +457,10 @@ export async function processEventInline(
             .from('leads')
             .insert({
               workspace_id: targetWorkspaceId,
-              email: normalized.primary_email,
+              email: contact.email,
+              ...(contact.secondaryEmail && { secondary_email: contact.secondaryEmail }),
+              ...icpFields,
+              ...(icpFit?.isMatch && { tags: ['icp-match'] }),
               first_name: normalized.first_name,
               last_name: normalized.last_name,
               full_name: [normalized.first_name, normalized.last_name].filter(Boolean).join(' ') || null,
@@ -610,7 +629,7 @@ export async function processEventInline(
     if (leadId && isNewLead) {
       const leadPayload = {
         id: leadId,
-        email: normalized.primary_email,
+        email: contact.email,
         first_name: normalized.first_name,
         last_name: normalized.last_name,
         full_name: [normalized.first_name, normalized.last_name].filter(Boolean).join(' ') || null,
