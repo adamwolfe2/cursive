@@ -87,7 +87,7 @@ function normalizePhoneForHash(phone: string | null | undefined): string {
 /**
  * Edge-compatible hash key calculation (replaces Node.js crypto.createHash).
  */
-async function calculateHashKey(
+export async function calculateHashKey(
   email: string,
   companyDomain: string | null,
   phone: string | null
@@ -378,12 +378,21 @@ export async function processEventInline(
       if (normalized.landing_url) updateFields.page_url = normalized.landing_url
       if (normalized.dnc_mobile) updateFields.dnc_mobile = normalized.dnc_mobile
       if (normalized.dnc_landline) updateFields.dnc_landline = normalized.dnc_landline
-      Object.assign(updateFields, icpFields)
 
       await supabase
         .from('leads')
         .update(updateFields)
         .eq('id', existingLeadId)
+
+      // ICP fields derive from THIS workspace's private ICP: never write them
+      // onto a lead owned by another workspace (identities can link cross-workspace).
+      if (icpFit && targetWorkspaceId) {
+        await supabase
+          .from('leads')
+          .update(icpFields)
+          .eq('id', existingLeadId)
+          .eq('workspace_id', targetWorkspaceId)
+      }
     } else if (contact.email) {
       // Check lead-worthiness (all events including auth must pass quality gate)
       const worthy = isLeadWorthy({

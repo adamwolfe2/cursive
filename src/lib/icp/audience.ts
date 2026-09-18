@@ -17,5 +17,6 @@ export function buildIcpAudienceRequest(icp: IcpProfile): ALIntentAudienceReques
     segment: icp.audience.intentSegments,
     days_back: 7,
     filters: Object.keys(businessProfile).length > 0 ? { businessProfile } : {},
+    ...(icp.audience.intentScores.length > 0 && { score: icp.audience.intentScores }),
   }
 }

@@ -306,6 +306,11 @@ export async function bulkInsertALRecords(
     // (insertLeadFromALRecord alone only requires *some* email). Require an
     // AL-verified email, reject explicitly-bad statuses, top-up sparse records,
     // and stamp markVerified so refreshed leads are verified, not pending.
+    // ICP gate first: most in-market records miss the ICP, and top-up enrichment costs money.
+    if (insertOptions.icp && !scoreIcpFit(icpInputFromALRecord(record as Record<string, unknown>), insertOptions.icp).isMatch) {
+      skipped++
+      continue
+    }
     const quality = assessLeadQuality(record)
     if (!quality.deliverable) {
       skipped++

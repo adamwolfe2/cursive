@@ -699,6 +699,8 @@ export async function createCustomAudience(
 export interface ALIntentAudienceRequest {
   segment: string[]
   days_back: number
+  /** AL intent strength filter; omitted = all strengths. */
+  score?: Array<'low' | 'medium' | 'high'>
   filters: {
     businessProfile?: { industry?: string[]; seniority?: string[]; jobTitle?: string[]; excludeJobTitle?: string[] }
     state?: string[]
@@ -706,7 +708,7 @@ export interface ALIntentAudienceRequest {
 }
 
 export async function previewIntentAudience(
-  params: ALIntentAudienceRequest & { limit?: number; score?: Array<'low' | 'medium' | 'high'> }
+  params: ALIntentAudienceRequest & { limit?: number }
 ): Promise<ALAudiencePreviewResponse> {
   return alFetch<ALAudiencePreviewResponse>('/audiences/preview', {
     method: 'POST',
@@ -730,6 +732,7 @@ export async function createIntentAudience(
       segment: params.segment,
       days_back: params.days_back,
       filters: params.filters,
+      ...(params.score && params.score.length > 0 && { score: params.score }),
     }),
   })
 }

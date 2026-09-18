@@ -21,6 +21,7 @@ import { normalizeALPayload, flattenPayload } from '../src/lib/audiencelab/field
 import { icpProfileSchema } from '../src/lib/icp/profile'
 import { scoreIcpFit, icpInputFromALRecord } from '../src/lib/icp/score'
 import { resolveLeadContact } from '../src/lib/icp/contact'
+import { calculateHashKey } from '../src/lib/audiencelab/edge-processor'
 
 const arg = (name: string) => process.argv.find(a => a.startsWith(`--${name}=`))?.split('=')[1] ?? null
 const APPLY = process.argv.includes('--apply')
@@ -86,7 +87,7 @@ async function main() {
         stats.emailConflict++
       } else {
         patch.email = contact.email
-        patch.secondary_email = current || contact.secondaryEmail
+        patch.secondary_email = lead.secondary_email || current || contact.secondaryEmail
         emailsInUse.add(contact.email)
         stats.emailSwitched++
       }
@@ -102,6 +103,12 @@ async function main() {
     const input = icpInputFromALRecord(flattenPayload(e.raw!))
     const contact = resolveLeadContact(n, icp, input)
     if (!contact.b2bQualified || !contact.email || emailsInUse.has(contact.email)) continue
+    // Same rule as the realtime path: an email already owned by any workspace is not re-created.
+    const { data: elsewhere } = await db.from('leads').select('id').eq('email', contact.email).limit(1).maybeSingle()
+    if (elsewhere) continue
+    const hashKey = await calculateHashKey(contact.email, n.company_domain, n.phones[0] || null)
+    const { data: hashTaken } = await db.from('leads').select('id').eq('hash_key', hashKey).limit(1).maybeSingle()
+    if (hashTaken) continue
     const fit = scoreIcpFit(input, icp)
     emailsInUse.add(contact.email)
     creates.push({
@@ -109,6 +116,7 @@ async function main() {
       row: {
         workspace_id: WORKSPACE,
         email: contact.email,
+        hash_key: hashKey,
         secondary_email: contact.secondaryEmail,
         first_name: n.first_name,
         last_name: n.last_name,
@@ -158,7 +166,10 @@ async function main() {
     const { data, error } = await db.from('leads').insert(c.row).select('id').single()
     if (error || !data) { failed++; console.error('insert failed', c.row.email, error?.message); continue }
     await db.from('audiencelab_events').update({ lead_id: data.id }).eq('id', c.event.id).eq('workspace_id', WORKSPACE!)
-    if (c.event.identity_id) await db.from('audiencelab_identities').update({ lead_id: data.id }).eq('id', c.event.identity_id)
+    if (c.event.identity_id) {
+      await db.from('audiencelab_identities').update({ lead_id: data.id })
+        .eq('id', c.event.identity_id).eq('workspace_id', WORKSPACE!)
+    }
   }
   console.log(`applied: ${updates.length} updated, ${creates.length} created, ${failed} failed`)
   if (failed > 0) process.exitCode = 1
