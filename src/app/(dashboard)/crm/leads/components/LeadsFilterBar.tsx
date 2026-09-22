@@ -19,6 +19,7 @@ import {
 import { useCRMStore } from '@/lib/crm/crm-state'
 import { useDebounce } from '@/hooks/use-debounce'
 import type { LeadStatus } from '@/types/crm.types'
+import { publicLeadSourceLabel } from '@/lib/leads/public-source'
 
 const STATUS_OPTIONS: { value: LeadStatus; label: string; color: string }[] = [
   { value: 'new', label: 'New', color: 'bg-blue-100 text-blue-700' },
@@ -28,14 +29,16 @@ const STATUS_OPTIONS: { value: LeadStatus; label: string; color: string }[] = [
   { value: 'lost', label: 'Lost', color: 'bg-gray-100 text-gray-700' },
 ]
 
+// Labels must match what the rows render, which comes from publicLeadSourceLabel.
+// `audiencelab_database` and `audiencelab_pull` are both the daily pull, so they
+// are one option here rather than two that display identically.
 const SOURCE_OPTIONS: { value: string; label: string }[] = [
-  { value: 'audiencelab', label: 'SuperPixel' },
-  { value: 'audiencelab_database', label: 'Database Pull' },
-  { value: 'audiencelab_pull', label: 'Auto-Pull' },
-  { value: 'marketplace', label: 'Marketplace' },
-  { value: 'query', label: 'Auto-Match' },
-  { value: 'import', label: 'Import' },
-  { value: 'manual', label: 'Manual' },
+  { value: 'superpixel', label: publicLeadSourceLabel('superpixel') },
+  { value: 'audiencelab_pull', label: publicLeadSourceLabel('audiencelab_pull') },
+  { value: 'marketplace', label: publicLeadSourceLabel('marketplace') },
+  { value: 'query', label: publicLeadSourceLabel('query') },
+  { value: 'import', label: publicLeadSourceLabel('import') },
+  { value: 'manual', label: publicLeadSourceLabel('manual') },
 ]
 
 const INDUSTRY_OPTIONS = [

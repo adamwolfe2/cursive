@@ -57,6 +57,7 @@ import {
 import { formatDistanceToNow } from 'date-fns'
 import type { LeadTableRow } from '@/types/crm.types'
 import { cn } from '@/lib/utils'
+import { publicLeadSourceLabel } from '@/lib/leads/public-source'
 
 export interface EnhancedLeadsTableHandle {
   clearSelection: () => void
@@ -194,17 +195,9 @@ export const EnhancedLeadsTable = React.forwardRef<EnhancedLeadsTableHandle, Enh
     setSelectedLeadIds(new Set())
   }, [searchQuery, statusFilter, sourceFilter])
 
-  const sourceLabel = (src: string): string => {
-    const map: Record<string, string> = {
-      audiencelab: 'SuperPixel',
-      audiencelab_database: 'Database Pull',
-      audiencelab_pull: 'Auto-Pull',
-      marketplace: 'Marketplace',
-      query: 'Auto-Match',
-      import: 'Import',
-    }
-    return map[src] ?? (src.charAt(0).toUpperCase() + src.slice(1).replace(/_/g, ' '))
-  }
+  // Labels come from the single boundary helper so every surface agrees and
+  // no provider name can reach a customer.
+  const sourceLabel = publicLeadSourceLabel
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
