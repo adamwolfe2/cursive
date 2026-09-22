@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { cn } from '@/lib/design-system'
 import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react'
+import { publicLeadSourceLabel } from '@/lib/leads/public-source'
 
 interface AllLeadsTableProps {
   workspaceId: string
@@ -109,7 +110,7 @@ export function AllLeadsTable({ workspaceId }: AllLeadsTableProps) {
                 <td className="px-4 py-3 font-medium text-foreground">{displayName(lead)}</td>
                 <td className="px-4 py-3 text-muted-foreground hidden sm:table-cell">{lead.email ?? '-'}</td>
                 <td className="px-4 py-3 text-muted-foreground hidden md:table-cell">{lead.company_name ?? '-'}</td>
-                <td className="px-4 py-3 text-muted-foreground hidden lg:table-cell">{lead.source ?? '-'}</td>
+                <td className="px-4 py-3 text-muted-foreground hidden lg:table-cell">{publicLeadSourceLabel(lead.source)}</td>
                 <td className="px-4 py-3">
                   <span className={cn(
                     'inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium',

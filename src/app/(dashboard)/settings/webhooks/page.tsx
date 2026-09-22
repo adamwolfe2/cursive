@@ -508,7 +508,7 @@ export default function WebhooksPage() {
     "phone": null,
     "city": "Austin",
     "state": "TX",
-    "source": "audiencelab_superpixel",
+    "source": "pixel",
     "created_at": "2026-01-01T00:00:00.000Z"
   }
 }`}
