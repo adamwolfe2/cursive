@@ -1,5 +1,8 @@
 export const maxDuration = 30
 
+/** Simultaneous webhook deliveries per ingest request. */
+const WEBHOOK_FANOUT_CONCURRENCY = 5
+
 /**
  * Lead Ingestion API
  *
@@ -23,6 +26,7 @@ import { createUserLeadRouter } from '@/lib/services/user-lead-router.service'
 import { createClient } from '@/lib/supabase/server'
 import { logDedupRejections } from '@/lib/services/deduplication.service'
 import { sanitizeSearchTerm } from '@/lib/utils/sanitize-search'
+import { emitWebhookEvent } from '@/lib/services/webhook-delivery.service'
 
 // Schema for direct lead push
 const LeadPushSchema = z.object({
@@ -147,6 +151,7 @@ export async function POST(req: NextRequest) {
       company_name: l.company_name || null,
     }))
     const dedupIndices = new Set<number>()
+    const pendingWebhooks: (() => Promise<unknown>)[] = []
     let leadIndex = 0
 
     // Handle batch leads
@@ -154,7 +159,7 @@ export async function POST(req: NextRequest) {
       for (const leadData of ingestRequest.leads) {
         const currentIndex = leadIndex++
         try {
-          const { id: leadId, wasDuplicate } = await createLeadFromPush(supabase, workspaceId, leadData, ingestRequest)
+          const { id: leadId, wasDuplicate } = await createLeadFromPush(supabase, workspaceId, leadData, ingestRequest, pendingWebhooks)
 
           if (wasDuplicate) {
             dedupIndices.add(currentIndex)
@@ -185,7 +190,7 @@ export async function POST(req: NextRequest) {
     if (ingestRequest.lead) {
       const currentIndex = leadIndex++
       try {
-        const { id: leadId, wasDuplicate } = await createLeadFromPush(supabase, workspaceId, ingestRequest.lead, ingestRequest)
+        const { id: leadId, wasDuplicate } = await createLeadFromPush(supabase, workspaceId, ingestRequest.lead, ingestRequest, pendingWebhooks)
 
         if (wasDuplicate) {
           dedupIndices.add(currentIndex)
@@ -220,6 +225,19 @@ export async function POST(req: NextRequest) {
       await updateSourceStats(supabase, ingestRequest.source_id, results)
     }
 
+    // Fan out with bounded concurrency: a batch waits for the slowest few
+    // endpoints rather than the sum of every lead, without firing a hundred
+    // simultaneous deliveries at one customer. Each records its own failure;
+    // none can fail the ingest.
+    const queue = [...pendingWebhooks]
+    await Promise.allSettled(
+      Array.from({ length: Math.min(WEBHOOK_FANOUT_CONCURRENCY, queue.length) }, async () => {
+        for (let next = queue.shift(); next; next = queue.shift()) {
+          await next().catch(() => undefined)
+        }
+      })
+    )
+
     return NextResponse.json({
       success: true,
       processed: results.length,
@@ -243,7 +261,9 @@ async function createLeadFromPush(
   supabase: Awaited<ReturnType<typeof createClient>>,
   workspaceId: string,
   leadData: z.infer<typeof LeadPushSchema>,
-  request: IngestRequest
+  request: IngestRequest,
+  /** Collects webhook fan-outs so the batch loop never waits on customer HTTP. */
+  pendingWebhooks: (() => Promise<unknown>)[]
 ): Promise<{ id: string; wasDuplicate: boolean }> {
   // Deduplication: check email and name+company within workspace
   if (leadData.email) {
@@ -329,27 +349,20 @@ async function createLeadFromPush(
     data: { lead_id: data.id, workspace_id: workspaceId, source: request.source_type || leadData.source || 'api' },
   })
 
-  // Fire outbound webhook: lead.received
-  inngest.send({
-    name: 'outbound-webhook/deliver' as const,
-    data: {
-      workspace_id: workspaceId,
-      event_type: 'lead.received',
-      payload: {
-        event: 'lead.received',
-        timestamp: new Date().toISOString(),
-        lead: {
-          id: data.id,
-          first_name: leadData.first_name,
-          last_name: leadData.last_name,
-          email: leadData.email,
-          phone: leadData.phone,
-          company_name: leadData.company_name,
-          source: request.source_type || leadData.source || 'api',
-        },
-      },
-    },
-  }).catch((err) => safeError('[Lead Ingest] Outbound webhook send failed:', err))
+  // Fire outbound webhook: lead.received. The service adds the event envelope,
+  // so this passes the lead fields flat — the same shape the pixel path sends.
+  // Not awaited here: this runs inside a per-lead loop, and serialising a
+  // network call per lead would push a large batch past the route's 30s limit.
+  // The caller awaits all of them together once the loop is done.
+  pendingWebhooks.push(() => emitWebhookEvent(workspaceId, 'lead.received', {
+    id: data.id,
+    first_name: leadData.first_name,
+    last_name: leadData.last_name,
+    email: leadData.email,
+    phone: leadData.phone,
+    company_name: leadData.company_name,
+    source: request.source_type || leadData.source || 'api',
+  }))
 
   return { id: data.id, wasDuplicate: false }
 }

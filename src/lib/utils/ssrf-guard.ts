@@ -6,6 +6,8 @@
 const BLOCKED_HOSTNAMES = new Set([
   'localhost',
   'metadata.google.internal',
+  'metadata.goog',
+  'instance-data',
 ])
 
 const PRIVATE_IP_PATTERNS = [
@@ -37,11 +39,16 @@ const PRIVATE_IP_PATTERNS = [
  */
 export function isBlockedHost(urlStr: string): boolean {
   try {
-    const { hostname, protocol } = new URL(urlStr)
+    const { hostname: rawHostname, protocol } = new URL(urlStr)
+    // A trailing dot is a valid FQDN that resolves identically, so strip it
+    // before matching — `metadata.goog.` must not slip past `metadata.goog`.
+    const hostname = rawHostname.toLowerCase().replace(/\.$/, '')
     // Only allow http/https
     if (protocol !== 'http:' && protocol !== 'https:') return true
     // Block localhost and common internal hostnames
     if (hostname === 'localhost' || hostname === '0.0.0.0') return true
+    if (BLOCKED_HOSTNAMES.has(hostname)) return true
+    if (hostname.endsWith('.internal')) return true
     // Block IPv6 loopback
     if (hostname === '::1' || hostname === '[::1]') return true
     // Block IPv4 private ranges (checked as numeric comparison for correctness)
@@ -72,10 +79,11 @@ export function isValidWebhookUrl(urlString: string): boolean {
   // Only HTTPS
   if (url.protocol !== 'https:') return false
 
-  const hostname = url.hostname.toLowerCase()
+  const hostname = url.hostname.toLowerCase().replace(/\.$/, '')
 
   // Block known internal hostnames
   if (BLOCKED_HOSTNAMES.has(hostname)) return false
+  if (hostname.endsWith('.internal')) return false
 
   // Block private/loopback IP ranges
   for (const pattern of PRIVATE_IP_PATTERNS) {

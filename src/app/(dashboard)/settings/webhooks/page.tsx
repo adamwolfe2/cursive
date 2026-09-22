@@ -264,7 +264,7 @@ export default function WebhooksPage() {
       if (result.success) {
         toast({ type: 'success', message: `Test delivered — got ${result.response_status} response` })
       } else {
-        toast({ type: 'error', message: `Test failed: ${result.response_body?.slice(0, 80) ?? 'Connection error'}` })
+        toast({ type: 'error', message: `Test failed: ${result.error?.slice(0, 80) ?? 'Connection error'}` })
       }
     } catch {
       toast({ type: 'error', message: 'Test request failed' })
@@ -495,19 +495,51 @@ export default function WebhooksPage() {
           <code className="block bg-muted rounded-lg p-3 text-xs font-mono text-foreground whitespace-pre">
 {`{
   "event": "lead.received",
-  "workspace_id": "ws_...",
+  "workspace_id": "3f9a...",
   "timestamp": "2026-01-01T00:00:00.000Z",
-  "data": { ... }
+  "data": {
+    "id": "...",
+    "email": "jane.smith@acme.com",
+    "first_name": "Jane",
+    "last_name": "Smith",
+    "company_name": "Acme Corp",
+    "company_domain": "acme.com",
+    "job_title": "VP Marketing",
+    "phone": null,
+    "city": "Austin",
+    "state": "TX",
+    "source": "audiencelab_superpixel",
+    "created_at": "2026-01-01T00:00:00.000Z"
+  }
 }`}
           </code>
           <div className="space-y-1">
             <p className="text-xs font-medium text-foreground">Signature verification</p>
             <p className="text-xs text-muted-foreground">
-              Each request includes an <code className="bg-muted px-1 rounded">X-Cursive-Signature</code> header
-              containing an HMAC-SHA256 digest of the raw body signed with your webhook secret.
-              Always verify this signature before processing the payload.
+              Every request carries an <code className="bg-muted px-1 rounded">X-Cursive-Signature</code> header
+              of the form <code className="bg-muted px-1 rounded">t=&lt;unix&gt;,v1=&lt;hex&gt;</code>. The digest is
+              HMAC-SHA256 over <code className="bg-muted px-1 rounded">&lt;t&gt;.&lt;raw body&gt;</code> using your
+              signing secret. Compare it with a constant-time equality check, and reject timestamps older than
+              five minutes. Test sends use the identical format, so one verifier covers both.
             </p>
           </div>
+          <code className="block bg-muted rounded-lg p-3 text-xs font-mono text-foreground whitespace-pre overflow-x-auto">
+{`// Node — verify before trusting the body
+import { createHmac, timingSafeEqual } from 'crypto'
+
+const raw = await req.text()                     // raw body, not JSON.parse'd
+const header = req.headers.get('x-cursive-signature') ?? ''
+const t  = header.match(/t=(\d+)/)?.[1]
+const v1 = header.match(/v1=([a-f0-9]+)/)?.[1]
+
+const expected = createHmac('sha256', SECRET).update(\`\${t}.\${raw}\`).digest('hex')
+const ok = !!t && !!v1
+  && Math.abs(Date.now() / 1000 - Number(t)) < 300
+  && v1.length === expected.length          // timingSafeEqual throws on length mismatch
+  && timingSafeEqual(Buffer.from(v1, 'hex'), Buffer.from(expected, 'hex'))
+
+if (!ok) return new Response('bad signature', { status: 401 })`}
+          </code>
           <div className="space-y-1">
             <p className="text-xs font-medium text-foreground">Retries</p>
             <p className="text-xs text-muted-foreground">
