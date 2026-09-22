@@ -3,11 +3,19 @@ export const runtime = 'nodejs'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth/helpers'
-import { createHmac } from 'crypto'
-import { isBlockedHost } from '@/lib/utils/ssrf-guard'
+import { deliverWebhook } from '@/lib/services/webhook-delivery.service'
 
+/**
+ * Send a test event to one of the workspace's webhook endpoints.
+ *
+ * Delegates to the same delivery service the live Inngest fan-out uses, so the
+ * body shape, the signature scheme and the delivery log a customer sees here
+ * are byte-for-byte what they will receive in production. Hand-rolling the
+ * signing here is what previously made the test event unverifiable against a
+ * verifier written for real events.
+ */
 export async function POST(
-  req: NextRequest,
+  _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params
@@ -23,10 +31,10 @@ export async function POST(
 
   const supabase = await createClient()
 
-  // Fetch the webhook, verify it belongs to this workspace
+  // Ownership check — the service loads by id alone, so the tenant scope is enforced here.
   const { data: webhook } = await supabase
     .from('workspace_webhooks')
-    .select('id, url, secret, is_active, events')
+    .select('id, events')
     .eq('id', id)
     .eq('workspace_id', user.workspace_id)
     .maybeSingle()
@@ -35,22 +43,15 @@ export async function POST(
     return NextResponse.json({ error: 'Webhook not found' }, { status: 404 })
   }
 
-  // SSRF protection: block internal/private network targets
-  if (isBlockedHost(webhook.url)) {
-    return NextResponse.json(
-      { error: 'Webhook URL targets a blocked internal address' },
-      { status: 400 }
-    )
-  }
+  const eventType = webhook.events?.[0] ?? 'lead.received'
 
-  // Build test payload
-  const payload = {
-    event: webhook.events?.[0] ?? 'lead.received',
-    workspace_id: user.workspace_id,
-    timestamp: new Date().toISOString(),
-    test: true,
-    data: {
+  const result = await deliverWebhook(
+    id,
+    eventType,
+    {
       id: 'lead_test_' + Date.now(),
+      first_name: 'Jane',
+      last_name: 'Smith',
       full_name: 'Jane Smith',
       email: 'jane.smith@example.com',
       company_name: 'Acme Corp',
@@ -58,65 +59,13 @@ export async function POST(
       intent_score: 85,
       note: 'This is a test delivery from Cursive.',
     },
-  }
-
-  const body = JSON.stringify(payload)
-
-  // Sign the payload
-  const signature = createHmac('sha256', webhook.secret ?? '')
-    .update(body, 'utf8')
-    .digest('hex')
-
-  // Deliver to endpoint
-  let responseStatus = 0
-  let responseBody = ''
-  let success = false
-
-  try {
-    const controller = new AbortController()
-    const timeout = setTimeout(() => controller.abort(), 10_000)
-
-    const res = await fetch(webhook.url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Cursive-Signature': signature,
-        'X-Cursive-Event': payload.event,
-        'User-Agent': 'Cursive-Webhooks/1.0',
-      },
-      body,
-      signal: controller.signal,
-    })
-
-    clearTimeout(timeout)
-    responseStatus = res.status
-    responseBody = await res.text().catch(() => '')
-    success = res.status >= 200 && res.status < 300
-  } catch (err) {
-    responseStatus = 0
-    responseBody = err instanceof Error ? err.message : 'Connection failed'
-    success = false
-  }
-
-  // Log delivery
-  await supabase.from('outbound_webhook_deliveries').insert({
-    webhook_id: id,
-    workspace_id: user.workspace_id,
-    event_type: payload.event,
-    payload,
-    status: success ? 'success' : 'failed',
-    response_status: responseStatus || null,
-    response_body: responseBody.slice(0, 2000),
-    attempts: 1,
-    last_attempt_at: new Date().toISOString(),
-    completed_at: new Date().toISOString(),
-  // Non-critical: swallow any insert error
-  }).then(() => null, () => null)
+    { maxAttempts: 1, test: true }
+  )
 
   return NextResponse.json({
-    success,
-    response_status: responseStatus,
-    response_body: responseBody.slice(0, 500),
-    payload,
+    success: result.success,
+    response_status: result.statusCode ?? 0,
+    error: result.error ?? null,
+    delivery_id: result.deliveryId,
   })
 }

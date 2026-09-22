@@ -10,8 +10,23 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { hmacSha256Hex } from '@/lib/utils/crypto'
 import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
+import { isBlockedHost } from '@/lib/utils/ssrf-guard'
 
 const DELIVERY_TIMEOUT_MS = 10_000
+
+/**
+ * The canonical body Cursive POSTs to every customer endpoint. Every delivery
+ * path — live events and the "Send test" button — must emit this exact shape,
+ * because customers write one verifier against it.
+ */
+export interface WebhookEnvelope {
+  event: string
+  workspace_id: string
+  timestamp: string
+  data: unknown
+  /** Present and true only for a "Send test" delivery. */
+  test?: boolean
+}
 
 export interface OutboundDeliveryResult {
   webhookId: string
@@ -86,7 +101,8 @@ async function attemptDelivery(
 export async function deliverWebhook(
   webhookId: string,
   eventType: string,
-  payload: unknown
+  data: unknown,
+  options: { maxAttempts?: number; test?: boolean } = {}
 ): Promise<OutboundDeliveryResult> {
   const supabase = createAdminClient()
 
@@ -102,30 +118,45 @@ export async function deliverWebhook(
     throw new Error(`Webhook ${webhookId} not found`)
   }
 
-  if (!webhook.is_active) {
-    safeLog('[WebhookDelivery] Skipping inactive webhook:', webhookId)
-    // Still create a skipped record so the caller knows
+  // Canonical envelope — built once, signed once, stored once.
+  const envelope: WebhookEnvelope = {
+    event: eventType,
+    workspace_id: webhook.workspace_id,
+    timestamp: new Date().toISOString(),
+    data,
+    ...(options.test ? { test: true } : {}),
+  }
+
+  /** Record a delivery that was rejected before any HTTP attempt was made. */
+  const recordRejected = async (reason: string): Promise<OutboundDeliveryResult> => {
     const { data: delivery } = await supabase
       .from('outbound_webhook_deliveries')
       .insert({
         webhook_id: webhookId,
         workspace_id: webhook.workspace_id,
         event_type: eventType,
-        payload: payload as any,
+        payload: envelope as any,
         status: 'failed',
-        error_message: 'Webhook is inactive',
+        error_message: reason,
         attempts: 0,
         completed_at: new Date().toISOString(),
       })
       .select('id')
       .maybeSingle()
 
-    return {
-      webhookId,
-      deliveryId: delivery?.id ?? '',
-      success: false,
-      error: 'Webhook is inactive',
-    }
+    return { webhookId, deliveryId: delivery?.id ?? '', success: false, error: reason }
+  }
+
+  if (!webhook.is_active) {
+    safeLog('[WebhookDelivery] Skipping inactive webhook:', webhookId)
+    return recordRejected('Webhook is inactive')
+  }
+
+  // SSRF guard on every delivery, not only at creation time: a row can predate
+  // the guard, or a hostname can be re-pointed at an internal address later.
+  if (isBlockedHost(webhook.url)) {
+    safeError('[WebhookDelivery] Blocked internal destination for webhook:', webhookId)
+    return recordRejected('Webhook URL targets a blocked internal address')
   }
 
   // Create pending delivery record
@@ -135,7 +166,7 @@ export async function deliverWebhook(
       webhook_id: webhookId,
       workspace_id: webhook.workspace_id,
       event_type: eventType,
-      payload: payload as any,
+      payload: envelope as any,
       status: 'pending',
       attempts: 0,
     })
@@ -147,19 +178,22 @@ export async function deliverWebhook(
     throw new Error('Failed to create delivery record')
   }
 
-  const payloadString = JSON.stringify(payload)
+  const payloadString = JSON.stringify(envelope)
   const startMs = Date.now()
 
-  // Attempt delivery (up to 3 times with exponential backoff)
+  // Attempt delivery (up to 3 times with exponential backoff). A test send uses
+  // a single attempt so the user is not left waiting on retries.
   let lastResult: Awaited<ReturnType<typeof attemptDelivery>> = { success: false }
-  const maxAttempts = 3
+  const maxAttempts = Math.max(1, Math.min(options.maxAttempts ?? 3, 3))
   const backoffMs = [0, 2_000, 6_000] // 0s, 2s, 6s
 
+  let attemptsMade = 0
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     if (backoffMs[attempt] > 0) {
       await new Promise((r) => setTimeout(r, backoffMs[attempt]))
     }
 
+    attemptsMade++
     lastResult = await attemptDelivery(webhook.url, webhook.secret, eventType, payloadString)
 
     if (lastResult.success) break
@@ -172,7 +206,7 @@ export async function deliverWebhook(
     .from('outbound_webhook_deliveries')
     .update({
       status: lastResult.success ? 'success' : 'failed',
-      attempts: maxAttempts,
+      attempts: attemptsMade,
       response_status: lastResult.statusCode ?? null,
       response_body: lastResult.responseBody ?? null,
       error_message: lastResult.error ?? null,

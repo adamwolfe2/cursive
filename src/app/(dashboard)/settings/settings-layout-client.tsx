@@ -22,10 +22,16 @@ const settingsTabs = [
 
 // A funnel / managed buyer only needs the essentials. Hides the agency /
 // marketplace surfaces (client profile, branding, email accounts, integrations,
-// API keys, webhooks, team) that bloat their settings.
+// API keys, team) that bloat their settings.
+//
+// Webhooks are NOT an agency surface: getting identifications out of Cursive and
+// into their own stack is the whole point of buying the pixel, and it is the only
+// delivery path that exists (the pixel has no client-side callback). Every buyer
+// gets it.
 const MANAGED_TAB_HREFS = new Set([
   '/settings',
   '/settings/pixel',
+  '/settings/webhooks',
   '/settings/billing',
 ])
 
