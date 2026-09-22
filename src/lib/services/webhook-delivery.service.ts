@@ -254,3 +254,39 @@ export async function getMatchingWebhookIds(
     .filter((w) => (w.events as string[]).includes(eventType))
     .map((w) => w.id)
 }
+
+/**
+ * Fan out one platform event to every endpoint in the workspace that subscribes
+ * to it, and await the result.
+ *
+ * This is the delivery path in production. The Inngest function that used to own
+ * the fan-out is not registered in the production Inngest environment — events
+ * fired at it are accepted and produce zero runs — so anything that relied on it
+ * delivered nothing at all. Calling the service directly removes that dependency.
+ *
+ * ponytail: one attempt per endpoint, because callers sit on the identification
+ * hot path and a retrying loop would hold the request open for ~28s. Failures are
+ * recorded as `failed` deliveries and retried out-of-band by
+ * /api/cron/retry-webhook-deliveries.
+ */
+export async function emitWebhookEvent(
+  workspaceId: string,
+  eventType: string,
+  data: unknown
+): Promise<{ delivered: number; failed: number }> {
+  try {
+    const webhookIds = await getMatchingWebhookIds(workspaceId, eventType)
+    if (webhookIds.length === 0) return { delivered: 0, failed: 0 }
+
+    const results = await Promise.allSettled(
+      webhookIds.map((id) => deliverWebhook(id, eventType, data, { maxAttempts: 1 }))
+    )
+
+    const delivered = results.filter((r) => r.status === 'fulfilled' && r.value.success).length
+    return { delivered, failed: results.length - delivered }
+  } catch (err) {
+    // A webhook problem must never fail the ingestion that produced the event.
+    safeError('[WebhookDelivery] Fan-out failed:', err)
+    return { delivered: 0, failed: 0 }
+  }
+}

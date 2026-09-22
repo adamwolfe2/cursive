@@ -19,18 +19,21 @@ const HOOK = {
 let webhookRow: typeof HOOK = { ...HOOK }
 const inserted: any[] = []
 
-function chain(result: any) {
+function chain(result: any, listResult?: any) {
   const c: any = {}
   for (const m of ['select', 'eq', 'update', 'insert']) c[m] = vi.fn(() => c)
   c.maybeSingle = vi.fn(() => Promise.resolve(result))
   c.single = vi.fn(() => Promise.resolve(result))
+  // getMatchingWebhookIds awaits the builder itself
+  if (listResult) c.then = (res: any, rej: any) => Promise.resolve(listResult).then(res, rej)
   return c
 }
 
 vi.mock('@/lib/supabase/admin', () => ({
   createAdminClient: vi.fn(() => ({
     from: vi.fn((table: string) => {
-      if (table === 'workspace_webhooks') return chain({ data: webhookRow, error: null })
+      if (table === 'workspace_webhooks')
+        return chain({ data: webhookRow, error: null }, { data: [webhookRow], error: null })
       const c = chain({ data: { id: 'delivery-1' }, error: null })
       c.insert = vi.fn((row: any) => {
         inserted.push(row)
@@ -43,7 +46,7 @@ vi.mock('@/lib/supabase/admin', () => ({
 
 vi.mock('@/lib/utils/log-sanitizer', () => ({ safeLog: vi.fn(), safeError: vi.fn() }))
 
-import { deliverWebhook } from '@/lib/services/webhook-delivery.service'
+import { deliverWebhook, emitWebhookEvent } from '@/lib/services/webhook-delivery.service'
 
 /** Verify exactly the way the published docs tell a customer to verify. */
 function verifyLikeACustomer(headerValue: string, rawBody: string, secret: string) {
@@ -115,5 +118,25 @@ describe('outbound webhook delivery', () => {
     expect(result.error).toMatch(/blocked internal address/i)
     expect(fetchMock).not.toHaveBeenCalled()
     expect(inserted.at(-1)).toMatchObject({ status: 'failed', error_message: expect.stringMatching(/blocked/i) })
+  })
+
+  it('fans out only to endpoints subscribed to the event', async () => {
+    const fetchMock = captureFetch()
+
+    const matched = await emitWebhookEvent('ws-1', 'lead.received', { email: 'jane@acme.com' })
+    expect(matched).toEqual({ delivered: 1, failed: 0 })
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+
+    fetchMock.mockClear()
+    const unmatched = await emitWebhookEvent('ws-1', 'lead.purchased', { email: 'jane@acme.com' })
+    expect(unmatched).toEqual({ delivered: 0, failed: 0 })
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
+
+  it('never lets a webhook failure escape into the caller', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => { throw new Error('customer endpoint exploded') }))
+
+    await expect(emitWebhookEvent('ws-1', 'lead.received', { email: 'jane@acme.com' }))
+      .resolves.toEqual({ delivered: 0, failed: 1 })
   })
 })

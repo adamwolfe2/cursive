@@ -282,33 +282,24 @@ export async function POST(request: NextRequest) {
 
       if (purchasedLeads && purchasedLeads.length > 0) {
         try {
-          const { inngest: inngestClient } = await import('@/inngest/client')
-          // Batch all webhook events in a single Inngest call instead of N separate calls
-          await inngestClient.send(
-            purchasedLeads.map((lead) => ({
-              name: 'outbound-webhook/deliver' as const,
-              data: {
-                workspace_id: user.workspace_id,
-                event_type: 'lead.purchased',
-                payload: {
-                  event: 'lead.purchased',
-                  timestamp: new Date().toISOString(),
-                  purchase_id: purchase.id,
-                  lead: {
-                    id: lead.id,
-                    first_name: lead.first_name,
-                    last_name: lead.last_name,
-                    email: lead.email,
-                    phone: lead.phone,
-                    company_name: lead.company_name,
-                    company_industry: lead.company_industry,
-                  },
-                },
-              },
-            }))
+          const { emitWebhookEvent } = await import('@/lib/services/webhook-delivery.service')
+          // One event per purchased lead, flat fields — the service adds the envelope.
+          await Promise.all(
+            purchasedLeads.map((lead) =>
+              emitWebhookEvent(user.workspace_id, 'lead.purchased', {
+                purchase_id: purchase.id,
+                id: lead.id,
+                first_name: lead.first_name,
+                last_name: lead.last_name,
+                email: lead.email,
+                phone: lead.phone,
+                company_name: lead.company_name,
+                company_industry: lead.company_industry,
+              })
+            )
           )
         } catch (webhookError) {
-          safeError('[Purchase] Failed to queue outbound webhook:', webhookError)
+          safeError('[Purchase] Failed to deliver outbound webhook:', webhookError)
         }
       }
 

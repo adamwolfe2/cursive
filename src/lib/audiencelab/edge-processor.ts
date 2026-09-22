@@ -15,6 +15,7 @@ import { loadWorkspaceIcp } from '@/lib/icp/profile'
 import { scoreIcpFit, icpInputFromALRecord } from '@/lib/icp/score'
 import { resolveLeadContact } from '@/lib/icp/contact'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
+import { emitWebhookEvent } from '@/lib/services/webhook-delivery.service'
 import { checkQuota, incrementQuota } from '@/lib/services/al-quota.service'
 
 const LOG_PREFIX = '[AL EdgeProcessor]'
@@ -663,12 +664,11 @@ export async function processEventInline(
           workspace_id: targetWorkspaceId,
           source: `audiencelab_${source}`,
         }),
-        // Triggers: deliverOutboundWebhooks (fan-out to all user-configured endpoints)
-        fireInngestEvent('outbound-webhook/deliver', {
-          workspace_id: targetWorkspaceId,
-          event_type: 'lead.received',
-          payload: leadPayload,
-        }),
+        // Fan out to the workspace's own webhook endpoints. Called directly
+        // rather than through Inngest: the fan-out function is not registered
+        // in the production Inngest environment, so routing it through an event
+        // delivered nothing. Swallows its own errors.
+        emitWebhookEvent(targetWorkspaceId, 'lead.received', leadPayload),
         // Triggers: ghlSyncContact — pushes lead to client's connected GHL account (if any)
         // The function gracefully no-ops when no GHL OAuth connection is configured.
         fireInngestEvent('ghl/sync-contact', {

@@ -23,6 +23,7 @@ import { createUserLeadRouter } from '@/lib/services/user-lead-router.service'
 import { createClient } from '@/lib/supabase/server'
 import { logDedupRejections } from '@/lib/services/deduplication.service'
 import { sanitizeSearchTerm } from '@/lib/utils/sanitize-search'
+import { emitWebhookEvent } from '@/lib/services/webhook-delivery.service'
 
 // Schema for direct lead push
 const LeadPushSchema = z.object({
@@ -329,27 +330,17 @@ async function createLeadFromPush(
     data: { lead_id: data.id, workspace_id: workspaceId, source: request.source_type || leadData.source || 'api' },
   })
 
-  // Fire outbound webhook: lead.received
-  inngest.send({
-    name: 'outbound-webhook/deliver' as const,
-    data: {
-      workspace_id: workspaceId,
-      event_type: 'lead.received',
-      payload: {
-        event: 'lead.received',
-        timestamp: new Date().toISOString(),
-        lead: {
-          id: data.id,
-          first_name: leadData.first_name,
-          last_name: leadData.last_name,
-          email: leadData.email,
-          phone: leadData.phone,
-          company_name: leadData.company_name,
-          source: request.source_type || leadData.source || 'api',
-        },
-      },
-    },
-  }).catch((err) => safeError('[Lead Ingest] Outbound webhook send failed:', err))
+  // Fire outbound webhook: lead.received. The service adds the event envelope,
+  // so this passes the lead fields flat — the same shape the pixel path sends.
+  await emitWebhookEvent(workspaceId, 'lead.received', {
+    id: data.id,
+    first_name: leadData.first_name,
+    last_name: leadData.last_name,
+    email: leadData.email,
+    phone: leadData.phone,
+    company_name: leadData.company_name,
+    source: request.source_type || leadData.source || 'api',
+  })
 
   return { id: data.id, wasDuplicate: false }
 }

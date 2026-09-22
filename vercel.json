@@ -3,7 +3,9 @@
   "buildCommand": "rm -rf .next && pnpm run build",
   "framework": "nextjs",
   "installCommand": "pnpm install",
-  "regions": ["pdx1"],
+  "regions": [
+    "pdx1"
+  ],
   "functions": {
     "src/app/api/**/*.ts": {
       "memory": 512
@@ -35,6 +37,10 @@
     {
       "path": "/api/cron/sweep-stuck-onboarding",
       "schedule": "*/30 * * * *"
+    },
+    {
+      "path": "/api/cron/retry-webhook-deliveries",
+      "schedule": "*/10 * * * *"
     }
   ]
 }
