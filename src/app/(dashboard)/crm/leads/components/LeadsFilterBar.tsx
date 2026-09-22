@@ -29,7 +29,7 @@ const STATUS_OPTIONS: { value: LeadStatus; label: string; color: string }[] = [
 ]
 
 const SOURCE_OPTIONS: { value: string; label: string }[] = [
-  { value: 'audiencelab', label: 'SuperPixel' },
+  { value: 'audiencelab', label: 'Pixel' },
   { value: 'audiencelab_database', label: 'Database Pull' },
   { value: 'audiencelab_pull', label: 'Auto-Pull' },
   { value: 'marketplace', label: 'Marketplace' },

@@ -196,9 +196,9 @@ export const EnhancedLeadsTable = React.forwardRef<EnhancedLeadsTableHandle, Enh
 
   const sourceLabel = (src: string): string => {
     const map: Record<string, string> = {
-      audiencelab: 'SuperPixel',
-      audiencelab_database: 'Database Pull',
-      audiencelab_pull: 'Auto-Pull',
+      audiencelab: 'Pixel',
+      audiencelab_database: 'Daily Audience',
+      audiencelab_pull: 'Daily Audience',
       marketplace: 'Marketplace',
       query: 'Auto-Match',
       import: 'Import',

@@ -262,7 +262,12 @@ export default function WebhooksPage() {
       const res = await fetch(`/api/webhooks/outbound/${webhookId}/test`, { method: 'POST' })
       const result = await res.json()
       if (result.success) {
-        toast({ type: 'success', message: `Test delivered — got ${result.response_status} response` })
+        toast({
+          type: 'success',
+          message: result.used_real_lead
+            ? `Test delivered with your most recent lead — got ${result.response_status} response`
+            : `Test delivered — got ${result.response_status} response`,
+        })
       } else {
         toast({ type: 'error', message: `Test failed: ${result.error?.slice(0, 80) ?? 'Connection error'}` })
       }
