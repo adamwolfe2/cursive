@@ -7,6 +7,7 @@
 
 import { hmacSha256Hex, timingSafeEqual } from '@/lib/utils/crypto'
 import { getErrorMessage } from '@/lib/utils/error-helpers'
+import { publicLeadSource } from '@/lib/leads/public-source'
 
 export interface WebhookPayload {
   event: string
@@ -144,7 +145,7 @@ export function formatLeadPayload(lead: any): WebhookPayload {
       company_location: lead.company_location,
       intent_signal: lead.intent_signal,
       lead_score: lead.lead_score,
-      source: lead.source,
+      source: publicLeadSource(lead.source),
       created_at: lead.created_at,
       // Enriched data if available
       enrichment_data: lead.enrichment_data,

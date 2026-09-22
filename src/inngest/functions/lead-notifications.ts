@@ -13,6 +13,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { notifyNewLead } from '@/lib/services/lead-notifications.service'
 import type { LeadNotification } from '@/lib/services/lead-notifications.service'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { publicLeadSource } from '@/lib/leads/public-source'
 
 function getSupabaseAdmin() {
   return createAdminClient()
@@ -70,7 +71,7 @@ export const sendLeadNotifications = inngest.createFunction(
       linkedin_url: lead.linkedin_url || undefined,
       intent_score: lead.intent_score ?? lead.lead_score ?? undefined,
       status: lead.status || undefined,
-      source: lead.source || undefined,
+      source: publicLeadSource(lead.source) || undefined,
       created_at: lead.created_at || undefined,
     }
 

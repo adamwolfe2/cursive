@@ -13,6 +13,22 @@
 const PROVIDER_PATTERN = /audience[\s_-]?labs?/i
 
 /**
+ * The only values we will ever hand a customer. Anything not on this list is
+ * reported as `unknown`: an unrecognised stored value is just as likely to name
+ * a vendor (`clay`, `prospeo`) as to be something harmless.
+ */
+const PUBLIC_SOURCES = new Set([
+  'pixel',
+  'daily_audience',
+  'partner',
+  'marketplace',
+  'auto_match',
+  'import',
+  'manual',
+  'api',
+])
+
+/**
  * Translate a stored source into something safe to hand a customer.
  * Anything provider-shaped is mapped explicitly; anything unrecognised is
  * passed through only after confirming it carries no provider name.
@@ -38,8 +54,9 @@ export function publicLeadSource(source: string | null | undefined): string {
   if (value === 'manual') return 'manual'
   if (value === 'api') return 'api'
 
-  // Unrecognised, and provider-free by the check above — pass it through.
-  return value
+  // Anything else is reported as unknown rather than echoed: passing stored
+  // provenance through verbatim is how a vendor name reaches a customer.
+  return PUBLIC_SOURCES.has(value) ? value : 'unknown'
 }
 
 /** Title-cased form for display surfaces. */

@@ -13,7 +13,10 @@ describe('public lead source', () => {
     ['Audience Labs', 'daily_audience'],
     ['marketplace', 'marketplace'],
     ['ingest', 'import'],
-    ['demo', 'demo'],
+    ['demo', 'unknown'],
+    ['clay', 'unknown'],
+    ['prospeo_enrich', 'unknown'],
+    ['reseller_test_matrix', 'unknown'],
     [null, 'unknown'],
   ])('maps %s to %s', (input, expected) => {
     expect(publicLeadSource(input)).toBe(expected)
