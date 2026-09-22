@@ -50,13 +50,23 @@ export async function POST(
   // endpoint will actually receive, with this customer's own field coverage,
   // rather than a sample that is always fully populated. Falls back to the
   // sample for a workspace that has not identified anyone yet.
-  const { data: recentLead } = await supabase
+  const { data: recentLead, error: recentLeadError } = await supabase
     .from('leads')
     .select('id, first_name, last_name, email, phone, company_name, company_domain, job_title, city, state, source, created_at')
     .eq('workspace_id', user.workspace_id)
     .order('created_at', { ascending: false })
     .limit(1)
     .maybeSingle()
+
+  // A lookup failure must not quietly masquerade as "this workspace has no
+  // leads yet" — that would report used_real_lead: false as if the real-lead
+  // path had run and found nothing.
+  if (recentLeadError) {
+    return NextResponse.json(
+      { success: false, response_status: 0, error: 'Could not load a recent lead to test with. Try again.' },
+      { status: 200 }
+    )
+  }
 
   const sampleData = {
     id: 'lead_test_' + Date.now(),

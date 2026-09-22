@@ -29,6 +29,7 @@ import { InlineStatusEdit } from './InlineStatusEdit'
 import { InlineAssignUserEdit } from './InlineAssignUserEdit'
 import { InlineTagsEdit } from './InlineTagsEdit'
 import type { LeadTableRow } from '@/types/crm.types'
+import { publicLeadSourceLabel } from '@/lib/leads/public-source'
 
 // Types for workspace data
 interface WorkspaceUser {
@@ -37,18 +38,9 @@ interface WorkspaceUser {
   email: string
 }
 
-// Helper to map raw source keys to human-friendly labels
-function sourceLabel(src: string): string {
-  const map: Record<string, string> = {
-    audiencelab: 'Pixel',
-    audiencelab_database: 'Daily Audience',
-    audiencelab_pull: 'Daily Audience',
-    marketplace: 'Marketplace',
-    query: 'Auto-Match',
-    import: 'Import',
-  }
-  return map[src] ?? (src.charAt(0).toUpperCase() + src.slice(1).replace(/_/g, ' '))
-}
+// Labels come from the single boundary helper so every surface agrees and
+// no provider name can reach a customer.
+const sourceLabel = publicLeadSourceLabel
 
 // Helper to format currency
 function formatCurrency(amount: number | null): string {
