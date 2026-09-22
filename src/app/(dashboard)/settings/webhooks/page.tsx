@@ -535,7 +535,8 @@ const v1 = header.match(/v1=([a-f0-9]+)/)?.[1]
 const expected = createHmac('sha256', SECRET).update(\`\${t}.\${raw}\`).digest('hex')
 const ok = !!t && !!v1
   && Math.abs(Date.now() / 1000 - Number(t)) < 300
-  && timingSafeEqual(Buffer.from(v1), Buffer.from(expected))
+  && v1.length === expected.length          // timingSafeEqual throws on length mismatch
+  && timingSafeEqual(Buffer.from(v1, 'hex'), Buffer.from(expected, 'hex'))
 
 if (!ok) return new Response('bad signature', { status: 401 })`}
           </code>

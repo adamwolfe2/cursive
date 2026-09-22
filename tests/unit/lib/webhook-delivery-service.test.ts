@@ -18,10 +18,12 @@ const HOOK = {
 
 let webhookRow: typeof HOOK = { ...HOOK }
 const inserted: any[] = []
+const updated: any[] = []
 
-function chain(result: any, listResult?: any) {
+function chain(result: any, listResult?: any, track = false) {
   const c: any = {}
   for (const m of ['select', 'eq', 'update', 'insert']) c[m] = vi.fn(() => c)
+  if (track) c.update = vi.fn((row: any) => { updated.push(row); return c })
   c.maybeSingle = vi.fn(() => Promise.resolve(result))
   c.single = vi.fn(() => Promise.resolve(result))
   // getMatchingWebhookIds awaits the builder itself
@@ -34,7 +36,7 @@ vi.mock('@/lib/supabase/admin', () => ({
     from: vi.fn((table: string) => {
       if (table === 'workspace_webhooks')
         return chain({ data: webhookRow, error: null }, { data: [webhookRow], error: null })
-      const c = chain({ data: { id: 'delivery-1' }, error: null })
+      const c = chain({ data: { id: 'delivery-1' }, error: null }, undefined, true)
       c.insert = vi.fn((row: any) => {
         inserted.push(row)
         return c
@@ -72,6 +74,7 @@ function captureFetch(status = 200) {
 beforeEach(() => {
   webhookRow = { ...HOOK }
   inserted.length = 0
+  updated.length = 0
   vi.unstubAllGlobals()
 })
 
@@ -138,5 +141,31 @@ describe('outbound webhook delivery', () => {
 
     await expect(emitWebhookEvent('ws-1', 'lead.received', { email: 'jane@acme.com' }))
       .resolves.toEqual({ delivered: 0, failed: 1 })
+  })
+
+  it('persists a first-try success as one attempt, not the retry ceiling', async () => {
+    captureFetch(200)
+
+    await deliverWebhook('hook-1', 'lead.received', { email: 'jane@acme.com' })
+
+    expect(updated.at(-1)).toMatchObject({ status: 'success', attempts: 1, response_status: 200 })
+  })
+
+  it('persists the real attempt count when a live delivery keeps failing', async () => {
+    captureFetch(500)
+
+    const result = await deliverWebhook('hook-1', 'lead.received', { email: 'jane@acme.com' })
+
+    expect(result.success).toBe(false)
+    expect(updated.at(-1)).toMatchObject({ status: 'failed', attempts: 3 })
+  }, 15_000)
+
+  it('treats a redirect as a failure instead of following it', async () => {
+    captureFetch(302)
+
+    const result = await deliverWebhook('hook-1', 'lead.received', { email: 'jane@acme.com' }, { maxAttempts: 1 })
+
+    expect(result.success).toBe(false)
+    expect(updated.at(-1).error_message).toMatch(/redirect/i)
   })
 })

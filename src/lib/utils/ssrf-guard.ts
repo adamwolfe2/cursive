@@ -6,6 +6,8 @@
 const BLOCKED_HOSTNAMES = new Set([
   'localhost',
   'metadata.google.internal',
+  'metadata.goog',
+  'instance-data',
 ])
 
 const PRIVATE_IP_PATTERNS = [
@@ -42,6 +44,8 @@ export function isBlockedHost(urlStr: string): boolean {
     if (protocol !== 'http:' && protocol !== 'https:') return true
     // Block localhost and common internal hostnames
     if (hostname === 'localhost' || hostname === '0.0.0.0') return true
+    if (BLOCKED_HOSTNAMES.has(hostname.toLowerCase())) return true
+    if (hostname.toLowerCase().endsWith('.internal')) return true
     // Block IPv6 loopback
     if (hostname === '::1' || hostname === '[::1]') return true
     // Block IPv4 private ranges (checked as numeric comparison for correctness)

@@ -13,6 +13,10 @@ import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
 import { isBlockedHost } from '@/lib/utils/ssrf-guard'
 
 const DELIVERY_TIMEOUT_MS = 10_000
+// Callers on the identification hot path get a much shorter ceiling: a customer
+// endpoint that needs more than this is treated as failed and swept later,
+// rather than holding pixel ingestion open.
+const INLINE_TIMEOUT_MS = 3_000
 
 /**
  * The canonical body Cursive POSTs to every customer endpoint. Every delivery
@@ -54,10 +58,11 @@ async function attemptDelivery(
   url: string,
   secret: string,
   eventType: string,
-  payloadString: string
+  payloadString: string,
+  timeoutMs: number = DELIVERY_TIMEOUT_MS
 ): Promise<{ success: boolean; statusCode?: number; responseBody?: string; error?: string }> {
   const controller = new AbortController()
-  const timeoutId = setTimeout(() => controller.abort(), DELIVERY_TIMEOUT_MS)
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
 
   try {
     const signatureHeader = await signPayload(secret, payloadString)
@@ -73,10 +78,20 @@ async function attemptDelivery(
       },
       body: payloadString,
       signal: controller.signal,
+      // Never follow a redirect: the URL passed the guard, the hop target did not.
+      redirect: 'manual',
     })
 
     clearTimeout(timeoutId)
     const responseBody = await response.text().catch(() => '')
+
+    if (response.status >= 300 && response.status < 400) {
+      return {
+        success: false,
+        statusCode: response.status,
+        error: `Endpoint redirected (HTTP ${response.status}); webhook URLs must be final destinations`,
+      }
+    }
 
     return {
       success: response.ok,
@@ -102,7 +117,7 @@ export async function deliverWebhook(
   webhookId: string,
   eventType: string,
   data: unknown,
-  options: { maxAttempts?: number; test?: boolean } = {}
+  options: { maxAttempts?: number; test?: boolean; timeoutMs?: number } = {}
 ): Promise<OutboundDeliveryResult> {
   const supabase = createAdminClient()
 
@@ -194,7 +209,9 @@ export async function deliverWebhook(
     }
 
     attemptsMade++
-    lastResult = await attemptDelivery(webhook.url, webhook.secret, eventType, payloadString)
+    lastResult = await attemptDelivery(
+      webhook.url, webhook.secret, eventType, payloadString, options.timeoutMs
+    )
 
     if (lastResult.success) break
   }
@@ -246,8 +263,10 @@ export async function getMatchingWebhookIds(
     .eq('is_active', true)
 
   if (error) {
+    // Returning [] here would make a database blip indistinguishable from
+    // "this workspace has no webhooks" and drop the event with no record.
     safeError('[WebhookDelivery] Failed to fetch webhooks for fan-out:', error)
-    return []
+    throw new Error('Webhook subscriber lookup failed')
   }
 
   return (data ?? [])
@@ -273,20 +292,117 @@ export async function emitWebhookEvent(
   workspaceId: string,
   eventType: string,
   data: unknown
-): Promise<{ delivered: number; failed: number }> {
+): Promise<{ delivered: number; failed: number; lookupFailed?: true }> {
+  let webhookIds: string[]
+
   try {
-    const webhookIds = await getMatchingWebhookIds(workspaceId, eventType)
-    if (webhookIds.length === 0) return { delivered: 0, failed: 0 }
-
-    const results = await Promise.allSettled(
-      webhookIds.map((id) => deliverWebhook(id, eventType, data, { maxAttempts: 1 }))
-    )
-
-    const delivered = results.filter((r) => r.status === 'fulfilled' && r.value.success).length
-    return { delivered, failed: results.length - delivered }
-  } catch (err) {
-    // A webhook problem must never fail the ingestion that produced the event.
-    safeError('[WebhookDelivery] Fan-out failed:', err)
-    return { delivered: 0, failed: 0 }
+    webhookIds = await getMatchingWebhookIds(workspaceId, eventType)
+  } catch {
+    // One retry, because the common case is a transient connection blip. If it
+    // still fails we cannot write a delivery row (there is no webhook id to
+    // attach it to), so make the drop loud rather than silent — this is the
+    // one path the retry sweep cannot recover.
+    // ponytail: a durable outbox would close it; that is a bigger change than
+    // this surface warrants until it is observed happening.
+    try {
+      await new Promise((r) => setTimeout(r, 250))
+      webhookIds = await getMatchingWebhookIds(workspaceId, eventType)
+    } catch (retryErr) {
+      safeError(
+        `[WebhookDelivery] DROPPED event=${eventType} workspace=${workspaceId} — subscriber lookup failed twice:`,
+        retryErr
+      )
+      return { delivered: 0, failed: 0, lookupFailed: true }
+    }
   }
+
+  if (webhookIds.length === 0) return { delivered: 0, failed: 0 }
+
+  const results = await Promise.allSettled(
+    webhookIds.map((id) =>
+      deliverWebhook(id, eventType, data, { maxAttempts: 1, timeoutMs: INLINE_TIMEOUT_MS })
+    )
+  )
+
+  const delivered = results.filter((r) => r.status === 'fulfilled' && r.value.success).length
+  return { delivered, failed: results.length - delivered }
+}
+
+/**
+ * Re-attempt one delivery that previously failed, updating that same row.
+ *
+ * Retrying in place is what makes the attempt cap mean anything: inserting a
+ * fresh row per sweep would reset the count every time and multiply failed rows
+ * for an endpoint that is simply gone. The envelope is rebuilt so the signature
+ * carries a current timestamp, and a test send stays flagged as a test.
+ */
+export async function retryDelivery(
+  deliveryId: string,
+  timeoutMs: number = INLINE_TIMEOUT_MS
+): Promise<{ success: boolean; statusCode?: number }> {
+  const supabase = createAdminClient()
+
+  const { data: row, error } = await supabase
+    .from('outbound_webhook_deliveries')
+    .select('id, webhook_id, event_type, payload, attempts')
+    .eq('id', deliveryId)
+    .maybeSingle()
+
+  if (error || !row) throw new Error(`Delivery ${deliveryId} not found`)
+
+  const { data: webhook } = await supabase
+    .from('workspace_webhooks')
+    .select('url, secret, is_active')
+    .eq('id', row.webhook_id)
+    .maybeSingle()
+
+  const attempts = (row.attempts ?? 0) + 1
+
+  const fail = async (reason: string) => {
+    await supabase
+      .from('outbound_webhook_deliveries')
+      .update({
+        attempts,
+        status: 'failed',
+        error_message: reason,
+        last_attempt_at: new Date().toISOString(),
+      })
+      .eq('id', row.id)
+    return { success: false }
+  }
+
+  if (!webhook || !webhook.is_active) return fail('Webhook is inactive or deleted')
+  if (isBlockedHost(webhook.url)) return fail('Webhook URL targets a blocked internal address')
+
+  const stored = (row.payload ?? {}) as { data?: unknown; test?: boolean }
+  const envelope: WebhookEnvelope = {
+    event: row.event_type,
+    workspace_id: (row.payload as { workspace_id?: string })?.workspace_id ?? '',
+    timestamp: new Date().toISOString(),
+    data: 'data' in stored ? stored.data : row.payload,
+    ...(stored.test ? { test: true as const } : {}),
+  }
+
+  const result = await attemptDelivery(
+    webhook.url,
+    webhook.secret,
+    row.event_type,
+    JSON.stringify(envelope),
+    timeoutMs
+  )
+
+  await supabase
+    .from('outbound_webhook_deliveries')
+    .update({
+      attempts,
+      status: result.success ? 'success' : 'failed',
+      response_status: result.statusCode ?? null,
+      response_body: result.responseBody ?? null,
+      error_message: result.error ?? null,
+      last_attempt_at: new Date().toISOString(),
+      ...(result.success ? { completed_at: new Date().toISOString() } : {}),
+    })
+    .eq('id', row.id)
+
+  return { success: result.success, statusCode: result.statusCode }
 }

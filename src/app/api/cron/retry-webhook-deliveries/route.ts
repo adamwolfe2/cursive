@@ -18,10 +18,14 @@ export const maxDuration = 60
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { deliverWebhook } from '@/lib/services/webhook-delivery.service'
+import { retryDelivery } from '@/lib/services/webhook-delivery.service'
 import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
 
-const MAX_PER_RUN = 50
+// Sized to fit maxDuration: 25 rows at concurrency 5 is 5 waves, and each wave
+// is capped by the delivery timeout, so a run of dead endpoints still lands
+// well inside 60s.
+const MAX_PER_RUN = 25
+const CONCURRENCY = 5
 const MAX_ATTEMPTS = 4
 const MAX_AGE_HOURS = 24
 
@@ -37,7 +41,7 @@ export async function GET(request: NextRequest) {
 
   const { data: stuck, error } = await supabase
     .from('outbound_webhook_deliveries')
-    .select('id, webhook_id, event_type, payload, attempts')
+    .select('id')
     .eq('status', 'failed')
     .lt('attempts', MAX_ATTEMPTS)
     .gte('created_at', cutoff)
@@ -52,28 +56,22 @@ export async function GET(request: NextRequest) {
   let redelivered = 0
   let stillFailing = 0
 
-  for (const row of stuck ?? []) {
-    // The stored payload is the full envelope; re-send only its data so the
-    // service rebuilds a fresh envelope with a current timestamp and signature.
-    const data = (row.payload as { data?: unknown } | null)?.data ?? row.payload
-
-    try {
-      const result = await deliverWebhook(row.webhook_id, row.event_type, data, { maxAttempts: 1 })
-      if (result.success) redelivered++
-      else stillFailing++
-    } catch (err) {
-      safeError('[WebhookRetry] Redelivery threw:', err)
-      stillFailing++
+  // Retry in place: retryDelivery updates the same row, so `attempts` keeps
+  // climbing toward MAX_ATTEMPTS instead of resetting on every sweep.
+  const queue = [...(stuck ?? [])]
+  const workers = Array.from({ length: Math.min(CONCURRENCY, queue.length) }, async () => {
+    for (let row = queue.shift(); row; row = queue.shift()) {
+      try {
+        const result = await retryDelivery(row.id)
+        if (result.success) redelivered++
+        else stillFailing++
+      } catch (err) {
+        safeError('[WebhookRetry] Redelivery threw:', err)
+        stillFailing++
+      }
     }
-
-    // Bump the original row's attempt count. The redelivery wrote its own row;
-    // this one stops being swept once it reaches MAX_ATTEMPTS. No new status
-    // value is introduced, so the delivery log keeps reading the same way.
-    await supabase
-      .from('outbound_webhook_deliveries')
-      .update({ attempts: (row.attempts ?? 0) + 1 })
-      .eq('id', row.id)
-  }
+  })
+  await Promise.all(workers)
 
   safeLog(`[WebhookRetry] swept=${stuck?.length ?? 0} redelivered=${redelivered} stillFailing=${stillFailing}`)
 

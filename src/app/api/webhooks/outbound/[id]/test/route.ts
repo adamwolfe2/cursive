@@ -45,22 +45,32 @@ export async function POST(
 
   const eventType = webhook.events?.[0] ?? 'lead.received'
 
-  const result = await deliverWebhook(
-    id,
-    eventType,
-    {
-      id: 'lead_test_' + Date.now(),
-      first_name: 'Jane',
-      last_name: 'Smith',
-      full_name: 'Jane Smith',
-      email: 'jane.smith@example.com',
-      company_name: 'Acme Corp',
-      company_industry: 'Technology',
-      intent_score: 85,
-      note: 'This is a test delivery from Cursive.',
-    },
-    { maxAttempts: 1, test: true }
-  )
+  let result
+  try {
+    result = await deliverWebhook(
+      id,
+      eventType,
+      {
+        id: 'lead_test_' + Date.now(),
+        first_name: 'Jane',
+        last_name: 'Smith',
+        full_name: 'Jane Smith',
+        email: 'jane.smith@example.com',
+        company_name: 'Acme Corp',
+        company_industry: 'Technology',
+        intent_score: 85,
+        note: 'This is a test delivery from Cursive.',
+      },
+      { maxAttempts: 1, test: true }
+    )
+  } catch (err) {
+    // The UI parses this response as JSON — an uncaught throw would hand it an
+    // HTML error page and surface as a misleading generic failure.
+    return NextResponse.json(
+      { success: false, response_status: 0, error: err instanceof Error ? err.message : 'Test delivery failed' },
+      { status: 200 }
+    )
+  }
 
   return NextResponse.json({
     success: result.success,
