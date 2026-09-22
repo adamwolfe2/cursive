@@ -16,6 +16,7 @@ import { scoreIcpFit, icpInputFromALRecord } from '@/lib/icp/score'
 import { resolveLeadContact } from '@/lib/icp/contact'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 import { emitWebhookEvent } from '@/lib/services/webhook-delivery.service'
+import { publicLeadSource } from '@/lib/leads/public-source'
 import { checkQuota, incrementQuota } from '@/lib/services/al-quota.service'
 
 const LOG_PREFIX = '[AL EdgeProcessor]'
@@ -649,7 +650,9 @@ export async function processEventInline(
         phone: normalized.phones[0] || null,
         city: normalized.city,
         state: normalized.state,
-        source: `audiencelab_${source}`,
+        // Customer-facing: never leak the upstream provider name. The stored
+        // lead row keeps the real provenance.
+        source: publicLeadSource(source),
         created_at: new Date().toISOString(),
       }
 
