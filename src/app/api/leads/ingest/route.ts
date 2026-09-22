@@ -1,5 +1,8 @@
 export const maxDuration = 30
 
+/** Simultaneous webhook deliveries per ingest request. */
+const WEBHOOK_FANOUT_CONCURRENCY = 5
+
 /**
  * Lead Ingestion API
  *
@@ -148,7 +151,7 @@ export async function POST(req: NextRequest) {
       company_name: l.company_name || null,
     }))
     const dedupIndices = new Set<number>()
-    const pendingWebhooks: Promise<unknown>[] = []
+    const pendingWebhooks: (() => Promise<unknown>)[] = []
     let leadIndex = 0
 
     // Handle batch leads
@@ -222,10 +225,18 @@ export async function POST(req: NextRequest) {
       await updateSourceStats(supabase, ingestRequest.source_id, results)
     }
 
-    // All webhook fan-outs run concurrently, so a batch waits once for the
-    // slowest endpoint rather than once per lead. Each one records its own
-    // failure; none of them can fail the ingest.
-    await Promise.allSettled(pendingWebhooks)
+    // Fan out with bounded concurrency: a batch waits for the slowest few
+    // endpoints rather than the sum of every lead, without firing a hundred
+    // simultaneous deliveries at one customer. Each records its own failure;
+    // none can fail the ingest.
+    const queue = [...pendingWebhooks]
+    await Promise.allSettled(
+      Array.from({ length: Math.min(WEBHOOK_FANOUT_CONCURRENCY, queue.length) }, async () => {
+        for (let next = queue.shift(); next; next = queue.shift()) {
+          await next().catch(() => undefined)
+        }
+      })
+    )
 
     return NextResponse.json({
       success: true,
@@ -252,7 +263,7 @@ async function createLeadFromPush(
   leadData: z.infer<typeof LeadPushSchema>,
   request: IngestRequest,
   /** Collects webhook fan-outs so the batch loop never waits on customer HTTP. */
-  pendingWebhooks: Promise<unknown>[]
+  pendingWebhooks: (() => Promise<unknown>)[]
 ): Promise<{ id: string; wasDuplicate: boolean }> {
   // Deduplication: check email and name+company within workspace
   if (leadData.email) {
@@ -343,7 +354,7 @@ async function createLeadFromPush(
   // Not awaited here: this runs inside a per-lead loop, and serialising a
   // network call per lead would push a large batch past the route's 30s limit.
   // The caller awaits all of them together once the loop is done.
-  pendingWebhooks.push(emitWebhookEvent(workspaceId, 'lead.received', {
+  pendingWebhooks.push(() => emitWebhookEvent(workspaceId, 'lead.received', {
     id: data.id,
     first_name: leadData.first_name,
     last_name: leadData.last_name,

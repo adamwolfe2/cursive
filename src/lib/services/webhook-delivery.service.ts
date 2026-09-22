@@ -103,7 +103,12 @@ async function attemptDelivery(
     clearTimeout(timeoutId)
     return {
       success: false,
-      error: err instanceof Error && err.name === 'AbortError' ? 'Request timed out after 10s' : (err instanceof Error ? err.message : 'Unknown error'),
+      error:
+        err instanceof Error && err.name === 'AbortError'
+          ? `Request timed out after ${Math.round(timeoutMs / 1000)}s`
+          : err instanceof Error
+            ? err.message
+            : 'Unknown error',
     }
   }
 }
@@ -338,7 +343,9 @@ export async function emitWebhookEvent(
  */
 export async function retryDelivery(
   deliveryId: string,
-  timeoutMs: number = INLINE_TIMEOUT_MS
+  // Full ceiling here, not the inline one: this runs in a cron, and the docs
+  // promise customers 10 seconds to respond.
+  timeoutMs: number = DELIVERY_TIMEOUT_MS
 ): Promise<{ success: boolean; statusCode?: number }> {
   const supabase = createAdminClient()
 
@@ -350,11 +357,15 @@ export async function retryDelivery(
 
   if (error || !row) throw new Error(`Delivery ${deliveryId} not found`)
 
-  const { data: webhook } = await supabase
+  const { data: webhook, error: webhookError } = await supabase
     .from('workspace_webhooks')
     .select('url, secret, is_active')
     .eq('id', row.webhook_id)
     .maybeSingle()
+
+  // A failed lookup is not evidence the endpoint is gone. Throw so the sweep
+  // counts it as still-failing and tries again without spending an attempt.
+  if (webhookError) throw new Error(`Webhook lookup failed for delivery ${deliveryId}`)
 
   const attempts = (row.attempts ?? 0) + 1
 
@@ -391,7 +402,7 @@ export async function retryDelivery(
     timeoutMs
   )
 
-  await supabase
+  const { error: persistError } = await supabase
     .from('outbound_webhook_deliveries')
     .update({
       attempts,
@@ -403,6 +414,16 @@ export async function retryDelivery(
       ...(result.success ? { completed_at: new Date().toISOString() } : {}),
     })
     .eq('id', row.id)
+
+  if (persistError && result.success) {
+    // The customer already has this event. The row still reads `failed`, so the
+    // next sweep would send it a second time — say so loudly rather than let a
+    // duplicate lead appear silently.
+    safeError(
+      `[WebhookDelivery] DELIVERED BUT NOT RECORDED delivery=${row.id} — next sweep may duplicate it:`,
+      persistError
+    )
+  }
 
   return { success: result.success, statusCode: result.statusCode }
 }

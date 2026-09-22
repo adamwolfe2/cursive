@@ -154,11 +154,14 @@ describe('outbound webhook delivery', () => {
   it('persists the real attempt count when a live delivery keeps failing', async () => {
     captureFetch(500)
 
-    const result = await deliverWebhook('hook-1', 'lead.received', { email: 'jane@acme.com' })
+    // Two attempts, not three: the invariant under test is that the recorded
+    // count tracks attempts actually made, and stopping at two costs one 2s
+    // backoff instead of 8s on every run.
+    const result = await deliverWebhook('hook-1', 'lead.received', { email: 'jane@acme.com' }, { maxAttempts: 2 })
 
     expect(result.success).toBe(false)
-    expect(updated.at(-1)).toMatchObject({ status: 'failed', attempts: 3 })
-  }, 15_000)
+    expect(updated.at(-1)).toMatchObject({ status: 'failed', attempts: 2 })
+  }, 10_000)
 
   it('treats a redirect as a failure instead of following it', async () => {
     captureFetch(302)
@@ -167,5 +170,21 @@ describe('outbound webhook delivery', () => {
 
     expect(result.success).toBe(false)
     expect(updated.at(-1).error_message).toMatch(/redirect/i)
+  })
+
+  it.each([
+    'http://169.254.169.254/latest/meta-data/',
+    'https://metadata.google.internal/',
+    'https://metadata.goog./',
+    'https://anything.internal./',
+    'http://127.0.0.1:8080/hook',
+  ])('refuses %s', async (url) => {
+    const fetchMock = captureFetch()
+    webhookRow = { ...HOOK, url }
+
+    const result = await deliverWebhook('hook-1', 'lead.received', { email: 'jane@acme.com' })
+
+    expect(result.success).toBe(false)
+    expect(fetchMock).not.toHaveBeenCalled()
   })
 })
