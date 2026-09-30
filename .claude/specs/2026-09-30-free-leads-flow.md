@@ -45,3 +45,11 @@ Founder pastes their website -> Cursive infers their ICP -> live count -> refine
 ## Open (Adam)
 - Weekly-leads price (no Stripe product created; rung captures intent + books a call).
 - GetLeads terms for product use before public launch.
+
+## Status 2026-09-30 end of session
+- Branch feat/free-leads-flow: 3 commits on top of main (80657b2), NOT pushed (Adam: batch, one push, one Vercel build).
+- free_lead_claims applied to prod (via Supabase Management API query; CLI token in keychain). Unique-domain invariant probed OK.
+- E2E passed on local `next build && next start -p 3103` vs prod data (/tmp/fl-e2e/e2e.py): claim -> admin magic link -> 25 leads, idempotent refresh, 1 billed attempt, source free_leads. MV on the 25: 15 ok, 10 catch_all, 0 invalid.
+- Test data left in prod: user adam+freeleadstest@meetcursive.com, workspace bfe2994b-454e-4a8a-8f85-95e644b4abe7 (25 leads), fulfilled claim (locks domain meetcursive.com for free claims; delete claim row to unlock).
+- #128 (magic-link fix + hardened sanitizeNext for all auth redirects) merged and promoted manually (leadme prod deploys sit in "Running Checks"; promotion is manual on this project).
+- Next: push once -> PR -> one preview -> merge -> promote. Then: weekly-leads price (Adam), GetLeads product-use terms, ICP quality for local-service niches (dentists matched eye/neuro practices), slow counts (8-24s), rate_limit_logs cleanup cron trims windows to ~2h.
