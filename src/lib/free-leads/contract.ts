@@ -30,6 +30,8 @@ export const IcpSchema = z.object({
   countries: z.array(z.string().min(1).max(80)).max(10),
   /** US state names ("Texas") or other regions; maps to office_states. */
   states: z.array(z.string().min(1).max(80)).max(15),
+  /** Metro cities for local/regional sellers ("Austin", "Round Rock"); maps to the person's city. */
+  cities: z.array(z.string().min(1).max(80)).max(12).default([]),
 })
 export type Icp = z.infer<typeof IcpSchema>
 

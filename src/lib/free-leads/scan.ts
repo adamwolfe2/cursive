@@ -23,7 +23,7 @@ import {
 } from './contract'
 
 const MODEL = 'claude-opus-5-5'
-const ICP_KEYS = ['summary', 'industries', 'job_titles', 'seniority', 'company_size', 'countries', 'states'] as const
+const ICP_KEYS = ['summary', 'industries', 'job_titles', 'seniority', 'company_size', 'countries', 'states', 'cities'] as const
 
 export class ScanError extends Error {
   constructor(message: string, readonly code: 'refusal' | 'truncated' | 'invalid' | 'not_configured') {
@@ -51,6 +51,7 @@ const ICP_PROPERTIES = {
   company_size: enumArray(COMPANY_SIZE_BANDS),
   countries: strArray,
   states: strArray,
+  cities: strArray,
 }
 
 function objectSchema(properties: Record<string, unknown>) {
@@ -68,11 +69,16 @@ const REFINE_SCHEMA = objectSchema({ ...ICP_PROPERTIES, note: { type: 'string' }
 
 const ICP_RULES = `ICP field rules:
 - summary: one sentence, second person, max 200 characters, e.g. "You sell SOC 2 audits to Series A SaaS teams."
-- industries: 1-5 values from the enum describing the BUYERS' industries (not the seller's own industry unless they sell within it).
+- industries: 1-4 of the MOST SPECIFIC enum values for the BUYERS' organizations (not the seller's own industry unless they sell within it).
+  Use "Dentists", not "Hospitals and Health Care" or "Medical Practices"; SaaS companies are "Software Development", not "IT Services and IT Consulting".
+  Add a broad value (e.g. "Financial Services", "Manufacturing") only when the seller really sells across that whole sector.
+  Use [] when the buyers are any kind of organization in an area (typical for a local business).
 - job_titles: 3-8 concrete titles of the people who buy or champion this (e.g. "Head of Growth", "VP Marketing").
 - seniority: from the enum. company_size: the buyer company size bands most likely to buy.
 - countries: full country names, e.g. "United States". Default to the seller's home market when unclear.
-- states: only when the business is clearly local or regional (full state names, e.g. "Texas"); otherwise [].`
+- states: only when the business is clearly local or regional (full state names, e.g. "Texas"); otherwise [].
+- cities: only for a local business serving one metro (a clinic, contractor, local law firm or agency): 4-10 of that metro's main cities as written in addresses (e.g. "Dallas", "Fort Worth", "Plano", "Irving"); also set states. Otherwise [].
+- If the seller mainly sells to consumers, target the business buyers with the most direct path to purchase (e.g. office or HR managers buying for staff, stores that stock the product, property managers) and say so in the summary.`
 
 const SCAN_SYSTEM = `You analyze a company's website to infer its ideal customer profile (who it should sell to), for a B2B lead list.
 Write findings first: 3-4 (never more than 4) short factual observations, each with a label of at most 3 words ("What you sell", "Who buys", "Deal size", "Where") and text under 120 characters, second person ("You sell..."). No hype, no emojis, no em dashes.
@@ -91,13 +97,19 @@ function anthropic(): Anthropic {
 }
 
 /** Request params. Effort lives in output_config; SDK 0.72 types only know `format`, hence the cast. */
-function params(system: string, schema: object, user: string, maxTokens: number): Anthropic.MessageCreateParamsNonStreaming {
+function params(
+  system: string,
+  schema: object,
+  user: string,
+  maxTokens: number,
+  choice: ModelChoice = {}
+): Anthropic.MessageCreateParamsNonStreaming {
   return {
-    model: MODEL,
+    model: choice.model ?? MODEL,
     max_tokens: maxTokens,
     system,
     messages: [{ role: 'user', content: user }],
-    output_config: { effort: 'low', format: { type: 'json_schema', schema } },
+    output_config: { effort: choice.effort ?? 'low', format: { type: 'json_schema', schema } },
   } as Anthropic.MessageCreateParamsNonStreaming
 }
 
@@ -122,6 +134,7 @@ export function toIcp(raw: Record<string, unknown>): Icp {
     company_size: arr(raw.company_size, 8),
     countries: arr(raw.countries, 10),
     states: arr(raw.states, 15),
+    cities: arr(raw.cities, 12).map((c) => c.slice(0, 80)),
   })
   if (!parsed.success) throw new ScanError(`ICP failed validation: ${parsed.error.message.slice(0, 200)}`, 'invalid')
   return parsed.data
@@ -137,6 +150,14 @@ function toFinding(raw: unknown): Finding | null {
 export interface ScanCallbacks {
   onFinding: (finding: Finding) => void
   onIcpPartial: (icp: Partial<Icp>) => void
+  /** Token usage of each model call (cost accounting). */
+  onUsage?: (usage: Anthropic.Usage, model: string) => void
+}
+
+/** Model/effort override (eval comparisons). Production uses the defaults. */
+export interface ModelChoice {
+  model?: string
+  effort?: 'low' | 'medium' | 'high'
 }
 
 /** Emits findings / completed ICP fields from a growing JSON snapshot. Stateful per attempt. */
@@ -169,26 +190,27 @@ export function snapshotEmitter(cb: ScanCallbacks) {
   }
 }
 
-async function scanAttempt(siteText: string, emit: ((s: string) => void) | null): Promise<Icp> {
+async function scanAttempt(siteText: string, emit: ((s: string) => void) | null, cb: ScanCallbacks, choice: ModelChoice): Promise<Icp> {
   const stream = anthropic().messages.stream(
-    params(SCAN_SYSTEM, SCAN_SCHEMA, `Website content:\n<site>\n${siteText}\n</site>`, SCAN_MAX_TOKENS)
+    params(SCAN_SYSTEM, SCAN_SCHEMA, `Website content:\n<site>\n${siteText}\n</site>`, SCAN_MAX_TOKENS, choice)
   )
   if (emit) stream.on('text', (_delta, snapshot) => emit(snapshot))
   const message = await stream.finalMessage()
+  cb.onUsage?.(message.usage, message.model)
   checkStop(message)
   return toIcp(JSON.parse(finalText(message)) as Record<string, unknown>)
 }
 
 /** Infers the ICP from site text. Streams findings/partials via callbacks; retries once on bad output. */
-export async function scanIcp(siteText: string, cb: ScanCallbacks): Promise<Icp> {
+export async function scanIcp(siteText: string, cb: ScanCallbacks, choice: ModelChoice = {}): Promise<Icp> {
   try {
-    return await scanAttempt(siteText, snapshotEmitter(cb))
+    return await scanAttempt(siteText, snapshotEmitter(cb), cb, choice)
   } catch (err) {
     if (!(err instanceof ScanError && (err.code === 'invalid' || err.code === 'truncated')) && !(err instanceof SyntaxError)) {
       throw err
     }
     safeWarn('[free-leads/scan] retrying after bad output', String(err))
-    return scanAttempt(siteText, null)
+    return scanAttempt(siteText, null, cb, choice)
   }
 }
 

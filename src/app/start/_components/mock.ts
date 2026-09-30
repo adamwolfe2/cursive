@@ -30,6 +30,7 @@ const ICP: Icp = {
   company_size: ['11 to 50', '51 to 200', '201 to 500'],
   countries: ['United States'],
   states: [],
+  cities: [],
 }
 
 export async function mockScan(

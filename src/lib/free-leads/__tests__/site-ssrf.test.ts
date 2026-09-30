@@ -61,3 +61,12 @@ describe('connect-time SSRF guard', () => {
     expect(httpsFavicon('data:image/png;base64,AAAA', 'https://acme.com/')).toBeNull()
   })
 })
+
+describe('upgradeRedirect', () => {
+  it('upgrades an http redirect to https and resolves relative locations', async () => {
+    const { upgradeRedirect } = await import('../site')
+    expect(upgradeRedirect('http://www.vaco.com/', 'https://vaco.com/')).toBe('https://www.vaco.com/')
+    expect(upgradeRedirect('/about', 'https://acme.com/')).toBe('https://acme.com/about')
+    expect(upgradeRedirect('ftp://acme.com/x', 'https://acme.com/')).toBe('ftp://acme.com/x')
+  })
+})

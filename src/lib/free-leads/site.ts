@@ -20,6 +20,8 @@ export interface SiteContent {
   description: string | null
   favicon: string | null
   text: string
+  /** Which path produced the text (the crawler costs money; direct does not). */
+  source: 'direct' | 'crawler'
 }
 
 const MAX_HTML = 600_000
@@ -132,6 +134,7 @@ export function htmlToSite(html: string, url: string): SiteContent {
     description: (metaContent(html, 'description') ?? metaContent(html, 'og:description'))?.slice(0, 400) ?? null,
     favicon: httpsFavicon(iconHref ?? '/favicon.ico', url),
     text,
+    source: 'direct',
   }
 }
 
@@ -150,6 +153,17 @@ async function readCapped(res: UndiciResponse): Promise<string> {
   return Buffer.concat(chunks).toString('utf8')
 }
 
+/**
+ * Next hop for a redirect. Sites often send https://acme.com to http://www.acme.com; we
+ * upgrade plain http to https instead of refusing (https-only still holds, and every hop
+ * is re-checked). Other schemes stay as they are and are refused by the caller.
+ */
+export function upgradeRedirect(location: string, current: string): string {
+  const next = new URL(location, current)
+  if (next.protocol === 'http:') next.protocol = 'https:'
+  return next.toString()
+}
+
 async function directFetch(url: string): Promise<SiteContent> {
   let current = url
   for (let hop = 0; hop < 4; hop++) {
@@ -166,7 +180,7 @@ async function directFetch(url: string): Promise<SiteContent> {
     })
     const location = res.headers.get('location')
     if (res.status >= 300 && res.status < 400 && location) {
-      current = new URL(location, current).toString()
+      current = upgradeRedirect(location, current)
       continue
     }
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
@@ -196,6 +210,7 @@ export async function fetchSite(url: string): Promise<SiteContent> {
       description: crawled.description ?? direct?.description ?? null,
       favicon: direct?.favicon ?? httpsFavicon('/favicon.ico', url),
       text: crawled.markdown.slice(0, MAX_TEXT),
+      source: 'crawler',
     }
   }
   if (direct && direct.text.length >= 80) return direct

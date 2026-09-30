@@ -21,6 +21,8 @@ export interface GetLeadsFilters {
   company_size?: string[]
   countries?: string[]
   office_states?: string[]
+  /** Person city (substring match), for local sellers. */
+  cities?: string[]
   email_status: ['VALID']
 }
 
