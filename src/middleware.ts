@@ -193,6 +193,10 @@ export async function middleware(req: NextRequest) {
       pathname.startsWith('/auth/callback') ||
       pathname.startsWith('/auth/accept-invite') ||
       pathname.startsWith('/auth/signout') ||
+      // Magic-link landing: the visitor has no session until verifyOtp runs in
+      // the route. Without this, every emailed login link bounced to /login and
+      // lost its token_hash. The route only redirects to same-origin paths.
+      pathname.startsWith('/auth/confirm') ||
       pathname.startsWith('/mfa-challenge') ||
       pathname.startsWith('/superpixel') ||
       pathname.startsWith('/visitor-estimate') ||
