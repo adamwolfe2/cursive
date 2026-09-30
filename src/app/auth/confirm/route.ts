@@ -14,21 +14,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import { APP_URL } from '@/lib/config/urls'
 import { safeError } from '@/lib/utils/log-sanitizer'
-
-function sanitizeNext(path: string | null): string {
-  if (
-    !path ||
-    !path.startsWith('/') ||
-    path.startsWith('//') ||
-    path.includes('\\')
-  ) {
-    return '/dashboard'
-  }
-  const lower = path.toLowerCase()
-  if (lower.includes('javascript:') || lower.includes('data:'))
-    return '/dashboard'
-  return path
-}
+import { sanitizeNext } from '@/lib/auth/safe-next'
 
 export async function GET(request: NextRequest) {
   const url = new URL(request.url)
