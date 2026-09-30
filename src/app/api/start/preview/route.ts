@@ -13,6 +13,9 @@ import { searchContacts } from '@/lib/getleads/client'
 import { badRequest, clientIp, isLimited, rateLimited, readJson, serverError } from '@/lib/free-leads/http'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
+// A billed 5-row search can take 10s+; don't let the platform cut it off.
+export const maxDuration = 60
+
 // ponytail: per-instance cache; misses on a cold instance are still bounded by the global daily cap.
 // Move to a table keyed by filter hash if preview spend shows up in credit reports.
 const TTL_MS = 24 * 60 * 60 * 1000

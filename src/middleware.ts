@@ -227,8 +227,6 @@ export async function middleware(req: NextRequest) {
       pathname.startsWith('/api/start/refine') ||
       pathname.startsWith('/api/start/preview') ||
       pathname.startsWith('/api/start/claim') ||
-      // Magic-link landing: the visitor has no session until verifyOtp runs here.
-      pathname.startsWith('/auth/confirm') ||
       pathname.startsWith('/audience-builder') ||
       pathname.startsWith('/audience-intelligence') ||
       // Client portal — token-based auth, no user session required

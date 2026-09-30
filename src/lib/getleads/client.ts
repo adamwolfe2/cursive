@@ -10,6 +10,9 @@ import { z } from 'zod'
 const BASE_URL = 'https://app.getleads.io'
 // Title-heavy counts measured 10-17s on 2026-09-30; search stays well under this.
 const TIMEOUT_MS = 20_000
+// Paid searches: a 25-row pull measured 22.7s on 2026-09-30, and a request that
+// times out on our side is still billed upstream. Give paid calls real headroom.
+const SEARCH_TIMEOUT_MS = 60_000
 
 export interface GetLeadsFilters {
   industries?: string[]
@@ -77,7 +80,7 @@ export function assertConfigured(): string {
   return apiKey
 }
 
-async function post(path: string, body: unknown): Promise<unknown> {
+async function post(path: string, body: unknown, timeoutMs: number = TIMEOUT_MS): Promise<unknown> {
   const apiKey = assertConfigured()
 
   let res: Response
@@ -86,13 +89,13 @@ async function post(path: string, body: unknown): Promise<unknown> {
       method: 'POST',
       headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
-      signal: AbortSignal.timeout(TIMEOUT_MS),
+      signal: AbortSignal.timeout(timeoutMs),
       cache: 'no-store',
     })
   } catch (err) {
     const isTimeout = err instanceof Error && (err.name === 'TimeoutError' || err.name === 'AbortError')
     throw new GetLeadsError(
-      isTimeout ? `Lead database timed out after ${TIMEOUT_MS}ms` : 'Lead database network error',
+      isTimeout ? `Lead database timed out after ${timeoutMs}ms` : 'Lead database network error',
       isTimeout ? 'timeout' : 'network'
     )
   }
@@ -127,7 +130,7 @@ export async function searchContacts(
   page: { limit: number; offset?: number }
 ): Promise<{ contacts: GetLeadsContact[]; totalAvailable: number }> {
   const limit = Math.max(1, Math.min(100, Math.floor(page.limit)))
-  const json = await post('/api/v1/contacts/search', { ...filters, limit, offset: page.offset ?? 0 })
+  const json = await post('/api/v1/contacts/search', { ...filters, limit, offset: page.offset ?? 0 }, SEARCH_TIMEOUT_MS)
   const data = parse(SearchResponseSchema, json)
   return { contacts: data.contacts, totalAvailable: data.total_available }
 }

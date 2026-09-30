@@ -40,12 +40,17 @@ const cell = (v: string | null) => {
   return `"${safe.replace(/"/g, '""')}"`
 }
 
+/** "https://www.acme.com/" -> "acme.com" for display and file names. */
+function bareDomain(website: string): string {
+  return website.replace(/^https?:\/\//i, '').replace(/^www\./i, '').replace(/\/.*$/, '')
+}
+
 function downloadCsv(leads: FullLead[], website: string) {
   const lines = [CSV_COLUMNS.map(([h]) => h).join(','), ...leads.map((l) => CSV_COLUMNS.map(([, get]) => cell(get(l))).join(','))]
   const url = URL.createObjectURL(new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8' }))
   const a = document.createElement('a')
   a.href = url
-  a.download = `cursive-leads-${website.replace(/[^a-z0-9.-]/gi, '')}.csv`
+  a.download = `cursive-leads-${bareDomain(website).replace(/[^a-z0-9.-]/gi, '')}.csv`
   a.click()
   URL.revokeObjectURL(url)
 }
@@ -96,7 +101,7 @@ export function LeadsView({ mock, token }: { mock: Mock; token: string | null })
     <div className="mx-auto w-full max-w-[72rem] px-5 pb-24 pt-8 sm:px-8 sm:pt-14">
       <header className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
         <div className="min-w-0">
-          <p className="text-[13px] font-medium text-[#6b7280]">{data?.website ?? 'Your free list'}</p>
+          <p className="text-[13px] font-medium text-[#6b7280]">{data?.website ? bareDomain(data.website) : 'Your free list'}</p>
           <h1 className="mt-1 text-[2.25rem] font-semibold leading-[1.05] tracking-[-0.04em] text-[#111318] sm:text-[3rem]">
             {state.kind === 'failed' && 'Your leads are stuck.'}
             {state.kind === 'loading' && 'Pulling your 25 leads.'}
