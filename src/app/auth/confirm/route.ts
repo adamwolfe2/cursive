@@ -14,26 +14,12 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import { APP_URL } from '@/lib/config/urls'
 import { safeError } from '@/lib/utils/log-sanitizer'
-
-function sanitizeNext(path: string | null): string {
-  if (
-    !path ||
-    !path.startsWith('/') ||
-    path.startsWith('//') ||
-    path.includes('\\')
-  ) {
-    return '/dashboard'
-  }
-  const lower = path.toLowerCase()
-  if (lower.includes('javascript:') || lower.includes('data:'))
-    return '/dashboard'
-  return path
-}
+import { sanitizeNext } from '@/lib/auth/safe-next'
 
 export async function GET(request: NextRequest) {
   const url = new URL(request.url)
   const tokenHash = url.searchParams.get('token_hash')
-  const next = sanitizeNext(url.searchParams.get('next'))
+  const next = sanitizeNext(url.searchParams.get('next'), APP_URL)
 
   if (!tokenHash) {
     return NextResponse.redirect(new URL('/login?error=invalid_link', APP_URL))
