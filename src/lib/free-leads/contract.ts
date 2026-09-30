@@ -16,20 +16,20 @@ export const COMPANY_SIZE_BANDS = [
   '10001+',
 ] as const
 
-/** The editable ICP. Every array maps 1:1 onto a GetLeads search filter. */
+/** The editable ICP. Every array maps 1:1 onto a lead-database search filter. */
 export const IcpSchema = z.object({
   /** One sentence, second person: "You sell SOC 2 audits to Series A SaaS teams." */
   summary: z.string().min(1).max(240),
-  /** GetLeads industry values only (see src/lib/getleads/industries.ts). */
-  industries: z.array(z.string().min(1)).max(8),
+  /** Lead-database industry values only (see src/lib/free-leads/industries.ts). */
+  industries: z.array(z.string().min(1).max(80)).max(8),
   /** Free-text titles, e.g. "Head of Growth". */
   job_titles: z.array(z.string().min(1).max(80)).max(12),
   seniority: z.array(z.enum(SENIORITY_VALUES)).max(5),
   company_size: z.array(z.enum(COMPANY_SIZE_BANDS)).max(8),
   /** Country names, e.g. "United States". */
-  countries: z.array(z.string().min(1)).max(10),
+  countries: z.array(z.string().min(1).max(80)).max(10),
   /** US state names ("Texas") or other regions; maps to office_states. */
-  states: z.array(z.string().min(1)).max(15),
+  states: z.array(z.string().min(1).max(80)).max(15),
 })
 export type Icp = z.infer<typeof IcpSchema>
 
@@ -131,3 +131,26 @@ export interface InterestResponse {
 export const FREE_LEAD_COUNT = 25
 export const PREVIEW_LEAD_COUNT = 5
 export const BOOKING_URL = 'https://cal.com/meetcursive/intro'
+
+// ---- Request bodies (added by backend; additive, backward compatible) ----
+
+/** POST /api/start/scan body. Send `url`, or `description` when the site is unreachable (paste fallback). */
+export const ScanRequestSchema = z
+  .object({
+    url: z.string().trim().min(3).max(2048).optional(),
+    description: z.string().trim().min(40).max(4000).optional(),
+  })
+  .refine((b) => Boolean(b.url || b.description), { message: 'url or description is required' })
+export type ScanRequest = z.infer<typeof ScanRequestSchema>
+
+/** POST /api/start/count and /api/start/preview body. */
+export const IcpRequestSchema = z.object({ icp: IcpSchema })
+
+/** POST /api/start/refine body. */
+export const RefineRequestSchema = z.object({
+  icp: IcpSchema,
+  instruction: z.string().trim().min(2).max(500),
+})
+
+/** POST /api/start/interest body. */
+export const InterestRequestSchema = z.object({ tier: z.enum(UPGRADE_TIERS) })

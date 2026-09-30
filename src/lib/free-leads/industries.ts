@@ -1,5 +1,6 @@
-// Generated 2026-09-30 from GetLeads get_available_values(field=industries). Exact filter values.
-export const GETLEADS_INDUSTRIES = [
+// Industry filter values accepted by the lead database (snapshot 2026-09-30).
+// Neutral module/const names: this list ships to the browser (IcpCard).
+export const LEAD_INDUSTRIES = [
   "IT Services and IT Consulting",
   "Hospitals and Health Care",
   "Financial Services",
@@ -443,4 +444,4 @@ export const GETLEADS_INDUSTRIES = [
   "Other"
 ] as const
 
-export type GetLeadsIndustry = (typeof GETLEADS_INDUSTRIES)[number]
+export type LeadIndustry = (typeof LEAD_INDUSTRIES)[number]

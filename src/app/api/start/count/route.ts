@@ -1,0 +1,23 @@
+/** POST /api/start/count  body: { icp }  -> CountResponse. Public; free upstream call; rate-limited per IP. */
+export const runtime = 'nodejs'
+
+import { NextResponse, type NextRequest } from 'next/server'
+import { IcpRequestSchema, type CountResponse } from '@/lib/free-leads/contract'
+import { icpToFilters } from '@/lib/free-leads/icp-to-filters'
+import { countContacts } from '@/lib/getleads/client'
+import { badRequest, clientIp, isLimited, rateLimited, readJson, serverError } from '@/lib/free-leads/http'
+import { safeError } from '@/lib/utils/log-sanitizer'
+
+export async function POST(req: NextRequest) {
+  const parsed = IcpRequestSchema.safeParse(await readJson(req))
+  if (!parsed.success) return badRequest('Invalid profile')
+  if (await isLimited('free-leads-count', `ip:${clientIp(req)}`)) return rateLimited()
+
+  try {
+    const total = await countContacts(icpToFilters(parsed.data.icp))
+    return NextResponse.json<CountResponse>({ total })
+  } catch (err) {
+    safeError('[start/count] count failed', err)
+    return serverError('We could not count matches just now. Please try again.')
+  }
+}

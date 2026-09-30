@@ -66,6 +66,33 @@ export class FirecrawlService {
     }
   }
 
+  /** Page text as markdown (main content only), with a caller-set timeout. */
+  async scrapeMarkdown(
+    url: string,
+    timeoutMs: number
+  ): Promise<{ markdown: string; title: string | null; description: string | null }> {
+    if (!this.apiKey) {
+      throw new Error('Firecrawl API key not configured')
+    }
+    const response = await fetch(`${this.baseUrl}/scrape`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${this.apiKey}` },
+      body: JSON.stringify({ url, formats: ['markdown'], onlyMainContent: true, timeout: timeoutMs }),
+      signal: AbortSignal.timeout(timeoutMs),
+    })
+    if (!response.ok) {
+      throw new Error(`Firecrawl API error: HTTP ${response.status}`)
+    }
+    const data = (await response.json()) as {
+      data?: { markdown?: string; metadata?: { title?: string; description?: string } }
+    }
+    return {
+      markdown: data.data?.markdown ?? '',
+      title: data.data?.metadata?.title ?? null,
+      description: data.data?.metadata?.description ?? null,
+    }
+  }
+
   private extractWebsiteData(data: any, url: string): WebsiteData {
     const html = data.data?.html || ''
     const markdown = data.data?.markdown || ''
