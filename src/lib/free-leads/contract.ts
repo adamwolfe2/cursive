@@ -35,17 +35,35 @@ export const IcpSchema = z.object({
 })
 export type Icp = z.infer<typeof IcpSchema>
 
-/** Short, factual observations shown while the scan runs. */
-export const FindingSchema = z.object({
-  label: z.string().max(40), // "What you sell", "Who buys", "Deal size"
-  text: z.string().max(160),
-})
-export type Finding = z.infer<typeof FindingSchema>
+/** What the scan extracted. `site` facts come straight from the pages; `model` facts from reading them. */
+export const FACT_KEYS = ['offer', 'customers', 'pricing', 'locations', 'company'] as const
+export type FactKey = (typeof FACT_KEYS)[number]
+export const FACT_LABELS: Record<FactKey, string> = {
+  offer: 'What you sell',
+  customers: 'Who buys',
+  pricing: 'Pricing',
+  locations: 'Where',
+  company: 'Company',
+}
+export interface Fact {
+  key: FactKey
+  label: string
+  text: string // <= 160 chars
+  source: 'site' | 'model'
+}
 
-/** Server-Sent Events from POST /api/start/scan (body: { url }). One JSON object per `data:` line. */
+/**
+ * Server-Sent Events from POST /api/start/scan (body: ScanRequest). One JSON object per `data:` line.
+ * Every event reports real backend progress, in this order:
+ *   page(fetching "/") -> site -> page(read "/") -> page(fetching|read|failed, sub-pages) -> fact(site)*
+ *   -> fact(model)* -> icp_partial* (one per completed field) -> icp -> count -> done
+ * A repeat scan of a recently scanned site starts with `replay` and then the same events, instantly.
+ */
 export type ScanEvent =
+  | { type: 'replay'; scanned_at: string }
+  | { type: 'page'; path: string; state: 'fetching' | 'read' | 'failed'; title?: string | null; chars?: number }
   | { type: 'site'; domain: string; title: string | null; description: string | null; favicon: string | null }
-  | { type: 'finding'; finding: Finding }
+  | { type: 'fact'; fact: Fact }
   | { type: 'icp_partial'; icp: Partial<Icp> }
   | { type: 'icp'; icp: Icp }
   | { type: 'count'; total: number }
@@ -93,6 +111,14 @@ export const ClaimRequestSchema = z.object({
   website: z.string().min(3).max(253),
   icp: IcpSchema,
 })
+
+/** POST /api/start/email-icp body -> { status } . "Email me this profile": soft capture, any mailbox. */
+export const EmailIcpRequestSchema = z.object({
+  email: z.string().email().max(254),
+  website: z.string().min(3).max(253),
+  icp: IcpSchema,
+})
+export type EmailIcpResponse = { status: 'sent' } | { status: 'rate_limited' } | { status: 'invalid_email' }
 export type ClaimRequest = z.infer<typeof ClaimRequestSchema>
 export type ClaimResponse =
   | { status: 'sent' }
@@ -140,11 +166,25 @@ export const BOOKING_URL = 'https://cal.com/meetcursive/intro'
 
 // ---- Request bodies (added by backend; additive, backward compatible) ----
 
+/** First-touch attribution, sent with the first scan of a session. */
+export const AttributionSchema = z.object({
+  utm_source: z.string().max(120).optional(),
+  utm_medium: z.string().max(120).optional(),
+  utm_campaign: z.string().max(200).optional(),
+  utm_content: z.string().max(200).optional(),
+  utm_term: z.string().max(200).optional(),
+  ref: z.string().max(120).optional(),
+  referrer: z.string().max(500).optional(),
+  landing: z.string().max(500).optional(),
+})
+export type Attribution = z.infer<typeof AttributionSchema>
+
 /** POST /api/start/scan body. Send `url`, or `description` when the site is unreachable (paste fallback). */
 export const ScanRequestSchema = z
   .object({
     url: z.string().trim().min(3).max(2048).optional(),
     description: z.string().trim().min(40).max(4000).optional(),
+    attribution: AttributionSchema.optional(),
   })
   .refine((b) => Boolean(b.url || b.description), { message: 'url or description is required' })
 export type ScanRequest = z.infer<typeof ScanRequestSchema>
@@ -160,3 +200,30 @@ export const RefineRequestSchema = z.object({
 
 /** POST /api/start/interest body. */
 export const InterestRequestSchema = z.object({ tier: z.enum(UPGRADE_TIERS) })
+
+// ---- Funnel (every step, per anonymous session) ----
+
+/** Client-generated session id (uuid v4, localStorage), sent on every /api/start/* request. */
+export const SESSION_HEADER = 'x-fl-session'
+export const SessionIdSchema = z.string().uuid()
+
+export const FUNNEL_STEPS = [
+  'paste', // scan requested
+  'scan_done', // ICP shown
+  'icp_approved', // client: primary Approve
+  'icp_emailed', // "Email me this profile" sent
+  'preview', // masked preview shown
+  'claim', // work email submitted, link sent
+  'link_opened', // magic link opened (leads page with token)
+  'delivered', // 25 leads pulled and stored
+  'leads_viewed', // leads page rendered the list
+  'csv', // client: CSV downloaded
+  'upgrade_weekly_leads',
+  'upgrade_linkedin_outreach',
+  'upgrade_ai_dashboard',
+] as const
+export type FunnelStep = (typeof FUNNEL_STEPS)[number]
+
+/** Steps only the browser can observe. POST /api/start/event { step } with SESSION_HEADER. */
+export const CLIENT_STEPS = ['icp_approved', 'csv'] as const
+export const ClientEventSchema = z.object({ step: z.enum(CLIENT_STEPS) })

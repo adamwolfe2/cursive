@@ -13,14 +13,7 @@ import Anthropic from '@anthropic-ai/sdk'
 import { partialParse } from '@anthropic-ai/sdk/_vendor/partial-json-parser/parser'
 import { LEAD_INDUSTRIES } from '@/lib/free-leads/industries'
 import { safeWarn } from '@/lib/utils/log-sanitizer'
-import {
-  COMPANY_SIZE_BANDS,
-  FindingSchema,
-  IcpSchema,
-  SENIORITY_VALUES,
-  type Finding,
-  type Icp,
-} from './contract'
+import { COMPANY_SIZE_BANDS, FACT_LABELS, IcpSchema, SENIORITY_VALUES, type Fact, type FactKey, type Icp } from './contract'
 
 // Sonnet 5.5 low matched Opus 5.5 low on the ICP-fit eval (mean fit 2.29 vs 2.25, 115 leads) at ~1/4
 // the cost per scan and ~2s faster to the ICP (scripts/free-leads-eval/RESULTS.md, 2026-09-30).
@@ -36,8 +29,9 @@ export class ScanError extends Error {
   }
 }
 
-/** Findings shown to the user; anything past this is dropped (the scan is not a general model proxy). */
+/** Facts shown to the user; anything past this is dropped (the scan is not a general model proxy). */
 export const MAX_FINDINGS = 4
+const MODEL_FACT_KEYS = ['offer', 'customers', 'pricing', 'locations'] as const satisfies readonly FactKey[]
 // Output caps bound abuse, not normal use: measured 414-467 output tokens per scan, 256 per refine (2026-09-30).
 const SCAN_MAX_TOKENS = 2_500
 const REFINE_MAX_TOKENS = 2_000
@@ -65,7 +59,7 @@ function objectSchema(properties: Record<string, unknown>) {
 const SCAN_SCHEMA = objectSchema({
   findings: {
     type: 'array',
-    items: objectSchema({ label: { type: 'string' }, text: { type: 'string' } }),
+    items: objectSchema({ key: { type: 'string', enum: [...MODEL_FACT_KEYS] }, text: { type: 'string' } }),
   },
   ...ICP_PROPERTIES,
 })
@@ -84,8 +78,13 @@ const ICP_RULES = `ICP field rules:
 - cities: only for a local business serving one metro (a clinic, contractor, local law firm or agency): 4-10 of that metro's main cities as written in addresses (e.g. "Dallas", "Fort Worth", "Plano", "Irving"); also set states. Otherwise [].
 - If the seller mainly sells to consumers, target the business buyers with the most direct path to purchase (e.g. office or HR managers buying for staff, stores that stock the product, property managers) and say so in the summary.`
 
-const SCAN_SYSTEM = `You analyze a company's website to infer its ideal customer profile (who it should sell to), for a B2B lead list.
-Write findings first: 3-4 (never more than 4) short factual observations, each with a label of at most 3 words ("What you sell", "Who buys", "Deal size", "Where") and text under 120 characters, second person ("You sell..."). No hype, no emojis, no em dashes.
+const SCAN_SYSTEM = `You analyze a company's website (its homepage and a few key pages) to infer its ideal customer profile (who it should sell to), for a B2B lead list.
+Write findings first, 2-4 short facts read from the site, in this order, each once:
+- offer: what they sell, in one plain sentence ("You sell ...").
+- customers: who buys it, as the site shows (named customer types, industries, sizes).
+- pricing: only if the site states prices or a pricing model.
+- locations: only if the site names where they operate or serve.
+Each text under 120 characters, second person, factual. No hype, no emojis, no em dashes.
 Then the ICP fields.
 ${ICP_RULES}`
 
@@ -146,15 +145,15 @@ export function toIcp(raw: Record<string, unknown>): Icp {
   return parsed.data
 }
 
-function toFinding(raw: unknown): Finding | null {
-  const f = raw as { label?: unknown; text?: unknown } | null
-  if (typeof f?.label !== 'string' || typeof f.text !== 'string' || !f.label || !f.text) return null
-  const parsed = FindingSchema.safeParse({ label: f.label.slice(0, 40), text: f.text.slice(0, 160) })
-  return parsed.success ? parsed.data : null
+function toFact(raw: unknown): Fact | null {
+  const f = raw as { key?: unknown; text?: unknown } | null
+  const key = MODEL_FACT_KEYS.find((k) => k === f?.key)
+  if (!key || typeof f?.text !== 'string' || !f.text.trim()) return null
+  return { key, label: FACT_LABELS[key], text: f.text.trim().replace(/\s*[—–]\s*/g, ', ').slice(0, 160), source: 'model' }
 }
 
 export interface ScanCallbacks {
-  onFinding: (finding: Finding) => void
+  onFact: (fact: Fact) => void
   onIcpPartial: (icp: Partial<Icp>) => void
   /** Token usage of each model call (cost accounting). */
   onUsage?: (usage: Anthropic.Usage, model: string) => void
@@ -182,8 +181,8 @@ export function snapshotEmitter(cb: ScanCallbacks) {
     const findingsDone = 'summary' in obj
     const ready = Math.min(MAX_FINDINGS, findingsDone ? findings.length : Math.max(0, findings.length - 1))
     for (; findingsSent < ready; findingsSent++) {
-      const f = toFinding(findings[findingsSent])
-      if (f) cb.onFinding(f)
+      const f = toFact(findings[findingsSent])
+      if (f) cb.onFact(f)
     }
     // A field is complete once the next key has started.
     const present = ICP_KEYS.filter((k) => k in obj)

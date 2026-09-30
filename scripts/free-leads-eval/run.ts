@@ -27,7 +27,7 @@ import { filtersHash, icpToFilters } from '@/lib/free-leads/icp-to-filters'
 import { usableContacts } from '@/lib/free-leads/rules'
 import { FIT_MODEL, OVERPULL_FACTOR, scoreLeads, selectFitLeads, type LeadFit } from '@/lib/free-leads/lead-fit'
 import { countContacts, searchContacts, type GetLeadsContact } from '@/lib/getleads/client'
-import type { Finding, Icp } from '@/lib/free-leads/contract'
+import type { Fact, Icp } from '@/lib/free-leads/contract'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const CACHE = join(HERE, '.cache')
@@ -108,7 +108,7 @@ interface ScanRecord {
   model?: string
   usage?: Anthropic.Usage[]
   claude_usd?: number
-  findings?: Finding[]
+  findings?: Fact[]
   icp?: Icp
   total?: number | null
   count_ms?: number
@@ -126,7 +126,7 @@ async function scanSite(site: Site, choice: ModelChoice): Promise<ScanRecord> {
     return { domain, ok: false, error: `unreachable: ${String(err)}` }
   }
   const fetchMs = Date.now() - t0
-  const findings: Finding[] = []
+  const findings: Fact[] = []
   const usage: Anthropic.Usage[] = []
   let model = choice.model ?? 'claude-opus-5-5'
   let firstFinding: number | null = null
@@ -135,7 +135,7 @@ async function scanSite(site: Site, choice: ModelChoice): Promise<ScanRecord> {
   const icp = await scanIcp(
     source,
     {
-      onFinding: (f) => {
+      onFact: (f) => {
         firstFinding ??= Date.now() - t1
         findings.push(f)
       },

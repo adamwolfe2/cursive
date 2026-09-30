@@ -6,7 +6,7 @@ const db = vi.hoisted(() => ({ current: null as unknown }))
 vi.mock('@/lib/supabase/admin', () => ({ createAdminClient: () => db.current }))
 vi.mock('@/lib/free-leads/http', async (orig) => ({ ...(await orig<typeof import('@/lib/free-leads/http')>()), isLimited: async () => false }))
 const fetchSite = vi.hoisted(() => vi.fn())
-vi.mock('@/lib/free-leads/site', async (orig) => ({ ...(await orig<typeof import('@/lib/free-leads/site')>()), fetchSite }))
+vi.mock('@/lib/free-leads/site', async (orig) => ({ ...(await orig<typeof import('@/lib/free-leads/site')>()), readSite: fetchSite }))
 const scanIcp = vi.hoisted(() => vi.fn())
 vi.mock('@/lib/free-leads/scan', async (orig) => ({ ...(await orig<typeof import('@/lib/free-leads/scan')>()), scanIcp }))
 const countContacts = vi.hoisted(() => vi.fn())
@@ -28,22 +28,23 @@ const events = async (res: Response) =>
   (await res.text()).split('\n\n').filter(Boolean).map((l) => JSON.parse(l.replace(/^data: /, '')) as { type: string })
 
 beforeEach(() => {
-  db.current = fakeSupabase({ free_leads_cache: [] })
+  db.current = fakeSupabase({ free_leads_cache: [], free_lead_sessions: [], free_lead_events: [] })
   for (const m of [fetchSite, scanIcp, countContacts, searchContacts, scoreLeads]) m.mockReset()
 })
 
 describe('scan: shared cache', () => {
   it('a repeat scan of the same site replays the events with no fetch or model call', async () => {
     fetchSite.mockResolvedValue({ domain: 'acme.com', title: 'Acme', description: null, favicon: null, text: 'x'.repeat(400), source: 'direct' })
-    scanIcp.mockImplementation(async (_t: string, cb: { onFinding: (f: unknown) => void }) => {
-      cb.onFinding({ label: 'What you sell', text: 'SOC 2 audits' })
+    scanIcp.mockImplementation(async (_t: string, cb: { onFact: (f: unknown) => void }) => {
+      cb.onFact({ key: 'offer', label: 'What you sell', text: 'SOC 2 audits', source: 'model' })
       return ICP
     })
     countContacts.mockResolvedValue(1234)
     const first = await events(await scan(req('/api/start/scan', { url: 'acme.com' })))
     const second = await events(await scan(req('/api/start/scan', { url: 'https://www.acme.com/' })))
-    expect(first.map((e) => e.type)).toEqual(['site', 'finding', 'icp', 'count', 'done'])
-    expect(second).toEqual(first)
+    expect(first.map((e) => e.type)).toEqual(['fact', 'icp', 'count', 'done'])
+    expect(second[0]).toMatchObject({ type: 'replay' })
+    expect(second.slice(1)).toEqual(first)
     expect(fetchSite).toHaveBeenCalledTimes(1)
     expect(scanIcp).toHaveBeenCalledTimes(1)
     expect(countContacts).toHaveBeenCalledTimes(1)

@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import type {
   CountResponse,
-  Finding,
+  Fact,
   Icp,
   MaskedLead,
   PreviewResponse,
@@ -37,7 +37,7 @@ export function StartFlow({ mock }: { mock: Mock }) {
   const [phase, setPhase] = useState<'idle' | 'scanning' | 'done'>('idle')
   const [query, setQuery] = useState<ScanInput | null>(null)
   const [site, setSite] = useState<Site | null>(null)
-  const [findings, setFindings] = useState<Finding[]>([])
+  const [findings, setFindings] = useState<Fact[]>([])
   const [icp, setIcp] = useState<Partial<Icp>>({})
   const [complete, setComplete] = useState(false)
   const [scanError, setScanError] = useState<ScanError | null>(null)
@@ -91,8 +91,8 @@ export function StartFlow({ mock }: { mock: Mock }) {
     switch (e.type) {
       case 'site':
         return setSite(e)
-      case 'finding':
-        return setFindings((f) => [...f, e.finding])
+      case 'fact':
+        return setFindings((f) => [...f, e.fact])
       case 'icp_partial':
         return setIcp((prev) => ({ ...prev, ...e.icp }))
       case 'icp':

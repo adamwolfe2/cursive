@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest'
 import { snapshotEmitter, toIcp, ScanError } from '../scan'
-import type { Finding, Icp } from '../contract'
+import type { Fact, Icp } from '../contract'
 
 const full = {
   findings: [
-    { label: 'What you sell', text: 'You sell audits.' },
-    { label: 'Who buys', text: 'SaaS CTOs.' },
+    { key: 'offer', text: 'You sell audits.' },
+    { key: 'customers', text: 'SaaS CTOs.' },
   ],
   summary: 'You sell audits to SaaS teams.',
   industries: ['Software Development'],
@@ -17,14 +17,17 @@ const full = {
 }
 
 describe('snapshotEmitter', () => {
-  it('emits each finding once, only when complete, then completed ICP fields in order', () => {
-    const findings: Finding[] = []
+  it('emits each fact once, only when complete, then completed ICP fields in order', () => {
+    const findings: Fact[] = []
     const partials: Partial<Icp>[] = []
-    const emit = snapshotEmitter({ onFinding: (f) => findings.push(f), onIcpPartial: (p) => partials.push(p) })
+    const emit = snapshotEmitter({ onFact: (f) => findings.push(f), onIcpPartial: (p) => partials.push(p) })
     const json = JSON.stringify(full)
     for (let i = 1; i <= json.length; i++) emit(json.slice(0, i))
 
-    expect(findings).toEqual(full.findings)
+    expect(findings).toEqual([
+      { key: 'offer', label: 'What you sell', text: 'You sell audits.', source: 'model' },
+      { key: 'customers', label: 'Who buys', text: 'SaaS CTOs.', source: 'model' },
+    ])
     expect(partials.length).toBeGreaterThan(0)
     expect(partials[0]).toEqual({ summary: full.summary })
     // Never emits a half-written field: every emitted value equals the final value.

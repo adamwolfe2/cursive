@@ -1,17 +1,22 @@
 /**
- * POST /api/start/scan  body: { url } | { description }  -> text/event-stream of ScanEvent.
+ * POST /api/start/scan  body: ScanRequest  -> text/event-stream of ScanEvent (see contract for order).
  * Public, rate-limited per IP (costs model + crawler). No credits spent (count is free).
+ * Every event is real progress: pages as they are fetched, facts as they are read, ICP fields as
+ * the model completes them. A site scanned in the last 7 days replays instantly (marked `replay`).
  */
 export const runtime = 'nodejs'
 export const maxDuration = 60
 
 import type { NextRequest } from 'next/server'
-import { ScanRequestSchema, type ScanEvent } from '@/lib/free-leads/contract'
-import { fetchSite, normalizeSiteUrl, siteDomain, type SiteContent } from '@/lib/free-leads/site'
+import type Anthropic from '@anthropic-ai/sdk'
+import { ScanRequestSchema, type Attribution, type Icp, type ScanEvent } from '@/lib/free-leads/contract'
+import { normalizeSiteUrl, readSite, siteDomain, type SiteContent } from '@/lib/free-leads/site'
 import { scanIcp, ScanError, SCAN_VERSION } from '@/lib/free-leads/scan'
 import { icpToFilters } from '@/lib/free-leads/icp-to-filters'
 import { cachedCount, cacheGet, cachePut, HOUR_MS } from '@/lib/free-leads/cache'
-import type { Icp } from '@/lib/free-leads/contract'
+import { recordStep, sessionIdFrom } from '@/lib/free-leads/funnel'
+import { claudeUsd } from '@/lib/free-leads/cost'
+import { hashIp } from '@/lib/free-leads/rules'
 import { clientIp, isLimited, readJson } from '@/lib/free-leads/http'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
@@ -19,61 +24,82 @@ type Send = (event: ScanEvent) => void
 
 const FAILED: ScanEvent = { type: 'error', code: 'failed', message: 'We could not work out who buys from you just now. Please try again.' }
 
-async function loadSource(url: string | null, description: string | undefined, send: Send): Promise<string | null> {
+/** Events worth replaying for a repeat visit to the same site (everything before the count). */
+type Replayable = Exclude<ScanEvent, { type: 'count' } | { type: 'error' } | { type: 'done' } | { type: 'replay' }>
+const SCAN_TTL_MS = 7 * 24 * HOUR_MS
+const scanKey = (url: string) => `scan:${SCAN_VERSION}:${siteDomain(url)}`
+
+interface ScanContext {
+  sessionId: string | null
+  url: string | null
+  description: string | undefined
+}
+
+async function loadSource(ctx: ScanContext, send: Send): Promise<{ text: string; site: SiteContent | null } | null> {
+  const { url, description } = ctx
   if (description) {
-    return url ? `Website: ${siteDomain(url)}\n\nDescription from the owner:\n${description}` : description
+    const text = url ? `Website: ${siteDomain(url)}\n\nDescription from the owner:\n${description}` : description
+    return { text, site: null }
   }
   if (!url) return null
-  let site: SiteContent
   try {
-    site = await fetchSite(url)
+    const site = await readSite(url, send)
+    return { text: [site.title, site.description, site.text].filter(Boolean).join('\n\n'), site }
   } catch (err) {
     safeError('[start/scan] site fetch failed', { domain: siteDomain(url), err: String(err) })
     send({ type: 'error', code: 'unreachable', message: 'We could not open that site. Paste a short description of what you sell instead.' })
     return null
   }
-  send({ type: 'site', domain: site.domain, title: site.title, description: site.description, favicon: site.favicon })
-  return [site.title, site.description, site.text].filter(Boolean).join('\n\n')
 }
 
-/** Events worth replaying for a repeat visit to the same site (everything before the count). */
-type Replayable = Exclude<ScanEvent, { type: 'count' } | { type: 'error' } | { type: 'done' }>
-const SCAN_TTL_MS = 7 * 24 * HOUR_MS
-const scanKey = (url: string) => `scan:${SCAN_VERSION}:${siteDomain(url)}`
-
-async function sendCount(icp: Icp, send: Send): Promise<void> {
+async function sendCount(icp: Icp, send: Send): Promise<number | null> {
   try {
-    send({ type: 'count', total: await cachedCount(icpToFilters(icp)) })
+    const total = await cachedCount(icpToFilters(icp))
+    send({ type: 'count', total })
+    return total
   } catch (err) {
     // Non-fatal: the UI can call /api/start/count again.
     safeError('[start/scan] count failed', err)
+    return null
   }
 }
 
-async function run(url: string | null, description: string | undefined, send: Send): Promise<void> {
+async function finish(ctx: ScanContext, icp: Icp, send: Send, meta: Record<string, unknown>): Promise<void> {
+  const total = await sendCount(icp, send)
+  send({ type: 'done' })
+  await recordStep(ctx.sessionId, 'scan_done', {
+    meta,
+    patch: { icp, ...(total === null ? {} : { total }), ...(ctx.url ? { domain: siteDomain(ctx.url) } : {}) },
+  })
+}
+
+async function run(ctx: ScanContext, send: Send): Promise<void> {
+  const { url, description } = ctx
   // A site scanned recently (by anyone) replays instantly: no fetch, no model call.
   if (url && !description) {
-    const cached = await cacheGet<{ events: Replayable[] }>(scanKey(url))
+    const cached = await cacheGet<{ events: Replayable[]; scanned_at: string }>(scanKey(url))
     const icp = cached?.events.find((e): e is Extract<Replayable, { type: 'icp' }> => e.type === 'icp')?.icp
     if (cached && icp) {
+      send({ type: 'replay', scanned_at: cached.scanned_at })
       cached.events.forEach(send)
-      await sendCount(icp, send)
-      send({ type: 'done' })
+      await finish(ctx, icp, send, { cached: true, usd: 0 })
       return
     }
   }
   const events: Replayable[] = []
   const record: Send = (event) => {
-    if (event.type !== 'count' && event.type !== 'error' && event.type !== 'done') events.push(event)
+    if (event.type !== 'count' && event.type !== 'error' && event.type !== 'done' && event.type !== 'replay') events.push(event)
     send(event)
   }
-  const source = await loadSource(url, description, record)
+  const source = await loadSource(ctx, record)
   if (!source) return
-  let icp
+  const usage: Array<{ u: Anthropic.Usage; model: string }> = []
+  let icp: Icp
   try {
-    icp = await scanIcp(source, {
-      onFinding: (finding) => record({ type: 'finding', finding }),
+    icp = await scanIcp(source.text, {
+      onFact: (fact) => record({ type: 'fact', fact }),
       onIcpPartial: (partial) => record({ type: 'icp_partial', icp: partial }),
+      onUsage: (u, model) => usage.push({ u, model }),
     })
   } catch (err) {
     safeError('[start/scan] model scan failed', err instanceof ScanError ? `${err.code}: ${err.message}` : err)
@@ -81,9 +107,14 @@ async function run(url: string | null, description: string | undefined, send: Se
     return
   }
   record({ type: 'icp', icp })
-  if (url && !description) await cachePut(scanKey(url), { events }, SCAN_TTL_MS)
-  await sendCount(icp, send)
-  send({ type: 'done' })
+  if (url && !description) await cachePut(scanKey(url), { events, scanned_at: new Date().toISOString() }, SCAN_TTL_MS)
+  await finish(ctx, icp, send, {
+    cached: false,
+    usd: usage.reduce((s, x) => s + claudeUsd(x.model, x.u), 0),
+    model: usage[0]?.model,
+    source: source.site?.source ?? 'description',
+    cache_read: usage.reduce((s, x) => s + (x.u.cache_read_input_tokens ?? 0), 0),
+  })
 }
 
 function sseResponse(body: (send: Send) => Promise<void>): Response {
@@ -118,6 +149,8 @@ export async function POST(req: NextRequest) {
   const parsed = ScanRequestSchema.safeParse(body)
   const url = parsed.success && parsed.data.url ? normalizeSiteUrl(parsed.data.url) : null
   const description = parsed.success ? parsed.data.description : undefined
+  const attribution: Attribution | undefined = parsed.success ? parsed.data.attribution : undefined
+  const ctx: ScanContext = { sessionId: sessionIdFrom(req), url, description }
 
   return sseResponse(async (send) => {
     if (!parsed.success || (!url && !description)) {
@@ -127,7 +160,8 @@ export async function POST(req: NextRequest) {
       send({ type: 'error', code: 'invalid_url', message })
       return
     }
-    if (await isLimited('free-leads-scan', `ip:${clientIp(req)}`)) {
+    const ip = clientIp(req)
+    if (await isLimited('free-leads-scan', `ip:${ip}`)) {
       send({ type: 'error', code: 'rate_limited', message: 'You have run a lot of scans. Try again in an hour.' })
       return
     }
@@ -135,6 +169,11 @@ export async function POST(req: NextRequest) {
       send({ type: 'error', code: 'rate_limited', message: 'Scans are busy right now. Try again tomorrow.' })
       return
     }
-    await run(url, description, send)
+    await recordStep(ctx.sessionId, 'paste', {
+      attribution,
+      patch: { ip_hash: hashIp(ip), ...(url ? { website: url, domain: siteDomain(url) } : {}) },
+      meta: description ? { description: true } : {},
+    })
+    await run(ctx, send)
   })
 }

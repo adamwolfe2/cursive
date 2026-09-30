@@ -19,6 +19,7 @@ export function fakeSupabase(tables: Record<string, Row[]>, unique: UniqueCheck 
   class Query implements PromiseLike<{ data: unknown; error: unknown; count?: number | null }> {
     private op: 'select' | 'insert' | 'update' | 'delete' | 'upsert' = 'select'
     private conflictKey = 'id'
+    private ignoreDuplicates = false
     private filters: Filter[] = []
     private payload: Row | Row[] = {}
     private head = false
@@ -40,10 +41,11 @@ export function fakeSupabase(tables: Record<string, Row[]>, unique: UniqueCheck 
       this.payload = p
       return this
     }
-    upsert(p: Row, opts?: { onConflict?: string }) {
+    upsert(p: Row, opts?: { onConflict?: string; ignoreDuplicates?: boolean }) {
       this.op = 'upsert'
       this.payload = p
       this.conflictKey = opts?.onConflict ?? 'id'
+      this.ignoreDuplicates = Boolean(opts?.ignoreDuplicates)
       return this
     }
     gt(k: string, v: string) {
@@ -122,8 +124,9 @@ export function fakeSupabase(tables: Record<string, Row[]>, unique: UniqueCheck 
       if (this.op === 'upsert') {
         const p = this.payload as Row
         const existing = rows.find((r) => r[this.conflictKey] === p[this.conflictKey])
-        if (existing) Object.assign(existing, p)
-        else rows.push({ created_at: new Date().toISOString(), ...p })
+        if (existing) {
+          if (!this.ignoreDuplicates) Object.assign(existing, p)
+        } else rows.push({ created_at: new Date().toISOString(), ...p })
         return { data: null, error: null }
       }
       if (this.op === 'update') {

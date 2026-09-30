@@ -356,6 +356,27 @@ export const RATE_LIMITS = {
     message: 'Free lead claims are paused for today.',
   },
 
+  'free-leads-email-icp': {
+    windowMs: 24 * 60 * 60 * 1000,
+    maxRequests: 3, // "Email me this profile" sends per IP per day
+    message: 'Too many emails today.',
+  },
+  'free-leads-email-icp-email': {
+    windowMs: 24 * 60 * 60 * 1000,
+    maxRequests: 1, // one profile email per mailbox per day
+    message: 'We already sent this address a profile today.',
+  },
+  'free-leads-email-icp-global': {
+    windowMs: 24 * 60 * 60 * 1000,
+    maxRequests: Number(process.env.FREE_LEADS_DAILY_ICP_EMAIL_CAP) || 150,
+    message: 'Profile emails are paused for today.',
+  },
+  'free-leads-event': {
+    windowMs: 60 * 60 * 1000,
+    maxRequests: 120, // client-reported funnel steps (ICP approved, CSV download)
+    message: 'Too many requests.',
+  },
+
   // Default fallback
   'default': {
     windowMs: 60 * 1000, // 1 minute

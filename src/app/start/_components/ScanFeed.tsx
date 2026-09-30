@@ -2,7 +2,7 @@
 
 import { Globe, RotateCcw } from 'lucide-react'
 import { useState } from 'react'
-import type { Finding, ScanEvent } from '@/lib/free-leads/contract'
+import type { Fact, ScanEvent } from '@/lib/free-leads/contract'
 import type { ScanInput } from './api'
 
 export type Site = Extract<ScanEvent, { type: 'site' }>
@@ -23,7 +23,7 @@ export function ScanFeed({
 }: {
   query: ScanInput | null
   site: Site | null
-  findings: Finding[]
+  findings: Fact[]
   scanning: boolean
   slow: 0 | 1 | 2
   error: ScanError | null

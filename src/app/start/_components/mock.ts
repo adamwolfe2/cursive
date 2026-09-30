@@ -56,10 +56,10 @@ export async function mockScan(
     await emit(900, { type: 'error', code: 'unreachable', message: 'We could not open that site.' })
     return
   }
-  await emit(700, { type: 'finding', finding: { label: 'What you sell', text: 'SOC 2 and ISO 27001 audit readiness, plus the auditor intro.' } })
-  await emit(800, { type: 'finding', finding: { label: 'Who buys', text: 'Engineering and security leaders at software companies closing their first enterprise deals.' } })
-  await emit(800, { type: 'finding', finding: { label: 'Company stage', text: 'Seed to Series B, roughly 20 to 300 employees.' } })
-  await emit(700, { type: 'finding', finding: { label: 'Where', text: 'Mostly United States, some UK and Canada.' } })
+  await emit(700, { type: 'fact', fact: { key: 'offer', source: 'model', label: 'What you sell', text: 'SOC 2 and ISO 27001 audit readiness, plus the auditor intro.' } })
+  await emit(800, { type: 'fact', fact: { key: 'customers', source: 'model', label: 'Who buys', text: 'Engineering and security leaders at software companies closing their first enterprise deals.' } })
+  await emit(800, { type: 'fact', fact: { key: 'customers', source: 'model', label: 'Company stage', text: 'Seed to Series B, roughly 20 to 300 employees.' } })
+  await emit(700, { type: 'fact', fact: { key: 'locations', source: 'model', label: 'Where', text: 'Mostly United States, some UK and Canada.' } })
   if (scenario === 'slow') await wait(13000, signal)
   const steps: Array<Partial<Icp>> = [
     { summary: ICP.summary },
