@@ -467,6 +467,7 @@ export async function middleware(req: NextRequest) {
       pathname.startsWith('/signup') ||
       pathname.startsWith('/welcome') ||
       pathname.startsWith('/auth/callback') ||
+      pathname.startsWith('/auth/confirm') ||
       pathname === '/'
     if (isPublicOnError) {
       return NextResponse.next({ request: req })

@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 import { checkRateLimit } from '@/lib/utils/rate-limit'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
+import { sanitizeNext } from '@/lib/auth/safe-next'
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -21,17 +22,6 @@ async function getClientIpFromHeaders(): Promise<string> {
   )
 }
 
-function sanitizeRedirectPath(path: string): string {
-  // Only allow relative paths starting with /
-  if (!path || !path.startsWith('/') || path.startsWith('//') || path.includes('\\')) {
-    return '/dashboard'
-  }
-  // Block javascript: and data: URIs
-  if (path.toLowerCase().includes('javascript:') || path.toLowerCase().includes('data:')) {
-    return '/dashboard'
-  }
-  return path
-}
 
 export async function loginAction(formData: FormData) {
   // Rate limit: 10 login attempts per minute per IP
@@ -46,7 +36,7 @@ export async function loginAction(formData: FormData) {
 
   const email = formData.get('email') as string
   const password = formData.get('password') as string
-  const redirectTo = sanitizeRedirectPath(formData.get('redirect') as string || '/dashboard')
+  const redirectTo = sanitizeNext(formData.get('redirect') as string || '/dashboard')
 
   // Validate input
   const result = loginSchema.safeParse({ email, password })
@@ -88,7 +78,7 @@ export async function googleLoginAction(redirectTo: string = '/dashboard') {
     return { error: `Too many login attempts. Please try again in ${rateLimitResult.retryAfter} seconds.` }
   }
 
-  redirectTo = sanitizeRedirectPath(redirectTo)
+  redirectTo = sanitizeNext(redirectTo)
 
   // Determine site URL: prefer env var, fall back to request origin
   const headersList = await headers()

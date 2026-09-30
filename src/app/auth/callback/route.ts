@@ -14,6 +14,7 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { sanitizeNext } from '@/lib/auth/safe-next'
 
 // Add HTML loading page for better UX during callback.
 // The HTTP Refresh header drives the redirect; no JS redirect is used to avoid
@@ -61,22 +62,11 @@ const LOADING_PAGE = `
 </html>
 `
 
-function sanitizeRedirectPath(path: string): string {
-  // Only allow relative paths starting with /
-  if (!path || !path.startsWith('/') || path.startsWith('//') || path.includes('\\')) {
-    return '/dashboard'
-  }
-  // Block javascript: and data: URIs
-  if (path.toLowerCase().includes('javascript:') || path.toLowerCase().includes('data:')) {
-    return '/dashboard'
-  }
-  return path
-}
 
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url)
   const code = requestUrl.searchParams.get('code')
-  const next = sanitizeRedirectPath(requestUrl.searchParams.get('next') || '/dashboard')
+  const next = sanitizeNext(requestUrl.searchParams.get('next') || '/dashboard')
 
   // Handle OAuth errors (e.g., user denied permission)
   const oauthError = requestUrl.searchParams.get('error')

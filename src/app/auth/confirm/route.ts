@@ -19,7 +19,7 @@ import { sanitizeNext } from '@/lib/auth/safe-next'
 export async function GET(request: NextRequest) {
   const url = new URL(request.url)
   const tokenHash = url.searchParams.get('token_hash')
-  const next = sanitizeNext(url.searchParams.get('next'), APP_URL)
+  const next = sanitizeNext(url.searchParams.get('next'))
 
   if (!tokenHash) {
     return NextResponse.redirect(new URL('/login?error=invalid_link', APP_URL))
