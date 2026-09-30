@@ -28,6 +28,7 @@ import { leadsActionFor, mayAccessClaim } from '@/lib/free-leads/rules'
 import { sessionUser } from '@/lib/free-leads/http'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { recordStep } from '@/lib/free-leads/funnel'
 
 type Admin = ReturnType<typeof createAdminClient>
 
@@ -41,6 +42,7 @@ async function ready(claim: ClaimRow, admin: Admin) {
   const icp = claimIcp(claim)
   if (!icp || !claim.workspace_id) return failed(RETRY_MESSAGE)
   const leads = await loadStoredLeads(claim.workspace_id, claim.id, admin)
+  await recordStep(claim.session_id ?? null, 'leads_viewed', { meta: { leads: leads.length } })
   return reply({ status: 'ready', icp, website: claim.website, leads, total_matching: claim.total_matching ?? leads.length })
 }
 
@@ -74,7 +76,8 @@ async function respondFor(claim: ClaimRow | null, userId: string, email: string,
         await releaseClaim((claim as ClaimRow).id, admin)
         return failed(CAP_MESSAGE)
       }
-      await fulfillClaim(claim as ClaimRow, userId, admin)
+      const cost = await fulfillClaim(claim as ClaimRow, userId, admin)
+      await recordStep((claim as ClaimRow).session_id ?? null, 'delivered', { meta: { ...cost } })
       return respondFor(await findLatestClaimByEmail(email, admin), userId, email, admin)
     }
   }
@@ -90,7 +93,9 @@ export async function GET(req: NextRequest) {
   const admin = createAdminClient()
   try {
     const claim = await findLatestClaimByEmail(user.email, admin)
-    if (claim && !mayAccessClaim(claim, req.nextUrl.searchParams.get('c'), user.id)) return failed(LINK_MESSAGE)
+    const token = req.nextUrl.searchParams.get('c')
+    if (claim && !mayAccessClaim(claim, token, user.id)) return failed(LINK_MESSAGE)
+    if (claim && token) await recordStep(claim.session_id ?? null, 'link_opened')
     return await respondFor(claim, user.id, user.email, admin)
   } catch (err) {
     safeError('[start/leads] materialize failed', err)

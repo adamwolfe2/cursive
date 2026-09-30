@@ -119,6 +119,8 @@ export async function middleware(req: NextRequest) {
       '/api/start/refine',
       '/api/start/preview',
       '/api/start/claim',
+      '/api/start/email-icp',
+      '/api/start/event',
       // MCP server — uses bearer token auth via workspace API keys, not session cookies.
       // Route handler enforces its own auth, workspace isolation, and multi-layer rate limiting.
       '/api/mcp',
@@ -227,6 +229,8 @@ export async function middleware(req: NextRequest) {
       pathname.startsWith('/api/start/refine') ||
       pathname.startsWith('/api/start/preview') ||
       pathname.startsWith('/api/start/claim') ||
+      pathname.startsWith('/api/start/email-icp') ||
+      pathname.startsWith('/api/start/event') ||
       pathname.startsWith('/audience-builder') ||
       pathname.startsWith('/audience-intelligence') ||
       // Client portal — token-based auth, no user session required

@@ -7,6 +7,10 @@ import { findLatestClaimByEmail, recordInterest } from '@/lib/free-leads/claims'
 import { badRequest, readJson, serverError, sessionUser } from '@/lib/free-leads/http'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
+import { recordStep } from '@/lib/free-leads/funnel'
+import { notifySales, slackSafe } from '@/lib/free-leads/notify'
+
+const TIER_LABEL = { weekly_leads: 'weekly leads', linkedin_outreach: 'LinkedIn outreach done for you', ai_dashboard: 'AI dashboard' } as const
 
 export async function POST(req: NextRequest) {
   const user = await sessionUser()
@@ -18,8 +22,13 @@ export async function POST(req: NextRequest) {
   const admin = createAdminClient()
   try {
     const claim = await findLatestClaimByEmail(user.email, admin)
-    if (claim) await recordInterest(claim.id, parsed.data.tier, admin)
-    safeLog('[start/interest] recorded', { tier: parsed.data.tier, has_claim: Boolean(claim) })
+    const tier = parsed.data.tier
+    if (claim) await recordInterest(claim.id, tier, admin)
+    safeLog('[start/interest] recorded', { tier, has_claim: Boolean(claim) })
+    await recordStep(claim?.session_id ?? null, `upgrade_${tier}`)
+    await notifySales(
+      `Upgrade intent: ${TIER_LABEL[tier]} from ${slackSafe(user.email)}${claim ? ` (${slackSafe(claim.website.replace(/^https?:\/\//, ''))})` : ''}`
+    )
     return NextResponse.json<InterestResponse>({ ok: true, booking_url: BOOKING_URL })
   } catch (err) {
     safeError('[start/interest] record failed', err)

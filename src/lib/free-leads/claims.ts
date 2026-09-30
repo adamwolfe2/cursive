@@ -15,6 +15,7 @@ import { FREE_LEAD_COUNT, IcpSchema, type FullLead, type Icp } from './contract'
 import { cacheGet } from './cache'
 import { filtersHash } from './icp-to-filters'
 import { OVERPULL_FACTOR, scoreLeads, selectFitLeads } from './lead-fit'
+import { claudeUsd, CREDIT_USD } from './cost'
 import type { GetLeadsContact } from '@/lib/getleads/client'
 import {
   FREE_LEADS_SOURCE,
@@ -43,10 +44,11 @@ export interface ClaimRow {
   claim_token_hash: string | null
   attempts: number
   processing_started_at: string | null
+  session_id?: string | null
 }
 
 const CLAIM_COLUMNS =
-  'id, email, email_domain, website, icp, filters, status, workspace_id, auth_user_id, total_matching, claim_token_hash, attempts, processing_started_at'
+  'id, email, email_domain, website, icp, filters, status, workspace_id, auth_user_id, total_matching, claim_token_hash, attempts, processing_started_at, session_id'
 
 /** Post-verification daily cap on paid 25-lead pulls (processing, fulfilled or failed in the last 24h). */
 const DAILY_FULFILLMENT_CAP = Number(process.env.FREE_LEADS_DAILY_CLAIM_CAP) || 30
@@ -95,6 +97,8 @@ export interface PendingClaimInput {
   ipHash: string
   /** sha256 of the link token. A refresh rotates it, so only the newest email's link works. */
   tokenHash: string
+  /** Funnel session that made the claim (links later steps opened on another device). */
+  sessionId?: string | null
 }
 
 /** Creates the pending claim, or refreshes an existing pending one for the same email. */
@@ -108,13 +112,21 @@ export async function upsertPendingClaim(input: PendingClaimInput, admin: Admin 
     ip_hash: input.ipHash,
     claim_token_hash: input.tokenHash,
     status: 'pending' as const,
+    ...(input.sessionId ? { session_id: input.sessionId } : {}),
   }
   const { error } = await admin.from('free_lead_claims').insert(row)
   if (!error) return
   if (error.code !== '23505') throw dbError('claim insert failed', error)
   const { error: updErr } = await admin
     .from('free_lead_claims')
-    .update({ website: row.website, icp: row.icp, filters: row.filters, ip_hash: row.ip_hash, claim_token_hash: row.claim_token_hash })
+    .update({
+      website: row.website,
+      icp: row.icp,
+      filters: row.filters,
+      ip_hash: row.ip_hash,
+      claim_token_hash: row.claim_token_hash,
+      ...(input.sessionId ? { session_id: input.sessionId } : {}),
+    })
     .eq('email', input.email)
     .eq('status', 'pending')
   if (updErr) throw dbError('claim refresh failed', updErr)
@@ -242,7 +254,13 @@ async function ensureWorkspace(admin: Admin, claim: ClaimRow, authUserId: string
  * Before the paid request: failures release the claim back to pending (a refresh retries).
  * After it is sent: any failure is final ('failed'); a timeout may already have been billed.
  */
-export async function fulfillClaim(claim: ClaimRow, authUserId: string, admin: Admin): Promise<void> {
+export interface DeliveryCost {
+  credits: number
+  usd: number
+  reused_preview: number
+}
+
+export async function fulfillClaim(claim: ClaimRow, authUserId: string, admin: Admin): Promise<DeliveryCost> {
   if (claim.attempts >= MAX_PAID_PULLS) {
     await setStatus(admin, claim.id, 'failed', {})
     throw new ClaimError('paid pull already attempted', 'upstream')
@@ -277,7 +295,10 @@ export async function fulfillClaim(claim: ClaimRow, authUserId: string, admin: A
   const candidates = usableContacts([...reused, ...pulled.contacts], want)
   const icp = claimIcp(claim)
   // Never throws: a failed check delivers the top rows unscored (logged in scoreLeads).
-  const fits = icp ? await scoreLeads(icp, claim.website, candidates) : null
+  let fitUsd = 0
+  const fits = icp
+    ? await scoreLeads(icp, claim.website, candidates, { onUsage: ({ usage, model }) => (fitUsd += claudeUsd(model, usage)) })
+    : null
   const rows = selectFitLeads(candidates, fits, FREE_LEAD_COUNT).map(({ item, fit }, rank) =>
     toLeadInsert(item, workspaceId, claim.id, now, fit ? { fit_score: fit.score, fit_why: fit.why, fit_rank: rank } : undefined)
   )
@@ -294,6 +315,7 @@ export async function fulfillClaim(claim: ClaimRow, authUserId: string, admin: A
     fulfilled_at: now,
   })
   safeLog('[free-leads/claims] fulfilled', { claim_id: claim.id, workspace_id: workspaceId, leads: rows.length })
+  return { credits: pulled.contacts.length, usd: fitUsd + pulled.contacts.length * CREDIT_USD, reused_preview: reused.length }
 }
 
 export async function loadStoredLeads(workspaceId: string, claimId: string, admin: Admin): Promise<FullLead[]> {

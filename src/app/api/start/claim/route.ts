@@ -28,6 +28,8 @@ import { sendFreeLeadsReadyEmail } from '@/lib/email/templates/free-leads-ready'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { APP_URL } from '@/lib/config/urls'
 import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
+import { recordStep, sessionIdFrom } from '@/lib/free-leads/funnel'
+import { notifySales, slackSafe } from '@/lib/free-leads/notify'
 
 const reply = (body: ClaimResponse) => NextResponse.json<ClaimResponse>(body)
 
@@ -102,8 +104,10 @@ export async function POST(req: NextRequest) {
       return reply({ status: 'rate_limited' })
     }
 
+    const sessionId = sessionIdFrom(req)
     const { token, hash } = newClaimToken()
     await upsertPendingClaim({
+      sessionId,
       email,
       emailDomain: domain,
       website,
@@ -115,6 +119,13 @@ export async function POST(req: NextRequest) {
     const sent = await sendLink(email, token, website, parsed.data.icp.summary)
     if (!sent.success) return serverError('We could not send the email. Please try again.')
     safeLog('[start/claim] magic link sent', { decision })
+    const claim = await findLatestClaimByEmail(email)
+    await recordStep(sessionId, 'claim', { patch: { email, ...(claim ? { claim_id: claim.id } : {}) } })
+    if (decision === 'new') {
+      await notifySales(
+        `Free leads claim: ${slackSafe(email)} for ${slackSafe(siteDomain(website))}. ICP: ${slackSafe(parsed.data.icp.summary)}`
+      )
+    }
     return reply({ status: 'sent' })
   } catch (err) {
     safeError('[start/claim] claim failed', err)

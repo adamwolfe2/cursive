@@ -13,6 +13,8 @@ import { toMaskedLead, usableContacts } from '@/lib/free-leads/rules'
 import { cacheGet, cachePut, HOUR_MS } from '@/lib/free-leads/cache'
 import { scoreLeads, type LeadFit } from '@/lib/free-leads/lead-fit'
 import { searchContacts, type GetLeadsContact } from '@/lib/getleads/client'
+import { recordStep, sessionIdFrom } from '@/lib/free-leads/funnel'
+import { claudeUsd, CREDIT_USD } from '@/lib/free-leads/cost'
 import { badRequest, clientIp, isLimited, rateLimited, readJson, serverError } from '@/lib/free-leads/http'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
@@ -42,8 +44,12 @@ export async function POST(req: NextRequest) {
   const icp = parsed.data.icp
   const filters = icpToFilters(icp)
   const key = `preview:${filtersHash(filters)}`
+  const sessionId = sessionIdFrom(req)
   const hit = await cacheGet<CachedPreview>(key)
-  if (hit?.contacts) return respond(icp, hit)
+  if (hit?.contacts) {
+    await recordStep(sessionId, 'preview', { meta: { cached: true, credits: 0, usd: 0 } })
+    return respond(icp, hit)
+  }
 
   if (await isLimited('free-leads-preview-global', 'global')) {
     return rateLimited('Previews are busy right now. You can still claim your 25 leads.')
@@ -58,7 +64,10 @@ export async function POST(req: NextRequest) {
     return serverError('We could not load a preview just now. Please try again.')
   }
   // Never throws; null (logged) just means no "why" lines on this preview.
-  value.fits = await scoreLeads(icp, 'the seller', value.contacts)
+  let fitUsd = 0
+  value.fits = await scoreLeads(icp, 'the seller', value.contacts, { onUsage: ({ usage, model }) => (fitUsd += claudeUsd(model, usage)) })
   await cachePut(key, value, 24 * HOUR_MS)
+  const credits = value.contacts.length
+  await recordStep(sessionId, 'preview', { meta: { cached: false, credits, usd: fitUsd + credits * CREDIT_USD } })
   return respond(icp, value)
 }
