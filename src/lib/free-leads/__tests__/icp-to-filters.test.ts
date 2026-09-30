@@ -14,8 +14,9 @@ const base: Icp = {
 }
 
 describe('icpToFilters', () => {
-  it('always requires VALID email status', () => {
+  it('always requires VALID email status and excludes non-buying titles', () => {
     expect(icpToFilters(base).email_status).toEqual(['VALID'])
+    expect(icpToFilters(base).exclude_job_titles).toEqual(['Assistant', 'Intern', 'Student', 'Retired', 'Former'])
   })
 
   it('maps states to office_states and drops unknown industries', () => {
@@ -35,6 +36,7 @@ describe('icpToFilters', () => {
       seniority: ['C-Team', 'VP'],
       company_size: ['11 to 50'],
       countries: ['United States'],
+      exclude_job_titles: ['Assistant', 'Intern', 'Student', 'Retired', 'Former'],
       email_status: ['VALID'],
     })
   })

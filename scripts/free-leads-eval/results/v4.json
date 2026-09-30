@@ -1,0 +1,761 @@
+[
+ {
+  "vertical": "local",
+  "note": "dentist",
+  "domain": "pecanparkdentistry.com",
+  "ok": true,
+  "leads": [
+   {
+    "title": "Human Resources Director",
+    "company": "The Goodwill Excel Center",
+    "industry": "Education",
+    "size": "51 to 200",
+    "location": "Austin, Texas",
+    "score": 2,
+    "reason": "HR director at a local Austin employer could add the practice's membership plan as an employee dental benefit or partnership.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "HR Director at a 51-200 person Austin school, so can steer staff to a dentist.",
+    "shown": true
+   },
+   {
+    "title": "Executive and Office Administrator",
+    "company": "Backd Business Funding",
+    "industry": "Financial Services",
+    "size": "51 to 200",
+    "location": "Austin, Texas",
+    "score": 1,
+    "reason": "An office administrator at a local firm has only indirect influence over employee benefit decisions.",
+    "mv": "ok",
+    "fit_cheap": 2,
+    "why": "Office administrator at a 51-200 person Austin firm, may handle staff perks.",
+    "shown": false
+   },
+   {
+    "title": "Human Resources Director",
+    "company": "Texas School For The Blind And Visually Impaired",
+    "industry": "Primary and Secondary Education",
+    "size": "201 to 500",
+    "location": "Austin, Texas",
+    "score": 1,
+    "reason": "As a state agency, the school's dental benefits run through state plans, so a local practice partnership is unlikely.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "HR Director at a 201-500 person Austin school, likely owns staff benefits choices.",
+    "shown": true
+   },
+   {
+    "title": "Human Resources Manager Administrative Manager",
+    "company": "Lpc Services",
+    "industry": "Facilities Services",
+    "size": "51 to 200",
+    "location": "Austin, Texas",
+    "score": 2,
+    "reason": "HR manager at a local Austin employer could promote the practice or its membership plan to staff.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "HR Manager at a 51-200 person Austin services company, can offer dental options.",
+    "shown": true
+   },
+   {
+    "title": "Human Resources Manager",
+    "company": "Spare Time Texas",
+    "industry": "Entertainment",
+    "size": "51 to 200",
+    "location": "Austin, Texas",
+    "score": 2,
+    "reason": "HR manager at a local Austin employer is a plausible partner for an employee dental benefit.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "HR Manager at a 51-200 person Austin entertainment firm, can point staff to a dentist.",
+    "shown": true
+   }
+  ],
+  "source": "direct",
+  "first_finding_ms": 1947,
+  "icp_ms": 4230,
+  "fetch_ms": 437,
+  "count_ms": 7012,
+  "claude_usd": 0.0295005,
+  "judge_usd": 0.014892,
+  "icp": {
+   "summary": "You sell family dental care to Austin households, so target employers, HR and benefits teams in the Austin area who can steer staff to a dentist or offer a dental membership.",
+   "industries": [],
+   "job_titles": [
+    "HR Director",
+    "Benefits Manager",
+    "Employee Benefits Specialist",
+    "Office Administrator",
+    "Human Resources Manager",
+    "Total Rewards Manager"
+   ],
+   "seniority": [
+    "Director",
+    "Manager"
+   ],
+   "company_size": [
+    "51 to 200",
+    "201 to 500",
+    "501 to 1000"
+   ],
+   "countries": [
+    "United States"
+   ],
+   "states": [
+    "Texas"
+   ],
+   "cities": [
+    "Austin",
+    "Cedar Park",
+    "Round Rock",
+    "Leander",
+    "Pflugerville",
+    "Georgetown",
+    "Lakeway"
+   ]
+  },
+  "total": 143,
+  "credits": 5,
+  "pull_cached": false,
+  "pull_file": "536542c45aaed9115982f93b535e4bf1b91e8d3bd03162293d6339c1c2973d95-5.json"
+ },
+ {
+  "vertical": "local",
+  "note": "dentist",
+  "domain": "atxfamilydental.com",
+  "ok": true,
+  "leads": [
+   {
+    "title": "Office Manager",
+    "company": "Dh Allen Construction, Inc",
+    "industry": "Building Construction",
+    "size": "11 to 50",
+    "location": "Austin, Texas",
+    "score": 2,
+    "reason": "Office manager at a small Austin employer could arrange a dental wellness benefit or referrals for staff.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "Office manager at a 11-50 person Austin builder, likely handles staff benefits.",
+    "shown": true
+   },
+   {
+    "title": "Property Manager",
+    "company": "Hpi Real Estate Services & Investments",
+    "industry": "Leasing Non-residential Real Estate",
+    "size": "51 to 200",
+    "location": "Austin, Texas",
+    "score": 1,
+    "reason": "Property manager has no clear role in buying dental care; at most a consumer or tenant referral source.",
+    "mv": "ok",
+    "fit_cheap": 2,
+    "why": "Property manager at a 51-200 person Austin firm, may influence staff benefits.",
+    "shown": true
+   },
+   {
+    "title": "Property Manager",
+    "company": "Sandalwood Management, Inc",
+    "industry": "Real Estate",
+    "size": "201 to 500",
+    "location": "Austin, Texas",
+    "score": 1,
+    "reason": "Property management role is tangential to dental services purchasing.",
+    "mv": "ok",
+    "fit_cheap": 2,
+    "why": "Property manager at a 201-500 person Austin firm, some say in staff benefits.",
+    "shown": false
+   },
+   {
+    "title": "Office Manager",
+    "company": "Miracle Foundation",
+    "industry": "Non-profit Organizations",
+    "size": "51 to 200",
+    "location": "Austin, Texas",
+    "score": 2,
+    "reason": "Office manager at a mid-size Austin nonprofit could influence an employee dental benefit or wellness plan.",
+    "mv": "invalid",
+    "fit_cheap": 3,
+    "why": "Office manager at a 51-200 person Austin nonprofit, likely picks staff benefits.",
+    "shown": true
+   },
+   {
+    "title": "Office Manager",
+    "company": "Sweeten Cpa, P.C",
+    "industry": "Accounting",
+    "size": "11 to 50",
+    "location": "Austin, Texas",
+    "score": 2,
+    "reason": "Office manager at a small Austin firm could arrange staff dental wellness plans or referrals.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "Office manager at an 11-50 person Austin CPA firm, likely runs staff benefits.",
+    "shown": true
+   }
+  ],
+  "source": "direct",
+  "first_finding_ms": 1763,
+  "icp_ms": 4063,
+  "fetch_ms": 1836,
+  "count_ms": 6600,
+  "claude_usd": 0.008176600000000001,
+  "judge_usd": 0.013692,
+  "icp": {
+   "summary": "You sell family dental care to Austin patients; the most direct business buyers are local employers and HR teams who buy dental wellness and benefits for staff.",
+   "industries": [],
+   "job_titles": [
+    "HR Benefits Manager",
+    "Office Manager",
+    "Human Resources Director",
+    "Employee Benefits Specialist",
+    "Property Manager",
+    "Talent and People Operations Lead"
+   ],
+   "seniority": [
+    "Director",
+    "Manager"
+   ],
+   "company_size": [
+    "11 to 50",
+    "51 to 200",
+    "201 to 500"
+   ],
+   "countries": [
+    "United States"
+   ],
+   "states": [
+    "Texas"
+   ],
+   "cities": [
+    "Austin",
+    "Round Rock",
+    "Cedar Park",
+    "Pflugerville",
+    "Lakeway",
+    "Bee Cave",
+    "Buda",
+    "Kyle"
+   ]
+  },
+  "total": 376,
+  "credits": 5,
+  "pull_cached": false,
+  "pull_file": "ba10e77ff079a18fbc57d56365bba64a46e749ce701c7d249ae82bdda5eec60f-5.json"
+ },
+ {
+  "vertical": "local",
+  "note": "hvac",
+  "domain": "kahnmechanical.com",
+  "ok": true,
+  "leads": [
+   {
+    "title": "Commercial Property Manager",
+    "company": "Colonial Commercial Real Estate Llc",
+    "industry": "Commercial Real Estate",
+    "size": "11 to 50",
+    "location": "Fort Worth, Texas",
+    "score": 3,
+    "reason": "Commercial property manager in Fort Worth directly hires HVAC contractors for managed buildings.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "Manages commercial property at a small Fort Worth real estate firm, so buys HVAC service.",
+    "shown": true
+   },
+   {
+    "title": "Project & Facilities Manager",
+    "company": "Primary Care Solutions",
+    "industry": "Hospitals and Health Care",
+    "size": "51 to 200",
+    "location": "Dallas-Fort Worth, Texas",
+    "score": 3,
+    "reason": "Facilities manager at a DFW healthcare provider, a core segment the seller serves.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "Handles facilities and projects at a 51-200 person DFW healthcare group, so owns HVAC work.",
+    "shown": true
+   },
+   {
+    "title": "Facilities Manager",
+    "company": "Carevide",
+    "industry": "Hospitals and Health Care",
+    "size": "51 to 200",
+    "location": "Dallas-Fort Worth, Texas",
+    "score": 3,
+    "reason": "Facilities manager at a DFW healthcare organization controls HVAC service purchasing.",
+    "mv": "invalid",
+    "fit_cheap": 3,
+    "why": "Facilities manager at a 51-200 person DFW healthcare company, likely owns HVAC contracts.",
+    "shown": true
+   },
+   {
+    "title": "Building Engineer",
+    "company": "Frius Functional Restoration Institute U.S",
+    "industry": "Hospitals and Health Care",
+    "size": "51 to 200",
+    "location": "Dallas, Texas",
+    "score": 2,
+    "reason": "Building engineer at a Dallas healthcare facility strongly influences HVAC vendor selection but may not hold final authority.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "Building engineer at a Dallas healthcare site, hands-on with HVAC systems and vendors.",
+    "shown": true
+   },
+   {
+    "title": "Property Manager",
+    "company": "Lancarte Commercial Real Estate, Llc",
+    "industry": "Commercial Real Estate",
+    "size": "11 to 50",
+    "location": "Dallas-Fort Worth, Texas",
+    "score": 3,
+    "reason": "DFW commercial property manager is a primary buyer of commercial HVAC service contracts.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "Property manager at a small DFW commercial real estate firm, so hires HVAC service.",
+    "shown": false
+   }
+  ],
+  "source": "direct",
+  "first_finding_ms": 1395,
+  "icp_ms": 3494,
+  "fetch_ms": 1572,
+  "count_ms": 5830,
+  "claude_usd": 0.015908600000000002,
+  "judge_usd": 0.01564,
+  "icp": {
+   "summary": "You sell commercial HVAC service and mechanical construction to DFW property managers, building owners and facility teams in offices, healthcare, retail and industrial sites.",
+   "industries": [
+    "Commercial Real Estate",
+    "Hospitals and Health Care",
+    "Restaurants",
+    "Warehousing and Storage"
+   ],
+   "job_titles": [
+    "Facilities Director",
+    "Facilities Manager",
+    "Property Manager",
+    "Director of Facilities Operations",
+    "Building Engineer",
+    "Asset Manager",
+    "Chief Engineer"
+   ],
+   "seniority": [
+    "Director",
+    "Manager",
+    "Staff"
+   ],
+   "company_size": [
+    "11 to 50",
+    "51 to 200",
+    "201 to 500",
+    "501 to 1000"
+   ],
+   "countries": [
+    "United States"
+   ],
+   "states": [
+    "Texas"
+   ],
+   "cities": [
+    "Dallas",
+    "Fort Worth",
+    "Plano",
+    "Frisco",
+    "Irving",
+    "Richardson",
+    "Garland",
+    "Carrollton"
+   ]
+  },
+  "total": 10,
+  "credits": 5,
+  "pull_cached": false,
+  "pull_file": "313a15b82240468047e3dd2c852a6b68234f87f47d193f82ff2f51dbb8bed5c6-5.json"
+ },
+ {
+  "vertical": "local",
+  "note": "hvac",
+  "domain": "texasairmechanical.com",
+  "ok": true,
+  "leads": [
+   {
+    "title": "Commercial Property Manager",
+    "company": "Colonial Commercial Real Estate Llc",
+    "industry": "Commercial Real Estate",
+    "size": "11 to 50",
+    "location": "Fort Worth, Texas",
+    "score": 3,
+    "reason": "Commercial property manager at a DFW commercial real estate firm directly buys HVAC service for managed buildings.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "Manages commercial property at a small Fort Worth real estate firm, so handles HVAC vendors.",
+    "shown": true
+   },
+   {
+    "title": "Property Manager",
+    "company": "Bobby Cox Companies, Inc",
+    "industry": "Food and Beverages",
+    "size": "201 to 500",
+    "location": "Fort Worth, Texas",
+    "score": 3,
+    "reason": "Property manager at a large Fort Worth company with multiple properties (restaurants, retail) that need commercial HVAC service.",
+    "mv": "catch_all",
+    "fit_cheap": 3,
+    "why": "Property manager at a 200-500 person Fort Worth food and beverage firm, likely oversees building HVAC.",
+    "shown": true
+   },
+   {
+    "title": "Property Manager",
+    "company": "Lancarte Commercial Real Estate, Llc",
+    "industry": "Commercial Real Estate",
+    "size": "11 to 50",
+    "location": "Dallas-Fort Worth, Texas",
+    "score": 3,
+    "reason": "Property manager at a DFW commercial real estate firm decides on HVAC maintenance vendors.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "Manages commercial properties at a small DFW real estate firm, so picks HVAC service vendors.",
+    "shown": true
+   },
+   {
+    "title": "Property Manager",
+    "company": "Newquest",
+    "industry": "Commercial Real Estate",
+    "size": "51 to 200",
+    "location": "Fort Worth, Texas",
+    "score": 3,
+    "reason": "Property manager at a retail-center developer/manager in Fort Worth buys commercial HVAC service.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "Property manager at a 51-200 person Fort Worth commercial real estate firm, owns building maintenance.",
+    "shown": true
+   },
+   {
+    "title": "Property Manager",
+    "company": "Brook Partners",
+    "industry": "Commercial Real Estate",
+    "size": "11 to 50",
+    "location": "Dallas, Texas",
+    "score": 3,
+    "reason": "Property manager at a Dallas commercial real estate firm is a direct buyer of HVAC contracts.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "Manages commercial property for a small Dallas real estate firm, so hires HVAC service providers.",
+    "shown": false
+   }
+  ],
+  "source": "direct",
+  "first_finding_ms": 1355,
+  "icp_ms": 3649,
+  "fetch_ms": 442,
+  "count_ms": 5853,
+  "claude_usd": 0.0117966,
+  "judge_usd": 0.015516,
+  "icp": {
+   "summary": "You sell commercial HVAC service, maintenance and installation to businesses and facilities across the Dallas Fort Worth area.",
+   "industries": [
+    "Retail",
+    "Restaurants",
+    "Commercial Real Estate",
+    "Food and Beverage Services"
+   ],
+   "job_titles": [
+    "Facilities Director",
+    "Facilities Operations Manager",
+    "Property Manager",
+    "Director of Facilities Maintenance",
+    "Building Operations Manager",
+    "Regional Facilities Manager"
+   ],
+   "seniority": [
+    "Director",
+    "Manager",
+    "Staff"
+   ],
+   "company_size": [
+    "11 to 50",
+    "51 to 200",
+    "201 to 500",
+    "501 to 1000"
+   ],
+   "countries": [
+    "United States"
+   ],
+   "states": [
+    "Texas"
+   ],
+   "cities": [
+    "Keller",
+    "Fort Worth",
+    "Dallas",
+    "Southlake",
+    "Grapevine",
+    "Colleyville",
+    "Coppell",
+    "Roanoke",
+    "Plano",
+    "Denton"
+   ]
+  },
+  "total": 6,
+  "credits": 5,
+  "pull_cached": false,
+  "pull_file": "759c285e304159c3f039165ec779993d9d15bfff15c5478e1bd09ad3f173878d-5.json"
+ },
+ {
+  "vertical": "local",
+  "note": "law",
+  "domain": "foxswibel.com",
+  "ok": true,
+  "leads": [
+   {
+    "title": "General Counsel & Manager of Operations",
+    "company": "D'escoto, Inc",
+    "industry": "Construction",
+    "size": "201 to 500",
+    "location": "Chicago, Illinois",
+    "score": 3,
+    "reason": "General counsel at a mid-size Chicago construction firm directly hires outside counsel, and construction law is a core practice.",
+    "mv": "catch_all",
+    "fit_cheap": 3,
+    "why": "General Counsel at a 201-500 person Chicago construction firm, owns legal work.",
+    "shown": true
+   },
+   {
+    "title": "Co-founder and CEO",
+    "company": "Mezo",
+    "industry": "Real Estate",
+    "size": "11 to 50",
+    "location": "Chicago, Illinois",
+    "score": 2,
+    "reason": "CEO of a small Chicago real estate company would decide on outside business counsel for its real estate and corporate matters.",
+    "mv": "catch_all",
+    "fit_cheap": 3,
+    "why": "Co-founder and CEO of a small Chicago real estate company, decides on outside counsel.",
+    "shown": true
+   },
+   {
+    "title": "Founder & CEO",
+    "company": "Shapack",
+    "industry": "Real Estate",
+    "size": "11 to 50",
+    "location": "Chicago, Illinois",
+    "score": 2,
+    "reason": "Founder/CEO of a small Chicago real estate firm is a plausible decision-maker for real estate and corporate legal work.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "Founder and CEO of a small Chicago real estate firm, likely buys deal and contract counsel.",
+    "shown": true
+   },
+   {
+    "title": "Vice President and Associate General Counsel",
+    "company": "Harlem Irving Companies",
+    "industry": "Real Estate",
+    "size": "11 to 50",
+    "location": "Chicago, Illinois",
+    "score": 3,
+    "reason": "In-house counsel at a Chicago real estate developer typically selects and manages outside law firms.",
+    "mv": "catch_all",
+    "fit_cheap": 3,
+    "why": "Associate General Counsel at a Chicago real estate company, directs outside legal work.",
+    "shown": true
+   },
+   {
+    "title": "CEO",
+    "company": "Dds Investments Llc",
+    "industry": "Real Estate",
+    "size": "11 to 50",
+    "location": "Chicago, Illinois",
+    "score": 2,
+    "reason": "CEO of a small Chicago real estate investment firm would likely hire outside counsel for transactions.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "CEO of a small Chicago real estate investment firm, likely needs deal and finance counsel.",
+    "shown": false
+   }
+  ],
+  "source": "crawler",
+  "first_finding_ms": 1906,
+  "icp_ms": 3706,
+  "fetch_ms": 869,
+  "count_ms": 8007,
+  "claude_usd": 0.0076746,
+  "judge_usd": 0.013344,
+  "icp": {
+   "summary": "You sell boutique business legal services to Chicago-area companies, from entrepreneurs to large institutions, needing transactional, finance and litigation counsel.",
+   "industries": [
+    "Financial Services",
+    "Real Estate",
+    "Construction",
+    "Banking"
+   ],
+   "job_titles": [
+    "General Counsel",
+    "Chief Financial Officer",
+    "Chief Executive Officer",
+    "Founder",
+    "Chief Legal Officer",
+    "Vice President Finance",
+    "Real Estate Director"
+   ],
+   "seniority": [
+    "C-Team",
+    "VP",
+    "Director"
+   ],
+   "company_size": [
+    "11 to 50",
+    "51 to 200",
+    "201 to 500",
+    "501 to 1000",
+    "1001 to 5000"
+   ],
+   "countries": [
+    "United States"
+   ],
+   "states": [
+    "Illinois"
+   ],
+   "cities": [
+    "Chicago",
+    "Evanston",
+    "Naperville",
+    "Schaumburg",
+    "Oak Brook",
+    "Rosemont",
+    "Skokie",
+    "Oak Park"
+   ]
+  },
+  "total": 330,
+  "credits": 5,
+  "pull_cached": false,
+  "pull_file": "190b1808c5eaeb4158392010ceeee1dc29a985383f434b3f06ab844ed7df1242-5.json"
+ },
+ {
+  "vertical": "local",
+  "note": "law",
+  "domain": "stilpbusinesslaw.com",
+  "ok": true,
+  "leads": [
+   {
+    "title": "General Counsel",
+    "company": "Matrix Executions",
+    "industry": "Financial Services",
+    "size": "51 to 200",
+    "location": "Chicago, Illinois",
+    "score": 3,
+    "reason": "General Counsel at a mid-size Chicago firm directly hires outside business counsel.",
+    "mv": "catch_all",
+    "fit_cheap": 3,
+    "why": "General Counsel at a 51-200 person Chicago financial firm, so directs outside legal work.",
+    "shown": true
+   },
+   {
+    "title": "Chief Executive Officer",
+    "company": "Robosig",
+    "industry": "Financial Services",
+    "size": "1 to 10",
+    "location": "Chicago, Illinois",
+    "score": 3,
+    "reason": "CEO of a small Chicago business is the decision-maker for outside legal services.",
+    "mv": "catch_all",
+    "fit_cheap": 3,
+    "why": "CEO of a tiny Chicago financial services firm, likely decides on outside counsel.",
+    "shown": true
+   },
+   {
+    "title": "Chief Operating Officer",
+    "company": "Irwin Cohen Group",
+    "industry": "Financial Services",
+    "size": "1 to 10",
+    "location": "Chicago, Illinois",
+    "score": 2,
+    "reason": "COO of a small Chicago firm could influence or decide on hiring business counsel.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "COO at a 1-10 person Chicago financial firm, likely handles contracts and legal spend.",
+    "shown": true
+   },
+   {
+    "title": "Senior Vice President at Xfa Division of Marex",
+    "company": "X-Change Financial Access, Llc. Xfa",
+    "industry": "Financial Services",
+    "size": "51 to 200",
+    "location": "Chicago, Illinois",
+    "score": 1,
+    "reason": "SVP at a division of a large global broker likely uses in-house or big-firm counsel.",
+    "mv": "catch_all",
+    "fit_cheap": 1,
+    "why": "Senior VP at a Chicago Marex unit, but a large parent likely uses in-house counsel.",
+    "shown": false
+   },
+   {
+    "title": "Co-founder and CEO",
+    "company": "Mezo",
+    "industry": "Real Estate",
+    "size": "11 to 50",
+    "location": "Chicago, Illinois",
+    "score": 3,
+    "reason": "Founder-CEO of a Chicago real estate startup fits the firm's startup and real estate practice.",
+    "mv": "catch_all",
+    "fit_cheap": 3,
+    "why": "Co-founder and CEO of an 11-50 person Chicago real estate company, buys business legal help.",
+    "shown": true
+   }
+  ],
+  "source": "direct",
+  "first_finding_ms": 1306,
+  "icp_ms": 2878,
+  "fetch_ms": 940,
+  "count_ms": 7340,
+  "claude_usd": 0.0122586,
+  "judge_usd": 0.014168,
+  "icp": {
+   "summary": "You sell business legal services to small and mid-size Chicago businesses, startups and real estate and manufacturing firms.",
+   "industries": [
+    "Real Estate",
+    "Manufacturing",
+    "Software Development",
+    "Financial Services"
+   ],
+   "job_titles": [
+    "Owner",
+    "Founder",
+    "Chief Executive Officer",
+    "President",
+    "Chief Financial Officer",
+    "General Counsel",
+    "Chief Operating Officer"
+   ],
+   "seniority": [
+    "C-Team",
+    "VP",
+    "Director"
+   ],
+   "company_size": [
+    "1 to 10",
+    "11 to 50",
+    "51 to 200",
+    "201 to 500"
+   ],
+   "countries": [
+    "United States"
+   ],
+   "states": [
+    "Illinois"
+   ],
+   "cities": [
+    "Chicago",
+    "Evanston",
+    "Oak Brook",
+    "Schaumburg",
+    "Naperville",
+    "Skokie",
+    "Rosemont",
+    "Oak Park"
+   ]
+  },
+  "total": 2120,
+  "credits": 5,
+  "pull_cached": false,
+  "pull_file": "b672be91a9704545957a8c034289b9da0166936365dbcce41a2a497f45eae4bb-5.json"
+ }
+]

@@ -23,6 +23,7 @@ export interface GetLeadsFilters {
   office_states?: string[]
   /** Person city (substring match), for local sellers. */
   cities?: string[]
+  exclude_job_titles?: string[]
   email_status: ['VALID']
 }
 

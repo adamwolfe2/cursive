@@ -1,0 +1,2773 @@
+[
+ {
+  "vertical": "agency",
+  "domain": "siegemedia.com",
+  "ok": true,
+  "leads": [
+   {
+    "title": "Senior Vice President Marketing",
+    "company": "Assent",
+    "industry": "Software Development",
+    "size": "501 to 1000",
+    "location": "Belmont, North Carolina",
+    "score": 3,
+    "reason": "SVP Marketing at a mid-size SaaS company, a core segment for GEO and content services.",
+    "mv": "invalid",
+    "fit_cheap": 3,
+    "why": "Senior marketing head at a 501-1000 person software firm, so owns SEO and content budget.",
+    "shown": true
+   },
+   {
+    "title": "Director, Marketing Strategy & Operations Chief of Staff to CMO",
+    "company": "Upwork",
+    "industry": "Software Development",
+    "size": "501 to 1000",
+    "location": "Bend, Oregon",
+    "score": 2,
+    "reason": "Marketing strategy and ops lead supporting the CMO at a large software platform strongly influences agency selection.",
+    "mv": "catch_all",
+    "fit_cheap": 2,
+    "why": "Marketing strategy and ops lead working for the CMO at a software company, so shapes vendor choices.",
+    "shown": true
+   },
+   {
+    "title": "Global Head of Marketing (CMO)",
+    "company": "Interactive Brokers",
+    "industry": "Financial Services",
+    "size": "1001 to 5000",
+    "location": "New York, New York",
+    "score": 3,
+    "reason": "Global CMO at a large fintech brand, squarely in the seller's fintech focus.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "Top marketing lead at a large New York brokerage, so decides on search and content spend.",
+    "shown": true
+   },
+   {
+    "title": "Vice President of Marketing and Development",
+    "company": "Westminster-Canterbury On Chesapeake Bay & Senior Options, Llc",
+    "industry": "Hospitals and Health Care",
+    "size": "501 to 1000",
+    "location": "Virginia Beach, Virginia",
+    "score": 1,
+    "reason": "A local senior living community is a poor fit for an enterprise and startup GEO agency.",
+    "mv": "catch_all",
+    "fit_cheap": 2,
+    "why": "Leads marketing for a Virginia senior care provider, so could buy content and search help.",
+    "shown": false
+   },
+   {
+    "title": "Chief Marketing Officer",
+    "company": "Nexla",
+    "industry": "Software Development",
+    "size": "51 to 200",
+    "location": "San Mateo, California",
+    "score": 3,
+    "reason": "CMO at a growing SaaS startup is the direct buyer of organic growth and GEO services.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "CMO at a 51-200 person California software company, so directly owns SEO and content buying.",
+    "shown": true
+   }
+  ],
+  "source": "direct",
+  "first_finding_ms": 4608,
+  "icp_ms": 6184,
+  "fetch_ms": 517,
+  "count_ms": 14338,
+  "claude_usd": 0.0303795,
+  "judge_usd": 0.015308,
+  "icp": {
+   "summary": "You sell GEO and SEO content, digital PR and affiliate services to SaaS, fintech, e-commerce and health brands that want visibility in AI search.",
+   "industries": [
+    "Software Development",
+    "Financial Services",
+    "Online and Mail Order Retail",
+    "Hospitals and Health Care"
+   ],
+   "job_titles": [
+    "VP Marketing",
+    "Head of Growth",
+    "Head of SEO",
+    "Director of Content Marketing",
+    "Chief Marketing Officer",
+    "Director of Demand Generation"
+   ],
+   "seniority": [
+    "C-Team",
+    "VP",
+    "Director",
+    "Manager"
+   ],
+   "company_size": [
+    "51 to 200",
+    "201 to 500",
+    "501 to 1000",
+    "1001 to 5000"
+   ],
+   "countries": [
+    "United States"
+   ],
+   "states": [],
+   "cities": []
+  },
+  "total": 1934,
+  "credits": 5,
+  "pull_cached": false,
+  "pull_file": "7188fe8e7e44438971032afd0eb5b74bfb4291aae1ad5f9485eab7611941a522-5.json"
+ },
+ {
+  "vertical": "agency",
+  "domain": "kalungi.com",
+  "ok": true,
+  "leads": [
+   {
+    "title": "Cofounder & CEO",
+    "company": "Ecomap Technologies, Inc",
+    "industry": "Software Development",
+    "size": "11 to 50",
+    "location": "Baltimore, Maryland",
+    "score": 3,
+    "reason": "CEO of a small B2B software company, the core buyer for outsourced SaaS marketing.",
+    "mv": "catch_all",
+    "fit_cheap": 3,
+    "why": "Cofounder and CEO of a 11-50 person Baltimore software firm, likely owns marketing spend.",
+    "shown": true
+   },
+   {
+    "title": "Founder",
+    "company": "Bambumeta",
+    "industry": "Software Development",
+    "size": "11 to 50",
+    "location": "Atlanta, Georgia",
+    "score": 2,
+    "reason": "Founder of a small software company, though Bambumeta's B2B SaaS fit is less certain.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "Founder of a 11-50 person Atlanta software company, likely decides on outside marketing help.",
+    "shown": true
+   },
+   {
+    "title": "Co-founder & CEO",
+    "company": "Need Inc",
+    "industry": "Software Development",
+    "size": "11 to 50",
+    "location": "San Francisco, California",
+    "score": 3,
+    "reason": "CEO of an early-stage SaaS startup, a typical fractional CMO buyer.",
+    "mv": "catch_all",
+    "fit_cheap": 3,
+    "why": "Co-founder and CEO of a 11-50 person San Francisco software company, can hire a fractional CMO.",
+    "shown": true
+   },
+   {
+    "title": "CEO and Co-founder",
+    "company": "Goliath",
+    "industry": "Software Development",
+    "size": "11 to 50",
+    "location": "Chattanooga, Tennessee",
+    "score": 3,
+    "reason": "CEO of a small software company needing a pipeline engine, the ideal decision maker.",
+    "mv": "catch_all",
+    "fit_cheap": 3,
+    "why": "CEO and co-founder of a 11-50 person Chattanooga software company, makes marketing buying calls.",
+    "shown": true
+   },
+   {
+    "title": "Chief Revenue Officer",
+    "company": "Greenfly",
+    "industry": "Software Development",
+    "size": "51 to 200",
+    "location": "Marblehead, Massachusetts",
+    "score": 3,
+    "reason": "CRO at a growth-stage SaaS firm owns pipeline and would buy demand gen services.",
+    "mv": "ok",
+    "fit_cheap": 2,
+    "why": "CRO at a 51-200 person Massachusetts software firm, influences demand generation and marketing.",
+    "shown": false
+   }
+  ],
+  "source": "direct",
+  "first_finding_ms": 4456,
+  "icp_ms": 6096,
+  "fetch_ms": 650,
+  "count_ms": 9171,
+  "claude_usd": 0.0315815,
+  "judge_usd": 0.014784,
+  "icp": {
+   "summary": "You sell outsourced B2B SaaS marketing and fractional CMO services to seed to $10M ARR SaaS companies whose founders and executives lack a full marketing team.",
+   "industries": [
+    "Software Development"
+   ],
+   "job_titles": [
+    "CEO",
+    "Founder",
+    "CRO",
+    "VP of Marketing",
+    "Head of Growth",
+    "Chief Revenue Officer",
+    "VP of Strategy"
+   ],
+   "seniority": [
+    "C-Team",
+    "VP"
+   ],
+   "company_size": [
+    "11 to 50",
+    "51 to 200"
+   ],
+   "countries": [
+    "United States"
+   ],
+   "states": [],
+   "cities": []
+  },
+  "total": 12338,
+  "credits": 5,
+  "pull_cached": false,
+  "pull_file": "0444c4379775cad03b17488d7eada727d500ef8b6878e2dd6e9bd9acdc8bb575-5.json"
+ },
+ {
+  "vertical": "agency",
+  "domain": "powerdigitalmarketing.com",
+  "ok": true,
+  "leads": [
+   {
+    "title": "Senior Vice President Marketing",
+    "company": "Assent",
+    "industry": "Software Development",
+    "size": "501 to 1000",
+    "location": "Belmont, North Carolina",
+    "score": 3,
+    "reason": "SVP Marketing at a mid-size B2B software company is a core decision-maker for agency engagements.",
+    "mv": "invalid",
+    "fit_cheap": 3,
+    "why": "Leads marketing as SVP at a 501-1000 person US software company, so owns agency spend.",
+    "shown": true
+   },
+   {
+    "title": "Director, Marketing Strategy & Operations Chief of Staff to CMO",
+    "company": "Upwork",
+    "industry": "Software Development",
+    "size": "501 to 1000",
+    "location": "Bend, Oregon",
+    "score": 2,
+    "reason": "Marketing ops leader and chief of staff to the CMO strongly influences agency selection at Upwork.",
+    "mv": "catch_all",
+    "fit_cheap": 1,
+    "why": "Strategy and ops chief of staff to the CMO at Upwork; supports budget but doesn't own it.",
+    "shown": false
+   },
+   {
+    "title": "Chief Marketing Officer",
+    "company": "Nexla",
+    "industry": "Software Development",
+    "size": "51 to 200",
+    "location": "San Mateo, California",
+    "score": 3,
+    "reason": "CMO of a growing B2B software company directly owns agency buying decisions.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "CMO at a 51-200 person San Mateo software company, so decides on performance marketing.",
+    "shown": true
+   },
+   {
+    "title": "VP of Marketing",
+    "company": "Seqera",
+    "industry": "Software Development",
+    "size": "51 to 200",
+    "location": "Austin, Texas",
+    "score": 3,
+    "reason": "VP Marketing at a B2B software firm is the direct buyer of digital marketing services.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "VP of Marketing at a 51-200 person Austin software firm, owns demand and agency choices.",
+    "shown": true
+   },
+   {
+    "title": "Chief Marketing Officer",
+    "company": "Innergy",
+    "industry": "Software Development",
+    "size": "51 to 200",
+    "location": "",
+    "score": 3,
+    "reason": "CMO at a B2B software company is the direct decision-maker for agency spend.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "CMO at a 51-200 person US software company, so sets marketing budget and picks agencies.",
+    "shown": true
+   }
+  ],
+  "source": "direct",
+  "first_finding_ms": 1714,
+  "icp_ms": 3362,
+  "fetch_ms": 478,
+  "count_ms": 6330,
+  "claude_usd": 0.013867,
+  "judge_usd": 0.014404,
+  "icp": {
+   "summary": "You sell performance digital marketing services to mid-size and large CPG, fashion, healthcare, lifestyle and B2B brands, selling to their marketing leaders.",
+   "industries": [
+    "Retail",
+    "Food and Beverage Manufacturing",
+    "Retail Apparel and Fashion",
+    "Software Development"
+   ],
+   "job_titles": [
+    "Chief Marketing Officer",
+    "VP of Marketing",
+    "Director of Brand Marketing",
+    "Head of Growth",
+    "Director of E-commerce",
+    "Chief Digital Officer",
+    "Senior Manager DTC Marketing"
+   ],
+   "seniority": [
+    "C-Team",
+    "VP",
+    "Director",
+    "Manager"
+   ],
+   "company_size": [
+    "51 to 200",
+    "201 to 500",
+    "501 to 1000",
+    "1001 to 5000"
+   ],
+   "countries": [
+    "United States"
+   ],
+   "states": [],
+   "cities": []
+  },
+  "total": 922,
+  "credits": 5,
+  "pull_cached": false,
+  "pull_file": "a62e6a50901c68c417f5a22d099890e608f13bd4208c30737b439484c9f3ee58-5.json"
+ },
+ {
+  "vertical": "agency",
+  "domain": "directiveconsulting.com",
+  "ok": true,
+  "leads": [
+   {
+    "title": "Senior Vice President Marketing",
+    "company": "Assent",
+    "industry": "Software Development",
+    "size": "501 to 1000",
+    "location": "Belmont, North Carolina",
+    "score": 3,
+    "reason": "SVP Marketing at a mid-size B2B software company is a core agency buyer.",
+    "mv": "invalid",
+    "fit_cheap": 3,
+    "why": "SVP Marketing at a 501-1000 person US software company, owns pipeline marketing spend.",
+    "shown": true
+   },
+   {
+    "title": "Director, Marketing Strategy & Operations Chief of Staff to CMO",
+    "company": "Upwork",
+    "industry": "Software Development",
+    "size": "501 to 1000",
+    "location": "Bend, Oregon",
+    "score": 2,
+    "reason": "Marketing ops chief of staff to the CMO strongly influences agency selection at a B2B tech company.",
+    "mv": "catch_all",
+    "fit_cheap": 2,
+    "why": "Marketing strategy and ops lead under the CMO at a 500+ person US software firm.",
+    "shown": false
+   },
+   {
+    "title": "Chief Marketing Officer",
+    "company": "Nexla",
+    "industry": "Software Development",
+    "size": "51 to 200",
+    "location": "San Mateo, California",
+    "score": 3,
+    "reason": "CMO of a B2B data software startup is the direct decision-maker for demand-gen agencies.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "CMO of a 51-200 person San Mateo software company, decides on marketing services.",
+    "shown": true
+   },
+   {
+    "title": "VP of Marketing",
+    "company": "Seqera",
+    "industry": "Software Development",
+    "size": "51 to 200",
+    "location": "Austin, Texas",
+    "score": 3,
+    "reason": "VP Marketing at a B2B software company is the right buyer for pipeline-focused agency services.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "VP of Marketing at a 51-200 person Austin software company, runs demand programs.",
+    "shown": true
+   },
+   {
+    "title": "Chief Marketing Officer",
+    "company": "Innergy",
+    "industry": "Software Development",
+    "size": "51 to 200",
+    "location": "",
+    "score": 3,
+    "reason": "CMO at a B2B software firm serving manufacturers fits the seller's tech and industrial focus.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "CMO of a 51-200 person US software company, owns marketing and pipeline budget.",
+    "shown": true
+   }
+  ],
+  "source": "direct",
+  "first_finding_ms": 2560,
+  "icp_ms": 5272,
+  "fetch_ms": 1739,
+  "count_ms": 4767,
+  "claude_usd": 0.013165,
+  "judge_usd": 0.014216,
+  "icp": {
+   "summary": "You sell B2B pipeline-focused marketing services to technology, industrial and professional services companies, led by their marketing and growth leaders.",
+   "industries": [
+    "Software Development",
+    "Manufacturing",
+    "Professional Services",
+    "Technology; Information and Internet"
+   ],
+   "job_titles": [
+    "CMO",
+    "VP Marketing",
+    "Head of Growth",
+    "Director of Demand Generation",
+    "Head of Marketing",
+    "VP Revenue Operations",
+    "Director of Digital Marketing"
+   ],
+   "seniority": [
+    "C-Team",
+    "VP",
+    "Director"
+   ],
+   "company_size": [
+    "51 to 200",
+    "201 to 500",
+    "501 to 1000",
+    "1001 to 5000"
+   ],
+   "countries": [
+    "United States"
+   ],
+   "states": [],
+   "cities": []
+  },
+  "total": 1258,
+  "credits": 5,
+  "pull_cached": false,
+  "pull_file": "9bf1f8e14300cf2b349e32dde63625c28a9a4598e656c1f52cea0c0e8da5e55f-5.json"
+ },
+ {
+  "vertical": "saas",
+  "domain": "vanta.com",
+  "ok": true,
+  "leads": [
+   {
+    "title": "Chief Technology Officer",
+    "company": "Viridium.Ai",
+    "industry": "Software Development",
+    "size": "11 to 50",
+    "location": "Redmond, Washington",
+    "score": 3,
+    "reason": "CTO of a small AI software startup, a typical owner of SOC 2 compliance buying.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "CTO of a small Redmond software firm, likely owns security and compliance decisions.",
+    "shown": true
+   },
+   {
+    "title": "CEO & VP of Engineering",
+    "company": "Protonomics, Llc",
+    "industry": "Software Development",
+    "size": "11 to 50",
+    "location": "San Francisco, California",
+    "score": 3,
+    "reason": "CEO and engineering head of a small software company decides on compliance tooling.",
+    "mv": "catch_all",
+    "fit_cheap": 2,
+    "why": "CEO and VP Engineering at a small San Francisco software company, can decide on compliance tools.",
+    "shown": false
+   },
+   {
+    "title": "Vice President of Engineering",
+    "company": "Trustwell",
+    "industry": "Software Development",
+    "size": "51 to 200",
+    "location": "Raleigh-Durham-Chapel Hill, North Carolina",
+    "score": 2,
+    "reason": "VP Engineering at a mid-size software firm strongly influences compliance platform purchase, though security/CTO may own it.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "VP Engineering at a 51-200 person North Carolina software company, owns security and audit work.",
+    "shown": true
+   },
+   {
+    "title": "Cpo & CTO",
+    "company": "Functional Finance",
+    "industry": "Financial Services",
+    "size": "11 to 50",
+    "location": "Keller, Texas",
+    "score": 3,
+    "reason": "CTO of a small fintech needing SOC 2/PCI compliance is the core buyer.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "CTO and product head at a small Texas financial services firm, likely owns compliance tooling.",
+    "shown": true
+   },
+   {
+    "title": "Co-founder & CTO",
+    "company": "Method",
+    "industry": "Financial Services",
+    "size": "51 to 200",
+    "location": "Austin, Texas",
+    "score": 3,
+    "reason": "Co-founder CTO at a growing fintech is a prime decision-maker for compliance automation.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "Co-founder and CTO at a 51-200 person Austin fintech, likely drives SOC 2 and security buying.",
+    "shown": true
+   }
+  ],
+  "source": "direct",
+  "first_finding_ms": 1387,
+  "icp_ms": 2962,
+  "fetch_ms": 555,
+  "count_ms": 5070,
+  "claude_usd": 0.013665,
+  "judge_usd": 0.014636,
+  "icp": {
+   "summary": "You sell compliance automation software to security and compliance teams at SaaS, fintech and healthcare companies, from startups to enterprises.",
+   "industries": [
+    "Software Development",
+    "Financial Services",
+    "Hospitals and Health Care",
+    "Technology; Information and Internet"
+   ],
+   "job_titles": [
+    "Head of Security",
+    "CISO",
+    "VP Engineering",
+    "Head of Compliance",
+    "CTO",
+    "GRC Manager",
+    "Director of Security"
+   ],
+   "seniority": [
+    "C-Team",
+    "VP",
+    "Director",
+    "Manager"
+   ],
+   "company_size": [
+    "11 to 50",
+    "51 to 200",
+    "201 to 500",
+    "501 to 1000",
+    "1001 to 5000"
+   ],
+   "countries": [
+    "United States"
+   ],
+   "states": [],
+   "cities": []
+  },
+  "total": 5977,
+  "credits": 5,
+  "pull_cached": false,
+  "pull_file": "7dd659df06a648e93a5ae1f0614575f77dc86477323ad67e11943697597fc604-5.json"
+ },
+ {
+  "vertical": "saas",
+  "domain": "servicetitan.com",
+  "ok": true,
+  "leads": [
+   {
+    "title": "Owner",
+    "company": "Just Sprinklers Inc",
+    "industry": "Landscaping Services",
+    "size": "51 to 200",
+    "location": "Albuquerque, New Mexico",
+    "score": 3,
+    "reason": "Owner of a mid-sized irrigation/landscaping contractor, a trade ServiceTitan explicitly serves.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "Owner of a 51-200 person Albuquerque landscaping company, decides on field software.",
+    "shown": true
+   },
+   {
+    "title": "Project Operations Manager",
+    "company": "Vive Exterior Design",
+    "industry": "Landscaping Services",
+    "size": "11 to 50",
+    "location": "Milton, Wisconsin",
+    "score": 2,
+    "reason": "Operations manager at a landscaping contractor who could strongly influence field software choice.",
+    "mv": "invalid",
+    "fit_cheap": 2,
+    "why": "Runs project operations at a small Wisconsin landscaping firm, likely to influence software choice.",
+    "shown": true
+   },
+   {
+    "title": "Owner",
+    "company": "Langendoen Electric Inc",
+    "industry": "Specialty Trade Contractors",
+    "size": "11 to 50",
+    "location": "",
+    "score": 3,
+    "reason": "Owner of an electrical contractor, a core ServiceTitan trade.",
+    "mv": "catch_all",
+    "fit_cheap": 3,
+    "why": "Owns a small Canadian electrical contractor, so makes the software buying call.",
+    "shown": true
+   },
+   {
+    "title": "Owner Field Operations",
+    "company": "Sky2ground",
+    "industry": "Landscaping Services",
+    "size": "11 to 50",
+    "location": "",
+    "score": 3,
+    "reason": "Owner overseeing field operations at a landscaping services firm, a direct fit.",
+    "mv": "ok",
+    "fit_cheap": 2,
+    "why": "Owner-level role over field operations at a small US landscaping company.",
+    "shown": false
+   },
+   {
+    "title": "Service Manager",
+    "company": "Mountain Service Company",
+    "industry": "Specialty Trade Contractors",
+    "size": "11 to 50",
+    "location": "San Francisco, California",
+    "score": 2,
+    "reason": "Service manager at a trade contractor who would influence dispatch and field service software decisions.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "Service Manager at a San Francisco trades contractor, owns dispatch and scheduling.",
+    "shown": true
+   }
+  ],
+  "source": "direct",
+  "first_finding_ms": 3261,
+  "icp_ms": 4771,
+  "fetch_ms": 1389,
+  "count_ms": 3408,
+  "claude_usd": 0.009973,
+  "judge_usd": 0.01496,
+  "icp": {
+   "summary": "You sell field service and construction management software to residential and commercial trades contractors such as HVAC, plumbing, electrical and roofing companies.",
+   "industries": [
+    "Building Equipment Contractors",
+    "Specialty Trade Contractors",
+    "Building Construction",
+    "Landscaping Services"
+   ],
+   "job_titles": [
+    "Owner",
+    "CEO",
+    "President",
+    "General Manager",
+    "Operations Manager",
+    "Service Manager",
+    "COO",
+    "Director of Operations"
+   ],
+   "seniority": [
+    "C-Team",
+    "Director",
+    "Manager"
+   ],
+   "company_size": [
+    "11 to 50",
+    "51 to 200",
+    "201 to 500",
+    "501 to 1000"
+   ],
+   "countries": [
+    "United States",
+    "Canada"
+   ],
+   "states": [],
+   "cities": []
+  },
+  "total": 1698,
+  "credits": 5,
+  "pull_cached": false,
+  "pull_file": "52a77d8c760d12dff1531e098e511113bedf4546b9346fd860ba01d2bd145f8b-5.json"
+ },
+ {
+  "vertical": "saas",
+  "domain": "curvedental.com",
+  "ok": true,
+  "leads": [
+   {
+    "title": "Office Manager",
+    "company": "Waters Orthodontics",
+    "industry": "Dentists",
+    "size": "1 to 10",
+    "location": "Greenville, South Carolina",
+    "score": 2,
+    "reason": "The office manager at a small orthodontic practice could buy the software, but orthodontics is a slightly less direct fit than general dentistry.",
+    "mv": "catch_all",
+    "fit_cheap": 3,
+    "why": "Office manager at a small Greenville orthodontic practice, likely runs daily software.",
+    "shown": true
+   },
+   {
+    "title": "Office Manager",
+    "company": "Total Health Dental Care",
+    "industry": "Dentists",
+    "size": "51 to 200",
+    "location": "",
+    "score": 3,
+    "reason": "The office manager at a sizable dental practice is a direct buyer of practice management software.",
+    "mv": "invalid",
+    "fit_cheap": 3,
+    "why": "Office manager at a 51-200 person US dental group, likely handles practice systems.",
+    "shown": true
+   },
+   {
+    "title": "Fractional Director of Operations",
+    "company": "Maya Dental",
+    "industry": "Dentists",
+    "size": "11 to 50",
+    "location": "Park Ridge, Illinois",
+    "score": 3,
+    "reason": "The operations director at a dental practice oversees systems like practice management software.",
+    "mv": "ok",
+    "fit_cheap": 2,
+    "why": "Fractional ops director at a 11-50 person Illinois dental practice, can influence software.",
+    "shown": false
+   },
+   {
+    "title": "Office Manager",
+    "company": "Pearl Dental Associates Implant Center",
+    "industry": "Dentists",
+    "size": "11 to 50",
+    "location": "Hartford, Connecticut",
+    "score": 3,
+    "reason": "The office manager at a mid-size dental practice is the typical buyer of practice management software.",
+    "mv": "catch_all",
+    "fit_cheap": 3,
+    "why": "Office manager at an 11-50 person Hartford implant practice, close to software choices.",
+    "shown": true
+   },
+   {
+    "title": "Practice Administrator",
+    "company": "Tindal Prosthodontics",
+    "industry": "Dentists",
+    "size": "1 to 10",
+    "location": "Sarasota, Florida",
+    "score": 3,
+    "reason": "The practice administrator at a dental specialty practice decides on practice software.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "Practice administrator at a small Sarasota prosthodontics office, likely owns systems decisions.",
+    "shown": true
+   }
+  ],
+  "source": "direct",
+  "first_finding_ms": 1907,
+  "icp_ms": 3305,
+  "fetch_ms": 608,
+  "count_ms": 8393,
+  "claude_usd": 0.012331,
+  "judge_usd": 0.014156,
+  "icp": {
+   "summary": "You sell cloud-based dental practice management software to independent, multi-location and startup dental practices in the U.S. and Canada.",
+   "industries": [
+    "Dentists"
+   ],
+   "job_titles": [
+    "Practice Owner",
+    "Dentist Owner",
+    "Office Manager",
+    "Practice Administrator",
+    "Chief Operating Officer",
+    "Director of Operations",
+    "Dental Practice Manager"
+   ],
+   "seniority": [
+    "C-Team",
+    "Director",
+    "Manager",
+    "Staff"
+   ],
+   "company_size": [
+    "1 to 10",
+    "11 to 50",
+    "51 to 200"
+   ],
+   "countries": [
+    "United States",
+    "Canada"
+   ],
+   "states": [],
+   "cities": []
+  },
+  "total": 153,
+  "credits": 5,
+  "pull_cached": false,
+  "pull_file": "401176deaedf35e0e48bb9648100c0e499d340c8e7b424a17aef1cf3f0a6506f-5.json"
+ },
+ {
+  "vertical": "saas",
+  "domain": "gusto.com",
+  "ok": true,
+  "leads": [
+   {
+    "title": "Operations Manager",
+    "company": "Yale Appliance",
+    "industry": "Retail",
+    "size": "51 to 200",
+    "location": "Stoughton, Massachusetts",
+    "score": 2,
+    "reason": "Operations manager at a mid-sized retailer could influence payroll/HR software choice, though larger firms may have dedicated HR.",
+    "mv": "catch_all",
+    "fit_cheap": 3,
+    "why": "Operations manager at a 51-200 person Massachusetts retailer, likely handles payroll and HR setup.",
+    "shown": true
+   },
+   {
+    "title": "Business Operations Manager",
+    "company": "Fsi Engineers",
+    "industry": "Professional Services",
+    "size": "11 to 50",
+    "location": "Everett, Washington",
+    "score": 3,
+    "reason": "Business operations manager at a small professional services firm typically owns payroll and HR admin.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "Business operations manager at an 11-50 person Washington engineering firm, likely runs payroll and benefits.",
+    "shown": true
+   },
+   {
+    "title": "CEO & Founder",
+    "company": "Dosey",
+    "industry": "Retail",
+    "size": "1 to 10",
+    "location": "",
+    "score": 2,
+    "reason": "Founder of a tiny startup is the decision maker but may have few or no employees to pay.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "Founder and CEO of a 1-10 person US retailer, likely runs payroll and benefits themselves.",
+    "shown": true
+   },
+   {
+    "title": "Co-owner",
+    "company": "Crew Ogt",
+    "industry": "Restaurants",
+    "size": "11 to 50",
+    "location": "San Diego County, California",
+    "score": 3,
+    "reason": "Co-owner of a small restaurant with staff is a core Gusto buyer for payroll and shift management.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "Co-owner of an 11-50 person San Diego restaurant group, decides on payroll and staff benefits.",
+    "shown": true
+   },
+   {
+    "title": "Chief Executive Officer",
+    "company": "Garage Composites",
+    "industry": "Retail",
+    "size": "11 to 50",
+    "location": "Steamboat Springs, Colorado",
+    "score": 3,
+    "reason": "CEO of a small business decides on payroll and HR tools, squarely in Gusto's segment.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "CEO of an 11-50 person Colorado retailer, likely owns payroll and HR decisions.",
+    "shown": false
+   }
+  ],
+  "source": "crawler",
+  "first_finding_ms": 2864,
+  "icp_ms": 4437,
+  "fetch_ms": 972,
+  "count_ms": 5054,
+  "claude_usd": 0.017259,
+  "judge_usd": 0.018372,
+  "icp": {
+   "summary": "You sell payroll, benefits and HR software to small businesses and solopreneurs, reaching owners and office managers who run their own people operations.",
+   "industries": [
+    "Restaurants",
+    "Retail",
+    "Professional Services",
+    "Construction"
+   ],
+   "job_titles": [
+    "Founder",
+    "Owner",
+    "CEO",
+    "Office Manager",
+    "HR Manager",
+    "Operations Manager",
+    "Controller"
+   ],
+   "seniority": [
+    "C-Team",
+    "Manager",
+    "Director"
+   ],
+   "company_size": [
+    "1 to 10",
+    "11 to 50",
+    "51 to 200"
+   ],
+   "countries": [
+    "United States"
+   ],
+   "states": [],
+   "cities": []
+  },
+  "total": 53179,
+  "credits": 5,
+  "pull_cached": false,
+  "pull_file": "922521127319f8dd2428364022c13e4ad89351c71f263f2ab3d7e30c7e2c2cd6-5.json"
+ },
+ {
+  "vertical": "saas",
+  "domain": "gong.io",
+  "ok": true,
+  "leads": [
+   {
+    "title": "Vice President of Sales",
+    "company": "Nielsen",
+    "industry": "Software Development",
+    "size": "10001+",
+    "location": "Washington, District of Columbia",
+    "score": 3,
+    "reason": "VP of Sales at a large data/software company is a core Gong buyer.",
+    "mv": "catch_all",
+    "fit_cheap": 3,
+    "why": "VP of Sales at a 10,000+ person US company, owns sales tooling decisions.",
+    "shown": true
+   },
+   {
+    "title": "Vice President of Sales",
+    "company": "Realpage, Inc",
+    "industry": "Software Development",
+    "size": "5001 to 10000",
+    "location": "Little Elm, Texas",
+    "score": 3,
+    "reason": "VP of Sales at a large SaaS company fits Gong's primary technology segment.",
+    "mv": "invalid",
+    "fit_cheap": 3,
+    "why": "VP of Sales at a 5,000+ person Texas software firm, likely owns sales tech spend.",
+    "shown": true
+   },
+   {
+    "title": "Assistant Vice President of Sales",
+    "company": "United Wholesale Mortgage",
+    "industry": "Financial Services",
+    "size": "5001 to 10000",
+    "location": "",
+    "score": 2,
+    "reason": "AVP of Sales at a large wholesale mortgage lender with a big sales team can influence the purchase, though it sits below top sales leadership.",
+    "mv": "unknown",
+    "fit_cheap": 2,
+    "why": "Assistant VP of Sales at a large US mortgage lender, can influence sales tools.",
+    "shown": false
+   },
+   {
+    "title": "Vice President of Sales, Ontario",
+    "company": "Foresters Financial",
+    "industry": "Financial Services",
+    "size": "1001 to 5000",
+    "location": "",
+    "score": 2,
+    "reason": "Regional sales VP at an insurer could influence the purchase, but a distributed agent model and regional scope limit buying authority.",
+    "mv": "catch_all",
+    "fit_cheap": 3,
+    "why": "VP of Sales for Ontario at a mid-size Canadian financial firm, leads a sales team.",
+    "shown": true
+   },
+   {
+    "title": "Vice President of Sales",
+    "company": "Tradewind",
+    "industry": "Financial Services",
+    "size": "201 to 500",
+    "location": "Miami, Florida",
+    "score": 3,
+    "reason": "VP of Sales at a mid-size fintech with a B2B sales team is a direct buyer of revenue intelligence.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "VP of Sales at a 201-500 person Miami financial firm, likely decides on sales tools.",
+    "shown": true
+   }
+  ],
+  "source": "direct",
+  "first_finding_ms": 1438,
+  "icp_ms": 3496,
+  "fetch_ms": 1000,
+  "count_ms": 8566,
+  "claude_usd": 0.015609,
+  "judge_usd": 0.0157,
+  "icp": {
+   "summary": "You sell a revenue AI platform to sales, RevOps and enablement leaders at mid-size and enterprise B2B companies, mainly in software, financial services, healthcare and manufacturing.",
+   "industries": [
+    "Software Development",
+    "Financial Services",
+    "Manufacturing",
+    "Technology; Information and Internet"
+   ],
+   "job_titles": [
+    "VP of Sales",
+    "Chief Revenue Officer",
+    "Head of Revenue Operations",
+    "VP Sales Enablement",
+    "Director of Sales Operations",
+    "Head of Customer Success",
+    "GTM Enablement Lead"
+   ],
+   "seniority": [
+    "C-Team",
+    "VP",
+    "Director",
+    "Manager"
+   ],
+   "company_size": [
+    "201 to 500",
+    "501 to 1000",
+    "1001 to 5000",
+    "5001 to 10000",
+    "10001+"
+   ],
+   "countries": [
+    "United States",
+    "United Kingdom",
+    "Canada",
+    "Germany",
+    "Australia"
+   ],
+   "states": [],
+   "cities": []
+  },
+  "total": 3331,
+  "credits": 5,
+  "pull_cached": false,
+  "pull_file": "9b6be59a0b472e4a3fbb693c87f9b6ce69801c3ea32976e04ff0b7b45b04f89c-5.json"
+ },
+ {
+  "vertical": "local",
+  "note": "dentist",
+  "domain": "pecanparkdentistry.com",
+  "ok": true,
+  "leads": [
+   {
+    "title": "Office Manager",
+    "company": "Dh Allen Construction, Inc",
+    "industry": "Building Construction",
+    "size": "11 to 50",
+    "location": "Austin, Texas",
+    "score": 1,
+    "reason": "Office manager at a small Austin employer might arrange a dental benefit, but dentists rarely sell to employers, so this is mainly a potential patient.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "Office manager at a 11-50 person Austin builder, likely handles staff benefits.",
+    "shown": true
+   },
+   {
+    "title": "Operations Manager",
+    "company": "The Boardwalk Cleaning Co",
+    "industry": "Consumer Services",
+    "size": "11 to 50",
+    "location": "Austin, Texas",
+    "score": 1,
+    "reason": "Operations manager at a small local cleaning company has little benefits authority and is mostly a potential patient.",
+    "mv": "catch_all",
+    "fit_cheap": 2,
+    "why": "Runs operations at a small Austin cleaning company, may pick staff dental options.",
+    "shown": true
+   },
+   {
+    "title": "Assistant Operations Manager",
+    "company": "Thompson Austin",
+    "industry": "Hospitality",
+    "size": "51 to 200",
+    "location": "Austin, Texas",
+    "score": 1,
+    "reason": "Assistant operations manager at a hotel has no benefits purchasing role, so this is only a local consumer.",
+    "mv": "ok",
+    "fit_cheap": 1,
+    "why": "Assistant ops role at an Austin hotel; limited say over staff benefits.",
+    "shown": false
+   },
+   {
+    "title": "People and Business Operations Manager",
+    "company": "Astrak Us",
+    "industry": "Construction Hardware Manufacturing",
+    "size": "51 to 200",
+    "location": "Round Rock, Texas",
+    "score": 2,
+    "reason": "A people-ops manager at a nearby 51-200 employer could plausibly adopt the practice's membership plan as an employee benefit or refer staff.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "Handles people and operations for a 51-200 person Round Rock manufacturer, owns benefits.",
+    "shown": true
+   },
+   {
+    "title": "Office Manager",
+    "company": "Miracle Foundation",
+    "industry": "Non-profit Organizations",
+    "size": "51 to 200",
+    "location": "Austin, Texas",
+    "score": 1,
+    "reason": "Office manager at a local nonprofit might influence benefits, but this is most likely just a potential patient.",
+    "mv": "invalid",
+    "fit_cheap": 3,
+    "why": "Office manager at a 51-200 person Austin nonprofit, likely involved in staff benefits.",
+    "shown": true
+   }
+  ],
+  "source": "direct",
+  "first_finding_ms": 2377,
+  "icp_ms": 4156,
+  "fetch_ms": 494,
+  "count_ms": 4915,
+  "claude_usd": 0.011397,
+  "judge_usd": 0.015708,
+  "icp": {
+   "summary": "You sell family and cosmetic dental care to Austin households; the closest business buyers are local employers and HR teams arranging dental care for staff.",
+   "industries": [],
+   "job_titles": [
+    "HR Manager",
+    "Office Manager",
+    "Benefits Manager",
+    "Practice Owner",
+    "Operations Manager"
+   ],
+   "seniority": [
+    "Manager",
+    "Director",
+    "Staff"
+   ],
+   "company_size": [
+    "11 to 50",
+    "51 to 200",
+    "201 to 500"
+   ],
+   "countries": [
+    "United States"
+   ],
+   "states": [
+    "Texas"
+   ],
+   "cities": [
+    "Austin",
+    "Cedar Park",
+    "Round Rock",
+    "Leander",
+    "Pflugerville",
+    "Georgetown",
+    "Lakeway",
+    "Bee Cave"
+   ]
+  },
+  "total": 930,
+  "credits": 5,
+  "pull_cached": false,
+  "pull_file": "c1b79acf9c94616dfd202fc04f8b02fad450644bd20abab1f8d0de6114e49bc0-5.json"
+ },
+ {
+  "vertical": "local",
+  "note": "dentist",
+  "domain": "atxfamilydental.com",
+  "ok": true,
+  "leads": [
+   {
+    "title": "Office Manager",
+    "company": "Dh Allen Construction, Inc",
+    "industry": "Building Construction",
+    "size": "11 to 50",
+    "location": "Austin, Texas",
+    "score": 2,
+    "reason": "The office manager at a small local Austin employer could arrange an employee dental benefit or wellness plan.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "Office Manager at a 11-50 person Austin builder, likely handles staff benefits.",
+    "shown": true
+   },
+   {
+    "title": "Office Manager",
+    "company": "Miracle Foundation",
+    "industry": "Non-profit Organizations",
+    "size": "51 to 200",
+    "location": "Austin, Texas",
+    "score": 2,
+    "reason": "The office manager at a mid-size local Austin nonprofit could plausibly arrange employee dental perks.",
+    "mv": "invalid",
+    "fit_cheap": 3,
+    "why": "Office Manager at a 51-200 person Austin nonprofit, likely arranges staff perks.",
+    "shown": true
+   },
+   {
+    "title": "Practice Manager",
+    "company": "Treehouse Pediatrics",
+    "industry": "Hospitals and Health Care",
+    "size": "51 to 200",
+    "location": "Austin, Texas",
+    "score": 2,
+    "reason": "A local pediatric practice is a plausible referral partner for family and kids' dental care.",
+    "mv": "catch_all",
+    "fit_cheap": 2,
+    "why": "Practice Manager at a 51-200 person Austin pediatric group, may run staff benefits.",
+    "shown": true
+   },
+   {
+    "title": "Office Manager",
+    "company": "Sweeten Cpa, P.C",
+    "industry": "Accounting",
+    "size": "11 to 50",
+    "location": "Austin, Texas",
+    "score": 2,
+    "reason": "The office manager at a small local Austin firm often handles employee benefits like dental wellness plans.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "Office Manager at a 11-50 person Austin CPA firm, likely picks staff benefits.",
+    "shown": true
+   },
+   {
+    "title": "Legal Secretary Office Manager",
+    "company": "J. Torrez Law, P.C",
+    "industry": "",
+    "size": "51 to 200",
+    "location": "Austin, Texas",
+    "score": 2,
+    "reason": "The office manager at a local Austin law firm could arrange employee dental benefits.",
+    "mv": "ok",
+    "fit_cheap": 2,
+    "why": "Office Manager at an Austin law firm, likely helps handle staff benefits.",
+    "shown": false
+   }
+  ],
+  "source": "direct",
+  "first_finding_ms": 1350,
+  "icp_ms": 3171,
+  "fetch_ms": 925,
+  "count_ms": 17429,
+  "claude_usd": 0.007921,
+  "judge_usd": 0.01932,
+  "icp": {
+   "summary": "You sell family dental care to Austin-area consumers; the most direct business buyers are local employers and HR teams who arrange dental benefits and wellness perks for staff.",
+   "industries": [],
+   "job_titles": [
+    "Office Manager",
+    "HR Manager",
+    "Benefits Manager",
+    "Human Resources Director",
+    "Practice Manager"
+   ],
+   "seniority": [
+    "Manager",
+    "Director"
+   ],
+   "company_size": [
+    "11 to 50",
+    "51 to 200",
+    "201 to 500"
+   ],
+   "countries": [
+    "United States"
+   ],
+   "states": [
+    "Texas"
+   ],
+   "cities": [
+    "Austin",
+    "Round Rock",
+    "Cedar Park",
+    "Pflugerville",
+    "Georgetown",
+    "Lakeway",
+    "Bee Cave",
+    "Kyle"
+   ]
+  },
+  "total": 477,
+  "credits": 5,
+  "pull_cached": false,
+  "pull_file": "203e53c83aa0dcb235f6a88c05a3889894ad326a9aeaf8fb8b3fcdd532eb9fec-5.json"
+ },
+ {
+  "vertical": "local",
+  "note": "hvac",
+  "domain": "kahnmechanical.com",
+  "ok": true,
+  "leads": [
+   {
+    "title": "Clinical Operations Manager",
+    "company": "North Texas Orthopedics & Spine Center",
+    "industry": "Hospitals and Health Care",
+    "size": "51 to 200",
+    "location": "Dallas-Fort Worth, Texas",
+    "score": 2,
+    "reason": "An operations manager at a DFW healthcare center could influence facility HVAC service decisions.",
+    "mv": "ok",
+    "fit_cheap": 1,
+    "why": "Clinical operations at a 51-200 person DFW clinic; focus is care, not building systems.",
+    "shown": true
+   },
+   {
+    "title": "People Operations Manager",
+    "company": "Lakepointe Church",
+    "industry": "Religious Institutions",
+    "size": "201 to 500",
+    "location": "Dallas-Fort Worth, Texas",
+    "score": 1,
+    "reason": "A People Operations role is HR-focused, with little say over facilities, even though large churches do buy HVAC.",
+    "mv": "ok",
+    "fit_cheap": 0,
+    "why": "People operations at a church handles staffing and HR, not HVAC or facilities.",
+    "shown": false
+   },
+   {
+    "title": "Physician Operations Manager",
+    "company": "Emergency Staffing Solutions",
+    "industry": "Hospitals and Health Care",
+    "size": "51 to 200",
+    "location": "Frisco, Texas",
+    "score": 0,
+    "reason": "A physician staffing firm doesn't manage buildings, and the role is about scheduling clinicians.",
+    "mv": "ok",
+    "fit_cheap": 1,
+    "why": "Physician staffing operations in Frisco; likely no say over building HVAC contracts.",
+    "shown": true
+   },
+   {
+    "title": "Operations Manager",
+    "company": "Pain Treatment Institute",
+    "industry": "Hospitals and Health Care",
+    "size": "11 to 50",
+    "location": "Dallas-Fort Worth, Texas",
+    "score": 2,
+    "reason": "The operations manager at a small DFW clinic likely handles facility vendors, including HVAC.",
+    "mv": "ok",
+    "fit_cheap": 2,
+    "why": "Operations manager at a small DFW pain clinic, may handle vendors like HVAC service.",
+    "shown": true
+   },
+   {
+    "title": "Commercial Property Manager",
+    "company": "Colonial Commercial Real Estate Llc",
+    "industry": "Commercial Real Estate",
+    "size": "11 to 50",
+    "location": "Fort Worth, Texas",
+    "score": 3,
+    "reason": "A commercial property manager in Fort Worth is the core buyer of HVAC service and maintenance contracts.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "Commercial property manager in Fort Worth, directly owns building HVAC service contracts.",
+    "shown": true
+   }
+  ],
+  "source": "direct",
+  "first_finding_ms": 1368,
+  "icp_ms": 3634,
+  "fetch_ms": 2598,
+  "count_ms": 4522,
+  "claude_usd": 0.016143,
+  "judge_usd": 0.015684,
+  "icp": {
+   "summary": "You sell commercial HVAC service and maintenance contracts to DFW property managers, building owners and facility teams in offices, healthcare, retail and restaurants.",
+   "industries": [
+    "Commercial Real Estate",
+    "Hospitals and Health Care",
+    "Restaurants",
+    "Religious Institutions"
+   ],
+   "job_titles": [
+    "Facility Manager",
+    "Property Manager",
+    "Director of Facilities",
+    "Building Owner",
+    "Operations Manager",
+    "Asset Manager",
+    "Director of Property Management"
+   ],
+   "seniority": [
+    "Director",
+    "Manager",
+    "Staff"
+   ],
+   "company_size": [
+    "11 to 50",
+    "51 to 200",
+    "201 to 500",
+    "501 to 1000"
+   ],
+   "countries": [
+    "United States"
+   ],
+   "states": [
+    "Texas"
+   ],
+   "cities": [
+    "Dallas",
+    "Fort Worth",
+    "Plano",
+    "Frisco",
+    "Irving",
+    "Richardson",
+    "Garland",
+    "Mesquite",
+    "Carrollton",
+    "Farmers Branch"
+   ]
+  },
+  "total": 60,
+  "credits": 5,
+  "pull_cached": false,
+  "pull_file": "9583ade175406f8ae46e2a5fc2dc3c4098e5bad5f3c0fbf74a449953b0c39e91-5.json"
+ },
+ {
+  "vertical": "local",
+  "note": "hvac",
+  "domain": "texasairmechanical.com",
+  "ok": true,
+  "leads": [
+   {
+    "title": "Store Manager",
+    "company": "Avara",
+    "industry": "Retail",
+    "size": "51 to 200",
+    "location": "Fort Worth, Texas",
+    "score": 2,
+    "reason": "A store manager at a small DFW retailer may arrange HVAC service for the location.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "Store Manager at a 51-200 person Fort Worth retailer, handles store HVAC and plumbing.",
+    "shown": true
+   },
+   {
+    "title": "Assistant Store Manager",
+    "company": "James Avery Artisan Jewelry",
+    "industry": "Retail",
+    "size": "1001 to 5000",
+    "location": "Dallas, Texas",
+    "score": 1,
+    "reason": "An assistant store manager at a large chain has little say, since facilities are typically handled centrally.",
+    "mv": "invalid",
+    "fit_cheap": 1,
+    "why": "Assistant manager at a large Dallas retailer, limited say over service vendors.",
+    "shown": false
+   },
+   {
+    "title": "Store Manager",
+    "company": "James Avery Artisan Jewelry",
+    "industry": "Retail",
+    "size": "1001 to 5000",
+    "location": "Fort Worth, Texas",
+    "score": 1,
+    "reason": "A store manager at a large chain can report HVAC issues, but vendor selection is likely corporate.",
+    "mv": "invalid",
+    "fit_cheap": 2,
+    "why": "Runs a Fort Worth jewelry store, may request repairs but chain may set vendors.",
+    "shown": true
+   },
+   {
+    "title": "Divisional Operations Manager - Retail",
+    "company": "Davaco",
+    "industry": "Facilities Services",
+    "size": "1001 to 5000",
+    "location": "Dallas-Fort Worth, Texas",
+    "score": 1,
+    "reason": "Davaco is a retail facilities services firm that may subcontract HVAC, but it is also partly a competitor.",
+    "mv": "ok",
+    "fit_cheap": 2,
+    "why": "Oversees retail operations for a large DFW facilities firm, could influence service vendors.",
+    "shown": true
+   },
+   {
+    "title": "Operations Manager",
+    "company": "Northstar Recovery Services",
+    "industry": "Facilities Services",
+    "size": "1001 to 5000",
+    "location": "Garland, Texas",
+    "score": 1,
+    "reason": "Northstar is a restoration and recovery firm, which makes it a possible subcontracting partner but a weak fit.",
+    "mv": "ok",
+    "fit_cheap": 2,
+    "why": "Operations Manager at a Garland facilities services company, plausible buyer for site upkeep.",
+    "shown": true
+   }
+  ],
+  "source": "direct",
+  "first_finding_ms": 2080,
+  "icp_ms": 3936,
+  "fetch_ms": 2777,
+  "count_ms": 4082,
+  "claude_usd": 0.007547,
+  "judge_usd": 0.012448,
+  "icp": {
+   "summary": "You sell commercial HVAC and plumbing service and maintenance to businesses and property operators across the Dallas Fort Worth area.",
+   "industries": [
+    "Commercial Real Estate",
+    "Retail",
+    "Restaurants",
+    "Facilities Services"
+   ],
+   "job_titles": [
+    "Facilities Manager",
+    "Property Manager",
+    "Operations Manager",
+    "Director of Facilities",
+    "Store Manager",
+    "Building Engineer"
+   ],
+   "seniority": [
+    "Manager",
+    "Director",
+    "Staff"
+   ],
+   "company_size": [
+    "11 to 50",
+    "51 to 200",
+    "201 to 500",
+    "501 to 1000",
+    "1001 to 5000"
+   ],
+   "countries": [
+    "United States"
+   ],
+   "states": [
+    "Texas"
+   ],
+   "cities": [
+    "Dallas",
+    "Fort Worth",
+    "Plano",
+    "Irving",
+    "Arlington",
+    "Frisco",
+    "Garland",
+    "Grand Prairie"
+   ]
+  },
+  "total": 88,
+  "credits": 5,
+  "pull_cached": false,
+  "pull_file": "c81a82a404e70b781b7ac9f4d71ba470358bb88bcc4aff18d952e9820f2ee08d-5.json"
+ },
+ {
+  "vertical": "local",
+  "note": "law",
+  "domain": "foxswibel.com",
+  "ok": true,
+  "leads": [
+   {
+    "title": "General Counsel & Manager of Operations",
+    "company": "D'escoto, Inc",
+    "industry": "Construction",
+    "size": "201 to 500",
+    "location": "Chicago, Illinois",
+    "score": 3,
+    "reason": "General counsel at a mid-size Chicago construction firm directly hires outside counsel, and construction law is a core practice.",
+    "mv": "catch_all",
+    "fit_cheap": 3,
+    "why": "General Counsel at a 201-500 person Chicago construction firm, so owns legal spend.",
+    "shown": true
+   },
+   {
+    "title": "Co-founder and CEO",
+    "company": "Mezo",
+    "industry": "Real Estate",
+    "size": "11 to 50",
+    "location": "Chicago, Illinois",
+    "score": 2,
+    "reason": "CEO of a small Chicago real estate company would decide on outside business counsel for its real estate and corporate matters.",
+    "mv": "catch_all",
+    "fit_cheap": 3,
+    "why": "Co-founder and CEO of a small Chicago real estate company, likely to need deal counsel.",
+    "shown": true
+   },
+   {
+    "title": "Founder & CEO",
+    "company": "Shapack",
+    "industry": "Real Estate",
+    "size": "11 to 50",
+    "location": "Chicago, Illinois",
+    "score": 2,
+    "reason": "Founder/CEO of a small Chicago real estate firm is a plausible decision-maker for real estate and corporate legal work.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "Founder and CEO of a Chicago real estate firm with 11-50 staff, decides on legal counsel.",
+    "shown": true
+   },
+   {
+    "title": "Vice President and Associate General Counsel",
+    "company": "Harlem Irving Companies",
+    "industry": "Real Estate",
+    "size": "11 to 50",
+    "location": "Chicago, Illinois",
+    "score": 3,
+    "reason": "In-house counsel at a Chicago real estate developer typically selects and manages outside law firms.",
+    "mv": "catch_all",
+    "fit_cheap": 3,
+    "why": "Associate General Counsel at a Chicago real estate group, directs outside counsel.",
+    "shown": true
+   },
+   {
+    "title": "CEO",
+    "company": "Dds Investments Llc",
+    "industry": "Real Estate",
+    "size": "11 to 50",
+    "location": "Chicago, Illinois",
+    "score": 2,
+    "reason": "CEO of a small Chicago real estate investment firm would likely hire outside counsel for transactions.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "CEO of a small Chicago real estate investment firm, likely needs transaction and finance counsel.",
+    "shown": false
+   }
+  ],
+  "source": "crawler",
+  "first_finding_ms": 1464,
+  "icp_ms": 3117,
+  "fetch_ms": 479,
+  "count_ms": 20002,
+  "claude_usd": 0.007539,
+  "judge_usd": 0.013344,
+  "icp": {
+   "summary": "You sell business law services to Chicago-area companies, from entrepreneurs to large institutions, needing transactional, litigation and finance counsel.",
+   "industries": [
+    "Real Estate",
+    "Construction",
+    "Banking",
+    "Financial Services"
+   ],
+   "job_titles": [
+    "General Counsel",
+    "Chief Financial Officer",
+    "Chief Executive Officer",
+    "Founder",
+    "Owner",
+    "VP Finance",
+    "Head of Human Resources"
+   ],
+   "seniority": [
+    "C-Team",
+    "VP",
+    "Director"
+   ],
+   "company_size": [
+    "11 to 50",
+    "51 to 200",
+    "201 to 500",
+    "501 to 1000",
+    "1001 to 5000"
+   ],
+   "countries": [
+    "United States"
+   ],
+   "states": [
+    "Illinois"
+   ],
+   "cities": [
+    "Chicago",
+    "Evanston",
+    "Oak Brook",
+    "Schaumburg",
+    "Naperville",
+    "Skokie",
+    "Rosemont",
+    "Oak Park"
+   ]
+  },
+  "total": null,
+  "credits": 5,
+  "pull_cached": false,
+  "pull_file": "9e8effffc42e1e0610ab6b21b62b746a3491d225b853d29314feabb69f72c128-5.json"
+ },
+ {
+  "vertical": "local",
+  "note": "law",
+  "domain": "stilpbusinesslaw.com",
+  "ok": true,
+  "leads": [
+   {
+    "title": "General Counsel",
+    "company": "Matrix Executions",
+    "industry": "Financial Services",
+    "size": "51 to 200",
+    "location": "Chicago, Illinois",
+    "score": 3,
+    "reason": "A General Counsel at a mid-size Chicago firm directly hires outside business counsel.",
+    "mv": "catch_all",
+    "fit_cheap": 2,
+    "why": "General Counsel at a 51-200 person Chicago finance firm, may hire outside counsel.",
+    "shown": true
+   },
+   {
+    "title": "Chief Executive Officer",
+    "company": "Robosig",
+    "industry": "Financial Services",
+    "size": "1 to 10",
+    "location": "Chicago, Illinois",
+    "score": 3,
+    "reason": "The CEO of a small Chicago business would personally decide on hiring business legal counsel.",
+    "mv": "catch_all",
+    "fit_cheap": 3,
+    "why": "CEO of a 1-10 person Chicago financial firm, owner-level buyer of business legal help.",
+    "shown": true
+   },
+   {
+    "title": "Senior Vice President at Xfa Division of Marex",
+    "company": "X-Change Financial Access, Llc. Xfa",
+    "industry": "Financial Services",
+    "size": "51 to 200",
+    "location": "Chicago, Illinois",
+    "score": 1,
+    "reason": "An SVP at a division of large Marex likely relies on corporate legal and has limited say over outside counsel.",
+    "mv": "catch_all",
+    "fit_cheap": 1,
+    "why": "Senior VP at a Chicago unit of a larger group, likely uses in-house or group counsel.",
+    "shown": false
+   },
+   {
+    "title": "Co-founder and CEO",
+    "company": "Mezo",
+    "industry": "Real Estate",
+    "size": "11 to 50",
+    "location": "Chicago, Illinois",
+    "score": 3,
+    "reason": "The co-founder and CEO of a small Chicago real estate company fits the firm's startup and real estate practice areas.",
+    "mv": "catch_all",
+    "fit_cheap": 3,
+    "why": "Co-founder and CEO of an 11-50 person Chicago real estate company, decides on legal work.",
+    "shown": true
+   },
+   {
+    "title": "Founder & CEO",
+    "company": "Shapack",
+    "industry": "Real Estate",
+    "size": "11 to 50",
+    "location": "Chicago, Illinois",
+    "score": 3,
+    "reason": "The founder and CEO of a small Chicago real estate firm is the decision-maker for business and real estate legal services.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "Founder and CEO of an 11-50 person Chicago real estate company, decides on legal work.",
+    "shown": true
+   }
+  ],
+  "source": "direct",
+  "first_finding_ms": 1556,
+  "icp_ms": 3106,
+  "fetch_ms": 903,
+  "count_ms": 4674,
+  "claude_usd": 0.011993,
+  "judge_usd": 0.014616,
+  "icp": {
+   "summary": "You sell business legal services to small and mid-size Chicago-area businesses, startups, real estate firms and manufacturers.",
+   "industries": [
+    "Real Estate",
+    "Manufacturing",
+    "Financial Services",
+    "Software Development"
+   ],
+   "job_titles": [
+    "Owner",
+    "Founder",
+    "CEO",
+    "President",
+    "General Counsel",
+    "CFO",
+    "Managing Partner"
+   ],
+   "seniority": [
+    "C-Team",
+    "VP",
+    "Director"
+   ],
+   "company_size": [
+    "1 to 10",
+    "11 to 50",
+    "51 to 200",
+    "201 to 500"
+   ],
+   "countries": [
+    "United States"
+   ],
+   "states": [
+    "Illinois"
+   ],
+   "cities": [
+    "Chicago",
+    "Naperville",
+    "Schaumburg",
+    "Evanston",
+    "Oak Brook",
+    "Skokie",
+    "Aurora",
+    "Rosemont"
+   ]
+  },
+  "total": 2149,
+  "credits": 5,
+  "pull_cached": false,
+  "pull_file": "000a9126804018f183c2d918ae098c21a5b4c1c19e1a447f4fe9f6951c5bd4a4-5.json"
+ },
+ {
+  "vertical": "ecommerce",
+  "domain": "uline.com",
+  "ok": true,
+  "leads": [
+   {
+    "title": "Buyer",
+    "company": "Northeast",
+    "industry": "Manufacturing",
+    "size": "51 to 200",
+    "location": "New Canaan, Connecticut",
+    "score": 3,
+    "reason": "Buyer at a mid-size manufacturer directly purchases packaging, shipping and warehouse supplies.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "Buyer at a 51-200 person Connecticut manufacturer, likely orders packaging and supplies.",
+    "shown": true
+   },
+   {
+    "title": "Operations Manager",
+    "company": "Yale Appliance",
+    "industry": "Retail",
+    "size": "51 to 200",
+    "location": "Stoughton, Massachusetts",
+    "score": 3,
+    "reason": "Operations manager at an appliance retailer with warehouse/delivery ops buys shipping, material handling and store supplies.",
+    "mv": "catch_all",
+    "fit_cheap": 3,
+    "why": "Runs operations at a 51-200 person Massachusetts appliance retailer that ships and stores bulky goods.",
+    "shown": true
+   },
+   {
+    "title": "Mexico Operations Manager",
+    "company": "Fisher Brothers Trucking & Logistics",
+    "industry": "Transportation; Logistics; Supply Chain and Storage",
+    "size": "51 to 200",
+    "location": "Eagle Pass, Texas",
+    "score": 2,
+    "reason": "Operations manager at a logistics/storage firm could buy warehouse and material handling supplies, though the Mexico focus limits scope.",
+    "mv": "ok",
+    "fit_cheap": 2,
+    "why": "Manages operations for a 51-200 person Texas trucking firm, may buy pallets and wrap.",
+    "shown": true
+   },
+   {
+    "title": "Branch Operations Manager",
+    "company": "Senox Corporation",
+    "industry": "Manufacturing",
+    "size": "201 to 500",
+    "location": "Hoschton, Georgia",
+    "score": 3,
+    "reason": "Branch operations manager at a manufacturer/distributor runs warehouse operations needing packaging and material handling supplies.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "Runs a branch of a 201-500 person Georgia manufacturer, so influences shipping supply buys.",
+    "shown": true
+   },
+   {
+    "title": "Timepiece and Accessories Buyer",
+    "company": "Albert's Diamond Jewelers",
+    "industry": "Retail",
+    "size": "51 to 200",
+    "location": "Chicago, Illinois",
+    "score": 1,
+    "reason": "Merchandise buyer for watches purchases inventory, not packaging or operational supplies.",
+    "mv": "ok",
+    "fit_cheap": 1,
+    "why": "Buys watches for a Chicago jeweler, which is merchandise rather than packaging supplies.",
+    "shown": false
+   }
+  ],
+  "source": "direct",
+  "first_finding_ms": 1369,
+  "icp_ms": 3289,
+  "fetch_ms": 805,
+  "count_ms": 13153,
+  "claude_usd": 0.009393,
+  "judge_usd": 0.016804,
+  "icp": {
+   "summary": "You sell shipping, packaging and warehouse supplies to manufacturers, distributors, retailers and e-commerce businesses that buy in bulk across North America.",
+   "industries": [
+    "Manufacturing",
+    "Wholesale",
+    "Transportation; Logistics; Supply Chain and Storage",
+    "Retail"
+   ],
+   "job_titles": [
+    "Purchasing Manager",
+    "Procurement Manager",
+    "Warehouse Manager",
+    "Operations Manager",
+    "Logistics Manager",
+    "Facilities Manager",
+    "Supply Chain Manager",
+    "Buyer"
+   ],
+   "seniority": [
+    "Manager",
+    "Director",
+    "Staff"
+   ],
+   "company_size": [
+    "51 to 200",
+    "201 to 500",
+    "501 to 1000",
+    "1001 to 5000"
+   ],
+   "countries": [
+    "United States",
+    "Canada",
+    "Mexico"
+   ],
+   "states": [],
+   "cities": []
+  },
+  "total": 18154,
+  "credits": 5,
+  "pull_cached": false,
+  "pull_file": "b32c7c3c7ff6022cc4545a57d906053de981c34634e0ebeac4d256a59e39b27c-5.json"
+ },
+ {
+  "vertical": "ecommerce",
+  "domain": "webstaurantstore.com",
+  "ok": true,
+  "leads": [
+   {
+    "title": "Co-owner",
+    "company": "Crew Ogt",
+    "industry": "Restaurants",
+    "size": "11 to 50",
+    "location": "San Diego County, California",
+    "score": 3,
+    "reason": "Co-owner of a restaurant directly buys foodservice equipment and supplies.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "Co-owner of a San Diego County restaurant, so decides on kitchen equipment and supplies.",
+    "shown": true
+   },
+   {
+    "title": "Owner Operator",
+    "company": "Nothing Bundt Cakes",
+    "industry": "Food and Beverage Services",
+    "size": "201 to 500",
+    "location": "Summerville, South Carolina",
+    "score": 3,
+    "reason": "Franchise owner-operator of a bakery buys smallwares, disposables and supplies.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "Owner operator of a Summerville bakery shop, buys baking supplies and equipment.",
+    "shown": true
+   },
+   {
+    "title": "Owner Founder",
+    "company": "Saucehouse Bbq",
+    "industry": "Restaurants",
+    "size": "51 to 200",
+    "location": "Athens, Georgia",
+    "score": 3,
+    "reason": "Founder-owner of a BBQ restaurant is the direct buyer of restaurant supplies.",
+    "mv": "catch_all",
+    "fit_cheap": 3,
+    "why": "Founder-owner of a 51-200 person Athens BBQ restaurant, controls equipment purchasing.",
+    "shown": true
+   },
+   {
+    "title": "Business Owner",
+    "company": "Nothing Bundt Cakes",
+    "industry": "Food and Beverage Services",
+    "size": "201 to 500",
+    "location": "Wheaton, Illinois",
+    "score": 3,
+    "reason": "Franchise bakery owner purchases commercial supplies and packaging.",
+    "mv": "invalid",
+    "fit_cheap": 3,
+    "why": "Owns a Wheaton bakery franchise location, so buys smallwares and bakery supplies.",
+    "shown": true
+   },
+   {
+    "title": "Assistant Retail Operations Manager",
+    "company": "So Good So You",
+    "industry": "Food and Beverage Services",
+    "size": "51 to 200",
+    "location": "St Paul, Minnesota",
+    "score": 1,
+    "reason": "So Good So You is a packaged beverage maker, and an assistant retail ops manager has limited purchasing authority.",
+    "mv": "catch_all",
+    "fit_cheap": 2,
+    "why": "Retail operations manager at a St Paul food business, likely influences supply buying.",
+    "shown": false
+   }
+  ],
+  "source": "direct",
+  "first_finding_ms": 2186,
+  "icp_ms": 4423,
+  "fetch_ms": 250,
+  "count_ms": 4086,
+  "claude_usd": 0.014103,
+  "judge_usd": 0.01738,
+  "icp": {
+   "summary": "You sell bulk restaurant equipment and supplies online to restaurants, cafes, bars, bakeries and other food service businesses across the United States.",
+   "industries": [
+    "Restaurants",
+    "Food and Beverage Services",
+    "Hospitality",
+    "Caterers"
+   ],
+   "job_titles": [
+    "Owner",
+    "General Manager",
+    "Purchasing Manager",
+    "Executive Chef",
+    "Operations Manager",
+    "Food and Beverage Director",
+    "Kitchen Manager"
+   ],
+   "seniority": [
+    "C-Team",
+    "Director",
+    "Manager"
+   ],
+   "company_size": [
+    "1 to 10",
+    "11 to 50",
+    "51 to 200",
+    "201 to 500"
+   ],
+   "countries": [
+    "United States"
+   ],
+   "states": [],
+   "cities": []
+  },
+  "total": 11617,
+  "credits": 5,
+  "pull_cached": false,
+  "pull_file": "087a55ec06f08fc27c75cd9e96cc79c94ac3ea463ea4dfd71605fb82a1e88ba9-5.json"
+ },
+ {
+  "vertical": "ecommerce",
+  "domain": "brooklinen.com",
+  "ok": true,
+  "leads": [
+   {
+    "title": "General Manager",
+    "company": "The Jay, Autograph Collection",
+    "industry": "Hotels and Motels",
+    "size": "51 to 200",
+    "location": "San Francisco, California",
+    "score": 2,
+    "reason": "Hotel GM influences bedding purchases, though a flagged chain property likely uses brand-standard linen suppliers.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "Runs a 51-200 person San Francisco hotel, so owns room linen purchasing.",
+    "shown": true
+   },
+   {
+    "title": "General Manager",
+    "company": "Inness",
+    "industry": "Hotels and Motels",
+    "size": "11 to 50",
+    "location": "Newburgh, New York",
+    "score": 3,
+    "reason": "GM of a small independent boutique hotel is a likely direct buyer of premium bedding.",
+    "mv": "catch_all",
+    "fit_cheap": 3,
+    "why": "General Manager of a small New York hotel, likely decides on bedding directly.",
+    "shown": true
+   },
+   {
+    "title": "Property Manager",
+    "company": "Heritage Property Management",
+    "industry": "Leasing Residential Real Estate",
+    "size": "11 to 50",
+    "location": "Lansdale, Pennsylvania",
+    "score": 1,
+    "reason": "Residential leasing property managers rarely buy bedding unless furnishing units.",
+    "mv": "ok",
+    "fit_cheap": 2,
+    "why": "Manages residential rentals at a 11-50 person Pennsylvania firm, may buy unit linens.",
+    "shown": true
+   },
+   {
+    "title": "Property Manager",
+    "company": "Wsh Management",
+    "industry": "Leasing Residential Real Estate",
+    "size": "51 to 200",
+    "location": "Los Angeles, California",
+    "score": 1,
+    "reason": "Residential property management typically leases unfurnished units, so bedding need is tangential.",
+    "mv": "ok",
+    "fit_cheap": 2,
+    "why": "Property Manager at a 51-200 person Los Angeles rental firm, could buy bedding for units.",
+    "shown": true
+   },
+   {
+    "title": "Regional Property Manager",
+    "company": "Merge Management",
+    "industry": "Leasing Residential Real Estate",
+    "size": "11 to 50",
+    "location": "Georgetown, Texas",
+    "score": 1,
+    "reason": "Regional residential property manager has little need for bedding purchases.",
+    "mv": "ok",
+    "fit_cheap": 2,
+    "why": "Oversees properties for a small Texas rental manager, plausible bulk bedding buyer.",
+    "shown": false
+   }
+  ],
+  "source": "direct",
+  "first_finding_ms": 1214,
+  "icp_ms": 2811,
+  "fetch_ms": 747,
+  "count_ms": 4706,
+  "claude_usd": 0.012721,
+  "judge_usd": 0.017088,
+  "icp": {
+   "summary": "You sell luxury bedding online to consumers, so the best business buyers are hotels, hospitality groups and property managers buying linens in bulk.",
+   "industries": [
+    "Hotels and Motels",
+    "Hospitality",
+    "Bed-and-Breakfasts; Hostels; Homestays",
+    "Leasing Residential Real Estate"
+   ],
+   "job_titles": [
+    "Purchasing Manager",
+    "Director of Housekeeping",
+    "General Manager",
+    "Procurement Manager",
+    "Property Manager",
+    "Director of Operations"
+   ],
+   "seniority": [
+    "Director",
+    "Manager"
+   ],
+   "company_size": [
+    "11 to 50",
+    "51 to 200",
+    "201 to 500"
+   ],
+   "countries": [
+    "United States"
+   ],
+   "states": [],
+   "cities": []
+  },
+  "total": 208,
+  "credits": 5,
+  "pull_cached": false,
+  "pull_file": "1213e1b108a90e58b05b0decb992fa47c3aa3b8a704c6f8961bedff6564d6095-5.json"
+ },
+ {
+  "vertical": "ecommerce",
+  "domain": "allbirds.com",
+  "ok": true,
+  "leads": [
+   {
+    "title": "Merchandise Manager",
+    "company": "F.A.F. Inc",
+    "industry": "Retail Apparel and Fashion",
+    "size": "51 to 200",
+    "location": "Lincoln, Rhode Island",
+    "score": 2,
+    "reason": "A merchandise manager at an apparel retailer could plausibly buy Allbirds wholesale for resale.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "Merchandise Manager at a 51-200 person Rhode Island apparel retailer, picks products to stock.",
+    "shown": true
+   },
+   {
+    "title": "Human Resources Manager",
+    "company": "Free Country",
+    "industry": "Retail Apparel and Fashion",
+    "size": "51 to 200",
+    "location": "Brooklyn, New York",
+    "score": 1,
+    "reason": "An HR manager at an apparel maker has no buying role for footwear beyond acting as an individual consumer.",
+    "mv": "ok",
+    "fit_cheap": 1,
+    "why": "HR manager at a Brooklyn apparel firm, could buy gifts but sells competing apparel.",
+    "shown": true
+   },
+   {
+    "title": "Senior Human Resources Manager",
+    "company": "Lands' End",
+    "industry": "Retail Apparel and Fashion",
+    "size": "1001 to 5000",
+    "location": "Darlington, Wisconsin",
+    "score": 0,
+    "reason": "Lands' End is a competing apparel and footwear brand, so this HR role has no buying influence.",
+    "mv": "ok",
+    "fit_cheap": 1,
+    "why": "Senior HR manager at Lands' End, a large apparel rival, limited reason to buy shoes.",
+    "shown": true
+   },
+   {
+    "title": "HR Manager",
+    "company": "Cape Robbin Inc",
+    "industry": "Retail Apparel and Fashion",
+    "size": "51 to 200",
+    "location": "Pomona, California",
+    "score": 0,
+    "reason": "Cape Robbin is a competing footwear brand, and an HR manager there is not a buyer.",
+    "mv": "catch_all",
+    "fit_cheap": 1,
+    "why": "HR manager at a 51-200 person California apparel and footwear company, indirect buying role.",
+    "shown": true
+   },
+   {
+    "title": "Human Resources Manager",
+    "company": "Jd Fine & Company",
+    "industry": "Retail Apparel and Fashion",
+    "size": "51 to 200",
+    "location": "Concord, California",
+    "score": 1,
+    "reason": "An HR manager at an apparel company is tangential and would buy only as an individual consumer.",
+    "mv": "ok",
+    "fit_cheap": 1,
+    "why": "HR manager at a 51-200 person California apparel firm, could run staff gifting or perks.",
+    "shown": false
+   }
+  ],
+  "source": "direct",
+  "first_finding_ms": 1646,
+  "icp_ms": 3840,
+  "fetch_ms": 1074,
+  "count_ms": 11834,
+  "claude_usd": 0.016175,
+  "judge_usd": 0.017556,
+  "icp": {
+   "summary": "You sell sustainable shoes and apparel mainly to consumers, so this targets retailers, corporate gifting and wellness buyers with the most direct path to bulk purchase.",
+   "industries": [
+    "Retail Apparel and Fashion",
+    "Retail",
+    "Wholesale Apparel and Sewing Supplies"
+   ],
+   "job_titles": [
+    "Footwear Buyer",
+    "Merchandise Manager",
+    "Head of Buying",
+    "Corporate Gifting Manager",
+    "HR Manager",
+    "Head of Employee Experience"
+   ],
+   "seniority": [
+    "Manager",
+    "Director",
+    "VP"
+   ],
+   "company_size": [
+    "51 to 200",
+    "201 to 500",
+    "501 to 1000",
+    "1001 to 5000"
+   ],
+   "countries": [
+    "United States"
+   ],
+   "states": [],
+   "cities": []
+  },
+  "total": 230,
+  "credits": 5,
+  "pull_cached": false,
+  "pull_file": "0d99b98d0126f9b21224b9aca96b17c0819bbdaa068e1bc48539448f066369c9-5.json"
+ },
+ {
+  "vertical": "consultant",
+  "domain": "salesxceleration.com",
+  "ok": true,
+  "leads": [
+   {
+    "title": "Vice President, Product",
+    "company": "Clear Capital",
+    "industry": "Financial Services",
+    "size": "201 to 500",
+    "location": "Truckee, California",
+    "score": 1,
+    "reason": "Product VP at a mid-size firm has little say over outsourced sales leadership.",
+    "mv": "catch_all",
+    "fit_cheap": 1,
+    "why": "Product VP at a 201-500 person US finance firm; not a sales leadership buyer.",
+    "shown": true
+   },
+   {
+    "title": "Vice President of Operations",
+    "company": "Southern Glazer's Wine And Spirits Of Texas, Llc",
+    "industry": "Software Development",
+    "size": "11 to 50",
+    "location": "Prosper, Texas",
+    "score": 1,
+    "reason": "Operations VP at what is really a large distributor's regional unit is unlikely to buy fractional sales leadership.",
+    "mv": "catch_all",
+    "fit_cheap": 1,
+    "why": "Operations VP at a small Texas firm; tangential role, and the listed industry looks inconsistent.",
+    "shown": true
+   },
+   {
+    "title": "Vice President and Trust Officer",
+    "company": "Midwest Trust Company",
+    "industry": "Financial Services",
+    "size": "51 to 200",
+    "location": "Westerville, Ohio",
+    "score": 0,
+    "reason": "A trust officer role has no buying influence over sales consulting.",
+    "mv": "unknown",
+    "fit_cheap": 1,
+    "why": "Trust officer at a 51-200 person Ohio financial firm; not an owner or sales decision maker.",
+    "shown": false
+   },
+   {
+    "title": "Founder and Chief Research Officer (CRO)",
+    "company": "Data",
+    "industry": "Software Development",
+    "size": "11 to 50",
+    "location": "",
+    "score": 2,
+    "reason": "The founder of a small software company is a plausible decision-maker for fractional sales help.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "Founder of an 11-50 person Canadian software company, so decides on sales leadership.",
+    "shown": true
+   },
+   {
+    "title": "Vice President",
+    "company": "Brazos Technology",
+    "industry": "Software Development",
+    "size": "11 to 50",
+    "location": "Buda, Texas",
+    "score": 2,
+    "reason": "A VP at a small software firm could plausibly decide on outsourced sales leadership.",
+    "mv": "catch_all",
+    "fit_cheap": 2,
+    "why": "Vice President at an 11-50 person Texas software firm; likely senior enough to influence.",
+    "shown": true
+   }
+  ],
+  "source": "direct",
+  "first_finding_ms": 1373,
+  "icp_ms": 2977,
+  "fetch_ms": 2834,
+  "count_ms": 8558,
+  "claude_usd": 0.011557,
+  "judge_usd": 0.014252,
+  "icp": {
+   "summary": "You sell fractional sales leadership to small and mid-sized tech, manufacturing, professional services and financial firms, plus private equity portfolio companies.",
+   "industries": [
+    "Software Development",
+    "Manufacturing",
+    "Professional Services",
+    "Financial Services"
+   ],
+   "job_titles": [
+    "CEO",
+    "Founder",
+    "Owner",
+    "President",
+    "Operating Partner",
+    "Managing Partner",
+    "Chief Revenue Officer"
+   ],
+   "seniority": [
+    "C-Team",
+    "VP",
+    "Director"
+   ],
+   "company_size": [
+    "11 to 50",
+    "51 to 200",
+    "201 to 500"
+   ],
+   "countries": [
+    "United States",
+    "Canada",
+    "United Kingdom",
+    "Australia"
+   ],
+   "states": [],
+   "cities": []
+  },
+  "total": 74123,
+  "credits": 5,
+  "pull_cached": true,
+  "pull_file": "94b7463db4b10b9ed137fda166a4178c9f5e642c6c2bdc4207167f42fd0c302c-5.json"
+ },
+ {
+  "vertical": "consultant",
+  "domain": "cfoselections.com",
+  "ok": true,
+  "leads": [
+   {
+    "title": "COO",
+    "company": "Tecplot, Inc",
+    "industry": "Software Development",
+    "size": "11 to 50",
+    "location": "Bellevue, Washington",
+    "score": 3,
+    "reason": "COO of a small Washington software firm, an in-market SMB likely to own fractional finance decisions.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "COO at a 11-50 person Bellevue software firm, likely oversees finance hiring.",
+    "shown": true
+   },
+   {
+    "title": "CEO and Superintendent",
+    "company": "Essence Preparatory Public School",
+    "industry": "Primary and Secondary Education",
+    "size": "11 to 50",
+    "location": "San Antonio, Texas",
+    "score": 2,
+    "reason": "CEO of a small Texas charter school could buy nonprofit CFO/controller services, though public funding and district structures may limit the need.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "CEO of a small San Antonio public school, decides on finance leadership and outside support.",
+    "shown": true
+   },
+   {
+    "title": "Chief Executive Officer",
+    "company": "Texas Association Against Sexual Assault Taasa",
+    "industry": "Non-profit Organization Management",
+    "size": "11 to 50",
+    "location": "Austin, Texas",
+    "score": 3,
+    "reason": "CEO of a small Texas nonprofit fits the seller's dedicated nonprofit CFO/controller service.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "CEO of a small Austin nonprofit, owns budgets and finance staffing decisions.",
+    "shown": true
+   },
+   {
+    "title": "CEO",
+    "company": "Leonardo247",
+    "industry": "Software Development",
+    "size": "11 to 50",
+    "location": "Denver, Colorado",
+    "score": 3,
+    "reason": "CEO of a small Denver software company, the classic fractional CFO buyer in a served market.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "CEO of a 11-50 person Denver software company, likely needs part-time finance leadership.",
+    "shown": true
+   },
+   {
+    "title": "Chief Executive Officer",
+    "company": "Catamount Constructors",
+    "industry": "Construction",
+    "size": "201 to 500",
+    "location": "",
+    "score": 2,
+    "reason": "CEO of a mid-size Colorado construction firm could hire a CFO through executive search, though its size suggests existing finance staff.",
+    "mv": "ok",
+    "fit_cheap": 2,
+    "why": "CEO of a 201-500 person construction firm, location not listed beyond the US.",
+    "shown": false
+   }
+  ],
+  "source": "direct",
+  "first_finding_ms": 1652,
+  "icp_ms": 3067,
+  "fetch_ms": 1174,
+  "count_ms": 13905,
+  "claude_usd": 0.013757,
+  "judge_usd": 0.01528,
+  "icp": {
+   "summary": "You sell fractional CFO, controller and finance executive search services to small and mid-sized businesses and nonprofits in Washington, Oregon, Colorado and Texas.",
+   "industries": [
+    "Non-profit Organizations",
+    "Construction",
+    "Software Development",
+    "Primary and Secondary Education"
+   ],
+   "job_titles": [
+    "CEO",
+    "Founder",
+    "President",
+    "Executive Director",
+    "Owner",
+    "Board Chair",
+    "COO"
+   ],
+   "seniority": [
+    "C-Team"
+   ],
+   "company_size": [
+    "11 to 50",
+    "51 to 200",
+    "201 to 500"
+   ],
+   "countries": [
+    "United States"
+   ],
+   "states": [
+    "Washington",
+    "Oregon",
+    "Colorado",
+    "Texas"
+   ],
+   "cities": []
+  },
+  "total": 7646,
+  "credits": 5,
+  "pull_cached": false,
+  "pull_file": "6f71f8b584d1fb63b3566ed7286c218788f221696000ae5813c1b15c950345fb-5.json"
+ },
+ {
+  "vertical": "consultant",
+  "domain": "rainsalestraining.com",
+  "ok": true,
+  "leads": [
+   {
+    "title": "Vice President of Sales",
+    "company": "Nielsen",
+    "industry": "Software Development",
+    "size": "10001+",
+    "location": "Washington, District of Columbia",
+    "score": 3,
+    "reason": "VP of Sales at a large enterprise B2B data/software firm is a core buyer of sales training.",
+    "mv": "catch_all",
+    "fit_cheap": 3,
+    "why": "VP Sales at a 10,000+ person US software firm, owns sales team development.",
+    "shown": true
+   },
+   {
+    "title": "Vice President of Sales",
+    "company": "Realpage, Inc",
+    "industry": "Software Development",
+    "size": "5001 to 10000",
+    "location": "Little Elm, Texas",
+    "score": 3,
+    "reason": "VP of Sales at a large B2B software company fits RAIN's target industry and buyer role.",
+    "mv": "invalid",
+    "fit_cheap": 3,
+    "why": "VP Sales at a 5,000+ person Texas software company, can buy sales training.",
+    "shown": true
+   },
+   {
+    "title": "Assistant Vice President of Sales",
+    "company": "United Wholesale Mortgage",
+    "industry": "Financial Services",
+    "size": "5001 to 10000",
+    "location": "",
+    "score": 2,
+    "reason": "AVP of Sales at a large financial services firm could influence sales training purchases, though the role is less senior.",
+    "mv": "unknown",
+    "fit_cheap": 2,
+    "why": "Assistant VP Sales at a large US mortgage lender, likely influences training spend.",
+    "shown": false
+   },
+   {
+    "title": "Vice President of Sales, Ontario",
+    "company": "Foresters Financial",
+    "industry": "Financial Services",
+    "size": "1001 to 5000",
+    "location": "",
+    "score": 3,
+    "reason": "Regional VP of Sales at an insurance/financial firm leads a sales team in an industry RAIN serves.",
+    "mv": "catch_all",
+    "fit_cheap": 3,
+    "why": "VP Sales for Ontario at a Canadian financial firm of 1,000+, leads a large sales team.",
+    "shown": true
+   },
+   {
+    "title": "Vice President of Sales",
+    "company": "Tradewind",
+    "industry": "Financial Services",
+    "size": "201 to 500",
+    "location": "Miami, Florida",
+    "score": 2,
+    "reason": "VP of Sales at a mid-size B2B financial services firm is a plausible buyer, though the company is smaller.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "VP Sales at a 200-500 person Miami financial firm, decides on sales coaching.",
+    "shown": true
+   }
+  ],
+  "source": "direct",
+  "first_finding_ms": 1471,
+  "icp_ms": 2787,
+  "fetch_ms": 643,
+  "count_ms": 20002,
+  "claude_usd": 0.012199,
+  "judge_usd": 0.015528,
+  "icp": {
+   "summary": "You sell sales training, coaching and leadership development to B2B sales organizations in professional services, finance, technology, life sciences and industrial firms.",
+   "industries": [
+    "Business Consulting and Services",
+    "Financial Services",
+    "Software Development",
+    "Pharmaceutical Manufacturing"
+   ],
+   "job_titles": [
+    "Chief Sales Officer",
+    "VP Sales",
+    "VP Sales Enablement",
+    "Head of Sales Enablement",
+    "Director of Sales Training",
+    "Chief Learning Officer",
+    "Head of Learning and Development"
+   ],
+   "seniority": [
+    "C-Team",
+    "VP",
+    "Director"
+   ],
+   "company_size": [
+    "201 to 500",
+    "501 to 1000",
+    "1001 to 5000",
+    "5001 to 10000",
+    "10001+"
+   ],
+   "countries": [
+    "United States",
+    "United Kingdom",
+    "Canada"
+   ],
+   "states": [],
+   "cities": []
+  },
+  "total": null,
+  "credits": 5,
+  "pull_cached": false,
+  "pull_file": "7661cbebe61a57b7bb48da615862bc8764ef8613875a76781e5103097ba26e4e-5.json"
+ },
+ {
+  "vertical": "staffing",
+  "domain": "roberthalf.com",
+  "ok": true,
+  "leads": [
+   {
+    "title": "Controller",
+    "company": "Mark Iv Capital",
+    "industry": "Real Estate",
+    "size": "51 to 200",
+    "location": "Nashville, Tennessee",
+    "score": 3,
+    "reason": "Controller at a mid-size firm is a core hiring manager for Robert Half's finance and accounting contract and full-time staffing.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "Controller at a 51-200 person Nashville real estate firm, so owns accounting hiring.",
+    "shown": true
+   },
+   {
+    "title": "Chief Financial Officer",
+    "company": "Resilience",
+    "industry": "Pharmaceutical Manufacturing",
+    "size": "1001 to 5000",
+    "location": "Boston, Massachusetts",
+    "score": 3,
+    "reason": "CFO at a large company decides on finance talent and executive search spend, a core Robert Half buyer.",
+    "mv": "ok",
+    "fit_cheap": 3,
+    "why": "CFO at a 1,000+ person Boston pharma maker, so decides on finance and accounting hires.",
+    "shown": true
+   },
+   {
+    "title": "Controller & Sr Accounting Manager",
+    "company": "Avn Corp",
+    "industry": "Research Services",
+    "size": "51 to 200",
+    "location": "",
+    "score": 3,
+    "reason": "Controller and accounting manager at a mid-size firm directly hires the accounting staff Robert Half places.",
+    "mv": "catch_all",
+    "fit_cheap": 3,
+    "why": "Controller and accounting lead at a 51-200 person US research firm, hires finance staff.",
+    "shown": true
+   },
+   {
+    "title": "General Counsel, Netflix Animation Studios",
+    "company": "Netflix",
+    "industry": "Entertainment Providers",
+    "size": "10001+",
+    "location": "Burbank, California",
+    "score": 2,
+    "reason": "A divisional general counsel could hire contract attorneys and paralegals, but Netflix likely has its own in-house legal recruiting.",
+    "mv": "catch_all",
+    "fit_cheap": 2,
+    "why": "Legal head for Netflix Animation in Burbank, could bring in contract legal talent.",
+    "shown": true
+   },
+   {
+    "title": "General Counsel",
+    "company": "Mnp",
+    "industry": "Accounting",
+    "size": "5001 to 10000",
+    "location": "Calgary, Alberta",
+    "score": 2,
+    "reason": "General counsel at a large accounting firm could buy legal staffing, though MNP is partly a competitor for accounting talent.",
+    "mv": "ok",
+    "fit_cheap": 1,
+    "why": "General Counsel at a large Calgary accounting firm, which staffs its own finance talent.",
+    "shown": false
+   }
+  ],
+  "source": "direct",
+  "first_finding_ms": 1725,
+  "icp_ms": 3460,
+  "fetch_ms": 371,
+  "count_ms": 18714,
+  "claude_usd": 0.009051,
+  "judge_usd": 0.014856,
+  "icp": {
+   "summary": "You sell specialized contract and permanent staffing to employers hiring finance, technology, legal, marketing and admin talent across the United States and other major markets.",
+   "industries": [],
+   "job_titles": [
+    "Chief Financial Officer",
+    "Head of Human Resources",
+    "VP Human Resources",
+    "Talent Acquisition Manager",
+    "Chief Information Officer",
+    "Controller",
+    "General Counsel",
+    "Director of Finance"
+   ],
+   "seniority": [
+    "C-Team",
+    "VP",
+    "Director",
+    "Manager"
+   ],
+   "company_size": [
+    "51 to 200",
+    "201 to 500",
+    "501 to 1000",
+    "1001 to 5000",
+    "5001 to 10000",
+    "10001+"
+   ],
+   "countries": [
+    "United States",
+    "Canada",
+    "United Kingdom"
+   ],
+   "states": [],
+   "cities": []
+  },
+  "total": 204639,
+  "credits": 5,
+  "pull_cached": false,
+  "pull_file": "7c18d98b4da2137331bdb1cd636afec8ea298d68fcd206b5693ef8fda611f81c-5.json"
+ },
+ {
+  "vertical": "staffing",
+  "domain": "vaco.com",
+  "ok": false,
+  "error": "Error: credit budget 110 would be exceeded",
+  "leads": []
+ },
+ {
+  "vertical": "staffing",
+  "domain": "insightglobal.com",
+  "ok": false,
+  "error": "Error: credit budget 110 would be exceeded",
+  "leads": []
+ }
+]

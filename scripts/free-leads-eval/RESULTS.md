@@ -58,3 +58,16 @@ Sonnet 5.5 low chosen: no good lead wrongly dropped, ~$0.02 per 35-lead delivery
 - Counts are slow with city/title filters: median 14.7s, 8/25 timed out at 20s.
 
 Credits: baseline 240, v2 250 (GetLeads $97 / 10,000 credits = $0.0097 each).
+
+## Later runs (5 leads per site, credit budget)
+| run | what changed | mean fit | fit >= 2 | shown fit | shown >= 2 | scan $ median | ICP after fetch |
+|---|---|---|---|---|---|---|---|
+| v2 (first 5 of 10) | Opus 5.5 low, homepage only | 2.25 | 83% | - | - | $0.053 (uncached) | 5.7s |
+| sonnet | Sonnet 5.5 low, homepage only, schema cached | 2.29 | 80% | 2.41 | 85% | $0.0128 | 3.6s |
+| v3 | + reads up to 3 key pages (pricing, customers, services, about, locations) | 2.24 | 79% | 2.37 | 85% | $0.0127 | 3.5s |
+| v4 (local only, 6 sites) | + purchase-owning titles, excluded Assistant/Intern/Student/Retired/Former | 2.30 | 83% | 2.42 | 92% | $0.0123 | 3.7s |
+
+v3 local dipped (1.83) because generic titles ("Operations Manager", "Store Manager") fuzzy-matched
+"People Operations Manager", "Assistant Store Manager"; v4 fixed it (HVAC 1.6/1.2 -> 2.8/3.0).
+Shipped config = v4. Local, baseline -> v4: mean fit 1.40 -> 2.30, shown fit >= 2 45% -> 92%.
+Credits: sonnet 125 (2 timed-out pulls billed), v3 110, v4 30.

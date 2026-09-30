@@ -15,7 +15,7 @@ import { FREE_LEAD_COUNT, IcpSchema, type FullLead, type Icp } from './contract'
 import { cacheGet } from './cache'
 import { filtersHash } from './icp-to-filters'
 import { OVERPULL_FACTOR, scoreLeads, selectFitLeads } from './lead-fit'
-import { claudeUsd, CREDIT_USD } from './cost'
+import { claudeUsd } from './cost'
 import type { GetLeadsContact } from '@/lib/getleads/client'
 import {
   FREE_LEADS_SOURCE,
@@ -254,6 +254,7 @@ async function ensureWorkspace(admin: Admin, claim: ClaimRow, authUserId: string
  * Before the paid request: failures release the claim back to pending (a refresh retries).
  * After it is sent: any failure is final ('failed'); a timeout may already have been billed.
  */
+/** Event meta convention: `usd` is model spend only; credits are priced separately (CREDIT_USD). */
 export interface DeliveryCost {
   credits: number
   usd: number
@@ -315,7 +316,7 @@ export async function fulfillClaim(claim: ClaimRow, authUserId: string, admin: A
     fulfilled_at: now,
   })
   safeLog('[free-leads/claims] fulfilled', { claim_id: claim.id, workspace_id: workspaceId, leads: rows.length })
-  return { credits: pulled.contacts.length, usd: fitUsd + pulled.contacts.length * CREDIT_USD, reused_preview: reused.length }
+  return { credits: pulled.contacts.length, usd: fitUsd, reused_preview: reused.length }
 }
 
 export async function loadStoredLeads(workspaceId: string, claimId: string, admin: Admin): Promise<FullLead[]> {

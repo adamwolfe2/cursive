@@ -55,6 +55,12 @@ export function narrowIndustries(industries: readonly string[]): string[] {
   return known.filter((parent) => !known.some((tag) => tag !== parent && isChildOf(parent, tag)))
 }
 
+/**
+ * Titles that never buy for a small business seller. Title matching is fuzzy ("Store Manager" also
+ * returned "Assistant Store Manager"), so these are excluded on every search (eval 2026-09-30).
+ */
+export const EXCLUDED_TITLES = ['Assistant', 'Intern', 'Student', 'Retired', 'Former'] as const
+
 export function icpToFilters(icp: Icp): GetLeadsFilters {
   const lists: Record<Exclude<keyof GetLeadsFilters, 'email_status'>, string[]> = {
     industries: narrowIndustries(icp.industries),
@@ -66,7 +72,7 @@ export function icpToFilters(icp: Icp): GetLeadsFilters {
     cities: clean(icp.cities ?? []),
   }
   const nonEmpty = Object.fromEntries(Object.entries(lists).filter(([, v]) => v.length > 0))
-  return { ...nonEmpty, email_status: ['VALID'] }
+  return { ...nonEmpty, exclude_job_titles: [...EXCLUDED_TITLES], email_status: ['VALID'] }
 }
 
 /** Order-insensitive hash of the filters (used as the preview cache key). */

@@ -19,7 +19,7 @@ import { COMPANY_SIZE_BANDS, FACT_LABELS, IcpSchema, SENIORITY_VALUES, type Fact
 // the cost per scan and ~2s faster to the ICP (scripts/free-leads-eval/RESULTS.md, 2026-09-30).
 const MODEL = 'claude-sonnet-5-5'
 /** Bump when the prompt, schema or model changes: cached scans from older versions are ignored. */
-export const SCAN_VERSION = 'v3-sonnet55'
+export const SCAN_VERSION = 'v4-sonnet55'
 const ICP_KEYS = ['summary', 'industries', 'job_titles', 'seniority', 'company_size', 'countries', 'states', 'cities'] as const
 
 export class ScanError extends Error {
@@ -71,7 +71,8 @@ const ICP_RULES = `ICP field rules:
   Use "Dentists", not "Hospitals and Health Care" or "Medical Practices"; SaaS companies are "Software Development", not "IT Services and IT Consulting".
   Add a broad value (e.g. "Financial Services", "Manufacturing") only when the seller really sells across that whole sector.
   Use [] when the buyers are any kind of organization in an area (typical for a local business).
-- job_titles: 3-8 concrete titles of the people who buy or champion this (e.g. "Head of Growth", "VP Marketing").
+- job_titles: 3-8 concrete titles of the people who own this purchase or champion it (e.g. "Head of Growth", "VP Marketing", "Facilities Director").
+  Titles match loosely, so never use a bare generic title ("Operations Manager", "Store Manager", "Manager") that would also match unrelated roles; name the function ("Facilities Operations Manager").
 - seniority: from the enum. company_size: the buyer company size bands most likely to buy.
 - countries: full country names, e.g. "United States". Default to the seller's home market when unclear.
 - states: only when the business is clearly local or regional (full state names, e.g. "Texas"); otherwise [].

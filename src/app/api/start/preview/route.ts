@@ -14,7 +14,7 @@ import { cacheGet, cachePut, HOUR_MS } from '@/lib/free-leads/cache'
 import { scoreLeads, type LeadFit } from '@/lib/free-leads/lead-fit'
 import { searchContacts, type GetLeadsContact } from '@/lib/getleads/client'
 import { recordStep, sessionIdFrom } from '@/lib/free-leads/funnel'
-import { claudeUsd, CREDIT_USD } from '@/lib/free-leads/cost'
+import { claudeUsd } from '@/lib/free-leads/cost'
 import { badRequest, clientIp, isLimited, rateLimited, readJson, serverError } from '@/lib/free-leads/http'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
@@ -68,6 +68,6 @@ export async function POST(req: NextRequest) {
   value.fits = await scoreLeads(icp, 'the seller', value.contacts, { onUsage: ({ usage, model }) => (fitUsd += claudeUsd(model, usage)) })
   await cachePut(key, value, 24 * HOUR_MS)
   const credits = value.contacts.length
-  await recordStep(sessionId, 'preview', { meta: { cached: false, credits, usd: fitUsd + credits * CREDIT_USD } })
+  await recordStep(sessionId, 'preview', { meta: { cached: false, credits, usd: fitUsd } })
   return respond(icp, value)
 }
