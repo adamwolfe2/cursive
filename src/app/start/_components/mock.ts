@@ -116,6 +116,7 @@ function masked(i: number): MaskedLead {
     email_masked: `${first[0].toLowerCase()}•••@${domain}`,
     has_linkedin: i % 4 !== 3,
     has_phone: i % 3 === 0,
+    why: `${title} at a growing software company in ${loc.split(',')[0]}, so owns the security review.`,
   }
 }
 
@@ -133,6 +134,7 @@ function full(i: number): FullLead {
     industry: 'Software Development',
     company_size: '51 to 200',
     location: loc,
+    why: i % 5 === 4 ? null : `${title} at a 51-200 person software company in ${loc.split(',')[0]}, so owns the security review.`,
     email: `${first.toLowerCase()}.${last.toLowerCase()}@${domain}`,
     linkedin_url: i % 4 === 3 ? null : `https://www.linkedin.com/in/${first.toLowerCase()}${last.toLowerCase()}`,
     phone: i % 3 === 0 ? '+1 512 555 0' + String(100 + i) : null,

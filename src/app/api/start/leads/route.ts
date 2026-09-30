@@ -8,7 +8,8 @@
  * parallel tabs) return the stored rows; a concurrent call waits for the winner.
  */
 export const runtime = 'nodejs'
-export const maxDuration = 90
+// Paid pull (up to 60s upstream) + fit check (~5s) + inserts.
+export const maxDuration = 120
 
 import { NextResponse, type NextRequest } from 'next/server'
 import type { LeadsResponse } from '@/lib/free-leads/contract'

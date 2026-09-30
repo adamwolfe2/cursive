@@ -4,7 +4,7 @@ export const runtime = 'nodejs'
 import { NextResponse, type NextRequest } from 'next/server'
 import { IcpRequestSchema, type CountResponse } from '@/lib/free-leads/contract'
 import { icpToFilters } from '@/lib/free-leads/icp-to-filters'
-import { countContacts } from '@/lib/getleads/client'
+import { cachedCount } from '@/lib/free-leads/cache'
 import { badRequest, clientIp, isLimited, rateLimited, readJson, serverError } from '@/lib/free-leads/http'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
   if (await isLimited('free-leads-count', `ip:${clientIp(req)}`)) return rateLimited()
 
   try {
-    const total = await countContacts(icpToFilters(parsed.data.icp))
+    const total = await cachedCount(icpToFilters(parsed.data.icp))
     return NextResponse.json<CountResponse>({ total })
   } catch (err) {
     safeError('[start/count] count failed', err)

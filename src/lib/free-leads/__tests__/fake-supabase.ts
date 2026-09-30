@@ -17,7 +17,8 @@ export function fakeSupabase(tables: Record<string, Row[]>, unique: UniqueCheck 
   let nextId = 1
 
   class Query implements PromiseLike<{ data: unknown; error: unknown; count?: number | null }> {
-    private op: 'select' | 'insert' | 'update' | 'delete' = 'select'
+    private op: 'select' | 'insert' | 'update' | 'delete' | 'upsert' = 'select'
+    private conflictKey = 'id'
     private filters: Filter[] = []
     private payload: Row | Row[] = {}
     private head = false
@@ -37,6 +38,16 @@ export function fakeSupabase(tables: Record<string, Row[]>, unique: UniqueCheck 
     insert(p: Row | Row[]) {
       this.op = 'insert'
       this.payload = p
+      return this
+    }
+    upsert(p: Row, opts?: { onConflict?: string }) {
+      this.op = 'upsert'
+      this.payload = p
+      this.conflictKey = opts?.onConflict ?? 'id'
+      return this
+    }
+    gt(k: string, v: string) {
+      this.filters.push((r) => field(r, k) != null && String(field(r, k)) > v)
       return this
     }
     update(p: Row) {
@@ -107,6 +118,13 @@ export function fakeSupabase(tables: Record<string, Row[]>, unique: UniqueCheck 
         if (!unique(this.table, [...rows, ...list])) return { data: null, error: { code: '23505', message: 'duplicate' } }
         rows.push(...list)
         return this.returning ? this.shape(list) : { data: null, error: null }
+      }
+      if (this.op === 'upsert') {
+        const p = this.payload as Row
+        const existing = rows.find((r) => r[this.conflictKey] === p[this.conflictKey])
+        if (existing) Object.assign(existing, p)
+        else rows.push({ created_at: new Date().toISOString(), ...p })
+        return { data: null, error: null }
       }
       if (this.op === 'update') {
         const next = rows.map((r) => (match.includes(r) ? { ...r, ...(this.payload as Row) } : r))

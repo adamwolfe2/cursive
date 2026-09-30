@@ -8,9 +8,10 @@ export const maxDuration = 60
 import type { NextRequest } from 'next/server'
 import { ScanRequestSchema, type ScanEvent } from '@/lib/free-leads/contract'
 import { fetchSite, normalizeSiteUrl, siteDomain, type SiteContent } from '@/lib/free-leads/site'
-import { scanIcp, ScanError } from '@/lib/free-leads/scan'
+import { scanIcp, ScanError, SCAN_VERSION } from '@/lib/free-leads/scan'
 import { icpToFilters } from '@/lib/free-leads/icp-to-filters'
-import { countContacts } from '@/lib/getleads/client'
+import { cachedCount, cacheGet, cachePut, HOUR_MS } from '@/lib/free-leads/cache'
+import type { Icp } from '@/lib/free-leads/contract'
 import { clientIp, isLimited, readJson } from '@/lib/free-leads/http'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
@@ -35,27 +36,53 @@ async function loadSource(url: string | null, description: string | undefined, s
   return [site.title, site.description, site.text].filter(Boolean).join('\n\n')
 }
 
+/** Events worth replaying for a repeat visit to the same site (everything before the count). */
+type Replayable = Exclude<ScanEvent, { type: 'count' } | { type: 'error' } | { type: 'done' }>
+const SCAN_TTL_MS = 7 * 24 * HOUR_MS
+const scanKey = (url: string) => `scan:${SCAN_VERSION}:${siteDomain(url)}`
+
+async function sendCount(icp: Icp, send: Send): Promise<void> {
+  try {
+    send({ type: 'count', total: await cachedCount(icpToFilters(icp)) })
+  } catch (err) {
+    // Non-fatal: the UI can call /api/start/count again.
+    safeError('[start/scan] count failed', err)
+  }
+}
+
 async function run(url: string | null, description: string | undefined, send: Send): Promise<void> {
-  const source = await loadSource(url, description, send)
+  // A site scanned recently (by anyone) replays instantly: no fetch, no model call.
+  if (url && !description) {
+    const cached = await cacheGet<{ events: Replayable[] }>(scanKey(url))
+    const icp = cached?.events.find((e): e is Extract<Replayable, { type: 'icp' }> => e.type === 'icp')?.icp
+    if (cached && icp) {
+      cached.events.forEach(send)
+      await sendCount(icp, send)
+      send({ type: 'done' })
+      return
+    }
+  }
+  const events: Replayable[] = []
+  const record: Send = (event) => {
+    if (event.type !== 'count' && event.type !== 'error' && event.type !== 'done') events.push(event)
+    send(event)
+  }
+  const source = await loadSource(url, description, record)
   if (!source) return
   let icp
   try {
     icp = await scanIcp(source, {
-      onFinding: (finding) => send({ type: 'finding', finding }),
-      onIcpPartial: (partial) => send({ type: 'icp_partial', icp: partial }),
+      onFinding: (finding) => record({ type: 'finding', finding }),
+      onIcpPartial: (partial) => record({ type: 'icp_partial', icp: partial }),
     })
   } catch (err) {
     safeError('[start/scan] model scan failed', err instanceof ScanError ? `${err.code}: ${err.message}` : err)
     send(FAILED)
     return
   }
-  send({ type: 'icp', icp })
-  try {
-    send({ type: 'count', total: await countContacts(icpToFilters(icp)) })
-  } catch (err) {
-    // Non-fatal: the UI can call /api/start/count again.
-    safeError('[start/scan] count failed', err)
-  }
+  record({ type: 'icp', icp })
+  if (url && !description) await cachePut(scanKey(url), { events }, SCAN_TTL_MS)
+  await sendCount(icp, send)
   send({ type: 'done' })
 }
 

@@ -7,6 +7,11 @@ vi.mock('@/lib/getleads/client', async (importOriginal) => {
   return { ...real, searchContacts }
 })
 vi.mock('@/lib/supabase/admin', () => ({ createAdminClient: () => { throw new Error('use the fake') } }))
+const scoreLeads = vi.hoisted(() => vi.fn())
+vi.mock('../lead-fit', async (importOriginal) => {
+  const real = await importOriginal<typeof import('../lead-fit')>()
+  return { ...real, scoreLeads }
+})
 
 import { GetLeadsError } from '@/lib/getleads/client'
 import {
@@ -17,6 +22,8 @@ import {
   type ClaimRow,
 } from '../claims'
 import { leadsActionFor } from '../rules'
+import { filtersHash } from '../icp-to-filters'
+import { loadStoredLeads } from '../claims'
 
 type Admin = Parameters<typeof fulfillClaim>[2]
 
@@ -58,6 +65,8 @@ async function lockAndFulfill(admin: Admin, row: () => ClaimRow) {
 describe('claim fulfillment state machine', () => {
   beforeEach(() => {
     searchContacts.mockReset()
+    scoreLeads.mockReset()
+    scoreLeads.mockResolvedValue(null)
     process.env.GETLEADS_API_KEY = 'test-key'
   })
 
@@ -139,5 +148,79 @@ describe('claim fulfillment state machine', () => {
     expect(await beginFulfillment('c1', 'u1', admin)).toBe(true)
     expect(await withinDailyFulfillmentCap(admin, 3)).toBe(true)
     expect(await withinDailyFulfillmentCap(admin, 2)).toBe(false)
+  })
+})
+
+const ICP = {
+  summary: 'You sell HVAC service to Dallas facility managers.', industries: [], job_titles: ['Facilities Manager'],
+  seniority: [], company_size: [], countries: ['United States'], states: ['Texas'], cities: ['Dallas'],
+}
+const people = (n: number, from = 0) =>
+  Array.from({ length: n }, (_, i) => ({ ...contact, first_name: `P${from + i}`, email_address: `p${from + i}@acme.com` }))
+
+describe('delivery: over-pull, fit check, preview reuse', () => {
+  beforeEach(() => {
+    searchContacts.mockReset()
+    scoreLeads.mockReset()
+    process.env.GETLEADS_API_KEY = 'test-key'
+  })
+
+  function withIcp(extra: Record<string, unknown>[] = []) {
+    const ctx = setup(extra)
+    Object.assign(ctx.row(), { icp: ICP })
+    return ctx
+  }
+
+  it('pulls 35 in one paid request, drops 0s, stores the best 25 with why and rank', async () => {
+    const { admin, row, db } = withIcp()
+    searchContacts.mockResolvedValue({ contacts: people(35), totalAvailable: 500 })
+    // Leads 0-4 score 0, 5-14 score 3, the rest 1.
+    scoreLeads.mockResolvedValue(people(35).map((_, i) => ({ score: i < 5 ? 0 : i < 15 ? 3 : 1, why: `why ${i}` })))
+    await lockAndFulfill(admin, row)
+    expect(searchContacts).toHaveBeenCalledTimes(1)
+    expect(searchContacts.mock.calls[0][1]).toEqual({ limit: 35, offset: 0 })
+    expect(row()).toMatchObject({ status: 'fulfilled', attempts: 1, credits_used: 35 })
+    expect(db.tables.leads).toHaveLength(25)
+    const names = db.tables.leads.map((l) => l.first_name)
+    expect(names).not.toContain('P0')
+    expect(names.slice(0, 10)).toEqual(Array.from({ length: 10 }, (_, i) => `P${i + 5}`))
+    expect(db.tables.leads[0].metadata).toEqual({ free_lead_claim_id: 'c1', fit_score: 3, fit_why: 'why 5', fit_rank: 0 })
+  })
+
+  it('reuses the cached preview contacts and only buys the rest (offset past them)', async () => {
+    const preview = people(5, 100)
+    const { admin, row, db } = withIcp()
+    db.tables.free_leads_cache = [
+      { key: `preview:${filtersHash(row().filters)}`, value: { contacts: preview, total: 500 }, expires_at: new Date(Date.now() + 60_000).toISOString() },
+    ]
+    searchContacts.mockResolvedValue({ contacts: people(30), totalAvailable: 500 })
+    scoreLeads.mockResolvedValue(null)
+    await lockAndFulfill(admin, row)
+    expect(searchContacts).toHaveBeenCalledTimes(1)
+    expect(searchContacts.mock.calls[0][1]).toEqual({ limit: 30, offset: 5 })
+    expect(row()).toMatchObject({ status: 'fulfilled', credits_used: 30 })
+    expect(db.tables.leads.slice(0, 5).map((l) => l.first_name)).toEqual(['P100', 'P101', 'P102', 'P103', 'P104'])
+    expect(db.tables.leads).toHaveLength(25)
+  })
+
+  it('a failed fit check still delivers 25 unscored and never pulls again', async () => {
+    const { admin, row, db } = withIcp()
+    searchContacts.mockResolvedValue({ contacts: people(35), totalAvailable: 500 })
+    scoreLeads.mockResolvedValue(null)
+    await lockAndFulfill(admin, row)
+    expect(row().status).toBe('fulfilled')
+    expect(searchContacts).toHaveBeenCalledTimes(1)
+    expect(db.tables.leads).toHaveLength(25)
+    expect(db.tables.leads[0].metadata).toEqual({ free_lead_claim_id: 'c1' })
+  })
+
+  it('reads stored leads best-first with the why line', async () => {
+    const { admin, row, db } = withIcp()
+    searchContacts.mockResolvedValue({ contacts: people(3), totalAvailable: 3 })
+    scoreLeads.mockResolvedValue([{ score: 1, why: 'c' }, { score: 3, why: 'a' }, { score: 2, why: 'b' }])
+    await lockAndFulfill(admin, row)
+    db.tables.leads.reverse() // storage order is not guaranteed
+    const leads = await loadStoredLeads('ws1', 'c1', admin)
+    expect(leads.map((l) => l.why)).toEqual(['a', 'b', 'c'])
   })
 })

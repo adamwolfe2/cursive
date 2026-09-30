@@ -22,7 +22,11 @@ import {
   type Icp,
 } from './contract'
 
-const MODEL = 'claude-opus-5-5'
+// Sonnet 5.5 low matched Opus 5.5 low on the ICP-fit eval (mean fit 2.29 vs 2.25, 115 leads) at ~1/4
+// the cost per scan and ~2s faster to the ICP (scripts/free-leads-eval/RESULTS.md, 2026-09-30).
+const MODEL = 'claude-sonnet-5-5'
+/** Bump when the prompt, schema or model changes: cached scans from older versions are ignored. */
+export const SCAN_VERSION = 'v3-sonnet55'
 const ICP_KEYS = ['summary', 'industries', 'job_titles', 'seniority', 'company_size', 'countries', 'states', 'cities'] as const
 
 export class ScanError extends Error {
@@ -107,7 +111,9 @@ function params(
   return {
     model: choice.model ?? MODEL,
     max_tokens: maxTokens,
-    system,
+    // The structured-output schema (441-value industry enum, ~6.5k tokens) is part of this cached
+    // prefix: a warm scan reads it at 0.05x instead of paying full input (measured 2026-09-30).
+    system: [{ type: 'text', text: system, cache_control: { type: 'ephemeral' } }],
     messages: [{ role: 'user', content: user }],
     output_config: { effort: choice.effort ?? 'low', format: { type: 'json_schema', schema } },
   } as Anthropic.MessageCreateParamsNonStreaming

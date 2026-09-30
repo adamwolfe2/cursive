@@ -55,7 +55,7 @@ function location(c: GetLeadsContact): string | null {
   return parts.length ? parts.join(', ') : null
 }
 
-export function toMaskedLead(c: GetLeadsContact): MaskedLead {
+export function toMaskedLead(c: GetLeadsContact, why: string | null = null): MaskedLead {
   return {
     first_name: c.first_name,
     last_initial: c.last_name ? c.last_name[0].toUpperCase() : '',
@@ -66,11 +66,18 @@ export function toMaskedLead(c: GetLeadsContact): MaskedLead {
     email_masked: maskEmail(c.email_address),
     has_linkedin: Boolean(c.person_linkedin_url),
     has_phone: Boolean(c.cellphone),
+    why,
   }
 }
 
 /** Insert payload for `leads`. Mirrors the existing lead-inserter columns. */
-export function toLeadInsert(c: GetLeadsContact, workspaceId: string, claimId: string, nowIso: string) {
+export interface FitMeta {
+  fit_score: number
+  fit_why: string
+  fit_rank: number
+}
+
+export function toLeadInsert(c: GetLeadsContact, workspaceId: string, claimId: string, nowIso: string, fit?: FitMeta) {
   const fullName = [c.first_name, c.last_name].filter(Boolean).join(' ')
   return {
     workspace_id: workspaceId,
@@ -99,7 +106,7 @@ export function toLeadInsert(c: GetLeadsContact, workspaceId: string, claimId: s
     verification_status: 'verified',
     verified_at: nowIso,
     tags: [FREE_LEADS_SOURCE],
-    metadata: { free_lead_claim_id: claimId },
+    metadata: { free_lead_claim_id: claimId, ...fit },
   }
 }
 
@@ -119,10 +126,11 @@ export interface StoredLeadRow {
   email: string | null
   linkedin_url: string | null
   phone: string | null
+  metadata?: { fit_why?: unknown; fit_rank?: unknown } | null
 }
 
 export const STORED_LEAD_COLUMNS =
-  'id, first_name, last_name, job_title, seniority_level, company_name, company_domain, company_industry, company_size, city, state, country, email, linkedin_url, phone'
+  'id, first_name, last_name, job_title, seniority_level, company_name, company_domain, company_industry, company_size, city, state, country, email, linkedin_url, phone, metadata'
 
 export function toFullLead(r: StoredLeadRow): FullLead {
   const loc = [r.city, r.state || r.country].filter(Boolean).join(', ')
@@ -140,6 +148,7 @@ export function toFullLead(r: StoredLeadRow): FullLead {
     email: r.email ?? '',
     linkedin_url: r.linkedin_url,
     phone: r.phone,
+    why: typeof r.metadata?.fit_why === 'string' ? r.metadata.fit_why : null,
   }
 }
 

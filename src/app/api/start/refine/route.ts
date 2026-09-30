@@ -6,7 +6,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { RefineRequestSchema, type RefineResponse } from '@/lib/free-leads/contract'
 import { refineIcp, ScanError } from '@/lib/free-leads/scan'
 import { icpToFilters } from '@/lib/free-leads/icp-to-filters'
-import { countContacts } from '@/lib/getleads/client'
+import { cachedCount } from '@/lib/free-leads/cache'
 import { badRequest, clientIp, isLimited, rateLimited, readJson, serverError } from '@/lib/free-leads/http'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const { icp, note } = await refineIcp(parsed.data.icp, parsed.data.instruction)
-    const total = await countContacts(icpToFilters(icp))
+    const total = await cachedCount(icpToFilters(icp))
     return NextResponse.json<RefineResponse>({ icp, note, total })
   } catch (err) {
     safeError('[start/refine] refine failed', err instanceof ScanError ? `${err.code}: ${err.message}` : err)

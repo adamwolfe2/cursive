@@ -12,6 +12,10 @@ import { slugifyWorkspace } from '@/lib/funnel/workspace-provision'
 import { FUNNEL_TIER_FEATURES } from '@/lib/workspaces/feature-flags'
 import { assertConfigured, searchContacts, type GetLeadsFilters } from '@/lib/getleads/client'
 import { FREE_LEAD_COUNT, IcpSchema, type FullLead, type Icp } from './contract'
+import { cacheGet } from './cache'
+import { filtersHash } from './icp-to-filters'
+import { OVERPULL_FACTOR, scoreLeads, selectFitLeads } from './lead-fit'
+import type { GetLeadsContact } from '@/lib/getleads/client'
 import {
   FREE_LEADS_SOURCE,
   STORED_LEAD_COLUMNS,
@@ -254,9 +258,15 @@ export async function fulfillClaim(claim: ClaimRow, authUserId: string, admin: A
     throw new ClaimError('fulfillment failed', 'upstream')
   }
 
+  // The anonymous preview for these exact filters already bought the first rows (upstream order is
+  // stable, verified 2026-09-30): reuse them and buy only what comes after.
+  const want = Math.ceil(FREE_LEAD_COUNT * OVERPULL_FACTOR)
+  const preview = await cacheGet<{ contacts: GetLeadsContact[] }>(`preview:${filtersHash(claim.filters)}`, admin)
+  const reused = (preview?.contacts ?? []).slice(0, want - 1)
+
   let pulled: Awaited<ReturnType<typeof searchContacts>>
   try {
-    pulled = await searchContacts(claim.filters, { limit: FREE_LEAD_COUNT })
+    pulled = await searchContacts(claim.filters, { limit: want - reused.length, offset: reused.length })
   } catch (err) {
     safeError('[free-leads/claims] paid pull failed; not retrying', err)
     await setStatus(admin, claim.id, 'failed', { workspace_id: workspaceId })
@@ -264,7 +274,13 @@ export async function fulfillClaim(claim: ClaimRow, authUserId: string, admin: A
   }
 
   const now = new Date().toISOString()
-  const rows = usableContacts(pulled.contacts, FREE_LEAD_COUNT).map((c) => toLeadInsert(c, workspaceId, claim.id, now))
+  const candidates = usableContacts([...reused, ...pulled.contacts], want)
+  const icp = claimIcp(claim)
+  // Never throws: a failed check delivers the top rows unscored (logged in scoreLeads).
+  const fits = icp ? await scoreLeads(icp, claim.website, candidates) : null
+  const rows = selectFitLeads(candidates, fits, FREE_LEAD_COUNT).map(({ item, fit }, rank) =>
+    toLeadInsert(item, workspaceId, claim.id, now, fit ? { fit_score: fit.score, fit_why: fit.why, fit_rank: rank } : undefined)
+  )
   const { error } = rows.length ? await admin.from('leads').insert(rows) : { error: null }
   if (error) {
     safeError('[free-leads/claims] leads insert failed after pull', error)
@@ -290,7 +306,8 @@ export async function loadStoredLeads(workspaceId: string, claimId: string, admi
     .order('created_at', { ascending: true })
     .limit(FREE_LEAD_COUNT)
   if (error) throw dbError('stored leads read failed', error)
-  return ((data ?? []) as StoredLeadRow[]).map(toFullLead)
+  const rank = (r: StoredLeadRow) => (typeof r.metadata?.fit_rank === 'number' ? r.metadata.fit_rank : Number.MAX_SAFE_INTEGER)
+  return [...((data ?? []) as StoredLeadRow[])].sort((a, b) => rank(a) - rank(b)).map(toFullLead)
 }
 
 export function claimIcp(claim: ClaimRow): Icp | null {

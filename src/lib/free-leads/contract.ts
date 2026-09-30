@@ -77,6 +77,8 @@ export interface MaskedLead {
   email_masked: string
   has_linkedin: boolean
   has_phone: boolean
+  /** One line on why this person fits (fit check); null when unavailable. */
+  why: string | null
 }
 
 /** POST /api/start/preview  body: { icp }  -> 5 masked leads (costs credits, cached + rate-limited). */
@@ -113,6 +115,8 @@ export interface FullLead {
   email: string
   linkedin_url: string | null
   phone: string | null
+  /** One line on why this person fits the ICP (fit check); null when the check was unavailable. */
+  why: string | null
 }
 
 /** GET /api/start/leads (authenticated) -> materializes the claim on first call (idempotent). */

@@ -185,6 +185,9 @@ async function pull(icp: Icp, limit: number, knownFile?: string): Promise<{ cont
   const path = join(CACHE, 'pulls', file)
   const hit = readJson<{ contacts: GetLeadsContact[] }>(path)
   if (hit) return { contacts: hit.contacts, credits: hit.contacts.length, cached: true, file }
+  // Same filters pulled with a larger limit earlier: upstream order is stable, so its head is this pull.
+  const bigger = readJson<{ contacts: GetLeadsContact[] }>(join(CACHE, 'pulls', `${filtersHash(filters)}-10.json`))
+  if (bigger && limit < 10) return { contacts: bigger.contacts.slice(0, limit), credits: limit, cached: true, file: `${filtersHash(filters)}-10.json` }
   if (args['no-pull']) return { contacts: [], credits: 0, cached: false, file }
   if (creditsSpent + limit > maxCredits) throw new Error(`credit budget ${maxCredits} would be exceeded`)
   creditsSpent += limit // reserve before the request (concurrent sites)

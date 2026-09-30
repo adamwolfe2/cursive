@@ -62,6 +62,7 @@ describe('masking', () => {
       email_masked: 'r•••@jones-dilworth.com',
       has_linkedin: true,
       has_phone: true,
+      why: null,
     })
     const json = JSON.stringify(m)
     expect(json).not.toContain('fielder')

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { icpBrief, parseFits, selectFitLeads, type LeadFit } from '../lead-fit'
+import { icpBrief, leadRow, parseFits, selectFitLeads, type LeadFit } from '../lead-fit'
 import type { Icp } from '../contract'
 
 const fit = (score: LeadFit['score'], why = 'w'): LeadFit => ({ score, why })
@@ -51,5 +51,21 @@ describe('icpBrief', () => {
     }
     expect(icpBrief(icp, 'acme.com')).toContain('Where: Dallas, Texas, United States')
     expect(icpBrief(icp, 'acme.com')).not.toContain('Buyer industries')
+  })
+})
+
+describe('leadRow', () => {
+  it('never sends name, email, LinkedIn or phone to the fit check (why lines show on the anonymous preview)', () => {
+    const row = leadRow(
+      {
+        first_name: 'Risa', last_name: 'Fielder', email_address: 'risa@jd.com', email_status: 'VALID', job_title: 'COO',
+        job_level: '', org_company_name: 'JD', org_domain: 'jd.com', org_industry_linkedin: 'Marketing Services',
+        employee_count_range: '11 to 50', person_city: 'Austin', state_name: 'Texas', person_country_name: 'United States',
+        person_linkedin_url: 'https://linkedin.com/in/risa', cellphone: '+15125550100',
+      },
+      1
+    )
+    for (const secret of ['Risa', 'Fielder', 'risa@', 'linkedin.com', '5550100']) expect(row).not.toContain(secret)
+    expect(row).toContain('COO at JD')
   })
 })
