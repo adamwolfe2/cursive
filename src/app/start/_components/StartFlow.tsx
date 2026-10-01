@@ -6,6 +6,7 @@ import type {
   Fact,
   Icp,
   MaskedLead,
+  Persona,
   PreviewResponse,
   RefineResponse,
   ScanEvent,
@@ -14,6 +15,7 @@ import { errorCopy, isAbort, MIN_DESCRIPTION, postJson, streamScan, trackStep, t
 import { EmailProfile } from './EmailProfile'
 import { Hero, type InputMode } from './Hero'
 import { IcpCard } from './IcpCard'
+import { PersonaCard } from './PersonaCard'
 import { ClaimForm, PreviewTable } from './Preview'
 import { ScanErrorNote, ScanFeed, type ScanError, type Site } from './ScanFeed'
 import { withPage, type PageRow } from './scan-state'
@@ -57,6 +59,8 @@ export function StartFlow({ mock, initialSite }: { mock: Mock; initialSite: stri
   const [replayedAt, setReplayedAt] = useState<string | null>(null)
   const [icp, setIcp] = useState<Partial<Icp>>({})
   const [complete, setComplete] = useState(false)
+  /** Best effort, after `count`; may never arrive. */
+  const [persona, setPersona] = useState<Persona | null>(null)
   const [scanError, setScanError] = useState<ScanError | null>(null)
   const [slow, setSlow] = useState<0 | 1 | 2>(0)
 
@@ -167,6 +171,10 @@ export function StartFlow({ mock, initialSite }: { mock: Mock; initialSite: stri
             : toHero('description', `Tell us a bit more: at least ${MIN_DESCRIPTION} characters on what you sell and who buys it.`)
         }
         return setScanError(e)
+      case 'persona':
+        // Drop a malformed persona rather than render half a person.
+        if (!e.persona?.name || !Array.isArray(e.persona.measured_on)) return
+        return setPersona(e.persona)
       case 'done':
         return
     }
@@ -186,6 +194,7 @@ export function StartFlow({ mock, initialSite }: { mock: Mock; initialSite: stri
     followRef.current = true
     setIcp({})
     setComplete(false)
+    setPersona(null)
     setScanError(null)
     setSlow(0)
     setCount(null)
@@ -385,11 +394,13 @@ export function StartFlow({ mock, initialSite }: { mock: Mock; initialSite: stri
           pages={pages}
           facts={facts}
           scanning={scanning}
+          icpReady={complete}
           slow={slow}
           replayedAt={replayedAt}
           onReset={() => toHero('url', null)}
         />
-        <div className="min-w-0 space-y-5">
+        {/* Phones: room below the profile so the follow-scroll can bring it to the top, past the rail. */}
+        <div className={`min-w-0 space-y-5 ${Object.keys(icp).length > 0 ? 'max-lg:min-h-[100svh]' : ''}`}>
           {showCard && (
             <div ref={cardRef} className="scroll-mt-4">
             <IcpCard
@@ -408,8 +419,11 @@ export function StartFlow({ mock, initialSite }: { mock: Mock; initialSite: stri
             />
             </div>
           )}
+          {/* Describes the scanned profile; hidden once the reader edits it so it never contradicts the card. */}
+          {complete && persona && !edited && <PersonaCard persona={persona} />}
           {scanError && <ScanErrorNote error={scanError} onRetry={() => query && void run(query)} />}
-          {complete && !approved && website && count !== 0 && (
+          {/* Held until the persona lands or the stream ends, so the persona never pushes it down. */}
+          {complete && !approved && website && count !== 0 && (persona || phase !== 'scanning') && (
             <div className="px-1">
               <EmailProfile website={website} icp={icp as Icp} mock={mock} edited={edited} />
             </div>

@@ -10,6 +10,7 @@ import {
   type FullLead,
   type Icp,
   type MaskedLead,
+  type Persona,
   type ScanEvent,
 } from '@/lib/free-leads/contract'
 import { StartApiError, type ScanInput } from './api'
@@ -26,12 +27,21 @@ const wait = (ms: number, signal?: AbortSignal) =>
 const ICP: Icp = {
   summary: 'You sell SOC 2 and ISO 27001 audits to B2B software companies getting ready for enterprise deals.',
   industries: ['Software Development', 'IT Services and IT Consulting', 'Financial Services'],
-  job_titles: ['CTO', 'VP of Engineering', 'Head of Security', 'Founder'],
+  job_titles: ['CTO', 'VP of Engineering', 'Head of Security', 'Founder', 'CISO', 'Director of Engineering', 'Head of IT', 'Head of Compliance'],
   seniority: ['C-Team', 'VP', 'Director'],
   company_size: ['11 to 50', '51 to 200', '201 to 500'],
   countries: ['United States'],
   states: [],
   cities: [],
+}
+
+const PERSONA: Persona = {
+  name: 'Priya',
+  role: 'VP of Engineering',
+  company: 'a 120-person payments software company in Austin',
+  day: 'Most of her week goes to the roadmap and unblocking eight engineers. Since the first bank asked for a SOC 2 report, she also answers security questionnaires at night, and two deals are waiting on her.',
+  measured_on: ['Shipping the roadmap on the dates sales promised', 'Getting enterprise deals through security review', 'Keeping engineering headcount flat this year'],
+  replies_when: 'A short note that names the stuck deal and says when the report could be ready. Anything that reads like a compliance brochure goes unanswered.',
 }
 
 const SITE_FACTS: ScanEvent[] = [
@@ -48,7 +58,7 @@ const ICP_FIELDS = ['summary', 'industries', 'job_titles', 'seniority', 'company
 /**
  * Replays the real event order with realistic timings (ms from submit):
  * page "/" fetching 50 -> site + read 450 -> sub-pages fetching 480, settled 900-1400 (one fails)
- * -> site facts 1400 -> model facts 2000/2600/3200 -> icp_partial 3500-5200 -> icp 5300 -> count 6500 -> done.
+ * -> site facts 1400 -> model facts 2000/2600/3200 -> icp_partial 3500-5200 -> icp 5300 -> count 6500 -> persona 8000 -> done.
  * Scenarios: replay (instant, after a `replay` marker), unreachable, ratelimited, zero, slow (+13s before the profile).
  */
 export async function mockScan(
@@ -98,6 +108,7 @@ export async function mockScan(
   }
   await at(delay + 5300, { type: 'icp', icp: full })
   await at(delay + (replay ? 600 : 6500), { type: 'count', total: countFor(full) })
+  await at(delay + (replay ? 620 : 8000), { type: 'persona', persona: PERSONA })
   onEvent({ type: 'done' })
 }
 
