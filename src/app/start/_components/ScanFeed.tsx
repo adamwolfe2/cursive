@@ -124,9 +124,11 @@ function SiteHeader({
 }) {
   const [faviconOk, setFaviconOk] = useState(true)
   const description = site?.description ?? (query && 'description' in query ? query.description : null)
+  // The description slot is held while the scan can still fill it; a scan that ended early lets it collapse.
+  const hold = scanning || Boolean(site)
   return (
     <div>
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex items-center justify-between gap-4">
         <div className="flex min-w-0 items-center gap-3">
           <span className="grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-lg border border-[#e5e7eb] bg-white">
             {site?.favicon && faviconOk ? (
@@ -138,8 +140,9 @@ function SiteHeader({
           </span>
           <div className="min-w-0">
             <p className="truncate text-[15px] font-semibold text-[#1d2025]">{domain ?? 'Your description'}</p>
+            {/* Always holds its line so the header never jumps when a scan stops early. */}
             <p className="h-5 truncate text-[13px] text-[#4d5460]">
-              {site?.title ? <span className="fl-fade">{site.title}</span> : domain && scanning ? 'Opening the homepage' : ''}
+              {site?.title ? <span className="fl-fade">{site.title}</span> : domain ? (scanning ? 'Opening the homepage' : 'Not opened') : ''}
             </p>
           </div>
         </div>
@@ -152,9 +155,11 @@ function SiteHeader({
         </button>
       </div>
       {/* Two lines reserved so the description landing never pushes the page list. */}
-      <p className="mt-2.5 line-clamp-2 min-h-10 text-[13px] leading-5 text-[#6b7280]">
-        {description && <span className="fl-fade">{description}</span>}
-      </p>
+      {(hold || description) && (
+        <p className="mt-2.5 line-clamp-2 min-h-10 text-[13px] leading-5 text-[#6b7280]">
+          {description && <span className="fl-fade">{description}</span>}
+        </p>
+      )}
     </div>
   )
 }
@@ -199,7 +204,7 @@ export function ScanErrorNote({ error, onRetry }: { error: ScanError; onRetry: (
         <button
           type="button"
           onClick={onRetry}
-          className={`mt-5 inline-flex h-11 items-center gap-2 rounded-lg bg-[#007AFF] px-4 text-[15px] font-semibold text-white transition-colors hover:bg-[#0063E6] ${FOCUS}`}
+          className={`mt-5 inline-flex h-11 items-center gap-2 rounded-lg bg-[#0063E6] px-4 text-[15px] font-semibold text-white transition-colors hover:bg-[#084fba] ${FOCUS}`}
         >
           <RotateCcw className="h-4 w-4" aria-hidden="true" />
           Try again

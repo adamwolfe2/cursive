@@ -56,6 +56,8 @@ export function StartFlow({ mock, initialSite }: { mock: Mock; initialSite: stri
   const [refining, setRefining] = useState(false)
   const [refineNote, setRefineNote] = useState<string | null>(null)
   const [refineError, setRefineError] = useState<string | null>(null)
+  /** The reader changed the scanned profile (chips or refine). The emailed profile is always the scanned one. */
+  const [edited, setEdited] = useState(false)
 
   const [approved, setApproved] = useState(false)
   const [preview, setPreview] = useState<MaskedLead[] | null>(null)
@@ -64,7 +66,11 @@ export function StartFlow({ mock, initialSite }: { mock: Mock; initialSite: stri
 
   /** One controller per scan session: aborting it cancels the stream and every count/refine/preview call. */
   const sessionRef = useRef<AbortController | null>(null)
+  /** Bumped by every count source (edit, refine, new scan); a response only lands if its seq is still current. */
   const countSeq = useRef(0)
+  /** countSeq when the scan started: the stream's late `count` only applies while no edit has happened since. */
+  const scanCountSeq = useRef(0)
+  const refineSeq = useRef(0)
   const countTimer = useRef<number | undefined>(undefined)
   const previewSeq = useRef(0)
   const claimRef = useRef<HTMLDivElement>(null)
@@ -77,6 +83,7 @@ export function StartFlow({ mock, initialSite }: { mock: Mock; initialSite: stri
     sessionRef.current?.abort()
     window.clearTimeout(countTimer.current)
     countSeq.current++
+    refineSeq.current++
     previewSeq.current++
   }
 
@@ -134,6 +141,8 @@ export function StartFlow({ mock, initialSite }: { mock: Mock; initialSite: stri
         setComplete(true)
         return
       case 'count':
+        // Counts the scanned profile; once the reader has edited it, the edit's own count wins.
+        if (countSeq.current !== scanCountSeq.current) return
         return setCount(e.total)
       case 'error':
         // Unreachable site or bad input: back to the hero with a specific next step.
@@ -154,6 +163,7 @@ export function StartFlow({ mock, initialSite }: { mock: Mock; initialSite: stri
 
   const run = async (input: ScanInput) => {
     endSession()
+    scanCountSeq.current = countSeq.current
     const ctrl = new AbortController()
     sessionRef.current = ctrl
     setQuery(input)
@@ -172,6 +182,7 @@ export function StartFlow({ mock, initialSite }: { mock: Mock; initialSite: stri
     setRefining(false)
     setRefineNote(null)
     setRefineError(null)
+    setEdited(false)
     setApproved(false)
     setPreview(null)
     setPreviewTotal(null)
@@ -204,7 +215,7 @@ export function StartFlow({ mock, initialSite }: { mock: Mock; initialSite: stri
       setScanError({ type: 'error', code: 'failed', message: 'The scan stopped partway.' })
     }
     // The scan's own count is best effort; fetch it if it never arrived.
-    if (finalIcp && !gotCount) recount(finalIcp, 0)
+    if (finalIcp && !gotCount && countSeq.current === scanCountSeq.current) recount(finalIcp, 0)
     setPhase((p) => (p === 'idle' ? 'idle' : 'done'))
   }
 
@@ -263,6 +274,7 @@ export function StartFlow({ mock, initialSite }: { mock: Mock; initialSite: stri
 
   const onChange = (next: Icp) => {
     setIcp(next)
+    setEdited(true)
     setRefineNote(null)
     setRefineError(null)
     unapprove()
@@ -273,14 +285,20 @@ export function StartFlow({ mock, initialSite }: { mock: Mock; initialSite: stri
     if (!complete || refining) return
     window.clearTimeout(countTimer.current)
     const seq = ++countSeq.current
+    const own = ++refineSeq.current
     setRefining(true)
     setCounting(true)
     setRefineError(null)
     setRefineNote(null)
     try {
       const r = await postJson<RefineResponse>('/api/start/refine', { icp, instruction }, mock, sessionRef.current?.signal)
-      if (seq !== countSeq.current) return
+      // A chip edit landed while this was in flight: the edit is newer, so this rewrite is dropped.
+      if (seq !== countSeq.current) {
+        if (own === refineSeq.current) setRefineNote('You edited the profile while that ran, so we kept your edit. Send it again to apply it.')
+        return
+      }
       setIcp(r.icp)
+      setEdited(true)
       setCount(r.total)
       setRefineNote(r.note)
       unapprove()
@@ -289,10 +307,9 @@ export function StartFlow({ mock, initialSite }: { mock: Mock; initialSite: stri
       console.error('[start] refine failed', err)
       if (seq === countSeq.current) setRefineError(errorCopy(err, 'Keep it to a short sentence, like "only Texas, add CMOs".'))
     } finally {
-      if (seq === countSeq.current) {
-        setRefining(false)
-        setCounting(false)
-      }
+      // `refining` belongs to this request alone; `counting` belongs to whichever count is newest.
+      if (own === refineSeq.current) setRefining(false)
+      if (seq === countSeq.current) setCounting(false)
     }
   }
 
@@ -345,6 +362,7 @@ export function StartFlow({ mock, initialSite }: { mock: Mock; initialSite: stri
 
   return (
     <div className={`mx-auto w-full max-w-[72rem] px-5 pb-24 pt-6 sm:px-8 sm:pt-12 ${replayedAt ? 'fl-instant' : ''}`}>
+      <h1 className="sr-only">{website ? `Who buys from ${website}` : 'Who buys from you'}</h1>
       <div className="grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] lg:gap-14">
         <ScanFeed
           query={query}
@@ -378,7 +396,7 @@ export function StartFlow({ mock, initialSite }: { mock: Mock; initialSite: stri
           {scanError && <ScanErrorNote error={scanError} onRetry={() => query && void run(query)} />}
           {complete && !approved && website && count !== 0 && (
             <div className="px-1">
-              <EmailProfile website={website} icp={icp as Icp} mock={mock} />
+              <EmailProfile website={website} icp={icp as Icp} mock={mock} edited={edited} />
             </div>
           )}
         </div>

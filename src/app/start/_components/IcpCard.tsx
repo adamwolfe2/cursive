@@ -51,7 +51,7 @@ export function IcpCard(props: Props) {
               type="button"
               onClick={() => setEditing((e) => !e)}
               aria-pressed={editing}
-              className={`fl-fade inline-flex h-9 items-center gap-1.5 rounded-lg px-3 text-sm font-semibold text-white ring-1 ring-inset ring-white/50 transition-colors hover:bg-white/10 ${WHITE_FOCUS}`}
+              className={`fl-fade inline-flex h-9 items-center gap-1.5 rounded-lg px-3 text-sm font-semibold text-white ring-1 ring-inset ring-white/50 transition-colors hover:bg-[#084fba] ${WHITE_FOCUS}`}
             >
               {editing ? <Check className="h-3.5 w-3.5" aria-hidden="true" /> : <Pencil className="h-3.5 w-3.5" aria-hidden="true" />}
               {editing ? 'Done editing' : 'Edit'}
@@ -64,7 +64,7 @@ export function IcpCard(props: Props) {
           </p>
         ) : (
           <p className="mt-3 max-w-[40ch] text-[15px] leading-relaxed text-white">
-            Fills in here, one field at a time, as soon as we have read your site.
+            Fills in here, one field at a time, as we work out who buys from you.
           </p>
         )}
 
@@ -141,14 +141,14 @@ function IcpRow({
           {values.map((v) => (
             <li
               key={v}
-              className={`inline-flex min-h-8 max-w-full items-center gap-1 rounded-md bg-white py-1 text-sm font-medium leading-tight text-[#0c1f45] ${edit ? 'pl-2.5 pr-1' : 'px-2.5'}`}
+              className={`inline-flex min-h-8 max-w-full items-center gap-1 rounded-md bg-white py-1 text-sm font-medium leading-tight text-[#0c1f45] ${edit ? 'pl-2.5 pr-1 max-sm:min-h-11 max-sm:py-0 max-sm:pr-0' : 'px-2.5'}`}
             >
               <span className="min-w-0 [overflow-wrap:anywhere]">{chipLabel(row.key, v)}</span>
               {full && edit && (
                 <button
                   type="button"
                   onClick={() => onChange(withRemoved(full, row.key, v))}
-                  className="fl-compact grid h-6 w-6 shrink-0 place-items-center rounded text-[#0063E6] transition-colors hover:bg-[#f0f7ff] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#0c1f45]"
+                  className="fl-compact grid h-6 w-6 shrink-0 max-sm:h-11 max-sm:w-11 place-items-center rounded text-[#0063E6] transition-colors hover:bg-[#f0f7ff] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#0c1f45]"
                   aria-label={`Remove ${chipLabel(row.key, v)}`}
                 >
                   <X className="h-3.5 w-3.5" aria-hidden="true" />
@@ -163,7 +163,7 @@ function IcpRow({
                   <button
                     type="button"
                     onClick={() => onChange(withAdded(full, row.key, o))}
-                    className={`fl-compact h-8 rounded-md border border-dashed border-white/70 px-2.5 text-sm font-medium text-white transition-colors hover:bg-white/10 ${WHITE_FOCUS}`}
+                    className={`fl-compact h-8 rounded-md border max-sm:h-11 border-dashed border-white/70 px-2.5 text-sm font-medium text-white transition-colors hover:bg-[#084fba] ${WHITE_FOCUS}`}
                   >
                     + {chipLabel(row.key, o)}
                   </button>
@@ -173,7 +173,7 @@ function IcpRow({
                 <button
                   type="button"
                   onClick={() => setAdding(false)}
-                  className={`fl-compact h-8 px-2 text-sm font-medium text-white underline underline-offset-4 ${WHITE_FOCUS}`}
+                  className={`fl-compact h-8 px-2 max-sm:h-11 max-sm:px-3 text-sm font-medium text-white underline underline-offset-4 ${WHITE_FOCUS}`}
                 >
                   Done
                 </button>
@@ -195,7 +195,7 @@ function IcpRow({
                 list={row.key === 'industries' ? listId : undefined}
                 placeholder={row.key === 'locations' ? 'Texas or Canada' : row.key === 'job_titles' ? 'Head of Growth' : 'Type to search'}
                 maxLength={80}
-                className="h-8 w-48 max-w-full rounded-md border border-white bg-white px-2.5 text-sm text-[#0c1f45] placeholder:text-[#6b7280] focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0063E6]"
+                className="h-8 w-48 max-w-full rounded-md max-sm:h-11 border border-white bg-white px-2.5 text-sm text-[#0c1f45] placeholder:text-[#6b7280] focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0063E6]"
               />
               {row.key === 'industries' && industries && (
                 <datalist id={listId}>
@@ -211,7 +211,7 @@ function IcpRow({
               <button
                 type="button"
                 onClick={openAdd}
-                className={`fl-compact inline-flex h-8 items-center gap-1 rounded-md border border-dashed border-white/70 px-2.5 text-sm font-medium text-white transition-colors hover:bg-white/10 ${WHITE_FOCUS}`}
+                className={`fl-compact inline-flex h-8 max-sm:h-11 items-center gap-1 rounded-md border border-dashed border-white/70 px-2.5 text-sm font-medium text-white transition-colors hover:bg-[#084fba] ${WHITE_FOCUS}`}
                 aria-label={`Add to ${row.label}`}
               >
                 <Plus className="h-3.5 w-3.5" aria-hidden="true" />

@@ -1,6 +1,9 @@
 import Image from 'next/image'
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import './start.css'
+
+// The root layout caps zoom at 1x; this flow is read on phones and must allow pinch zoom (WCAG 1.4.4).
+export const viewport: Viewport = { maximumScale: 5 }
 
 export const metadata: Metadata = {
   title: 'Get 25 free leads from your website | Cursive',

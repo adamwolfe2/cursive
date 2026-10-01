@@ -9,8 +9,11 @@ type State = 'closed' | 'open' | 'sending' | 'sent' | 'rate_limited' | 'invalid_
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 
-/** Secondary to Approve: send the profile to any inbox and come back later. */
-export function EmailProfile({ website, icp, mock }: { website: string; icp: Icp; mock: Mock }) {
+/**
+ * Secondary to Approve: send the profile to any inbox and come back later. The server emails the profile from the
+ * original scan (it never relays client edits), so after an edit the copy says so instead of implying the edited one.
+ */
+export function EmailProfile({ website, icp, mock, edited }: { website: string; icp: Icp; mock: Mock; edited: boolean }) {
   const [state, setState] = useState<State>('closed')
   const [email, setEmail] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -44,7 +47,7 @@ export function EmailProfile({ website, icp, mock }: { website: string; icp: Icp
           className="inline-flex min-h-11 items-center gap-1.5 font-semibold text-[#0063E6] underline decoration-[#b3d7ff] underline-offset-4 transition-colors hover:decoration-[#0063E6] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF]"
         >
           <Mail className="h-4 w-4" aria-hidden="true" />
-          Email me this profile
+          {edited ? 'Email me the profile we found' : 'Email me this profile'}
         </button>
       </p>
     )
@@ -55,7 +58,8 @@ export function EmailProfile({ website, icp, mock }: { website: string; icp: Icp
       <p role="status" className="fl-fade flex min-h-11 items-center gap-2 text-[15px] text-[#1d2025]">
         <Mail className="h-4 w-4 shrink-0 text-[#007AFF]" aria-hidden="true" />
         <span>
-          Sent to <strong className="font-semibold [overflow-wrap:anywhere]">{email.trim()}</strong>, with a link back to this profile.
+          Sent to <strong className="font-semibold [overflow-wrap:anywhere]">{email.trim()}</strong>, with a link back to{' '}
+          {edited ? 'the profile we found.' : 'this profile.'}
         </span>
       </p>
     )
@@ -87,6 +91,11 @@ export function EmailProfile({ website, icp, mock }: { website: string; icp: Icp
           onChange={(e) => {
             setEmail(e.target.value)
             if (state !== 'sending') setState('open')
+          }}
+          onKeyDown={(e) => {
+            if (e.key !== 'Escape' || state === 'sending') return
+            setState('closed')
+            requestAnimationFrame(() => document.querySelector<HTMLElement>('[data-fl-email-profile]')?.focus())
           }}
           placeholder="you@anywhere.com"
           aria-invalid={message ? true : undefined}
