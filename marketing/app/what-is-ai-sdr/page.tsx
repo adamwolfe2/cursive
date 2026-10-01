@@ -14,7 +14,7 @@ import {
   Scale, ShieldCheck, Network, Target, ArrowRight, type LucideIcon,
 } from "lucide-react"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
-import { GET_LEADS_URL, BOOKING_URL } from "@/lib/cta"
+import { BOOKING_URL, START_CTA_LABEL, startUrl } from "@/lib/cta"
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
@@ -312,8 +312,8 @@ export default function WhatIsAISDRPage() {
                 booking meetings on behalf of a sales team.
               </p>
               <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center">
-                <Button size="lg" href={GET_LEADS_URL} target="_blank" rel="noopener noreferrer">
-                  Get Started
+                <Button size="lg" href={startUrl("what-is-ai-sdr")}>
+                  {START_CTA_LABEL}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
                 <Button size="lg" variant="outline" href={BOOKING_URL} target="_blank" rel="noopener noreferrer">
@@ -692,8 +692,8 @@ export default function WhatIsAISDRPage() {
                 cancel anytime.
               </p>
               <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center">
-                <Button size="lg" href={GET_LEADS_URL} target="_blank" rel="noopener noreferrer">
-                  Get Started
+                <Button size="lg" href={startUrl("what-is-ai-sdr")}>
+                  {START_CTA_LABEL}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
                 <Button size="lg" variant="outline" href={BOOKING_URL} target="_blank" rel="noopener noreferrer">
@@ -814,7 +814,7 @@ export default function WhatIsAISDRPage() {
               Cursive is the identity and intent layer that feeds warm, in-market prospects to your human reps or existing outreach tooling so the outreach you send converts. Self-serve from $97/month, live in minutes. Cursive is not an AI SDR and does not send outreach or book meetings on your behalf.
             </p>
             <MachineList items={[
-              { label: "Get Started", href: "https://leads.meetcursive.com/get-leads", description: "Pick a plan and you are live in minutes" },
+              { label: "Get 25 Free Leads", href: startUrl("what-is-ai-sdr-links"), description: "Paste your website, get 25 leads with work emails. No card, no call." },
               { label: "Book a Call", href: "https://cal.com/cursiveteam/30min", description: "Talk to the team before you buy" }
             ]} />
           </MachineSection>

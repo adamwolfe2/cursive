@@ -14,7 +14,7 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
-import { GET_LEADS_URL, BOOKING_URL } from "@/lib/cta"
+import { BOOKING_URL, START_CTA_LABEL, startUrl } from "@/lib/cta"
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
@@ -673,8 +673,8 @@ export default function WhatIsB2BIntentDataPage() {
                   ))}
                 </div>
                 <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center">
-                  <Button size="lg" href={GET_LEADS_URL} target="_blank" rel="noopener noreferrer">
-                    Get Started
+                  <Button size="lg" href={startUrl("what-is-b2b-intent-data")}>
+                    {START_CTA_LABEL}
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                   <Button size="lg" variant="outline" href={BOOKING_URL} target="_blank" rel="noopener noreferrer">
@@ -782,7 +782,7 @@ export default function WhatIsB2BIntentDataPage() {
               Cursive turns intent signals into a fresh weekly Custom Audience of in-market buyers, paired with deterministic website visitor identification — so you reach interested accounts before your competitors.
             </p>
             <MachineList items={[
-              { label: "Get Started", href: "https://leads.meetcursive.com/get-leads", description: "Pick a plan and you are live in minutes" },
+              { label: "Get 25 Free Leads", href: startUrl("what-is-b2b-intent-data-links"), description: "Paste your website, get 25 leads with work emails. No card, no call." },
               { label: "Free Audit", href: "https://www.meetcursive.com/free-audit", description: "See which in-market accounts are visiting your site" },
               { label: "Book a Call", href: "https://cal.com/cursiveteam/30min", description: "Talk to the team before you buy" },
             ]} />

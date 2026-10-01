@@ -9,7 +9,7 @@ import Link from "next/link"
 import { ArrowRight, Workflow, Plug, HelpCircle, type LucideIcon } from "lucide-react"
 import { integrations } from "@/lib/integrations-data"
 import type { Integration } from "@/lib/integrations-data"
-import { GET_LEADS_URL, BOOKING_URL } from "@/lib/cta"
+import { BOOKING_URL, START_CTA_LABEL, startUrl } from "@/lib/cta"
 
 // ---------------------------------------------------------------------------
 // Static params + metadata
@@ -155,12 +155,10 @@ export default async function IntegrationPage({
 
             <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center">
               <Link
-                href={GET_LEADS_URL}
-                target="_blank"
-                rel="noopener noreferrer"
+                href={startUrl("integration")}
                 className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-8 py-3 text-base text-white transition-colors hover:bg-primary-dark"
               >
-                Get Started
+                {START_CTA_LABEL}
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
@@ -379,12 +377,10 @@ export default async function IntegrationPage({
             </p>
             <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center">
               <Link
-                href={GET_LEADS_URL}
-                target="_blank"
-                rel="noopener noreferrer"
+                href={startUrl("integration")}
                 className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-8 py-3 text-base text-white transition-colors hover:bg-primary-dark"
               >
-                Get Started
+                {START_CTA_LABEL}
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link

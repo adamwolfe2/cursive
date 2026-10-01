@@ -9,7 +9,7 @@ import {
 } from "lucide-react"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
 import { Breadcrumbs } from "@/components/Breadcrumbs"
-import { GET_LEADS_URL, BOOKING_URL } from "@/lib/cta"
+import { BOOKING_URL, GET_LEADS_URL, START_CTA_LABEL, startUrl } from "@/lib/cta"
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
@@ -233,8 +233,8 @@ export default function CallBookedPage() {
                   Install the pixel in 60 seconds. Plans from $97/mo, month-to-month, cancel anytime.
                 </p>
                 <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center">
-                  <Button size="lg" href={GET_LEADS_URL} target="_blank" rel="noopener noreferrer">
-                    Get Started
+                  <Button size="lg" href={startUrl("call-booked")}>
+                    {START_CTA_LABEL}
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                   <Button size="lg" variant="outline" href={BOOKING_URL} target="_blank" rel="noopener noreferrer">
@@ -289,7 +289,7 @@ export default function CallBookedPage() {
 
           <MachineSection title="Get Started">
             <MachineList items={[
-              { label: "Install the Pixel / Get Started", href: "https://leads.meetcursive.com/get-leads", description: "Pick a plan and you are live in minutes" },
+              { label: "Get 25 Free Leads", href: startUrl("call-booked-links"), description: "Paste your website, get 25 leads with work emails. No card, no call." },
               { label: "Manage Your Booking", href: "https://cal.com/cursiveteam/30min", description: "Reschedule or review your booked call" },
               { label: "Email", href: "mailto:hey@meetcursive.com", description: "Questions before your call" },
             ]} />

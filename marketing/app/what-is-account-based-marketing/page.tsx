@@ -14,7 +14,7 @@ import {
   AlertTriangle, ArrowRight, type LucideIcon,
 } from "lucide-react"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
-import { GET_LEADS_URL, BOOKING_URL } from "@/lib/cta"
+import { BOOKING_URL, START_CTA_LABEL, startUrl } from "@/lib/cta"
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
@@ -343,8 +343,8 @@ export default function WhatIsAccountBasedMarketing() {
                 generation to precision-targeted account engagement.
               </p>
               <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center">
-                <Button size="lg" href={GET_LEADS_URL} target="_blank" rel="noopener noreferrer">
-                  Get Started
+                <Button size="lg" href={startUrl("what-is-account-based-marketing")}>
+                  {START_CTA_LABEL}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
                 <Button size="lg" variant="outline" href={BOOKING_URL} target="_blank" rel="noopener noreferrer">
@@ -860,8 +860,8 @@ export default function WhatIsAccountBasedMarketing() {
                 month-to-month, cancel anytime.
               </p>
               <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center">
-                <Button size="lg" href={GET_LEADS_URL} target="_blank" rel="noopener noreferrer">
-                  Get Started
+                <Button size="lg" href={startUrl("what-is-account-based-marketing")}>
+                  {START_CTA_LABEL}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
                 <Button size="lg" variant="outline" href={BOOKING_URL} target="_blank" rel="noopener noreferrer">
@@ -990,7 +990,7 @@ export default function WhatIsAccountBasedMarketing() {
               Cursive provides the identification and intent layer that modern ABM programs require — see which target accounts are already visiting your website, and get a fresh weekly list of in-market buyers built to your ICP. Self-serve from $97/month, month-to-month.
             </p>
             <MachineList items={[
-              { label: "Get Started", href: "https://leads.meetcursive.com/get-leads", description: "Pick a plan and you are live in minutes" },
+              { label: "Get 25 Free Leads", href: startUrl("what-is-account-based-marketing-links"), description: "Paste your website, get 25 leads with work emails. No card, no call." },
               { label: "Book a Call", href: "https://cal.com/cursiveteam/30min", description: "Talk to the team before you buy" },
               { label: "Pricing", href: "https://www.meetcursive.com/pricing", description: "Visitor Pixel $97/mo, Custom Audience $197/mo, or both for $247/mo" }
             ]} />
