@@ -10,9 +10,12 @@
  */
 export const START_URL = 'https://leads.meetcursive.com/start'
 
-/** /start link tagged with where on the site the click came from (e.g. "nav", "home-hero"). */
-export const startUrl = (placement: string) =>
-  `${START_URL}?utm_source=meetcursive&utm_medium=website&utm_content=${encodeURIComponent(placement)}`
+/**
+ * /start link tagged with where on the site the click came from (e.g. "nav", "home-hero").
+ * With `site`, /start skips its own form and starts scanning that site on load.
+ */
+export const startUrl = (placement: string, site?: string) =>
+  `${START_URL}?${site ? `site=${encodeURIComponent(site)}&` : ''}utm_source=meetcursive&utm_medium=website&utm_content=${encodeURIComponent(placement)}`
 
 /** Primary offer line, used in CTAs and hero copy. */
 export const START_CTA_LABEL = 'Get 25 free leads'

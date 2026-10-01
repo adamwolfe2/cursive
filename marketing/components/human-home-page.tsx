@@ -2,23 +2,24 @@
 
 import { Button } from "@/components/ui/button"
 import { Container } from "@/components/ui/container"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion } from "framer-motion"
 import { DashboardCTA } from "@/components/dashboard-cta"
 import { IntegrationsShowcase } from "@/components/integrations-showcase"
 import { HowItWorksSection } from "@/components/homepage/how-it-works-section"
 import { CompetitiveAdvantagesSection } from "@/components/homepage/competitive-advantages-section"
 import { TestimonialsSection } from "@/components/homepage/testimonials-section"
 import { FAQSection } from "@/components/homepage/faq-section"
+import { StartHero } from "@/components/homepage/start-hero"
 import Link from "next/link"
 import { useState } from "react"
 import {
-  Eye, Bot, TrendingUp, ShoppingCart, Briefcase,
+  Eye, TrendingUp, ShoppingCart,
   Users, Database, Mail, Sparkles, ShieldCheck,
   BarChart3, GitBranch, Building2, Search, Flame,
   Layers, Check,
   type LucideIcon,
 } from "lucide-react"
-import { GET_LEADS_URL, START_CTA_LABEL, startUrl } from "@/lib/cta"
+import { GET_LEADS_URL } from "@/lib/cta"
 
 // Demo components
 import { DemoVisitorTracking } from "@/components/demos/demo-visitor-tracking"
@@ -34,25 +35,24 @@ import { DemoEmailValidator } from "@/components/demos/demo-email-validator"
 import { DemoAttributionFlow } from "@/components/demos/demo-attribution-flow"
 import { DemoAccountIntelligence } from "@/components/demos/demo-account-intelligence"
 
-// Feature definitions with icons for the hero showcase
+// Paid products, each with a live demo, for the "Everything else" tour under the hero
 const heroFeatures: Array<{
   id: string
   label: string
-  shortLabel: string
   icon: LucideIcon
 }> = [
-  { id: "visitor-tracking", label: "Visitor Tracking", shortLabel: "Visitors", icon: Eye },
-  { id: "intent-heatmap", label: "Intent Heatmap", shortLabel: "Intent", icon: Flame },
-  { id: "audience-builder", label: "Audience Builder", shortLabel: "Audiences", icon: Users },
-  { id: "enrichment", label: "Data Enrichment", shortLabel: "Enrichment", icon: Database },
-  { id: "sequences", label: "Lead Sequences", shortLabel: "Sequences", icon: Mail },
-  { id: "ai-studio", label: "AI Studio", shortLabel: "AI Studio", icon: Sparkles },
-  { id: "email-validator", label: "Email Validator", shortLabel: "Validator", icon: ShieldCheck },
-  { id: "pipeline", label: "Pipeline Dashboard", shortLabel: "Pipeline", icon: BarChart3 },
-  { id: "attribution", label: "Attribution Flow", shortLabel: "Attribution", icon: GitBranch },
-  { id: "account-intel", label: "Account Intelligence", shortLabel: "Accounts", icon: Building2 },
-  { id: "people-search", label: "People Search", shortLabel: "People", icon: Search },
-  { id: "marketplace", label: "Marketplace", shortLabel: "Marketplace", icon: ShoppingCart },
+  { id: "visitor-tracking", label: "Visitor Tracking", icon: Eye },
+  { id: "intent-heatmap", label: "Intent Heatmap", icon: Flame },
+  { id: "audience-builder", label: "Audience Builder", icon: Users },
+  { id: "enrichment", label: "Data Enrichment", icon: Database },
+  { id: "sequences", label: "Lead Sequences", icon: Mail },
+  { id: "ai-studio", label: "AI Studio", icon: Sparkles },
+  { id: "email-validator", label: "Email Validator", icon: ShieldCheck },
+  { id: "pipeline", label: "Pipeline Dashboard", icon: BarChart3 },
+  { id: "attribution", label: "Attribution Flow", icon: GitBranch },
+  { id: "account-intel", label: "Account Intelligence", icon: Building2 },
+  { id: "people-search", label: "People Search", icon: Search },
+  { id: "marketplace", label: "Marketplace", icon: ShoppingCart },
 ]
 
 // Render the active demo component lazily
@@ -92,138 +92,46 @@ export function HumanHomePage() {
 
   return (
     <main className="bg-white">
-      {/* ===== HERO SECTION ===== */}
-      <section id="hero" className="pt-14 pb-6 bg-white min-h-[100svh] lg:min-h-[90vh] lg:flex lg:flex-col lg:justify-center">
-        <Container className="max-w-[1440px] lg:px-12">
-          {/* Split Layout: Copy Left, Demo Right */}
-          <div className="lg:flex lg:gap-8 xl:gap-12 items-start">
-            {/* Left Column: Copy */}
-            <motion.div
-              initial={false}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-              className="lg:w-[46%] lg:flex-shrink-0 text-center lg:text-left mb-8 lg:mb-0"
-            >
-              {/* Locked to two lines at lg+: explicit <br>, whitespace-nowrap per line.
-                  Font sizes are tuned to fit the longer line in the 46% column. */}
-              <h1 className="text-[2.25rem] sm:text-[2.75rem] md:text-[3.25rem] lg:text-[1.875rem] xl:text-[2.375rem] 2xl:text-[2.75rem] font-light mb-4 leading-[1.08] tracking-tight">
-                <span className="text-gray-900 lg:whitespace-nowrap">Paste your website.</span>
-                <br />
-                <span className="text-gray-400 lg:whitespace-nowrap">Get 25 people who should buy from you.</span>
-              </h1>
+      <StartHero />
 
-              <p className="text-base text-gray-600 mb-4 leading-relaxed max-w-lg mx-auto lg:mx-0">
-                <span className="font-cursive text-gray-500 text-lg">Cursive</span> reads your site, works out who buys from you, and finds them. You get real names, titles, work emails, and a line on why each one fits. Free, in about a minute.
-              </p>
+      {/* Everything else: the paid products, each with a live demo. Secondary to the free list above. */}
+      <section id="products-tour" aria-labelledby="products-tour-heading" className="border-t border-gray-100 bg-[#F7F9FB] py-16 lg:py-20">
+        <Container className="grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] lg:gap-14">
+          <div className="min-w-0">
+            <h2 id="products-tour-heading" className="text-[2rem] font-semibold leading-[1.08] tracking-[-0.03em] text-[#111318] sm:text-[2.5rem]">
+              Everything else Cursive does
+            </h2>
+            <p className="mt-4 max-w-[42ch] text-base leading-relaxed text-[#4d5460]">
+              The free list is the start. The same data runs visitor identification, audiences, enrichment and outreach. Pick one to see it work.
+            </p>
+            <div role="group" aria-label="Pick a product" className="mt-6 grid grid-cols-2 gap-1.5 sm:flex sm:flex-wrap">
+              {heroFeatures.map((feature) => {
+                const Icon = feature.icon
+                const isActive = activeFeature === feature.id
+                return (
+                  <button
+                    key={feature.id}
+                    type="button"
+                    onClick={() => setActiveFeature(feature.id)}
+                    aria-pressed={isActive}
+                    className={`inline-flex min-h-11 items-center gap-2 rounded-lg border px-3 text-left text-[13px] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF] ${
+                      isActive
+                        ? "border-[#cfe3ff] bg-white font-medium text-[#0c1f45] shadow-[0_1px_2px_rgb(12_31_69/0.08)]"
+                        : "border-gray-200 bg-white/60 text-[#4d5460] hover:bg-white hover:text-[#1d2025]"
+                    }`}
+                  >
+                    <Icon className={`h-4 w-4 shrink-0 ${isActive ? "text-[#0063E6]" : "text-gray-500"}`} aria-hidden="true" />
+                    {feature.label}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
 
-              {/* What the free list includes */}
-              <ul className="flex flex-wrap justify-center lg:justify-start gap-x-5 gap-y-1.5 mb-5 py-3 border-y border-gray-100 text-sm text-gray-700">
-                {["No card", "No sales call", "The 25 are yours to keep"].map((item) => (
-                  <li key={item} className="inline-flex items-center gap-1.5">
-                    <Check className="w-4 h-4 text-primary flex-shrink-0" aria-hidden="true" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-
-              {/* CTAs */}
-              <div className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-3 mb-1">
-                <Button
-                  size="lg"
-                  href={startUrl("home-hero")}
-                  className="bg-primary text-white hover:bg-primary-dark px-6 py-3"
-                >
-                  {START_CTA_LABEL}
-                </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  href="/pricing"
-                  className="px-6 py-3"
-                >
-                  See pricing
-                </Button>
-              </div>
-              <div className="mb-4" />
-
-              {/* Desktop Feature Pills (ClickUp-style flex-wrap rows) */}
-              <div className="hidden lg:flex lg:flex-wrap gap-1.5">
-                {heroFeatures.map((feature) => {
-                  const Icon = feature.icon
-                  const isActive = activeFeature === feature.id
-                  return (
-                    <button
-                      key={feature.id}
-                      onClick={() => setActiveFeature(feature.id)}
-                      className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs transition-all whitespace-nowrap ${
-                        isActive
-                          ? 'bg-primary/5 text-primary font-medium shadow-sm border border-primary/20'
-                          : 'text-gray-600 hover:bg-gray-50 border border-gray-200'
-                      }`}
-                    >
-                      <Icon className={`w-3 h-3 flex-shrink-0 ${isActive ? 'text-primary' : 'text-gray-400'}`} />
-                      {feature.label}
-                    </button>
-                  )
-                })}
-              </div>
-            </motion.div>
-
-            {/* Right Column: Demo */}
-            <motion.div
-              initial={false}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-              className="lg:flex-1 lg:min-w-0"
-            >
-              {/* Mobile Feature Grid (ClickUp-style 4x3 icon grid) */}
-              <div className="lg:hidden grid grid-cols-4 gap-px bg-gray-200 rounded-xl overflow-hidden mb-4">
-                {heroFeatures.map((feature) => {
-                  const Icon = feature.icon
-                  const isActive = activeFeature === feature.id
-                  return (
-                    <button
-                      key={feature.id}
-                      onClick={() => setActiveFeature(feature.id)}
-                      className={`flex flex-col items-center justify-center gap-1 py-3 px-1 transition-colors ${
-                        isActive ? 'bg-primary/5' : 'bg-white'
-                      }`}
-                    >
-                      <Icon className={`w-4 h-4 ${isActive ? 'text-primary' : 'text-gray-400'}`} />
-                      <span className={`text-[10px] leading-tight text-center ${
-                        isActive ? 'text-primary font-medium' : 'text-gray-500'
-                      }`}>
-                        {feature.shortLabel}
-                      </span>
-                    </button>
-                  )
-                })}
-              </div>
-
-              {/* Demo with Browser Chrome */}
-              <div className="bg-gradient-to-br from-primary/5 to-primary/10 rounded-2xl p-2 md:p-3">
-                <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
-                  <div className="bg-gray-100 px-3 py-2 flex items-center gap-1.5 border-b border-gray-200">
-                    <div className="w-2 h-2 rounded-full bg-gray-300" />
-                    <div className="w-2 h-2 rounded-full bg-gray-300" />
-                    <div className="w-2 h-2 rounded-full bg-gray-300" />
-                  </div>
-                  <div className="p-3 md:p-4 h-[400px] overflow-hidden">
-                    <AnimatePresence mode="wait">
-                      <motion.div
-                        key={activeFeature}
-                        initial={false}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                      >
-                        {renderDemoComponent(activeFeature)}
-                      </motion.div>
-                    </AnimatePresence>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
+          <div className="min-w-0 overflow-hidden rounded-2xl border border-[#dfe7f2] bg-white shadow-[0_24px_60px_-28px_rgb(12_31_69/0.28)]">
+            <div className="h-[400px] overflow-hidden p-3 md:p-4">
+              <div key={activeFeature}>{renderDemoComponent(activeFeature)}</div>
+            </div>
           </div>
         </Container>
       </section>

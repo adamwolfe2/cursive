@@ -30,11 +30,11 @@ const homepageFAQs = [
 
 export const metadata: Metadata = {
   title: "Cursive | Get 25 free leads from your website",
-  description: "Paste your website. Cursive works out who buys from you and finds 25 of them: names, titles, work emails, and why each fits. Free, no card, no call.",
+  description: "Your site in, 25 buyers out. Cursive reads your website, works out who buys, and finds 25 people who fit, with work emails and why each one fits. Free, about a minute, no card.",
   keywords: "identity graph, intent data, B2B data infrastructure, pixel identification, consumer data, audience enrichment, NCOA, lead generation, AI SDR, intent provider, Bombora alternative, 6sense alternative",
   openGraph: {
     title: "Cursive | Get 25 free leads from your website",
-    description: "Paste your website. Cursive works out who buys from you and finds 25 of them: names, titles, work emails, and why each fits. Free, no card, no call.",
+    description: "Your site in, 25 buyers out. Cursive reads your website, works out who buys, and finds 25 people who fit, with work emails and why each one fits. Free, about a minute, no card.",
     url: "https://www.meetcursive.com",
     siteName: "Cursive",
     images: [{
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Cursive | Get 25 free leads from your website",
-    description: "Paste your website. Cursive works out who buys from you and finds 25 of them: names, titles, work emails, and why each fits. Free, no card, no call.",
+    description: "Your site in, 25 buyers out. Cursive reads your website, works out who buys, and finds 25 people who fit, with work emails and why each one fits. Free, about a minute, no card.",
     images: ["https://www.meetcursive.com/cursive-social-preview.png"],
     creator: "@meetcursive",
   },
