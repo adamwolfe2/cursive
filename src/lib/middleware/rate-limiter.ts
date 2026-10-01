@@ -17,6 +17,13 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
+/** Non-negative integer from env, or the fallback when unset or not a number (0 is kept). */
+function envCount(raw: string | undefined, fallback: number): number {
+  const n = raw === undefined || raw.trim() === '' ? NaN : Number(raw)
+  return Number.isInteger(n) && n >= 0 ? n : fallback
+}
+
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Section 1: Distributed rate limiting via Upstash Redis
 // ─────────────────────────────────────────────────────────────────────────────
@@ -360,6 +367,14 @@ export const RATE_LIMITS = {
     windowMs: 24 * 60 * 60 * 1000,
     maxRequests: Number(process.env.FREE_LEADS_DAILY_SEND_CAP) || 200,
     message: 'Free lead claims are paused for today.',
+  },
+
+  // Email-finder lookups for thin-niche rescue (one slot per lookup, all claims).
+  'free-leads-email-lookup-global': {
+    windowMs: 24 * 60 * 60 * 1000,
+    // 0 is a valid kill switch, so only a missing or non-numeric value falls back to 300.
+    maxRequests: envCount(process.env.FREE_LEADS_DAILY_LOOKUP_CAP, 300),
+    message: 'Email lookups are paused for today.',
   },
 
   'free-leads-email-icp': {
