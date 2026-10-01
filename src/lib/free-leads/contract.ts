@@ -56,9 +56,20 @@ export interface Fact {
  * Server-Sent Events from POST /api/start/scan (body: ScanRequest). One JSON object per `data:` line.
  * Every event reports real backend progress, in this order:
  *   page(fetching "/") -> site -> page(read "/") -> page(fetching|read|failed, sub-pages) -> fact(site)*
- *   -> fact(model)* -> icp_partial* (one per completed field) -> icp -> count -> done
+ *   -> fact(model)* -> icp_partial* (one per completed field) -> icp -> count -> persona? -> done
+ * `persona` is best-effort: a failed persona call skips the event, never the scan.
  * A repeat scan of a recently scanned site starts with `replay` and then the same events, instantly.
  */
+/** One believable, fictional buyer drawn from the ICP. Plain language, no em dashes. */
+export interface Persona {
+  name: string // first name only, e.g. "Dana"
+  role: string // "VP Operations"
+  company: string // "a 12-property student-housing operator in Austin"
+  day: string // 2-3 sentences: what her week actually looks like
+  measured_on: string[] // 2-3 short items: what her boss judges her on
+  replies_when: string // 1-2 sentences: what makes her answer a cold message
+}
+
 export type ScanEvent =
   | { type: 'replay'; scanned_at: string }
   | { type: 'page'; path: string; state: 'fetching' | 'read' | 'failed'; title?: string | null; chars?: number }
@@ -67,6 +78,7 @@ export type ScanEvent =
   | { type: 'icp_partial'; icp: Partial<Icp> }
   | { type: 'icp'; icp: Icp }
   | { type: 'count'; total: number }
+  | { type: 'persona'; persona: Persona }
   | { type: 'error'; code: 'invalid_url' | 'unreachable' | 'rate_limited' | 'failed'; message: string }
   | { type: 'done' }
 
