@@ -20,7 +20,7 @@ function lookupOnce(fn: ReturnType<typeof guardedLookup>, options: { all?: boole
 describe('connect-time SSRF guard', () => {
   it('blocks private, loopback, metadata, CGNAT, mapped and NAT64 addresses', () => {
     for (const a of ['127.0.0.1', '10.1.2.3', '172.16.0.1', '192.168.1.1', '169.254.169.254', '100.64.0.1', '0.0.0.0',
-      '::1', '::', 'fd00::1', 'fe80::1', '::ffff:127.0.0.1', '::ffff:169.254.169.254', '64:ff9b::a9fe:a9fe', 'not-an-ip']) {
+      '::1', '::', 'fd00::1', 'fe80::1', '::ffff:127.0.0.1', '::ffff:7f00:1', '::ffff:169.254.169.254', '64:ff9b::a9fe:a9fe', 'not-an-ip']) {
       expect(isBlockedAddress(a), a).toBe(true)
     }
     for (const a of ['93.184.216.34', '2606:4700::6810:84e5', '::ffff:93.184.216.34']) {

@@ -42,7 +42,14 @@ const TWO_LABEL_SUFFIXES = new Set([
 export function companyDomain(email: string): string {
   const labels = emailDomain(email).split('.').filter(Boolean)
   const lastTwo = labels.slice(-2).join('.')
-  return TWO_LABEL_SUFFIXES.has(lastTwo) ? labels.slice(-3).join('.') : lastTwo
+  return TWO_LABEL_SUFFIXES.has(lastTwo) || isGenericCcSuffix(labels) ? labels.slice(-3).join('.') : lastTwo
+}
+
+/** "com.tw", "co.th", "org.vn": a generic second level under a country code is a public suffix, not a company. */
+const GENERIC_SECOND_LEVEL = new Set(['com', 'co', 'net', 'org', 'ac', 'gov', 'edu', 'ne', 'or', 'go', 'ltd', 'biz'])
+function isGenericCcSuffix(labels: string[]): boolean {
+  const [sld, tld] = labels.slice(-2)
+  return labels.length >= 3 && /^[a-z]{2}$/.test(tld ?? '') && GENERIC_SECOND_LEVEL.has(sld ?? '')
 }
 
 export function isPersonalEmail(email: string): boolean {
