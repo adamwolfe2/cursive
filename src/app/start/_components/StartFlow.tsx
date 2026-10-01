@@ -456,6 +456,7 @@ export function StartFlow({ mock, initialSite }: { mock: Mock; initialSite: stri
               onRefine={onRefine}
               approved={approved}
               onApprove={() => void onApprove()}
+              onRecount={() => complete && recount(icp as Icp, 0)}
               secondary={
                 complete && !approved && website && count !== 0 ? (
                   <EmailProfile website={website} icp={icp as Icp} mock={mock} edited={edited} />

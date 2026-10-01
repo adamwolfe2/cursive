@@ -24,6 +24,8 @@ interface Props {
   onApprove: () => void
   /** The secondary action ("Email me this profile"); its row is held so it never moves the panel. */
   secondary: ReactNode
+  /** Retries a count that failed; offered only while the count is unknown. */
+  onRecount: () => void
 }
 
 const WHITE_FOCUS = 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white'
@@ -35,7 +37,7 @@ const TICKS = ['100', '1k', '10k', '100k', '1M+']
  * and Approve. Every height here is fixed across states (building, counted, zero, narrow) so the count landing
  * never pushes the targeting panel below it.
  */
-export function MarketPanel({ full, count, counting, delta, onChange, approved, onApprove, secondary }: Props) {
+export function MarketPanel({ full, count, counting, delta, onChange, approved, onApprove, secondary, onRecount }: Props) {
   const approveRef = useRef<HTMLButtonElement>(null)
   const settled = count !== null && !counting
   const band = settled ? marketBand(count) : null
@@ -72,8 +74,13 @@ export function MarketPanel({ full, count, counting, delta, onChange, approved, 
       </div>
       <div className="mt-2 flex h-7 min-w-0 items-center gap-3 text-[14px] sm:text-[15px]">
         <span className="shrink-0">
-          {count === null ? (unknown ? 'Count unavailable right now.' : 'Counting people who fit') : 'people fit this profile'}
+          {count === null ? (unknown ? 'The count did not load.' : 'Counting people who fit') : 'people fit this profile'}
         </span>
+        {unknown && (
+          <button type="button" onClick={onRecount} className={`rounded-full bg-white px-3 py-1 text-[13px] font-semibold text-[#0066DD] transition-colors hover:bg-[#f0f7ff] ${WHITE_FOCUS}`}>
+            Count again
+          </button>
+        )}
         {delta && settled && <DeltaPill key={deltaKey(delta)} delta={delta} />}
       </div>
 

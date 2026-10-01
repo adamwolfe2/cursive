@@ -22,6 +22,7 @@ interface Props {
   onApprove: () => void
   /** "Email me this profile", rendered in the decision panel's reserved secondary slot. */
   secondary: ReactNode
+  onRecount: () => void
 }
 
 /** Titles beyond this fold behind "+N more" so a long list does not bury the rest of the targeting. */
@@ -70,6 +71,7 @@ export function IcpCard(props: Props) {
         approved={props.approved}
         onApprove={props.onApprove}
         secondary={props.secondary}
+        onRecount={props.onRecount}
       />
       <Targeting {...props} full={full} />
     </section>
