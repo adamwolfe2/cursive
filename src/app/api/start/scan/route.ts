@@ -128,16 +128,24 @@ async function run(ctx: ScanContext, send: Send, cached: CachedScan | null): Pro
 
 function sseResponse(body: (send: Send) => Promise<void>): Response {
   const encoder = new TextEncoder()
+  // The visitor may leave mid-scan: stop writing but let the scan finish, so the model spend
+  // lands in the shared cache instead of being thrown away.
+  let closed = false
   const stream = new ReadableStream({
+    cancel() {
+      closed = true
+    },
     async start(controller) {
-      const send: Send = (event) => controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`))
+      const send: Send = (event) => {
+        if (!closed) controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`))
+      }
       try {
         await body(send)
       } catch (err) {
         safeError('[start/scan] stream failed', err)
         send(FAILED)
       } finally {
-        controller.close()
+        if (!closed) controller.close()
       }
     },
   })
@@ -188,5 +196,6 @@ export async function POST(req: NextRequest) {
       meta: description ? { description: true } : {},
     })
     await run(ctx, send, cached)
+    await ctx.pasted // early returns (unreachable, failed scan) must still record the paste
   })
 }

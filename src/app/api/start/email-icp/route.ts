@@ -10,7 +10,7 @@ export const runtime = 'nodejs'
 
 import { NextResponse, type NextRequest } from 'next/server'
 import { EmailIcpRequestSchema, type EmailIcpResponse } from '@/lib/free-leads/contract'
-import { emailDomain } from '@/lib/free-leads/rules'
+import { emailDomain, emailKey } from '@/lib/free-leads/rules'
 import { hasMailExchanger } from '@/lib/free-leads/mx'
 import { normalizeSiteUrl, siteDomain } from '@/lib/free-leads/site'
 import { recordStep, sessionIcp, sessionIdFrom } from '@/lib/free-leads/funnel'
@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
 
   if (
     (await isLimited('free-leads-email-icp', `ip:${clientIp(req)}`)) ||
-    (await isLimited('free-leads-email-icp-email', `email:${email}`)) ||
+    (await isLimited('free-leads-email-icp-email', `email:${emailKey(email)}`)) ||
     (await isLimited('free-leads-email-icp-global', 'global'))
   ) {
     return reply({ status: 'rate_limited' })

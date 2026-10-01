@@ -233,3 +233,30 @@ describe('delivery: over-pull, fit check, preview reuse', () => {
     expect(leads.map((l) => l.why)).toEqual(['a', 'b', 'c'])
   })
 })
+
+describe('stale processing recovery (nothing billed yet)', () => {
+  it('a stale lock with no paid attempt goes back to pending and can be fulfilled; a billed one cannot', async () => {
+    const { recoverStaleClaim } = await import('../claims')
+    const { admin, row } = setup()
+    const old = new Date(Date.now() - 10 * 60 * 1000).toISOString()
+    Object.assign(row(), { status: 'processing', attempts: 0, processing_started_at: old })
+    expect(leadsActionFor(row())).toBe('recover')
+    await recoverStaleClaim('c1', admin)
+    expect(row()).toMatchObject({ status: 'pending', processing_started_at: null })
+    expect(leadsActionFor(row())).toBe('fulfill')
+
+    Object.assign(row(), { status: 'processing', attempts: 1, processing_started_at: old })
+    expect(leadsActionFor(row())).toBe('failed')
+    await recoverStaleClaim('c1', admin)
+    expect(row().status).toBe('processing')
+  })
+
+  it('a fresh lock is never recovered (a live request may be mid-pull)', async () => {
+    const { recoverStaleClaim } = await import('../claims')
+    const { admin, row } = setup()
+    Object.assign(row(), { status: 'processing', attempts: 0, processing_started_at: new Date().toISOString() })
+    expect(leadsActionFor(row())).toBe('wait')
+    await recoverStaleClaim('c1', admin)
+    expect(row().status).toBe('processing')
+  })
+})

@@ -113,10 +113,11 @@ export const ClaimRequestSchema = z.object({
 })
 
 /** POST /api/start/email-icp body -> { status } . "Email me this profile": soft capture, any mailbox. */
+/** The emailed profile is the one our scan stored for this session (anti-relay); `icp` is ignored. */
 export const EmailIcpRequestSchema = z.object({
   email: z.string().email().max(254),
   website: z.string().min(3).max(253),
-  icp: IcpSchema,
+  icp: IcpSchema.optional(),
 })
 export type EmailIcpResponse = { status: 'sent' } | { status: 'rate_limited' } | { status: 'invalid_email' }
 export type ClaimRequest = z.infer<typeof ClaimRequestSchema>
@@ -149,7 +150,7 @@ export interface FullLead {
 export type LeadsResponse =
   | { status: 'ready'; icp: Icp; website: string; leads: FullLead[]; total_matching: number }
   | { status: 'no_claim' } // signed in but never claimed -> send to /start
-  | { status: 'failed'; message: string }
+  | { status: 'failed'; message: string; retryable?: boolean }
 
 export const UPGRADE_TIERS = ['weekly_leads', 'linkedin_outreach', 'ai_dashboard'] as const
 export type UpgradeTier = (typeof UPGRADE_TIERS)[number]
@@ -216,6 +217,7 @@ export const FUNNEL_STEPS = [
   'claim', // work email submitted, link sent
   'link_opened', // magic link opened (leads page with token)
   'delivered', // 25 leads pulled and stored
+  'delivery_failed', // paid pull or store failed (meta.credits billed)
   'leads_viewed', // leads page rendered the list
   'csv', // client: CSV downloaded
   'upgrade_weekly_leads',

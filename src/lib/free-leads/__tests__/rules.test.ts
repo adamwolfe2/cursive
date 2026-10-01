@@ -124,10 +124,11 @@ describe('claim state transitions', () => {
     expect(leadsActionFor(state('pending', 1), NOW)).toBe('failed')
   })
 
-  it('treats processing older than 5 minutes (or with no start time) as failed, not pending', () => {
+  it('stale processing: failed after a paid attempt (or with no start time), recoverable only when nothing was billed', () => {
     expect(leadsActionFor(state('processing', 1, STALE_PROCESSING_MS - 1), NOW)).toBe('wait')
     expect(leadsActionFor(state('processing', 1, STALE_PROCESSING_MS), NOW)).toBe('failed')
     expect(leadsActionFor(state('processing', 0, null), NOW)).toBe('failed')
+    expect(leadsActionFor(state('processing', 0, STALE_PROCESSING_MS), NOW)).toBe('recover')
   })
 
   it('decides claim-time outcomes without revealing who claimed', () => {

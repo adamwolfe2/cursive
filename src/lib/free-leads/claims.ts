@@ -23,6 +23,7 @@ import {
   toLeadInsert,
   usableContacts,
   MAX_PAID_PULLS,
+  STALE_PROCESSING_MS,
   type ClaimStatus,
   type StoredLeadRow,
 } from './rules'
@@ -53,7 +54,12 @@ const CLAIM_COLUMNS =
 const DAILY_FULFILLMENT_CAP = Number(process.env.FREE_LEADS_DAILY_CLAIM_CAP) || 30
 
 export class ClaimError extends Error {
-  constructor(message: string, readonly code: 'db' | 'domain_taken' | 'upstream' | 'store') {
+  constructor(
+    message: string,
+    readonly code: 'db' | 'domain_taken' | 'upstream' | 'store',
+    /** Credits billed before the failure (for cost accounting). */
+    readonly credits = 0
+  ) {
     super(message)
     this.name = 'ClaimError'
   }
@@ -177,6 +183,19 @@ export async function releaseClaim(claimId: string, admin: Admin): Promise<void>
   if (error) throw dbError('claim release failed', error)
 }
 
+/** processing -> pending for a claim stuck before any paid request (attempts 0, stale lock). */
+export async function recoverStaleClaim(claimId: string, admin: Admin): Promise<void> {
+  const cutoff = new Date(Date.now() - STALE_PROCESSING_MS).toISOString()
+  const { error } = await admin
+    .from('free_lead_claims')
+    .update({ status: 'pending', processing_started_at: null })
+    .eq('id', claimId)
+    .eq('status', 'processing')
+    .eq('attempts', 0)
+    .lt('processing_started_at', cutoff)
+  if (error) throw dbError('stale claim recovery failed', error)
+}
+
 /**
  * Daily cap on paid pulls, checked after the caller already holds the processing
  * lock (so its own claim is in the count). Count-after-claim means concurrent
@@ -297,7 +316,7 @@ export async function fulfillClaim(claim: ClaimRow, authUserId: string, admin: A
   // Never throws: a failed check delivers the top rows unscored (logged in scoreLeads).
   let fitUsd = 0
   const fits = icp
-    ? await scoreLeads(icp, claim.website, candidates, { onUsage: ({ usage, model }) => (fitUsd += claudeUsd(model, usage)) })
+    ? await scoreLeads(icp, claim.website, candidates, { delivery: true, onUsage: ({ usage, model }) => (fitUsd += claudeUsd(model, usage)) })
     : null
   const picked = selectFitLeads(candidates, fits, FREE_LEAD_COUNT)
   // Credits are already spent: if the check rejected every row, deliver them unscored rather than none.
@@ -309,7 +328,7 @@ export async function fulfillClaim(claim: ClaimRow, authUserId: string, admin: A
   if (error) {
     safeError('[free-leads/claims] leads insert failed after pull', error)
     await setStatus(admin, claim.id, 'failed', { workspace_id: workspaceId, credits_used: pulled.contacts.length })
-    throw new ClaimError('storing leads failed', 'store')
+    throw new ClaimError('storing leads failed', 'store', pulled.contacts.length)
   }
   await setStatus(admin, claim.id, 'fulfilled', {
     workspace_id: workspaceId,

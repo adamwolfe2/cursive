@@ -99,7 +99,7 @@ export async function scoreLeads(
   icp: Icp,
   website: string,
   contacts: readonly GetLeadsContact[],
-  opts: { model?: string; effort?: 'low' | 'medium' | 'high'; onUsage?: (u: FitUsage) => void } = {}
+  opts: { model?: string; effort?: 'low' | 'medium' | 'high'; onUsage?: (u: FitUsage) => void; delivery?: boolean } = {}
 ): Promise<LeadFit[] | null> {
   if (!contacts.length) return []
   if (!process.env.ANTHROPIC_API_KEY) {
@@ -119,7 +119,9 @@ export async function scoreLeads(
         },
       ],
       output_config: { effort: opts.effort ?? FIT_EFFORT, format: { type: 'json_schema', schema: SCHEMA } },
-    } as Anthropic.MessageCreateParamsNonStreaming)
+    } as Anthropic.MessageCreateParamsNonStreaming,
+    // During delivery credits are already spent: one bounded try, then deliver unscored.
+    opts.delivery ? { maxRetries: 0, timeout: 20_000 } : undefined)
     opts.onUsage?.({ usage: message.usage, model: message.model })
     if (message.stop_reason !== 'end_turn') {
       safeWarn('[free-leads/lead-fit] judge stopped early', message.stop_reason)

@@ -9,8 +9,9 @@ type ResolveMx = (domain: string) => Promise<{ exchange: string; priority: numbe
 
 const TIMEOUT_MS = 3_000
 const TTL_MS = 60 * 60 * 1000
-// ponytail: per-instance cache; fine because lookups are cheap and cached by DNS too.
+// ponytail: per-instance cache, capped so random domains cannot grow memory without bound.
 const cache = new Map<string, { ok: boolean; expires: number }>()
+const CACHE_MAX = 5_000
 
 function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
   let timer: ReturnType<typeof setTimeout> | undefined
@@ -38,6 +39,7 @@ export async function hasMailExchanger(domain: string, resolve: ResolveMx = reso
     }
     ok = false
   }
+  if (cache.size >= CACHE_MAX) cache.clear()
   cache.set(domain, { ok, expires: Date.now() + TTL_MS })
   return ok
 }

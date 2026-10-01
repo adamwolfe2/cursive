@@ -11,7 +11,7 @@ export const runtime = 'nodejs'
 
 import { NextResponse, type NextRequest } from 'next/server'
 import { ClaimRequestSchema, type ClaimResponse } from '@/lib/free-leads/contract'
-import { claimDecisionFor, companyDomain, emailDomain, hashIp, isPersonalEmail, newClaimToken } from '@/lib/free-leads/rules'
+import { claimDecisionFor, companyDomain, emailDomain, emailKey, hashIp, isPersonalEmail, newClaimToken } from '@/lib/free-leads/rules'
 import {
   claimIcp,
   findLatestClaimByEmail,
@@ -83,7 +83,7 @@ export async function POST(req: NextRequest) {
 
   const ip = clientIp(req)
   // Per IP, and per mailbox per day, so rotating IPs cannot email-bomb one address.
-  if ((await isLimited('free-leads-claim', `ip:${ip}`)) || (await isLimited('free-leads-claim-email', `email:${email}`))) {
+  if ((await isLimited('free-leads-claim', `ip:${ip}`)) || (await isLimited('free-leads-claim-email', `email:${emailKey(email)}`))) {
     return reply({ status: 'rate_limited' })
   }
 

@@ -61,6 +61,11 @@ export function maskEmail(email: string): string {
  * Keyed hash of the caller IP: a plain sha256 of an IPv4 address is brute-forceable, so the key is a
  * server secret (FREE_LEADS_IP_SALT, else the service-role key, which every server instance has).
  */
+/** Short stable id for an email in rate-limit keys (keys are VARCHAR(255); emails can be 254 chars). */
+export function emailKey(email: string): string {
+  return createHash('sha256').update(email.trim().toLowerCase()).digest('hex').slice(0, 32)
+}
+
 export function hashIp(ip: string): string {
   const key = process.env.FREE_LEADS_IP_SALT || process.env.SUPABASE_SERVICE_ROLE_KEY || 'free-leads'
   return createHmac('sha256', key).update(`free-leads:${ip}`).digest('hex').slice(0, 32)
@@ -237,7 +242,7 @@ export interface ClaimState {
 }
 
 /** What GET /api/start/leads should do for the caller's latest claim. */
-export type LeadsAction = 'no_claim' | 'fulfill' | 'wait' | 'return_stored' | 'failed'
+export type LeadsAction = 'no_claim' | 'fulfill' | 'wait' | 'return_stored' | 'failed' | 'recover'
 
 export function leadsActionFor(claim: ClaimState | null, now = Date.now()): LeadsAction {
   if (!claim) return 'no_claim'
@@ -246,7 +251,10 @@ export function leadsActionFor(claim: ClaimState | null, now = Date.now()): Lead
       return claim.attempts >= MAX_PAID_PULLS ? 'failed' : 'fulfill'
     case 'processing': {
       const started = claim.processing_started_at ? Date.parse(claim.processing_started_at) : NaN
-      return Number.isFinite(started) && now - started < STALE_PROCESSING_MS ? 'wait' : 'failed'
+      if (Number.isFinite(started) && now - started < STALE_PROCESSING_MS) return 'wait'
+      // Stuck before the paid request was ever sent (crash, timeout, deploy): nothing was billed,
+      // so it can safely go back to pending. After a paid attempt it stays failed (no re-billing).
+      return claim.attempts === 0 && Number.isFinite(started) ? 'recover' : 'failed'
     }
     case 'fulfilled':
       return 'return_stored'

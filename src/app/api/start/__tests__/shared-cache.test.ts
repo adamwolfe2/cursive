@@ -52,6 +52,27 @@ describe('scan: shared cache', () => {
     expect(fetchSite.mock.calls[0][0]).toBe('https://acme.com/')
   })
 
+  it('a visitor leaving mid-scan does not waste the scan: it finishes and is cached', async () => {
+    fetchSite.mockResolvedValue({ domain: 'acme.com', title: 'Acme', description: null, favicon: null, text: 'x'.repeat(400), source: 'direct' })
+    let release!: () => void
+    const gate = new Promise<void>((r) => (release = r))
+    scanIcp.mockImplementation(async (_t: string, cb: { onFact: (f: unknown) => void }) => {
+      cb.onFact({ key: 'offer', label: 'What you sell', text: 'Audits', source: 'model' })
+      await gate
+      return ICP
+    })
+    countContacts.mockResolvedValue(7)
+    const res = await scan(req('/api/start/scan', { url: 'acme.com' }))
+    const reader = (res.body as ReadableStream<Uint8Array>).getReader()
+    await reader.read()
+    await reader.cancel()
+    release()
+    await vi.waitFor(() => {
+      const cache = (db.current as ReturnType<typeof fakeSupabase>).tables.free_leads_cache
+      expect(cache.some((r) => String(r.key).startsWith('scan:'))).toBe(true)
+    })
+  })
+
   it('a failed scan is not cached', async () => {
     fetchSite.mockResolvedValue({ domain: 'acme.com', title: 'Acme', description: null, favicon: null, text: 'x'.repeat(400), source: 'direct' })
     scanIcp.mockRejectedValue(new Error('model down'))
