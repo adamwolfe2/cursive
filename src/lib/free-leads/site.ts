@@ -262,7 +262,8 @@ const PER_PERIOD = /(?:\/|per\s)/i
 
 /** Prices from a pricing page; elsewhere only explicit per-period prices count. */
 export function listedPrices(text: string, fromPricingPage: boolean): string[] {
-  const found = (text.match(PRICE) ?? []).map((p) => p.replace(/\s+/g, ' ').trim())
+  // "$25 / mo" and "$25 /mo" (tags stripped between them) both read as "$25/mo".
+  const found = (text.match(PRICE) ?? []).map((p) => p.replace(/\s*\/\s*/g, '/').replace(/\s+/g, ' ').trim())
   return [...new Set(fromPricingPage ? found : found.filter((p) => PER_PERIOD.test(p)))].slice(0, 3)
 }
 

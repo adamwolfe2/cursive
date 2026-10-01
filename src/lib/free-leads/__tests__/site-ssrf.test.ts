@@ -77,5 +77,6 @@ describe('listedPrices', () => {
     const copy = 'We raised $4M and saved clients $300K. Plans: $49/mo, $99 per user, $1,200/year. Setup $3.'
     expect(listedPrices(copy, false)).toEqual(['$49/mo', '$99 per user', '$1,200/year'])
     expect(listedPrices('Starter $49 Growth $199 Enterprise $4M ARR', true)).toEqual(['$49', '$199'])
+    expect(listedPrices('Pro $25 /mo or $15 / user', false)).toEqual(['$25/mo', '$15/user'])
   })
 })
