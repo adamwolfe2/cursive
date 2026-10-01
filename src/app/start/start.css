@@ -197,6 +197,83 @@
   animation: fl-sheen 1.6s linear infinite;
 }
 
+/* Hero example: the domain types itself in (a clip reveal; text never reflows). */
+@keyframes fl-type {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+.fl-type {
+  animation: fl-type 650ms steps(14, end) 150ms both;
+}
+
+/* How it works: the connector fills and each number lights as the step scrolls into view. */
+@keyframes fl-line {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes fl-num {
+  from {
+    background-color: #fff;
+    color: #0063e6;
+  }
+  to {
+    background-color: #0063e6;
+    color: #fff;
+  }
+}
+
+.fl-step-line {
+  transform-origin: top;
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .fl-step-line {
+      animation: fl-line linear both;
+      animation-timeline: view();
+      animation-range: entry 60% cover 55%;
+    }
+    .fl-step-num {
+      animation: fl-num linear both;
+      animation-timeline: view();
+      animation-range: entry 100% cover 40%;
+    }
+  }
+}
+
+/* Submit: the hero field morphs into the scan view's site header; everything else cross-fades. */
+::view-transition-group(fl-site) {
+  animation-duration: 520ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 280ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fl-type {
+    animation: none;
+  }
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
 /* A replayed scan arrives all at once; skip the entrance motion. */
 .fl-instant .fl-rise,
 .fl-instant .fl-fade {

@@ -172,7 +172,7 @@ function SiteHeader({
   return (
     <div>
       <div className="flex items-center justify-between gap-4">
-        <div className="flex min-w-0 items-center gap-3">
+        <div className="flex min-w-0 items-center gap-3" style={{ viewTransitionName: 'fl-site' }}>
           <span className="grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-lg border border-[#e5e7eb] bg-white">
             {site?.favicon && faviconOk ? (
               // eslint-disable-next-line @next/next/no-img-element -- arbitrary third-party favicon, 20px
@@ -207,7 +207,7 @@ function SiteHeader({
   )
 }
 
-function PageLine({ page, first }: { page: PageRow; first: boolean }) {
+export function PageLine({ page, first }: { page: PageRow; first: boolean }) {
   const label = page.path === '/' ? 'Homepage' : page.path
   return (
     <li
