@@ -22,12 +22,13 @@ export async function POST() {
   try {
     const { data: member, error: memberError } = await admin
       .from('users')
-      .select('workspace_id')
+      .select('workspace_id, role')
       .eq('auth_user_id', user.id)
       .maybeSingle()
     if (memberError) throw new Error(`member lookup failed: ${memberError.message}`)
-    const workspaceId = (member as { workspace_id: string | null } | null)?.workspace_id
+    const { workspace_id: workspaceId, role } = (member ?? {}) as { workspace_id?: string | null; role?: string }
     if (!workspaceId) return NextResponse.json({ error: 'No billing account' }, { status: 404 })
+    if (role !== 'owner') return NextResponse.json({ error: 'Only the workspace owner can manage billing.' }, { status: 403 })
 
     const { data: order, error: orderError } = await admin
       .from('funnel_orders')

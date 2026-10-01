@@ -38,12 +38,13 @@ export async function POST() {
   try {
     const { data: member, error: memberError } = await admin
       .from('users')
-      .select('workspace_id')
+      .select('workspace_id, role')
       .eq('auth_user_id', user.id)
       .maybeSingle()
     if (memberError) throw new Error(`member lookup failed: ${memberError.message}`)
-    const workspaceId = (member as { workspace_id: string | null } | null)?.workspace_id
+    const { workspace_id: workspaceId, role } = (member ?? {}) as { workspace_id?: string | null; role?: string }
     if (!workspaceId) return NextResponse.json({ error: 'No workspace' }, { status: 403 })
+    if (role !== 'owner') return NextResponse.json({ error: 'Only the workspace owner can change billing.' }, { status: 403 })
 
     const { data: ws, error: wsError } = await admin.from('workspaces').select('settings').eq('id', workspaceId).maybeSingle()
     if (wsError) throw new Error(`workspace lookup failed: ${wsError.message}`)
@@ -63,6 +64,8 @@ export async function POST() {
     }
 
     const meta = { type: 'funnel_order', offer_slug: offer.slug, free_leads_workspace_id: workspaceId }
+    // Two quick clicks reuse one session instead of opening two subscriptions (10-minute window).
+    const idempotencyKey = `fl-checkout:${workspaceId}:${Math.floor(Date.now() / 600_000)}`
     const session = await getStripeClient().checkout.sessions.create({
       mode: 'subscription',
       // Locked at Checkout: the order email is the verified session email (the bind re-checks it).
@@ -83,7 +86,7 @@ export async function POST() {
       },
       success_url: `${APP_URL}/dashboard?weekly=started`,
       cancel_url: `${APP_URL}/dashboard`,
-    })
+    }, { idempotencyKey })
     if (!session.url) throw new Error('Stripe returned no checkout url')
 
     const claim = await findLatestClaimByEmail(user.email, admin)

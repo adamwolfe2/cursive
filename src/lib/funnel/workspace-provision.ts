@@ -154,9 +154,10 @@ export async function bindOrderToFreeLeadsWorkspace(
     .select('id, auth_user_id')
     .eq('workspace_id', workspaceId)
     .eq('email', normalizeEmail(order.customer_email))
+    .eq('role', 'owner')
     .maybeSingle()
-  if (userError) throw new Error(`free-leads bind: member lookup failed: ${userError.message}`)
-  if (!member) return refuse('checkout email is not a member of the workspace')
+  if (userError) throw new Error(`free-leads bind: owner lookup failed: ${userError.message}`)
+  if (!member) return refuse('checkout email is not the owner of the workspace')
 
   const linked = await linkOrderToWorkspace(admin, order.id, workspaceId)
   if (linked !== workspaceId) return refuse('order already bound to another workspace')

@@ -61,6 +61,18 @@ describe('POST /api/start/checkout', () => {
     expect(args.subscription_data).toMatchObject({ trial_period_days: 14, metadata: { free_leads_workspace_id: WS } })
   })
 
+  it('refuses a non-owner member', async () => {
+    ;(db.current as ReturnType<typeof fakeSupabase>).tables.users.push({ id: 'u-5', auth_user_id: 'a-5', workspace_id: WS, email: 'm@acme.com', role: 'member' })
+    auth.user = { id: 'a-5', email: 'm@acme.com' }
+    expect((await post()).status).toBe(403)
+    expect(stripe.create).not.toHaveBeenCalled()
+  })
+
+  it('sends an idempotency key scoped to the workspace', async () => {
+    await post()
+    expect(stripe.create.mock.calls[0][1]?.idempotencyKey).toMatch(/^fl-checkout:ws-free:\d+$/)
+  })
+
   it('requires a signed-in user', async () => {
     auth.user = null
     expect((await post()).status).toBe(401)

@@ -19,8 +19,9 @@ beforeEach(() => {
       { id: 'ws-marketplace', settings: { source: 'signup' } },
     ],
     users: [
-      { id: 'u-1', auth_user_id: 'a-1', workspace_id: WS, email: 'owner@acme.com' },
-      { id: 'u-2', auth_user_id: 'a-2', workspace_id: 'ws-marketplace', email: 'owner@acme.com' },
+      { id: 'u-1', auth_user_id: 'a-1', workspace_id: WS, email: 'owner@acme.com', role: 'owner' },
+      { id: 'u-4', auth_user_id: 'a-4', workspace_id: WS, email: 'member@acme.com', role: 'member' },
+      { id: 'u-2', auth_user_id: 'a-2', workspace_id: 'ws-marketplace', email: 'owner@acme.com', role: 'owner' },
     ],
     funnel_orders: [{ id: 'ord-1', workspace_id: null }],
   })
@@ -40,6 +41,11 @@ describe('bindOrderToFreeLeadsWorkspace', () => {
 
   it('refuses when the checkout email is not a member of that workspace', async () => {
     expect(await bindOrderToFreeLeadsWorkspace(order({ customer_email: 'attacker@evil.com' }), WS)).toBeNull()
+    expect(tables().funnel_orders[0].workspace_id).toBeNull()
+  })
+
+  it('refuses a non-owner member of the workspace', async () => {
+    expect(await bindOrderToFreeLeadsWorkspace(order({ customer_email: 'member@acme.com' }), WS)).toBeNull()
     expect(tables().funnel_orders[0].workspace_id).toBeNull()
   })
 

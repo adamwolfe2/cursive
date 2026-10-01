@@ -19,7 +19,7 @@ beforeEach(() => {
   portal.create.mockReset()
   portal.create.mockResolvedValue({ url: 'https://billing.stripe.com/p/1' })
   db.current = fakeSupabase({
-    users: [{ id: 'u-1', auth_user_id: 'a-1', workspace_id: 'ws-1' }],
+    users: [{ id: 'u-1', auth_user_id: 'a-1', workspace_id: 'ws-1', role: 'owner' }, { id: 'u-2', auth_user_id: 'a-2', workspace_id: 'ws-1', role: 'member' }],
     funnel_orders: [
       { id: 'o-other', workspace_id: 'ws-2', stripe_customer_id: 'cus_other' },
       { id: 'o-1', workspace_id: 'ws-1', stripe_customer_id: 'cus_mine' },
@@ -35,6 +35,12 @@ describe('POST /api/start/billing', () => {
     expect(portal.create.mock.calls[0][0].customer).toBe('cus_mine')
   })
 
+  it('refuses a non-owner member of the same workspace', async () => {
+    auth.user = { id: 'a-2', email: 'm@acme.com' }
+    expect((await POST()).status).toBe(403)
+    expect(portal.create).not.toHaveBeenCalled()
+  })
+
   it('requires a session', async () => {
     auth.user = null
     expect((await POST()).status).toBe(401)
@@ -43,7 +49,7 @@ describe('POST /api/start/billing', () => {
 
   it('404s when the workspace has no paid order', async () => {
     auth.user = { id: 'a-9', email: 'x@y.com' }
-    ;(db.current as ReturnType<typeof fakeSupabase>).tables.users.push({ id: 'u-9', auth_user_id: 'a-9', workspace_id: 'ws-9' })
+    ;(db.current as ReturnType<typeof fakeSupabase>).tables.users.push({ id: 'u-9', auth_user_id: 'a-9', workspace_id: 'ws-9', role: 'owner' })
     expect((await POST()).status).toBe(404)
     expect(portal.create).not.toHaveBeenCalled()
   })
