@@ -26,6 +26,12 @@ export async function POST(req: NextRequest) {
   const website = normalizeSiteUrl(parsed.data.website)
   if (!website) return badRequest('Enter a valid website.')
   const email = parsed.data.email.trim().toLowerCase()
+  // Validate everything that is free to check before spending a send slot: a rejected request
+  // must not use up the caller's (or the mailbox's) daily allowance.
+  const domain = siteDomain(website)
+  const sessionId = sessionIdFrom(req)
+  const scanned = sessionId ? await sessionIcp(sessionId) : null
+  if (!scanned || scanned.domain !== domain) return badRequest('Scan your site first, then we can email the profile.')
   if (!(await hasMailExchanger(emailDomain(email)))) return reply({ status: 'invalid_email' })
 
   if (
@@ -36,10 +42,6 @@ export async function POST(req: NextRequest) {
     return reply({ status: 'rate_limited' })
   }
 
-  const domain = siteDomain(website)
-  const sessionId = sessionIdFrom(req)
-  const scanned = sessionId ? await sessionIcp(sessionId) : null
-  if (!scanned || scanned.domain !== domain) return badRequest('Scan your site first, then we can email the profile.')
   const sent = await sendFreeLeadsProfileEmail({ to: email, domain, icp: scanned.icp })
   if (!sent.success) return serverError('We could not send the email. Please try again.')
   safeLog('[start/email-icp] profile sent', {})

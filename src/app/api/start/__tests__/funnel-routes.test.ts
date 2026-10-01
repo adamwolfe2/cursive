@@ -4,10 +4,10 @@ import { fakeSupabase } from '@/lib/free-leads/__tests__/fake-supabase'
 
 const db = vi.hoisted(() => ({ current: null as unknown }))
 vi.mock('@/lib/supabase/admin', () => ({ createAdminClient: () => db.current }))
-const limited = vi.hoisted(() => ({ types: new Set<string>() }))
+const limited = vi.hoisted(() => ({ types: new Set<string>(), checked: [] as string[] }))
 vi.mock('@/lib/free-leads/http', async (orig) => ({
   ...(await orig<typeof import('@/lib/free-leads/http')>()),
-  isLimited: async (type: string) => limited.types.has(type),
+  isLimited: async (type: string) => (limited.checked.push(type), limited.types.has(type)),
 }))
 vi.mock('@/lib/free-leads/mx', () => ({ hasMailExchanger: async (d: string) => d !== 'nomx.test' }))
 const sendProfile = vi.hoisted(() => vi.fn())
@@ -33,6 +33,7 @@ const tables = () => (db.current as ReturnType<typeof fakeSupabase>).tables
 beforeEach(() => {
   db.current = fakeSupabase({ free_lead_sessions: [], free_lead_events: [] })
   limited.types.clear()
+  limited.checked.length = 0
   sendProfile.mockReset()
   sendProfile.mockResolvedValue({ success: true })
 })
@@ -61,6 +62,8 @@ describe('POST /api/start/email-icp', () => {
     tables().free_lead_sessions.push({ id: SID, domain: 'other.com', icp: ICP })
     expect((await emailIcp(req('/api/start/email-icp', body))).status).toBe(400)
     expect(sendProfile).not.toHaveBeenCalled()
+    // Rejected requests must not burn the IP / mailbox send allowance.
+    expect(limited.checked).toEqual([])
   })
 
   it('sends the scanned profile (not the request body) to any mailbox with MX', async () => {
@@ -72,7 +75,9 @@ describe('POST /api/start/email-icp', () => {
   })
 
   it('refuses mailboxes without MX and never sends past a cap', async () => {
+    tables().free_lead_sessions.push({ id: SID, domain: 'acme.com', icp: ICP })
     expect(await (await emailIcp(req('/api/start/email-icp', { ...body, email: 'a@nomx.test' }))).json()).toEqual({ status: 'invalid_email' })
+    expect(limited.checked).toEqual([])
     limited.types.add('free-leads-email-icp-email')
     expect(await (await emailIcp(req('/api/start/email-icp', body))).json()).toEqual({ status: 'rate_limited' })
     expect(sendProfile).not.toHaveBeenCalled()

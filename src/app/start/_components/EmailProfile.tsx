@@ -69,7 +69,7 @@ export function EmailProfile({ website, icp, mock, edited }: { website: string; 
     state === 'invalid_email'
       ? 'That email does not look right. Check it and try again.'
       : state === 'rate_limited'
-        ? 'We have sent a lot of emails to this network today. Try again later.'
+        ? 'We have sent this profile a lot today. Try again tomorrow.'
         : state === 'error'
           ? error
           : null
