@@ -17,6 +17,21 @@ function useInterest(mock: Mock) {
   const choose = async (tier: UpgradeTier) => {
     if (inFlight.current) return
     inFlight.current = true
+    if (tier === 'weekly_leads' && !mock) {
+      // Self-serve: straight to Stripe Checkout (same tab). The server binds it to this workspace.
+      setBusy(tier)
+      try {
+        const { url } = await postJson<{ url: string }>('/api/start/checkout', {}, mock)
+        return window.location.assign(url)
+      } catch (err) {
+        inFlight.current = false
+        setBusy(null)
+        if (err instanceof StartApiError && err.status === 409) return router.push('/dashboard')
+        if (err instanceof StartApiError && err.status === 401) return router.replace('/start')
+        console.error('[start] checkout failed, falling back to the booking page', err)
+        return window.location.assign(BOOKING_URL)
+      }
+    }
     // Open synchronously inside the click so popup blockers allow it, then point it at the booking page.
     const win = window.open('about:blank', '_blank')
     if (win) win.opener = null

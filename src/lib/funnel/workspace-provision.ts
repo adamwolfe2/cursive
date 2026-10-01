@@ -120,6 +120,56 @@ async function getOrCreateAuthUser(
 /**
  * Provision (or reuse) a workspace for a funnel order. Idempotent + race-safe.
  */
+/**
+ * Binds a paid order to the free-leads workspace it was bought from (/api/start/checkout).
+ *
+ * The workspace id comes from Checkout metadata, which only our server can set, and that
+ * route only sets it for the signed-in owner of the workspace. As a second check the order's
+ * email (locked at Checkout to the signed-in user's verified email) must belong to a member
+ * of that workspace, and the workspace must have come from the free-leads flow. Anything
+ * else returns null: the caller alerts and the order stays unlinked for a human to resolve.
+ * Never moves an order already bound to another workspace.
+ */
+export async function bindOrderToFreeLeadsWorkspace(
+  order: FunnelOrder,
+  workspaceId: string
+): Promise<ProvisionResult | null> {
+  const admin = createAdminClient()
+  const refuse = (reason: string) => {
+    safeError('[funnel/provision] free-leads bind refused', { order_id: order.id, reason })
+    return null
+  }
+
+  const { data: ws, error: wsError } = await admin
+    .from('workspaces')
+    .select('id, settings')
+    .eq('id', workspaceId)
+    .maybeSingle()
+  if (wsError) throw new Error(`free-leads bind: workspace lookup failed: ${wsError.message}`)
+  if (!ws) return refuse('workspace not found')
+  if ((ws.settings as { source?: string } | null)?.source !== 'free_leads') return refuse('not a free-leads workspace')
+
+  const { data: member, error: userError } = await admin
+    .from('users')
+    .select('id, auth_user_id')
+    .eq('workspace_id', workspaceId)
+    .eq('email', normalizeEmail(order.customer_email))
+    .maybeSingle()
+  if (userError) throw new Error(`free-leads bind: member lookup failed: ${userError.message}`)
+  if (!member) return refuse('checkout email is not a member of the workspace')
+
+  const linked = await linkOrderToWorkspace(admin, order.id, workspaceId)
+  if (linked !== workspaceId) return refuse('order already bound to another workspace')
+
+  safeLog('[funnel/provision] bound order to free-leads workspace', { order_id: order.id, workspace_id: workspaceId })
+  return {
+    workspaceId,
+    userId: (member as { id: string }).id,
+    authUserId: (member as { auth_user_id: string }).auth_user_id,
+    created: false,
+  }
+}
+
 export async function provisionFunnelWorkspace(
   order: FunnelOrder
 ): Promise<ProvisionResult | null> {

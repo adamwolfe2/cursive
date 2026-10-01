@@ -683,12 +683,12 @@ function DashboardMainGridSkeleton() {
 // ─── Main page — fast phase only ──────────────────────────────────────────────
 
 /**
- * A workspace provisioned by the free-leads flow, with no paid funnel order yet, gets its own
- * home (FreeLeadsHome). Returns null for every other workspace, which keeps the full dashboard.
+ * A workspace provisioned by the free-leads flow gets its own home (FreeLeadsHome), before and
+ * after it subscribes to weekly leads. Returns null for every other workspace, which keeps the full dashboard.
  * Service role: free_lead_claims and funnel_orders are server-only (RLS, no policies); every read
  * is scoped to this workspace id.
  */
-async function loadFreeLeadsHome(supabase: Awaited<ReturnType<typeof createClient>>, workspaceId: string) {
+async function loadFreeLeadsHome(supabase: Awaited<ReturnType<typeof createClient>>, workspaceId: string, justStarted: boolean) {
   const { data: ws, error: wsError } = await supabase
     .from('workspaces')
     .select('settings, website_url, name')
@@ -702,22 +702,27 @@ async function loadFreeLeadsHome(supabase: Awaited<ReturnType<typeof createClien
   if (settings?.source !== 'free_leads') return null
 
   const admin = createAdminClient()
-  const { count: orders, error: orderError } = await admin
+  const { data: order, error: orderError } = await admin
     .from('funnel_orders')
-    .select('id', { count: 'exact', head: true })
+    .select('subscription_state, trial_ends_at')
     .eq('workspace_id', workspaceId)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
   if (orderError) {
     safeError('[dashboard] free-leads order lookup failed', orderError)
     return null
   }
-  if (orders) return null // upgraded: the funnel-buyer home takes over
+  const weekly = order
+    ? { state: (order as { subscription_state: string }).subscription_state, trialEndsAt: (order as { trial_ends_at: string | null }).trial_ends_at }
+    : null
 
   try {
     const claim = await findWorkspaceClaim(workspaceId, admin)
     if (!claim) return null
     const leads = await loadStoredLeads(workspaceId, claim.id, admin)
     const domain = (ws?.website_url ?? claim.website).replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0] || ws?.name || ''
-    return <FreeLeadsHome domain={domain} icp={claimIcp(claim)} leads={leads} totalMatching={claim.total_matching} />
+    return <FreeLeadsHome domain={domain} icp={claimIcp(claim)} leads={leads} totalMatching={claim.total_matching} weekly={weekly} justStarted={justStarted} />
   } catch (err) {
     // Fall back to the standard dashboard rather than a broken page; the error is logged.
     safeError('[dashboard] free-leads home failed', err)
@@ -728,9 +733,9 @@ async function loadFreeLeadsHome(supabase: Awaited<ReturnType<typeof createClien
 export default async function DashboardPage({
   searchParams,
 }: {
-  searchParams: Promise<{ onboarding?: string; targeting_failed?: string }>
+  searchParams: Promise<{ onboarding?: string; targeting_failed?: string; weekly?: string }>
 }) {
-  const { onboarding, targeting_failed } = await searchParams
+  const { onboarding, targeting_failed, weekly } = await searchParams
   const supabase = await createClient()
 
   // SECURITY: Use getUser() for server-side JWT verification.
@@ -763,7 +768,7 @@ export default async function DashboardPage({
 
   const workspaceId = userProfile.workspace_id
 
-  const freeLeadsHome = await loadFreeLeadsHome(supabase, workspaceId)
+  const freeLeadsHome = await loadFreeLeadsHome(supabase, workspaceId, weekly === 'started')
   if (freeLeadsHome) return freeLeadsHome
 
   // ── Fast phase: data needed for above-the-fold content ──

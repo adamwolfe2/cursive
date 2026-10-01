@@ -397,6 +397,11 @@ export const RATE_LIMITS = {
     maxRequests: 20, // upgrade clicks per signed-in user per hour
     message: 'Too many requests.',
   },
+  'free-leads-checkout': {
+    windowMs: 60 * 60 * 1000,
+    maxRequests: 10, // checkout sessions per signed-in user per hour
+    message: 'Too many requests.',
+  },
   'free-leads-event': {
     windowMs: 60 * 60 * 1000,
     maxRequests: 120, // client-reported funnel steps (ICP approved, CSV download)

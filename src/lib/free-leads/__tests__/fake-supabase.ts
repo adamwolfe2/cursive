@@ -73,6 +73,10 @@ export function fakeSupabase(tables: Record<string, Row[]>, unique: UniqueCheck 
       this.filters.push((r) => field(r, k) != null && String(field(r, k)) >= v)
       return this
     }
+    is(k: string, v: null) {
+      this.filters.push((r) => (field(r, k) ?? null) === v)
+      return this
+    }
     in(k: string, vs: unknown[]) {
       this.filters.push((r) => vs.includes(field(r, k)))
       return this

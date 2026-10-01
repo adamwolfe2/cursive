@@ -19,7 +19,8 @@ import {
   countPriorOrdersForEmail,
   setTrialEndsAt,
 } from '@/lib/funnel/order.service'
-import { provisionFunnelWorkspace } from '@/lib/funnel/workspace-provision'
+import { bindOrderToFreeLeadsWorkspace, provisionFunnelWorkspace } from '@/lib/funnel/workspace-provision'
+import { notifySales } from '@/lib/free-leads/notify'
 import { sendFunnelConfirmationEmail } from '@/lib/email/templates/funnel-confirmation'
 import { APP_URL } from '@/lib/config/urls'
 
@@ -391,16 +392,28 @@ async function handleFunnelOrderCompleted(session: Stripe.Checkout.Session): Pro
   // delivers fulfillment regardless, so a provisioning hiccup never blocks a
   // paid order. dashboardUrl is only included in the email if this succeeds.
   let dashboardUrl: string | undefined
+  // Bought from inside a free-leads workspace (/api/start/checkout): bind to that workspace
+  // instead of provisioning a new one. The id is server-set metadata, re-verified in the bind.
+  const freeLeadsWorkspaceId = session.metadata?.free_leads_workspace_id
   try {
-    const provisioned = await provisionFunnelWorkspace(order)
-    if (provisioned) {
-      const token = portalUrl.split('/funnel/')[1] ?? ''
-      if (token) {
-        dashboardUrl = `${APP_URL}/api/funnel/${token}/dashboard-login`
+    if (freeLeadsWorkspaceId) {
+      const bound = await bindOrderToFreeLeadsWorkspace(order, freeLeadsWorkspaceId)
+      if (bound) dashboardUrl = `${APP_URL}/dashboard`
+      else await notifySales(`Paid weekly-leads order ${order.id} could not be linked to its free-leads workspace. Link it by hand.`)
+    } else {
+      const provisioned = await provisionFunnelWorkspace(order)
+      if (provisioned) {
+        const token = portalUrl.split('/funnel/')[1] ?? ''
+        if (token) {
+          dashboardUrl = `${APP_URL}/api/funnel/${token}/dashboard-login`
+        }
       }
     }
   } catch (provisionErr) {
     safeError('[Stripe Webhook] funnel workspace provision failed (non-fatal)', provisionErr)
+    if (freeLeadsWorkspaceId) {
+      await notifySales(`Paid weekly-leads order ${order.id} failed to link to its free-leads workspace. Check the logs.`)
+    }
   }
 
   // Confirmation email — non-fatal if it fails (Stripe is the source of truth)

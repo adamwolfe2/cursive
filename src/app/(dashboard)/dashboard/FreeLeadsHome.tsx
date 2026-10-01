@@ -3,7 +3,7 @@ import { ArrowRight, BarChart3, CalendarClock, Download, Send, Sparkles } from '
 import type { FullLead, Icp } from '@/lib/free-leads/contract'
 import { scriptFont } from '@/app/start/_components/script-font'
 import '@/app/start/start.css'
-import { UpgradeButton } from './UpgradeButton'
+import { StripeButton, UpgradeButton } from './UpgradeButton'
 
 /**
  * Home for a workspace provisioned by the free-leads flow (/start).
@@ -18,6 +18,23 @@ interface Props {
   icp: Icp | null
   leads: FullLead[]
   totalMatching: number | null
+  /** Latest weekly-leads order for this workspace, if any. */
+  weekly: { state: string; trialEndsAt: string | null } | null
+  /** Back from Stripe Checkout; the webhook may not have landed yet. */
+  justStarted: boolean
+}
+
+const LIVE = new Set(['active', 'past_due', 'paused', 'incomplete'])
+
+/** The next Monday after today (UTC), as "Mon, Oct 6". */
+function nextMonday(now = new Date()): string {
+  const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()))
+  d.setUTCDate(d.getUTCDate() + (((8 - d.getUTCDay()) % 7) || 7))
+  return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' })
+}
+
+function shortDate(iso: string): string {
+  return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' })
 }
 
 const DECISION = /^(c-?team|c-suite|cxo|vp|director|owner|founder|partner)/i
@@ -27,7 +44,8 @@ function brandName(domain: string): string {
   return root.charAt(0).toUpperCase() + root.slice(1)
 }
 
-export function FreeLeadsHome({ domain, icp, leads, totalMatching }: Props) {
+export function FreeLeadsHome({ domain, icp, leads, totalMatching, weekly, justStarted }: Props) {
+  const weeklyOn = Boolean(weekly && LIVE.has(weekly.state))
   const brand = brandName(domain)
   const deciders = leads.filter((l) => DECISION.test(l.seniority ?? '') || /chief|founder|owner|vp|head|director|president/i.test(l.job_title)).length
   const companies = new Set(leads.map((l) => l.company_domain ?? l.company)).size
@@ -138,18 +156,40 @@ export function FreeLeadsHome({ domain, icp, leads, totalMatching }: Props) {
         </h2>
         <div className="mt-5 grid gap-4 lg:grid-cols-3">
           <article className="fl-card relative flex flex-col rounded-xl border-2 border-[#007AFF] bg-white p-6">
-            <span className="absolute -top-3 left-5 rounded-full bg-[#007AFF] px-2.5 py-0.5 text-xs text-white">Most teams start here</span>
+            <span className="absolute -top-3 left-5 rounded-full bg-[#007AFF] px-2.5 py-0.5 text-xs text-white">
+              {weeklyOn ? 'On' : 'Most teams start here'}
+            </span>
             <CalendarClock className="h-6 w-6 text-[#007AFF]" strokeWidth={1.5} aria-hidden="true" />
             <h3 className="mt-4 text-xl text-[#111827]">25 new leads every Monday</h3>
             <p className="mt-2 flex-1 text-[15px] leading-relaxed text-[#4b5563]">
               Same buyer profile, fresh people each week, never a repeat. Lands right here and in your inbox.
             </p>
-            <p className="mt-4 text-sm text-[#111827]">
-              14 days free, then $197/mo. <span className="text-[#6b7280]">Cancel anytime.</span>
-            </p>
-            <div className="mt-4">
-              <UpgradeButton tier="weekly_leads" label="Start free for 14 days" primary />
-            </div>
+            {weeklyOn ? (
+              <div className="mt-4">
+                <p role="status" className="text-[15px] text-[#111827]">
+                  Your next 25 arrive {nextMonday()}.
+                  {weekly?.trialEndsAt && new Date(weekly.trialEndsAt) > new Date() ? (
+                    <span className="block text-sm text-[#6b7280]">Free until {shortDate(weekly.trialEndsAt)}. Cancel anytime.</span>
+                  ) : null}
+                </p>
+                <div className="mt-2">
+                  <StripeButton path="/api/start/billing" label="Manage billing or cancel" quiet />
+                </div>
+              </div>
+            ) : justStarted ? (
+              <p role="status" className="mt-4 text-[15px] text-[#111827]">
+                Payment received. Turning weekly leads on now; refresh in a minute.
+              </p>
+            ) : (
+              <>
+                <p className="mt-4 text-sm text-[#111827]">
+                  14 days free, then $197/mo. <span className="text-[#6b7280]">Cancel anytime.</span>
+                </p>
+                <div className="mt-4">
+                  <StripeButton path="/api/start/checkout" label="Start free for 14 days" />
+                </div>
+              </>
+            )}
           </article>
           <article className="fl-card flex flex-col rounded-xl border border-[#e5e7eb] bg-white p-6">
             <Send className="h-6 w-6 text-[#374151]" strokeWidth={1.5} aria-hidden="true" />
