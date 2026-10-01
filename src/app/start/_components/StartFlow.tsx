@@ -16,6 +16,8 @@ import { errorCopy, isAbort, MIN_DESCRIPTION, postJson, streamScan, trackStep, t
 import { EmailProfile } from './EmailProfile'
 import { Hero, type InputMode } from './Hero'
 import { IcpCard } from './IcpCard'
+import { describeChange } from './icp-edit'
+import type { CountDelta } from './MarketPanel'
 import { PersonaCard } from './PersonaCard'
 import { ClaimForm, PreviewTable } from './Preview'
 import { ScanErrorNote, ScanFeed, type ScanError, type Site } from './ScanFeed'
@@ -72,6 +74,8 @@ export function StartFlow({ mock, initialSite }: { mock: Mock; initialSite: stri
   const [slow, setSlow] = useState<0 | 1 | 2>(0)
 
   const [count, setCount] = useState<number | null>(null)
+  /** How the reader's last edit moved the count ("+1,240 since you added Texas"). */
+  const [delta, setDelta] = useState<CountDelta | null>(null)
   const [counting, setCounting] = useState(false)
   const [refining, setRefining] = useState(false)
   const [refineNote, setRefineNote] = useState<string | null>(null)
@@ -93,6 +97,8 @@ export function StartFlow({ mock, initialSite }: { mock: Mock; initialSite: stri
   const refineSeq = useRef(0)
   const countTimer = useRef<number | undefined>(undefined)
   const previewSeq = useRef(0)
+  /** The settled count before the pending edit(s) and what they changed; folded into `delta` when the count lands. */
+  const pendingRef = useRef<{ base: number; reasons: string[] } | null>(null)
   const claimRef = useRef<HTMLDivElement>(null)
   const cardRef = useRef<HTMLDivElement>(null)
   /** Phones: glide to the profile when it starts, unless the reader has scrolled on their own. */
@@ -205,6 +211,8 @@ export function StartFlow({ mock, initialSite }: { mock: Mock; initialSite: stri
     setScanError(null)
     setSlow(0)
     setCount(null)
+    setDelta(null)
+    pendingRef.current = null
     setCounting(false)
     setRefining(false)
     setRefineNote(null)
@@ -272,6 +280,25 @@ export function StartFlow({ mock, initialSite }: { mock: Mock; initialSite: stri
     }
   }
 
+  /** Remember what an edit changed, against the last count the reader actually saw. */
+  const noteChange = (prev: Partial<Icp>, next: Icp) => {
+    const reason = describeChange(prev, next)
+    const p = pendingRef.current
+    if (p) pendingRef.current = { ...p, reasons: [...p.reasons, reason] }
+    else if (count !== null) pendingRef.current = { base: count, reasons: [reason] }
+  }
+
+  const landCount = (total: number) => {
+    const p = pendingRef.current
+    pendingRef.current = null
+    setCount(total)
+    setDelta(
+      p && total !== p.base
+        ? { diff: total - p.base, reason: p.reasons.length === 1 ? p.reasons[0] : `since your last ${p.reasons.length} changes` }
+        : null
+    )
+  }
+
   const recount = (next: Icp, delay = 400) => {
     window.clearTimeout(countTimer.current)
     const seq = ++countSeq.current
@@ -280,12 +307,14 @@ export function StartFlow({ mock, initialSite }: { mock: Mock; initialSite: stri
     countTimer.current = window.setTimeout(async () => {
       try {
         const r = await postJson<CountResponse>('/api/start/count', { icp: next }, mock, signal)
-        if (seq === countSeq.current) setCount(r.total)
+        if (seq === countSeq.current) landCount(r.total)
       } catch (err) {
         if (isAbort(err)) return
         console.error('[start] count failed', err)
         if (seq === countSeq.current) {
           // The old total described a different profile: show "unavailable" and keep Approve blocked.
+          pendingRef.current = null
+          setDelta(null)
           setCount(null)
           setRefineError(`${errorCopy(err, 'One of those filters is not valid. Remove it and try again.')} Your changes are kept.`)
         }
@@ -304,6 +333,7 @@ export function StartFlow({ mock, initialSite }: { mock: Mock; initialSite: stri
   }
 
   const onChange = (next: Icp) => {
+    noteChange(icp, next)
     setIcp(next)
     setEdited(true)
     setRefineNote(null)
@@ -328,9 +358,10 @@ export function StartFlow({ mock, initialSite }: { mock: Mock; initialSite: stri
         if (own === refineSeq.current) setRefineNote('You edited the profile while that ran, so we kept your edit. Send it again to apply it.')
         return
       }
+      noteChange(icp, r.icp)
       setIcp(r.icp)
       setEdited(true)
-      setCount(r.total)
+      landCount(r.total)
       setRefineNote(r.note)
       unapprove()
     } catch (err) {
@@ -404,6 +435,7 @@ export function StartFlow({ mock, initialSite }: { mock: Mock; initialSite: stri
           icpReady={complete}
           slow={slow}
           replayedAt={replayedAt}
+          count={count}
           onReset={() => morph(() => toHero('url', null))}
         />
         {/* Phones: room below the profile so the follow-scroll can bring it to the top, past the rail. */}
@@ -414,6 +446,7 @@ export function StartFlow({ mock, initialSite }: { mock: Mock; initialSite: stri
               icp={icp}
               complete={complete}
               count={count}
+              delta={delta}
               // The stream stays open until its count lands; that wait is counting, not "unavailable".
               counting={counting || (phase === 'scanning' && count === null)}
               onChange={onChange}
@@ -423,18 +456,17 @@ export function StartFlow({ mock, initialSite }: { mock: Mock; initialSite: stri
               onRefine={onRefine}
               approved={approved}
               onApprove={() => void onApprove()}
+              secondary={
+                complete && !approved && website && count !== 0 ? (
+                  <EmailProfile website={website} icp={icp as Icp} mock={mock} edited={edited} />
+                ) : null
+              }
             />
             </div>
           )}
           {/* Describes the scanned profile; hidden once the reader edits it so it never contradicts the card. */}
           {complete && persona && !edited && <PersonaCard persona={persona} />}
           {scanError && <ScanErrorNote error={scanError} onRetry={() => query && void run(query)} />}
-          {/* Held until the persona lands or the stream ends, so the persona never pushes it down. */}
-          {complete && !approved && website && count !== 0 && (persona || phase !== 'scanning') && (
-            <div className="px-1">
-              <EmailProfile website={website} icp={icp as Icp} mock={mock} edited={edited} />
-            </div>
-          )}
         </div>
       </div>
 
