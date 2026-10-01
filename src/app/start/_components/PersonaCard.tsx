@@ -1,39 +1,66 @@
+import { CalendarDays, MessageSquareReply, Target, type LucideIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
 import type { Persona } from '@/lib/free-leads/contract'
 
-/** One real-sounding buyer behind the profile. Plain type, no icons or badges: it should read like a person. */
+/** One believable buyer behind the profile, met like a person: who she is, her week, what she is judged on, what gets a reply. */
 export function PersonaCard({ persona }: { persona: Persona }) {
   return (
-    <section aria-labelledby="persona-heading" className="fl-rise rounded-2xl border border-[#e5e7eb] bg-white px-5 py-6 sm:px-10 sm:py-8">
-      <h2 id="persona-heading" className="text-sm font-medium text-[#4d5460]">
-        An example buyer
-      </h2>
-      <p className="mt-3 max-w-[40ch] text-xl leading-snug tracking-[-0.01em] text-[#1d2025] sm:text-[1.375rem]">
-        <span className="font-semibold text-[#111318]">{persona.name}</span>, {persona.role} at {persona.company}
+    <section aria-labelledby="persona-heading" className="fl-rise overflow-hidden rounded-2xl border border-[#e5e7eb] bg-white">
+      <div className="flex items-center justify-between gap-3 border-b border-[#f0f1f3] px-5 py-3 sm:px-6">
+        <h2 id="persona-heading" className="text-sm font-semibold text-[#1d2025]">
+          An example buyer
+        </h2>
+        <span className="rounded-full bg-[#f3f4f6] px-2.5 py-0.5 text-[12px] font-medium text-[#4d5460]">Illustrative</span>
+      </div>
+      <div className="flex items-start gap-4 px-5 pt-5 sm:gap-5 sm:px-6 sm:pt-6">
+        <span
+          className="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-[#e8f1ff] text-[1.5rem] font-semibold text-[#084fba] ring-4 ring-[#f5f9ff] sm:h-16 sm:w-16 sm:text-[1.75rem]"
+          aria-hidden="true"
+        >
+          {persona.name.charAt(0).toUpperCase()}
+        </span>
+        <div className="min-w-0">
+          <p className="text-xl font-semibold leading-tight tracking-[-0.015em] text-[#111318] sm:text-[1.375rem]">{persona.name}</p>
+          <p className="mt-1 text-[15px] leading-snug text-[#3a3f4b]">
+            <span className="font-medium text-[#1d2025]">{persona.role}</span> at {persona.company}
+          </p>
+        </div>
+      </div>
+      <p className="px-5 pt-3 text-[13px] text-[#6b7280] sm:px-6">
+        Made up from your profile to help you picture who you are writing to. Not one of your leads.
       </p>
-      <p className="mt-2 text-[13px] text-[#4d5460]">Made up from your profile to help you picture who you are writing to. Not one of your leads.</p>
-      <dl className="mt-6 border-t border-[#e5e7eb]">
-        <Row label="A typical week">{persona.day}</Row>
+      <dl className="mt-5 grid border-t border-[#f0f1f3] md:grid-cols-3 md:divide-x md:divide-[#f0f1f3] max-md:divide-y max-md:divide-[#f0f1f3]">
+        <Block icon={CalendarDays} label="A typical week">
+          {persona.day}
+        </Block>
         {persona.measured_on.length > 0 && (
-          <Row label="Judged on">
-            <ul className="list-disc space-y-1 pl-5 marker:text-[#a0a5b1]">
+          <Block icon={Target} label="Judged on">
+            <ul className="space-y-1.5">
               {persona.measured_on.map((m, i) => (
-                <li key={i}>{m}</li>
+                <li key={i} className="flex gap-2">
+                  <span className="mt-[0.55rem] h-1 w-1 shrink-0 rounded-full bg-[#0063E6]" aria-hidden="true" />
+                  {m}
+                </li>
               ))}
             </ul>
-          </Row>
+          </Block>
         )}
-        <Row label="What gets a reply">{persona.replies_when}</Row>
+        <Block icon={MessageSquareReply} label="What gets a reply">
+          {persona.replies_when}
+        </Block>
       </dl>
     </section>
   )
 }
 
-function Row({ label, children }: { label: string; children: ReactNode }) {
+function Block({ icon: Icon, label, children }: { icon: LucideIcon; label: string; children: ReactNode }) {
   return (
-    <div className="grid gap-1.5 border-b border-[#e5e7eb] py-4 last:border-b-0 last:pb-0 sm:grid-cols-[9rem_1fr] sm:gap-6">
-      <dt className="text-[13px] font-medium text-[#4d5460] sm:pt-0.5">{label}</dt>
-      <dd className="max-w-[60ch] text-[15px] leading-relaxed text-[#1d2025]">{children}</dd>
+    <div className="px-5 py-4 sm:px-6 sm:py-5">
+      <dt className="flex items-center gap-2 text-[13px] font-semibold text-[#1d2025]">
+        <Icon className="h-4 w-4 text-[#0063E6]" aria-hidden="true" />
+        {label}
+      </dt>
+      <dd className="mt-2 text-[14px] leading-relaxed text-[#3a3f4b]">{children}</dd>
     </div>
   )
 }

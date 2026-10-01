@@ -65,18 +65,65 @@ export function withAdded(icp: Icp, key: ListKey, raw: string): Icp {
   return { ...icp, [key]: [...list, value] }
 }
 
-/** One-click ways out of a zero-match ICP, most restrictive first. */
+/** One-click ways out of a zero-match or narrow ICP, most restrictive first. */
 export function widenings(icp: Icp): Array<{ label: string; next: Icp }> {
   const out: Array<{ label: string; next: Icp }> = []
   if (icp.cities.length)
     out.push({ label: icp.states.length ? `Anywhere in ${icp.states[0]}` : 'Any city', next: { ...icp, cities: [] } })
   if (icp.states.length) out.push({ label: 'Any state or region', next: { ...icp, states: [], cities: [] } })
+  const level = nextSeniority(icp.seniority)
+  if (level) out.push({ label: `Add ${level} level`, next: { ...icp, seniority: [...icp.seniority, level] } })
   if (icp.company_size.length) out.push({ label: 'Any company size', next: { ...icp, company_size: [] } })
   if (icp.seniority.length) out.push({ label: 'Any seniority', next: { ...icp, seniority: [] } })
   if (icp.job_titles.length > 1)
     out.push({ label: `Drop "${icp.job_titles[icp.job_titles.length - 1]}"`, next: { ...icp, job_titles: icp.job_titles.slice(0, -1) } })
   if (icp.industries.length) out.push({ label: 'Any industry', next: { ...icp, industries: [] } })
   return out.slice(0, 3)
+}
+
+/** The next level down from the most junior one picked (Director -> Manager); null when seniority is "any" or full. */
+function nextSeniority(picked: Icp['seniority']): Icp['seniority'][number] | null {
+  if (!picked.length) return null
+  const lowest = Math.max(...picked.map((v) => SENIORITY_VALUES.indexOf(v)))
+  return SENIORITY_VALUES.slice(lowest + 1).find((v) => !picked.includes(v)) ?? SENIORITY_VALUES.find((v) => !picked.includes(v)) ?? null
+}
+
+/** "since you added Texas": what one edit (or a refine) changed, for the count's delta line. */
+export function describeChange(prev: Partial<Icp>, next: Icp): string {
+  const diffs = ROWS.map((row) => {
+    const before = valuesFor(prev, row.key) ?? []
+    const after = valuesFor(next, row.key) ?? []
+    return {
+      row,
+      added: after.filter((v) => !before.includes(v)),
+      removed: before.filter((v) => !after.includes(v)),
+    }
+  }).filter((d) => d.added.length || d.removed.length)
+  if (diffs.length !== 1) return 'since your change'
+  const { row, added, removed } = diffs[0]
+  if (added.length === 1 && !removed.length) return `since you added ${chipLabel(row.key, added[0])}`
+  if (removed.length === 1 && !added.length) return `since you removed ${chipLabel(row.key, removed[0])}`
+  if (!added.length) {
+    const after = valuesFor(next, row.key) ?? []
+    return after.length ? `since you removed ${removed.length} ${row.label.toLowerCase()}` : `since you allowed any ${row.label.toLowerCase()}`
+  }
+  return 'since your change'
+}
+
+/** Below this the list is short enough that we suggest widening (approving is still allowed). */
+export const NARROW_BELOW = 500
+
+export type MarketBand = 'none' | 'narrow' | 'focused' | 'broad'
+export function marketBand(count: number): MarketBand {
+  if (count === 0) return 'none'
+  if (count < NARROW_BELOW) return 'narrow'
+  return count <= 100_000 ? 'focused' : 'broad'
+}
+
+/** Position on a log scale from 100 (0%) to 1,000,000 (100%), clamped. */
+export function meterPct(count: number): number {
+  const p = ((Math.log10(Math.max(count, 1)) - 2) / 4) * 100
+  return Math.min(100, Math.max(0, p))
 }
 
 /** The list's own spelling of a typed value, matched case-insensitively; null when it is not in the list. */

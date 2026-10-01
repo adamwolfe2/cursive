@@ -68,7 +68,6 @@ describe('StartFlow count and refine races', () => {
     })
     await waitFor(() => expect(screen.getByRole('button', { name: /Approve/ })).toBeEnabled())
 
-    fireEvent.click(screen.getByRole('button', { name: 'Edit' }))
     fireEvent.click(screen.getByRole('button', { name: 'Remove CTO' }))
     await waitFor(() => expect(screen.getByText('Count unavailable right now.')).toBeInTheDocument())
     expect(screen.getByRole('button', { name: /Approve/ })).toBeDisabled()
@@ -80,7 +79,6 @@ describe('StartFlow count and refine races', () => {
     await waitFor(() => expect(h.streamScan).toHaveBeenCalled())
     act(() => scan.emit({ type: 'icp', icp: ICP }))
 
-    fireEvent.click(screen.getByRole('button', { name: 'Edit' }))
     fireEvent.click(screen.getByRole('button', { name: 'Remove CTO' }))
     await waitFor(() => expect(screen.getByText('50 people match.')).toBeInTheDocument())
 
@@ -107,7 +105,6 @@ describe('StartFlow count and refine races', () => {
       scan.end.resolve()
     })
 
-    fireEvent.click(screen.getByRole('button', { name: 'Edit' }))
     const box = screen.getByLabelText('Or say what to change')
     fireEvent.change(box, { target: { value: 'only Texas' } })
     fireEvent.click(screen.getByRole('button', { name: 'Apply change' }))
@@ -123,5 +120,25 @@ describe('StartFlow count and refine races', () => {
     expect(screen.queryByRole('button', { name: 'Remove CTO' })).toBeNull()
     expect(screen.queryByRole('button', { name: 'Remove Texas' })).toBeNull()
     await waitFor(() => expect(screen.getByText('40 people match.')).toBeInTheDocument())
+  })
+
+  it('shows how an edit moved the count and offers the removed value back', async () => {
+    h.postJson.mockImplementation(async (path: string) => (path === '/api/start/count' ? { total: 140 } : null))
+    const scan = startScan()
+    await waitFor(() => expect(h.streamScan).toHaveBeenCalled())
+    await act(async () => {
+      scan.emit({ type: 'icp', icp: ICP })
+      scan.emit({ type: 'count', total: 100 })
+      scan.emit({ type: 'done' })
+      scan.end.resolve()
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Remove CTO' }))
+    await waitFor(() => expect(screen.getByText('140 people match.')).toBeInTheDocument())
+    expect(screen.getAllByText('since you removed CTO').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('+40').length).toBeGreaterThan(0)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Add back CTO' }))
+    expect(screen.getByRole('button', { name: 'Remove CTO' })).toBeInTheDocument()
   })
 })
