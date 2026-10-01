@@ -33,13 +33,18 @@ export async function cacheGet<T>(key: string, admin: Admin = createAdminClient(
   return ((data as { value: T } | null)?.value ?? null) as T | null
 }
 
-// ponytail: expired rows are never swept; the table stays small (one row per domain / filter set).
-// Add a daily delete where expires_at < now() if it grows past ~100k rows.
+/** Share of writes that also delete expired rows (preview rows hold contact data; don't keep them). */
+const SWEEP_RATE = 0.05
+
 export async function cachePut(key: string, value: unknown, ttlMs: number, admin: Admin = createAdminClient()): Promise<void> {
   const { error } = await admin
     .from('free_leads_cache')
     .upsert({ key, value, expires_at: new Date(Date.now() + ttlMs).toISOString() }, { onConflict: 'key' })
   if (error) safeWarn('[free-leads/cache] write failed', { key: key.split(':')[0], error: error.message })
+  if (Math.random() < SWEEP_RATE) {
+    const swept = await admin.from('free_leads_cache').delete().lt('expires_at', new Date().toISOString())
+    if (swept.error) safeWarn('[free-leads/cache] sweep failed', swept.error.message)
+  }
 }
 
 /** Free upstream count, shared across instances for a day (counts with city/title filters take 5-20s). */

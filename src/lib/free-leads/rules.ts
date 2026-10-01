@@ -1,5 +1,5 @@
 /** Pure rules for the free-leads flow: email checks, masking, row mapping, claim decisions. */
-import { createHash, randomBytes, timingSafeEqual } from 'node:crypto'
+import { createHash, createHmac, randomBytes, timingSafeEqual } from 'node:crypto'
 import type { GetLeadsContact } from '@/lib/getleads/client'
 import type { FullLead, MaskedLead } from './contract'
 
@@ -57,8 +57,13 @@ export function maskEmail(email: string): string {
   return `${local[0]}•••@${domain}`
 }
 
+/**
+ * Keyed hash of the caller IP: a plain sha256 of an IPv4 address is brute-forceable, so the key is a
+ * server secret (FREE_LEADS_IP_SALT, else the service-role key, which every server instance has).
+ */
 export function hashIp(ip: string): string {
-  return createHash('sha256').update(`free-leads:${ip}`).digest('hex').slice(0, 32)
+  const key = process.env.FREE_LEADS_IP_SALT || process.env.SUPABASE_SERVICE_ROLE_KEY || 'free-leads'
+  return createHmac('sha256', key).update(`free-leads:${ip}`).digest('hex').slice(0, 32)
 }
 
 // ---------------------------------------------------------------------------

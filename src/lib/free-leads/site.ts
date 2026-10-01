@@ -296,8 +296,8 @@ export async function readSite(url: string, emit: Emit): Promise<SiteContent> {
     if (crawled && crawled.markdown.length >= MIN_USEFUL_TEXT) {
       const site: SiteContent = {
         domain: siteDomain(url),
-        title: crawled.title ?? direct?.title ?? null,
-        description: crawled.description ?? direct?.description ?? null,
+        title: (crawled.title ?? direct?.title ?? null)?.slice(0, 200) ?? null,
+        description: (crawled.description ?? direct?.description ?? null)?.slice(0, 400) ?? null,
         favicon: direct?.favicon ?? httpsFavicon('/favicon.ico', url),
         text: crawled.markdown.slice(0, MAX_TEXT),
         source: 'crawler',

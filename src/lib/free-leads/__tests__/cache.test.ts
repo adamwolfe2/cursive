@@ -18,6 +18,14 @@ describe('free-leads cache', () => {
     expect(await cacheGet('count:x', admin)).toBeNull()
   })
 
+  it('sometimes sweeps expired rows on write (preview rows hold contact data)', async () => {
+    const db = fakeSupabase({ free_leads_cache: [{ key: 'old', value: {}, expires_at: new Date(Date.now() - 1000).toISOString() }] })
+    const spy = vi.spyOn(Math, 'random').mockReturnValue(0)
+    await cachePut('new', { ok: 1 }, 60_000, db as unknown as Admin)
+    spy.mockRestore()
+    expect(db.tables.free_leads_cache.map((r) => r.key)).toEqual(['new'])
+  })
+
   it('treats a read error as a miss instead of failing the request', async () => {
     const broken = { from: () => ({ select: () => ({ eq: () => ({ gt: () => ({ maybeSingle: async () => ({ data: null, error: { message: 'down' } }) }) }) }) }) }
     expect(await cacheGet('scan:v1:acme.com', broken as unknown as Admin)).toBeNull()

@@ -65,8 +65,8 @@ export function fakeSupabase(tables: Record<string, Row[]>, unique: UniqueCheck 
       this.filters.push((r) => field(r, k) === v)
       return this
     }
-    lt(k: string, v: number) {
-      this.filters.push((r) => (field(r, k) as number) < v)
+    lt(k: string, v: number | string) {
+      this.filters.push((r) => (typeof v === 'string' ? String(field(r, k)) < v : (field(r, k) as number) < v))
       return this
     }
     gte(k: string, v: string) {
