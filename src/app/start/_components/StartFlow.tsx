@@ -21,10 +21,19 @@ import { withPage, type PageRow } from './scan-state'
 const SLOW_AFTER_MS = [12_000, 25_000] as const
 const NOT_A_SITE = "That doesn't look like a website. Try something like acme.com."
 
-/** acme.com, www.acme.com, https://acme.com/about -> "acme.com/about"; null if it can't be a site. */
+/**
+ * acme.com, https://www.acme.com/about?x=1#top, acme.com:8080 -> "acme.com" / "www.acme.com/about";
+ * null if it can't be a site. Port, query and hash are dropped (the server scans the origin).
+ * IDN hosts come back in their ASCII (xn--) form.
+ */
 export function normalizeUrl(raw: string): string | null {
-  const v = raw.trim().replace(/^https?:\/\//i, '').replace(/\/+$/, '')
-  return /^[^\s/.]+(\.[^\s/.]+)*\.[a-z]{2,}(\/\S*)?$/i.test(v) ? v : null
+  const v = raw.trim()
+  if (!v || /\s/.test(v)) return null
+  const candidate = /^https?:\/\//i.test(v) ? v : `https://${v}`
+  if (!URL.canParse(candidate)) return null
+  const url = new URL(candidate)
+  if (!/^([a-z0-9-]+\.)+([a-z]{2,}|xn--[a-z0-9-]+)$/i.test(url.hostname)) return null
+  return url.hostname + url.pathname.replace(/\/+$/, '')
 }
 
 const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches

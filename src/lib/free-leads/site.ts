@@ -85,10 +85,16 @@ export function siteDomain(url: string): string {
   return new URL(url).hostname.replace(/^www\./, '')
 }
 
-/** Normalizes user input to an https URL, or null if unusable / private. */
+/** Normalizes user input to an https URL on the default port, or null if unusable / private. */
 export function normalizeSiteUrl(input: string): string | null {
-  const url = normalizeWebsiteUrl(input)
-  return url && !isBlockedHost(url) ? url : null
+  const normalized = normalizeWebsiteUrl(input)
+  if (!normalized) return null
+  // A public site lives on 443; a typed port would let the scanner probe arbitrary services.
+  const url = new URL(normalized)
+  url.port = ''
+  url.username = ''
+  url.password = ''
+  return isBlockedHost(url.toString()) ? null : url.toString()
 }
 
 function decodeEntities(s: string): string {
