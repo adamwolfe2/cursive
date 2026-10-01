@@ -44,22 +44,22 @@ Adam
 ## Touch 4. LinkedIn (connection note or DM), day 5
 "Hi {first_name}, I sent you 25 leads for {domain} on Monday. If any of them missed the mark, tell me which and I will swap them for better fits, no charge. Adam"
 
-## Touch 5. Email, day 9
-Subject: Your free workspace goes read-only on day 14
+## Touch 5. Email, day 9 (rewritten 2026-10-01: no read-only deadline, the free workspace stays)
+Subject: Next Monday's 25 for {domain}
 Body:
 Hi {first_name},
 
-Heads up: the free workspace with your 25 leads goes read-only on day 14. Export the CSV any time before then: {leads_url}
+Your first 25 are still in your workspace: {leads_url}
 
-Two ways to keep going:
-1. 25 new leads like these every Monday.
-2. We run the LinkedIn outreach for you, so you only take the replies. Weekly leads are included.
+Next Monday there will be new people who match "{icp_summary}". Two ways to get them:
+1. 25 new leads every Monday. 14 days free, then $197/mo, cancel anytime.
+2. We run the outreach for you, so you only take the replies. Weekly leads are included.
 
-Reply with 1 or 2, or book 15 minutes here: https://cal.com/meetcursive/intro
+Reply with 1 or 2, or book 15 minutes here: {booking_url}
 
 Adam
 
 ## Open decisions (Adam)
-- Touch 5 depends on a real read-only rule at day 14 (not built). Drop that line until it exists.
+- Day-14 read-only rule dropped (see 2026-10-01-free-leads-decisions.md); touch 5 no longer depends on it.
 - Sender: Adam personally (research favors founder-to-founder) vs a team inbox.
 - Sending system: EmailBison (send.meetcursive.com) sequences vs a transactional sender. Suggest EmailBison, triggered from the `delivered` event.

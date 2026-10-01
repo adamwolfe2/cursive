@@ -88,10 +88,13 @@ export function Ladder({ mock, leads, website }: { mock: Mock; leads: FullLead[]
               <span className="fl-script fl-write block pt-1 leading-[1.05] text-[2.5rem] sm:text-[3.25rem]">every Monday.</span>
             </h2>
             <p className="mt-3 text-base leading-relaxed text-white sm:text-[17px]">
-              Same buyer profile you approved, fresh contacts each week, work emails and LinkedIn links included.
+              Same buyer profile you approved, fresh contacts each week, never a repeat. Work emails and LinkedIn links included.
+            </p>
+            <p className="mt-3 text-[15px] text-white">
+              14 days free, then $197/mo. <span className="text-white/80">Cancel anytime.</span>
             </p>
           </div>
-          <Cta tier="weekly_leads" label="Send me 25 every Monday" tone="white" interest={interest} />
+          <Cta tier="weekly_leads" label="Start free for 14 days" tone="white" interest={interest} />
         </div>
         <NextMondays />
 
