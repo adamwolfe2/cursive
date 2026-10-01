@@ -4,6 +4,7 @@ import { Check, ChevronDown, Globe, History, RotateCcw, X } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { useEffect, useRef, useState } from 'react'
 import type { Fact, ScanEvent } from '@/lib/free-leads/contract'
+import { AgentOrb } from './Agent'
 import type { ScanInput } from './api'
 import { formatCount } from './AnimatedNumber'
 import { compactChars, groupFacts, pagesSummary, replayLabel, type PageRow } from './scan-state'
@@ -182,12 +183,12 @@ function Step({
     <li className={`fl-rise relative pb-5 pl-8 ${desktopOnly ? 'max-lg:hidden' : ''}`}>
       <span
         className={`absolute left-0 top-0 grid h-5 w-5 place-items-center rounded-full ${
-          state === 'done' ? 'bg-[#007AFF] text-white' : state === 'active' ? 'bg-[#e8f1ff] ring-1 ring-inset ring-[#b3d7ff]' : 'bg-[#f3f4f6] text-[#6b7280]'
+          state === 'done' ? 'bg-[#007AFF] text-white' : state === 'active' ? 'bg-white' : 'bg-[#f3f4f6] text-[#6b7280]'
         }`}
         aria-hidden="true"
       >
         {state === 'done' && <Check className="fl-pop h-3 w-3" strokeWidth={3} />}
-        {state === 'active' && <span className="fl-pulse h-1.5 w-1.5 rounded-full bg-[#007AFF]" />}
+        {state === 'active' && <AgentOrb size={20} working />}
         {state === 'failed' && <X className="h-3 w-3" strokeWidth={3} />}
       </span>
       {children}

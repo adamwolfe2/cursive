@@ -4,6 +4,7 @@ import { ArrowRight, Briefcase, Building2, Check, Factory, Layers, Loader2, MapP
 import { useEffect, useId, useRef, useState, type FormEvent, type KeyboardEvent, type ReactNode } from 'react'
 import type { Icp } from '@/lib/free-leads/contract'
 import { chipLabel, matchOption, ROWS, valuesFor, withAdded, withRemoved, type ListKey } from './icp-edit'
+import { AgentOrb, Words } from './Agent'
 import { MarketPanel, type CountDelta } from './MarketPanel'
 
 interface Props {
@@ -50,13 +51,13 @@ export function IcpCard(props: Props) {
   return (
     <section aria-labelledby="icp-heading" aria-busy={!complete} className="fl-rise space-y-5">
       <div>
-        <h2 id="icp-heading" className="flex h-6 items-center gap-2 text-sm font-medium text-[#4b5563]">
-          {!complete && <span className="fl-pulse h-1.5 w-1.5 rounded-full bg-[#007AFF]" aria-hidden="true" />}
+        <h2 id="icp-heading" className="flex h-8 items-center gap-3 text-sm font-medium text-[#4b5563]">
+          <AgentOrb size={30} working={!complete || props.counting} />
           {complete ? 'Who buys from you' : 'Building your buyer profile'}
         </h2>
         {icp.summary && (
-          <p className="mt-2 max-w-[44ch] text-[1.5rem] font-light leading-[1.2] tracking-[-0.02em] text-[#111827] sm:text-[1.875rem]">
-            {icp.summary}
+          <p key={icp.summary} className="mt-3 max-w-[44ch] text-[1.5rem] font-light leading-[1.2] tracking-[-0.02em] text-[#0c1f45] sm:text-[1.875rem]">
+            <Words text={icp.summary} />
           </p>
         )}
       </div>
@@ -78,8 +79,8 @@ export function IcpCard(props: Props) {
 function Placeholder() {
   return (
     <div className="max-lg:hidden" aria-hidden="true">
-      <p className="flex h-6 items-center gap-2 text-sm font-medium text-[#4b5563]">
-        <span className="fl-pulse h-1.5 w-1.5 rounded-full bg-[#007AFF]" />
+      <p className="flex h-8 items-center gap-3 text-sm font-medium text-[#4b5563]">
+        <AgentOrb size={30} working />
         Your buyer profile
       </p>
       <p className="mt-2 max-w-[44ch] text-[15px] leading-relaxed text-[#4b5563]">

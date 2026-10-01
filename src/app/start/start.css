@@ -276,7 +276,8 @@
 
 /* A replayed scan arrives all at once; skip the entrance motion. */
 .fl-instant .fl-rise,
-.fl-instant .fl-fade {
+.fl-instant .fl-fade,
+.fl-instant .fl-word {
   animation: none;
 }
 
@@ -379,4 +380,74 @@
 /* The header is sticky: every scrollIntoView in the flow lands below it. */
 html:has(.fl-root) {
   scroll-padding-top: 4.5rem;
+}
+
+/* The Cursive mark as the agent (same mark the Audience Builder chat floats). It drifts gently; while it works,
+   a soft blue halo breathes behind it. */
+@keyframes fl-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes fl-breathe {
+  0%,
+  100% {
+    transform: scale(0.85);
+    opacity: 0.55;
+  }
+  50% {
+    transform: scale(1.12);
+    opacity: 1;
+  }
+}
+
+.fl-float {
+  animation: fl-float 4.8s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+.fl-halo {
+  background: radial-gradient(closest-side, rgb(0 122 255 / 0.24), rgb(0 122 255 / 0) 72%);
+  opacity: 0;
+  transform: scale(0.8);
+  transition:
+    opacity 700ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.fl-orb[data-working] .fl-halo {
+  opacity: 1;
+  animation: fl-breathe 2.4s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+/* Words arriving one after another, as if written: each word lifts out of a blur. The full sentence holds its
+   space from the first frame, so nothing reflows while it writes. */
+@keyframes fl-word {
+  from {
+    opacity: 0;
+    transform: translateY(0.22em);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+
+.fl-word {
+  display: inline-block;
+  animation: fl-word 560ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fl-float,
+  .fl-word,
+  .fl-orb[data-working] .fl-halo {
+    animation: none !important;
+  }
 }

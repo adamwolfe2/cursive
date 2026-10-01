@@ -55,6 +55,11 @@ export function StartHero() {
     <section id="hero" aria-labelledby="hero-heading" className="bg-white">
       <Container className="grid grid-cols-[minmax(0,1fr)] gap-12 pb-16 pt-8 sm:pt-12 lg:grid-cols-[minmax(0,29rem)_minmax(0,1fr)] lg:items-start lg:gap-14 lg:pb-24 lg:pt-14">
         <div className="min-w-0">
+          <span className="fl-orb relative mb-6 inline-grid h-11 w-11 place-items-center" data-working="" aria-hidden="true">
+            <span className="fl-halo absolute -inset-[45%] rounded-full" />
+            {/* eslint-disable-next-line @next/next/no-img-element -- static brand mark */}
+            <img src="/cursive-logo.png" alt="" width={44} height={44} className="fl-float relative h-11 w-11 object-contain" />
+          </span>
           <h1
             id="hero-heading"
             className="text-[2.75rem] font-light leading-[1.02] tracking-[-0.02em] text-[#111827] sm:text-[4rem] lg:text-[4.25rem]"

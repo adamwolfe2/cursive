@@ -1,10 +1,14 @@
 'use client'
 
-import { Pause, Play } from 'lucide-react'
-import { useEffect, useState } from 'react'
-import { AnimatedNumber } from './AnimatedNumber'
-import { PageLine } from './ScanFeed'
-import type { PageRow } from './scan-state'
+import { Check, Pause, Play } from 'lucide-react'
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
+
+/*
+ * Byte-for-byte twin of the marketing homepage demo (marketing/components/homepage/start-hero-demo.tsx), which is a
+ * separate Next app. Change both together; only this comment and the export name differ.
+ */
+
+type PageRow = { path: string; state: 'fetching' | 'read'; chars: number }
 
 /**
  * The hero's live example: a scan of a sample company playing out in the same order, and with the same
@@ -87,18 +91,14 @@ const CYCLE_MS = AT[AT.length - 1]
 
 export function HeroDemo({ held }: { held: boolean }) {
   const [index, setIndex] = useState(0)
-  const [step, setStep] = useState(0)
+  const [rawStep, setStep] = useState(0)
   /** Bumped whenever an example (re)starts, so its progress bar and entrance motion restart too. */
   const [run, setRun] = useState(0)
   const [paused, setPaused] = useState(false)
   const [hovered, setHovered] = useState(false)
-  const [still, setStill] = useState(false)
-
-  useEffect(() => {
-    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    setStill(true)
-    setStep(LAST)
-  }, [])
+  /** Reduced motion: a still, finished example. False on the server, so the first paint matches. */
+  const still = useSyncExternalStore(subscribeReducedMotion, prefersReducedMotion, () => false)
+  const step = still ? LAST : rawStep
 
   const stopped = still || paused || held || hovered
   useEffect(() => {
@@ -114,7 +114,7 @@ export function HeroDemo({ held }: { held: boolean }) {
 
   const pick = (i: number) => {
     setIndex(i)
-    setStep(still ? LAST : 0)
+    setStep(0)
     setRun((r) => r + 1)
   }
 
@@ -122,7 +122,6 @@ export function HeroDemo({ held }: { held: boolean }) {
   const pages: PageRow[] = ex.pages.slice(0, Math.min(step, 3)).map(([path, chars], i) => ({
     path,
     state: i < step - 1 ? 'read' : 'fetching',
-    title: null,
     chars,
   }))
   const readAll = step >= PAGES_DONE
@@ -135,17 +134,15 @@ export function HeroDemo({ held }: { held: boolean }) {
       onPointerLeave={() => setHovered(false)}
     >
       <div className="flex items-center gap-2">
-        <div role="group" aria-label="Pick an example" className="flex min-w-0 flex-1 gap-1.5 overflow-x-auto [scrollbar-width:none]">
+        <div role="group" aria-label="Pick an example" className="flex min-w-0 flex-1 gap-1 overflow-x-auto [scrollbar-width:none]">
           {EXAMPLES.map((e, i) => (
             <button
               key={e.domain}
               type="button"
               onClick={() => pick(i)}
               aria-pressed={i === index}
-              className={`relative min-h-11 shrink-0 overflow-hidden rounded-lg border px-3 text-[13px] font-medium transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF] ${
-                i === index
-                  ? 'border-[#cfe3ff] bg-white text-[#0c1f45] shadow-[0_1px_2px_rgb(12_31_69/0.08)]'
-                  : 'border-transparent text-[#4b5563] hover:bg-[#eef4fc] hover:text-[#111827]'
+              className={`relative min-h-11 shrink-0 overflow-hidden rounded-full px-4 text-[13px] font-medium transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF] ${
+                i === index ? 'bg-[#0c1f45] text-white' : 'text-[#4b5563] hover:bg-[#eef4fc] hover:text-[#111827]'
               }`}
             >
               {e.tab}
@@ -153,7 +150,7 @@ export function HeroDemo({ held }: { held: boolean }) {
                 <span
                   key={run}
                   aria-hidden="true"
-                  className="fl-fill absolute inset-x-0 bottom-0 h-0.5 bg-[#007AFF]"
+                  className="fl-fill absolute inset-x-4 bottom-1.5 h-px bg-white/60"
                   style={{ animationDuration: `${CYCLE_MS}ms`, animationPlayState: stopped ? 'paused' : 'running' }}
                 />
               )}
@@ -165,7 +162,7 @@ export function HeroDemo({ held }: { held: boolean }) {
             type="button"
             onClick={() => setPaused((p) => !p)}
             aria-label={paused ? 'Play the example' : 'Pause the example'}
-            className="grid h-11 w-11 shrink-0 place-items-center rounded-lg text-[#4b5563] transition-colors hover:bg-[#eef4fc] hover:text-[#111827] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF]"
+            className="grid h-11 w-11 shrink-0 place-items-center rounded-full text-[#6b7280] transition-colors hover:bg-[#eef4fc] hover:text-[#111827] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF]"
           >
             {paused ? <Play className="h-4 w-4" aria-hidden="true" /> : <Pause className="h-4 w-4" aria-hidden="true" />}
           </button>
@@ -175,109 +172,115 @@ export function HeroDemo({ held }: { held: boolean }) {
       <div
         key={run}
         aria-hidden="true"
-        className="mt-3 overflow-hidden rounded-2xl border border-[#dfe7f2] bg-white shadow-[0_24px_60px_-28px_rgb(12_31_69/0.28)]"
+        className="mt-3 overflow-hidden rounded-[22px] border border-[#e3e9f2] bg-white shadow-[0_1px_0_rgb(255_255_255)_inset,0_30px_70px_-34px_rgb(12_31_69/0.35),0_2px_6px_-2px_rgb(12_31_69/0.06)]"
       >
-        {/* Address row: the site being typed in, then what the scan is doing. */}
-        <div className="flex h-12 items-center gap-3 border-b border-[#eef1f5] bg-[#fafbfd] px-4">
-          <span className="grid h-6 w-6 shrink-0 place-items-center rounded-md bg-[#007AFF] text-[11px] font-semibold uppercase text-white">
+        {/* The site being read: its address types in, then the agent says what it is doing. */}
+        <div className="flex h-14 items-center gap-3 border-b border-[#eef1f5] px-5">
+          <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg border border-[#e5e7eb] text-[12px] font-semibold uppercase text-[#0c1f45]">
             {ex.domain[0]}
           </span>
           <span className="relative min-w-0 flex-1 truncate text-[14px] font-semibold text-[#111827]">
             <span className={still ? '' : 'fl-type inline-block'}>{ex.domain}</span>
           </span>
           {/* Fixed width, so the label changing never moves anything. */}
-          <span className="w-24 shrink-0 text-left text-[12px] font-medium text-[#4b5563]">
-            {readAll ? (step >= COUNT ? 'Done' : 'Finding buyers') : step > 0 ? 'Reading pages' : ''}
+          <span className="w-28 shrink-0 text-right text-[12px] text-[#6b7280]">
+            {step >= COUNT ? 'Done' : readAll ? 'Finding buyers' : step > 0 ? 'Reading pages' : ''}
           </span>
-          <span className="shrink-0 rounded-full border border-[#f5d9a8] bg-[#fff8eb] px-2 py-0.5 text-[11px] font-medium text-[#8a5a00]">
-            Example
-          </span>
+          <span className="shrink-0 text-[11px] font-medium uppercase tracking-[0.08em] text-[#9ca3af]">Example</span>
         </div>
 
-        <div className="space-y-4 p-4 sm:p-5">
-          <div className="min-w-0">
-            <p className="h-5 text-[12px] font-medium text-[#111827]">
-              {readAll ? `Read ${ex.pages.length} pages` : step > 0 ? 'Opening pages' : 'Pages'}
-            </p>
-            <ul className="mt-2 grid h-[5.25rem] content-start gap-x-4 gap-y-1 sm:h-6 sm:grid-cols-3">
-              {pages.map((p) => (
-                <PageLine key={p.path} page={p} first={false} />
-              ))}
-            </ul>
-          </div>
-
-          {/* Mirrors the real buyer profile card, shrunk. */}
-          <div className="min-w-0 rounded-xl bg-[#007AFF] px-4 py-3.5 text-white">
-            <p className="text-[12px] font-medium text-white">{step >= SUMMARY ? `Who buys from ${ex.domain}` : 'Building the buyer profile'}</p>
-            <div className="mt-1.5 min-h-[2.75rem]">
-              {step >= SUMMARY ? (
-                <p className="fl-rise text-[15px] font-semibold leading-snug tracking-[-0.01em]">{ex.summary}</p>
-              ) : (
-                <div className="space-y-1.5 pt-1">
-                  <span className="fl-sheen block h-3.5 w-[92%] rounded" />
-                  <span className="fl-sheen block h-3.5 w-[64%] rounded" />
-                </div>
-              )}
-            </div>
-            <dl className="mt-3 space-y-2 border-t border-white/20 pt-3">
-              {ex.rows.map(([label, values], i) => (
-                <div key={label} className="flex h-6 items-center gap-3">
-                  <dt className="w-[3.75rem] shrink-0 text-[12px] text-white sm:w-[5.5rem]">{label}</dt>
-                  <dd className="flex min-w-0 gap-1.5 overflow-hidden max-sm:[&>*:nth-child(n+3)]:hidden">
-                    {step >= FIRST_ROW + i
-                      ? values.map((v, j) => (
-                          <span
-                            key={v}
-                            className="fl-rise shrink-0 rounded-md bg-white px-2 py-0.5 text-[12px] font-medium text-[#0c1f45]"
-                            style={{ animationDelay: `${j * 70}ms` }}
-                          >
-                            {v}
-                          </span>
-                        ))
-                      : [0, 1].map((j) => <span key={j} className="fl-sheen h-5 w-16 shrink-0 rounded-md" />)}
-                  </dd>
-                </div>
-              ))}
-            </dl>
-          </div>
+        <div className="px-5 pt-4">
+          <ul className="grid h-[5.25rem] content-start gap-x-4 gap-y-1 sm:h-6 sm:grid-cols-3">
+            {pages.map((p) => (
+              <PageLine key={p.path} page={p} />
+            ))}
+          </ul>
         </div>
 
-        <div className="border-t border-[#eef1f5] px-4 pb-2 pt-3.5 sm:px-5">
-          <div className="flex h-7 items-baseline justify-between gap-3">
-            <p className="text-[13px] font-semibold text-[#111827]">Your 25, first 3 shown</p>
-            <p className="text-[13px] text-[#4b5563]">
-              {step >= COUNT ? (
-                <>
-                  from{' '}
-                  <AnimatedNumber key={`${run}-${index}`} value={ex.count} from={still ? undefined : 0} duration={900} className="inline-block w-[2.5rem] text-left font-semibold tabular-nums text-[#007AFF]" />{' '}
-                  who fit
-                </>
-              ) : (
-                ''
-              )}
+        {/* The agent's answer: the Cursive mark, then who buys, written out word by word. */}
+        <div className="px-5 pb-5 pt-4">
+          <div className="flex items-center gap-2.5">
+            <AgentOrb size={26} working={step > 0 && step < COUNT} />
+            <p className="text-[12.5px] font-medium text-[#4b5563]">
+              {step >= SUMMARY ? `Who buys from ${ex.domain}` : step > 0 ? 'Working out who buys' : 'Cursive'}
             </p>
+          </div>
+          <div className="mt-2.5 min-h-[3.25rem]">
+            {step >= SUMMARY ? (
+              <p className="text-[19px] font-light leading-[1.3] tracking-[-0.015em] text-[#0c1f45]">
+                {still ? ex.summary : <Words text={ex.summary} />}
+              </p>
+            ) : (
+              <div className="space-y-2 pt-1.5">
+                <span className="fl-sheen-ink block h-3.5 w-[88%] rounded-full" />
+                <span className="fl-sheen-ink block h-3.5 w-[56%] rounded-full" />
+              </div>
+            )}
+          </div>
+          <dl className="mt-4 space-y-1.5">
+            {ex.rows.map(([label, values], i) => (
+              <div key={label} className="flex h-7 items-center gap-3">
+                <dt className="w-[3.75rem] shrink-0 text-[12px] text-[#6b7280] sm:w-[4.5rem]">{label}</dt>
+                <dd className="flex min-w-0 gap-1.5 overflow-hidden max-sm:[&>*:nth-child(n+3)]:hidden">
+                  {step >= FIRST_ROW + i
+                    ? values.map((v, j) => (
+                        <span
+                          key={v}
+                          className="fl-rise shrink-0 rounded-full border border-[#d6e6ff] bg-[#f3f8ff] px-2.5 py-0.5 text-[12px] font-medium text-[#0c1f45]"
+                          style={{ animationDelay: `${j * 70}ms` }}
+                        >
+                          {v}
+                        </span>
+                      ))
+                    : [0, 1].map((j) => <span key={j} className="fl-sheen-ink h-6 w-16 shrink-0 rounded-full" />)}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+
+        <div className="border-t border-[#eef1f5] bg-[#fbfcfe] px-5 pb-2 pt-4">
+          <div className="flex h-9 items-baseline gap-2">
+            {step >= COUNT ? (
+              <>
+                <AnimatedNumber
+                  key={`${run}-${index}`}
+                  value={ex.count}
+                  from={still ? undefined : 0}
+                  duration={900}
+                  className="text-[28px] font-light leading-none tabular-nums tracking-[-0.02em] text-[#007AFF]"
+                />
+                <span className="text-[13px] text-[#4b5563]">people fit. Your first 3 of 25:</span>
+              </>
+            ) : (
+              <span className="text-[13px] text-[#9ca3af]">{readAll ? 'Counting people who fit' : ''}</span>
+            )}
           </div>
           <ul className="mt-1">
             {ex.leads.map(([name, title, company, email, why], i) => (
-              <li key={name} className={`grid h-[4.25rem] content-center gap-0.5 border-b border-[#f1f3f6] last:border-b-0 max-sm:[&:nth-child(3)]:hidden ${step >= FIRST_LEAD + i ? 'fl-land' : ''}`}>
+              <li key={name} className={`-mx-2 grid h-[4.25rem] content-center rounded-xl px-2 max-sm:[&:nth-child(3)]:hidden ${step >= FIRST_LEAD + i ? 'fl-land' : ''}`}>
+                {/* Keyed wrappers: the row is replaced, not patched, so the placeholder never counts as a layout shift. */}
                 {step >= FIRST_LEAD + i ? (
-                  <>
-                    <div className="flex min-w-0 items-baseline gap-2 text-[13px]">
-                      <span className="shrink-0 font-semibold text-[#111827]">{name}</span>
-                      <span className="min-w-0 truncate text-[#4b5563]">
-                        {title}, {company}
-                      </span>
-                      <span className="ml-auto hidden shrink-0 text-[12px] text-[#374151] sm:inline">{email}</span>
+                  <div key="lead" className="grid grid-cols-[2.25rem_minmax(0,1fr)] items-center gap-3">
+                    <span className="grid h-9 w-9 place-items-center rounded-full bg-[#e8f1ff] text-[13px] font-semibold text-[#0066DD]">{name[0]}</span>
+                    <div className="grid min-w-0 gap-0.5">
+                      <div className="flex min-w-0 items-baseline gap-2 text-[13px]">
+                        <span className="shrink-0 font-semibold text-[#111827]">{name}</span>
+                        <span className="min-w-0 truncate text-[#4b5563]">
+                          {title}, {company}
+                        </span>
+                        <span className="ml-auto hidden shrink-0 text-[12px] text-[#6b7280] sm:inline">{email}</span>
+                      </div>
+                      <p className="truncate text-[12.5px] text-[#374151]">{why}</p>
                     </div>
-                    <p className="truncate text-[12.5px] text-[#374151]">
-                      <span className="mr-1.5 font-semibold text-[#0066DD]">Why them</span>
-                      {why}
-                    </p>
-                  </>
+                  </div>
                 ) : (
-                  <div className="space-y-2">
-                    <span className="fl-sheen-ink block h-3 w-1/2 rounded" />
-                    <span className="fl-sheen-ink block h-3 w-4/5 rounded" />
+                  <div key="placeholder" className="grid grid-cols-[2.25rem_minmax(0,1fr)] items-center gap-3">
+                    <span className="fl-sheen-ink h-9 w-9 rounded-full" />
+                    <span className="space-y-2">
+                      <span className="fl-sheen-ink block h-2.5 w-2/5 rounded-full" />
+                      <span className="fl-sheen-ink block h-2.5 w-3/4 rounded-full" />
+                    </span>
                   </div>
                 )}
               </li>
@@ -290,5 +293,91 @@ export function HeroDemo({ held }: { held: boolean }) {
         each lead comes with a name, title, company, work email and a reason they fit.
       </p>
     </figure>
+  )
+}
+
+/** The Cursive mark as the agent: drifts gently, and a halo breathes behind it while it works. */
+function AgentOrb({ size, working }: { size: number; working: boolean }) {
+  return (
+    <span className="fl-orb relative inline-grid shrink-0 place-items-center" style={{ width: size, height: size }} data-working={working || undefined} aria-hidden="true">
+      <span className="fl-halo absolute -inset-[45%] rounded-full" />
+      {/* eslint-disable-next-line @next/next/no-img-element -- tiny static mark, already loaded by the header */}
+      <img src="/cursive-logo.png" alt="" width={size} height={size} className="fl-float relative h-full w-full object-contain" />
+    </span>
+  )
+}
+
+/** Writes a sentence out word by word. The whole sentence holds its space from the first frame. */
+function Words({ text, step = 42 }: { text: string; step?: number }) {
+  return (
+    <>
+      {text.split(' ').map((w, i) => (
+        <span key={i}>
+          <span className="fl-word" style={{ animationDelay: `${i * step}ms` }}>
+            {w}
+          </span>{' '}
+        </span>
+      ))}
+    </>
+  )
+}
+
+const REDUCED = '(prefers-reduced-motion: reduce)'
+const prefersReducedMotion = () => window.matchMedia(REDUCED).matches
+function subscribeReducedMotion(onChange: () => void) {
+  const mq = window.matchMedia(REDUCED)
+  mq.addEventListener('change', onChange)
+  return () => mq.removeEventListener('change', onChange)
+}
+
+const compactChars = (n: number) => (n < 1000 ? String(n) : `${(n / 1000).toFixed(n < 10_000 ? 1 : 0).replace(/\.0$/, '')}k`)
+
+function PageLine({ page }: { page: PageRow }) {
+  return (
+    <li className="fl-rise grid h-6 grid-cols-[1rem_minmax(0,1fr)_auto] items-center gap-2 text-[13px]">
+      {page.state === 'fetching' ? (
+        <span className="h-3 w-3 animate-spin rounded-full border-[1.5px] border-[#b3d7ff] border-t-[#007AFF]" aria-hidden="true" />
+      ) : (
+        <Check className="h-3.5 w-3.5 text-[#007AFF]" aria-hidden="true" />
+      )}
+      <span className="truncate text-[#111827]">{page.path === '/' ? 'Homepage' : page.path}</span>
+      <span className="text-[12px] tabular-nums text-[#6b7280]">
+        {page.state === 'fetching' ? 'reading' : `${compactChars(page.chars)} chars`}
+      </span>
+    </li>
+  )
+}
+
+const fmt = new Intl.NumberFormat('en-US')
+
+/** Expo ease-out count from `from` to `value`. Visual only (aria-hidden); the figure's sr-only text carries it. */
+function AnimatedNumber({ value, className, from, duration = 700 }: { value: number; className?: string; from?: number; duration?: number }) {
+  const [shown, setShown] = useState(from ?? value)
+  const current = useRef(from ?? value)
+
+  useEffect(() => {
+    const start = current.current
+    let raf = 0
+    if (start === value || prefersReducedMotion()) {
+      current.current = value
+      raf = requestAnimationFrame(() => setShown(value))
+      return () => cancelAnimationFrame(raf)
+    }
+    const t0 = performance.now()
+    const tick = (now: number) => {
+      const p = Math.min(1, (now - t0) / duration)
+      const v = Math.round(start + (value - start) * (p === 1 ? 1 : 1 - Math.pow(2, -10 * p)))
+      current.current = v
+      setShown(v)
+      if (p < 1) raf = requestAnimationFrame(tick)
+    }
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [value, duration])
+
+  return (
+    <span className={className} aria-hidden="true">
+      {fmt.format(shown)}
+    </span>
   )
 }
