@@ -12,7 +12,8 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { partialParse } from '@anthropic-ai/sdk/_vendor/partial-json-parser/parser'
 import { LEAD_INDUSTRIES } from '@/lib/free-leads/industries'
-import { canonicalIndustry } from './icp-to-filters'
+import { tidyPrices } from './site'
+import { canonicalIndustry, coreTitles } from './icp-to-filters'
 import { safeWarn } from '@/lib/utils/log-sanitizer'
 import { COMPANY_SIZE_BANDS, FACT_LABELS, IcpSchema, SENIORITY_VALUES, type Fact, type FactKey, type Icp } from './contract'
 
@@ -20,7 +21,7 @@ import { COMPANY_SIZE_BANDS, FACT_LABELS, IcpSchema, SENIORITY_VALUES, type Fact
 // the cost per scan and ~2s faster to the ICP (scripts/free-leads-eval/RESULTS.md, 2026-09-30).
 const MODEL = 'claude-sonnet-5-5'
 /** Bump when the prompt, schema or model changes: cached scans from older versions are ignored. */
-export const SCAN_VERSION = 'v6-sonnet55'
+export const SCAN_VERSION = 'v7-core-titles'
 const ICP_KEYS = ['summary', 'industries', 'job_titles', 'seniority', 'company_size', 'countries', 'states', 'cities'] as const
 
 export class ScanError extends Error {
@@ -72,8 +73,9 @@ const ICP_RULES = `ICP field rules:
   Use "Dentists", not "Hospitals and Health Care" or "Medical Practices"; SaaS companies are "Software Development", not "IT Services and IT Consulting".
   Add a broad value (e.g. "Financial Services", "Manufacturing") only when the seller really sells across that whole sector.
   Use [] when the buyers are any kind of organization in an area (typical for a local business).
-- job_titles: 3-8 concrete titles of the people who own this purchase or champion it (e.g. "Head of Growth", "VP Marketing", "Facilities Director").
-  Titles match loosely, so never use a bare generic title ("Operations Manager", "Store Manager", "Manager") that would also match unrelated roles; name the function ("Facilities Operations Manager").
+- job_titles: 3-8 plain titles exactly as people hold them on LinkedIn, for the people who own this purchase or champion it (e.g. "VP of Marketing", "Director of Marketing", "Regional Manager", "Director of Revenue Management", "Asset Manager").
+  Titles match as a contiguous substring, so NEVER add the industry or segment to a title ("VP Marketing Multifamily", "Director of Marketing Real Estate" match nobody): the industries field carries the industry.
+  Write "Director of Marketing", not "Director Marketing". Avoid bare generic titles ("Operations Manager", "Store Manager", "Manager") that would also match unrelated roles; name the function, not the industry.
 - seniority: from the enum. company_size: the buyer company size bands most likely to buy.
 - countries: full country names, e.g. "United States". Default to the seller's home market when unclear.
 - states: only when the business is clearly local or regional (full state names, e.g. "Texas"); otherwise [].
@@ -136,7 +138,7 @@ export function toIcp(raw: Record<string, unknown>): Icp {
   const parsed = IcpSchema.safeParse({
     summary: typeof raw.summary === 'string' ? raw.summary.trim().slice(0, 240) : '',
     industries: arr(raw.industries, 8).map(canonicalIndustry).filter((i): i is string => i !== null),
-    job_titles: arr(raw.job_titles, 12).map((t) => t.slice(0, 80)),
+    job_titles: coreTitles(arr(raw.job_titles, 12).map((t) => t.slice(0, 80))),
     seniority: arr(raw.seniority, 5),
     company_size: arr(raw.company_size, 8),
     countries: arr(raw.countries, 10),
@@ -151,7 +153,17 @@ function toFact(raw: unknown): Fact | null {
   const f = raw as { key?: unknown; text?: unknown } | null
   const key = MODEL_FACT_KEYS.find((k) => k === f?.key)
   if (!key || typeof f?.text !== 'string' || !f.text.trim()) return null
-  return { key, label: FACT_LABELS[key], text: f.text.trim().replace(/\s*[—–]\s*/g, ', ').slice(0, 160), source: 'model' }
+  return { key, label: FACT_LABELS[key], text: tidyPrices(f.text.trim().replace(/\s*[—–]\s*/g, ', ')).slice(0, 160), source: 'model' }
+}
+
+/** One fact per key, in first-seen order; the model's reading beats the site's regex when both exist. */
+export function dedupeFacts(facts: readonly Fact[]): Fact[] {
+  const best = new Map<FactKey, Fact>()
+  for (const f of facts) {
+    const cur = best.get(f.key)
+    if (!cur || (cur.source !== 'model' && f.source === 'model')) best.set(f.key, f)
+  }
+  return [...best.values()]
 }
 
 export interface ScanCallbacks {

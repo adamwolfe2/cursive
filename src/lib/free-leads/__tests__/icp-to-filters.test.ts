@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { filtersHash, icpToFilters, INDUSTRY_CHILDREN, narrowIndustries } from '../icp-to-filters'
+import { coreTitle, coreTitles, filtersHash, icpToFilters, INDUSTRY_CHILDREN, narrowIndustries } from '../icp-to-filters'
 import type { Icp } from '../contract'
 
 const base: Icp = {
@@ -91,5 +91,38 @@ describe('cities', () => {
   it('maps cities to the person-city filter and defaults to none', () => {
     expect(icpToFilters({ ...base, cities: ['Austin', ' Austin', 'Round Rock'] }).cities).toEqual(['Austin', 'Round Rock'])
     expect(icpToFilters(base)).not.toHaveProperty('cities')
+  })
+})
+
+describe('coreTitle', () => {
+  it('drops industry words baked into a title', () => {
+    expect(coreTitle('Director of Marketing Property Management')).toBe('Director of Marketing')
+    expect(coreTitle('Portfolio Manager Multifamily')).toBe('Portfolio Manager')
+    expect(coreTitle('Director of Marketing Real Estate')).toBe('Director of Marketing')
+    expect(coreTitle('VP Marketing Multifamily')).toBe('VP of Marketing')
+    expect(coreTitle('Head of Growth (SaaS)')).toBe('Head of Growth')
+  })
+  it('puts "of" in VP / Director titles, but not where it would be wrong', () => {
+    expect(coreTitle('Director Marketing')).toBe('Director of Marketing')
+    expect(coreTitle('VP Engineering')).toBe('VP of Engineering')
+    expect(coreTitle('Director of Marketing')).toBe('Director of Marketing')
+    expect(coreTitle('Director Operations Manager')).toBe('Director Operations Manager')
+  })
+  it('never reduces a title to a stub and leaves plain titles alone', () => {
+    expect(coreTitle('Director of Property Management')).toBe('Director of Property Management')
+    expect(coreTitle('Real Estate')).toBe('Real Estate')
+    expect(coreTitle('Regional Property Manager')).toBe('Regional Property Manager')
+    expect(coreTitle('Asset Manager')).toBe('Asset Manager')
+  })
+  it('dedupes titles that collapse to the same core', () => {
+    expect(coreTitles(['VP Marketing Multifamily', 'VP of Marketing', 'vp of marketing', 'Asset Manager'])).toEqual(['VP of Marketing', 'Asset Manager'])
+  })
+})
+
+describe('Real Estate umbrella', () => {
+  it('stays beside its narrower tags (property managers carry the plain tag)', () => {
+    expect(narrowIndustries(['Real Estate', 'Leasing Residential Real Estate', 'Commercial Real Estate'])).toEqual([
+      'Real Estate', 'Leasing Residential Real Estate', 'Commercial Real Estate',
+    ])
   })
 })
