@@ -1,7 +1,7 @@
 /**
  * DEV-ONLY fixtures for /start?mock=<scenario>. Loaded lazily by api.ts only when
  * page.tsx passes a mock scenario, which it never does in production.
- * Scan scenarios: 1 (happy path), replay, slow (profile after ~18s), unreachable, ratelimited, zero (no matches).
+ * Scan scenarios: 1 (happy path), replay, slow (profile after ~18s), unreachable, ratelimited, zero (no matches), narrow (a short list, under 500).
  * /start/leads: failed (not retryable), failedretry, expired, short (12 leads, nothing beyond). claim500 (claim returns a server error). Claim emails: gmail etc -> personal_email,
  * *taken* -> already_claimed, *slowdown* -> rate_limited. Email-profile: *slowdown* -> rate_limited, no "@" -> invalid_email.
  */
@@ -102,7 +102,12 @@ export async function mockScan(
   }
   for (const [ms, e] of MODEL_FACTS) await at(ms, e)
   const delay = scenario === 'slow' ? 13_000 : 0
-  const full: Icp = scenario === 'zero' ? { ...ICP, states: ['Wyoming'] } : ICP
+  const full: Icp =
+    scenario === 'zero'
+      ? { ...ICP, states: ['Wyoming'] }
+      : scenario === 'narrow'
+        ? { ...ICP, states: ['Texas'], job_titles: ['Head of Compliance'] }
+        : ICP
   for (const [i, field] of ICP_FIELDS.entries()) {
     await at(delay + 3500 + i * 243, { type: 'icp_partial', icp: { [field]: full[field] } })
   }
