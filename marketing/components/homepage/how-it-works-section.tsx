@@ -37,7 +37,7 @@ const processSteps: ProcessStep[] = [
       "IP address resolved to company location",
       "Device fingerprinting for cross-session tracking",
       "Identity graph matches across 280M profiles",
-      "Appends verified email and phone data"
+      "Appends work email and phone data"
     ],
     color: "#007AFF" // blue
   },

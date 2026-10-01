@@ -8,6 +8,7 @@ import { StructuredData } from "@/components/seo/structured-data"
 import { generateFAQSchema } from "@/lib/seo/faq-schema"
 import { cn } from "@/lib/utils"
 import { trackDemoBooked } from "@/lib/analytics"
+import { BOOKING_URL } from "@/lib/cta"
 
 interface FAQ {
   question: string
@@ -17,15 +18,15 @@ interface FAQ {
 const faqs: FAQ[] = [
   {
     question: "How does visitor identification work?",
-    answer: "Cursive's deterministic pixel resolves anonymous visitors against an identity graph of 280M+ verified consumer and 140M+ business profiles, refreshed every 30 days via NCOA. The result is a 40–60% match rate driven by our proprietary geo-framing methodology — significantly higher than cookie-based tools (2–5%) or IP databases (10–15%) — with 60–80% pixel-level accuracy. Visitors are resolved the moment they land, so your sales team can reach out while they're still engaged."
+    answer: "Cursive's deterministic pixel resolves anonymous visitors against an identity graph of 280M+ consumer and 140M+ business profiles, refreshed every 30 days via NCOA. The result is a 40–60% match rate driven by our proprietary geo-framing methodology, significantly higher than cookie-based tools (2–5%) or IP databases (10–15%), with 60–80% pixel-level accuracy. Visitors are resolved the moment they land, so your sales team can reach out while they're still engaged."
   },
   {
     question: "How accurate is the data?",
-    answer: "Cursive's pixel is fully deterministic — not modeled or probabilistic. We deliver a 40–60% match rate with 60–80% pixel-level accuracy on identified visitors, backed by an identity graph of 280M+ verified consumer and 140M+ business profiles refreshed every 30 days via NCOA. Email validation runs through Deep Verify, our in-house engine processing ~20 million records per day. Our closed feedback loop maps signals back to source URLs, apps, and exchanges and validates against real conversions."
+    answer: "Cursive's pixel is fully deterministic, not modeled or probabilistic. We deliver a 40–60% match rate with 60–80% pixel-level accuracy on identified visitors, backed by an identity graph of 280M+ consumer and 140M+ business profiles refreshed every 30 days via NCOA. Email checks run in-house on ~20 million records per day. Our closed feedback loop maps signals back to source URLs, apps, and exchanges and validates against real conversions."
   },
   {
     question: "What pricing plans are available?",
-    answer: "Three self-serve plans, all month-to-month. The Visitor Pixel is $97/month and identifies the companies and people visiting your site. The Custom Audience is $197/month and delivers a fresh weekly list of people actively searching for your product. The Pixel + Audience Bundle is $247/month and includes both. No setup fee, no long-term contract, cancel anytime. Enterprise teams that need direct API access to the underlying identity infrastructure can reach out about a committed data partnership."
+    answer: "Start free: paste your website at leads.meetcursive.com/start and get 25 leads with work emails, no card and no sales call. After that, three self-serve plans, all month-to-month. The Visitor Pixel is $97/month and identifies the companies and people visiting your site. The Custom Audience is $197/month and delivers a fresh weekly list of people actively searching for your product. The Pixel + Audience Bundle is $247/month and includes both. No setup fee, no long-term contract, cancel anytime. Enterprise teams that need direct API access to the underlying identity infrastructure can reach out about a committed data partnership."
   },
   {
     question: "What integrations does Cursive support?",
@@ -41,7 +42,7 @@ const faqs: FAQ[] = [
   },
   {
     question: "What data sources does Cursive use?",
-    answer: "Cursive aggregates data from multiple authoritative sources including business registries, public records, verified professional networks, and real-time intent signals. Our database includes 280M consumer profiles, 140M+ business profiles, and 60B+ behaviors & URLs scanned weekly tracked across 30,000+ commercial categories. We continuously refresh data to maintain accuracy, with weekly updates to intent audiences and real-time enrichment for visitor identification. All data sources are vetted for compliance and quality."
+    answer: "Cursive aggregates data from multiple authoritative sources including business registries, public records, professional networks, and real-time intent signals. Our database includes 280M consumer profiles, 140M+ business profiles, and 60B+ behaviors & URLs scanned weekly tracked across 30,000+ commercial categories. We continuously refresh data to maintain accuracy, with weekly updates to intent audiences and real-time enrichment for visitor identification. All data sources are vetted for compliance and quality."
   },
   {
     question: "What support and onboarding is included?",
@@ -53,7 +54,7 @@ const faqs: FAQ[] = [
   },
   {
     question: "How is Cursive different from competitors?",
-    answer: "Unlike traditional visitor ID tools that resolve 2–5% of visitors, Cursive's deterministic pixel resolves 40–60% with person-level detail. Compared to data providers like Clearbit or ZoomInfo, Cursive adds anonymous visitor identification plus a fresh weekly audience of people actively searching for your product, drawn from 60B+ behaviors and URLs scanned weekly. Every identified visitor and audience record comes with a verified work email, ready to export to your CRM or sequencer. You get visitor identification, in-market audiences, and verified contact data in one place, starting at $97/month."
+    answer: "Unlike traditional visitor ID tools that resolve 2–5% of visitors, Cursive's deterministic pixel resolves 40–60% with person-level detail. Compared to data providers like Clearbit or ZoomInfo, Cursive adds anonymous visitor identification plus a fresh weekly audience of people actively searching for your product, drawn from 60B+ behaviors and URLs scanned weekly. Every identified visitor and audience record comes with a work email, ready to export to your CRM or sequencer. You get visitor identification, in-market audiences, and contact data in one place. Your first 25 leads are free."
   }
 ]
 
@@ -162,13 +163,13 @@ export function FAQSection() {
           >
             <p className="text-gray-600 mb-4">Still have questions?</p>
             <a
-              href="https://cal.com/cursiveteam/30min"
+              href={BOOKING_URL}
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => trackDemoBooked("faq_section")}
               className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg font-medium hover:bg-primary-dark transition-colors"
             >
-              Book a Free AI Audit
+              Book a call
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
               </svg>

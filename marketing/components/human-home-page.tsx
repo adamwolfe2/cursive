@@ -18,7 +18,7 @@ import {
   Layers, Check,
   type LucideIcon,
 } from "lucide-react"
-import { GET_LEADS_URL } from "@/lib/cta"
+import { GET_LEADS_URL, START_CTA_LABEL, startUrl } from "@/lib/cta"
 
 // Demo components
 import { DemoVisitorTracking } from "@/components/demos/demo-visitor-tracking"
@@ -104,51 +104,44 @@ export function HumanHomePage() {
               transition={{ duration: 0.4, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
               className="lg:w-[46%] lg:flex-shrink-0 text-center lg:text-left mb-8 lg:mb-0"
             >
-              {/* Locked to two lines: explicit <br> for the break, whitespace-nowrap
-                  on each line at lg+ so the long second line never wraps to a
-                  third row. Font sizes are tuned to fit the longer line inside
-                  the 46%-width column at every breakpoint we support. */}
+              {/* Locked to two lines at lg+: explicit <br>, whitespace-nowrap per line.
+                  Font sizes are tuned to fit the longer line in the 46% column. */}
               <h1 className="text-[2.25rem] sm:text-[2.75rem] md:text-[3.25rem] lg:text-[1.875rem] xl:text-[2.375rem] 2xl:text-[2.75rem] font-light mb-4 leading-[1.08] tracking-tight">
-                <span className="text-gray-900 lg:whitespace-nowrap">The Data Identity Layer</span>
+                <span className="text-gray-900 lg:whitespace-nowrap">Paste your website.</span>
                 <br />
-                <span className="text-gray-400 lg:whitespace-nowrap">for Outbound, Intent, and Enrichment</span>
+                <span className="text-gray-400 lg:whitespace-nowrap">Get 25 people who should buy from you.</span>
               </h1>
 
               <p className="text-base text-gray-600 mb-4 leading-relaxed max-w-lg mx-auto lg:mx-0">
-                280M verified consumers, a 15M-domain organic network, refreshed every 30 days. <span className="font-cursive text-gray-500 text-lg">Cursive</span> is the data infrastructure powering pixel identification, intent feeds, and audience enrichment for teams that need accuracy that compounds.
+                <span className="font-cursive text-gray-500 text-lg">Cursive</span> reads your site, works out who buys from you, and finds them. You get real names, titles, work emails, and a line on why each one fits. Free, in about a minute.
               </p>
 
-              {/* Stats */}
-              <div className="flex justify-center lg:justify-start gap-6 mb-4 py-3 border-y border-gray-100">
-                {[
-                  { value: "280M+", label: "Verified Consumers" },
-                  { value: "15M+", label: "Organic Domains" },
-                  { value: "30-day", label: "NCOA Refresh" },
-                ].map((stat) => (
-                  <div key={stat.label}>
-                    <div className="text-2xl lg:text-3xl text-gray-900 font-light">{stat.value}</div>
-                    <div className="text-[11px] text-gray-500">{stat.label}</div>
-                  </div>
+              {/* What the free list includes */}
+              <ul className="flex flex-wrap justify-center lg:justify-start gap-x-5 gap-y-1.5 mb-5 py-3 border-y border-gray-100 text-sm text-gray-700">
+                {["No card", "No sales call", "The 25 are yours to keep"].map((item) => (
+                  <li key={item} className="inline-flex items-center gap-1.5">
+                    <Check className="w-4 h-4 text-primary flex-shrink-0" aria-hidden="true" />
+                    {item}
+                  </li>
                 ))}
-              </div>
+              </ul>
 
               {/* CTAs */}
               <div className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-3 mb-1">
                 <Button
                   size="lg"
-                  href="https://cal.com/cursiveteam/30min"
-                  target="_blank"
+                  href={startUrl("home-hero")}
                   className="bg-primary text-white hover:bg-primary-dark px-6 py-3"
                 >
-                  Book Your Free AI Audit
+                  {START_CTA_LABEL}
                 </Button>
                 <Button
                   size="lg"
                   variant="outline"
-                  href="/superpixel"
+                  href="/pricing"
                   className="px-6 py-3"
                 >
-                  See the Super Pixel
+                  See pricing
                 </Button>
               </div>
               <div className="mb-4" />
@@ -240,7 +233,7 @@ export function HumanHomePage() {
         <Container>
           <IntegrationsShowcase
             title="Works With Your Existing Stack"
-            subtitle="200+ native integrations—sync leads to your CRM, trigger campaigns, and automate workflows"
+            subtitle="200+ native integrations. Sync leads to your CRM, trigger campaigns, and automate workflows."
           />
         </Container>
       </section>
@@ -253,7 +246,7 @@ export function HumanHomePage() {
               Pick Your Plan
             </h2>
             <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto">
-              Self-serve, month-to-month, cancel anytime. Install in 60 seconds, first audience in 24 hours.
+              Start with 25 free leads. When you want a steady flow, these plans are month-to-month and cancel anytime.
             </p>
           </div>
 
@@ -322,7 +315,7 @@ export function HumanHomePage() {
               Stop Losing Your Best Prospects
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              98% of website visitors leave without filling out a form. Cursive reveals who they are—so you can reach out while they&apos;re still interested.
+              98% of website visitors leave without filling out a form. Cursive shows you who they are, so you can reach out while they&apos;re still interested.
             </p>
           </div>
 
@@ -512,10 +505,9 @@ export function HumanHomePage() {
 
       {/* Dashboard CTA */}
       <DashboardCTA
-        headline="Ready to See Who's"
-        subheadline="Visiting Your Site?"
-        description="Install the pixel in 60 seconds, or get your first audience within 24 hours. Plans from $97/mo, month-to-month."
-        ctaText="Get Started"
+        headline="See who should"
+        subheadline="buy from you"
+        description="Paste your website and get 25 real leads with work emails in about a minute. Free, no card, no call."
       />
     </main>
   )
@@ -586,7 +578,7 @@ const benefitPillars: Array<{
   {
     icon: Eye,
     title: "Know Who's Interested",
-    description: '40–60% of anonymous visitors identified deterministically — name, company, and verified email — before they ever fill out a form.',
+    description: '40–60% of anonymous visitors identified by name, company, and work email before they ever fill out a form.',
   },
   {
     icon: Search,
@@ -596,7 +588,7 @@ const benefitPillars: Array<{
   {
     icon: TrendingUp,
     title: 'Reach Them While Hot',
-    description: 'Every contact comes with a verified email, ready to export to your CRM or sequence the moment intent spikes.',
+    description: 'Every contact comes with a work email, ready to export to your CRM or sequence the moment intent spikes.',
   },
 ]
 
@@ -604,7 +596,7 @@ const benefitPillars: Array<{
 const coreFeatures = [
   {
     title: "Visitor Identification",
-    description: "Know which companies and individuals are researching your product — before they fill out a form",
+    description: "Know which companies and individuals are researching your product before they fill out a form",
     icon: "M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7",
     items: [
       "40–60% pixel match rate (deterministic)",
@@ -647,8 +639,8 @@ const coreFeatures = [
     ]
   },
   {
-    title: "Verified Contact Data",
-    description: "Every visitor and audience record comes with a verified work email, validated continuously",
+    title: "Work Emails Included",
+    description: "Every visitor and audience record comes with a work email, checked continuously",
     icon: "M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z",
     items: [
       "~20M emails validated per day",

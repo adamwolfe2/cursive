@@ -17,14 +17,14 @@ const advantages: Advantage[] = [
   {
     icon: TrendingUp,
     title: "Match Rates That Outclass The Industry",
-    description: "40–60% pixel match rates driven by our geo-framing methodology — versus 2–5% for cookie-based providers and 10–15% for IP databases. Deterministic, not modeled.",
+    description: "40–60% pixel match rates driven by our geo-framing methodology, versus 2–5% for cookie-based providers and 10–15% for IP databases. Deterministic, not modeled.",
     metric: "40–60%",
     metricLabel: "vs 2–5% cookies, 10–15% IP",
   },
   {
     icon: Database,
     title: "Offline-Rooted Identity Graph",
-    description: "280M+ verified US consumer records sourced from TransUnion and Experian, refreshed every 30 days against the National Change of Address database. Most providers reconcile annually.",
+    description: "280M+ US consumer records from offline-rooted sources, refreshed every 30 days against the National Change of Address database. Most providers reconcile annually.",
     metric: "280M+",
     metricLabel: "refreshed every 30 days",
   },
@@ -52,7 +52,7 @@ const advantages: Advantage[] = [
   {
     icon: Shield,
     title: "Privacy-First & Compliant",
-    description: "Fully compliant with CCPA, GDPR, and all major privacy regulations. Email validation runs continuously through Deep Verify at approximately 20 million records per day. Consumer file is API-only — never licensed as a downloadable export.",
+    description: "Fully compliant with CCPA, GDPR, and all major privacy regulations. Email checks run continuously, at roughly 20 million records per day. Consumer file is API-only, never licensed as a downloadable export.",
     metric: "20M / day",
     metricLabel: "emails validated",
   },
@@ -76,7 +76,7 @@ export function CompetitiveAdvantagesSection() {
               Cursive
             </p>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Built for modern growth teams who need more than just data—they need results.
+              Built for modern growth teams who need more than just data. They need results.
             </p>
           </motion.div>
         </div>
