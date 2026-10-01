@@ -1,7 +1,7 @@
 'use client'
 
-import { Check, Globe, History, RotateCcw, X } from 'lucide-react'
-import { useState } from 'react'
+import { Check, ChevronDown, Globe, History, RotateCcw, X } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
 import type { Fact, ScanEvent } from '@/lib/free-leads/contract'
 import type { ScanInput } from './api'
 import { compactChars, groupFacts, pagesSummary, replayLabel, type PageRow } from './scan-state'
@@ -21,6 +21,7 @@ export function ScanFeed({
   pages,
   facts,
   scanning,
+  icpReady = false,
   slow,
   replayedAt,
   onReset,
@@ -30,19 +31,50 @@ export function ScanFeed({
   pages: PageRow[]
   facts: Fact[]
   scanning: boolean
+  /** The profile is done: below lg the pages and facts fold behind a one-line summary (if already scrolled past). */
+  icpReady?: boolean
   slow: 0 | 1 | 2
   replayedAt: string | null
   onReset: () => void
 }) {
+  const asideRef = useRef<HTMLElement>(null)
+  const [open, setOpen] = useState(true)
+  /** The summary row only exists once the rail has folded, so it never appears above content the reader can see. */
+  const [foldable, setFoldable] = useState(false)
+  // Phones fold the rail once the profile is ready, but only when it is already scrolled past: folding a rail
+  // the reader can see would pull the profile up under them (a layout shift). Desktop never folds.
+  useEffect(() => {
+    if (!icpReady) {
+      setOpen(true)
+      setFoldable(false)
+      return
+    }
+    const aside = asideRef.current
+    if (aside && !window.matchMedia('(min-width: 1024px)').matches && aside.getBoundingClientRect().bottom <= 0) {
+      setOpen(false)
+      setFoldable(true)
+    }
+  }, [icpReady])
   const fromUrl = Boolean(query && 'url' in query)
   const domain = site?.domain ?? (query && 'url' in query ? query.url : null)
   const settled = pagesSummary(pages)
   const showFacts = facts.length > 0 || (scanning && (!fromUrl || settled !== null))
 
   return (
-    <aside aria-label="What we read" className="min-w-0 lg:sticky lg:top-8 lg:self-start">
+    <aside ref={asideRef} aria-label="What we read" className="min-w-0 lg:sticky lg:top-8 lg:self-start">
       <SiteHeader site={site} domain={domain} query={query} scanning={scanning} onReset={onReset} />
 
+      <details
+        open={open}
+        onToggle={(e) => setOpen(e.currentTarget.open)}
+        className="group"
+      >
+        <summary
+          className={`mt-5 min-h-11 cursor-pointer list-none items-center justify-between gap-3 border-t border-[#e5e7eb] pt-2 text-[14px] font-medium text-[#1d2025] [&::-webkit-details-marker]:hidden ${foldable ? 'flex lg:hidden' : 'hidden'} ${FOCUS}`}
+        >
+          {readSummary(pages, facts)}
+          <ChevronDown className="h-4 w-4 shrink-0 text-[#4d5460] transition-transform group-open:rotate-180" aria-hidden="true" />
+        </summary>
       {fromUrl && (pages.length > 0 || scanning) && (
         <section aria-label="Pages" className="mt-5 border-t border-[#e5e7eb] pt-4">
           <p className="flex h-5 items-center gap-2 text-[13px] font-medium text-[#1d2025]" role="status">
@@ -101,8 +133,19 @@ export function ScanFeed({
           </dl>
         </section>
       )}
+      </details>
     </aside>
   )
+}
+
+/** "What we read: 3 pages, 5 facts" */
+function readSummary(pages: PageRow[], facts: Fact[]): string {
+  const read = pages.filter((p) => p.state === 'read').length
+  const parts = [
+    read ? `${read} ${read === 1 ? 'page' : 'pages'}` : null,
+    `${facts.length} ${facts.length === 1 ? 'fact' : 'facts'}`,
+  ].filter(Boolean)
+  return `What we read: ${parts.join(', ')}`
 }
 
 function LiveDot() {

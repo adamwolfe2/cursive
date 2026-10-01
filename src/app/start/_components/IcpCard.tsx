@@ -20,6 +20,9 @@ interface Props {
   onApprove: () => void
 }
 
+/** Titles beyond this fold behind "+N more" so a long list does not push Approve off a phone screen. */
+const TITLE_CAP = 6
+
 const WHITE_FOCUS = 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white'
 
 /**
@@ -109,6 +112,11 @@ function IcpRow({
   const edit = Boolean(full && editing)
   const addRef = useRef<HTMLButtonElement>(null)
   const doneRef = useRef<HTMLButtonElement>(null)
+  const [showAll, setShowAll] = useState(false)
+  const firstHiddenRef = useRef<HTMLLIElement>(null)
+  // Editing shows every chip so each one can be removed; once expanded, a row stays expanded.
+  const cap = row.key === 'job_titles' && !showAll && !edit ? TITLE_CAP : Infinity
+  const hidden = Math.max(0, values.length - cap)
   /** Controls that unmount on use hand keyboard focus to the row's Add button (after React commits). */
   const focusAdd = () => requestAnimationFrame(() => addRef.current?.focus())
 
@@ -162,10 +170,12 @@ function IcpRow({
       <dd className="min-h-8">
         <ul className="flex flex-wrap items-center gap-2" aria-label={row.label}>
           {values.length === 0 && !adding && <li className="py-1.5 text-sm text-white">Any</li>}
-          {values.map((v) => (
+          {values.slice(0, cap).map((v, i) => (
             <li
               key={v}
-              className={`inline-flex min-h-8 max-w-full items-center gap-1 rounded-md bg-white py-1 text-sm font-medium leading-tight text-[#0c1f45] ${edit ? 'pl-2.5 pr-1 max-sm:min-h-11 max-sm:py-0 max-sm:pr-0' : 'px-2.5'}`}
+              ref={i === TITLE_CAP ? firstHiddenRef : undefined}
+              tabIndex={i === TITLE_CAP ? -1 : undefined}
+              className={`inline-flex min-h-8 max-w-full items-center gap-1 rounded-md bg-white py-1 ${WHITE_FOCUS} text-sm font-medium leading-tight text-[#0c1f45] ${edit ? 'pl-2.5 pr-1 max-sm:min-h-11 max-sm:py-0 max-sm:pr-0' : 'px-2.5'}`}
             >
               <span className="min-w-0 [overflow-wrap:anywhere]">{chipLabel(row.key, v)}</span>
               {full && edit && (
@@ -183,6 +193,22 @@ function IcpRow({
               )}
             </li>
           ))}
+          {hidden > 0 && (
+            <li>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowAll(true)
+                  // The button unmounts; focus lands on the first chip it revealed.
+                  requestAnimationFrame(() => firstHiddenRef.current?.focus())
+                }}
+                aria-label={`Show ${hidden} more ${row.label.toLowerCase()}`}
+                className={`fl-compact h-8 rounded-md px-2 text-sm font-medium text-white underline underline-offset-4 transition-colors hover:bg-[#084fba] max-lg:h-11 max-lg:px-3 ${WHITE_FOCUS}`}
+              >
+                +{hidden} more
+              </button>
+            </li>
+          )}
           {full && edit && adding && row.options && (
             <>
               {remaining.map((o) => (
