@@ -85,11 +85,12 @@ export function attributionFrom(href: string, referrer: string): Attribution {
   }
 }
 
-/** Attribution rides only on the first scan of a session; the server keeps first touch. */
-function firstScanAttribution(): Attribution | undefined {
-  const sid = sessionId()
-  if (storageGet(ATTRIBUTION_SENT_KEY) === sid) return undefined
-  storageSet(ATTRIBUTION_SENT_KEY, sid)
+/**
+ * Attribution rides on scans until one is accepted (the server creates the session row then and
+ * keeps first touch). A rejected or rate-limited first scan must not use it up.
+ */
+function pendingAttribution(): Attribution | undefined {
+  if (storageGet(ATTRIBUTION_SENT_KEY) === sessionId()) return undefined
   return attributionFrom(window.location.href, document.referrer)
 }
 
@@ -224,7 +225,7 @@ export async function streamScan(
     const m = await import('./mock')
     return m.mockScan(input, onEvent, signal, mock)
   }
-  const attribution = firstScanAttribution()
+  const attribution = pendingAttribution()
   let res: Response
   try {
     res = await fetch('/api/start/scan', {
@@ -246,7 +247,15 @@ export async function streamScan(
     )
     return
   }
-  const parser = sseParser(onEvent)
+  let accepted = false
+  const parser = sseParser((e) => {
+    // Any progress event means the server accepted the scan and stored the attribution.
+    if (attribution && !accepted && e.type !== 'error') {
+      accepted = true
+      storageSet(ATTRIBUTION_SENT_KEY, sessionId())
+    }
+    onEvent(e)
+  })
   const reader = res.body.pipeThrough(new TextDecoderStream()).getReader()
   for (;;) {
     const { value, done } = await reader.read()
