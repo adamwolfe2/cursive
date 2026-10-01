@@ -87,7 +87,7 @@ export function Ladder({ mock, firstLead }: { mock: Mock; firstLead: FullLead | 
               Get 25 new leads like these, every Monday.
             </h2>
             <p className="mt-3 text-base leading-relaxed text-white sm:text-[17px]">
-              Same ICP you just refined, fresh contacts each week, verified emails and LinkedIn links included.
+              Same ICP you just refined, fresh contacts each week, work emails and LinkedIn links included.
             </p>
           </div>
           <Cta tier="weekly_leads" label="Send me 25 every Monday" tone="white" interest={interest} />

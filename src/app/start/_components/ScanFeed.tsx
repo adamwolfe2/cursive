@@ -42,25 +42,26 @@ export function ScanFeed({
   return (
     <aside aria-label="What we read" className="min-w-0 lg:sticky lg:top-8 lg:self-start">
       <SiteHeader site={site} domain={domain} query={query} scanning={scanning} onReset={onReset} />
-      {replayedAt && (
-        <p className="mt-3 flex items-center gap-1.5 text-[13px] font-medium text-[#0063E6]">
-          <History className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-          {replayLabel(replayedAt)}
-        </p>
-      )}
 
-      {fromUrl && (
+      {fromUrl && (pages.length > 0 || scanning) && (
         <section aria-label="Pages" className="mt-5 border-t border-[#e5e7eb] pt-4">
           <p className="flex h-5 items-center gap-2 text-[13px] font-medium text-[#1d2025]" role="status">
-            {settled ? (
+            {/* A replay notice takes this same line, so its arrival never moves anything below. */}
+            {replayedAt ? (
+              <History className="h-3.5 w-3.5 shrink-0 text-[#0063E6]" aria-hidden="true" />
+            ) : settled ? (
               <Check className="h-3.5 w-3.5 text-[#007AFF]" aria-hidden="true" />
             ) : (
               scanning && <LiveDot />
             )}
-            {settled ?? (scanning ? (pages.length ? 'Reading your site' : `Opening ${domain}`) : 'Could not read the site')}
+            {replayedAt ? (
+              <span className="truncate text-[#0063E6]">{replayLabel(replayedAt)}</span>
+            ) : (
+              settled ?? (scanning ? (pages.length ? 'Reading your site' : `Opening ${domain}`) : 'Could not read the site')
+            )}
           </p>
           {pages.length > 0 && (
-            <ul aria-label="Pages we opened" className={`mt-2.5 space-y-1 ${facts.length ? 'max-lg:hidden' : ''}`}>
+            <ul aria-label="Pages we opened" className="mt-2.5 space-y-1">
               {pages.map((p, i) => (
                 <PageLine key={p.path} page={p} first={i === 0} />
               ))}
@@ -75,15 +76,17 @@ export function ScanFeed({
             {scanning && <LiveDot />}
             {scanning && slow > 0
               ? slow === 1
-                ? 'Still reading. Bigger sites take longer.'
-                : 'Almost there. Checking every page we read.'
+                ? facts.length
+                  ? 'Still working out who buys from you.'
+                  : 'Still reading. Bigger sites take longer.'
+                : 'Almost there. This one is taking longer than most.'
               : scanning && !facts.length
                 ? 'Reading for what you sell and who buys'
                 : 'What we found'}
           </p>
           <dl className="mt-3 space-y-3.5" aria-live="polite" aria-relevant="additions">
-            {groupFacts(facts).map((g) => (
-              <div key={g.key} className="fl-rise">
+            {groupFacts(facts).map((g, i) => (
+              <div key={`${g.key}-${i}`} className="fl-rise">
                 <dt className="text-[12px] font-medium text-[#6b7280]">{g.label}</dt>
                 {g.facts.map((f, i) => (
                   <dd key={i} className="fl-rise mt-0.5 text-[14px] leading-snug text-[#1d2025]">

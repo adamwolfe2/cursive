@@ -35,6 +35,8 @@ export function StartFlow({ mock, initialSite }: { mock: Mock; initialSite: stri
   const [mode, setMode] = useState<InputMode>('url')
   const [value, setValue] = useState(initialSite && !autoUrl ? initialSite : '')
   const [inputError, setInputError] = useState<string | null>(initialSite && !autoUrl ? NOT_A_SITE : null)
+  /** Not an error: why we are asking for a description instead of a site. */
+  const [notice, setNotice] = useState<string | null>(null)
   /** The site we could not open; kept so the claim still has a website after a description scan. */
   const [fallbackDomain, setFallbackDomain] = useState<string | null>(null)
 
@@ -66,6 +68,9 @@ export function StartFlow({ mock, initialSite }: { mock: Mock; initialSite: stri
   const countTimer = useRef<number | undefined>(undefined)
   const previewSeq = useRef(0)
   const claimRef = useRef<HTMLDivElement>(null)
+  const cardRef = useRef<HTMLDivElement>(null)
+  /** Phones: glide to the profile when it starts, unless the reader has scrolled on their own. */
+  const followRef = useRef(false)
   const inputRef = useRef<HTMLInputElement & HTMLTextAreaElement>(null)
 
   const endSession = () => {
@@ -80,16 +85,27 @@ export function StartFlow({ mock, initialSite }: { mock: Mock; initialSite: stri
   const scanning = phase === 'scanning' && !complete
   useEffect(() => {
     if (!scanning) return
+    const stop = () => {
+      followRef.current = false
+    }
+    const events = ['wheel', 'touchmove', 'keydown'] as const
+    events.forEach((ev) => window.addEventListener(ev, stop, { passive: true }))
+    return () => events.forEach((ev) => window.removeEventListener(ev, stop))
+  }, [scanning])
+
+  useEffect(() => {
+    if (!scanning) return
     const timers = SLOW_AFTER_MS.map((ms, i) => window.setTimeout(() => setSlow((i + 1) as 1 | 2), ms))
     return () => timers.forEach((t) => window.clearTimeout(t))
   }, [scanning])
 
-  const toHero = (nextMode: InputMode, message: string | null) => {
+  const toHero = (nextMode: InputMode, message: string | null, nextNotice: string | null = null) => {
     endSession()
     setPhase('idle')
     setMode(nextMode)
     setValue('')
     setInputError(message)
+    setNotice(nextNotice)
     requestAnimationFrame(() => inputRef.current?.focus())
   }
 
@@ -104,6 +120,14 @@ export function StartFlow({ mock, initialSite }: { mock: Mock; initialSite: stri
       case 'fact':
         return setFacts((f) => [...f, e.fact])
       case 'icp_partial':
+        if (followRef.current) {
+          followRef.current = false
+          if (window.matchMedia('(max-width: 1023px)').matches) {
+            requestAnimationFrame(() =>
+              cardRef.current?.scrollIntoView({ behavior: reducedMotion() ? 'auto' : 'smooth', block: 'start' })
+            )
+          }
+        }
         return setIcp((prev) => ({ ...prev, ...e.icp }))
       case 'icp':
         setIcp(e.icp)
@@ -115,7 +139,7 @@ export function StartFlow({ mock, initialSite }: { mock: Mock; initialSite: stri
         // Unreachable site or bad input: back to the hero with a specific next step.
         if (e.code === 'unreachable' && 'url' in input) {
           setFallbackDomain(input.url)
-          return toHero('description', `We couldn't open ${input.url}. Tell us what you sell and who buys it instead.`)
+          return toHero('description', null, `We couldn't open ${input.url}. Tell us what you sell and who buys it, and we will work from that instead.`)
         }
         if (e.code === 'invalid_url') {
           return 'url' in input
@@ -138,6 +162,7 @@ export function StartFlow({ mock, initialSite }: { mock: Mock; initialSite: stri
     setPages([])
     setFacts([])
     setReplayedAt(null)
+    followRef.current = true
     setIcp({})
     setComplete(false)
     setScanError(null)
@@ -302,10 +327,12 @@ export function StartFlow({ mock, initialSite }: { mock: Mock; initialSite: stri
             setMode(m)
             setValue('')
             setInputError(null)
+            setNotice(null)
           }}
           value={value}
           setValue={setValue}
           inputError={inputError}
+          notice={notice}
           onSubmit={submit}
           inputRef={inputRef}
         />
@@ -331,11 +358,13 @@ export function StartFlow({ mock, initialSite }: { mock: Mock; initialSite: stri
         />
         <div className="min-w-0 space-y-5">
           {showCard && (
+            <div ref={cardRef} className="scroll-mt-4">
             <IcpCard
               icp={icp}
               complete={complete}
               count={count}
-              counting={counting}
+              // The stream stays open until its count lands; that wait is counting, not "unavailable".
+              counting={counting || (phase === 'scanning' && count === null)}
               onChange={onChange}
               refining={refining}
               refineNote={refineNote}
@@ -344,6 +373,7 @@ export function StartFlow({ mock, initialSite }: { mock: Mock; initialSite: stri
               approved={approved}
               onApprove={() => void onApprove()}
             />
+            </div>
           )}
           {scanError && <ScanErrorNote error={scanError} onRetry={() => query && void run(query)} />}
           {complete && !approved && website && count !== 0 && (

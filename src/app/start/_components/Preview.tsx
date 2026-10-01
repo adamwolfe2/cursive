@@ -160,7 +160,7 @@ export function ClaimForm({ website, icp, mock }: { website: string | null; icp:
         Get {FREE_LEAD_COUNT} leads like this.
       </h2>
       <p className="mt-3 max-w-[58ch] text-[15px] leading-relaxed text-[#4d5460] sm:text-[17px]">
-        We send a sign-in link to your work email. Open it and your {FREE_LEAD_COUNT} are waiting: names, titles, verified emails,
+        We send a sign-in link to your work email. Open it and your {FREE_LEAD_COUNT} are waiting: names, titles, work emails,
         and why each one fits.
       </p>
       <label htmlFor={id} className="mt-7 block text-sm font-medium text-[#1d2025]">

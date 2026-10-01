@@ -41,7 +41,7 @@ export function IcpCard(props: Props) {
       className={`overflow-clip rounded-2xl bg-[#0063E6] text-white shadow-enterprise-md ${started ? 'fl-rise' : 'max-lg:hidden'}`}
     >
       <div className="px-5 pb-6 pt-5 sm:px-10 sm:pb-8 sm:pt-8">
-        <div className="flex min-h-9 items-center justify-between gap-4">
+        <div className="flex min-h-11 items-center justify-between gap-4 sm:min-h-9">
           <h2 id="icp-heading" className="flex items-center gap-2 text-sm font-medium text-white">
             {!complete && <span className="fl-pulse h-1.5 w-1.5 rounded-full bg-white" aria-hidden="true" />}
             {complete ? 'Who buys from you' : started ? 'Building your buyer profile' : 'Your buyer profile'}

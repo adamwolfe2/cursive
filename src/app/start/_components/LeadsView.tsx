@@ -112,14 +112,22 @@ export function LeadsView({ mock, token }: { mock: Mock; token: string | null })
             {state.kind === 'loading' && 'Pulling your 25 leads.'}
             {data && (
               <>
-                <AnimatedNumber value={leads.length} from={0} duration={landMs} linear className="tabular-nums text-[#007AFF]" /> leads,
+                <AnimatedNumber
+                  value={leads.length}
+                  from={0}
+                  duration={landMs}
+                  linear
+                  // Width fixed to the final digit count so the words after it never slide while it counts.
+                  className="inline-block text-right tabular-nums tracking-normal text-[#007AFF]"
+                  style={{ width: `${String(leads.length).length}ch` }}
+                /> leads,
                 ready.
               </>
             )}
             <span className="sr-only">{data ? `${leads.length} leads ready.` : ''}</span>
           </h1>
-          {/* Three lines reserved: the loading note and the profile summary swap without moving the table. */}
-          <p className="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-[#4d5460] max-sm:min-h-[4.875rem]" role="status">
+          {/* Two lines (three on phones) reserved: the loading note and the profile summary swap without moving the table. */}
+          <p className="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-[#4d5460] min-h-[3.25rem] max-sm:min-h-[4.875rem]" role="status">
             {state.kind === 'loading' &&
               (slow
                 ? 'Still checking emails. We only keep addresses that pass, so this can take up to a minute.'
@@ -220,11 +228,11 @@ function Facts({ leads }: { leads: FullLead[] | null }) {
   const phone = leads.filter((l) => l.phone).length
   return (
     <p className="fl-fade mt-8 h-5 truncate text-sm text-[#4d5460]">
-      <span className="font-semibold text-[#1d2025]">{leads.length}</span> verified work emails
+      <span className="font-semibold text-[#1d2025]">{leads.length}</span> work emails
       <span className="px-2 text-[#d1d5db]" aria-hidden="true">/</span>
       <span className="font-semibold text-[#1d2025]">{linkedin}</span> LinkedIn
       <span className="px-2 text-[#d1d5db]" aria-hidden="true">/</span>
-      <span className="font-semibold text-[#1d2025]">{phone}</span> phone numbers
+      <span className="font-semibold text-[#1d2025]">{phone}</span> phones
     </p>
   )
 }
@@ -272,7 +280,7 @@ function LeadRow({ lead, index }: { lead: FullLead; index: number }) {
         <td className={`hidden px-4 align-top md:table-cell ${pad}`}>
           <div className="truncate font-medium text-[#1d2025]">{lead.company}</div>
           <div className="truncate text-[13px] text-[#6b7280]">
-            {[lead.industry, lead.company_size && `${lead.company_size.replace(' to ', '–')} people`].filter(Boolean).join(' · ')}
+            {[lead.company_size && `${lead.company_size.replace(' to ', '–')} people`, lead.industry].filter(Boolean).join(' · ')}
           </div>
         </td>
         <td className={`hidden truncate px-4 align-top text-[#4d5460] xl:table-cell ${pad}`}>{lead.location ?? ''}</td>

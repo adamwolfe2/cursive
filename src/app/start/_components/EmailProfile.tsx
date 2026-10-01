@@ -53,8 +53,10 @@ export function EmailProfile({ website, icp, mock }: { website: string; icp: Icp
   if (state === 'sent') {
     return (
       <p role="status" className="fl-fade flex min-h-11 items-center gap-2 text-[15px] text-[#1d2025]">
-        <Mail className="h-4 w-4 text-[#007AFF]" aria-hidden="true" />
-        Sent to <strong className="font-semibold [overflow-wrap:anywhere]">{email.trim()}</strong>, with a link back to this profile.
+        <Mail className="h-4 w-4 shrink-0 text-[#007AFF]" aria-hidden="true" />
+        <span>
+          Sent to <strong className="font-semibold [overflow-wrap:anywhere]">{email.trim()}</strong>, with a link back to this profile.
+        </span>
       </p>
     )
   }

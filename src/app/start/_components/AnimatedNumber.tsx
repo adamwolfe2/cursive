@@ -11,12 +11,14 @@ const fmt = new Intl.NumberFormat('en-US')
 export function AnimatedNumber({
   value,
   className,
+  style,
   from,
   duration = 700,
   linear = false,
 }: {
   value: number
   className?: string
+  style?: React.CSSProperties
   from?: number
   duration?: number
   linear?: boolean
@@ -46,7 +48,7 @@ export function AnimatedNumber({
   }, [value, duration, linear])
 
   return (
-    <span className={className} aria-hidden="true">
+    <span className={className} style={style} aria-hidden="true">
       {fmt.format(shown)}
     </span>
   )

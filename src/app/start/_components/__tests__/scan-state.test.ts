@@ -20,12 +20,21 @@ describe('withPage', () => {
 
 describe('groupFacts', () => {
   const f = (key: Fact['key'], source: Fact['source'], text: string): Fact => ({ key, label: key, source, text })
-  it('groups by key in first-arrival order', () => {
-    const groups = groupFacts([f('company', 'site', 'Acme'), f('pricing', 'site', '$99'), f('offer', 'model', 'Audits'), f('pricing', 'model', 'Flat fee')])
+  it('groups consecutive facts by key and never inserts above the newest group', () => {
+    const groups = groupFacts([
+      f('company', 'site', 'Acme'),
+      f('pricing', 'site', '$99'),
+      f('offer', 'model', 'Audits'),
+      f('customers', 'model', 'CTOs'),
+      f('customers', 'model', 'Series A'),
+      f('pricing', 'model', 'Flat fee'),
+    ])
     expect(groups.map((g) => [g.key, g.facts.map((x) => x.text)])).toEqual([
       ['company', ['Acme']],
-      ['pricing', ['$99', 'Flat fee']],
+      ['pricing', ['$99']],
       ['offer', ['Audits']],
+      ['customers', ['CTOs', 'Series A']],
+      ['pricing', ['Flat fee']],
     ])
   })
 })
