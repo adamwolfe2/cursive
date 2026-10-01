@@ -333,7 +333,9 @@ export async function fulfillClaim(claim: ClaimRow, authUserId: string, admin: A
   let extraCredits = 0
   let lookups = { tried: 0, found: 0 }
   let ranked = chosen
-  if (candidates.length < FREE_LEAD_COUNT) {
+  // Only a genuinely thin market: the whole email-ready pool is smaller than one over-pull. A short list
+  // caused by people already stored elsewhere is not rescued (the extra pull would mostly re-buy them).
+  if (candidates.length < FREE_LEAD_COUNT && pulled.totalAvailable + reused.length < want) {
     try {
       const rescue = await rescueThinPool({
         filters: claim.filters,

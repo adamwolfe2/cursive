@@ -65,7 +65,7 @@ describe('small-niche email rescue', () => {
   it('thin pool: one extra pull without the email filter, lookups only up to the shortfall', async () => {
     const { admin, row, db } = setup()
     searchContacts
-      .mockResolvedValueOnce({ contacts: range(0, 20, true), totalAvailable: 40 })
+      .mockResolvedValueOnce({ contacts: range(0, 20, true), totalAvailable: 20 })
       .mockResolvedValueOnce({ contacts: [...range(0, 3, true), ...range(100, 7, false)], totalAvailable: 40 })
     const cost = await run(admin, row)
     expect(searchContacts).toHaveBeenCalledTimes(2)
@@ -80,10 +80,19 @@ describe('small-niche email rescue', () => {
     expect(row()).toMatchObject({ status: 'fulfilled', attempts: 1, credits_used: 30 })
   })
 
+  it('a short list in a big market (people already stored elsewhere) is not rescued', async () => {
+    const { admin, row } = setup()
+    searchContacts.mockResolvedValueOnce({ contacts: range(0, 20, true), totalAvailable: 5000 })
+    const cost = await run(admin, row)
+    expect(searchContacts).toHaveBeenCalledTimes(1)
+    expect(findWorkEmail).not.toHaveBeenCalled()
+    expect(cost.email_lookups).toEqual({ tried: 0, found: 0 })
+  })
+
   it('pull limit is capped at 30 and lookups at the per-claim cap when nobody is found', async () => {
     const { admin, row, db } = setup()
     searchContacts
-      .mockResolvedValueOnce({ contacts: range(0, 2, true), totalAvailable: 5000 })
+      .mockResolvedValueOnce({ contacts: range(0, 2, true), totalAvailable: 2 })
       .mockResolvedValueOnce({ contacts: range(100, 30, false), totalAvailable: 5000 })
     findWorkEmail.mockResolvedValue(null)
     const cost = await run(admin, row)
@@ -98,7 +107,7 @@ describe('small-niche email rescue', () => {
   it('lookup failures and timeouts never fail the claim', async () => {
     const { admin, row, db } = setup()
     searchContacts
-      .mockResolvedValueOnce({ contacts: range(0, 20, true), totalAvailable: 40 })
+      .mockResolvedValueOnce({ contacts: range(0, 20, true), totalAvailable: 20 })
       .mockResolvedValueOnce({ contacts: range(100, 10, false), totalAvailable: 40 })
     findWorkEmail.mockRejectedValue(Object.assign(new Error('boom'), { code: 'timeout' }))
     const cost = await run(admin, row)
@@ -139,7 +148,7 @@ describe('small-niche email rescue', () => {
   it('cap reached mid-claim stops further lookups', async () => {
     const { admin, row } = setup()
     searchContacts
-      .mockResolvedValueOnce({ contacts: range(0, 10, true), totalAvailable: 40 })
+      .mockResolvedValueOnce({ contacts: range(0, 10, true), totalAvailable: 10 })
       .mockResolvedValueOnce({ contacts: range(100, 30, false), totalAvailable: 40 })
     isLimited.mockResolvedValueOnce(false).mockResolvedValueOnce(false).mockResolvedValue(true)
     const cost = await run(admin, row)
@@ -151,7 +160,7 @@ describe('small-niche email rescue', () => {
     const { admin, row, db } = setup()
     // The finder returns an address that is already one of the pulled emails, and one already stored anywhere.
     searchContacts
-      .mockResolvedValueOnce({ contacts: range(0, 23, true), totalAvailable: 40 })
+      .mockResolvedValueOnce({ contacts: range(0, 23, true), totalAvailable: 23 })
       .mockResolvedValueOnce({ contacts: range(100, 10, false), totalAvailable: 40 })
     findWorkEmail.mockResolvedValueOnce('p0@co0.com').mockResolvedValueOnce('fresh@found.test')
     const cost = await run(admin, row)

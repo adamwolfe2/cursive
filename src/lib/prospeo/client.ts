@@ -9,7 +9,8 @@ import { z } from 'zod'
 const BASE_URL = 'https://api.prospeo.io'
 export const LOOKUP_TIMEOUT_MS = 10_000
 /** Approximate $ per credit on the current plan (override with PROSPEO_CREDIT_USD). */
-export const PROSPEO_CREDIT_USD = Number(process.env.PROSPEO_CREDIT_USD) || 0.04
+const creditUsd = Number(process.env.PROSPEO_CREDIT_USD)
+export const PROSPEO_CREDIT_USD = Number.isFinite(creditUsd) && creditUsd >= 0 && process.env.PROSPEO_CREDIT_USD ? creditUsd : 0.04
 
 export type ProspeoErrorCode = 'not_configured' | 'timeout' | 'network' | 'rejected' | 'invalid_response'
 
