@@ -26,6 +26,10 @@ describe('icpToFilters', () => {
     expect(f).not.toHaveProperty('states')
   })
 
+  it('matches industries case-insensitively to the database spelling', () => {
+    expect(icpToFilters({ ...base, industries: ['software development', 'SOFTWARE DEVELOPMENT'] }).industries).toEqual(['Software Development'])
+  })
+
   it('trims and dedupes values', () => {
     expect(icpToFilters(base).job_titles).toEqual(['CTO', 'VP Engineering'])
   })

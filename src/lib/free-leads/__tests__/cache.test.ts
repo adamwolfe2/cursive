@@ -31,3 +31,20 @@ describe('free-leads cache', () => {
     expect(await cacheGet('scan:v1:acme.com', broken as unknown as Admin)).toBeNull()
   })
 })
+
+describe('cachedCount', () => {
+  it('treats a filter value the database does not know as zero matches, and rethrows other rejections', async () => {
+    const { GetLeadsError } = await import('@/lib/getleads/client')
+    const client = await import('@/lib/getleads/client')
+    const { cachedCount } = await import('../cache')
+    const db = fakeSupabase({ free_leads_cache: [] })
+    const admin = db as unknown as Admin
+    const spy = vi.spyOn(client, 'countContacts')
+    spy.mockRejectedValueOnce(new GetLeadsError('Lead database rejected request: Invalid countries value(s): Atlantis.', 'rejected', 400))
+    expect(await cachedCount({ countries: ['Atlantis'] }, admin)).toBe(0)
+    expect(db.tables.free_leads_cache).toHaveLength(0)
+    spy.mockRejectedValueOnce(new GetLeadsError('Lead database rejected request: HTTP 401', 'rejected', 401))
+    await expect(cachedCount({ countries: ['Atlantis'] }, admin)).rejects.toThrow('401')
+    spy.mockRestore()
+  })
+})

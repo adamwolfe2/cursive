@@ -12,7 +12,7 @@
 import { createHash } from 'node:crypto'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { safeWarn } from '@/lib/utils/log-sanitizer'
-import { countContacts, type GetLeadsFilters } from '@/lib/getleads/client'
+import { countContacts, GetLeadsError, type GetLeadsFilters } from '@/lib/getleads/client'
 import { filtersHash } from './icp-to-filters'
 
 type Admin = ReturnType<typeof createAdminClient>
@@ -52,9 +52,21 @@ export async function cachedCount(filters: GetLeadsFilters, admin?: Admin): Prom
   const key = `count:${filtersHash(filters)}`
   const hit = await cacheGet<{ total: number }>(key, admin)
   if (hit && typeof hit.total === 'number') return hit.total
-  const total = await countContacts(filters)
+  let total: number
+  try {
+    total = await countContacts(filters)
+  } catch (err) {
+    // A value the database does not know ("Atlantis" as a country) matches nobody: show the zero state.
+    if (isUnknownValue(err)) return 0
+    throw err
+  }
   await cachePut(key, { total }, 24 * HOUR_MS, admin)
   return total
+}
+
+/** Upstream 400 "Invalid countries value(s): X" (or another filter field): the filter value does not exist. */
+export function isUnknownValue(err: unknown): boolean {
+  return err instanceof GetLeadsError && err.code === 'rejected' && err.status === 400 && /rejected request: Invalid \w+/.test(err.message)
 }
 
 /** Raw preview rows for a filter set: written only from upstream responses; delivery reuses them. */

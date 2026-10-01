@@ -4,7 +4,12 @@ import { LEAD_INDUSTRIES } from '@/lib/free-leads/industries'
 import type { GetLeadsFilters } from '@/lib/getleads/client'
 import type { Icp } from './contract'
 
-const INDUSTRY_SET: ReadonlySet<string> = new Set(LEAD_INDUSTRIES)
+const INDUSTRY_BY_LOWER: ReadonlyMap<string, string> = new Map(LEAD_INDUSTRIES.map((i) => [i.toLowerCase(), i]))
+
+/** The database's spelling of an industry, matched case-insensitively; null when it is not in the list. */
+export function canonicalIndustry(value: string): string | null {
+  return INDUSTRY_BY_LOWER.get(value.trim().toLowerCase()) ?? null
+}
 
 function clean(values: readonly string[]): string[] {
   return [...new Set(values.map((v) => v.trim()).filter(Boolean))]
@@ -51,7 +56,7 @@ function isChildOf(parent: string, tag: string): boolean {
 
 /** Known tags only, deduped, minus any umbrella whose narrower tag is also present. */
 export function narrowIndustries(industries: readonly string[]): string[] {
-  const known = clean(industries).filter((i) => INDUSTRY_SET.has(i))
+  const known = clean(industries.map((i) => canonicalIndustry(i) ?? ''))
   return known.filter((parent) => !known.some((tag) => tag !== parent && isChildOf(parent, tag)))
 }
 

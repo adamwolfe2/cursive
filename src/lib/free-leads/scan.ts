@@ -12,6 +12,7 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { partialParse } from '@anthropic-ai/sdk/_vendor/partial-json-parser/parser'
 import { LEAD_INDUSTRIES } from '@/lib/free-leads/industries'
+import { canonicalIndustry } from './icp-to-filters'
 import { safeWarn } from '@/lib/utils/log-sanitizer'
 import { COMPANY_SIZE_BANDS, FACT_LABELS, IcpSchema, SENIORITY_VALUES, type Fact, type FactKey, type Icp } from './contract'
 
@@ -132,10 +133,9 @@ function finalText(message: Anthropic.Message): string {
 /** Clamp model output into the contract shape; throws ScanError('invalid') if it still fails. */
 export function toIcp(raw: Record<string, unknown>): Icp {
   const arr = (v: unknown, max: number) => (Array.isArray(v) ? v.filter((x) => typeof x === 'string').slice(0, max) : [])
-  const industrySet: ReadonlySet<string> = new Set(LEAD_INDUSTRIES)
   const parsed = IcpSchema.safeParse({
     summary: typeof raw.summary === 'string' ? raw.summary.trim().slice(0, 240) : '',
-    industries: arr(raw.industries, 8).filter((i) => industrySet.has(i)),
+    industries: arr(raw.industries, 8).map(canonicalIndustry).filter((i): i is string => i !== null),
     job_titles: arr(raw.job_titles, 12).map((t) => t.slice(0, 80)),
     seniority: arr(raw.seniority, 5),
     company_size: arr(raw.company_size, 8),
@@ -230,7 +230,9 @@ export async function refineIcp(icp: Icp, instruction: string): Promise<{ icp: I
       checkStop(message)
       const raw = JSON.parse(finalText(message)) as Record<string, unknown>
       const note = typeof raw.note === 'string' ? raw.note.slice(0, 160) : 'Updated your profile.'
-      return { icp: toIcp(raw), note }
+      // "Remove everything" can come back with an empty summary; the previous one still describes the offer.
+      const summary = typeof raw.summary === 'string' && raw.summary.trim() ? raw.summary : icp.summary
+      return { icp: toIcp({ ...raw, summary }), note }
     } catch (err) {
       const retryable = (err instanceof ScanError && err.code !== 'refusal' && err.code !== 'not_configured') || err instanceof SyntaxError
       if (!retryable || attempt >= 1) throw err
