@@ -5,7 +5,7 @@ import './start.css'
 export const metadata: Metadata = {
   title: 'Get 25 free leads from your website | Cursive',
   description:
-    'Paste your website. Cursive works out who buys from you and sends 25 real decision makers with verified work emails. Free.',
+    'Paste your website. Cursive works out who buys from you and sends 25 real decision makers with checked work emails. Free.',
 }
 
 export default function StartLayout({ children }: { children: React.ReactNode }) {

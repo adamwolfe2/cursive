@@ -1,8 +1,9 @@
 /**
  * DEV-ONLY fixtures for /start?mock=<scenario>. Loaded lazily by api.ts only when
  * page.tsx passes a mock scenario, which it never does in production.
- * Scenarios: 1 (happy path), slow (icp after 14s), unreachable, zero (no matches), failed + expired (/start/leads),
- * claim500 (claim returns a server error). Claim emails: gmail etc -> personal_email, *taken* -> already_claimed.
+ * Scan scenarios: 1 (happy path), replay, slow (profile after ~18s), unreachable, ratelimited, zero (no matches).
+ * /start/leads: failed, expired. claim500 (claim returns a server error). Claim emails: gmail etc -> personal_email,
+ * *taken* -> already_claimed, *slowdown* -> rate_limited. Email-profile: *slowdown* -> rate_limited, no "@" -> invalid_email.
  */
 import {
   BOOKING_URL,
@@ -33,51 +34,71 @@ const ICP: Icp = {
   cities: [],
 }
 
+const SITE_FACTS: ScanEvent[] = [
+  { type: 'fact', fact: { key: 'company', source: 'site', label: 'Company', text: 'Vantacheck, founded 2021' } },
+  { type: 'fact', fact: { key: 'pricing', source: 'site', label: 'Pricing', text: 'Listed prices: $4,900, $9,500' } },
+]
+const MODEL_FACTS: Array<[number, ScanEvent]> = [
+  [2000, { type: 'fact', fact: { key: 'offer', source: 'model', label: 'What you sell', text: 'SOC 2 and ISO 27001 audit readiness, plus the auditor intro.' } }],
+  [2600, { type: 'fact', fact: { key: 'customers', source: 'model', label: 'Who buys', text: 'Engineering and security leaders at software companies closing their first enterprise deals.' } }],
+  [3200, { type: 'fact', fact: { key: 'locations', source: 'model', label: 'Where', text: 'Mostly United States, some UK and Canada.' } }],
+]
+const ICP_FIELDS = ['summary', 'industries', 'job_titles', 'seniority', 'company_size', 'countries', 'states', 'cities'] as const
+
+/**
+ * Replays the real event order with realistic timings (ms from submit):
+ * page "/" fetching 50 -> site + read 450 -> sub-pages fetching 480, settled 900-1400 (one fails)
+ * -> site facts 1400 -> model facts 2000/2600/3200 -> icp_partial 3500-5200 -> icp 5300 -> count 6500 -> done.
+ * Scenarios: replay (instant, after a `replay` marker), unreachable, ratelimited, zero, slow (+13s before the profile).
+ */
 export async function mockScan(
   input: ScanInput,
   onEvent: (e: ScanEvent) => void,
   signal: AbortSignal,
   scenario: string
 ): Promise<void> {
-  const emit = async (ms: number, e: ScanEvent) => {
-    await wait(ms, signal)
+  const t0 = Date.now()
+  const replay = scenario === 'replay'
+  // Replays land almost at once, like the cached server path.
+  const at = async (ms: number, e: ScanEvent) => {
+    await wait(Math.max(0, (replay ? Math.min(ms, 40) : ms) - (Date.now() - t0)), signal)
     onEvent(e)
   }
+  if (scenario === 'ratelimited') {
+    return at(250, { type: 'error', code: 'rate_limited', message: 'You have run a lot of scans. Try again in an hour.' })
+  }
+  if (replay) await at(20, { type: 'replay', scanned_at: new Date(Date.now() - 3 * 3600_000).toISOString() })
   if ('url' in input) {
-    await emit(500, {
+    await at(50, { type: 'page', path: '/', state: 'fetching' })
+    if (scenario === 'unreachable') {
+      await at(1900, { type: 'page', path: '/', state: 'failed' })
+      return at(1950, { type: 'error', code: 'unreachable', message: 'We could not open that site.' })
+    }
+    await at(450, {
       type: 'site',
       domain: 'vantacheck.io',
       title: 'Vantacheck | Pass your SOC 2 in weeks, not quarters',
       description: 'Compliance automation and audit readiness for growing SaaS teams.',
       favicon: null,
     })
+    onEvent({ type: 'page', path: '/', state: 'read', title: 'Vantacheck', chars: 12_408 })
+    await at(480, { type: 'page', path: '/pricing', state: 'fetching' })
+    onEvent({ type: 'page', path: '/customers', state: 'fetching' })
+    onEvent({ type: 'page', path: '/about', state: 'fetching' })
+    await at(900, { type: 'page', path: '/customers', state: 'read', title: 'Customers', chars: 5_870 })
+    await at(1250, { type: 'page', path: '/about', state: 'failed' })
+    await at(1400, { type: 'page', path: '/pricing', state: 'read', title: 'Pricing', chars: 3_221 })
+    SITE_FACTS.forEach(onEvent)
   }
-  if (scenario === 'unreachable') {
-    await emit(900, { type: 'error', code: 'unreachable', message: 'We could not open that site.' })
-    return
+  for (const [ms, e] of MODEL_FACTS) await at(ms, e)
+  const delay = scenario === 'slow' ? 13_000 : 0
+  const full: Icp = scenario === 'zero' ? { ...ICP, states: ['Wyoming'] } : ICP
+  for (const [i, field] of ICP_FIELDS.entries()) {
+    await at(delay + 3500 + i * 243, { type: 'icp_partial', icp: { [field]: full[field] } })
   }
-  await emit(700, { type: 'fact', fact: { key: 'offer', source: 'model', label: 'What you sell', text: 'SOC 2 and ISO 27001 audit readiness, plus the auditor intro.' } })
-  await emit(800, { type: 'fact', fact: { key: 'customers', source: 'model', label: 'Who buys', text: 'Engineering and security leaders at software companies closing their first enterprise deals.' } })
-  await emit(800, { type: 'fact', fact: { key: 'customers', source: 'model', label: 'Company stage', text: 'Seed to Series B, roughly 20 to 300 employees.' } })
-  await emit(700, { type: 'fact', fact: { key: 'locations', source: 'model', label: 'Where', text: 'Mostly United States, some UK and Canada.' } })
-  if (scenario === 'slow') await wait(13000, signal)
-  const steps: Array<Partial<Icp>> = [
-    { summary: ICP.summary },
-    { industries: ICP.industries },
-    { job_titles: ICP.job_titles },
-    { seniority: ICP.seniority },
-    { company_size: ICP.company_size },
-    { countries: scenario === 'zero' ? ['United States'] : ICP.countries, states: scenario === 'zero' ? ['Wyoming'] : [] },
-  ]
-  let partial: Partial<Icp> = {}
-  for (const step of steps) {
-    partial = { ...partial, ...step }
-    await emit(550, { type: 'icp_partial', icp: partial })
-  }
-  const icp = { ...ICP, ...partial } as Icp
-  await emit(300, { type: 'icp', icp })
-  await emit(400, { type: 'count', total: countFor(icp) })
-  await emit(50, { type: 'done' })
+  await at(delay + 5300, { type: 'icp', icp: full })
+  await at(delay + (replay ? 600 : 6500), { type: 'count', total: countFor(full) })
+  onEvent({ type: 'done' })
 }
 
 function countFor(icp: Icp): number {
@@ -183,6 +204,14 @@ export async function mockRequest(path: string, body: unknown, scenario: string)
         leads: Array.from({ length: 25 }, (_, i) => full(i)),
         total_matching: 48210,
       }
+    case '/api/start/email-icp': {
+      await wait(700)
+      const email = String(b?.email ?? '')
+      if (!email.includes('@')) return { status: 'invalid_email' }
+      return { status: email.includes('slowdown') ? 'rate_limited' : 'sent' }
+    }
+    case '/api/start/event':
+      return { ok: true }
     case '/api/start/interest':
       await wait(300)
       return { ok: true, booking_url: BOOKING_URL }
