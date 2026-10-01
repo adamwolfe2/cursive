@@ -329,9 +329,10 @@ export const RATE_LIMITS = {
     message: 'Too many requests. Please try again later.',
   },
   'free-leads-count-global': {
-    windowMs: 24 * 60 * 60 * 1000,
-    maxRequests: Number(process.env.FREE_LEADS_DAILY_COUNT_CAP) || 3000,
-    message: 'Counts are paused for today.',
+    // Hourly, not daily: smooths bursts against the upstream rate limit shared with deliveries.
+    windowMs: 60 * 60 * 1000,
+    maxRequests: Number(process.env.FREE_LEADS_HOURLY_COUNT_CAP) || 250,
+    message: 'Counts are busy right now.',
   },
   'free-leads-preview': {
     windowMs: 24 * 60 * 60 * 1000,
