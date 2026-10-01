@@ -15,6 +15,8 @@ import { FREE_LEAD_COUNT, IcpSchema, type FullLead, type Icp } from './contract'
 import { cacheGet, previewRowsKey } from './cache'
 import { OVERPULL_FACTOR, scoreLeads, selectFitLeads } from './lead-fit'
 import { claudeUsd } from './cost'
+import { rescueThinPool } from './email-rescue'
+import { PROSPEO_CREDIT_USD } from '@/lib/prospeo/client'
 import type { GetLeadsContact } from '@/lib/getleads/client'
 import {
   FREE_LEADS_SOURCE,
@@ -273,11 +275,16 @@ async function ensureWorkspace(admin: Admin, claim: ClaimRow, authUserId: string
  * Before the paid request: failures release the claim back to pending (a refresh retries).
  * After it is sent: any failure is final ('failed'); a timeout may already have been billed.
  */
-/** Event meta convention: `usd` is model spend only; credits are priced separately (CREDIT_USD). */
+/**
+ * Event meta convention: `usd` is model spend plus email-finder spend; lead credits are priced
+ * separately (CREDIT_USD). `credits` already includes `extra_credits` (the thin-niche rescue pull).
+ */
 export interface DeliveryCost {
   credits: number
   usd: number
   reused_preview: number
+  extra_credits: number
+  email_lookups: { tried: number; found: number }
 }
 
 export async function fulfillClaim(claim: ClaimRow, authUserId: string, admin: Admin): Promise<DeliveryCost> {
@@ -322,23 +329,57 @@ export async function fulfillClaim(claim: ClaimRow, authUserId: string, admin: A
   const picked = selectFitLeads(candidates, fits, FREE_LEAD_COUNT)
   // Credits are already spent: if the check rejected every row, deliver them unscored rather than none.
   const chosen = picked.length || !candidates.length ? picked : selectFitLeads(candidates, null, FREE_LEAD_COUNT)
-  const rows = chosen.map(({ item, fit }, rank) =>
+  // Thin niche: fewer email-ready people than we owe. Fails open: any rescue problem delivers `chosen` as is.
+  let extraCredits = 0
+  let lookups = { tried: 0, found: 0 }
+  let ranked = chosen
+  if (candidates.length < FREE_LEAD_COUNT) {
+    try {
+      const rescue = await rescueThinPool({
+        filters: claim.filters,
+        icp,
+        website: claim.website,
+        seen: [...reused, ...pulled.contacts],
+        have: candidates.length,
+      })
+      extraCredits = rescue.extraCredits
+      lookups = rescue.lookups
+      fitUsd += rescue.fitUsd
+      ranked = await mergeRescued(admin, chosen, rescue.leads)
+    } catch (err) {
+      safeError('[free-leads/claims] rescue post-processing failed; delivering without it', err)
+    }
+  }
+  const spent = pulled.contacts.length + extraCredits
+  const usd = Math.round((fitUsd + lookups.found * PROSPEO_CREDIT_USD) * 1e5) / 1e5
+  const rows = ranked.map(({ item, fit }, rank) =>
     toLeadInsert(item, workspaceId, claim.id, now, fit ? { fit_score: fit.score, fit_why: fit.why, fit_rank: rank } : undefined)
   )
   const { error } = rows.length ? await admin.from('leads').insert(rows) : { error: null }
   if (error) {
     safeError('[free-leads/claims] leads insert failed after pull', error)
-    await setStatus(admin, claim.id, 'failed', { workspace_id: workspaceId, credits_used: pulled.contacts.length })
-    throw new ClaimError('storing leads failed', 'store', pulled.contacts.length)
+    await setStatus(admin, claim.id, 'failed', { workspace_id: workspaceId, credits_used: spent })
+    throw new ClaimError('storing leads failed', 'store', spent)
   }
   await setStatus(admin, claim.id, 'fulfilled', {
     workspace_id: workspaceId,
-    credits_used: pulled.contacts.length,
+    credits_used: spent,
     total_matching: pulled.totalAvailable,
     fulfilled_at: now,
   })
   safeLog('[free-leads/claims] fulfilled', { claim_id: claim.id, workspace_id: workspaceId, leads: rows.length })
-  return { credits: pulled.contacts.length, usd: fitUsd, reused_preview: reused.length }
+  return { credits: spent, usd, reused_preview: reused.length, extra_credits: extraCredits, email_lookups: lookups }
+}
+
+type Picked = ReturnType<typeof selectFitLeads<GetLeadsContact>>
+
+/** Adds rescued people that still pass dedupe (by email, then against stored leads); best fit first, capped. */
+async function mergeRescued(admin: Admin, chosen: Picked, rescued: Picked): Promise<Picked> {
+  if (!rescued.length) return chosen
+  const usable = new Set(usableContacts([...chosen.map((c) => c.item), ...rescued.map((c) => c.item)], Infinity))
+  const fresh = new Set(await withoutStoredLeads(admin, rescued.map((c) => c.item).filter((c) => usable.has(c))))
+  const merged = [...chosen, ...rescued.filter((c) => fresh.has(c.item))]
+  return merged.sort((a, b) => (b.fit?.score ?? 0) - (a.fit?.score ?? 0)).slice(0, FREE_LEAD_COUNT)
 }
 
 /**

@@ -362,6 +362,13 @@ export const RATE_LIMITS = {
     message: 'Free lead claims are paused for today.',
   },
 
+  // Email-finder lookups for thin-niche rescue (one slot per lookup, all claims).
+  'free-leads-email-lookup-global': {
+    windowMs: 24 * 60 * 60 * 1000,
+    maxRequests: Number(process.env.FREE_LEADS_DAILY_LOOKUP_CAP) || 300,
+    message: 'Email lookups are paused for today.',
+  },
+
   'free-leads-email-icp': {
     windowMs: 24 * 60 * 60 * 1000,
     maxRequests: 3, // "Email me this profile" sends per IP per day
