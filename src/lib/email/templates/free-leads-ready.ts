@@ -34,7 +34,7 @@ const BLUE = '#007AFF'
 const CANVAS = '#f5f6f8'
 const FONT = "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
 
-const FIELDS = ['Full name', 'Job title', 'Verified work email', 'LinkedIn profile']
+const FIELDS = ['Full name', 'Job title', 'Checked work email', 'LinkedIn profile']
 
 function button(href: string, label: string): string {
   return `
@@ -77,7 +77,7 @@ export function renderFreeLeadsReadyEmail({ to, loginUrl, domain, icpSummary }: 
   const startUrl = `${APP_URL}/start`
   const startLabel = escapeHtml(startUrl.replace(/^https?:\/\//, ''))
   const subject = 'Your 25 leads are ready'
-  const preheader = `25 decision-makers matched to ${safeDomain}, with verified work emails. Your link works once and expires in ${LINK_EXPIRY}.`
+  const preheader = `25 decision-makers matched to ${safeDomain}, with checked work emails. Your link works once and expires in ${LINK_EXPIRY}.`
 
   const icpBlock = summary
     ? `
