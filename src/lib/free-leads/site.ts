@@ -202,7 +202,8 @@ export type SiteEvent =
 const HOME_TEXT = 7_000
 const SUBPAGE_TEXT = 1_700
 const SUBPAGES = 3
-const SUBPAGE_TIMEOUT_MS = 2_500
+// Sub-pages are a bonus: never let a slow one hold the model back for long.
+const SUBPAGE_TIMEOUT_MS = 1_800
 
 /** Key pages worth reading, in priority order; one per kind. */
 const PAGE_KINDS: Array<[string, RegExp]> = [

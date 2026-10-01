@@ -19,7 +19,7 @@ import { COMPANY_SIZE_BANDS, FACT_LABELS, IcpSchema, SENIORITY_VALUES, type Fact
 // the cost per scan and ~2s faster to the ICP (scripts/free-leads-eval/RESULTS.md, 2026-09-30).
 const MODEL = 'claude-sonnet-5-5'
 /** Bump when the prompt, schema or model changes: cached scans from older versions are ignored. */
-export const SCAN_VERSION = 'v4-sonnet55'
+export const SCAN_VERSION = 'v5-sonnet55'
 const ICP_KEYS = ['summary', 'industries', 'job_titles', 'seniority', 'company_size', 'countries', 'states', 'cities'] as const
 
 export class ScanError extends Error {
@@ -81,11 +81,12 @@ const ICP_RULES = `ICP field rules:
 
 const SCAN_SYSTEM = `You analyze a company's website (its homepage and a few key pages) to infer its ideal customer profile (who it should sell to), for a B2B lead list.
 Write findings first, 2-4 short facts read from the site, in this order, each once:
-- offer: what they sell, in one plain sentence ("You sell ...").
-- customers: who buys it, as the site shows (named customer types, industries, sizes).
-- pricing: only if the site states prices or a pricing model.
-- locations: only if the site names where they operate or serve.
-Each text under 120 characters, second person, factual. No hype, no emojis, no em dashes.
+- offer: what they sell ("SOC 2 audit readiness plus auditor intros").
+- customers: who buys it, as the site shows ("Engineering leaders at Series A-C software companies").
+- pricing: only if the site states prices or a pricing model ("Annual plans from $4,900").
+- locations: only if the site names where they operate or serve ("Dallas Fort Worth commercial buildings").
+Each text is a short third-person phrase under 90 characters, not a sentence: no "You", no "They", no trailing period.
+Factual, no hype, no emojis, no em dashes.
 Then the ICP fields.
 ${ICP_RULES}`
 

@@ -33,7 +33,11 @@ interface ScanContext {
   sessionId: string | null
   url: string | null
   description: string | undefined
+  /** The `paste` step write, started in the background so it never delays the first event. */
+  pasted?: Promise<void>
 }
+
+type CachedScan = { events: Replayable[]; scanned_at: string }
 
 async function loadSource(ctx: ScanContext, send: Send): Promise<{ text: string; site: SiteContent | null } | null> {
   const { url, description } = ctx
@@ -67,17 +71,17 @@ async function sendCount(icp: Icp, send: Send): Promise<number | null> {
 async function finish(ctx: ScanContext, icp: Icp, send: Send, meta: Record<string, unknown>): Promise<void> {
   const total = await sendCount(icp, send)
   send({ type: 'done' })
+  await ctx.pasted
   await recordStep(ctx.sessionId, 'scan_done', {
     meta,
     patch: { icp, ...(total === null ? {} : { total }), ...(ctx.url ? { domain: siteDomain(ctx.url) } : {}) },
   })
 }
 
-async function run(ctx: ScanContext, send: Send): Promise<void> {
+async function run(ctx: ScanContext, send: Send, cached: CachedScan | null): Promise<void> {
   const { url, description } = ctx
   // A site scanned recently (by anyone) replays instantly: no fetch, no model call.
   if (url && !description) {
-    const cached = await cacheGet<{ events: Replayable[]; scanned_at: string }>(scanKey(url))
     const icp = cached?.events.find((e): e is Extract<Replayable, { type: 'icp' }> => e.type === 'icp')?.icp
     if (cached && icp) {
       send({ type: 'replay', scanned_at: cached.scanned_at })
@@ -169,15 +173,20 @@ export async function POST(req: NextRequest) {
       return
     }
     const ip = clientIp(req)
-    if (await isLimited('free-leads-scan', `ip:${ip}`)) {
+    // In parallel: the per-IP check and the replay lookup (first visible progress < 1.5s).
+    const [limited, cached] = await Promise.all([
+      isLimited('free-leads-scan', `ip:${ip}`),
+      url && !description ? cacheGet<CachedScan>(scanKey(url)) : Promise.resolve(null),
+    ])
+    if (limited) {
       send({ type: 'error', code: 'rate_limited', message: 'You have run a lot of scans. Try again in an hour.' })
       return
     }
-    await recordStep(ctx.sessionId, 'paste', {
+    ctx.pasted = recordStep(ctx.sessionId, 'paste', {
       attribution,
       patch: { ip_hash: hashIp(ip), ...(url ? { website: url, domain: siteDomain(url) } : {}) },
       meta: description ? { description: true } : {},
     })
-    await run(ctx, send)
+    await run(ctx, send, cached)
   })
 }
