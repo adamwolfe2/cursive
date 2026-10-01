@@ -68,6 +68,13 @@ export interface Persona {
   day: string // 2-3 sentences: what her week actually looks like
   measured_on: string[] // 2-3 short items: what her boss judges her on
   replies_when: string // 1-2 sentences: what makes her answer a cold message
+  // Absent on personas cached before 2026-10-01.
+  gender?: 'woman' | 'man'
+  age?: number
+  /** What a portrait would show: hair, clothes for the job, the workplace behind them. Feeds the photo prompt. */
+  look?: string
+  /** AI-generated portrait as a data: URL (best effort; the card falls back to an initial). */
+  photo?: string
 }
 
 export type ScanEvent =

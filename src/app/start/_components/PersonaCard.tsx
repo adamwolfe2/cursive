@@ -2,7 +2,7 @@ import { CalendarDays, MessageSquareReply, Target, type LucideIcon } from 'lucid
 import type { ReactNode } from 'react'
 import type { Persona } from '@/lib/free-leads/contract'
 
-/** One believable buyer behind the profile, met like a person: who she is, her week, what she is judged on, what gets a reply. */
+/** One believable buyer behind the profile, met like a person: a face, their week, what they are judged on, what gets a reply. */
 export function PersonaCard({ persona }: { persona: Persona }) {
   return (
     <section aria-labelledby="persona-heading" className="fl-rise overflow-hidden rounded-2xl border border-[#e5e7eb] bg-white">
@@ -12,22 +12,36 @@ export function PersonaCard({ persona }: { persona: Persona }) {
         </h2>
         <span className="rounded-full bg-[#f3f4f6] px-2.5 py-0.5 text-[12px] font-medium text-[#4b5563]">Illustrative</span>
       </div>
-      <div className="flex items-start gap-4 px-5 pt-5 sm:gap-5 sm:px-6 sm:pt-6">
-        <span
-          className="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-[#e8f1ff] text-[1.5rem] font-semibold text-[#0066DD] ring-4 ring-[#f5f9ff] sm:h-16 sm:w-16 sm:text-[1.75rem]"
-          aria-hidden="true"
-        >
-          {persona.name.charAt(0).toUpperCase()}
-        </span>
+      <div className="flex items-center gap-4 px-5 pt-5 sm:gap-5 sm:px-6 sm:pt-6">
+        {persona.photo ? (
+          // eslint-disable-next-line @next/next/no-img-element -- inline data: URL, generated per scan
+          <img
+            src={persona.photo}
+            alt={`AI-generated portrait of ${persona.name}, an illustrative buyer`}
+            width={112}
+            height={112}
+            className="fl-fade h-20 w-20 shrink-0 rounded-2xl object-cover shadow-[0_10px_24px_-12px_rgb(12_31_69/0.45)] ring-1 ring-black/5 sm:h-28 sm:w-28"
+          />
+        ) : (
+          <span
+            className="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-[#e8f1ff] text-[1.5rem] font-semibold text-[#0066DD] ring-4 ring-[#f5f9ff] sm:h-16 sm:w-16 sm:text-[1.75rem]"
+            aria-hidden="true"
+          >
+            {persona.name.charAt(0).toUpperCase()}
+          </span>
+        )}
         <div className="min-w-0">
-          <p className="text-xl font-semibold leading-tight tracking-[-0.015em] text-[#111827] sm:text-[1.375rem]">{persona.name}</p>
+          <p className="text-xl font-semibold leading-tight tracking-[-0.015em] text-[#111827] sm:text-[1.375rem]">
+            {persona.name}
+            {persona.age ? <span className="ml-2 text-[15px] font-normal text-[#6b7280]">{persona.age}</span> : null}
+          </p>
           <p className="mt-1 text-[15px] leading-snug text-[#374151]">
             <span className="font-medium text-[#111827]">{persona.role}</span> at {persona.company}
           </p>
         </div>
       </div>
       <p className="px-5 pt-3 text-[13px] text-[#6b7280] sm:px-6">
-        Made up from your profile to help you picture who you are writing to. Not one of your leads.
+        Made up from your profile to help you picture who you are writing to. Not one of your leads{persona.photo ? '; the photo is AI-generated' : ''}.
       </p>
       <dl className="mt-5 grid border-t border-[#f0f1f3] md:grid-cols-3 md:divide-x md:divide-[#f0f1f3] max-md:divide-y max-md:divide-[#f0f1f3]">
         <Block icon={CalendarDays} label="A typical week">

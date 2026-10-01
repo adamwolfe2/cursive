@@ -13,6 +13,7 @@ import { ScanRequestSchema, type Attribution, type Icp, type Fact, type Persona,
 import { normalizeSiteUrl, readSite, siteDomain, tidyPrices, type SiteContent } from '@/lib/free-leads/site'
 import { dedupeFacts, scanIcp, ScanError, SCAN_VERSION } from '@/lib/free-leads/scan'
 import { generatePersona } from '@/lib/free-leads/persona'
+import { personaPhoto } from '@/lib/free-leads/persona-photo'
 import { icpToFilters } from '@/lib/free-leads/icp-to-filters'
 import { cachedCount, cacheGet, cachePut, HOUR_MS } from '@/lib/free-leads/cache'
 import { recordStep, sessionIdFrom } from '@/lib/free-leads/funnel'
@@ -75,9 +76,12 @@ const usdOf = (usage: Usage) => usage.reduce((s, x) => s + claudeUsd(x.model, x.
 
 /** Hard cap so a slow persona can never push the scan past maxDuration (it is best effort). */
 const PERSONA_DEADLINE_MS = 15_000
+const PHOTO_BUDGET_MS = 8_000
+const PERSONA_TOTAL_MS = 21_000
 
 /** Best-effort: a failed or slow persona never fails the scan. Starts immediately so it overlaps the count. */
 async function startPersona(icp: Icp, siteText: string | null, usage: Usage): Promise<Persona | null> {
+  const startedAt = Date.now()
   let timer: ReturnType<typeof setTimeout> | undefined
   const deadline = new Promise<null>((resolve) => {
     timer = setTimeout(() => resolve(null), PERSONA_DEADLINE_MS)
@@ -88,8 +92,13 @@ async function startPersona(icp: Icp, siteText: string | null, usage: Usage): Pr
   })
   const persona = await Promise.race([call, deadline])
   clearTimeout(timer)
-  if (!persona) safeError('[start/scan] persona skipped', 'failed or over deadline')
-  return persona
+  if (!persona) {
+    safeError('[start/scan] persona skipped', 'failed or over deadline')
+    return null
+  }
+  // Up to 8s for the portrait, never past 21s for the whole persona; without it the card shows an initial.
+  const photo = await personaPhoto(persona, Math.min(PHOTO_BUDGET_MS, PERSONA_TOTAL_MS - (Date.now() - startedAt)))
+  return photo ? { ...persona, photo } : persona
 }
 
 interface FinishOpts {
