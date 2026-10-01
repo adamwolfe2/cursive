@@ -57,7 +57,7 @@ export default function FreeLeadsAdminPage() {
   if (!isAdmin) return null
 
   return (
-    <div className="p-6 max-w-6xl">
+    <div className="p-6 max-w-7xl">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-xl font-semibold text-zinc-900">Free leads</h1>
@@ -206,15 +206,15 @@ function ClaimsTable({ claims }: { claims: ClaimListRow[] }) {
                   </Link>
                 </td>
                 <td className="px-3 py-2 text-zinc-900">{c.email}</td>
-                <td className="px-3 py-2 text-zinc-600">{c.website}</td>
-                <td className="px-3 py-2 text-zinc-600 max-w-[260px] truncate" title={c.icp_summary ?? undefined}>
+                <td className="px-3 py-2 text-zinc-600 whitespace-nowrap">{c.website.replace(/^https?:\/\//, '').replace(/\/$/, '')}</td>
+                <td className="px-3 py-2 text-zinc-600 max-w-[220px] truncate" title={c.icp_summary ?? undefined}>
                   {c.icp_summary ?? '-'}
                 </td>
                 <td className="px-3 py-2 tabular-nums text-zinc-600">{c.total_matching === null ? '-' : numberFmt.format(c.total_matching)}</td>
                 <td className={`px-3 py-2 ${c.status === 'failed' ? 'text-red-600' : 'text-zinc-900'}`}>{c.status}</td>
                 <td className="px-3 py-2 tabular-nums text-zinc-900">{c.lead_count}</td>
-                <td className="px-3 py-2 tabular-nums text-zinc-900">{c.mean_fit_score === null ? '-' : `${c.mean_fit_score.toFixed(2)} / 3`}</td>
-                <td className="px-3 py-2 text-zinc-600">
+                <td className="px-3 py-2 tabular-nums text-zinc-900 whitespace-nowrap">{c.mean_fit_score === null ? '-' : `${c.mean_fit_score.toFixed(2)} / 3`}</td>
+                <td className="px-3 py-2 text-zinc-600 whitespace-nowrap">
                   {c.upgrade_interest.length ? c.upgrade_interest.map((t) => UPGRADE_LABELS[t] ?? t).join(', ') : '-'}
                 </td>
                 <td className="px-3 py-2 text-zinc-600 whitespace-nowrap">{[c.utm_source, c.ref].filter(Boolean).join(' / ') || '-'}</td>

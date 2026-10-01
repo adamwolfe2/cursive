@@ -188,7 +188,7 @@ function DetailBody({ data }: { data: Detail }) {
                   <td className="px-3 py-2 text-zinc-600">{l.job_title || '-'}</td>
                   <td className="px-3 py-2 text-zinc-900">{l.company || '-'}</td>
                   <td className="px-3 py-2 text-zinc-600">{l.location ?? '-'}</td>
-                  <td className="px-3 py-2 tabular-nums text-zinc-900">{l.fit_score === null ? '-' : `${l.fit_score} / 3`}</td>
+                  <td className="px-3 py-2 tabular-nums text-zinc-900 whitespace-nowrap">{l.fit_score === null ? '-' : `${l.fit_score} / 3`}</td>
                   <td className="px-3 py-2 text-zinc-600">{l.fit_why ?? '-'}</td>
                 </tr>
               ))}
