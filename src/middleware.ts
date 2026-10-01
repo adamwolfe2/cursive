@@ -112,6 +112,16 @@ export async function middleware(req: NextRequest) {
       '/api/onboarding/icp-suggestions',
       '/api/pixel/provision-demo',
       '/api/public/segment-search',
+      // Free-leads flow (/start) — anonymous; each route enforces its own per-IP
+      // and global caps. /api/start/leads and /api/start/interest stay session-gated.
+      '/api/start/scan',
+      '/api/start/count',
+      '/api/start/refine',
+      '/api/start/preview',
+      '/api/start/claim',
+      '/api/start/email-icp',
+      '/api/start/event',
+      '/api/start/open',
       // MCP server — uses bearer token auth via workspace API keys, not session cookies.
       // Route handler enforces its own auth, workspace isolation, and multi-layer rate limiting.
       '/api/mcp',
@@ -212,6 +222,17 @@ export async function middleware(req: NextRequest) {
       pathname.startsWith('/api/pixel/provision-demo') ||
       pathname.startsWith('/api/public/segment-search') ||
       pathname.startsWith('/api/public/copilot') ||
+      // Free-leads flow: pages self-gate (/start/leads checks the session server-side).
+      pathname === '/start' ||
+      pathname.startsWith('/start/') ||
+      pathname.startsWith('/api/start/scan') ||
+      pathname.startsWith('/api/start/count') ||
+      pathname.startsWith('/api/start/refine') ||
+      pathname.startsWith('/api/start/preview') ||
+      pathname.startsWith('/api/start/claim') ||
+      pathname.startsWith('/api/start/email-icp') ||
+      pathname.startsWith('/api/start/event') ||
+      pathname.startsWith('/api/start/open') ||
       pathname.startsWith('/audience-builder') ||
       pathname.startsWith('/audience-intelligence') ||
       // Client portal — token-based auth, no user session required
@@ -348,7 +369,7 @@ export async function middleware(req: NextRequest) {
     // Caches a signed workspace_id cookie to avoid DB query on every request (~50-100ms savings).
     // The cookie is HMAC-signed with the user's auth_user_id so it cannot be forged.
     // Exclude /api/auth/* — needed during onboarding before workspace exists.
-    if (user && !isPublicRoute && !isAdminRoute && !isPartnerRoute && !isAffiliateRoute && !pathname.startsWith('/portal') && !pathname.startsWith('/onboarding') && !pathname.startsWith('/client-onboarding') && !pathname.startsWith('/welcome') && !pathname.startsWith('/api/onboarding') && !pathname.startsWith('/api/auth') && !pathname.startsWith('/api/affiliate')) {
+    if (user && !isPublicRoute && !isAdminRoute && !isPartnerRoute && !isAffiliateRoute && !pathname.startsWith('/portal') && !pathname.startsWith('/onboarding') && !pathname.startsWith('/client-onboarding') && !pathname.startsWith('/welcome') && !pathname.startsWith('/api/onboarding') && !pathname.startsWith('/api/auth') && !pathname.startsWith('/api/affiliate') && !pathname.startsWith('/api/start/')) {
       const cookieRaw = req.cookies.get('x-workspace-id')?.value
       const verifiedWs = verifyWorkspaceCookie(user.id, cookieRaw)
 
@@ -415,7 +436,8 @@ export async function middleware(req: NextRequest) {
       pathname.startsWith('/affiliate') ||
       pathname.startsWith('/affiliates') ||
       pathname.startsWith('/superpixel') ||
-      pathname.startsWith('/portal')
+      pathname.startsWith('/portal') ||
+      pathname.startsWith('/start/')
     if (isAppRoute) {
       client.response.headers.set('X-Robots-Tag', 'noindex, nofollow')
     }

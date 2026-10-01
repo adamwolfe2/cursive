@@ -13,6 +13,8 @@ describe('public lead source', () => {
     ['Audience Labs', 'daily_audience'],
     ['marketplace', 'marketplace'],
     ['ingest', 'import'],
+    ['free_leads', 'free_leads'],
+    ['getleads_free', 'unknown'],
     ['demo', 'unknown'],
     ['clay', 'unknown'],
     ['prospeo_enrich', 'unknown'],

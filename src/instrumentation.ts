@@ -55,29 +55,9 @@ export async function register() {
       console.error('[UnhandledRejection] Unhandled promise rejection:', message)
     })
 
-    // Also suppress unhandledRejection warnings printed by Node for GoTrue
-    process.on('uncaughtException', (err: Error) => {
-      const message = err?.message ?? ''
-      if (
-        message.includes('_recoverAndRefresh') ||
-        message.includes('GoTrueClient') ||
-        message.includes('Auth session missing')
-      ) {
-        return
-      }
-      // Suppress Next.js dev-server vendor-chunk race: Sentry / OTel worker
-      // threads sometimes try to load a chunk before the dev server has
-      // finished writing it. The next request retries automatically. Only
-      // suppress in dev — production builds have all chunks emitted ahead.
-      if (
-        process.env.NODE_ENV !== 'production' &&
-        message.includes('.next/server') &&
-        message.includes('Cannot find module')
-      ) {
-        return
-      }
-      // Re-throw unexpected uncaught exceptions to preserve original behavior
-      throw err
-    })
+    // No uncaughtException listener here on purpose. Next's server already installs one that logs
+    // and keeps the process alive. Re-throwing from a listener is fatal: a client disconnecting
+    // mid-request emits ECONNRESET "aborted" on the IncomingMessage, which then killed the whole
+    // instance (and every in-flight request on it).
   }
 }

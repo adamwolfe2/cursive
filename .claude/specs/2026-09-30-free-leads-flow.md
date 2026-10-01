@@ -1,0 +1,66 @@
+# Free-leads flow (GetLeads) — 2026-09-30
+
+Branch `feat/free-leads-flow` · worktree `~/cursive-worktrees/free-leads` · contract `src/lib/free-leads/contract.ts`
+Context: `.claude/specs/2026-09-30-getleads-replaces-audiencelab.md` in main checkout; bake-off `~/getleads-bakeoff/RESULTS.md`.
+
+## Goal
+Founder pastes their website -> Cursive infers their ICP -> live count -> refine -> 5 masked preview leads -> work email -> magic link -> free workspace with 25 real verified leads -> ladder: weekly leads (lead 26 paywall) -> LinkedIn outreach done for you -> AI dashboard partner.
+
+## Journey (URLs)
+- `/start` public. One input: website. Then scan (SSE), ICP card, count, refine, preview, email step. Single page, progressive, no route changes mid-flow.
+- `/start/check-email` public. "Open the link we sent to x@acme.com."
+- `/start/leads` authenticated (server-side session check, else redirect `/start`). Materializes claim, shows 25 leads, CSV, locked lead 26, ladder.
+- Magic link: `/auth/confirm?token_hash=…&next=/start/leads` (existing route).
+
+## Backend (owner: backend agent)
+- `src/lib/getleads/client.ts` — REST `https://app.getleads.io`, `Authorization: Bearer ${GETLEADS_API_KEY}`, zod-parse responses, 10s timeout, typed errors. Endpoints:
+  - `POST /api/v1/contacts/search/count` (free) body = filters -> `{ total_matching }`
+  - `POST /api/v1/contacts/search` body = filters + `limit`,`offset` -> `{ contacts[], total_available }` (1 credit per row)
+  - Filters: `industries, job_titles, seniority, company_size, countries, office_states, email_status:["VALID"]`. Contact fields: first_name, last_name, email_address, email_status, job_title, job_level, org_company_name, org_domain, org_industry_linkedin, employee_count_range, person_city, state_name, person_country_name, person_linkedin_url, cellphone.
+- `src/lib/free-leads/icp-to-filters.ts` — pure, tested. Always adds `email_status:["VALID"]`. Drops industries not in `GETLEADS_INDUSTRIES`.
+- `src/lib/free-leads/scan.ts` — fetch site (existing `firecrawlService`, 8s timeout, fallback raw fetch + strip), then Claude `claude-opus-5-5`, effort `low`, streaming, structured output, emits findings then ICP; industries constrained to the enum. Include `fallbacks: "default"` (beta `server-side-fallback-2026-07-01`) if the SDK version supports it; otherwise note it. Check `stop_reason` (refusal / max_tokens).
+- Routes under `src/app/api/start/`: `scan` (SSE), `count`, `refine`, `preview`, `claim`, `leads` (auth), `interest` (auth). Add public ones to middleware allowlists (both blocks) — NOT `leads`/`interest`.
+- Migration `free_lead_claims`: id, email (unique, lowercased), email_domain (unique among fulfilled), website, icp jsonb, filters jsonb, status (pending|fulfilled|failed), workspace_id, auth_user_id, ip_hash, credits_used, upgrade_interest text[], created_at, fulfilled_at. RLS enabled, no anon policies (service role only via server routes).
+- Workspace: reuse `src/lib/funnel/workspace-provision.ts` patterns (settings.source='free_leads', visible_features = FUNNEL_TIER_FEATURES). If the verified user already has a workspace, use it.
+- Leads insert into `leads` with workspace_id, source `getleads_free`, via existing inserter/repository patterns.
+- Email: "Your 25 leads are ready" magic-link template next to `src/lib/email/templates/magic-login-link.ts`.
+
+## Invariants (safe-feature-slice; review gate)
+1. No credits spent for an unverified mailbox: the 25-lead pull happens only in `GET /api/start/leads` for an authenticated user whose email matches a pending claim.
+2. One fulfilled claim per email and per email_domain, enforced by DB unique index + status transition `pending -> fulfilled` done atomically (no double pull on refresh / parallel tabs).
+3. Personal email domains rejected at claim.
+4. Anonymous spend caps: preview <= 5 per IP per day and cached by filter hash; global daily caps via env `FREE_LEADS_DAILY_CLAIM_CAP` (default 30) and `FREE_LEADS_DAILY_PREVIEW_CAP` (default 60). Scan/refine rate-limited per IP (they cost Claude + Firecrawl).
+5. Every leads read/write filtered by workspace_id. Service-role use justified in a comment at each call site.
+6. Never name GetLeads (or any vendor) in responses/UI/emails (see commit #126 "Never show customers the upstream provider name").
+7. No empty catches; log via `safeError` and return user-safe messages.
+
+## Frontend (owner: frontend agent) — impeccable, brand register, DESIGN.md tokens
+- `src/app/start/**` only (+ components under `src/app/start/_components`). Light theme, Inter, #007AFF, pushed bolder: blue carries the ICP card and the leads-arrival moment.
+- Scene: founder/agency owner, bright desk or phone, arrived from a cold email or LinkedIn DM, skeptical, ~90s attention.
+- Anchors: Perplexity streaming answer, Linear onboarding pacing, Clay's data table.
+- States: scanning (real findings stream, no fake spinners), unreachable site (paste description fallback -> same scan with text), zero matches (suggest widening), rate limited, already claimed, personal email, slow scan (>12s reassurance), mobile.
+- Leads page: table-first, CSV download (client-side from FullLead[]), lead 26 locked row + "Want 25 of these every week?" rung, then LinkedIn outreach rung, then AI dashboard rung (link examples https://leads.amcollectivecapital.com). Interest -> POST /api/start/interest -> open booking URL.
+- No emojis, no em dashes, no gradient text, no side-stripe borders, no hero-metric template, no modal-first.
+
+## Open (Adam)
+- Weekly-leads price (no Stripe product created; rung captures intent + books a call).
+- GetLeads terms for product use before public launch.
+
+## Status 2026-09-30 end of session
+- Branch feat/free-leads-flow: 3 commits on top of main (80657b2), NOT pushed (Adam: batch, one push, one Vercel build).
+- free_lead_claims applied to prod (via Supabase Management API query; CLI token in keychain). Unique-domain invariant probed OK.
+- E2E passed on local `next build && next start -p 3103` vs prod data (/tmp/fl-e2e/e2e.py): claim -> admin magic link -> 25 leads, idempotent refresh, 1 billed attempt, source free_leads. MV on the 25: 15 ok, 10 catch_all, 0 invalid.
+- Test data left in prod: user adam+freeleadstest@meetcursive.com, workspace bfe2994b-454e-4a8a-8f85-95e644b4abe7 (25 leads), fulfilled claim (locks domain meetcursive.com for free claims; delete claim row to unlock).
+- #128 (magic-link fix + hardened sanitizeNext for all auth redirects) merged and promoted manually (leadme prod deploys sit in "Running Checks"; promotion is manual on this project).
+- Next: push once -> PR -> one preview -> merge -> promote. Then: weekly-leads price (Adam), GetLeads product-use terms, ICP quality for local-service niches (dentists matched eye/neuro practices), slow counts (8-24s), rate_limit_logs cleanup cron trims windows to ~2h.
+
+## Status 2026-09-30 (session 2: quality, cost, funnel, real-time UI)
+- Eval: scripts/free-leads-eval (RESULTS.md). Baseline mean fit 1.98 / fit>=2 68% -> shipped 2.28 / 83%, 92% after the fit check; local 37% -> 92%.
+- Quality: ICP `cities` for local sellers, most-specific industries + umbrella pruning, purchase-owning titles, excluded non-buying titles, Sonnet 5.5 fit check at delivery (pull 35, keep best 25, "why" per lead).
+- Cost: .claude/specs/2026-09-30-free-leads-cost.md. ~$0.56 -> ~$0.47 per signup (model -56%); measured E2E signup $0.396. Scan on Sonnet 5.5 low with the 6.5k-token schema cached; shared DB caches (scan/count/preview); delivery reuses the preview's 5 rows.
+- Funnel: free_lead_sessions/free_lead_events (prod, RLS no policies), every step + cost meta; /admin/free-leads (funnel, cost per signup, claims, claim detail); Slack on new claim + first upgrade click; "Email me this profile"; follow-up copy in 2026-09-30-free-leads-followups.md (not wired).
+- Real-time UI: page/site/fact/icp_partial events, field-by-field ICP card, one Approve -> work email; E2E: first progress 0.42s, ICP 4.8s, delivery 18.7s.
+- Security review: HIGH (sub-domain claims) + 2 MEDIUM + lows fixed. Open: whether upstream 429s are billed (a 429 fails the claim; manual path).
+- Prod DB: free_leads_cache, free_lead_sessions, free_lead_events, free_lead_claims.session_id applied.
+- Pre-existing flaky test (not this branch): tests/unit/api/ai-studio/brand-extract.test.ts fails on base 80657b2 too (unmocked rate limiter).
+- Open (Adam): MillionVerifier at delivery (~$0.12/signup; 6.4% of "VALID" emails invalid); weekly-leads price; GetLeads product-use terms (their FAQ forbids powering a product with Unlimited; per-credit needs their OK); day-14 read-only rule.

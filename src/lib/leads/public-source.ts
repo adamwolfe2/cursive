@@ -26,6 +26,7 @@ const PUBLIC_SOURCES = new Set([
   'import',
   'manual',
   'api',
+  'free_leads',
 ])
 
 /**

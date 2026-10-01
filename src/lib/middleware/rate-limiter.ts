@@ -302,6 +302,92 @@ export const RATE_LIMITS = {
     message: 'Too many activation requests. Please wait before submitting another.',
   },
 
+  // Free-leads flow (/api/start/*) — anonymous, costs Claude/crawler/lead credits.
+  'free-leads-scan': {
+    windowMs: 60 * 60 * 1000,
+    maxRequests: 10, // 10 site scans per hour per IP (/64 for IPv6)
+    message: 'Too many scans. Please try again later.',
+  },
+  'free-leads-scan-global': {
+    windowMs: 24 * 60 * 60 * 1000,
+    maxRequests: Number(process.env.FREE_LEADS_DAILY_SCAN_CAP) || 500,
+    message: 'Scans are paused for today.',
+  },
+  'free-leads-refine': {
+    windowMs: 60 * 60 * 1000,
+    maxRequests: 30,
+    message: 'Too many edits. Please try again later.',
+  },
+  'free-leads-refine-global': {
+    windowMs: 24 * 60 * 60 * 1000,
+    maxRequests: Number(process.env.FREE_LEADS_DAILY_REFINE_CAP) || 500,
+    message: 'Edits are paused for today.',
+  },
+  'free-leads-count': {
+    windowMs: 60 * 60 * 1000,
+    maxRequests: 120,
+    message: 'Too many requests. Please try again later.',
+  },
+  'free-leads-count-global': {
+    // Hourly, not daily: smooths bursts against the upstream rate limit shared with deliveries.
+    windowMs: 60 * 60 * 1000,
+    maxRequests: Number(process.env.FREE_LEADS_HOURLY_COUNT_CAP) || 250,
+    message: 'Counts are busy right now.',
+  },
+  'free-leads-preview': {
+    windowMs: 24 * 60 * 60 * 1000,
+    maxRequests: 5, // spec invariant 4: <= 5 previews per IP per day
+    message: 'Preview limit reached for today.',
+  },
+  'free-leads-preview-global': {
+    windowMs: 24 * 60 * 60 * 1000,
+    maxRequests: Number(process.env.FREE_LEADS_DAILY_PREVIEW_CAP) || 60,
+    message: 'Preview limit reached for today.',
+  },
+  'free-leads-claim': {
+    windowMs: 60 * 60 * 1000,
+    maxRequests: 5,
+    message: 'Too many attempts. Please try again later.',
+  },
+  'free-leads-claim-email': {
+    windowMs: 24 * 60 * 60 * 1000,
+    maxRequests: 3, // link emails per mailbox per day
+    message: 'Too many emails to this address today.',
+  },
+  // Pre-verification link emails (new claims only). The paid pull has its own
+  // post-verification cap, FREE_LEADS_DAILY_CLAIM_CAP, in free-leads/claims.ts.
+  'free-leads-claim-global': {
+    windowMs: 24 * 60 * 60 * 1000,
+    maxRequests: Number(process.env.FREE_LEADS_DAILY_SEND_CAP) || 200,
+    message: 'Free lead claims are paused for today.',
+  },
+
+  'free-leads-email-icp': {
+    windowMs: 24 * 60 * 60 * 1000,
+    maxRequests: 3, // "Email me this profile" sends per IP per day
+    message: 'Too many emails today.',
+  },
+  'free-leads-email-icp-email': {
+    windowMs: 24 * 60 * 60 * 1000,
+    maxRequests: 1, // one profile email per mailbox per day
+    message: 'We already sent this address a profile today.',
+  },
+  'free-leads-email-icp-global': {
+    windowMs: 24 * 60 * 60 * 1000,
+    maxRequests: Number(process.env.FREE_LEADS_DAILY_ICP_EMAIL_CAP) || 150,
+    message: 'Profile emails are paused for today.',
+  },
+  'free-leads-interest': {
+    windowMs: 60 * 60 * 1000,
+    maxRequests: 20, // upgrade clicks per signed-in user per hour
+    message: 'Too many requests.',
+  },
+  'free-leads-event': {
+    windowMs: 60 * 60 * 1000,
+    maxRequests: 120, // client-reported funnel steps (ICP approved, CSV download)
+    message: 'Too many requests.',
+  },
+
   // Default fallback
   'default': {
     windowMs: 60 * 1000, // 1 minute
@@ -322,8 +408,14 @@ interface RouteRateLimitResult {
 /**
  * Check per-route rate limit backed by Supabase rate_limit_logs table.
  * Used internally by withRateLimit().
+ *
+ * Atomic without a lock: record the attempt FIRST, then count the window
+ * (including our own row). Of any maxRequests+1 allowed attempts, the last one
+ * to count would see all of them, so concurrent bursts can never exceed the cap
+ * (they can only over-deny at the boundary). A denied attempt deletes its row so
+ * it does not consume the window. Fails closed on any DB error.
  */
-async function checkRouteRateLimit(
+export async function checkRouteRateLimit(
   identifier: string,
   limitType: RateLimitType = 'default'
 ): Promise<RouteRateLimitResult> {
@@ -332,41 +424,39 @@ async function checkRouteRateLimit(
 
   const windowStart = new Date(Date.now() - config.windowMs)
   const key = `${limitType}:${identifier}`
+  const resetAt = new Date(Date.now() + config.windowMs)
+  const denied = { allowed: false, remaining: 0, resetAt, limit: config.maxRequests }
+
+  const { data: row, error: insertError } = await supabase
+    .from('rate_limit_logs')
+    .insert({ key, limit_type: limitType, identifier })
+    .select('id')
+    .single()
+  if (insertError || !row) {
+    safeError('Route rate limit record failed:', insertError ?? 'no row')
+    return denied // Fail closed — reject on DB error to prevent abuse during outages
+  }
 
   const { count, error } = await supabase
     .from('rate_limit_logs')
     .select('id', { count: 'exact', head: true })
     .eq('key', key)
     .gte('created_at', windowStart.toISOString())
-
   if (error) {
     safeError('Route rate limit check failed:', error)
-    // Fail closed — reject on DB error to prevent abuse during outages
-    return {
-      allowed: false,
-      remaining: 0,
-      resetAt: new Date(Date.now() + config.windowMs),
-      limit: config.maxRequests,
-    }
+    return denied
   }
 
-  const currentCount = count || 0
-  const allowed = currentCount < config.maxRequests
-
-  if (allowed) {
-    await supabase.from('rate_limit_logs').insert({
-      key,
-      limit_type: limitType,
-      identifier,
-    })
+  const used = count ?? 0 // includes this attempt
+  if (used <= config.maxRequests) {
+    return { allowed: true, remaining: config.maxRequests - used, resetAt, limit: config.maxRequests }
   }
-
-  return {
-    allowed,
-    remaining: Math.max(0, config.maxRequests - currentCount - (allowed ? 1 : 0)),
-    resetAt: new Date(Date.now() + config.windowMs),
-    limit: config.maxRequests,
+  const { error: deleteError } = await supabase.from('rate_limit_logs').delete().eq('id', row.id)
+  if (deleteError) {
+    // The request is denied either way; a leftover row only makes the window stricter.
+    safeError('Route rate limit rollback failed:', deleteError)
   }
+  return denied
 }
 
 /**

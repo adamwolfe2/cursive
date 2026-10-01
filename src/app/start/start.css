@@ -1,0 +1,138 @@
+/* Motion for the /start flow. Exponential ease-out only; transform and opacity only. */
+@keyframes fl-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fl-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fl-sheen {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes fl-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+/* A lead landing: rises in on a blue wash that settles back to white. */
+@keyframes fl-land {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+    background-color: #d6eaff;
+  }
+  30% {
+    opacity: 1;
+    transform: none;
+    background-color: #e8f3ff;
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+    background-color: transparent;
+  }
+}
+
+@keyframes fl-fill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.fl-land {
+  animation: fl-land 1100ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.fl-fill {
+  transform-origin: left;
+  animation: fl-fill linear both;
+}
+
+.fl-rise {
+  animation: fl-rise 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.fl-fade {
+  animation: fl-fade 400ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.fl-pulse {
+  animation: fl-pulse 1.4s ease-in-out infinite;
+}
+
+/* Placeholder bars while a field is still being worked out. */
+.fl-sheen {
+  background-image: linear-gradient(
+    90deg,
+    rgb(255 255 255 / 0.12) 0%,
+    rgb(255 255 255 / 0.28) 50%,
+    rgb(255 255 255 / 0.12) 100%
+  );
+  background-size: 200% 100%;
+  animation: fl-sheen 1.6s linear infinite;
+}
+
+.fl-sheen-ink {
+  background-image: linear-gradient(90deg, #eef0f3 0%, #f7f8fa 50%, #eef0f3 100%);
+  background-size: 200% 100%;
+  animation: fl-sheen 1.6s linear infinite;
+}
+
+/* A replayed scan arrives all at once; skip the entrance motion. */
+.fl-instant .fl-rise,
+.fl-instant .fl-fade {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fl-rise,
+  .fl-fade,
+  .fl-land,
+  .fl-fill {
+    animation: none !important;
+  }
+  .fl-sheen,
+  .fl-sheen-ink,
+  .fl-pulse {
+    animation: none !important;
+  }
+}
+
+/* The app-wide :focus-visible ring doubles up with the explicit outlines used here. */
+.fl-root button:focus-visible,
+.fl-root a:focus-visible {
+  box-shadow: none;
+}
+
+/* globals.css forces 44px min on every mobile button/link; dense in-row controls (24-28px, WCAG 2.5.8 AA) opt out. */
+.fl-compact {
+  min-height: 0;
+  min-width: 0;
+}
