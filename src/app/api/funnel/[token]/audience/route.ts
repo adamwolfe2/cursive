@@ -16,7 +16,7 @@ import {
   recordAudienceSubmitted,
   hasPaid,
 } from '@/lib/funnel/order.service'
-import { pushFunnelAudienceToWorkspace } from '@/lib/funnel/workspace-provision'
+import { isFreeLeadsWorkspace, pushFunnelAudienceToWorkspace } from '@/lib/funnel/workspace-provision'
 import { sendSlackAlert } from '@/lib/monitoring/alerts'
 import { sendFunnelAdminNotificationEmail } from '@/lib/email/templates/funnel-admin-notification'
 import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
@@ -46,6 +46,16 @@ export async function POST(
     }
 
     const { order } = lookup.data
+
+    // Weekly leads bought from a free-leads workspace are delivered every Monday from the profile
+    // the buyer already approved (free-leads-weekly). A managed audience on top would be a second,
+    // paid build into the same workspace.
+    if (order.workspace_id && (await isFreeLeadsWorkspace(order.workspace_id))) {
+      return NextResponse.json(
+        { error: 'Your weekly leads come from the profile you approved. Nothing to submit here.' },
+        { status: 409 }
+      )
+    }
 
     if (order.offer_slug === 'pixel_97') {
       return NextResponse.json(

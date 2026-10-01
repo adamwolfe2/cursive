@@ -29,11 +29,14 @@ const WEEKLY_OFFERS = ['audience_197', 'bundle_247']
 export interface WeeklyOrder {
   id: string
   workspace_id: string
+  /** 'paused' = cancelled at period end; still owed leads until Stripe ends the subscription. */
+  subscription_state: 'active' | 'paused'
+  stripe_subscription_id: string | null
 }
 
 export type WeeklyResult =
   | { status: 'delivered'; leads: number; credits: number; domain: string; top: WeeklyTopLead[] }
-  | { status: 'already' }
+  | { status: 'already'; stuck: boolean }
   | { status: 'skipped'; reason: string }
 
 /** ISO-8601 week label, e.g. 2026-W41 (weeks start Monday; week 1 holds the year's first Thursday). */
@@ -50,12 +53,12 @@ export function isoWeek(date: Date): string {
 export async function weeklyCandidates(admin: Admin): Promise<WeeklyOrder[]> {
   const { data: orders, error } = await admin
     .from('funnel_orders')
-    .select('id, workspace_id, offer_slug, subscription_state')
-    .eq('subscription_state', 'active')
+    .select('id, workspace_id, offer_slug, subscription_state, stripe_subscription_id')
+    .in('subscription_state', ['active', 'paused'])
     .in('offer_slug', WEEKLY_OFFERS)
     .limit(1000)
   if (error) throw new Error(`weekly candidates: order lookup failed: ${error.message}`)
-  const bound = ((orders ?? []) as Array<{ id: string; workspace_id: string | null }>).filter(
+  const bound = ((orders ?? []) as Array<Omit<WeeklyOrder, 'workspace_id'> & { workspace_id: string | null }>).filter(
     (o): o is WeeklyOrder => Boolean(o.workspace_id)
   )
   if (!bound.length) return []
@@ -70,7 +73,9 @@ export async function weeklyCandidates(admin: Admin): Promise<WeeklyOrder[]> {
       .filter((w) => w.settings?.source === 'free_leads')
       .map((w) => w.id)
   )
-  return bound.filter((o) => freeLeads.has(o.workspace_id)).map(({ id, workspace_id }) => ({ id, workspace_id }))
+  return bound
+    .filter((o) => freeLeads.has(o.workspace_id))
+    .map(({ id, workspace_id, subscription_state, stripe_subscription_id }) => ({ id, workspace_id, subscription_state, stripe_subscription_id }))
 }
 
 async function nextOffset(admin: Admin, orderId: string): Promise<number> {
@@ -103,7 +108,16 @@ export async function deliverWeekly(order: WeeklyOrder, week: string, admin: Adm
     .select('id')
     .single()
   if (lockError) {
-    if ((lockError as { code?: string }).code === '23505') return { status: 'already' }
+    if ((lockError as { code?: string }).code === '23505') {
+      // A row still 'started' means an earlier run died after the lock (maybe after paying): flag it.
+      const { data: held } = await admin
+        .from('free_lead_weekly_deliveries')
+        .select('status')
+        .eq('order_id', order.id)
+        .eq('week', week)
+        .maybeSingle()
+      return { status: 'already', stuck: (held as { status?: string } | null)?.status === 'started' }
+    }
     throw new Error(`weekly lock insert failed: ${lockError.message}`)
   }
   const deliveryId = (row as { id: string }).id

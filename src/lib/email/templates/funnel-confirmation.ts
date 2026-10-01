@@ -8,6 +8,7 @@
 
 import { sendEmail, createEmailTemplate } from '../resend-client'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { APP_URL } from '@/lib/config/urls'
 import type { FunnelOfferSlug } from '@/lib/stripe/funnel-products'
 
 interface FunnelConfirmationEmailData {
@@ -52,13 +53,14 @@ export async function sendFunnelConfirmationEmail(
   const firstName = (customerName ?? '').trim().split(/\s+/)[0] || 'there'
 
   const headline = freeLeads ? 'Weekly leads are on' : offerHeadline(offerSlug)
+  const workspaceUrl = escapeForEmail(dashboardUrl ?? `${APP_URL}/dashboard`)
   const summary = freeLeads
     ? 'Every Monday, 25 new people who match the profile you approved land in your Cursive workspace. Nothing to set up.'
     : offerSummary(offerSlug)
   // Trial buyers have not paid. State the terms here or day-15 becomes a dispute.
   const trialLine =
     FUNNEL_TRIAL_DAYS > 0
-      ? `Your ${FUNNEL_TRIAL_DAYS}-day free trial has started — $0 charged today. Billing begins on day ${FUNNEL_TRIAL_DAYS + 1}; cancel any time before then from the Manage billing link in your portal and you pay nothing.`
+      ? `Your ${FUNNEL_TRIAL_DAYS}-day free trial has started — $0 charged today. Billing begins on day ${FUNNEL_TRIAL_DAYS + 1}; cancel any time before then from the Manage billing link in your ${freeLeads ? 'Cursive workspace' : 'portal'} and you pay nothing.`
       : ''
 
   // Secondary CTA — one-click into the dashboard (no password). Only rendered
@@ -90,6 +92,18 @@ ${trialLine ? `
       ${escapeForEmail(trialLine)}
     </p>` : ''}
 
+    ${freeLeads ? `
+    <!-- Free-leads buyers: nothing to set up; the workspace is the only destination. -->
+    <table cellpadding="0" cellspacing="0" role="presentation" style="margin:24px 0 12px;">
+      <tr>
+        <td style="background-color:#007AFF;border-radius:8px;">
+          <a href="${workspaceUrl}" target="_blank" rel="noopener noreferrer"
+             style="display:inline-block;padding:14px 32px;font-size:15px;font-weight:600;color:#ffffff;text-decoration:none;border-radius:8px;">
+            Open your workspace →
+          </a>
+        </td>
+      </tr>
+    </table>` : `
     <!-- Primary CTA: setup portal -->
     <table cellpadding="0" cellspacing="0" role="presentation" style="margin:24px 0 12px;">
       <tr>
@@ -106,7 +120,7 @@ ${trialLine ? `
     <p class="email-text" style="font-size:13px;color:#6b7280;">
       Bookmark this link — it's your private portal. Every step lives there.
       If you ever lose it, reply to this email and we'll resend.
-    </p>
+    </p>`}
 
     <hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0;" />
 
@@ -125,7 +139,9 @@ ${trialLine ? `
       from: 'Adam at Cursive <adam@meetcursive.com>',
       subject: headline,
       html: createEmailTemplate({
-        preheader: 'Open your private setup portal to finish in under 2 minutes.',
+        preheader: freeLeads
+          ? 'Your first 25 new leads arrive Monday in your Cursive workspace.'
+          : 'Open your private setup portal to finish in under 2 minutes.',
         title: headline,
         content,
       }),
@@ -135,8 +151,9 @@ ${trialLine ? `
         summary,
         ...(trialLine ? [trialLine] : []),
         '',
-        `Open your setup portal: ${portalUrl}`,
-        ...(dashboardUrl ? ['', `Open your dashboard (no password): ${dashboardUrl}`] : []),
+        ...(freeLeads
+          ? [`Open your workspace: ${workspaceUrl}`]
+          : [`Open your setup portal: ${portalUrl}`, ...(dashboardUrl ? ['', `Open your dashboard (no password): ${dashboardUrl}`] : [])]),
         '',
         `Bookmark this link — it's your private portal. Reply to this email if you ever lose it.`,
         '',

@@ -17,9 +17,10 @@ import {
 import {
   createOrderFromCheckoutSession,
   countPriorOrdersForEmail,
+  setSubscriptionState,
   setTrialEndsAt,
 } from '@/lib/funnel/order.service'
-import { bindOrderToFreeLeadsWorkspace, provisionFunnelWorkspace } from '@/lib/funnel/workspace-provision'
+import { bindOrderToFreeLeadsWorkspace, hasOtherLiveOrder, provisionFunnelWorkspace } from '@/lib/funnel/workspace-provision'
 import { notifySales } from '@/lib/free-leads/notify'
 import { sendFunnelConfirmationEmail } from '@/lib/email/templates/funnel-confirmation'
 import { APP_URL } from '@/lib/config/urls'
@@ -329,6 +330,20 @@ async function handleFunnelOrderCompleted(session: Stripe.Checkout.Session): Pro
   }
 
   const { order, portalUrl } = result
+  const freeLeadsWorkspaceId = session.metadata?.free_leads_workspace_id
+
+  // A second weekly-leads checkout for a workspace that already has one (refresh before the first
+  // webhook landed, second tab). Cancel it now, before the repeat-buyer rule below ends the trial
+  // and charges $197. Safe on webhook retries: an already-cancelled subscription is left alone.
+  if (freeLeadsWorkspaceId && order.stripe_subscription_id && (await hasOtherLiveOrder(freeLeadsWorkspaceId, order.id))) {
+    const stripe = getStripe()
+    const sub = await stripe.subscriptions.retrieve(order.stripe_subscription_id)
+    if (sub.status !== 'canceled') await stripe.subscriptions.cancel(order.stripe_subscription_id)
+    await setSubscriptionState(order.id, 'cancelled')
+    await notifySales(`Duplicate weekly-leads checkout cancelled before any charge (order ${order.id}). Workspace already subscribed.`)
+    safeLog('[Stripe Webhook] duplicate free-leads order cancelled', { order_id: order.id })
+    return
+  }
 
   // ── Trial bookkeeping ──────────────────────────────────────────────────
   // The funnel is pay-first with no email field, so a repeat trialer cannot be
@@ -394,7 +409,6 @@ async function handleFunnelOrderCompleted(session: Stripe.Checkout.Session): Pro
   let dashboardUrl: string | undefined
   // Bought from inside a free-leads workspace (/api/start/checkout): bind to that workspace
   // instead of provisioning a new one. The id is server-set metadata, re-verified in the bind.
-  const freeLeadsWorkspaceId = session.metadata?.free_leads_workspace_id
   try {
     if (freeLeadsWorkspaceId) {
       const bound = await bindOrderToFreeLeadsWorkspace(order, freeLeadsWorkspaceId)

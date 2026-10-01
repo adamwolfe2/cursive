@@ -120,6 +120,25 @@ async function getOrCreateAuthUser(
 /**
  * Provision (or reuse) a workspace for a funnel order. Idempotent + race-safe.
  */
+/** Another order (not `orderId`) already live in this workspace: a second checkout slipped through. */
+export async function hasOtherLiveOrder(workspaceId: string, orderId: string): Promise<boolean> {
+  const { data, error } = await createAdminClient()
+    .from('funnel_orders')
+    .select('id')
+    .eq('workspace_id', workspaceId)
+    .in('subscription_state', ['active', 'past_due', 'paused', 'incomplete'])
+    .limit(5)
+  if (error) throw new Error(`live order lookup failed: ${error.message}`)
+  return ((data ?? []) as Array<{ id: string }>).some((o) => o.id !== orderId)
+}
+
+/** True when the workspace came from the free-leads flow (/start). Throws on a lookup error. */
+export async function isFreeLeadsWorkspace(workspaceId: string): Promise<boolean> {
+  const { data, error } = await createAdminClient().from('workspaces').select('settings').eq('id', workspaceId).maybeSingle()
+  if (error) throw new Error(`workspace source lookup failed: ${error.message}`)
+  return (data?.settings as { source?: string } | null)?.source === 'free_leads'
+}
+
 /**
  * Binds a paid order to the free-leads workspace it was bought from (/api/start/checkout).
  *

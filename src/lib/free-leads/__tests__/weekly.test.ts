@@ -32,7 +32,7 @@ const weekIndex = (table: string, rows: Record<string, unknown>[]) => {
   return new Set(keys).size === keys.length
 }
 
-const ORDER = { id: 'ord-1', workspace_id: 'ws-1' }
+const ORDER = { id: 'ord-1', workspace_id: 'ws-1', subscription_state: 'active' as const, stripe_subscription_id: 'sub_1' }
 const WEEK = '2026-W41'
 
 function setup(extra: Partial<Record<string, Record<string, unknown>[]>> = {}) {
@@ -96,6 +96,7 @@ describe('deliverWeekly', () => {
     searchContacts.mockResolvedValue({ contacts: people(0, 35), totalAvailable: 900 })
     const [a, b] = await Promise.all([deliverWeekly(ORDER, WEEK, admin), deliverWeekly(ORDER, WEEK, admin)])
     expect([a.status, b.status].sort()).toEqual(['already', 'delivered'])
+    expect([a, b].find((r) => r.status === 'already')).toMatchObject({ stuck: expect.any(Boolean) })
     expect(searchContacts).toHaveBeenCalledTimes(1)
     expect(db.tables.leads).toHaveLength(25)
   })
@@ -116,8 +117,16 @@ describe('deliverWeekly', () => {
     await expect(deliverWeekly(ORDER, WEEK, admin)).rejects.toThrow()
     expect(db.tables.free_lead_weekly_deliveries[0].status).toBe('failed')
     const again = await deliverWeekly(ORDER, WEEK, admin)
-    expect(again.status).toBe('already')
+    expect(again).toEqual({ status: 'already', stuck: false })
     expect(searchContacts).toHaveBeenCalledTimes(1)
+  })
+
+  it('flags a week whose lock was taken but never finished (crash after paying)', async () => {
+    const { admin } = setup({
+      free_lead_weekly_deliveries: [{ id: 'd1', order_id: 'ord-1', workspace_id: 'ws-1', week: WEEK, status: 'started', offset_start: 35 }],
+    })
+    expect(await deliverWeekly(ORDER, WEEK, admin)).toEqual({ status: 'already', stuck: true })
+    expect(searchContacts).not.toHaveBeenCalled()
   })
 
   it('skips a workspace with no fulfilled claim without spending', async () => {
@@ -134,6 +143,7 @@ describe('weeklyCandidates', () => {
         { id: 'a', workspace_id: 'ws-1', offer_slug: 'audience_197', subscription_state: 'active' },
         { id: 'b', workspace_id: 'ws-2', offer_slug: 'audience_197', subscription_state: 'active' },
         { id: 'c', workspace_id: 'ws-1', offer_slug: 'audience_197', subscription_state: 'paused' },
+        { id: 'f', workspace_id: 'ws-1', offer_slug: 'audience_197', subscription_state: 'cancelled' },
         { id: 'd', workspace_id: 'ws-1', offer_slug: 'pixel_97', subscription_state: 'active' },
         { id: 'e', workspace_id: null, offer_slug: 'audience_197', subscription_state: 'active' },
       ],
@@ -142,7 +152,8 @@ describe('weeklyCandidates', () => {
         { id: 'ws-2', settings: { source: 'funnel_order' } },
       ],
     })
-    expect((await weeklyCandidates(admin)).map((o) => o.id)).toEqual(['a'])
+    // 'paused' = cancelled at period end; the job checks Stripe before delivering to it.
+    expect((await weeklyCandidates(admin)).map((o) => o.id)).toEqual(['a', 'c'])
   })
 })
 
