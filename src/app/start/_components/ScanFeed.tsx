@@ -1,9 +1,11 @@
 'use client'
 
 import { Check, ChevronDown, Globe, History, RotateCcw, X } from 'lucide-react'
+import type { ReactNode } from 'react'
 import { useEffect, useRef, useState } from 'react'
 import type { Fact, ScanEvent } from '@/lib/free-leads/contract'
 import type { ScanInput } from './api'
+import { formatCount } from './AnimatedNumber'
 import { compactChars, groupFacts, pagesSummary, replayLabel, type PageRow } from './scan-state'
 
 export type Site = Extract<ScanEvent, { type: 'site' }>
@@ -24,6 +26,7 @@ export function ScanFeed({
   icpReady = false,
   slow,
   replayedAt,
+  count = null,
   onReset,
 }: {
   query: ScanInput | null
@@ -35,6 +38,8 @@ export function ScanFeed({
   icpReady?: boolean
   slow: 0 | 1 | 2
   replayedAt: string | null
+  /** The live count, for the rail's last step (desktop only). */
+  count?: number | null
   onReset: () => void
 }) {
   const asideRef = useRef<HTMLElement>(null)
@@ -75,17 +80,13 @@ export function ScanFeed({
           {readSummary(pages, facts)}
           <ChevronDown className="h-4 w-4 shrink-0 text-[#4d5460] transition-transform group-open:rotate-180" aria-hidden="true" />
         </summary>
+      {/* One rail line behind every marker; steps keep a constant bottom gap so appending one moves nothing. */}
+      <ol className="relative mt-5 border-t border-[#e5e7eb] pt-5 before:absolute before:bottom-5 before:left-[9px] before:top-7 before:w-px before:bg-[#e5e7eb]">
       {fromUrl && (pages.length > 0 || scanning) && (
-        <section aria-label="Pages" className="mt-5 border-t border-[#e5e7eb] pt-4">
-          <p className="flex h-5 items-center gap-2 text-[13px] font-medium text-[#1d2025]" role="status">
+        <Step state={replayedAt || settled ? 'done' : scanning ? 'active' : 'failed'}>
+          <p className="flex h-5 items-center gap-2 text-[13px] font-semibold text-[#1d2025]" role="status">
             {/* A replay notice takes this same line, so its arrival never moves anything below. */}
-            {replayedAt ? (
-              <History className="h-3.5 w-3.5 shrink-0 text-[#0063E6]" aria-hidden="true" />
-            ) : settled ? (
-              <Check className="h-3.5 w-3.5 text-[#007AFF]" aria-hidden="true" />
-            ) : (
-              scanning && <LiveDot />
-            )}
+            {replayedAt && <History className="h-3.5 w-3.5 shrink-0 text-[#0063E6]" aria-hidden="true" />}
             {replayedAt ? (
               <span className="truncate text-[#0063E6]">{replayLabel(replayedAt)}</span>
             ) : (
@@ -93,19 +94,18 @@ export function ScanFeed({
             )}
           </p>
           {pages.length > 0 && (
-            <ul aria-label="Pages we opened" className="mt-2.5 space-y-1">
+            <ul aria-label="Pages we opened" className="mt-2 space-y-0.5">
               {pages.map((p, i) => (
                 <PageLine key={p.path} page={p} first={i === 0} />
               ))}
             </ul>
           )}
-        </section>
+        </Step>
       )}
 
       {showFacts && (
-        <section aria-label="What we found" className="mt-5 border-t border-[#e5e7eb] pt-4">
-          <p className="flex h-5 items-center gap-2 truncate text-[13px] font-medium text-[#1d2025]" role="status">
-            {scanning && <LiveDot />}
+        <Step state={scanning && !icpReady ? 'active' : 'done'}>
+          <p className="flex h-5 items-center gap-2 truncate text-[13px] font-semibold text-[#1d2025]" role="status">
             {scanning && slow > 0
               ? slow === 1
                 ? facts.length
@@ -114,25 +114,45 @@ export function ScanFeed({
                 : 'Almost there. This one is taking longer than most.'
               : scanning && !facts.length
                 ? 'Reading for what you sell and who buys'
-                : 'What we found'}
+                : `What we found${facts.length ? `: ${facts.length} ${facts.length === 1 ? 'fact' : 'facts'}` : ''}`}
           </p>
-          <dl className="mt-3 space-y-3.5" aria-live="polite" aria-relevant="additions">
+          {/* Facts as one tidy card; append-only so a new fact never pushes an earlier one. */}
+          <dl
+            className={`mt-3 divide-y divide-[#f0f1f3] rounded-xl border border-[#e5e7eb] bg-white ${facts.length ? '' : 'hidden'}`}
+            aria-live="polite"
+            aria-relevant="additions"
+          >
             {groupFacts(facts).map((g, i) => (
-              <div key={`${g.key}-${i}`} className="fl-rise">
+              <div key={`${g.key}-${i}`} className="fl-rise px-3.5 py-3">
                 <dt className="text-[12px] font-medium text-[#6b7280]">{g.label}</dt>
                 {g.facts.map((f, i) => (
                   <dd key={i} className="fl-rise mt-0.5 text-[14px] leading-snug text-[#1d2025]">
                     {f.text}
                     {f.source === 'site' && (
-                      <span className="ml-1.5 whitespace-nowrap text-[11px] font-medium text-[#6b7280]">on your site</span>
+                      <span className="ml-1.5 whitespace-nowrap rounded bg-[#f3f4f6] px-1.5 py-px text-[11px] font-medium text-[#4d5460]">on your site</span>
                     )}
                   </dd>
                 ))}
               </div>
             ))}
           </dl>
-        </section>
+        </Step>
       )}
+
+      {/* Desktop only: the rail is its own column there, so these late steps move nothing. */}
+      {icpReady && (
+        <Step state="done" desktopOnly>
+          <p className="flex h-5 items-center text-[13px] font-semibold text-[#1d2025]">Built your buyer profile</p>
+        </Step>
+      )}
+      {icpReady && count !== null && (
+        <Step state="done" desktopOnly>
+          <p className="flex h-5 items-center text-[13px] font-semibold text-[#1d2025]">
+            Counted {formatCount(count)} {count === 1 ? 'person' : 'people'} who fit
+          </p>
+        </Step>
+      )}
+      </ol>
       </details>
     </aside>
   )
@@ -148,8 +168,31 @@ function readSummary(pages: PageRow[], facts: Fact[]): string {
   return `What we read: ${parts.join(', ')}`
 }
 
-function LiveDot() {
-  return <span className="fl-pulse h-1.5 w-1.5 shrink-0 rounded-full bg-[#007AFF]" aria-hidden="true" />
+/** One stop on the "what we read" timeline: a marker, a connector down to the next stop, and its content. */
+function Step({
+  state,
+  desktopOnly = false,
+  children,
+}: {
+  state: 'active' | 'done' | 'failed'
+  desktopOnly?: boolean
+  children: ReactNode
+}) {
+  return (
+    <li className={`fl-rise relative pb-5 pl-8 ${desktopOnly ? 'max-lg:hidden' : ''}`}>
+      <span
+        className={`absolute left-0 top-0 grid h-5 w-5 place-items-center rounded-full ${
+          state === 'done' ? 'bg-[#0063E6] text-white' : state === 'active' ? 'bg-[#e8f1ff] ring-1 ring-inset ring-[#b3d7ff]' : 'bg-[#f3f4f6] text-[#6b7280]'
+        }`}
+        aria-hidden="true"
+      >
+        {state === 'done' && <Check className="fl-pop h-3 w-3" strokeWidth={3} />}
+        {state === 'active' && <span className="fl-pulse h-1.5 w-1.5 rounded-full bg-[#007AFF]" />}
+        {state === 'failed' && <X className="h-3 w-3" strokeWidth={3} />}
+      </span>
+      {children}
+    </li>
+  )
 }
 
 function SiteHeader({
