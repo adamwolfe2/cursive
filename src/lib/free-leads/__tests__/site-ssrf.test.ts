@@ -70,3 +70,12 @@ describe('upgradeRedirect', () => {
     expect(upgradeRedirect('ftp://acme.com/x', 'https://acme.com/')).toBe('ftp://acme.com/x')
   })
 })
+
+describe('listedPrices', () => {
+  it('ignores marketing figures, and off the pricing page keeps only per-period prices', async () => {
+    const { listedPrices } = await import('../site')
+    const copy = 'We raised $4M and saved clients $300K. Plans: $49/mo, $99 per user, $1,200/year. Setup $3.'
+    expect(listedPrices(copy, false)).toEqual(['$49/mo', '$99 per user', '$1,200/year'])
+    expect(listedPrices('Starter $49 Growth $199 Enterprise $4M ARR', true)).toEqual(['$49', '$199'])
+  })
+})

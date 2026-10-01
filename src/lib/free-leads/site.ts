@@ -250,10 +250,18 @@ function jsonLd(html: string): Array<Record<string, unknown>> {
   return out
 }
 
-const PRICE = /\$\s?\d[\d,]*(?:\.\d{2})?(?:\s?(?:\/|per\s)\s?(?:mo(?:nth)?|yr|year|user|seat|hour|hr))?/gi
+// "$49", "$1,200/mo", "$99 per user". Never "$4M raised" or "$300K saved" (marketing figures).
+const PRICE = /\$\s?\d[\d,]*(?:\.\d{2})?(?![\d.,]*\s?(?:k|m|b|mm|bn|million|billion|thousand)\b)(?:\s?(?:\/|per\s)\s?(?:mo(?:nth)?|yr|year|user|seat|hour|hr))?/gi
+const PER_PERIOD = /(?:\/|per\s)/i
+
+/** Prices from a pricing page; elsewhere only explicit per-period prices count. */
+export function listedPrices(text: string, fromPricingPage: boolean): string[] {
+  const found = (text.match(PRICE) ?? []).map((p) => p.replace(/\s+/g, ' ').trim())
+  return [...new Set(fromPricingPage ? found : found.filter((p) => PER_PERIOD.test(p)))].slice(0, 3)
+}
 
 /** Facts stated on the pages themselves (no model): company name, address, listed prices. */
-export function siteFacts(homeHtml: string, pricingText: string | null): Fact[] {
+export function siteFacts(homeHtml: string, pricingText: string | null, fromPricingPage = true): Fact[] {
   const facts: Fact[] = []
   const nodes = jsonLd(homeHtml)
   const org = nodes.find((n) => typeof n.name === 'string' && /Organization|LocalBusiness|Corporation|Dentist|Store|Service|Attorney|LegalService|HVACBusiness/i.test(String(n['@type'])))
@@ -265,7 +273,7 @@ export function siteFacts(homeHtml: string, pricingText: string | null): Fact[] 
   const addr = (org?.address ?? nodes.find((n) => n.address)?.address) as Record<string, unknown> | undefined
   const place = [addr?.addressLocality, addr?.addressRegion].filter((v) => typeof v === 'string' && v).join(', ')
   if (place) facts.push({ key: 'locations', label: 'Where', text: `Based in ${place}`.slice(0, 160), source: 'site' })
-  const prices = [...new Set((pricingText ?? '').match(PRICE) ?? [])].slice(0, 3)
+  const prices = listedPrices(pricingText ?? '', fromPricingPage)
   if (prices.length) facts.push({ key: 'pricing', label: 'Pricing', text: `Listed prices: ${prices.join(', ')}`, source: 'site' })
   return facts
 }
@@ -335,8 +343,8 @@ export async function readSite(url: string, emit: Emit): Promise<SiteContent> {
     })
   )
   const read = pages.filter((p): p is { path: string; text: string } => Boolean(p?.text))
-  const pricing = read.find((p) => PAGE_KINDS[0][1].test(p.path))?.text ?? site.text
-  siteFacts(homeFetched.html, pricing).forEach((fact) => emit({ type: 'fact', fact }))
+  const pricingPage = read.find((p) => PAGE_KINDS[0][1].test(p.path))?.text ?? null
+  siteFacts(homeFetched.html, pricingPage ?? site.text, Boolean(pricingPage)).forEach((fact) => emit({ type: 'fact', fact }))
   const text = [site.text.slice(0, HOME_TEXT), ...read.map((p) => `Page ${p.path}:\n${p.text}`)].join('\n\n')
   return { ...site, text: text.slice(0, MAX_TEXT) }
 }

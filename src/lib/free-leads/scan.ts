@@ -19,7 +19,7 @@ import { COMPANY_SIZE_BANDS, FACT_LABELS, IcpSchema, SENIORITY_VALUES, type Fact
 // the cost per scan and ~2s faster to the ICP (scripts/free-leads-eval/RESULTS.md, 2026-09-30).
 const MODEL = 'claude-sonnet-5-5'
 /** Bump when the prompt, schema or model changes: cached scans from older versions are ignored. */
-export const SCAN_VERSION = 'v5-sonnet55'
+export const SCAN_VERSION = 'v6-sonnet55'
 const ICP_KEYS = ['summary', 'industries', 'job_titles', 'seniority', 'company_size', 'countries', 'states', 'cities'] as const
 
 export class ScanError extends Error {
