@@ -1,14 +1,11 @@
 /**
- * Pricing — self-serve plans
+ * Pricing: free first, then self-serve plans, then done-for-you.
  *
- * Cursive sells three productized plans, all month-to-month, all self-serve:
- *   - Visitor Pixel ($97/mo) — identify the companies + people on your site
- *   - Custom Audience ($197/mo) — weekly list of in-market prospects → Sheets
- *   - Pixel + Audience Bundle ($247/mo) — both, the full top-of-funnel layer
- *
- * Every CTA routes to the funnel at leads.meetcursive.com/get-leads, which
- * runs Stripe Checkout and drops the buyer into the correct portal (pixel
- * onboarding vs audience intake) based on what they bought.
+ *   - 25 free leads at leads.meetcursive.com/start (no card, no call)
+ *   - Visitor Pixel ($97/mo), Custom Audience ($197/mo), Bundle ($247/mo):
+ *     plan buttons go to leads.meetcursive.com/get-leads (Stripe Checkout)
+ *   - Weekly leads, LinkedIn outreach, custom AI dashboard: same ladder as
+ *     the /start results page; priced on a call, so no prices shown here.
  *
  * Source of truth for prices: src/lib/stripe/funnel-products.ts (app repo).
  * URL is preserved (/pricing) so existing inbound links + SEO carry over.
@@ -19,19 +16,19 @@ import Link from "next/link"
 import { Check } from "lucide-react"
 import { Container } from "@/components/ui/container"
 import { StructuredData } from "@/components/seo/structured-data"
-import { GET_LEADS_URL, BOOKING_URL } from "@/lib/cta"
+import { GET_LEADS_URL, BOOKING_URL, DASHBOARD_EXAMPLES_URL, START_CTA_LABEL, startUrl } from "@/lib/cta"
 
 export const metadata: Metadata = {
   title: "Pricing | Cursive",
   description:
-    "Simple, self-serve pricing. Visitor Pixel from $97/mo, Custom Audience from $197/mo, or both in the bundle for $247/mo. Install in 60 seconds, first audience in 24 hours.",
+    "Start with 25 free leads from your website, no card. Then Visitor Pixel $97/mo, Custom Audience $197/mo, or both for $247/mo, month-to-month.",
   alternates: {
     canonical: "https://www.meetcursive.com/pricing",
   },
   openGraph: {
     title: "Pricing | Cursive",
     description:
-      "Visitor Pixel $97/mo, Custom Audience $197/mo, or the bundle for $247/mo. Self-serve, month-to-month, cancel anytime.",
+      "Start with 25 free leads, no card. Then Visitor Pixel $97/mo, Custom Audience $197/mo, or the bundle for $247/mo. Month-to-month.",
     url: "https://www.meetcursive.com/pricing",
     siteName: "Cursive",
     type: "website",
@@ -77,13 +74,13 @@ const PLANS: Plan[] = [
     price: "$247",
     cadence: "/mo",
     summary:
-      "Both the visitor pixel and the weekly audience — your full top-of-funnel intel layer.",
+      "Both the visitor pixel and the weekly audience: your site traffic and in-market buyers in one place.",
     features: [
       "Everything in Visitor Pixel",
       "Everything in Custom Audience",
       "Site traffic + in-market intent in one feed",
       "Priority audience updates within 24 hours",
-      "Best value — save vs. buying separately",
+      "Best value: save vs. buying separately",
     ],
     cta: "Get the Bundle",
     highlight: true,
@@ -109,8 +106,12 @@ const PLANS: Plan[] = [
 
 const FAQS = [
   {
+    q: "Are the 25 free leads really free?",
+    a: "Yes. Paste your website, approve who your buyers are, and get 25 people with names, titles, work emails, and why each one fits. No card and no sales call. The list is yours to keep.",
+  },
+  {
     q: "What's the difference between the Pixel and the Audience?",
-    a: "The Visitor Pixel identifies people already coming to your website — it turns anonymous traffic into named companies and contacts. The Custom Audience is proactive: each week we deliver a fresh list of people actively searching for what you sell, whether or not they've visited your site. The bundle gives you both — your inbound traffic and net-new in-market prospects in one feed.",
+    a: "The Visitor Pixel identifies people already coming to your website: it turns anonymous traffic into named companies and contacts. The Custom Audience is proactive: each week we deliver a fresh list of people actively searching for what you sell, whether or not they've visited your site. The bundle gives you both.",
   },
   {
     q: "How fast can I get started?",
@@ -122,11 +123,35 @@ const FAQS = [
   },
   {
     q: "What data powers this?",
-    a: "The same identity graph across every plan — 280M+ verified consumer records sourced from offline partners and refreshed every 30 days, layered with intent signals from a 15M-domain organic network.",
+    a: "The same identity graph across every plan: 280M+ consumer records from offline-rooted sources, refreshed every 30 days, layered with intent signals from a 15M-domain organic network.",
   },
   {
     q: "Can I talk to someone before buying?",
-    a: "Of course. Book a 30-minute call and we'll walk through your ICP, show the platform on real data, and recommend the right plan. But most teams just pick a plan and get started the same day.",
+    a: "Of course. Book a 30-minute call and we'll walk through your buyers, show you real data, and recommend the right plan. Or skip the call and start with 25 free leads.",
+  },
+] as const
+
+const SERVICES = [
+  {
+    name: "Weekly leads",
+    body: "25 new leads every Monday, matched to the buyer profile you approved, with work emails and LinkedIn links.",
+    cta: "Start with 25 free",
+    href: startUrl("pricing-weekly"),
+    examples: false,
+  },
+  {
+    name: "LinkedIn outreach",
+    body: "We message your leads on LinkedIn so you only take the replies.",
+    cta: "Book a call",
+    href: BOOKING_URL,
+    examples: false,
+  },
+  {
+    name: "Custom AI dashboard",
+    body: "One dashboard that shows where every lead, reply, and dollar stands.",
+    cta: "Book a call",
+    href: BOOKING_URL,
+    examples: true,
   },
 ] as const
 
@@ -209,13 +234,22 @@ export default function PricingPage() {
               Pricing
             </p>
             <h1 className="mt-5 text-4xl sm:text-5xl font-light tracking-tight text-gray-900 leading-[1.1]">
-              Simple plans. Pipeline in minutes.
+              Start free. Pay when you want more.
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-lg text-gray-600 leading-relaxed">
-              Identify the visitors already on your site, get a weekly list of
-              people searching for your product, or both. Self-serve,
-              month-to-month, cancel anytime.
+              Your first 25 leads are free. After that, pick a self-serve plan
+              or have us run outreach for you. Month-to-month, cancel anytime.
             </p>
+            <div className="mt-8">
+              <Link
+                href={startUrl("pricing-hero")}
+                className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-primary/90"
+              >
+                {START_CTA_LABEL}
+                <span aria-hidden>→</span>
+              </Link>
+              <p className="mt-3 text-sm text-gray-500">No card. No sales call. About a minute.</p>
+            </div>
           </Container>
         </section>
 
@@ -284,6 +318,53 @@ export default function PricingPage() {
           </Container>
         </section>
 
+        {/* ── Done for you ───────────────────────────────────────────────── */}
+        <section className="border-b border-gray-100 py-16 sm:py-20">
+          <Container className="max-w-5xl">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
+              Done for you
+            </p>
+            <h2 className="mt-5 text-3xl sm:text-4xl font-light tracking-tight text-gray-900">
+              Liked your 25? We can keep going.
+            </h2>
+            <dl className="mt-10 divide-y divide-gray-100 border-y border-gray-100">
+              {SERVICES.map((svc) => (
+                <div
+                  key={svc.name}
+                  className="grid grid-cols-1 gap-3 py-7 sm:grid-cols-[240px_1fr_auto] sm:items-center sm:gap-10"
+                >
+                  <dt className="text-base font-medium text-gray-900">{svc.name}</dt>
+                  <dd className="text-[0.95rem] text-gray-700 leading-relaxed">
+                    {svc.body}
+                    {svc.examples && (
+                      <>
+                        {" "}
+                        <a
+                          href={DASHBOARD_EXAMPLES_URL}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-primary underline-offset-2 hover:underline"
+                        >
+                          See dashboards we&apos;ve built
+                        </a>
+                      </>
+                    )}
+                  </dd>
+                  <dd>
+                    <Link
+                      href={svc.href}
+                      {...(svc.href === BOOKING_URL ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                      className="inline-flex items-center justify-center whitespace-nowrap rounded-md border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-900 transition-colors hover:border-gray-400"
+                    >
+                      {svc.cta}
+                    </Link>
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </Container>
+        </section>
+
         {/* ── FAQ ────────────────────────────────────────────────────────── */}
         <section className="border-b border-gray-100 py-20 sm:py-24">
           <Container className="max-w-3xl">
@@ -318,20 +399,18 @@ export default function PricingPage() {
               Next Step
             </p>
             <h2 className="mt-5 text-3xl sm:text-4xl font-light tracking-tight text-gray-900">
-              Start turning traffic into pipeline.
+              See who should buy from you.
             </h2>
             <p className="mx-auto mt-5 max-w-xl text-base text-gray-600 leading-relaxed">
-              Pick a plan and you&apos;re live in minutes — or book a quick call
-              if you&apos;d like a walkthrough first.
+              Paste your website and get 25 leads free. Or book a quick call if
+              you&apos;d like a walkthrough first.
             </p>
             <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Link
-                href={GET_LEADS_URL}
-                target="_blank"
-                rel="noopener noreferrer"
+                href={startUrl("pricing-bottom")}
                 className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-primary/90"
               >
-                Get Started
+                {START_CTA_LABEL}
                 <span aria-hidden>→</span>
               </Link>
               <Link

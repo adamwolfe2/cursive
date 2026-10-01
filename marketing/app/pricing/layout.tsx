@@ -3,8 +3,8 @@ import { StructuredData } from '@/components/seo/structured-data'
 import { generateBreadcrumbSchema, generateFAQSchema } from '@/lib/seo/structured-data'
 
 export const metadata = generateMetadata({
-  title: 'Cursive Pricing: Visitor Pixel $97, Custom Audience $197 | B2B Lead Generation',
-  description: 'Simple, self-serve pricing. Visitor Pixel from $97/mo, Custom Audience from $197/mo, or both in the bundle for $247/mo. Month-to-month, cancel anytime. Install in 60 seconds.',
+  title: 'Cursive Pricing: 25 Free Leads, then Plans from $97/mo',
+  description: 'Start with 25 free leads from your website, no card. Then Visitor Pixel $97/mo, Custom Audience $197/mo, or both for $247/mo. Month-to-month, cancel anytime.',
   keywords: [
     'B2B lead generation pricing',
     'visitor pixel pricing',
@@ -27,11 +27,11 @@ const pricingFAQs = [
   },
   {
     question: 'Is there a free trial or free plan?',
-    answer: 'There is no free plan, but every plan is month-to-month with no setup fee, so you can start small and cancel anytime. The Visitor Pixel installs in about 60 seconds and Custom Audience plans deliver your first list within 24 hours, so you see value almost immediately.',
+    answer: 'Yes: your first 25 leads are free. Paste your website at leads.meetcursive.com/start and get 25 people with names, titles, work emails, and why each one fits. No card and no sales call. Paid plans are month-to-month with no setup fee.',
   },
   {
     question: 'What is the difference between the Visitor Pixel and the Custom Audience?',
-    answer: 'The Visitor Pixel identifies people already visiting your website — it turns anonymous traffic into named companies and contacts. The Custom Audience is proactive: each week we deliver a fresh list of people actively searching for what you sell, whether or not they have visited your site. The bundle gives you both in one feed.',
+    answer: 'The Visitor Pixel identifies people already visiting your website: it turns anonymous traffic into named companies and contacts. The Custom Audience is proactive: each week we deliver a fresh list of people actively searching for what you sell, whether or not they have visited your site. The bundle gives you both in one feed.',
   },
   {
     question: 'Are there long-term contracts?',
