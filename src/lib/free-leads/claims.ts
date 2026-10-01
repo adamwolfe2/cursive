@@ -18,6 +18,7 @@ import { claudeUsd } from './cost'
 import type { GetLeadsContact } from '@/lib/getleads/client'
 import {
   FREE_LEADS_SOURCE,
+  leadHashKey,
   STORED_LEAD_COLUMNS,
   toFullLead,
   toLeadInsert,
@@ -311,7 +312,7 @@ export async function fulfillClaim(claim: ClaimRow, authUserId: string, admin: A
   }
 
   const now = new Date().toISOString()
-  const candidates = usableContacts([...reused, ...pulled.contacts], want)
+  const candidates = await withoutStoredLeads(admin, usableContacts([...reused, ...pulled.contacts], want))
   const icp = claimIcp(claim)
   // Never throws: a failed check delivers the top rows unscored (logged in scoreLeads).
   let fitUsd = 0
@@ -338,6 +339,24 @@ export async function fulfillClaim(claim: ClaimRow, authUserId: string, admin: A
   })
   safeLog('[free-leads/claims] fulfilled', { claim_id: claim.id, workspace_id: workspaceId, leads: rows.length })
   return { credits: pulled.contacts.length, usd: fitUsd, reused_preview: reused.length }
+}
+
+/**
+ * leads.hash_key (email|domain|phone) is unique across ALL workspaces, so one person already stored
+ * anywhere would fail the whole insert after credits are spent. Skip them; the over-pull covers it.
+ * Service role, cross-workspace by necessity: reads only hash_key, nothing reaches the caller.
+ * A lookup error is logged and the insert proceeds (it then reports any conflict itself).
+ */
+async function withoutStoredLeads(admin: Admin, contacts: GetLeadsContact[]): Promise<GetLeadsContact[]> {
+  if (!contacts.length) return contacts
+  const hashes = contacts.map(leadHashKey)
+  const { data, error } = await admin.from('leads').select('hash_key').in('hash_key', hashes)
+  if (error) {
+    safeError('[free-leads/claims] stored-lead lookup failed; inserting unfiltered', error)
+    return contacts
+  }
+  const taken = new Set((data ?? []).map((r: { hash_key: string | null }) => r.hash_key))
+  return contacts.filter((_, i) => !taken.has(hashes[i]))
 }
 
 export async function loadStoredLeads(workspaceId: string, claimId: string, admin: Admin): Promise<FullLead[]> {

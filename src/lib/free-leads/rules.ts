@@ -195,6 +195,17 @@ export function usableContacts(contacts: readonly GetLeadsContact[], max: number
 // password signup may be auto-confirmed). Only the sha256 is stored.
 // ---------------------------------------------------------------------------
 
+/**
+ * Mirrors the DB's calculate_lead_hash(email, company_domain, phone) for the row toLeadInsert builds.
+ * leads.hash_key is unique across every workspace, so delivery skips people already stored anywhere.
+ */
+export function leadHashKey(c: GetLeadsContact): string {
+  const email = c.email_address.toLowerCase().trim()
+  const domain = (c.org_domain || '').toLowerCase().trim()
+  const phone = (c.cellphone || '').replace(/[^0-9]/g, '')
+  return sha256Hex(`${email}|${domain}|${phone}`)
+}
+
 function sha256Hex(value: string): string {
   return createHash('sha256').update(value).digest('hex')
 }

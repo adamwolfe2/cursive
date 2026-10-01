@@ -21,7 +21,7 @@ import {
   withinDailyFulfillmentCap,
   type ClaimRow,
 } from '../claims'
-import { leadsActionFor } from '../rules'
+import { leadHashKey, leadsActionFor } from '../rules'
 import { filtersHash } from '../icp-to-filters'
 import { loadStoredLeads } from '../claims'
 
@@ -220,6 +220,21 @@ describe('delivery: over-pull, fit check, preview reuse', () => {
     scoreLeads.mockResolvedValue(people(35).map(() => ({ score: 0, why: 'no' })))
     await lockAndFulfill(admin, row)
     expect(db.tables.leads).toHaveLength(25)
+    expect(row().status).toBe('fulfilled')
+  })
+
+  it('skips people already stored in any workspace (global hash_key) and still delivers 25', async () => {
+    const { admin, row, db } = withIcp()
+    const pool = people(35)
+    db.tables.leads.push({ workspace_id: 'other-ws', hash_key: leadHashKey(pool[0]) }, { workspace_id: 'other-ws', hash_key: leadHashKey(pool[7]) })
+    searchContacts.mockResolvedValue({ contacts: pool, totalAvailable: 500 })
+    scoreLeads.mockResolvedValue(null)
+    await lockAndFulfill(admin, row)
+    const mine = db.tables.leads.filter((l) => l.workspace_id === 'ws1')
+    expect(mine).toHaveLength(25)
+    expect(mine.map((l) => l.first_name)).not.toContain('P0')
+    expect(mine.map((l) => l.first_name)).not.toContain('P7')
+    expect(searchContacts).toHaveBeenCalledTimes(1)
     expect(row().status).toBe('fulfilled')
   })
 
