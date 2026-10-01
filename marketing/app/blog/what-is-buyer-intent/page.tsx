@@ -416,8 +416,6 @@ export default function WhatIsBuyerIntent() {
               <DashboardCTA
                 headline="Act on Buyer Intent Before Competitors Do"
                 description="Cursive combines website visitor identification (70% ID rate) with 60B+ behaviors & URLs scanned weekly refreshed weekly. See which prospects are actively in-market right now — and reach them before they book a demo with a competitor."
-                ctaText="Get Leads"
-                ctaUrl="https://leads.meetcursive.com/get-leads"
               />
 
               {/* Related Links */}

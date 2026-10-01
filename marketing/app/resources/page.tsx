@@ -285,7 +285,6 @@ export default function ResourcesPage() {
           headline="Ready to Identify"
           subheadline="Your Website Visitors?"
           description="Install the pixel in 60 seconds and see which companies are visiting your site right now. Plans from $97/mo, month-to-month."
-          ctaText="Get Started"
         />
       </HumanView>
 

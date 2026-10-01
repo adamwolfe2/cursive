@@ -6,8 +6,8 @@ import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
 import { useState } from "react"
-import { Menu, X, ChevronDown, Eye, Users, Mail, Target, Database, Shield, Building2, ShoppingCart, Code, Briefcase, Home, Store, BookOpen, BarChart3, FileText } from "lucide-react"
-import { GET_LEADS_URL, BOOKING_URL } from "@/lib/cta"
+import { Menu, X, ChevronDown, Eye, Users, Mail, Target, Database, Shield, Building2, ShoppingCart, Code, Briefcase, Home, Store, BookOpen, BarChart3, FileText, Sparkles } from "lucide-react"
+import { BOOKING_URL, START_CTA_LABEL, startUrl } from "@/lib/cta"
 
 interface DropdownItem {
   href: string
@@ -27,9 +27,15 @@ const navLinks: NavLink[] = [
     label: "Products",
     dropdown: [
       {
+        href: startUrl("nav-products"),
+        label: "25 Free Leads",
+        description: "Paste your website, get 25 buyers with work emails",
+        icon: Sparkles,
+      },
+      {
         href: "/superpixel",
         label: "Super Pixel V4",
-        description: "Turn anonymous visitors into verified leads",
+        description: "Turn anonymous visitors into named leads",
         icon: Eye,
       },
       {
@@ -181,8 +187,8 @@ export function Header() {
               <Button size="sm" variant="outline" href={BOOKING_URL} target="_blank">
                 Book a Call
               </Button>
-              <Button size="sm" href={GET_LEADS_URL} target="_blank">
-                Get Started
+              <Button size="sm" href={startUrl("nav")}>
+                {START_CTA_LABEL}
               </Button>
             </div>
 
@@ -287,11 +293,10 @@ export function Header() {
                 </Button>
                 <Button
                   className="w-full"
-                  href={GET_LEADS_URL}
-                  target="_blank"
+                  href={startUrl("nav-mobile")}
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  Get Started
+                  {START_CTA_LABEL}
                 </Button>
               </nav>
             </motion.div>

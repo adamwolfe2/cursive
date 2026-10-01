@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Container } from "@/components/ui/container"
 import { motion } from "framer-motion"
 import { DashboardPreview } from "@/components/dashboard-preview"
-import { GET_LEADS_URL } from "@/lib/cta"
+import { START_CTA_LABEL, startUrl } from "@/lib/cta"
 
 interface DashboardCTAProps {
   headline?: string
@@ -17,9 +17,9 @@ interface DashboardCTAProps {
 export function DashboardCTA({
   headline = "Stop Guessing. Start Converting.",
   subheadline = "your pipeline starts here",
-  description = "Resolve 40–60% of your anonymous website visitors with a deterministic pixel and turn them into pipeline — automatically.",
-  ctaText = "Get Started",
-  ctaUrl = GET_LEADS_URL,
+  description = "Paste your website. We work out who buys from you and send back 25 of them, with names, titles, work emails, and why each one fits.",
+  ctaText = START_CTA_LABEL,
+  ctaUrl = startUrl("bottom-cta"),
 }: DashboardCTAProps = {}) {
   return (
     <section className="relative py-32 bg-white overflow-hidden">
@@ -44,7 +44,6 @@ export function DashboardCTA({
           <Button
             size="lg"
             href={ctaUrl}
-            target="_blank"
             className="bg-primary text-white hover:bg-primary-dark text-lg px-10 py-5 mb-4"
           >
             {ctaText}
@@ -55,19 +54,19 @@ export function DashboardCTA({
               <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
               </svg>
-              <span>No commitment required</span>
+              <span>No card</span>
             </div>
             <div className="flex items-center gap-2">
               <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
               </svg>
-              <span>Setup in 5 minutes</span>
+              <span>No sales call</span>
             </div>
             <div className="flex items-center gap-2">
               <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
               </svg>
-              <span>See results in 24 hours</span>
+              <span>Your list in about a minute</span>
             </div>
           </div>
         </motion.div>

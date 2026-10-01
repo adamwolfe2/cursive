@@ -444,7 +444,6 @@ export default function CustomAudiencesPage() {
             headline="Ready for a Custom"
             subheadline="Audience?"
             description="Set your ICP and get your first verified weekly list within 24 hours. $197/mo, month-to-month, cancel anytime."
-            ctaText="Get Started"
           />
         </main>
       </HumanView>

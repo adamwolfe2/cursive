@@ -4,6 +4,7 @@ import { Container } from "@/components/ui/container"
 import Link from "next/link"
 import Image from "next/image"
 import { ViewToggle } from "./view-toggle"
+import { BOOKING_URL, START_CTA_LABEL, startUrl } from "@/lib/cta"
 
 export function Footer() {
   return (
@@ -27,7 +28,7 @@ export function Footer() {
             With Cursive
           </p>
           <p className="text-gray-600 text-sm mb-6">
-            AI-powered lead generation and outbound automation for B2B companies.
+            Paste your website and get 25 people who should buy from you, with work emails. Free, no card, no call.
           </p>
 
           {/* View Toggle */}
@@ -40,6 +41,11 @@ export function Footer() {
           <div>
             <h3 className="text-gray-900 font-medium mb-4">Product</h3>
             <ul className="space-y-2 text-sm text-gray-600">
+              <li>
+                <a href={startUrl("footer-product")} className="hover:text-primary transition-colors">
+                  25 Free Leads
+                </a>
+              </li>
               <li>
                 <Link href="/platform" className="hover:text-primary transition-colors">
                   Platform Overview
@@ -68,11 +74,6 @@ export function Footer() {
               <li>
                 <Link href="/intent-audiences" className="hover:text-primary transition-colors">
                   Intent Data
-                </Link>
-              </li>
-              <li>
-                <Link href="/direct-mail" className="hover:text-primary transition-colors">
-                  Direct Mail
                 </Link>
               </li>
               <li>
@@ -249,11 +250,6 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/pricing" className="hover:text-primary transition-colors">
-                  Pricing
-                </Link>
-              </li>
-              <li>
                 <Link href="/privacy" className="hover:text-primary transition-colors">
                   Privacy Policy
                 </Link>
@@ -268,13 +264,13 @@ export function Footer() {
             <h3 className="text-gray-900 font-medium mb-4 mt-8">Get Started</h3>
             <ul className="space-y-2 text-sm text-gray-600">
               <li>
-                <a href="https://leads.meetcursive.com/get-leads" className="hover:text-primary transition-colors">
-                  Get Started
+                <a href={startUrl("footer")} className="hover:text-primary transition-colors">
+                  {START_CTA_LABEL}
                 </a>
               </li>
               <li>
-                <a href="https://cal.com/cursiveteam/30min" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
-                  Book a Demo
+                <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+                  Book a call
                 </a>
               </li>
             </ul>

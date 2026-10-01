@@ -321,7 +321,6 @@ export default function CursiveVsRb2bPage() {
           headline="Move Beyond"
           subheadline="identification"
           description="Install the Visitor Pixel in under 2 minutes and get a verified work email plus full enrichment on every visitor automatically. Plans from $97/mo, month-to-month."
-          ctaText="Get Started"
         />
       </HumanView>
 

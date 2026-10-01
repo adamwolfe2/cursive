@@ -379,7 +379,6 @@ export function SuperPixelView() {
             headline="See Who's"
             subheadline="on your site"
             description="Drop the Super Pixel in 60 seconds and start resolving 40–60% of your anonymous traffic to real people. $97/mo, month-to-month."
-            ctaText="Get Started"
           />
         </main>
       </HumanView>

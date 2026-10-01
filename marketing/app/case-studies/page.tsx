@@ -284,7 +284,6 @@ export default function CaseStudiesPage() {
           headline="Want Results"
           subheadline="Like These?"
           description="Install the pixel in 60 seconds, or get your first audience within 24 hours. Plans from $97/mo, month-to-month."
-          ctaText="Get Started"
         />
       </HumanView>
 

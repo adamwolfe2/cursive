@@ -363,7 +363,6 @@ export default function PlatformPage() {
             headline="Start With Verified"
             subheadline="Data"
             description="Install the pixel in 60 seconds, or get your first audience within 24 hours. Plans from $97/mo, month-to-month."
-            ctaText="Get Started"
           />
         </main>
       </HumanView>

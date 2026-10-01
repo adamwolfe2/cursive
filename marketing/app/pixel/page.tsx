@@ -391,8 +391,6 @@ export default function PixelPage() {
             headline="Stop Losing"
             subheadline="website visitors"
             description="Install the Cursive Visitor Pixel in 60 seconds and start turning anonymous traffic into named, verified leads. Self-serve, $97/mo, cancel anytime."
-            ctaText="Get Started"
-            ctaUrl={GET_LEADS_URL}
           />
         </main>
       </HumanView>
