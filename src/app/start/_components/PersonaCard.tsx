@@ -6,18 +6,19 @@ export function PersonaCard({ persona }: { persona: Persona }) {
   return (
     <section aria-labelledby="persona-heading" className="fl-rise rounded-2xl border border-[#e5e7eb] bg-white px-5 py-6 sm:px-10 sm:py-8">
       <h2 id="persona-heading" className="text-sm font-medium text-[#4d5460]">
-        The person you are writing to
+        An example buyer
       </h2>
       <p className="mt-3 max-w-[40ch] text-xl leading-snug tracking-[-0.01em] text-[#1d2025] sm:text-[1.375rem]">
         <span className="font-semibold text-[#111318]">{persona.name}</span>, {persona.role} at {persona.company}
       </p>
+      <p className="mt-2 text-[13px] text-[#4d5460]">Made up from your profile to help you picture who you are writing to. Not one of your leads.</p>
       <dl className="mt-6 border-t border-[#e5e7eb]">
         <Row label="A typical week">{persona.day}</Row>
         {persona.measured_on.length > 0 && (
           <Row label="Judged on">
             <ul className="list-disc space-y-1 pl-5 marker:text-[#a0a5b1]">
-              {persona.measured_on.map((m) => (
-                <li key={m}>{m}</li>
+              {persona.measured_on.map((m, i) => (
+                <li key={i}>{m}</li>
               ))}
             </ul>
           </Row>

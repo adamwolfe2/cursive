@@ -419,7 +419,8 @@ export function StartFlow({ mock, initialSite }: { mock: Mock; initialSite: stri
             />
             </div>
           )}
-          {complete && persona && <PersonaCard persona={persona} />}
+          {/* Describes the scanned profile; hidden once the reader edits it so it never contradicts the card. */}
+          {complete && persona && !edited && <PersonaCard persona={persona} />}
           {scanError && <ScanErrorNote error={scanError} onRetry={() => query && void run(query)} />}
           {/* Held until the persona lands or the stream ends, so the persona never pushes it down. */}
           {complete && !approved && website && count !== 0 && (persona || phase !== 'scanning') && (

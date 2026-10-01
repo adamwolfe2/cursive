@@ -38,7 +38,8 @@ interface ScanContext {
   pasted?: Promise<void>
 }
 
-type CachedScan = { events: Replayable[]; scanned_at: string }
+/** `persona_tried`: a persona call already failed for this scan; never retried within the TTL (cost). */
+type CachedScan = { events: Replayable[]; scanned_at: string; persona_tried?: boolean }
 
 async function loadSource(ctx: ScanContext, send: Send): Promise<{ text: string; site: SiteContent | null } | null> {
   const { url, description } = ctx
@@ -72,14 +73,23 @@ async function sendCount(icp: Icp, send: Send): Promise<number | null> {
 type Usage = Array<{ u: Anthropic.Usage; model: string }>
 const usdOf = (usage: Usage) => usage.reduce((s, x) => s + claudeUsd(x.model, x.u), 0)
 
-/** Best-effort: a failed persona never fails the scan. Starts immediately so it overlaps the count. */
+/** Hard cap so a slow persona can never push the scan past maxDuration (it is best effort). */
+const PERSONA_DEADLINE_MS = 15_000
+
+/** Best-effort: a failed or slow persona never fails the scan. Starts immediately so it overlaps the count. */
 async function startPersona(icp: Icp, siteText: string | null, usage: Usage): Promise<Persona | null> {
-  try {
-    return await generatePersona(icp, siteText, { onUsage: (u, model) => usage.push({ u, model }) })
-  } catch (err) {
+  let timer: ReturnType<typeof setTimeout> | undefined
+  const deadline = new Promise<null>((resolve) => {
+    timer = setTimeout(() => resolve(null), PERSONA_DEADLINE_MS)
+  })
+  const call = generatePersona(icp, siteText, { onUsage: (u, model) => usage.push({ u, model }) }).catch((err) => {
     safeError('[start/scan] persona failed', err)
     return null
-  }
+  })
+  const persona = await Promise.race([call, deadline])
+  clearTimeout(timer)
+  if (!persona) safeError('[start/scan] persona skipped', 'failed or over deadline')
+  return persona
 }
 
 interface FinishOpts {
@@ -109,12 +119,14 @@ async function replay(ctx: ScanContext, send: Send, cached: CachedScan, icp: Icp
   cached.events.filter((e) => e.type !== 'persona').forEach(send)
   const stored = cached.events.find((e): e is Extract<Replayable, { type: 'persona' }> => e.type === 'persona')?.persona
   const usage: Usage = []
+  // Backfill once per cached scan (failure is remembered), and only under the global scan cap.
+  const backfill = !stored && !cached.persona_tried && !(await isLimited('free-leads-scan-global', 'global'))
   await finish(ctx, icp, send, {
-    persona: stored ? Promise.resolve(stored) : startPersona(icp, null, usage),
+    persona: stored ? Promise.resolve(stored) : backfill ? startPersona(icp, null, usage) : Promise.resolve(null),
     save: async (persona) => {
-      if (stored || !persona) return
-      const events: Replayable[] = [...cached.events, { type: 'persona', persona }]
-      await cachePut(scanKey(ctx.url ?? ''), { ...cached, events }, SCAN_TTL_MS)
+      if (!backfill) return
+      const events: Replayable[] = persona ? [...cached.events, { type: 'persona', persona }] : cached.events
+      await cachePut(scanKey(ctx.url ?? ''), { ...cached, events, persona_tried: !persona }, SCAN_TTL_MS)
     },
     meta: () => ({ cached: true, usd: usdOf(usage) }),
   })
@@ -157,10 +169,14 @@ async function run(ctx: ScanContext, send: Send, cached: CachedScan | null): Pro
   }
   record({ type: 'icp', icp })
   const persona = startPersona(icp, source.text, usage)
+  const cacheable = Boolean(url && !description)
+  const scannedAt = new Date().toISOString()
+  // Save the paid scan now, before the persona, so a slow persona can never lose it.
+  if (cacheable) await cachePut(scanKey(url ?? ''), { events: [...events], scanned_at: scannedAt }, SCAN_TTL_MS)
   await finish(ctx, icp, record, {
     persona,
-    save: async () => {
-      if (url && !description) await cachePut(scanKey(url), { events, scanned_at: new Date().toISOString() }, SCAN_TTL_MS)
+    save: async (p) => {
+      if (cacheable) await cachePut(scanKey(url ?? ''), { events, scanned_at: scannedAt, persona_tried: !p }, SCAN_TTL_MS)
     },
     meta: () => ({
       cached: false,

@@ -77,15 +77,28 @@ describe('scan: persona', () => {
     expect(scanIcp).toHaveBeenCalledTimes(1)
   })
 
-  it('a replay without a persona generates one once and writes it back', async () => {
+  it('a failed persona is remembered: replays never pay for it again', async () => {
     generatePersona.mockRejectedValueOnce(new Error('model down'))
     await events(await scan(req({ url: 'acme.com' })))
     expect(JSON.stringify(cacheRows())).not.toContain('"persona"')
     const second = await events(await scan(req({ url: 'acme.com' })))
+    expect(types(second)).toEqual(['replay', 'icp', 'count', 'done'])
+    expect(generatePersona).toHaveBeenCalledTimes(1)
+  })
+
+  it('a scan cached before personas existed gets one backfill, written back', async () => {
+    generatePersona.mockResolvedValue(PERSONA)
+    await events(await scan(req({ url: 'acme.com' })))
+    // Turn the stored entry into a legacy one: no persona, never tried.
+    for (const row of cacheRows() as Array<{ value: { events?: Array<{ type: string }>; persona_tried?: boolean } }>) {
+      if (!row.value.events) continue
+      row.value = { ...row.value, events: row.value.events.filter((e) => e.type !== 'persona'), persona_tried: undefined }
+    }
+    generatePersona.mockClear()
+    const second = await events(await scan(req({ url: 'acme.com' })))
     expect(types(second)).toEqual(['replay', 'icp', 'count', 'persona', 'done'])
-    expect(generatePersona).toHaveBeenCalledTimes(2)
     const third = await events(await scan(req({ url: 'acme.com' })))
     expect(types(third)).toContain('persona')
-    expect(generatePersona).toHaveBeenCalledTimes(2)
+    expect(generatePersona).toHaveBeenCalledTimes(1)
   })
 })

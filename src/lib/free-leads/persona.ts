@@ -120,7 +120,7 @@ export function personaBrief(icp: Icp, siteText: string | null, letter: string =
 let client: Anthropic | null = null
 function anthropic(): Anthropic {
   if (!process.env.ANTHROPIC_API_KEY) throw new PersonaError('ANTHROPIC_API_KEY missing', 'not_configured')
-  client ??= new Anthropic({ maxRetries: 1, timeout: 30_000 })
+  client ??= new Anthropic({ maxRetries: 0, timeout: 12_000 }) // the route caps the whole persona at 15s
   return client
 }
 

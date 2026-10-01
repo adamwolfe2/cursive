@@ -52,11 +52,11 @@ it('shows the persona, folds the rail behind a summary, and expands extra titles
     emit({ type: 'icp', icp: ICP })
     emit({ type: 'count', total: 120 })
   })
-  expect(screen.queryByText('The person you are writing to')).toBeNull()
+  expect(screen.queryByText('An example buyer')).toBeNull()
   expect(screen.getByText('What we read: 1 page, 1 fact')).toBeInTheDocument()
 
   act(() => emit({ type: 'persona', persona: PERSONA }))
-  expect(screen.getByText('The person you are writing to')).toBeInTheDocument()
+  expect(screen.getByText('An example buyer')).toBeInTheDocument()
   expect(screen.getByText('Dana')).toBeInTheDocument()
 
   expect(screen.queryByText('Director of IT')).toBeNull()
