@@ -92,6 +92,8 @@ export function Ladder({ mock, leads, website }: { mock: Mock; leads: FullLead[]
           </div>
           <Cta tier="weekly_leads" label="Send me 25 every Monday" tone="white" interest={interest} />
         </div>
+        <NextMondays />
+
         <p className="mt-6 border-t border-white/20 pt-5 text-[15px] text-white">
           Worried you won&apos;t get to them all?{' '}
           <a href="#rung-linkedin" className="inline-flex min-h-11 items-center font-semibold underline decoration-white/50 underline-offset-4 hover:decoration-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
@@ -149,6 +151,32 @@ export function Ladder({ mock, leads, website }: { mock: Mock; leads: FullLead[]
         </div>
       </section>
     </>
+  )
+}
+
+/** The next four Mondays on the weekly plan, with the running total. Rendered client-side only (after the leads load). */
+function NextMondays() {
+  const day = new Date()
+  day.setHours(0, 0, 0, 0)
+  day.setDate(day.getDate() + (((8 - day.getDay()) % 7) || 7))
+  const fmt = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' })
+  const mondays = Array.from({ length: 4 }, (_, i) => fmt.format(new Date(day.getTime() + i * 7 * 86_400_000)))
+  return (
+    <ol aria-label="Your next four Mondays on the weekly plan" className="mt-7 grid grid-cols-2 gap-2 sm:grid-cols-4">
+      {mondays.map((label, i) => (
+        <li
+          key={label}
+          className="fl-rise rounded-lg bg-white/10 px-3.5 py-3 ring-1 ring-inset ring-white/20 transition-colors hover:bg-white/15"
+          style={{ animationDelay: `${200 + i * 90}ms` }}
+        >
+          <p className="text-[13px] text-white">Mon, {label}</p>
+          <p className="mt-0.5 flex items-baseline gap-1.5">
+            <span className="text-xl font-semibold tabular-nums">+25</span>
+            <span className="text-[13px] text-white">{(i + 2) * 25} total</span>
+          </p>
+        </li>
+      ))}
+    </ol>
   )
 }
 
