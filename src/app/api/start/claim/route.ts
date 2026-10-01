@@ -51,8 +51,8 @@ async function magicLinkFor(email: string, claimToken: string): Promise<string> 
   if (link.error || !tokenHash || link.data.properties.verification_type !== 'magiclink') {
     throw new Error(`generateLink failed: ${link.error?.message ?? `type ${link.data?.properties?.verification_type}`}`)
   }
-  const next = `/start/leads?c=${encodeURIComponent(claimToken)}`
-  return `${APP_URL}/auth/confirm?token_hash=${encodeURIComponent(tokenHash)}&next=${encodeURIComponent(next)}`
+  // Lands on a click-through page: inbox link scanners GET links and would spend the single-use code.
+  return `${APP_URL}/start/open?t=${encodeURIComponent(tokenHash)}&c=${encodeURIComponent(claimToken)}`
 }
 
 async function sendLink(email: string, claimToken: string, website: string, icpSummary: string | undefined) {

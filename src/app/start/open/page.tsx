@@ -1,0 +1,52 @@
+/**
+ * /start/open?t=<token_hash>&c=<claim token>: the emailed link lands here, not on /auth/confirm.
+ * Work inboxes run link scanners (Safe Links, Mimecast, Proofpoint) that GET every link in a
+ * message; a GET to /auth/confirm would spend the single-use sign-in code before the person
+ * clicks. Scanners do not submit forms, so the code is only used by this button's POST.
+ */
+export const metadata = { title: 'Open your 25 leads | Cursive', robots: { index: false, follow: false } }
+
+const PRIMARY =
+  'inline-flex h-14 w-full items-center justify-center rounded-xl bg-[#0063E6] px-8 text-[17px] font-semibold text-white transition-colors hover:bg-[#0052bf] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF] sm:w-auto'
+
+export default async function OpenLeadsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ t?: string | string[]; c?: string | string[] }>
+}) {
+  const params = await searchParams
+  const t = typeof params.t === 'string' ? params.t.slice(0, 200) : ''
+  const c = typeof params.c === 'string' ? params.c.slice(0, 200) : ''
+
+  return (
+    <div className="mx-auto w-full max-w-[72rem] px-5 pb-24 pt-14 sm:px-8 sm:pt-24">
+      <div className="max-w-xl">
+        <h1 className="text-[2.5rem] font-semibold leading-[1.05] tracking-[-0.04em] text-[#111318] sm:text-[3.5rem]">
+          Your 25 leads are ready.
+        </h1>
+        {t && c ? (
+          <>
+            <p className="mt-5 text-lg leading-relaxed text-[#4d5460]">
+              One tap signs you in and opens them. The link works once.
+            </p>
+            <form method="post" action="/api/start/open" className="mt-9">
+              <input type="hidden" name="t" value={t} />
+              <input type="hidden" name="c" value={c} />
+              <button type="submit" className={PRIMARY}>
+                Open my 25 leads
+              </button>
+            </form>
+          </>
+        ) : (
+          <p className="mt-5 text-lg leading-relaxed text-[#4d5460]">
+            This link is incomplete. Request a fresh one at{' '}
+            <a href="/start" className="font-semibold text-[#0063E6] underline underline-offset-4">
+              /start
+            </a>{' '}
+            with the same work email.
+          </p>
+        )}
+      </div>
+    </div>
+  )
+}
