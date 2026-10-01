@@ -51,6 +51,7 @@ describe('funnel_order checkout with a free-leads workspace', () => {
     expect(m.provision).not.toHaveBeenCalled()
     expect(m.notify).not.toHaveBeenCalled()
     expect(m.email.mock.calls[0][0].dashboardUrl).toMatch(/\/dashboard$/)
+    expect(m.email.mock.calls[0][0].freeLeads).toBe(true)
   })
 
   it('alerts sales when the bind is refused, and still sends the receipt email', async () => {
@@ -77,5 +78,6 @@ describe('funnel_order checkout with a free-leads workspace', () => {
     expect(m.provision).toHaveBeenCalledTimes(1)
     expect(m.bind).not.toHaveBeenCalled()
     expect(m.email.mock.calls[0][0].dashboardUrl).toContain('/api/funnel/tok123/dashboard-login')
+    expect(m.email.mock.calls[0][0].freeLeads).toBe(false)
   })
 })

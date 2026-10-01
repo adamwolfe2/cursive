@@ -244,6 +244,7 @@ export const { GET, POST, PUT } = serve({
     functions.funnelVisitorDigest, // weekly visitor recap
     functions.funnelPixelHealthCheck, // every 2h — silent-pixel ops alert (#1)
     functions.funnelFirstVisitor, // every 15m — first-visitor "aha" email (#3)
+    functions.freeLeadsWeekly, // Mondays — 25 new leads for weekly-leads subscribers
 
     // Cal.com No-Show Recovery (2-email recovery sequence when prospect misses call)
     functions.calNoShowRecovery,

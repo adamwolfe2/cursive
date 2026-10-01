@@ -404,7 +404,7 @@ async function mergeRescued(admin: Admin, chosen: Picked, rescued: Picked): Prom
  * Service role, cross-workspace by necessity: reads only hash_key, nothing reaches the caller.
  * A lookup error is logged and the insert proceeds (it then reports any conflict itself).
  */
-async function withoutStoredLeads(admin: Admin, contacts: GetLeadsContact[]): Promise<GetLeadsContact[]> {
+export async function withoutStoredLeads(admin: Admin, contacts: GetLeadsContact[]): Promise<GetLeadsContact[]> {
   if (!contacts.length) return contacts
   const hashes = contacts.map(leadHashKey)
   const { data, error } = await admin.from('leads').select('hash_key').in('hash_key', hashes)

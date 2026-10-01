@@ -424,6 +424,7 @@ async function handleFunnelOrderCompleted(session: Stripe.Checkout.Session): Pro
       portalUrl,
       dashboardUrl,
       offerSlug: order.offer_slug,
+      freeLeads: Boolean(freeLeadsWorkspaceId),
     })
   } catch (emailErr) {
     safeError('[Stripe Webhook] funnel-confirmation email failed (non-fatal)', emailErr)

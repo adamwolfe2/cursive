@@ -347,6 +347,8 @@ export { funnelPixelInstallReminder } from './funnel-pixel-install-reminder'
 export { funnelVisitorDigest } from './funnel-visitor-digest'
 export { funnelPixelHealthCheck } from './funnel-pixel-health-check'
 export { funnelFirstVisitor } from './funnel-first-visitor'
+// Free leads — Monday delivery for weekly-leads subscribers
+export { freeLeadsWeekly } from './free-leads-weekly'
 
 // Reseller / White-Label — forwards new leads to a partner's endpoint (caps + throttle + retries)
 export { deliverResellerLead } from './deliver-reseller-lead'

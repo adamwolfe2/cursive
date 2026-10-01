@@ -17,6 +17,8 @@ interface FunnelConfirmationEmailData {
   /** Optional one-click dashboard login (Phase 2). Omitted if not provisioned. */
   dashboardUrl?: string
   offerSlug: FunnelOfferSlug
+  /** Bought from a free-leads workspace: the buyer already approved a profile, nothing to fill in. */
+  freeLeads?: boolean
 }
 
 function offerHeadline(slug: FunnelOfferSlug): string {
@@ -46,11 +48,13 @@ import { FUNNEL_TRIAL_DAYS } from '@/lib/stripe/funnel-products'
 export async function sendFunnelConfirmationEmail(
   data: FunnelConfirmationEmailData
 ) {
-  const { to, customerName, portalUrl, dashboardUrl, offerSlug } = data
+  const { to, customerName, portalUrl, dashboardUrl, offerSlug, freeLeads } = data
   const firstName = (customerName ?? '').trim().split(/\s+/)[0] || 'there'
 
-  const headline = offerHeadline(offerSlug)
-  const summary = offerSummary(offerSlug)
+  const headline = freeLeads ? 'Weekly leads are on' : offerHeadline(offerSlug)
+  const summary = freeLeads
+    ? 'Every Monday, 25 new people who match the profile you approved land in your Cursive workspace. Nothing to set up.'
+    : offerSummary(offerSlug)
   // Trial buyers have not paid. State the terms here or day-15 becomes a dispute.
   const trialLine =
     FUNNEL_TRIAL_DAYS > 0
