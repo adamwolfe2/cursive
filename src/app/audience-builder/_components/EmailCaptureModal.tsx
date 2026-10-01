@@ -19,7 +19,7 @@ interface EmailCaptureModalProps {
 }
 
 const BOOK_URL =
-  'https://cal.com/meetcursive/intro?utm_source=audience-builder&utm_medium=rate-limit'
+  'https://cal.com/cursiveteam/30min?utm_source=audience-builder&utm_medium=rate-limit'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 

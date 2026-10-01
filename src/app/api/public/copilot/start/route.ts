@@ -26,7 +26,7 @@ export const dynamic = 'force-dynamic'
 
 const MAX_IP_SESSIONS_PER_DAY = 5
 const MAX_EMAIL_SESSIONS_PER_DAY = 3
-const BOOK_URL = 'https://cal.com/meetcursive/intro'
+const BOOK_URL = 'https://cal.com/cursiveteam/30min'
 
 const StartBodySchema = z.object({
   email: z.string().email().max(320),
