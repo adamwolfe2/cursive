@@ -66,7 +66,7 @@ export function LeadsOverview({
                     value={k.value}
                     from={0}
                     duration={1100 + i * 120}
-                    className={`block text-[1.75rem] font-semibold leading-7 tabular-nums tracking-[-0.03em] ${k.accent ? 'text-[#0063E6]' : 'text-[#111318]'}`}
+                    className={`block text-[1.75rem] font-semibold leading-7 tabular-nums tracking-[-0.03em] ${k.accent ? 'text-[#007AFF]' : 'text-[#111827]'}`}
                   />
                   <span className="sr-only">{formatCount(k.value)}</span>
                 </>
@@ -93,17 +93,17 @@ export function LeadsOverview({
       </div>
 
       {/* One reserved line: the hint and the active filter swap in place. */}
-      <div className="mt-3 flex min-h-11 items-center gap-3 text-[13px] text-[#4d5460]" role="status">
+      <div className="mt-3 flex min-h-11 items-center gap-3 text-[13px] text-[#4b5563]" role="status">
         {filter ? (
           <>
             <span>
-              Showing <span className="font-semibold text-[#1d2025]">{shown}</span> of {s?.total ?? 0}:{' '}
-              <span className="font-semibold text-[#0063E6]">{filter.label}</span>
+              Showing <span className="font-semibold text-[#111827]">{shown}</span> of {s?.total ?? 0}:{' '}
+              <span className="font-semibold text-[#0066DD]">{filter.label}</span>
             </span>
             <button
               type="button"
               onClick={() => onFilter(null)}
-              className={`inline-flex min-h-11 items-center gap-1 rounded-md px-2 font-semibold text-[#1d2025] hover:bg-[#f3f4f6] ${FOCUS}`}
+              className={`inline-flex min-h-11 items-center gap-1 rounded-md px-2 font-semibold text-[#111827] hover:bg-[#f3f4f6] ${FOCUS}`}
             >
               <X className="h-3.5 w-3.5" aria-hidden="true" />
               Show all
@@ -144,7 +144,7 @@ function BarCard({
   return (
     <figure className="flex w-[82%] shrink-0 snap-start flex-col rounded-xl border border-[#e5e7eb] bg-white p-4 sm:w-auto sm:p-5">
       <figcaption className="flex items-center justify-between gap-3">
-        <span className="flex items-center gap-2 text-sm font-semibold text-[#1d2025]">
+        <span className="flex items-center gap-2 text-sm font-semibold text-[#111827]">
           <Icon className="h-4 w-4 text-[#6b7280]" aria-hidden="true" />
           {title}
         </span>
@@ -172,14 +172,14 @@ function BarCard({
                       aria-label={`${b.label}: ${b.count} of ${total}. ${on ? 'Showing only these. Press to show all.' : 'Show only these.'}`}
                       className={`group grid h-11 w-full grid-cols-[minmax(0,7.5rem)_minmax(0,1fr)_1.75rem] items-center gap-3 rounded-md px-2 text-left text-[13px] transition-[background-color,opacity] duration-200 sm:h-8 ${on ? 'bg-[#e8f1ff]' : 'hover:bg-[#f5f8fd]'} ${dim ? 'opacity-55 hover:opacity-100' : ''} ${FOCUS}`}
                     >
-                      <span className={`truncate ${on ? 'font-semibold text-[#084fba]' : 'text-[#3a3f4b]'}`} title={b.label}>{b.label}</span>
+                      <span className={`truncate ${on ? 'font-semibold text-[#0066DD]' : 'text-[#374151]'}`} title={b.label}>{b.label}</span>
                       <span className="h-2 overflow-hidden rounded-full bg-[#eef3fb]" aria-hidden="true">
                         <span
-                          className={`fl-grow block h-full rounded-full transition-colors duration-200 ${on ? 'bg-[#084fba]' : 'bg-[#0063E6] group-hover:bg-[#084fba]'}`}
+                          className={`fl-grow block h-full rounded-full transition-colors duration-200 ${on ? 'bg-[#0066DD]' : 'bg-[#007AFF] group-hover:bg-[#0066DD]'}`}
                           style={{ width: `${Math.max(4, (b.count / max) * 100)}%`, animationDelay: `${300 + i * 70}ms` }}
                         />
                       </span>
-                      <span className="text-right font-semibold tabular-nums text-[#1d2025]">{b.count}</span>
+                      <span className="text-right font-semibold tabular-nums text-[#111827]">{b.count}</span>
                     </button>
                   </li>
                 )
@@ -188,7 +188,7 @@ function BarCard({
       <p className="mt-3 h-[1.125rem] truncate border-t border-[#f3f4f6] pt-3 text-[12px] leading-[1.125rem] text-[#6b7280] [box-sizing:content-box]">
         {lead && total ? (
           <>
-            Largest group: <span className="font-semibold text-[#1d2025]">{lead.label}</span>, {Math.round((lead.count / total) * 100)}%
+            Largest group: <span className="font-semibold text-[#111827]">{lead.label}</span>, {Math.round((lead.count / total) * 100)}%
           </>
         ) : (
           ''

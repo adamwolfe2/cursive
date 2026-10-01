@@ -94,13 +94,13 @@ export function LeadsView({ mock, token }: { mock: Mock; token: string | null })
           <p className="flex items-center gap-2 text-[13px] font-medium text-[#6b7280]">
             {data?.website && (
               <>
-                <span className="text-[#1d2025]">{bareDomain(data.website)}</span>
+                <span className="text-[#111827]">{bareDomain(data.website)}</span>
                 <span aria-hidden="true">/</span>
               </>
             )}
             Your free list
           </p>
-          <h1 className="mt-1 text-[2.25rem] font-semibold leading-[1.05] tracking-[-0.04em] text-[#111318] sm:text-[3rem]">
+          <h1 className="mt-1 text-[2.25rem] font-light leading-[1.05] tracking-[-0.02em] text-[#111827] sm:text-[3rem]">
             {state.kind === 'failed' && 'Your leads are stuck.'}
             {state.kind === 'loading' && 'Pulling your 25 leads.'}
             {data && (
@@ -113,14 +113,14 @@ export function LeadsView({ mock, token }: { mock: Mock; token: string | null })
                   // Padded to the final digit count so neither the digits nor the words after them move while it counts.
                   pad={String(leads.length).length}
                   className="whitespace-pre tabular-nums tracking-normal text-[#007AFF]"
-                /> leads,
-                ready.
+                /> leads,{' '}
+                <span className="fl-script fl-write inline-block pl-1 text-[2.75rem] leading-none text-[#007AFF] sm:text-[3.75rem]">ready.</span>
               </>
             )}
             <span className="sr-only">{data ? `${leads.length} leads ready.` : ''}</span>
           </h1>
           {/* Two lines (three on phones) reserved: the loading note and the profile summary swap without moving the table. */}
-          <p className={`mt-3 max-w-[62ch] text-[15px] leading-relaxed text-[#4d5460] ${state.kind === 'failed' ? '' : 'min-h-[3.25rem] max-sm:min-h-[4.875rem]'}`}
+          <p className={`mt-3 max-w-[62ch] text-[15px] leading-relaxed text-[#4b5563] ${state.kind === 'failed' ? '' : 'min-h-[3.25rem] max-sm:min-h-[4.875rem]'}`}
             role="status">
             {state.kind === 'loading' &&
               (slow
@@ -139,7 +139,7 @@ export function LeadsView({ mock, token }: { mock: Mock; token: string | null })
               downloadCsv(leads, data.website)
               trackStep('csv', mock)
             }}
-            className="inline-flex h-11 shrink-0 items-center justify-center gap-2 self-start rounded-lg border border-[#1d2025] bg-white px-4 text-[15px] font-semibold text-[#1d2025] transition-colors hover:bg-[#f9fafb] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF] disabled:cursor-default disabled:border-[#d1d5db] disabled:text-[#a0a5b1] disabled:hover:bg-white sm:self-auto"
+            className="inline-flex h-11 shrink-0 items-center justify-center gap-2 self-start rounded-lg border border-[#111827] bg-white px-4 text-[15px] font-semibold text-[#111827] transition-colors hover:bg-[#f9fafb] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF] disabled:cursor-default disabled:border-[#d1d5db] disabled:text-[#a0a5b1] disabled:hover:bg-white sm:self-auto"
           >
             <Download className="h-4 w-4" aria-hidden="true" />
             Download CSV
@@ -149,7 +149,7 @@ export function LeadsView({ mock, token }: { mock: Mock; token: string | null })
 
       {state.kind === 'failed' ? (
         <div className="mt-10 rounded-xl border border-[#e5e7eb] p-6 sm:p-8">
-          <p className="text-[15px] text-[#1d2025]">
+          <p className="text-[15px] text-[#111827]">
             {state.retryable
               ? 'Your claim is saved. Try again, or reply to the email we sent and we will fix it by hand.'
               : 'Your claim is saved. Reply to the email we sent and we will sort out your list by hand.'}
@@ -158,7 +158,7 @@ export function LeadsView({ mock, token }: { mock: Mock; token: string | null })
             <button
               type="button"
               onClick={() => void load()}
-              className="mt-5 inline-flex h-11 items-center gap-2 rounded-lg bg-[#0063E6] px-4 text-[15px] font-semibold text-white hover:bg-[#084fba] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF]"
+              className="mt-5 inline-flex h-11 items-center gap-2 rounded-lg bg-[#007AFF] px-4 text-[15px] font-semibold text-white hover:bg-[#0066DD] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF]"
             >
               <RotateCcw className="h-4 w-4" aria-hidden="true" />
               Try again
@@ -247,7 +247,7 @@ function LeadRow({ lead, index, delayIndex }: { lead: FullLead; index: number; d
     <button
       type="button"
       onClick={copy}
-      className="fl-compact grid h-7 w-7 shrink-0 place-items-center rounded-md text-[#6b7280] transition-colors hover:bg-[#f3f4f6] hover:text-[#1d2025] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#007AFF]"
+      className="fl-compact grid h-7 w-7 shrink-0 place-items-center rounded-md text-[#6b7280] transition-colors hover:bg-[#f3f4f6] hover:text-[#111827] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#007AFF]"
       aria-label={copied ? `Copied ${lead.email}` : `Copy ${lead.email}`}
     >
       {copied ? <Check className="h-3.5 w-3.5 text-[#15803d]" aria-hidden="true" /> : <Copy className="h-3.5 w-3.5" aria-hidden="true" />}
@@ -261,14 +261,14 @@ function LeadRow({ lead, index, delayIndex }: { lead: FullLead; index: number; d
       <tr className="max-sm:flex">
         <td className={`hidden pl-4 align-top text-[13px] tabular-nums text-[#6b7280] sm:table-cell ${pad}`}>{index + 1}</td>
         <td className={`px-4 align-top max-sm:min-w-0 max-sm:flex-1 ${pad}`}>
-          <div className="truncate font-semibold text-[#1d2025]">{name}</div>
+          <div className="truncate font-semibold text-[#111827]">{name}</div>
           <div className="truncate text-[13px] text-[#6b7280]">{lead.job_title}</div>
           <div className="truncate text-[13px] text-[#6b7280] md:hidden">{lead.company}</div>
           {/* Phones: the whole email line is the copy target, 44px tall. */}
           <button
             type="button"
             onClick={copy}
-            className="-ml-2 flex min-h-11 max-w-[calc(100%+0.5rem)] items-center gap-2 rounded-md px-2 text-left text-[13px] text-[#3a3f4b] active:bg-[#f3f4f6] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#007AFF] sm:hidden"
+            className="-ml-2 flex min-h-11 max-w-[calc(100%+0.5rem)] items-center gap-2 rounded-md px-2 text-left text-[13px] text-[#374151] active:bg-[#f3f4f6] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#007AFF] sm:hidden"
             aria-label={copied ? `Copied ${lead.email}` : `Copy ${lead.email}`}
           >
             <span className="truncate">{lead.email}</span>
@@ -276,15 +276,15 @@ function LeadRow({ lead, index, delayIndex }: { lead: FullLead; index: number; d
           </button>
         </td>
         <td className={`hidden px-4 align-top md:table-cell ${pad}`}>
-          <div className="truncate font-medium text-[#1d2025]">{lead.company}</div>
+          <div className="truncate font-medium text-[#111827]">{lead.company}</div>
           <div className="truncate text-[13px] text-[#6b7280]">
             {[lead.company_size && `${lead.company_size.replace(' to ', '-')} people`, lead.industry].filter(Boolean).join(' · ')}
           </div>
         </td>
-        <td className={`hidden truncate px-4 align-top text-[#4d5460] xl:table-cell ${pad}`}>{lead.location ?? ''}</td>
+        <td className={`hidden truncate px-4 align-top text-[#4b5563] xl:table-cell ${pad}`}>{lead.location ?? ''}</td>
         <td className={`hidden px-4 align-top sm:table-cell ${pad}`}>
           <div className="flex items-center gap-1">
-            <a href={`mailto:${lead.email}`} className="fl-compact truncate text-[13px] text-[#1d2025] hover:text-[#0063E6] hover:underline">
+            <a href={`mailto:${lead.email}`} className="fl-compact truncate text-[13px] text-[#111827] hover:text-[#007AFF] hover:underline">
               {lead.email}
             </a>
             {copyButton}
@@ -297,7 +297,7 @@ function LeadRow({ lead, index, delayIndex }: { lead: FullLead; index: number; d
                 href={lead.linkedin_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="fl-compact grid h-7 w-7 place-items-center rounded-md bg-[#f0f7ff] max-sm:h-11 max-sm:w-11 text-[#0063E6] transition-colors hover:bg-[#d6eaff] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#007AFF]"
+                className="fl-compact grid h-7 w-7 place-items-center rounded-md bg-[#f0f7ff] max-sm:h-11 max-sm:w-11 text-[#0066DD] transition-colors hover:bg-[#d6eaff] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#007AFF]"
                 aria-label={`${name} on LinkedIn`}
               >
                 <Linkedin className="h-3.5 w-3.5" aria-hidden="true" />
@@ -308,7 +308,7 @@ function LeadRow({ lead, index, delayIndex }: { lead: FullLead; index: number; d
             {lead.phone && (
               <a
                 href={`tel:${lead.phone.replace(/[^\d+]/g, '')}`}
-                className="fl-compact grid h-7 w-7 place-items-center rounded-md bg-[#f3f4f6] max-sm:h-11 max-sm:w-11 text-[#3a3f4b] transition-colors hover:bg-[#e5e7eb] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#007AFF]"
+                className="fl-compact grid h-7 w-7 place-items-center rounded-md bg-[#f3f4f6] max-sm:h-11 max-sm:w-11 text-[#374151] transition-colors hover:bg-[#e5e7eb] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#007AFF]"
                 aria-label={`Call ${name}: ${lead.phone}`}
                 title={lead.phone}
               >
@@ -337,11 +337,11 @@ function LockedRow({ index, total, delay }: { index: number; total: number; dela
         <td className="hidden py-4 pl-4 align-middle text-[13px] tabular-nums text-[#6b7280] sm:table-cell">{index}</td>
         <td colSpan={5} className="px-4 py-4 max-sm:min-w-0 max-sm:flex-1">
           <div className="flex items-center gap-3">
-            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-md bg-white text-[#1d2025] shadow-enterprise-xs">
+            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-md bg-white text-[#111827] shadow-enterprise-xs">
               <Lock className="h-4 w-4" aria-hidden="true" />
             </span>
             <div className="min-w-0 select-none">
-              <p className="text-sm font-semibold text-[#1d2025]">Lead {index} of {formatCount(total)}</p>
+              <p className="text-sm font-semibold text-[#111827]">Lead {index} of {formatCount(total)}</p>
               <p className="truncate text-[13px] text-[#6b7280] blur-[3px]" aria-hidden="true">
                 Jordan Ellis, Head of Operations, Brightline Labs
               </p>
@@ -357,15 +357,15 @@ function Expired() {
   return (
     <div className="mx-auto w-full max-w-[72rem] px-5 pb-24 pt-14 sm:px-8 sm:pt-24">
       <div className="max-w-xl">
-        <h1 className="text-[2.25rem] font-semibold leading-[1.05] tracking-[-0.04em] text-[#111318] sm:text-[3rem]">
+        <h1 className="text-[2.25rem] font-light leading-[1.05] tracking-[-0.02em] text-[#111827] sm:text-[3rem]">
           This link has expired or was already used.
         </h1>
-        <p className="mt-4 text-[17px] leading-relaxed text-[#4d5460]">
+        <p className="mt-4 text-[17px] leading-relaxed text-[#4b5563]">
           Sign-in links work once, for a limited time. Paste your website again and we will send a fresh one.
         </p>
         <Link
           href="/start"
-          className="mt-8 inline-flex h-12 items-center rounded-lg bg-[#0063E6] px-5 text-[15px] font-semibold text-white transition-colors hover:bg-[#084fba] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF]"
+          className="mt-8 inline-flex h-12 items-center rounded-lg bg-[#007AFF] px-5 text-[15px] font-semibold text-white transition-colors hover:bg-[#0066DD] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF]"
         >
           Get a new link
         </Link>

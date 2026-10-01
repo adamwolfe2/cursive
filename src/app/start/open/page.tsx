@@ -10,7 +10,7 @@ import { Steps } from '../_components/Steps'
 export const metadata = { title: 'Open your 25 leads | Cursive', robots: { index: false, follow: false } }
 
 const PRIMARY =
-  'inline-flex h-14 w-full items-center justify-center rounded-xl bg-[#0063E6] px-8 text-[17px] font-semibold text-white transition-[background-color,transform] duration-150 hover:bg-[#0052bf] active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF] sm:w-auto'
+  'inline-flex h-14 w-full items-center justify-center rounded-xl bg-[#007AFF] px-8 text-[17px] font-semibold text-white transition-[background-color,transform] duration-150 hover:bg-[#0052bf] active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF] sm:w-auto'
 
 export default async function OpenLeadsPage({
   searchParams,
@@ -25,12 +25,13 @@ export default async function OpenLeadsPage({
     <div className="mx-auto w-full max-w-[72rem] px-5 pb-24 pt-8 sm:px-8 sm:pt-14">
       <div className="max-w-xl">
         <Steps current={3} />
-        <h1 className="mt-10 sm:mt-14 text-[2.5rem] font-semibold leading-[1.05] tracking-[-0.04em] text-[#111318] sm:text-[3.5rem]">
-          Your 25 leads are ready.
+        <h1 className="mt-10 sm:mt-14 text-[2.5rem] font-light leading-[1.05] tracking-[-0.02em] text-[#111827] sm:text-[3.5rem]">
+          Your 25 leads
+          <span className="fl-script fl-write block pt-1 text-[3rem] leading-[1.05] text-[#007AFF] sm:text-[4rem]">are ready.</span>
         </h1>
         {t && c ? (
           <>
-            <p className="mt-5 text-lg leading-relaxed text-[#4d5460]">
+            <p className="mt-5 text-lg leading-relaxed text-[#4b5563]">
               One tap signs you in and opens them. The link works once.
             </p>
             <form method="post" action="/api/start/open" className="mt-9">
@@ -40,10 +41,10 @@ export default async function OpenLeadsPage({
                 Open my 25 leads
               </button>
             </form>
-            <ul className="mt-10 grid gap-3 border-t border-[#e5e7eb] pt-6 text-[15px] text-[#3a3f4b] sm:grid-cols-3">
+            <ul className="mt-10 grid gap-3 border-t border-[#e5e7eb] pt-6 text-[15px] text-[#374151] sm:grid-cols-3">
               {['25 names and titles', 'A work email for each', 'Why each one fits'].map((item) => (
                 <li key={item} className="flex items-center gap-2.5">
-                  <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[#e8f1ff] text-[#0063E6]" aria-hidden="true">
+                  <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[#e8f1ff] text-[#0066DD]" aria-hidden="true">
                     <Check className="h-3.5 w-3.5" />
                   </span>
                   {item}
@@ -52,9 +53,9 @@ export default async function OpenLeadsPage({
             </ul>
           </>
         ) : (
-          <p className="mt-5 text-lg leading-relaxed text-[#4d5460]">
+          <p className="mt-5 text-lg leading-relaxed text-[#4b5563]">
             This link is incomplete. Request a fresh one at{' '}
-            <a href="/start" className="font-semibold text-[#0063E6] underline underline-offset-4">
+            <a href="/start" className="font-semibold text-[#0066DD] underline underline-offset-4">
               /start
             </a>{' '}
             with the same work email.

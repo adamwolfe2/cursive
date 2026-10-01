@@ -6,7 +6,7 @@ import { CLAIM_STORAGE_KEY, postJson, type Mock } from './api'
 
 const COOLDOWN_S = 30
 const LINK =
-  'inline-flex min-h-11 items-center font-semibold text-[#0063E6] underline decoration-[#b3d7ff] underline-offset-4 hover:decoration-[#0063E6] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF]'
+  'inline-flex min-h-11 items-center font-semibold text-[#0066DD] underline decoration-[#b3d7ff] underline-offset-4 hover:decoration-[#007AFF] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF]'
 
 /** Re-posts the claim saved by ClaimForm. The claim route resends the link for a pending claim. */
 export function ResendLink({ mock }: { mock: Mock }) {

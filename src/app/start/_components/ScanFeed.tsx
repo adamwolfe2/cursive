@@ -66,7 +66,7 @@ export function ScanFeed({
   const showFacts = facts.length > 0 || (scanning && (!fromUrl || settled !== null))
 
   return (
-    <aside ref={asideRef} aria-label="What we read" className="min-w-0 lg:sticky lg:top-8 lg:self-start">
+    <aside ref={asideRef} aria-label="What we read" className="min-w-0 lg:sticky lg:top-24 lg:self-start">
       <SiteHeader site={site} domain={domain} query={query} scanning={scanning} onReset={onReset} />
 
       <details
@@ -75,20 +75,20 @@ export function ScanFeed({
         className="group"
       >
         <summary
-          className={`mt-5 min-h-11 cursor-pointer list-none items-center justify-between gap-3 border-t border-[#e5e7eb] pt-2 text-[14px] font-medium text-[#1d2025] [&::-webkit-details-marker]:hidden ${foldable ? 'flex lg:hidden' : 'hidden'} ${FOCUS}`}
+          className={`mt-5 min-h-11 cursor-pointer list-none items-center justify-between gap-3 border-t border-[#e5e7eb] pt-2 text-[14px] font-medium text-[#111827] [&::-webkit-details-marker]:hidden ${foldable ? 'flex lg:hidden' : 'hidden'} ${FOCUS}`}
         >
           {readSummary(pages, facts)}
-          <ChevronDown className="h-4 w-4 shrink-0 text-[#4d5460] transition-transform group-open:rotate-180" aria-hidden="true" />
+          <ChevronDown className="h-4 w-4 shrink-0 text-[#4b5563] transition-transform group-open:rotate-180" aria-hidden="true" />
         </summary>
       {/* One rail line behind every marker; steps keep a constant bottom gap so appending one moves nothing. */}
       <ol className="relative mt-5 border-t border-[#e5e7eb] pt-5 before:absolute before:bottom-5 before:left-[9px] before:top-7 before:w-px before:bg-[#e5e7eb]">
       {fromUrl && (pages.length > 0 || scanning) && (
         <Step state={replayedAt || settled ? 'done' : scanning ? 'active' : 'failed'}>
-          <p className="flex h-5 items-center gap-2 text-[13px] font-semibold text-[#1d2025]" role="status">
+          <p className="flex h-5 items-center gap-2 text-[13px] font-semibold text-[#111827]" role="status">
             {/* A replay notice takes this same line, so its arrival never moves anything below. */}
-            {replayedAt && <History className="h-3.5 w-3.5 shrink-0 text-[#0063E6]" aria-hidden="true" />}
+            {replayedAt && <History className="h-3.5 w-3.5 shrink-0 text-[#0066DD]" aria-hidden="true" />}
             {replayedAt ? (
-              <span className="truncate text-[#0063E6]">{replayLabel(replayedAt)}</span>
+              <span className="truncate text-[#0066DD]">{replayLabel(replayedAt)}</span>
             ) : (
               settled ?? (scanning ? (pages.length ? 'Reading your site' : `Opening ${domain}`) : 'Could not read the site')
             )}
@@ -105,7 +105,7 @@ export function ScanFeed({
 
       {showFacts && (
         <Step state={scanning && !icpReady ? 'active' : 'done'}>
-          <p className="flex h-5 items-center gap-2 truncate text-[13px] font-semibold text-[#1d2025]" role="status">
+          <p className="flex h-5 items-center gap-2 truncate text-[13px] font-semibold text-[#111827]" role="status">
             {scanning && slow > 0
               ? slow === 1
                 ? facts.length
@@ -126,10 +126,10 @@ export function ScanFeed({
               <div key={`${g.key}-${i}`} className="fl-rise px-3.5 py-3">
                 <dt className="text-[12px] font-medium text-[#6b7280]">{g.label}</dt>
                 {g.facts.map((f, i) => (
-                  <dd key={i} className="fl-rise mt-0.5 text-[14px] leading-snug text-[#1d2025]">
+                  <dd key={i} className="fl-rise mt-0.5 text-[14px] leading-snug text-[#111827]">
                     {f.text}
                     {f.source === 'site' && (
-                      <span className="ml-1.5 whitespace-nowrap rounded bg-[#f3f4f6] px-1.5 py-px text-[11px] font-medium text-[#4d5460]">on your site</span>
+                      <span className="ml-1.5 whitespace-nowrap rounded bg-[#f3f4f6] px-1.5 py-px text-[11px] font-medium text-[#4b5563]">on your site</span>
                     )}
                   </dd>
                 ))}
@@ -142,12 +142,12 @@ export function ScanFeed({
       {/* Desktop only: the rail is its own column there, so these late steps move nothing. */}
       {icpReady && (
         <Step state="done" desktopOnly>
-          <p className="flex h-5 items-center text-[13px] font-semibold text-[#1d2025]">Built your buyer profile</p>
+          <p className="flex h-5 items-center text-[13px] font-semibold text-[#111827]">Built your buyer profile</p>
         </Step>
       )}
       {icpReady && count !== null && (
         <Step state="done" desktopOnly>
-          <p className="flex h-5 items-center text-[13px] font-semibold text-[#1d2025]">
+          <p className="flex h-5 items-center text-[13px] font-semibold text-[#111827]">
             Counted {formatCount(count)} {count === 1 ? 'person' : 'people'} who fit
           </p>
         </Step>
@@ -182,7 +182,7 @@ function Step({
     <li className={`fl-rise relative pb-5 pl-8 ${desktopOnly ? 'max-lg:hidden' : ''}`}>
       <span
         className={`absolute left-0 top-0 grid h-5 w-5 place-items-center rounded-full ${
-          state === 'done' ? 'bg-[#0063E6] text-white' : state === 'active' ? 'bg-[#e8f1ff] ring-1 ring-inset ring-[#b3d7ff]' : 'bg-[#f3f4f6] text-[#6b7280]'
+          state === 'done' ? 'bg-[#007AFF] text-white' : state === 'active' ? 'bg-[#e8f1ff] ring-1 ring-inset ring-[#b3d7ff]' : 'bg-[#f3f4f6] text-[#6b7280]'
         }`}
         aria-hidden="true"
       >
@@ -225,9 +225,9 @@ function SiteHeader({
             )}
           </span>
           <div className="min-w-0">
-            <p className="truncate text-[15px] font-semibold text-[#1d2025]">{domain ?? 'Your description'}</p>
+            <p className="truncate text-[15px] font-semibold text-[#111827]">{domain ?? 'Your description'}</p>
             {/* Always holds its line so the header never jumps when a scan stops early. */}
-            <p className="h-5 truncate text-[13px] text-[#4d5460]">
+            <p className="h-5 truncate text-[13px] text-[#4b5563]">
               {site?.title ? <span className="fl-fade">{site.title}</span> : domain ? (scanning ? 'Opening the homepage' : 'Not opened') : ''}
             </p>
           </div>
@@ -235,7 +235,7 @@ function SiteHeader({
         <button
           type="button"
           onClick={onReset}
-          className={`-mr-2 min-h-11 shrink-0 rounded-md px-2 text-[13px] font-medium text-[#4d5460] transition-colors hover:bg-[#f3f4f6] hover:text-[#1d2025] ${FOCUS}`}
+          className={`-mr-2 min-h-11 shrink-0 rounded-md px-2 text-[13px] font-medium text-[#4b5563] transition-colors hover:bg-[#f3f4f6] hover:text-[#111827] ${FOCUS}`}
         >
           Start over
         </button>
@@ -260,9 +260,9 @@ export function PageLine({ page, first }: { page: PageRow; first: boolean }) {
       {page.state === 'fetching' && (
         <span className="h-3 w-3 animate-spin rounded-full border-[1.5px] border-[#b3d7ff] border-t-[#007AFF]" aria-hidden="true" />
       )}
-      {page.state === 'read' && <Check className="h-3.5 w-3.5 text-[#007AFF]" aria-hidden="true" />}
+      {page.state === 'read' && <Check className="h-3.5 w-3.5 text-[#0066DD]" aria-hidden="true" />}
       {page.state === 'failed' && <X className="h-3.5 w-3.5 text-[#a0a5b1]" aria-hidden="true" />}
-      <span className={`truncate ${page.state === 'failed' ? 'text-[#6b7280]' : 'text-[#1d2025]'}`}>{label}</span>
+      <span className={`truncate ${page.state === 'failed' ? 'text-[#6b7280]' : 'text-[#111827]'}`}>{label}</span>
       <span className="text-[12px] tabular-nums text-[#6b7280]">
         {page.state === 'fetching' && 'reading'}
         {page.state === 'read' && (page.chars !== null ? `${compactChars(page.chars)} chars` : 'read')}
@@ -278,10 +278,10 @@ export function ScanErrorNote({ error, onRetry }: { error: ScanError; onRetry: (
   const limited = error.code === 'rate_limited'
   return (
     <div role="alert" className="fl-rise rounded-2xl border border-[#e5e7eb] bg-[#f9fafb] px-5 py-7 sm:px-10 sm:py-9">
-      <h2 className="text-xl font-semibold tracking-[-0.015em] text-[#111318] sm:text-2xl">
+      <h2 className="text-xl font-normal tracking-[-0.01em] text-[#111827] sm:text-2xl">
         {limited ? 'That is the scan limit for now.' : 'The scan stopped partway.'}
       </h2>
-      <p className="mt-2 max-w-[52ch] text-[15px] leading-relaxed text-[#4d5460]">
+      <p className="mt-2 max-w-[52ch] text-[15px] leading-relaxed text-[#4b5563]">
         {limited
           ? `${error.message} Nothing is lost: paste the same site when you are back.`
           : 'Nothing you did. It usually works on a second try.'}
@@ -290,7 +290,7 @@ export function ScanErrorNote({ error, onRetry }: { error: ScanError; onRetry: (
         <button
           type="button"
           onClick={onRetry}
-          className={`mt-5 inline-flex h-11 items-center gap-2 rounded-lg bg-[#0063E6] px-4 text-[15px] font-semibold text-white transition-colors hover:bg-[#084fba] ${FOCUS}`}
+          className={`mt-5 inline-flex h-11 items-center gap-2 rounded-lg bg-[#007AFF] px-4 text-[15px] font-semibold text-white transition-colors hover:bg-[#0066DD] ${FOCUS}`}
         >
           <RotateCcw className="h-4 w-4" aria-hidden="true" />
           Try again

@@ -38,6 +38,9 @@ import { FirstEnrichmentModal } from '@/components/onboarding/FirstEnrichmentMod
 import { PixelTroubleshoot } from './PixelTroubleshoot'
 import { AudienceBuildingBanner } from './AudienceBuildingBanner'
 import { FunnelBuyerDashboard } from './FunnelBuyerDashboard'
+import { FreeLeadsHome } from './FreeLeadsHome'
+import { claimIcp, findWorkspaceClaim, loadStoredLeads } from '@/lib/free-leads/claims'
+import { safeError } from '@/lib/utils/log-sanitizer'
 import type { FeedLead } from '@/components/leads/live-leads-feed'
 import { ProvisioningWidget } from '@/components/dashboard/ProvisioningWidget'
 import { FreePlanBanner } from '@/components/dashboard/FreePlanBanner'
@@ -679,6 +682,49 @@ function DashboardMainGridSkeleton() {
 
 // ─── Main page — fast phase only ──────────────────────────────────────────────
 
+/**
+ * A workspace provisioned by the free-leads flow, with no paid funnel order yet, gets its own
+ * home (FreeLeadsHome). Returns null for every other workspace, which keeps the full dashboard.
+ * Service role: free_lead_claims and funnel_orders are server-only (RLS, no policies); every read
+ * is scoped to this workspace id.
+ */
+async function loadFreeLeadsHome(supabase: Awaited<ReturnType<typeof createClient>>, workspaceId: string) {
+  const { data: ws, error: wsError } = await supabase
+    .from('workspaces')
+    .select('settings, website_url, name')
+    .eq('id', workspaceId)
+    .maybeSingle()
+  if (wsError) {
+    safeError('[dashboard] free-leads workspace lookup failed', wsError)
+    return null
+  }
+  const settings = (ws?.settings ?? null) as { source?: string } | null
+  if (settings?.source !== 'free_leads') return null
+
+  const admin = createAdminClient()
+  const { count: orders, error: orderError } = await admin
+    .from('funnel_orders')
+    .select('id', { count: 'exact', head: true })
+    .eq('workspace_id', workspaceId)
+  if (orderError) {
+    safeError('[dashboard] free-leads order lookup failed', orderError)
+    return null
+  }
+  if (orders) return null // upgraded: the funnel-buyer home takes over
+
+  try {
+    const claim = await findWorkspaceClaim(workspaceId, admin)
+    if (!claim) return null
+    const leads = await loadStoredLeads(workspaceId, claim.id, admin)
+    const domain = (ws?.website_url ?? claim.website).replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0] || ws?.name || ''
+    return <FreeLeadsHome domain={domain} icp={claimIcp(claim)} leads={leads} totalMatching={claim.total_matching} />
+  } catch (err) {
+    // Fall back to the standard dashboard rather than a broken page; the error is logged.
+    safeError('[dashboard] free-leads home failed', err)
+    return null
+  }
+}
+
 export default async function DashboardPage({
   searchParams,
 }: {
@@ -716,6 +762,9 @@ export default async function DashboardPage({
   }
 
   const workspaceId = userProfile.workspace_id
+
+  const freeLeadsHome = await loadFreeLeadsHome(supabase, workspaceId)
+  if (freeLeadsHome) return freeLeadsHome
 
   // ── Fast phase: data needed for above-the-fold content ──
   const thisMonthStart = new Date()
