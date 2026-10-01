@@ -269,6 +269,8 @@ export function StartFlow({ mock, initialSite }: { mock: Mock; initialSite: stri
         if (isAbort(err)) return
         console.error('[start] count failed', err)
         if (seq === countSeq.current) {
+          // The old total described a different profile: show "unavailable" and keep Approve blocked.
+          setCount(null)
           setRefineError(`${errorCopy(err, 'One of those filters is not valid. Remove it and try again.')} Your changes are kept.`)
         }
       } finally {

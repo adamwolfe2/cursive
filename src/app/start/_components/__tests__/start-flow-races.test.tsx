@@ -51,6 +51,29 @@ beforeEach(() => {
 })
 
 describe('StartFlow count and refine races', () => {
+  it('a failed recount clears the old total and keeps Approve blocked', async () => {
+    h.postJson.mockImplementation(async (path: string) => {
+      if (path === '/api/start/count') throw new Error('count down')
+      return null
+    })
+    const scan = startScan()
+    await waitFor(() => expect(h.streamScan).toHaveBeenCalled())
+    act(() => {
+      scan.emit({ type: 'icp', icp: ICP })
+      scan.emit({ type: 'count', total: 120 })
+    })
+    await act(async () => {
+      scan.emit({ type: 'done' })
+      scan.end.resolve()
+    })
+    await waitFor(() => expect(screen.getByRole('button', { name: /Approve/ })).toBeEnabled())
+
+    fireEvent.click(screen.getByRole('button', { name: 'Edit' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Remove CTO' }))
+    await waitFor(() => expect(screen.getByText('Count unavailable right now.')).toBeInTheDocument())
+    expect(screen.getByRole('button', { name: /Approve/ })).toBeDisabled()
+  })
+
   it('ignores the scan count that lands after the reader edited the profile', async () => {
     h.postJson.mockImplementation(async (path: string) => (path === '/api/start/count' ? { total: 50 } : null))
     const scan = startScan()
