@@ -42,7 +42,7 @@ export default function MediaAdvertisingLayout({ children }: { children: React.R
       <StructuredData data={[
         generateBreadcrumbSchema([
           { name: 'Home', url: 'https://www.meetcursive.com' },
-          { name: 'Industries', url: 'https://www.meetcursive.com/industries' },
+          { name: 'Industries', url: 'https://www.meetcursive.com/#industries' },
           { name: 'Media & Advertising', url: 'https://www.meetcursive.com/industries/media-advertising' },
         ]),
         generateFAQSchema(mediaAdvertisingFAQs),

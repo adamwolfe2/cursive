@@ -42,7 +42,7 @@ export default function RealEstateLayout({ children }: { children: React.ReactNo
       <StructuredData data={[
         generateBreadcrumbSchema([
           { name: 'Home', url: 'https://www.meetcursive.com' },
-          { name: 'Industries', url: 'https://www.meetcursive.com/industries' },
+          { name: 'Industries', url: 'https://www.meetcursive.com/#industries' },
           { name: 'Real Estate', url: 'https://www.meetcursive.com/industries/real-estate' },
         ]),
         generateFAQSchema(realEstateFAQs),

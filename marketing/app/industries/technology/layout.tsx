@@ -42,7 +42,7 @@ export default function TechnologyLayout({ children }: { children: React.ReactNo
       <StructuredData data={[
         generateBreadcrumbSchema([
           { name: 'Home', url: 'https://www.meetcursive.com' },
-          { name: 'Industries', url: 'https://www.meetcursive.com/industries' },
+          { name: 'Industries', url: 'https://www.meetcursive.com/#industries' },
           { name: 'Technology', url: 'https://www.meetcursive.com/industries/technology' },
         ]),
         generateFAQSchema(technologyFAQs),

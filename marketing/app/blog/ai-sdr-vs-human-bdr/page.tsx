@@ -505,7 +505,7 @@ export default function BlogPost() {
               Cursive's AI SDR platform handles high-volume prospecting, research, and personalization at scale. Book a 30-day pilot to test the results yourself.
             </p>
             <MachineList items={[
-              { label: "Book a Demo", href: "/book", description: "See Cursive's AI SDR in action" },
+              { label: "Book a Call", href: "https://cal.com/cursiveteam/30min", description: "See Cursive's AI SDR in action" },
               { label: "Visitor Identification", href: "/visitor-identification", description: "70% identification rate for B2B traffic" },
               { label: "AI Outreach", href: "/ai-outreach", description: "420M+ contact profiles for hyper-personalization" }
             ]} />

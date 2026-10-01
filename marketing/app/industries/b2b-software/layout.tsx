@@ -42,7 +42,7 @@ export default function B2BSoftwareLayout({ children }: { children: React.ReactN
       <StructuredData data={[
         generateBreadcrumbSchema([
           { name: 'Home', url: 'https://www.meetcursive.com' },
-          { name: 'Industries', url: 'https://www.meetcursive.com/industries' },
+          { name: 'Industries', url: 'https://www.meetcursive.com/#industries' },
           { name: 'B2B Software', url: 'https://www.meetcursive.com/industries/b2b-software' },
         ]),
         generateFAQSchema(b2bSoftwareFAQs),

@@ -8,11 +8,11 @@ import { FAQSection } from "@/components/homepage/faq-section"
 const homepageFAQs = [
   {
     question: 'How does Cursive identify website visitors?',
-    answer: 'Cursive uses a proprietary identity graph built from offline-rooted consumer data (TransUnion, Experian) layered with intent signals from major SSP and RTB exchanges and our own 15-million-domain organic network. When someone visits your site, our pixel matches their footprint against 280M+ verified consumer profiles. Pixel match rates are typically 40–60%, with 60–80% pixel-level accuracy.',
+    answer: 'Cursive uses a proprietary identity graph built from offline-rooted consumer data, layered with intent signals from major ad exchanges and our own 15-million-domain organic network. When someone visits your site, our pixel matches their footprint against 280M+ consumer profiles. Pixel match rates are typically 40–60%, with 60–80% pixel-level accuracy.',
   },
   {
     question: 'How fresh is the data?',
-    answer: 'The full consumer data set is refreshed every 30 days against the National Change of Address database. Most providers run NCOA reconciliation annually; serious providers do it quarterly. With ~15% of the U.S. population moving each year, our 30-day cycle keeps records meaningfully more current than industry norms. Email validation runs continuously through Deep Verify at approximately 20 million emails per day.',
+    answer: 'The full consumer data set is refreshed every 30 days against the National Change of Address database. Most providers run NCOA reconciliation annually; serious providers do it quarterly. With ~15% of the U.S. population moving each year, our 30-day cycle keeps records meaningfully more current than industry norms. Email checks run continuously, at roughly 20 million emails per day.',
   },
   {
     question: 'How is Cursive different from Bombora, 6sense, ZoomInfo, or Apollo?',
@@ -20,7 +20,7 @@ const homepageFAQs = [
   },
   {
     question: 'What does Cursive cost?',
-    answer: 'Three self-serve plans, all month-to-month: the Visitor Pixel is $97/month, a weekly Custom Audience is $197/month, and the Pixel + Audience Bundle is $247/month. No setup fee and no long-term contract. Enterprise teams that need direct API access to the underlying identity infrastructure can reach out about a committed data partnership.',
+    answer: 'Your first 25 leads are free: paste your website at leads.meetcursive.com/start, no card and no sales call. After that, three self-serve plans, all month-to-month: the Visitor Pixel is $97/month, a weekly Custom Audience is $197/month, and the Pixel + Audience Bundle is $247/month. No setup fee and no long-term contract. Enterprise teams that need direct API access to the underlying identity infrastructure can reach out about a committed data partnership.',
   },
   {
     question: 'What can I do with Cursive beyond visitor identification?',
@@ -29,12 +29,12 @@ const homepageFAQs = [
 ]
 
 export const metadata: Metadata = {
-  title: "Cursive | The Identity Layer for Outbound, Intent, and Enrichment",
-  description: "280M verified consumers, 15M-domain organic network, refreshed every 30 days. The data infrastructure powering pixel identification, intent feeds, and audience enrichment for teams that need accuracy that compounds.",
+  title: "Cursive | Get 25 free leads from your website",
+  description: "Paste your website. Cursive works out who buys from you and finds 25 of them: names, titles, work emails, and why each fits. Free, no card, no call.",
   keywords: "identity graph, intent data, B2B data infrastructure, pixel identification, consumer data, audience enrichment, NCOA, lead generation, AI SDR, intent provider, Bombora alternative, 6sense alternative",
   openGraph: {
-    title: "Cursive | The Identity Layer for Outbound, Intent, and Enrichment",
-    description: "280M verified consumers, 15M-domain organic network, refreshed every 30 days. Identity and intent infrastructure for enterprise data teams.",
+    title: "Cursive | Get 25 free leads from your website",
+    description: "Paste your website. Cursive works out who buys from you and finds 25 of them: names, titles, work emails, and why each fits. Free, no card, no call.",
     url: "https://www.meetcursive.com",
     siteName: "Cursive",
     images: [{
@@ -47,8 +47,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Cursive | The Identity Layer for Outbound, Intent, and Enrichment",
-    description: "280M verified consumers, 15M-domain organic network, refreshed every 30 days. Identity and intent infrastructure for enterprise data teams.",
+    title: "Cursive | Get 25 free leads from your website",
+    description: "Paste your website. Cursive works out who buys from you and finds 25 of them: names, titles, work emails, and why each fits. Free, no card, no call.",
     images: ["https://www.meetcursive.com/cursive-social-preview.png"],
     creator: "@meetcursive",
   },
@@ -78,21 +78,21 @@ export default function HomePage() {
         <MachineContent>
           {/* Header */}
           <div className="mb-12 pb-6 border-b border-gray-200">
-            <h1 className="text-2xl text-gray-900 font-bold mb-4">Cursive | The Identity Layer for Outbound, Intent, and Enrichment</h1>
+            <h1 className="text-2xl text-gray-900 font-bold mb-4">Cursive | Get 25 free leads from your website</h1>
             <p className="text-gray-700 leading-relaxed">
-              Cursive is the identity and intent data infrastructure powering pixel identification, audience enrichment, and intent segmentation for enterprise data teams. Built on offline-rooted consumer sources (TransUnion, Experian), refreshed every 30 days against the National Change of Address database, and continuously validated against real conversion outcomes through a closed feedback loop. 280M+ verified consumers, 15M-domain organic network, ~50,000 white-label intent segments.
+              Cursive is the identity and intent data infrastructure powering pixel identification, audience enrichment, and intent segmentation for enterprise data teams. Built on offline-rooted consumer sources, refreshed every 30 days against the National Change of Address database, and continuously validated against real conversion outcomes through a closed feedback loop. 280M+ consumer profiles, 15M-domain organic network, ~50,000 white-label intent segments.
             </p>
           </div>
 
           {/* Key Stats */}
           <MachineSection title="Key Stats">
             <MachineList items={[
-              "280M+ — Verified US consumer profiles in our identity graph",
+              "280M+: US consumer profiles in our identity graph",
               "15M+ — Domains in our proprietary organic network (vs ~40K signal-source domains used industry-wide)",
               "30 days — NCOA refresh cycle, vs annual or quarterly at most providers",
               "40–60% — Pixel match rate, vs 2–5% for cookies and 10–15% for IP databases",
               "60–80% — Pixel-level accuracy (deterministic, not modeled or probabilistic)",
-              "20M / day — Email records validated through Deep Verify",
+              "20M / day: email records checked",
               "~50,000 — Intent segments available for white-label use via taxonomy endpoint",
               "200+ — Native CRM and marketing-tool integrations",
             ]} />
@@ -345,7 +345,6 @@ export default function HomePage() {
               { label: "Email", href: "mailto:hey@meetcursive.com" },
               { label: "Schedule Demo", href: "https://cal.com/cursiveteam/30min" },
               { label: "LinkedIn", href: "https://linkedin.com/company/cursive" },
-              { label: "Twitter", href: "https://twitter.com/meetcursive" },
             ]} />
           </MachineSection>
 

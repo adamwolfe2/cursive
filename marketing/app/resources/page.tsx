@@ -11,7 +11,7 @@ import { DashboardCTA } from "@/components/dashboard-cta"
 import Link from "next/link"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
 import { Breadcrumbs } from "@/components/Breadcrumbs"
-import { GET_LEADS_URL } from "@/lib/cta"
+import { START_CTA_LABEL, startUrl } from "@/lib/cta"
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
@@ -273,8 +273,8 @@ export default function ResourcesPage() {
               ))}
             </div>
             <div className="mt-10 text-center">
-              <Button size="lg" href={GET_LEADS_URL} target="_blank" rel="noopener noreferrer">
-                Get Started
+              <Button size="lg" href={startUrl("resources")}>
+                {START_CTA_LABEL}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </div>
@@ -285,7 +285,6 @@ export default function ResourcesPage() {
           headline="Ready to Identify"
           subheadline="Your Website Visitors?"
           description="Install the pixel in 60 seconds and see which companies are visiting your site right now. Plans from $97/mo, month-to-month."
-          ctaText="Get Started"
         />
       </HumanView>
 
@@ -352,7 +351,7 @@ export default function ResourcesPage() {
 
           <MachineSection title="Get Started with Cursive">
             <MachineList items={[
-              { label: "Get Started", href: "https://leads.meetcursive.com/get-leads", description: "Pick a plan and you are live in minutes" },
+              { label: "Get 25 Free Leads", href: startUrl("resources-links"), description: "Paste your website, get 25 leads with work emails. No card, no call." },
               { label: "Full Blog", href: "https://www.meetcursive.com/blog", description: "Browse all articles on B2B growth and lead generation" },
               { label: "Platform Overview", href: "https://www.meetcursive.com/platform", description: "Visitor identification and intent audiences" },
               { label: "Pricing", href: "https://www.meetcursive.com/pricing", description: "Visitor Pixel $97/mo, Custom Audience $197/mo, or both for $247/mo" },

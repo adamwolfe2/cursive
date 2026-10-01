@@ -11,7 +11,7 @@ import {
 import { DashboardCTA } from "@/components/dashboard-cta"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
 import { Breadcrumbs } from "@/components/Breadcrumbs"
-import { GET_LEADS_URL, BOOKING_URL } from "@/lib/cta"
+import { BOOKING_URL, GET_LEADS_URL, START_CTA_LABEL, startUrl } from "@/lib/cta"
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
@@ -159,8 +159,8 @@ export default function PixelPage() {
                   deterministically, the moment they land. Self-serve, $97/mo, live in 60 seconds.
                 </p>
                 <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center">
-                  <Button size="lg" href={GET_LEADS_URL} target="_blank" rel="noopener noreferrer">
-                    Get Started
+                  <Button size="lg" href={startUrl("pixel")}>
+                    {START_CTA_LABEL}
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                   <Button size="lg" variant="outline" href={BOOKING_URL} target="_blank" rel="noopener noreferrer">
@@ -364,8 +364,8 @@ export default function PixelPage() {
                   Install the pixel in 60 seconds. $97/mo, month-to-month, cancel anytime.
                 </p>
                 <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center">
-                  <Button size="lg" href={GET_LEADS_URL} target="_blank" rel="noopener noreferrer">
-                    Get Started
+                  <Button size="lg" href={startUrl("pixel")}>
+                    {START_CTA_LABEL}
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                   <Button size="lg" variant="outline" href={BOOKING_URL} target="_blank" rel="noopener noreferrer">
@@ -391,8 +391,6 @@ export default function PixelPage() {
             headline="Stop Losing"
             subheadline="website visitors"
             description="Install the Cursive Visitor Pixel in 60 seconds and start turning anonymous traffic into named, verified leads. Self-serve, $97/mo, cancel anytime."
-            ctaText="Get Started"
-            ctaUrl={GET_LEADS_URL}
           />
         </main>
       </HumanView>

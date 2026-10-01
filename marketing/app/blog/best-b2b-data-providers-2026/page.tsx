@@ -1114,7 +1114,7 @@ export default function BlogPost() {
               { label: "Self-Serve Plans", href: "https://leads.meetcursive.com/get-leads", description: "Choose Visitor Pixel, Custom Audience, or both" },
               { label: "Pricing", href: "/pricing", description: "Month-to-month plans from $97/month" },
               { label: "Platform Overview", href: "/platform", description: "Visitor ID, intent data, and multi-channel outreach" },
-              { label: "Book a Demo", href: "/book", description: "See Cursive in action with your website's data" }
+              { label: "Book a Call", href: "https://cal.com/cursiveteam/30min", description: "See Cursive in action with your website's data" }
             ]} />
           </MachineSection>
         </MachineContent>

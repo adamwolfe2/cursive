@@ -12,7 +12,7 @@ import { DashboardCTA } from "@/components/dashboard-cta"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
 import Link from "next/link"
 import { Breadcrumbs } from "@/components/Breadcrumbs"
-import { GET_LEADS_URL, BOOKING_URL } from "@/lib/cta"
+import { BOOKING_URL, GET_LEADS_URL, START_CTA_LABEL, startUrl } from "@/lib/cta"
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
@@ -42,9 +42,10 @@ function IconChip({ Icon }: { Icon: LucideIcon }) {
   )
 }
 
-const plans: Array<{ name: string; price: string; icon: LucideIcon; description: string; highlight: boolean }> = [
+const plans: Array<{ name: string; price: string; icon: LucideIcon; description: string; highlight: boolean; cta: string }> = [
   {
     name: "Visitor Pixel",
+    cta: "Get the Pixel",
     price: "$97",
     icon: Eye,
     description: "Identify the companies and people visiting your site.",
@@ -52,6 +53,7 @@ const plans: Array<{ name: string; price: string; icon: LucideIcon; description:
   },
   {
     name: "Pixel + Audience Bundle",
+    cta: "Get the Bundle",
     price: "$247",
     icon: Layers,
     description: "Site traffic and in-market intent in one feed.",
@@ -59,6 +61,7 @@ const plans: Array<{ name: string; price: string; icon: LucideIcon; description:
   },
   {
     name: "Custom Audience",
+    cta: "Get an Audience",
     price: "$197",
     icon: Users,
     description: "A fresh weekly list of buyers searching for your product.",
@@ -228,18 +231,18 @@ export default function ContactPage() {
                   Get in touch
                 </span>
                 <h1 className="mt-4 text-4xl sm:text-5xl lg:text-6xl font-light text-gray-900 leading-[1.1]">
-                  Most teams just pick
+                  Most teams skip the call
                   <span className="block font-cursive text-4xl sm:text-5xl lg:text-6xl text-gray-500 mt-2">
-                    a plan and start
+                    and start free
                   </span>
                 </h1>
                 <p className="mt-6 text-lg sm:text-xl text-gray-600 leading-relaxed">
-                  Cursive is self-serve. Choose a plan, check out, and you are live in minutes —
-                  no sales call required. Prefer to talk first? We are one message away.
+                  Paste your website and get 25 leads with work emails in about a minute.
+                  No card, no sales call. Prefer to talk first? We are one message away.
                 </p>
                 <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center">
-                  <Button size="lg" href={GET_LEADS_URL} target="_blank" rel="noopener noreferrer">
-                    See plans &amp; get started
+                  <Button size="lg" href={startUrl("contact")}>
+                    {START_CTA_LABEL}
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                   <Button size="lg" variant="outline" href={BOOKING_URL} target="_blank" rel="noopener noreferrer">
@@ -254,7 +257,7 @@ export default function ContactPage() {
           <section className="py-20 sm:py-24 bg-[#F7F9FB]">
             <Container>
               <SectionHeading
-                plain="Skip the Wait,"
+                plain="Want more than 25?"
                 script="Pick a Plan"
                 sub="Self-serve, month-to-month, cancel anytime. No setup fee, no contract."
               />
@@ -291,13 +294,13 @@ export default function ContactPage() {
                       variant={plan.highlight ? "default" : "outline"}
                       className="w-full mt-8"
                     >
-                      Get Started
+                      {plan.cta}
                     </Button>
                   </motion.div>
                 ))}
               </div>
               <p className="mt-8 text-center text-sm text-gray-500">
-                Not sure which to pick? <Link href="/pricing" className="text-primary hover:underline">Compare plans</Link> — or message us below.
+                Not sure which to pick? <Link href="/pricing" className="text-primary hover:underline">Compare plans</Link>, or message us below.
               </p>
             </Container>
           </section>
@@ -321,7 +324,7 @@ export default function ContactPage() {
                     onSubmit={handleSubmit}
                     className="mt-8 space-y-5"
                     toolname="contactCursive"
-                    tooldescription="Send a message to the Cursive team with a question about plans, pricing, or fit. Response within 24 hours. Most buyers skip this and self-serve at leads.meetcursive.com/get-leads."
+                    tooldescription="Send a message to the Cursive team with a question about plans, pricing, or fit. Response within 24 hours. Most buyers skip this and start with 25 free leads at leads.meetcursive.com/start."
                   >
                     <div>
                       <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
@@ -535,8 +538,8 @@ export default function ContactPage() {
                 ))}
               </div>
               <div className="mt-10 flex flex-col sm:flex-row gap-3 justify-center items-center">
-                <Button size="lg" href={GET_LEADS_URL} target="_blank" rel="noopener noreferrer">
-                  See plans &amp; get started
+                <Button size="lg" href={startUrl("contact")}>
+                  {START_CTA_LABEL}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
                 <Button size="lg" variant="outline" href="/pricing">
@@ -574,7 +577,7 @@ export default function ContactPage() {
               No sales call required. Pick a self-serve plan, check out, and you are live in minutes.
             </p>
             <MachineList items={[
-              { label: "Get Started", href: "https://leads.meetcursive.com/get-leads", description: "Choose a plan and you are live in minutes" },
+              { label: "Get 25 Free Leads", href: startUrl("contact-links"), description: "Paste your website, get 25 leads with work emails. No card, no call." },
               { label: "Pricing", href: "https://www.meetcursive.com/pricing", description: "Visitor Pixel $97/mo, Custom Audience $197/mo, or both for $247/mo" },
             ]} />
           </MachineSection>
@@ -627,7 +630,7 @@ export default function ContactPage() {
             </p>
             <MachineList items={[
               { label: "Website", href: "https://www.meetcursive.com" },
-              { label: "Get Started", href: "https://leads.meetcursive.com/get-leads" }
+              { label: "Get 25 Free Leads", href: startUrl("contact-links"), description: "Paste your website, get 25 leads with work emails. No card, no call." }
             ]} />
           </MachineSection>
 

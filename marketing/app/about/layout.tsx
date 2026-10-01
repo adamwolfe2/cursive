@@ -12,7 +12,6 @@ const organizationSchema = {
   logo: 'https://www.meetcursive.com/cursive-logo.png',
   description: 'AI-powered B2B lead generation and outbound automation platform',
   sameAs: [
-    'https://twitter.com/meetcursive',
     'https://linkedin.com/company/cursive',
   ],
   foundingDate: '2025',

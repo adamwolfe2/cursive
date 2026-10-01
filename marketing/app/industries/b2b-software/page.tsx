@@ -12,7 +12,7 @@ import { generateBreadcrumbSchema } from "@/lib/seo/structured-data"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
 import Link from "next/link"
 import { Breadcrumbs } from "@/components/Breadcrumbs"
-import { GET_LEADS_URL, BOOKING_URL } from "@/lib/cta"
+import { BOOKING_URL, GET_LEADS_URL, START_CTA_LABEL, startUrl } from "@/lib/cta"
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
@@ -125,7 +125,7 @@ export default function B2BSoftwarePage() {
     <>
       <StructuredData data={generateBreadcrumbSchema([
         { name: 'Home', url: 'https://www.meetcursive.com' },
-        { name: 'Industries', url: 'https://www.meetcursive.com/industries' },
+        { name: 'Industries', url: 'https://www.meetcursive.com/#industries' },
         { name: 'B2B Software', url: 'https://www.meetcursive.com/industries/b2b-software' },
       ])} />
 
@@ -135,7 +135,7 @@ export default function B2BSoftwarePage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <Breadcrumbs items={[
               { name: "Home", href: "/" },
-              { name: "Industries", href: "/industries" },
+              { name: "Industries", href: "/#industries" },
               { name: "B2B Software", href: "/industries/b2b-software" },
             ]} />
           </div>
@@ -163,8 +163,8 @@ export default function B2BSoftwarePage() {
                   reach buyers already searching for what they sell — with verified contacts, ready to work.
                 </p>
                 <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center">
-                  <Button size="lg" href={GET_LEADS_URL} target="_blank" rel="noopener noreferrer">
-                    Get Started
+                  <Button size="lg" href={startUrl("industries-b2b-software")}>
+                    {START_CTA_LABEL}
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                   <Button size="lg" variant="outline" href={BOOKING_URL} target="_blank" rel="noopener noreferrer">
@@ -350,8 +350,8 @@ export default function B2BSoftwarePage() {
                   Identify and convert in-market software buyers. Plans from $97/mo, month-to-month, cancel anytime.
                 </p>
                 <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center">
-                  <Button size="lg" href={GET_LEADS_URL} target="_blank" rel="noopener noreferrer">
-                    Get Started
+                  <Button size="lg" href={startUrl("industries-b2b-software")}>
+                    {START_CTA_LABEL}
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                   <Button size="lg" variant="outline" href={BOOKING_URL} target="_blank" rel="noopener noreferrer">
@@ -435,10 +435,10 @@ export default function B2BSoftwarePage() {
           {/* Getting Started */}
           <MachineSection title="Getting Started">
             <MachineList items={[
-              { label: "Get Started", href: "https://leads.meetcursive.com/get-leads", description: "Pick a plan and you are live in minutes" },
+              { label: "Get 25 Free Leads", href: startUrl("industries-b2b-software-links"), description: "Paste your website, get 25 leads with work emails. No card, no call." },
               { label: "Pricing", href: "https://www.meetcursive.com/pricing", description: "Visitor Pixel $97/mo, Custom Audience $197/mo, or both for $247/mo" },
               { label: "Book a Call", href: "https://cal.com/cursiveteam/30min", description: "Talk to the team before you buy" },
-              { label: "Industries", href: "https://www.meetcursive.com/industries" },
+              { label: "Industries", href: "https://www.meetcursive.com/#industries" },
             ]} />
           </MachineSection>
         </MachineContent>

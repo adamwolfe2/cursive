@@ -42,7 +42,7 @@ export default function FranchisesLayout({ children }: { children: React.ReactNo
       <StructuredData data={[
         generateBreadcrumbSchema([
           { name: 'Home', url: 'https://www.meetcursive.com' },
-          { name: 'Industries', url: 'https://www.meetcursive.com/industries' },
+          { name: 'Industries', url: 'https://www.meetcursive.com/#industries' },
           { name: 'Franchises', url: 'https://www.meetcursive.com/industries/franchises' },
         ]),
         generateFAQSchema(franchisesFAQs),

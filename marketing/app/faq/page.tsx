@@ -8,7 +8,7 @@ import { DashboardCTA } from "@/components/dashboard-cta"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
 import { FAQSchema } from "@/components/schema/SchemaMarkup"
 import { Button } from "@/components/ui/button"
-import { GET_LEADS_URL, BOOKING_URL } from "@/lib/cta"
+import { BOOKING_URL, START_CTA_LABEL, startUrl } from "@/lib/cta"
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
@@ -188,8 +188,8 @@ export default function FAQPage() {
 
               {/* Inline CTAs */}
               <div className="mt-12 flex flex-col sm:flex-row gap-3 justify-center items-center">
-                <Button size="lg" href={GET_LEADS_URL} target="_blank" rel="noopener noreferrer">
-                  Get Started
+                <Button size="lg" href={startUrl("faq")}>
+                  {START_CTA_LABEL}
                 </Button>
                 <Button size="lg" variant="outline" href={BOOKING_URL} target="_blank" rel="noopener noreferrer">
                   Book a Call
@@ -275,9 +275,9 @@ export default function FAQPage() {
           <MachineSection title="Get Help">
             <MachineList items={[
               {
-                label: "Get Started",
-                href: "https://leads.meetcursive.com/get-leads",
-                description: "Pick a plan and you are live in minutes",
+                label: "Get 25 Free Leads",
+                href: startUrl("faq-links"),
+                description: "Paste your website, get 25 leads with work emails. No card, no call.",
               },
               {
                 label: "Book a Call",

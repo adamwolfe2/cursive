@@ -42,7 +42,7 @@ export default function HomeServicesLayout({ children }: { children: React.React
       <StructuredData data={[
         generateBreadcrumbSchema([
           { name: 'Home', url: 'https://www.meetcursive.com' },
-          { name: 'Industries', url: 'https://www.meetcursive.com/industries' },
+          { name: 'Industries', url: 'https://www.meetcursive.com/#industries' },
           { name: 'Home Services', url: 'https://www.meetcursive.com/industries/home-services' },
         ]),
         generateFAQSchema(homeServicesFAQs),

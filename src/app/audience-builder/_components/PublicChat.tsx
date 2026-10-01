@@ -23,7 +23,7 @@ import { QualifierModal } from './QualifierModal'
 import { CalBookingInline } from './CalBookingInline'
 
 const BOOK_URL =
-  'https://cal.com/meetcursive/intro?utm_source=audience-builder&utm_medium=copilot'
+  'https://cal.com/cursiveteam/30min?utm_source=audience-builder&utm_medium=copilot'
 
 const TURN_LIMIT = 10
 const DAILY_LIMIT = 30

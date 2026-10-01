@@ -64,7 +64,7 @@ export function DashboardPreview() {
           {/* Header */}
           <div className="flex items-center justify-between mb-4 sm:mb-6 lg:mb-8">
             <div>
-              <h1 className="text-lg sm:text-xl lg:text-2xl text-gray-900 mb-1">Welcome back, Adam!</h1>
+              <p className="text-lg sm:text-xl lg:text-2xl text-gray-900 mb-1">Welcome back, Adam!</p>
               <p className="text-gray-600">Admin Workspace</p>
             </div>
             <div className="flex items-center gap-2 sm:gap-3">

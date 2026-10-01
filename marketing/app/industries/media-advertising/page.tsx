@@ -13,7 +13,7 @@ import { generateBreadcrumbSchema } from "@/lib/seo/structured-data"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
 import { Breadcrumbs } from "@/components/Breadcrumbs"
 import Link from "next/link"
-import { GET_LEADS_URL, BOOKING_URL } from "@/lib/cta"
+import { BOOKING_URL, GET_LEADS_URL, START_CTA_LABEL, startUrl } from "@/lib/cta"
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
@@ -150,7 +150,7 @@ export default function MediaAdvertisingPage() {
     <>
       <StructuredData data={generateBreadcrumbSchema([
         { name: 'Home', url: 'https://www.meetcursive.com' },
-        { name: 'Industries', url: 'https://www.meetcursive.com/industries' },
+        { name: 'Industries', url: 'https://www.meetcursive.com/#industries' },
         { name: 'Media & Advertising', url: 'https://www.meetcursive.com/industries/media-advertising' },
       ])} />
 
@@ -160,7 +160,7 @@ export default function MediaAdvertisingPage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <Breadcrumbs items={[
               { name: "Home", href: "/" },
-              { name: "Industries", href: "/industries" },
+              { name: "Industries", href: "/#industries" },
               { name: "Media & Advertising", href: "/industries/media-advertising" },
             ]} />
           </div>
@@ -188,8 +188,8 @@ export default function MediaAdvertisingPage() {
                   premium audiences, maximize ad inventory value, and prove campaign attribution.
                 </p>
                 <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center">
-                  <Button size="lg" href={GET_LEADS_URL} target="_blank" rel="noopener noreferrer">
-                    Get Started
+                  <Button size="lg" href={startUrl("industries-media-advertising")}>
+                    {START_CTA_LABEL}
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                   <Button size="lg" variant="outline" href={BOOKING_URL} target="_blank" rel="noopener noreferrer">
@@ -376,8 +376,8 @@ export default function MediaAdvertisingPage() {
                   clients. Plans from $97/mo, month-to-month, cancel anytime.
                 </p>
                 <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center">
-                  <Button size="lg" href={GET_LEADS_URL} target="_blank" rel="noopener noreferrer">
-                    Get Started
+                  <Button size="lg" href={startUrl("industries-media-advertising")}>
+                    {START_CTA_LABEL}
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                   <Button size="lg" variant="outline" href={BOOKING_URL} target="_blank" rel="noopener noreferrer">
@@ -461,9 +461,9 @@ export default function MediaAdvertisingPage() {
           <MachineSection title="Get Started">
             <MachineList items={[
               {
-                label: "Get Started",
-                href: "https://leads.meetcursive.com/get-leads",
-                description: "Pick a plan and you are live in minutes"
+                label: "Get 25 Free Leads",
+                href: startUrl("industries-media-advertising-links"),
+                description: "Paste your website, get 25 leads with work emails. No card, no call."
               },
               {
                 label: "Pricing",

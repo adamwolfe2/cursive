@@ -841,7 +841,7 @@ export default function BlogPost() {
               { label: "Platform Overview", href: "/platform", description: "Visitor identification, intent data, AI outreach" },
               { label: "Pricing", href: "/pricing", description: "$97/mo Pixel, $197/mo Audience, or $247/mo Bundle" },
               { label: "Visitor Identification", href: "/visitor-identification", description: "70% identification rate for B2B traffic" },
-              { label: "Book a Demo", href: "/book", description: "Free ICP workshop and targeted list building" }
+              { label: "Book a Call", href: "https://cal.com/cursiveteam/30min", description: "Free ICP workshop and targeted list building" }
             ]} />
           </MachineSection>
 

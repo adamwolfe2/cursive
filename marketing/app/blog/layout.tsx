@@ -17,7 +17,6 @@ const blogPublisherSchema = {
       url: 'https://www.meetcursive.com/cursive-logo.png',
     },
     sameAs: [
-      'https://twitter.com/meetcursive',
       'https://linkedin.com/company/cursive',
     ],
   },

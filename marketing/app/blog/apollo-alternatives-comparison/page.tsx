@@ -1243,7 +1243,7 @@ export default function BlogPost() {
               Stop spraying cold emails at purchased lists. Cursive identifies your website visitors, enriches them with intent data, and automates personalized outreach across email, LinkedIn, and direct mail.
             </p>
             <MachineList items={[
-              { label: "Book a Demo", href: "/book", description: "See Cursive in real-time" },
+              { label: "Book a Call", href: "https://cal.com/cursiveteam/30min", description: "See Cursive in real-time" },
               { label: "Platform Overview", href: "/platform", description: "Visitor identification, intent data, AI outreach" },
               { label: "Pricing", href: "/pricing", description: "Three self-serve plans from $97/mo, cancel anytime" },
               { label: "Custom Audience", href: "/marketplace", description: "Fresh weekly lists of in-market buyers" }

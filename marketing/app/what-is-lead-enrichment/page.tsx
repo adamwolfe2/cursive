@@ -10,7 +10,7 @@ import Link from "next/link"
 import { motion } from "framer-motion"
 import { ShieldCheck, ArrowRight } from "lucide-react"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
-import { GET_LEADS_URL, BOOKING_URL } from "@/lib/cta"
+import { BOOKING_URL, START_CTA_LABEL, startUrl } from "@/lib/cta"
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
@@ -96,8 +96,8 @@ export default function WhatIsLeadEnrichment() {
                 </p>
 
                 <div className="mt-8 flex flex-col sm:flex-row gap-3">
-                  <Button size="lg" href={GET_LEADS_URL} target="_blank" rel="noopener noreferrer">
-                    Get enriched leads
+                  <Button size="lg" href={startUrl("what-is-lead-enrichment")}>
+                    {START_CTA_LABEL}
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                   <Button size="lg" variant="outline" href={BOOKING_URL} target="_blank" rel="noopener noreferrer">
@@ -726,8 +726,8 @@ export default function WhatIsLeadEnrichment() {
                   build, no per-record fees. Plans from $97/mo, month-to-month.
                 </p>
                 <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
-                  <Button size="lg" href={GET_LEADS_URL} target="_blank" rel="noopener noreferrer">
-                    Get enriched leads
+                  <Button size="lg" href={startUrl("what-is-lead-enrichment")}>
+                    {START_CTA_LABEL}
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                   <Button size="lg" variant="outline" href={BOOKING_URL} target="_blank" rel="noopener noreferrer">
@@ -847,7 +847,7 @@ export default function WhatIsLeadEnrichment() {
               Cursive delivers leads that are already enriched — every record carries a verified work email and full firmographics, validated through Deep Verify at roughly 20 million records per day. Skip the separate enrichment vendor and the per-record fees. Flat, self-serve plans: Visitor Pixel $97/mo, Custom Audience $197/mo, or both bundled at $247/mo, month-to-month.
             </p>
             <MachineList items={[
-              { label: "Get Started", href: "https://leads.meetcursive.com/get-leads", description: "Pick a plan and you are live in minutes — every record arrives enriched" },
+              { label: "Get 25 Free Leads", href: startUrl("what-is-lead-enrichment-links"), description: "Paste your website, get 25 leads with work emails. No card, no call." },
               { label: "Pricing", href: "https://www.meetcursive.com/pricing", description: "Visitor Pixel $97/mo, Custom Audience $197/mo, or both for $247/mo" },
               { label: "Book a Call", href: "https://cal.com/cursiveteam/30min", description: "Talk to the team before you buy" }
             ]} />

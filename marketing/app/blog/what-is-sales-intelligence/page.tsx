@@ -343,8 +343,6 @@ export default function WhatIsSalesIntelligence() {
               <DashboardCTA
                 headline="Turn Anonymous Visitors Into Sales Intelligence"
                 description="Cursive identifies 70% of your website visitors by name and email, enriches them with firmographic data and intent signals, and pushes them directly into your CRM. No more guessing who visited your site."
-                ctaText="Get Leads"
-                ctaUrl="https://leads.meetcursive.com/get-leads"
               />
 
               {/* Related Links */}

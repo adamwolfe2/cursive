@@ -10,7 +10,7 @@ import {
 import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
 import { DashboardCTA } from "@/components/dashboard-cta"
 import { Breadcrumbs } from "@/components/Breadcrumbs"
-import { GET_LEADS_URL } from "@/lib/cta"
+import { START_CTA_LABEL, startUrl } from "@/lib/cta"
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
@@ -182,8 +182,8 @@ export default function AboutPage() {
                 ))}
               </div>
               <div className="mt-10 text-center">
-                <Button href={GET_LEADS_URL} target="_blank" size="lg">
-                  See plans &amp; get started
+                <Button href={startUrl("about")} size="lg">
+                  {START_CTA_LABEL}
                   <ArrowRight className="w-5 h-5" />
                 </Button>
               </div>
@@ -369,7 +369,6 @@ export default function AboutPage() {
             headline="Let's Build Your"
             subheadline="Pipeline"
             description="Install the pixel in 60 seconds, or get your first audience within 24 hours. Plans from $97/mo, month-to-month."
-            ctaText="Get Started"
           />
         </main>
       </HumanView>
@@ -465,7 +464,7 @@ export default function AboutPage() {
 
           <MachineSection title="Contact">
             <MachineList items={[
-              { label: "Get Started", href: "https://leads.meetcursive.com/get-leads", description: "Pick a plan and you are live in minutes" },
+              { label: "Get 25 Free Leads", href: startUrl("about-links"), description: "Paste your website, get 25 leads with work emails. No card, no call." },
               { label: "Website", href: "https://www.meetcursive.com" },
               { label: "Email", href: "mailto:hey@meetcursive.com" },
             ]} />

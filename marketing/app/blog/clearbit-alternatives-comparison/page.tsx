@@ -1289,7 +1289,7 @@ export default function BlogPost() {
               { label: "Audience Builder", href: "/audience-builder", description: "Segment and target your ideal customers" },
               { label: "Direct Mail Campaigns", href: "/direct-mail", description: "Combine intent data with offline outreach" },
               { label: "Integrations", href: "/integrations", description: "Connect to your existing tech stack" },
-              { label: "Book a Demo", href: "/book", description: "See Cursive in real-time" }
+              { label: "Book a Call", href: "https://cal.com/cursiveteam/30min", description: "See Cursive in real-time" }
             ]} />
           </MachineSection>
         </MachineContent>

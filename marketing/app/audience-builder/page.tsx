@@ -13,7 +13,7 @@ import { IntegrationsShowcase } from "@/components/integrations-showcase"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
 import Link from "next/link"
 import { Breadcrumbs } from "@/components/Breadcrumbs"
-import { GET_LEADS_URL, BOOKING_URL } from "@/lib/cta"
+import { BOOKING_URL, GET_LEADS_URL, START_CTA_LABEL, startUrl } from "@/lib/cta"
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
@@ -74,12 +74,12 @@ const useCases = [
 ]
 
 const resources = [
-  { title: "Build an Effective Audience Platform", href: "/blog/02-steps-to-build-an-effective-audience-building-platform-UPDATED" },
-  { title: "Audience Targeting Platform Guide", href: "/blog/16-guide-to-building-an-effective-audience-targeting-platform-UPDATED" },
-  { title: "Why Segmentation Matters", href: "/blog/11-why-audience-segmentation-platforms-are-key-to-marketing-UPDATED" },
-  { title: "Behavioral Audience Segments", href: "/blog/32-creating-behavioral-audience-segments-easily" },
-  { title: "Intent-Based Segmentation", href: "/blog/38-buyer-intent-based-audience-segmentation-techniques-UPDATED" },
-  { title: "B2B Audience Targeting, Explained", href: "/blog/48-b2b-audience-targeting-explained-for-everyday-brands-UPDATED" },
+  { title: "Audience Targeting Guide", href: "/blog/audience-targeting" },
+  { title: "ICP Targeting Guide", href: "/blog/icp-targeting-guide" },
+  { title: "The Compounding Audience", href: "/blog/compounding-audience" },
+  { title: "What Is Buyer Intent?", href: "/blog/what-is-buyer-intent" },
+  { title: "Why Intent Data Fails", href: "/blog/why-intent-data-fails" },
+  { title: "Intent Data Providers Compared", href: "/blog/intent-data-providers-comparison" },
 ]
 
 const faqs = [
@@ -146,8 +146,8 @@ export default function AudienceBuilderPage() {
                   your sheet.
                 </p>
                 <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center">
-                  <Button size="lg" href={GET_LEADS_URL} target="_blank" rel="noopener noreferrer">
-                    Get Started
+                  <Button size="lg" href={startUrl("audience-builder")}>
+                    {START_CTA_LABEL}
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                   <Button size="lg" variant="outline" href={BOOKING_URL} target="_blank" rel="noopener noreferrer">
@@ -444,8 +444,8 @@ export default function AudienceBuilderPage() {
                   First list within 24 hours. Custom Audience from $197/mo, month-to-month, cancel anytime.
                 </p>
                 <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center">
-                  <Button size="lg" href={GET_LEADS_URL} target="_blank" rel="noopener noreferrer">
-                    Get Started
+                  <Button size="lg" href={startUrl("audience-builder")}>
+                    {START_CTA_LABEL}
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                   <Button size="lg" variant="outline" href={BOOKING_URL} target="_blank" rel="noopener noreferrer">

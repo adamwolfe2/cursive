@@ -11,7 +11,7 @@ import {
 import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
 import { DashboardCTA } from "@/components/dashboard-cta"
 import { Breadcrumbs } from "@/components/Breadcrumbs"
-import { GET_LEADS_URL, BOOKING_URL } from "@/lib/cta"
+import { BOOKING_URL, GET_LEADS_URL, startUrl } from "@/lib/cta"
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
@@ -379,7 +379,6 @@ export function SuperPixelView() {
             headline="See Who's"
             subheadline="on your site"
             description="Drop the Super Pixel in 60 seconds and start resolving 40–60% of your anonymous traffic to real people. $97/mo, month-to-month."
-            ctaText="Get Started"
           />
         </main>
       </HumanView>
@@ -468,7 +467,7 @@ export function SuperPixelView() {
 
           <MachineSection title="Getting Started">
             <MachineList items={[
-              { label: "Get Started", href: "https://leads.meetcursive.com/get-leads", description: "Pick a plan and you are live in minutes" },
+              { label: "Get 25 Free Leads", href: startUrl("superpixel-links"), description: "Paste your website, get 25 leads with work emails. No card, no call." },
               { label: "Pricing", href: "https://www.meetcursive.com/pricing", description: "Visitor Pixel $97/mo, Custom Audience $197/mo, or both for $247/mo" },
               { label: "Book a Call", href: "https://cal.com/cursiveteam/30min", description: "Talk to the team before you buy" },
             ]} />

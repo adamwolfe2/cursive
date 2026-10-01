@@ -14,7 +14,7 @@ import { integrations } from "@/lib/integrations-data"
 import type { Integration } from "@/lib/integrations-data"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
 import { Breadcrumbs } from "@/components/Breadcrumbs"
-import { GET_LEADS_URL, BOOKING_URL } from "@/lib/cta"
+import { BOOKING_URL, START_CTA_LABEL, startUrl } from "@/lib/cta"
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
@@ -153,8 +153,8 @@ export default function IntegrationsPage() {
                 contacts and intent data land in the tools your team already runs.
               </p>
               <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center">
-                <Button size="lg" href={GET_LEADS_URL} target="_blank" rel="noopener noreferrer">
-                  Get Started
+                <Button size="lg" href={startUrl("integrations")}>
+                  {START_CTA_LABEL}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
                 <Button size="lg" variant="outline" href={BOOKING_URL} target="_blank" rel="noopener noreferrer">

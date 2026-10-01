@@ -1262,7 +1262,7 @@ export default function BlogPost() {
               { label: "Direct Mail", href: "/direct-mail", description: "Multi-channel outreach including physical mail" },
               { label: "Self-Serve Plans", href: "/marketplace", description: "Visitor identification, in-market audiences, or both" },
               { label: "Free AI Audit", href: "/free-audit", description: "See exactly which visitors you're missing and potential pipeline" },
-              { label: "Book a Demo", href: "/book", description: "See Cursive in real-time with your traffic" },
+              { label: "Book a Call", href: "https://cal.com/cursiveteam/30min", description: "See Cursive in real-time with your traffic" },
               { label: "Plan Options", href: "/services", description: "Compare Cursive's three month-to-month plans" }
             ]} />
           </MachineSection>

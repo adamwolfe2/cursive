@@ -175,7 +175,7 @@ export interface InterestResponse {
 
 export const FREE_LEAD_COUNT = 25
 export const PREVIEW_LEAD_COUNT = 5
-export const BOOKING_URL = 'https://cal.com/meetcursive/intro'
+export const BOOKING_URL = 'https://cal.com/cursiveteam/30min'
 
 // ---- Request bodies (added by backend; additive, backward compatible) ----
 

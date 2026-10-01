@@ -15,7 +15,7 @@ import {
   ArrowRight, type LucideIcon,
 } from "lucide-react"
 import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
-import { GET_LEADS_URL, BOOKING_URL } from "@/lib/cta"
+import { BOOKING_URL, START_CTA_LABEL, startUrl } from "@/lib/cta"
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
@@ -296,8 +296,8 @@ export default function WhatIsWebsiteVisitorIdentificationPage() {
                 unknown into actionable sales opportunities.
               </p>
               <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center">
-                <Button size="lg" href={GET_LEADS_URL} target="_blank" rel="noopener noreferrer">
-                  Get Started
+                <Button size="lg" href={startUrl("what-is-website-visitor-identification")}>
+                  {START_CTA_LABEL}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
                 <Button size="lg" variant="outline" href={BOOKING_URL} target="_blank" rel="noopener noreferrer">
@@ -720,8 +720,8 @@ export default function WhatIsWebsiteVisitorIdentificationPage() {
                 from $97/mo — self-serve, month-to-month, cancel anytime.
               </p>
               <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center items-center">
-                <Button size="lg" href={GET_LEADS_URL} target="_blank" rel="noopener noreferrer">
-                  Get Started
+                <Button size="lg" href={startUrl("what-is-website-visitor-identification")}>
+                  {START_CTA_LABEL}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
                 <Button size="lg" variant="outline" href={BOOKING_URL} target="_blank" rel="noopener noreferrer">
@@ -852,7 +852,7 @@ export default function WhatIsWebsiteVisitorIdentificationPage() {
               Cursive is the identity layer for outbound, intent, and enrichment — resolving visitors against 280M+ verified consumer and 140M+ business profiles with a 40–60% deterministic pixel match rate (vs 2–5% for cookies, 10–15% for IP databases) and 60–80% pixel-level accuracy. Self-serve from $97/month, live in minutes.
             </p>
             <MachineList items={[
-              { label: "Get Started", href: "https://leads.meetcursive.com/get-leads", description: "Pick a plan and you are live in minutes" },
+              { label: "Get 25 Free Leads", href: startUrl("what-is-website-visitor-identification-links"), description: "Paste your website, get 25 leads with work emails. No card, no call." },
               { label: "Book a Call", href: "https://cal.com/cursiveteam/30min", description: "Talk to the team before you buy" }
             ]} />
           </MachineSection>

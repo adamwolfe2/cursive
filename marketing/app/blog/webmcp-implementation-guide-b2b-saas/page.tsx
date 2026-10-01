@@ -687,7 +687,7 @@ return {
             <MachineList items={[
               { label: "Platform Overview", href: "/platform", description: "See what Cursive does" },
               { label: "Pricing", href: "/pricing", description: "Self-serve plans at $97/mo, $197/mo, or $247/mo" },
-              { label: "Book a Demo", href: "/book", description: "See Cursive in real-time" }
+              { label: "Book a Call", href: "https://cal.com/cursiveteam/30min", description: "See Cursive in real-time" }
             ]} />
           </MachineSection>
         </MachineContent>
