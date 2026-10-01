@@ -3,7 +3,7 @@
 import { motion } from "framer-motion"
 import { CheckCircle, TrendingUp, Database, Zap, DollarSign, Shield } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
-import { GET_LEADS_URL } from "@/lib/cta"
+import { START_CTA_LABEL, startUrl } from "@/lib/cta"
 
 interface Advantage {
   icon: LucideIcon
@@ -140,12 +140,10 @@ export function CompetitiveAdvantagesSection() {
             See the difference for yourself
           </p>
           <a
-            href={GET_LEADS_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-white text-primary border-2 border-primary rounded-lg font-medium hover:bg-primary hover:text-white transition-all group"
+            href={startUrl("home-advantages")}
+            className="inline-flex min-h-11 items-center gap-2 px-6 py-3 bg-white text-primary border-2 border-primary rounded-lg font-medium hover:bg-primary hover:text-white transition-all group"
           >
-            <span>Get Started</span>
+            <span>{START_CTA_LABEL}</span>
             <svg
               className="w-5 h-5 group-hover:translate-x-1 transition-transform"
               fill="none"
