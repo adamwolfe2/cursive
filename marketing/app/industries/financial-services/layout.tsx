@@ -42,7 +42,7 @@ export default function FinancialServicesLayout({ children }: { children: React.
       <StructuredData data={[
         generateBreadcrumbSchema([
           { name: 'Home', url: 'https://www.meetcursive.com' },
-          { name: 'Industries', url: 'https://www.meetcursive.com/industries' },
+          { name: 'Industries', url: 'https://www.meetcursive.com/#industries' },
           { name: 'Financial Services', url: 'https://www.meetcursive.com/industries/financial-services' },
         ]),
         generateFAQSchema(financialServicesFAQs),

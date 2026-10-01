@@ -42,7 +42,7 @@ export default function RetailLayout({ children }: { children: React.ReactNode }
       <StructuredData data={[
         generateBreadcrumbSchema([
           { name: 'Home', url: 'https://www.meetcursive.com' },
-          { name: 'Industries', url: 'https://www.meetcursive.com/industries' },
+          { name: 'Industries', url: 'https://www.meetcursive.com/#industries' },
           { name: 'Retail', url: 'https://www.meetcursive.com/industries/retail' },
         ]),
         generateFAQSchema(retailFAQs),

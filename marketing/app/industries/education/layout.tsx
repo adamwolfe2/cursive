@@ -42,7 +42,7 @@ export default function EducationLayout({ children }: { children: React.ReactNod
       <StructuredData data={[
         generateBreadcrumbSchema([
           { name: 'Home', url: 'https://www.meetcursive.com' },
-          { name: 'Industries', url: 'https://www.meetcursive.com/industries' },
+          { name: 'Industries', url: 'https://www.meetcursive.com/#industries' },
           { name: 'Education', url: 'https://www.meetcursive.com/industries/education' },
         ]),
         generateFAQSchema(educationFAQs),

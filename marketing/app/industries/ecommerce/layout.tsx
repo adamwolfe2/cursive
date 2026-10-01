@@ -42,7 +42,7 @@ export default function EcommerceLayout({ children }: { children: React.ReactNod
       <StructuredData data={[
         generateBreadcrumbSchema([
           { name: 'Home', url: 'https://www.meetcursive.com' },
-          { name: 'Industries', url: 'https://www.meetcursive.com/industries' },
+          { name: 'Industries', url: 'https://www.meetcursive.com/#industries' },
           { name: 'Ecommerce', url: 'https://www.meetcursive.com/industries/ecommerce' },
         ]),
         generateFAQSchema(ecommerceFAQs),

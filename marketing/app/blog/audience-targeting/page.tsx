@@ -924,7 +924,7 @@ export default function AudienceTargetingPage() {
               { label: "Audience Builder", href: "/audience-builder", description: "Build precise audience segments with firmographic, intent, and behavioral data" },
               { label: "Intent Audiences", href: "/intent-audiences", description: "Target accounts showing active purchase intent" },
               { label: "Pricing", href: "/pricing", description: "Plans starting at $99/month" },
-              { label: "Book a Demo", href: "/book", description: "See Cursive in action" },
+              { label: "Book a Call", href: "https://cal.com/cursiveteam/30min", description: "See Cursive in action" },
             ]} />
           </MachineSection>
         </MachineContent>

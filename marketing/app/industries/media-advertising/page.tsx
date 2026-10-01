@@ -150,7 +150,7 @@ export default function MediaAdvertisingPage() {
     <>
       <StructuredData data={generateBreadcrumbSchema([
         { name: 'Home', url: 'https://www.meetcursive.com' },
-        { name: 'Industries', url: 'https://www.meetcursive.com/industries' },
+        { name: 'Industries', url: 'https://www.meetcursive.com/#industries' },
         { name: 'Media & Advertising', url: 'https://www.meetcursive.com/industries/media-advertising' },
       ])} />
 
@@ -160,7 +160,7 @@ export default function MediaAdvertisingPage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <Breadcrumbs items={[
               { name: "Home", href: "/" },
-              { name: "Industries", href: "/industries" },
+              { name: "Industries", href: "/#industries" },
               { name: "Media & Advertising", href: "/industries/media-advertising" },
             ]} />
           </div>

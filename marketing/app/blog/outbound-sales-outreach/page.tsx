@@ -435,7 +435,7 @@ export default function BlogPost() {
               { label: "Platform Overview", href: "/platform", description: "Visitor identification, intent data, AI outreach" },
               { label: "Pricing", href: "/pricing", description: "Three month-to-month self-serve plans from $97/mo" },
               { label: "Visitor Identification", href: "/visitor-identification", description: "70% identification rate for B2B traffic" },
-              { label: "Book a Demo", href: "/book", description: "See Cursive in real-time" }
+              { label: "Book a Call", href: "https://cal.com/cursiveteam/30min", description: "See Cursive in real-time" }
             ]} />
           </MachineSection>
 

@@ -25,7 +25,6 @@ export function OrganizationSchema() {
     description:
       "Cursive is an AI-powered B2B data and outbound platform that helps companies identify website visitors, build targeted audiences, and automate multi-channel outreach.",
     sameAs: [
-      "https://twitter.com/meetcursive",
       "https://linkedin.com/company/cursive",
     ],
   }

@@ -533,10 +533,10 @@ export default function IntentAudiencesPage() {
                 {[
                   { title: "What Is B2B Intent Data", href: "/what-is-b2b-intent-data" },
                   { title: "Custom Audiences", href: "/custom-audiences" },
-                  { title: "Buyer Intent Segmentation", href: "/blog/38-buyer-intent-based-audience-segmentation-techniques-UPDATED" },
-                  { title: "Intent Signal Tracking for B2B", href: "/blog/40-intent-signal-tracking-for-b2b-marketing" },
-                  { title: "Impact of Buyer Intent on Campaigns", href: "/blog/29-understanding-the-impact-of-buyer-intent-on-campaigns" },
-                  { title: "Intent-Based Marketing Tactics", href: "/blog/41-intent-based-marketing-tactics-for-b2b" },
+                  { title: "What Is Buyer Intent?", href: "/blog/what-is-buyer-intent" },
+                  { title: "Why Intent Data Fails", href: "/blog/why-intent-data-fails" },
+                  { title: "Intent Score Acceleration", href: "/blog/intent-score-acceleration" },
+                  { title: "Intent Data Providers Compared", href: "/blog/intent-data-providers-comparison" },
                 ].map((link) => (
                   <Link
                     key={link.href}

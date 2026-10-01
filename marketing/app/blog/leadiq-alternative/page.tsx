@@ -1198,7 +1198,7 @@ export default function BlogPost() {
               { label: "Intent Audiences", href: "/intent-audiences", description: "Track pages viewed, return visits, content engagement" },
               { label: "Direct Mail", href: "/direct-mail", description: "Multi-channel outreach including physical mail" },
               { label: "Free AI Audit", href: "/free-audit", description: "See exactly which warm visitors you are currently missing" },
-              { label: "Book a Demo", href: "/book", description: "See Cursive in real-time with your traffic" }
+              { label: "Book a Call", href: "https://cal.com/cursiveteam/30min", description: "See Cursive in real-time with your traffic" }
             ]} />
           </MachineSection>
 

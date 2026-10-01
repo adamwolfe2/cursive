@@ -125,7 +125,7 @@ export default function B2BSoftwarePage() {
     <>
       <StructuredData data={generateBreadcrumbSchema([
         { name: 'Home', url: 'https://www.meetcursive.com' },
-        { name: 'Industries', url: 'https://www.meetcursive.com/industries' },
+        { name: 'Industries', url: 'https://www.meetcursive.com/#industries' },
         { name: 'B2B Software', url: 'https://www.meetcursive.com/industries/b2b-software' },
       ])} />
 
@@ -135,7 +135,7 @@ export default function B2BSoftwarePage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <Breadcrumbs items={[
               { name: "Home", href: "/" },
-              { name: "Industries", href: "/industries" },
+              { name: "Industries", href: "/#industries" },
               { name: "B2B Software", href: "/industries/b2b-software" },
             ]} />
           </div>
@@ -438,7 +438,7 @@ export default function B2BSoftwarePage() {
               { label: "Get 25 Free Leads", href: startUrl("industries-b2b-software-links"), description: "Paste your website, get 25 leads with work emails. No card, no call." },
               { label: "Pricing", href: "https://www.meetcursive.com/pricing", description: "Visitor Pixel $97/mo, Custom Audience $197/mo, or both for $247/mo" },
               { label: "Book a Call", href: "https://cal.com/cursiveteam/30min", description: "Talk to the team before you buy" },
-              { label: "Industries", href: "https://www.meetcursive.com/industries" },
+              { label: "Industries", href: "https://www.meetcursive.com/#industries" },
             ]} />
           </MachineSection>
         </MachineContent>

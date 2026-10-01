@@ -124,7 +124,7 @@ export default function TechnologyPage() {
     <>
       <StructuredData data={generateBreadcrumbSchema([
         { name: 'Home', url: 'https://www.meetcursive.com' },
-        { name: 'Industries', url: 'https://www.meetcursive.com/industries' },
+        { name: 'Industries', url: 'https://www.meetcursive.com/#industries' },
         { name: 'Technology', url: 'https://www.meetcursive.com/industries/technology' },
       ])} />
 
@@ -134,7 +134,7 @@ export default function TechnologyPage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <Breadcrumbs items={[
               { name: "Home", href: "/" },
-              { name: "Industries", href: "/industries" },
+              { name: "Industries", href: "/#industries" },
               { name: "Technology", href: "/industries/technology" },
             ]} />
           </div>

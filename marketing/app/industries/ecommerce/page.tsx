@@ -73,7 +73,7 @@ export default function EcommercePage() {
     <>
       <StructuredData data={generateBreadcrumbSchema([
         { name: 'Home', url: 'https://www.meetcursive.com' },
-        { name: 'Industries', url: 'https://www.meetcursive.com/industries' },
+        { name: 'Industries', url: 'https://www.meetcursive.com/#industries' },
         { name: 'eCommerce', url: 'https://www.meetcursive.com/industries/ecommerce' },
       ])} />
 
@@ -83,7 +83,7 @@ export default function EcommercePage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <Breadcrumbs items={[
               { name: "Home", href: "/" },
-              { name: "Industries", href: "/industries" },
+              { name: "Industries", href: "/#industries" },
               { name: "eCommerce", href: "/industries/ecommerce" },
             ]} />
           </div>

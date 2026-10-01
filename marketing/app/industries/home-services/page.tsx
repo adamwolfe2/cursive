@@ -64,7 +64,7 @@ export default function HomeServicesPage() {
     <>
       <StructuredData data={generateBreadcrumbSchema([
         { name: 'Home', url: 'https://www.meetcursive.com' },
-        { name: 'Industries', url: 'https://www.meetcursive.com/industries' },
+        { name: 'Industries', url: 'https://www.meetcursive.com/#industries' },
         { name: 'Home Services', url: 'https://www.meetcursive.com/industries/home-services' },
       ])} />
 
@@ -74,7 +74,7 @@ export default function HomeServicesPage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <Breadcrumbs items={[
               { name: "Home", href: "/" },
-              { name: "Industries", href: "/industries" },
+              { name: "Industries", href: "/#industries" },
               { name: "Home Services", href: "/industries/home-services" },
             ]} />
           </div>

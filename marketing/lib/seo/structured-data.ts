@@ -7,7 +7,6 @@ export function generateOrganizationSchema() {
     logo: 'https://www.meetcursive.com/cursive-logo.png',
     description: 'AI-powered B2B lead generation and outbound automation. Identify 60–70% of anonymous website visitors and automate personalized outreach.',
     sameAs: [
-      'https://twitter.com/meetcursive',
       'https://linkedin.com/company/cursive',
     ],
     contactPoint: {

@@ -366,7 +366,7 @@ export function BlogClient() {
             <MachineList items={[
               { label: "Cursive Platform", href: "/platform", description: "Visitor identification and fresh weekly in-market audiences" },
               { label: "Pricing", href: "/pricing", description: "Three month-to-month self-serve plans starting at $97/month" },
-              { label: "Book a Demo", href: "/book", description: "See Cursive in real-time" },
+              { label: "Book a Call", href: "https://cal.com/cursiveteam/30min", description: "See Cursive in real-time" },
               { label: "Resources", href: "/resources", description: "Guides on visitor identification & lead generation" },
             ]} />
           </MachineSection>

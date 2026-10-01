@@ -126,7 +126,7 @@ export default function FinancialServicesPage() {
     <>
       <StructuredData data={generateBreadcrumbSchema([
         { name: 'Home', url: 'https://www.meetcursive.com' },
-        { name: 'Industries', url: 'https://www.meetcursive.com/industries' },
+        { name: 'Industries', url: 'https://www.meetcursive.com/#industries' },
         { name: 'Financial Services', url: 'https://www.meetcursive.com/industries/financial-services' },
       ])} />
 
@@ -136,7 +136,7 @@ export default function FinancialServicesPage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <Breadcrumbs items={[
               { name: "Home", href: "/" },
-              { name: "Industries", href: "/industries" },
+              { name: "Industries", href: "/#industries" },
               { name: "Financial Services", href: "/industries/financial-services" },
             ]} />
           </div>

@@ -1396,7 +1396,7 @@ export default function BlogPost() {
               { label: "Pricing", href: "/pricing", description: "$97 Visitor Pixel, $197 Custom Audience, or $247 Bundle" },
               { label: "Visitor Identification", href: "/visitor-identification", description: "85%+ match rate for B2B website traffic" },
               { label: "Intent Audiences", href: "/intent-audiences", description: "First-party intent signals from your website" },
-              { label: "Book a Demo", href: "/book", description: "See how Cursive works in real-time" }
+              { label: "Book a Call", href: "https://cal.com/cursiveteam/30min", description: "See how Cursive works in real-time" }
             ]} />
           </MachineSection>
         </MachineContent>

@@ -345,7 +345,6 @@ export default function HomePage() {
               { label: "Email", href: "mailto:hey@meetcursive.com" },
               { label: "Schedule Demo", href: "https://cal.com/cursiveteam/30min" },
               { label: "LinkedIn", href: "https://linkedin.com/company/cursive" },
-              { label: "Twitter", href: "https://twitter.com/meetcursive" },
             ]} />
           </MachineSection>
 

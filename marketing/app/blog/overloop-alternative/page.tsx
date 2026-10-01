@@ -1099,7 +1099,7 @@ export default function BlogPost() {
               { label: "AI SDR", href: "/what-is-ai-sdr", description: "AI-written personalized outreach based on visitor behavior" },
               { label: "Direct Mail", href: "/direct-mail", description: "Multi-channel outreach including physical mail" },
               { label: "Free AI Audit", href: "/free-audit", description: "See exactly which visitors you are missing and potential pipeline" },
-              { label: "Book a Demo", href: "/book", description: "See Cursive in action with your own traffic" }
+              { label: "Book a Call", href: "https://cal.com/cursiveteam/30min", description: "See Cursive in action with your own traffic" }
             ]} />
           </MachineSection>
 
