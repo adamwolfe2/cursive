@@ -32,3 +32,25 @@ fixes, code review fixes (6fe50b42). Prod DB migrations applied. Local prod E2E 
 
 ## Open decisions (Adam)
 MillionVerifier at delivery; weekly-leads price; GetLeads product-use terms; day-14 read-only rule.
+
+## Adversarial QA findings to fix before push (full report: /tmp/fl-qa/, screenshots /tmp/fl-qa/shots/)
+1. BLOCKER: client disconnect during POST /api/start/count|scan|refine crashes the Node process (ECONNRESET
+   "Emitted 'error' event on IncomingMessage", Node 26 locally). Suspect src/instrumentation.ts uncaughtException
+   re-throw. Repro: `curl -m 1.5 -X POST -H 'content-type: application/json' -d '{"icp":{...}}' localhost:3103/api/start/count`.
+   Fix root cause; pin Node (engines / .nvmrc) to Vercel's runtime; verify the process survives aborts.
+2. MAJOR: email-icp spends the per-mailbox/IP limits before validating session/domain: validate first, limit after.
+   Rate-limited copy says "this network" even for the mailbox limit.
+3. MAJOR: refine "remove everything" -> model returns empty summary -> 500. Keep the previous summary when empty.
+4. MAJOR: refine "only Atlantis" -> upstream rejects unknown country -> 500. Validate countries (upstream list or
+   catch `rejected` -> zero-match response) so it shows the zero state instead.
+5. MAJOR: free-text industry chips not in the enum are silently dropped (and case-sensitive). Case-insensitive match
+   to the enum, and only accept enum values in the UI (suggestions) or tell the user.
+6. MINOR: all chips removed -> 64M people, Approve enabled; disable Approve while the count is stale/loading and when
+   the profile has no title/industry/size filter.
+7. MINOR: focus lost to BODY after scan start/complete, chip remove, Escape/Enter in add input.
+8. MINOR: attribution marked sent before the first scan succeeds; two tabs race session id.
+9. MINOR: client URL validator rejects acme.com?x=1, #top, :8080, IDN TLDs; server accepts arbitrary ports (drop port).
+10. POLISH: "9 people match. Your free 25 come from this list." when count < 25; 1-char refine allowed client-side
+    (server min 2); >4000-char description shows wrong copy; "$25 /mo" stray space; size chips use en dashes;
+    email-profile hidden for description scans (ok); ?site= auto-scan spends model money when scanners open the
+    profile email link (gate auto-start behind a click, or rely on the 7-day cache).
