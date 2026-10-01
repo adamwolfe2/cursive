@@ -12,6 +12,8 @@ export async function POST(req: NextRequest) {
   const parsed = IcpRequestSchema.safeParse(await readJson(req))
   if (!parsed.success) return badRequest('Invalid profile')
   if (await isLimited('free-leads-count', `ip:${clientIp(req)}`)) return rateLimited()
+  // Upstream rate limits are shared with paid deliveries: a count flood must not starve them.
+  if (await isLimited('free-leads-count-global', 'global')) return rateLimited('Counts are busy right now. Try again shortly.')
 
   try {
     const total = await cachedCount(icpToFilters(parsed.data.icp))

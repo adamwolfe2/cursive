@@ -328,6 +328,11 @@ export const RATE_LIMITS = {
     maxRequests: 120,
     message: 'Too many requests. Please try again later.',
   },
+  'free-leads-count-global': {
+    windowMs: 24 * 60 * 60 * 1000,
+    maxRequests: Number(process.env.FREE_LEADS_DAILY_COUNT_CAP) || 3000,
+    message: 'Counts are paused for today.',
+  },
   'free-leads-preview': {
     windowMs: 24 * 60 * 60 * 1000,
     maxRequests: 5, // spec invariant 4: <= 5 previews per IP per day
