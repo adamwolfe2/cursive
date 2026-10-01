@@ -8,7 +8,13 @@ cost `2026-09-30-free-leads-cost.md`, follow-ups `2026-09-30-free-leads-followup
 A eval + fixes, B cost, C funnel + admin + Slack + profile email, D real-time UI (merged fl-ui), security review
 fixes, code review fixes (6fe50b42). Prod DB migrations applied. Local prod E2E passed (/tmp/fl-e2e/e2e2.py).
 
-## In flight when this was written
+## Update (later in session 2)
+- Merged fl-polish (8975cdc7: AA contrast, 44px targets, CLS 0, code-review UI races, retryable, CSV BOM).
+- Done: code-review backend fixes (6fe50b42), mobile profile email (6ab60dfa), scanner-safe /start/open click-through (610ab963).
+- Waiting on: adversarial QA report (prod build :3103). Then: rebuild, E2E (e2e2.py now also checks /start/open), push.
+- Root layout `maximumScale: 1` blocks zoom app-wide (outside this branch; /start overrides it). DESIGN.md: brand-600 for filled buttons.
+
+## In flight when this was first written
 - Polish agent on branch `fl-polish` (from 44e0280b): impeccable audit + polish of src/app/start/** plus code-review
   UI items (refine lock, late count overwrite, retryable failed UI, hide lead-26 row when <= delivered, CSV BOM/revoke,
   email-profile label). Merge `fl-polish` when done.
