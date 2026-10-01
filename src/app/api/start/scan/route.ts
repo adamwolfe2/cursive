@@ -9,9 +9,10 @@ export const maxDuration = 60
 
 import type { NextRequest } from 'next/server'
 import type Anthropic from '@anthropic-ai/sdk'
-import { ScanRequestSchema, type Attribution, type Icp, type ScanEvent } from '@/lib/free-leads/contract'
+import { ScanRequestSchema, type Attribution, type Icp, type Persona, type ScanEvent } from '@/lib/free-leads/contract'
 import { normalizeSiteUrl, readSite, siteDomain, type SiteContent } from '@/lib/free-leads/site'
 import { scanIcp, ScanError, SCAN_VERSION } from '@/lib/free-leads/scan'
+import { generatePersona } from '@/lib/free-leads/persona'
 import { icpToFilters } from '@/lib/free-leads/icp-to-filters'
 import { cachedCount, cacheGet, cachePut, HOUR_MS } from '@/lib/free-leads/cache'
 import { recordStep, sessionIdFrom } from '@/lib/free-leads/funnel'
@@ -24,7 +25,7 @@ type Send = (event: ScanEvent) => void
 
 const FAILED: ScanEvent = { type: 'error', code: 'failed', message: 'We could not work out who buys from you just now. Please try again.' }
 
-/** Events worth replaying for a repeat visit to the same site (everything before the count). */
+/** Events worth replaying for a repeat visit to the same site (the persona replays after the count). */
 type Replayable = Exclude<ScanEvent, { type: 'count' } | { type: 'error' } | { type: 'done' } | { type: 'replay' }>
 const SCAN_TTL_MS = 7 * 24 * HOUR_MS
 const scanKey = (url: string) => `scan:${SCAN_VERSION}:${siteDomain(url)}`
@@ -68,13 +69,54 @@ async function sendCount(icp: Icp, send: Send): Promise<number | null> {
   }
 }
 
-async function finish(ctx: ScanContext, icp: Icp, send: Send, meta: Record<string, unknown>): Promise<void> {
+type Usage = Array<{ u: Anthropic.Usage; model: string }>
+const usdOf = (usage: Usage) => usage.reduce((s, x) => s + claudeUsd(x.model, x.u), 0)
+
+/** Best-effort: a failed persona never fails the scan. Starts immediately so it overlaps the count. */
+async function startPersona(icp: Icp, siteText: string | null, usage: Usage): Promise<Persona | null> {
+  try {
+    return await generatePersona(icp, siteText, { onUsage: (u, model) => usage.push({ u, model }) })
+  } catch (err) {
+    safeError('[start/scan] persona failed', err)
+    return null
+  }
+}
+
+interface FinishOpts {
+  persona: Promise<Persona | null>
+  /** Runs after the persona landed, before `done` (cache write). */
+  save?: (persona: Persona | null) => Promise<void>
+  /** Read after the persona landed, so persona spend is included. */
+  meta: () => Record<string, unknown>
+}
+
+async function finish(ctx: ScanContext, icp: Icp, send: Send, opts: FinishOpts): Promise<void> {
   const total = await sendCount(icp, send)
+  const persona = await opts.persona
+  if (persona) send({ type: 'persona', persona })
+  await opts.save?.(persona)
   send({ type: 'done' })
   await ctx.pasted
   await recordStep(ctx.sessionId, 'scan_done', {
-    meta,
+    meta: opts.meta(),
     patch: { icp, ...(total === null ? {} : { total }), ...(ctx.url ? { domain: siteDomain(ctx.url) } : {}) },
+  })
+}
+
+/** Replays a cached scan; a scan cached before personas existed gets one generated and written back. */
+async function replay(ctx: ScanContext, send: Send, cached: CachedScan, icp: Icp): Promise<void> {
+  send({ type: 'replay', scanned_at: cached.scanned_at })
+  cached.events.filter((e) => e.type !== 'persona').forEach(send)
+  const stored = cached.events.find((e): e is Extract<Replayable, { type: 'persona' }> => e.type === 'persona')?.persona
+  const usage: Usage = []
+  await finish(ctx, icp, send, {
+    persona: stored ? Promise.resolve(stored) : startPersona(icp, null, usage),
+    save: async (persona) => {
+      if (stored || !persona) return
+      const events: Replayable[] = [...cached.events, { type: 'persona', persona }]
+      await cachePut(scanKey(ctx.url ?? ''), { ...cached, events }, SCAN_TTL_MS)
+    },
+    meta: () => ({ cached: true, usd: usdOf(usage) }),
   })
 }
 
@@ -84,9 +126,7 @@ async function run(ctx: ScanContext, send: Send, cached: CachedScan | null): Pro
   if (url && !description) {
     const icp = cached?.events.find((e): e is Extract<Replayable, { type: 'icp' }> => e.type === 'icp')?.icp
     if (cached && icp) {
-      send({ type: 'replay', scanned_at: cached.scanned_at })
-      cached.events.forEach(send)
-      await finish(ctx, icp, send, { cached: true, usd: 0 })
+      await replay(ctx, send, cached, icp)
       return
     }
   }
@@ -102,7 +142,7 @@ async function run(ctx: ScanContext, send: Send, cached: CachedScan | null): Pro
   }
   const source = await loadSource(ctx, record)
   if (!source) return
-  const usage: Array<{ u: Anthropic.Usage; model: string }> = []
+  const usage: Usage = []
   let icp: Icp
   try {
     icp = await scanIcp(source.text, {
@@ -116,13 +156,19 @@ async function run(ctx: ScanContext, send: Send, cached: CachedScan | null): Pro
     return
   }
   record({ type: 'icp', icp })
-  if (url && !description) await cachePut(scanKey(url), { events, scanned_at: new Date().toISOString() }, SCAN_TTL_MS)
-  await finish(ctx, icp, send, {
-    cached: false,
-    usd: usage.reduce((s, x) => s + claudeUsd(x.model, x.u), 0),
-    model: usage[0]?.model,
-    source: source.site?.source ?? 'description',
-    cache_read: usage.reduce((s, x) => s + (x.u.cache_read_input_tokens ?? 0), 0),
+  const persona = startPersona(icp, source.text, usage)
+  await finish(ctx, icp, record, {
+    persona,
+    save: async () => {
+      if (url && !description) await cachePut(scanKey(url), { events, scanned_at: new Date().toISOString() }, SCAN_TTL_MS)
+    },
+    meta: () => ({
+      cached: false,
+      usd: usdOf(usage),
+      model: usage[0]?.model,
+      source: source.site?.source ?? 'description',
+      cache_read: usage.reduce((s, x) => s + (x.u.cache_read_input_tokens ?? 0), 0),
+    }),
   })
 }
 

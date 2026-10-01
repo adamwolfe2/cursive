@@ -15,6 +15,9 @@ vi.mock('@/lib/getleads/client', async (orig) => ({ ...(await orig<typeof import
 const scoreLeads = vi.hoisted(() => vi.fn())
 vi.mock('@/lib/free-leads/lead-fit', async (orig) => ({ ...(await orig<typeof import('@/lib/free-leads/lead-fit')>()), scoreLeads }))
 
+// Persona is best effort; fail it so this test never makes a real model call.
+vi.mock('@/lib/free-leads/persona', async (orig) => ({ ...(await orig<typeof import('@/lib/free-leads/persona')>()), generatePersona: vi.fn(async () => { throw new Error('persona off in this test') }) }))
+
 import { POST as scan } from '../scan/route'
 import { POST as preview } from '../preview/route'
 
