@@ -5,6 +5,9 @@ import { ResendLink } from '../_components/ResendLink'
 
 export const metadata = { title: 'Check your inbox | Cursive' }
 
+const LINK =
+  'inline-flex min-h-11 items-center font-semibold text-[#0063E6] underline decoration-[#b3d7ff] underline-offset-4 hover:decoration-[#0063E6] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF]'
+
 const INBOXES = [
   { name: 'Gmail', href: 'https://mail.google.com/mail/u/0/#search/from%3Ameetcursive.com+in%3Aanywhere' },
   { name: 'Outlook', href: 'https://outlook.office.com/mail/' },
@@ -45,14 +48,15 @@ export default async function CheckEmailPage({
           ))}
         </div>
 
-        <div className="mt-12 space-y-2 border-t border-[#e5e7eb] pt-6 text-sm text-[#4d5460]">
-          <p>Nothing after a minute? Check spam or promotions, then <ResendLink mock={devMock(params.mock)} />.</p>
-          <p>
-            Wrong address?{' '}
-            <Link href="/start" className="font-medium text-[#0063E6] underline decoration-[#b3d7ff] underline-offset-4 hover:decoration-[#0063E6]">
-              Start over
+        <div className="mt-12 border-t border-[#e5e7eb] pt-6 text-sm text-[#4d5460]">
+          <p>Nothing after a minute? Check spam or promotions.</p>
+          <div className="mt-2 flex flex-wrap items-center gap-x-6">
+            <Link href="/start" className={LINK}>
+              Use a different email
             </Link>
-          </p>
+            {/* Last in the row: it may unmount after reading sessionStorage, and nothing sits after it to move. */}
+            <ResendLink mock={devMock(params.mock)} />
+          </div>
         </div>
       </div>
     </div>

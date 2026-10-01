@@ -1,11 +1,12 @@
 'use client'
 
-import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import type { ClaimResponse } from '@/lib/free-leads/contract'
 import { CLAIM_STORAGE_KEY, postJson, type Mock } from './api'
 
 const COOLDOWN_S = 30
+const LINK =
+  'inline-flex min-h-11 items-center font-semibold text-[#0063E6] underline decoration-[#b3d7ff] underline-offset-4 hover:decoration-[#0063E6] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF]'
 
 /** Re-posts the claim saved by ClaimForm. The claim route resends the link for a pending claim. */
 export function ResendLink({ mock }: { mock: Mock }) {
@@ -20,13 +21,8 @@ export function ResendLink({ mock }: { mock: Mock }) {
     return () => window.clearTimeout(t)
   }, [wait])
 
-  if (saved === null) {
-    return (
-      <Link href="/start" className="font-medium text-[#0063E6] underline decoration-[#b3d7ff] underline-offset-4">
-        request a new one
-      </Link>
-    )
-  }
+  // No saved claim (link opened on another device): "Use a different email" beside this already covers it.
+  if (saved === null) return null
 
   const resend = async () => {
     if (!saved || state === 'sending' || wait > 0) return
@@ -47,9 +43,9 @@ export function ResendLink({ mock }: { mock: Mock }) {
         type="button"
         onClick={resend}
         disabled={state === 'sending' || wait > 0}
-        className="font-medium text-[#0063E6] underline decoration-[#b3d7ff] underline-offset-4 hover:decoration-[#0063E6] disabled:text-[#6b7280] disabled:no-underline"
+        className={`${LINK} tabular-nums disabled:text-[#6b7280] disabled:no-underline`}
       >
-        {state === 'sending' ? 'sending...' : wait > 0 ? `resend in ${wait}s` : 'resend the link'}
+        {state === 'sending' ? 'Sending...' : wait > 0 ? `Resend in ${wait}s` : 'Resend the link'}
       </button>
       <span role="status" className="sr-only">
         {state === 'sent' ? 'Link sent again.' : state === 'error' ? 'We could not resend the link.' : ''}

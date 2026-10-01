@@ -87,14 +87,14 @@ export function Ladder({ mock, firstLead }: { mock: Mock; firstLead: FullLead | 
               Get 25 new leads like these, every Monday.
             </h2>
             <p className="mt-3 text-base leading-relaxed text-white sm:text-[17px]">
-              Same ICP you just refined, fresh contacts each week, work emails and LinkedIn links included.
+              Same buyer profile you approved, fresh contacts each week, work emails and LinkedIn links included.
             </p>
           </div>
           <Cta tier="weekly_leads" label="Send me 25 every Monday" tone="white" interest={interest} />
         </div>
         <p className="mt-6 border-t border-white/20 pt-5 text-[15px] text-white">
           Worried you won&apos;t get to them all?{' '}
-          <a href="#rung-linkedin" className="font-semibold underline decoration-white/50 underline-offset-4 hover:decoration-white">
+          <a href="#rung-linkedin" className="inline-flex min-h-11 items-center font-semibold underline decoration-white/50 underline-offset-4 hover:decoration-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
             We can reach out for you.
           </a>
         </p>
@@ -188,7 +188,7 @@ function ApprovalQueue({ lead }: { lead: FullLead | null }) {
           </div>
         </div>
         <div className="mt-4 flex gap-2">
-          <span className="inline-flex h-9 flex-1 items-center justify-center rounded-md bg-[#007AFF] text-sm font-semibold text-white">
+          <span className="inline-flex h-9 flex-1 items-center justify-center rounded-md bg-[#0063E6] text-sm font-semibold text-white">
             Approve
           </span>
           <span className="inline-flex h-9 flex-1 items-center justify-center rounded-md border border-[#d1d5db] text-sm font-semibold text-[#1d2025]">

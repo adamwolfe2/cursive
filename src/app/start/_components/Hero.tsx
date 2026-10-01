@@ -34,7 +34,7 @@ export function Hero({
   const button = (
     <button
       type="submit"
-      className={`inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-lg bg-[#007AFF] px-5 text-[15px] font-semibold text-white transition-[background-color,transform] duration-150 hover:bg-[#0063E6] active:scale-[0.98] ${FOCUS}`}
+      className={`inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-lg bg-[#0063E6] px-5 text-[15px] font-semibold text-white transition-[background-color,transform] duration-150 hover:bg-[#084fba] active:scale-[0.98] ${FOCUS}`}
     >
       Find my buyers
       <ArrowRight className="h-4 w-4" aria-hidden="true" />

@@ -7,42 +7,22 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { FREE_LEAD_COUNT, type FullLead, type LeadsResponse } from '@/lib/free-leads/contract'
 import { AnimatedNumber, formatCount } from './AnimatedNumber'
 import { errorCopy, getJson, isAbort, StartApiError, trackStep, type Mock } from './api'
+import { leadsCsv } from './csv'
 import { Ladder } from './Ladder'
 import { WhyLine } from './Preview'
 
 type Ready = Extract<LeadsResponse, { status: 'ready' }>
+/** `retryable` is optional in the contract; only an explicit true offers "Try again". */
+type Failed = Extract<LeadsResponse, { status: 'failed' }> & { retryable?: boolean }
 type State =
   | { kind: 'loading' }
   | { kind: 'ready'; data: Ready }
-  | { kind: 'failed'; message: string }
+  | { kind: 'failed'; message: string; retryable: boolean }
   | { kind: 'expired' }
 
 const SLOW_AFTER_MS = 12_000
 /** Leads land one after another at this pace; the heading count and the blue rule track the same clock. */
 const LAND_STEP_MS = 38
-
-const CSV_COLUMNS: Array<[string, (l: FullLead) => string | null]> = [
-  ['first_name', (l) => l.first_name],
-  ['last_name', (l) => l.last_name],
-  ['title', (l) => l.job_title],
-  ['seniority', (l) => l.seniority],
-  ['company', (l) => l.company],
-  ['company_domain', (l) => l.company_domain],
-  ['industry', (l) => l.industry],
-  ['company_size', (l) => l.company_size],
-  ['location', (l) => l.location],
-  ['email', (l) => l.email],
-  ['linkedin_url', (l) => l.linkedin_url],
-  ['phone', (l) => l.phone],
-  ['why_this_lead', (l) => l.why],
-]
-
-/** Quote every cell; prefix formula-looking values so spreadsheets don't execute them. */
-const cell = (v: string | null) => {
-  const s = v ?? ''
-  const safe = /^[=+\-@\t\r]/.test(s) ? `'${s}` : s
-  return `"${safe.replace(/"/g, '""')}"`
-}
 
 /** "https://www.acme.com/" -> "acme.com" for display and file names. */
 function bareDomain(website: string): string {
@@ -50,13 +30,13 @@ function bareDomain(website: string): string {
 }
 
 function downloadCsv(leads: FullLead[], website: string) {
-  const lines = [CSV_COLUMNS.map(([h]) => h).join(','), ...leads.map((l) => CSV_COLUMNS.map(([, get]) => cell(get(l))).join(','))]
-  const url = URL.createObjectURL(new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8' }))
+  const url = URL.createObjectURL(new Blob([leadsCsv(leads)], { type: 'text/csv;charset=utf-8' }))
   const a = document.createElement('a')
   a.href = url
   a.download = `cursive-leads-${bareDomain(website).replace(/[^a-z0-9.-]/gi, '')}.csv`
   a.click()
-  URL.revokeObjectURL(url)
+  // Safari cancels the download if the URL is revoked in the same tick as the click.
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000)
 }
 
 /** `token` is the `c` param from the emailed link. Held in memory only; sent on every (re)fetch. */
@@ -75,13 +55,14 @@ export function LeadsView({ mock, token }: { mock: Mock; token: string | null })
     try {
       const res = await getJson<LeadsResponse>(path, mock, c.signal)
       if (res.status === 'no_claim') return router.replace('/start')
-      if (res.status === 'failed') return setState({ kind: 'failed', message: res.message })
+      if (res.status === 'failed') return setState({ kind: 'failed', message: res.message, retryable: (res as Failed).retryable === true })
       setState({ kind: 'ready', data: res })
     } catch (err) {
       if (isAbort(err)) return
       console.error('[start] leads load failed', err)
       if (err instanceof StartApiError && (err.status === 401 || err.status === 403)) return setState({ kind: 'expired' })
-      setState({ kind: 'failed', message: errorCopy(err) })
+      // Transport errors (offline, 5xx) are worth another try.
+      setState({ kind: 'failed', message: errorCopy(err), retryable: true })
     }
   }, [mock, router, token])
 
@@ -117,9 +98,9 @@ export function LeadsView({ mock, token }: { mock: Mock; token: string | null })
                   from={0}
                   duration={landMs}
                   linear
-                  // Width fixed to the final digit count so the words after it never slide while it counts.
-                  className="inline-block text-right tabular-nums tracking-normal text-[#007AFF]"
-                  style={{ width: `${String(leads.length).length}ch` }}
+                  // Padded to the final digit count so neither the digits nor the words after them move while it counts.
+                  pad={String(leads.length).length}
+                  className="whitespace-pre tabular-nums tracking-normal text-[#007AFF]"
                 /> leads,
                 ready.
               </>
@@ -127,7 +108,8 @@ export function LeadsView({ mock, token }: { mock: Mock; token: string | null })
             <span className="sr-only">{data ? `${leads.length} leads ready.` : ''}</span>
           </h1>
           {/* Two lines (three on phones) reserved: the loading note and the profile summary swap without moving the table. */}
-          <p className="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-[#4d5460] min-h-[3.25rem] max-sm:min-h-[4.875rem]" role="status">
+          <p className={`mt-3 max-w-[62ch] text-[15px] leading-relaxed text-[#4d5460] ${state.kind === 'failed' ? '' : 'min-h-[3.25rem] max-sm:min-h-[4.875rem]'}`}
+            role="status">
             {state.kind === 'loading' &&
               (slow
                 ? 'Still checking emails. We only keep addresses that pass, so this can take up to a minute.'
@@ -155,15 +137,21 @@ export function LeadsView({ mock, token }: { mock: Mock; token: string | null })
 
       {state.kind === 'failed' ? (
         <div className="mt-10 rounded-xl border border-[#e5e7eb] p-6 sm:p-8">
-          <p className="text-[15px] text-[#1d2025]">Your claim is saved. Try again, or reply to the email we sent and we will fix it by hand.</p>
-          <button
-            type="button"
-            onClick={() => void load()}
-            className="mt-5 inline-flex h-11 items-center gap-2 rounded-lg bg-[#007AFF] px-4 text-[15px] font-semibold text-white hover:bg-[#0063E6] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF]"
-          >
-            <RotateCcw className="h-4 w-4" aria-hidden="true" />
-            Try again
-          </button>
+          <p className="text-[15px] text-[#1d2025]">
+            {state.retryable
+              ? 'Your claim is saved. Try again, or reply to the email we sent and we will fix it by hand.'
+              : 'Your claim is saved. Reply to the email we sent and we will sort out your list by hand.'}
+          </p>
+          {state.retryable && (
+            <button
+              type="button"
+              onClick={() => void load()}
+              className="mt-5 inline-flex h-11 items-center gap-2 rounded-lg bg-[#0063E6] px-4 text-[15px] font-semibold text-white hover:bg-[#084fba] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF]"
+            >
+              <RotateCcw className="h-4 w-4" aria-hidden="true" />
+              Try again
+            </button>
+          )}
         </div>
       ) : (
         <>
@@ -205,7 +193,8 @@ export function LeadsView({ mock, token }: { mock: Mock; token: string | null })
                   ))}
                 </tbody>
               )}
-              {data && <LockedRow total={data.total_matching} delay={landMs} />}
+              {/* Delivery can return fewer than 25; with nothing beyond the list there is no locked row to tease. */}
+              {data && data.total_matching > leads.length && <LockedRow index={leads.length + 1} total={data.total_matching} delay={landMs} />}
             </table>
           </div>
           {data ? (
@@ -267,15 +256,21 @@ function LeadRow({ lead, index }: { lead: FullLead; index: number }) {
       style={{ animationDelay: `${index * LAND_STEP_MS}ms` }}
     >
       <tr className="max-sm:flex">
-        <td className={`hidden pl-4 align-top text-[13px] tabular-nums text-[#a0a5b1] sm:table-cell ${pad}`}>{index + 1}</td>
+        <td className={`hidden pl-4 align-top text-[13px] tabular-nums text-[#6b7280] sm:table-cell ${pad}`}>{index + 1}</td>
         <td className={`px-4 align-top max-sm:min-w-0 max-sm:flex-1 ${pad}`}>
           <div className="truncate font-semibold text-[#1d2025]">{name}</div>
           <div className="truncate text-[13px] text-[#6b7280]">{lead.job_title}</div>
           <div className="truncate text-[13px] text-[#6b7280] md:hidden">{lead.company}</div>
-          <div className="mt-1 flex items-center gap-1 sm:hidden">
-            <span className="truncate text-[13px] text-[#3a3f4b]">{lead.email}</span>
-            {copyButton}
-          </div>
+          {/* Phones: the whole email line is the copy target, 44px tall. */}
+          <button
+            type="button"
+            onClick={copy}
+            className="-ml-2 flex min-h-11 max-w-[calc(100%+0.5rem)] items-center gap-2 rounded-md px-2 text-left text-[13px] text-[#3a3f4b] active:bg-[#f3f4f6] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#007AFF] sm:hidden"
+            aria-label={copied ? `Copied ${lead.email}` : `Copy ${lead.email}`}
+          >
+            <span className="truncate">{lead.email}</span>
+            {copied ? <Check className="h-3.5 w-3.5 shrink-0 text-[#15803d]" aria-hidden="true" /> : <Copy className="h-3.5 w-3.5 shrink-0 text-[#6b7280]" aria-hidden="true" />}
+          </button>
         </td>
         <td className={`hidden px-4 align-top md:table-cell ${pad}`}>
           <div className="truncate font-medium text-[#1d2025]">{lead.company}</div>
@@ -293,24 +288,24 @@ function LeadRow({ lead, index }: { lead: FullLead; index: number }) {
           </div>
         </td>
         <td className={`px-4 align-top max-sm:shrink-0 max-sm:pl-0 ${pad}`}>
-          <div className="flex gap-1">
+          <div className="flex gap-1 max-sm:flex-col">
             {lead.linkedin_url ? (
               <a
                 href={lead.linkedin_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="fl-compact grid h-7 w-7 place-items-center rounded-md bg-[#f0f7ff] text-[#0063E6] transition-colors hover:bg-[#d6eaff] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#007AFF]"
+                className="fl-compact grid h-7 w-7 place-items-center rounded-md bg-[#f0f7ff] max-sm:h-11 max-sm:w-11 text-[#0063E6] transition-colors hover:bg-[#d6eaff] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#007AFF]"
                 aria-label={`${name} on LinkedIn`}
               >
                 <Linkedin className="h-3.5 w-3.5" aria-hidden="true" />
               </a>
             ) : (
-              <span className="h-7 w-7" />
+              <span className="h-7 w-7 max-sm:hidden" />
             )}
             {lead.phone && (
               <a
                 href={`tel:${lead.phone.replace(/[^\d+]/g, '')}`}
-                className="fl-compact grid h-7 w-7 place-items-center rounded-md bg-[#f3f4f6] text-[#3a3f4b] transition-colors hover:bg-[#e5e7eb] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#007AFF]"
+                className="fl-compact grid h-7 w-7 place-items-center rounded-md bg-[#f3f4f6] max-sm:h-11 max-sm:w-11 text-[#3a3f4b] transition-colors hover:bg-[#e5e7eb] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#007AFF]"
                 aria-label={`Call ${name}: ${lead.phone}`}
                 title={lead.phone}
               >
@@ -332,18 +327,18 @@ function LeadRow({ lead, index }: { lead: FullLead; index: number }) {
   )
 }
 
-function LockedRow({ total, delay }: { total: number; delay: number }) {
+function LockedRow({ index, total, delay }: { index: number; total: number; delay: number }) {
   return (
     <tbody className="fl-rise border-t border-[#f3f4f6] max-sm:block" style={{ animationDelay: `${delay}ms` }}>
       <tr className="relative bg-[#f9fafb] max-sm:flex">
-        <td className="hidden py-4 pl-4 align-middle text-[13px] tabular-nums text-[#a0a5b1] sm:table-cell">26</td>
+        <td className="hidden py-4 pl-4 align-middle text-[13px] tabular-nums text-[#6b7280] sm:table-cell">{index}</td>
         <td colSpan={5} className="px-4 py-4 max-sm:min-w-0 max-sm:flex-1">
           <div className="flex items-center gap-3">
             <span className="grid h-8 w-8 shrink-0 place-items-center rounded-md bg-white text-[#1d2025] shadow-enterprise-xs">
               <Lock className="h-4 w-4" aria-hidden="true" />
             </span>
             <div className="min-w-0 select-none">
-              <p className="text-sm font-semibold text-[#1d2025]">Lead 26 of {formatCount(total)}</p>
+              <p className="text-sm font-semibold text-[#1d2025]">Lead {index} of {formatCount(total)}</p>
               <p className="truncate text-[13px] text-[#6b7280] blur-[3px]" aria-hidden="true">
                 Jordan Ellis, Head of Operations, Brightline Labs
               </p>
@@ -367,7 +362,7 @@ function Expired() {
         </p>
         <Link
           href="/start"
-          className="mt-8 inline-flex h-12 items-center rounded-lg bg-[#007AFF] px-5 text-[15px] font-semibold text-white transition-colors hover:bg-[#0063E6] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF]"
+          className="mt-8 inline-flex h-12 items-center rounded-lg bg-[#0063E6] px-5 text-[15px] font-semibold text-white transition-colors hover:bg-[#084fba] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF]"
         >
           Get a new link
         </Link>

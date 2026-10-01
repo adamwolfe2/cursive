@@ -15,6 +15,7 @@ export function AnimatedNumber({
   from,
   duration = 700,
   linear = false,
+  pad = 0,
 }: {
   value: number
   className?: string
@@ -22,6 +23,8 @@ export function AnimatedNumber({
   from?: number
   duration?: number
   linear?: boolean
+  /** Left-pad with figure spaces to this many characters so the digits' start never moves while counting. */
+  pad?: number
 }) {
   const [shown, setShown] = useState(from ?? value)
   const current = useRef(from ?? value)
@@ -49,7 +52,7 @@ export function AnimatedNumber({
 
   return (
     <span className={className} style={style} aria-hidden="true">
-      {fmt.format(shown)}
+      {fmt.format(shown).padStart(pad, '\u2007')}
     </span>
   )
 }

@@ -2,7 +2,7 @@
  * DEV-ONLY fixtures for /start?mock=<scenario>. Loaded lazily by api.ts only when
  * page.tsx passes a mock scenario, which it never does in production.
  * Scan scenarios: 1 (happy path), replay, slow (profile after ~18s), unreachable, ratelimited, zero (no matches).
- * /start/leads: failed, expired. claim500 (claim returns a server error). Claim emails: gmail etc -> personal_email,
+ * /start/leads: failed (not retryable), failedretry, expired, short (12 leads, nothing beyond). claim500 (claim returns a server error). Claim emails: gmail etc -> personal_email,
  * *taken* -> already_claimed, *slowdown* -> rate_limited. Email-profile: *slowdown* -> rate_limited, no "@" -> invalid_email.
  */
 import {
@@ -197,12 +197,14 @@ export async function mockRequest(path: string, body: unknown, scenario: string)
       await wait(scenario === 'slow' ? 14000 : 2600)
       if (scenario === 'expired') throw new StartApiError('Unauthorized', 401)
       if (scenario === 'failed') return { status: 'failed', message: 'We could not pull your leads right now.' }
+      if (scenario === 'failedretry') return { status: 'failed', message: 'We could not pull your leads right now.', retryable: true }
       return {
         status: 'ready',
         icp: ICP,
         website: 'vantacheck.io',
-        leads: Array.from({ length: 25 }, (_, i) => full(i)),
-        total_matching: 48210,
+        // `short`: delivery found fewer than 25 and nothing beyond them.
+        leads: Array.from({ length: scenario === 'short' ? 12 : 25 }, (_, i) => full(i)),
+        total_matching: scenario === 'short' ? 12 : 48210,
       }
     case '/api/start/email-icp': {
       await wait(700)

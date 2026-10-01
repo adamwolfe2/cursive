@@ -1,6 +1,6 @@
 'use client'
 
-import { ArrowRight, Linkedin, Loader2, Phone } from 'lucide-react'
+import { ArrowRight, ArrowUpRight, Linkedin, Loader2, Phone } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useId, useRef, useState, type FormEvent } from 'react'
 import {
@@ -13,14 +13,13 @@ import {
 import { formatCount } from './AnimatedNumber'
 import { CLAIM_STORAGE_KEY, errorCopy, postJson, StartApiError, type Mock } from './api'
 
+/** Shown only when the lead has it; an empty slot keeps the column aligned, same as the full list. */
 function Indicator({ on, label, children }: { on: boolean; label: string; children: React.ReactNode }) {
+  if (!on) return <span className="h-7 w-7" />
   return (
-    <span
-      className={`grid h-7 w-7 place-items-center rounded-md ${on ? 'bg-[#f0f7ff] text-[#0063E6]' : 'text-[#d1d5db]'}`}
-      title={on ? label : `No ${label.toLowerCase()}`}
-    >
+    <span className="grid h-7 w-7 place-items-center rounded-md bg-[#f0f7ff] text-[#0063E6]" title={label}>
       {children}
-      <span className="sr-only">{on ? `Has ${label}` : `No ${label}`}</span>
+      <span className="sr-only">Has {label}</span>
     </span>
   )
 }
@@ -187,7 +186,7 @@ export function ClaimForm({ website, icp, mock }: { website: string | null; icp:
         <button
           type="submit"
           disabled={state.kind === 'sending'}
-          className="inline-flex h-14 shrink-0 items-center justify-center gap-2 rounded-xl bg-[#007AFF] px-6 text-base font-semibold text-white transition-[background-color,transform] duration-150 hover:bg-[#0063E6] active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF] disabled:opacity-70"
+          className="inline-flex h-14 shrink-0 items-center justify-center gap-2 rounded-xl bg-[#0063E6] px-6 text-base font-semibold text-white transition-[background-color,transform] duration-150 hover:bg-[#084fba] active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF] disabled:opacity-70"
         >
           Send my {FREE_LEAD_COUNT} leads
           {state.kind === 'sending' ? (
@@ -197,22 +196,24 @@ export function ClaimForm({ website, icp, mock }: { website: string | null; icp:
           )}
         </button>
       </div>
-      <div id={msgId} role="alert" className="mt-3 min-h-5 max-w-2xl text-sm">
-        {message && (
-          <p className={invalid ? 'text-[#b91c1c]' : 'text-[#3a3f4b]'}>
-            {message}
-            {state.kind === 'already_claimed' && (
-              <>
-                {' '}
-                <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="font-medium text-[#0063E6] underline underline-offset-4">
-                  Book a call
-                </a>
-              </>
-            )}
-          </p>
+      {/* One slot: the reassurance line gives way to any message, so a one-line message never moves the preview. */}
+      <div className="mt-3 min-h-5 max-w-2xl text-sm">
+        <div id={msgId} role="alert">
+          {message && <p className={invalid ? 'text-[#b91c1c]' : 'text-[#3a3f4b]'}>{message}</p>}
+        </div>
+        {state.kind === 'already_claimed' && (
+          <a
+            href={BOOKING_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-1 inline-flex h-11 items-center gap-1.5 font-semibold text-[#0063E6] underline decoration-[#b3d7ff] underline-offset-4 hover:decoration-[#0063E6] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF]"
+          >
+            Book a call
+            <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+          </a>
         )}
+        {!message && <p className="text-[13px] text-[#6b7280]">No card. One free list per company.</p>}
       </div>
-      <p className="text-[13px] text-[#6b7280]">No card. One free list per company.</p>
     </form>
   )
 }
