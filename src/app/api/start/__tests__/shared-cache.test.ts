@@ -41,13 +41,15 @@ describe('scan: shared cache', () => {
     })
     countContacts.mockResolvedValue(1234)
     const first = await events(await scan(req('/api/start/scan', { url: 'acme.com' })))
-    const second = await events(await scan(req('/api/start/scan', { url: 'https://www.acme.com/' })))
+    const second = await events(await scan(req('/api/start/scan', { url: 'https://www.acme.com/search?q=injected' })))
     expect(first.map((e) => e.type)).toEqual(['fact', 'icp', 'count', 'done'])
     expect(second[0]).toMatchObject({ type: 'replay' })
     expect(second.slice(1)).toEqual(first)
     expect(fetchSite).toHaveBeenCalledTimes(1)
     expect(scanIcp).toHaveBeenCalledTimes(1)
     expect(countContacts).toHaveBeenCalledTimes(1)
+    // Paths and queries are dropped: the scan always reads the origin.
+    expect(fetchSite.mock.calls[0][0]).toBe('https://acme.com/')
   })
 
   it('a failed scan is not cached', async () => {
@@ -74,7 +76,14 @@ describe('preview: shared cache', () => {
     expect(a).toEqual(b)
     expect(a.leads[0]).toMatchObject({ first_name: 'P0', email_masked: 'p•••@acme.com', why: 'why 0' })
     expect(JSON.stringify(a)).not.toContain('p0@acme.com')
-    const row = (db.current as ReturnType<typeof fakeSupabase>).tables.free_leads_cache[0]
-    expect((row.value as { contacts: unknown[] }).contacts).toHaveLength(5)
+    const cache = (db.current as ReturnType<typeof fakeSupabase>).tables.free_leads_cache
+    const rows = cache.find((r) => String(r.key).startsWith('preview-rows:'))
+    expect((rows?.value as { contacts: unknown[] }).contacts).toHaveLength(5)
+    // A different summary reuses the paid rows but gets its own why lines.
+    scoreLeads.mockResolvedValue(contacts.map(() => ({ score: 2, why: 'other' })))
+    const c = await (await preview(req('/api/start/preview', { icp: { ...ICP, summary: 'Injected text' } }))).json()
+    expect(searchContacts).toHaveBeenCalledTimes(1)
+    expect(c.leads[0].why).toBe('other')
+    expect(a.leads[0].why).toBe('why 0')
   })
 })

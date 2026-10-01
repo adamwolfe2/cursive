@@ -141,3 +141,12 @@ describe('claim state transitions', () => {
     expect(claimDecisionFor('pending', true)).toBe('silent')
   })
 })
+
+describe('companyDomain', () => {
+  it('collapses sub-domains to the registrable domain so one company gets one free claim', async () => {
+    const { companyDomain } = await import('../rules')
+    expect(companyDomain('a@x1.attacker.com')).toBe('attacker.com')
+    expect(companyDomain('a@Mail.EU.Acme.co.uk')).toBe('acme.co.uk')
+    expect(companyDomain('ceo@acme.com')).toBe('acme.com')
+  })
+})

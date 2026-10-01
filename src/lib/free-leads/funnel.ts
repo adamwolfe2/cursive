@@ -9,7 +9,7 @@
 import type { NextRequest } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { safeError } from '@/lib/utils/log-sanitizer'
-import { SESSION_HEADER, SessionIdSchema, type Attribution, type FunnelStep, type Icp } from './contract'
+import { IcpSchema, SESSION_HEADER, SessionIdSchema, type Attribution, type FunnelStep, type Icp } from './contract'
 
 type Admin = ReturnType<typeof createAdminClient>
 
@@ -55,4 +55,16 @@ export async function recordStep(sessionId: string | null, step: FunnelStep, opt
   } catch (err) {
     safeError('[free-leads/funnel] step not recorded', { step, err: String(err) })
   }
+}
+
+/** The ICP our own scan stored for this session (null when none, unreadable, or not from a site). */
+export async function sessionIcp(sessionId: string, admin: Admin = createAdminClient()): Promise<{ icp: Icp; domain: string } | null> {
+  const { data, error } = await admin.from('free_lead_sessions').select('icp, domain').eq('id', sessionId).maybeSingle()
+  if (error) {
+    safeError('[free-leads/funnel] session read failed', error.message)
+    return null
+  }
+  const row = data as { icp: unknown; domain: string | null } | null
+  const icp = IcpSchema.safeParse(row?.icp)
+  return icp.success && row?.domain ? { icp: icp.data, domain: row.domain } : null
 }

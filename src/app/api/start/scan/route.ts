@@ -86,6 +86,11 @@ async function run(ctx: ScanContext, send: Send): Promise<void> {
       return
     }
   }
+  // Global cap counts only real scans (model + crawler spend), not cache replays.
+  if (await isLimited('free-leads-scan-global', 'global')) {
+    send({ type: 'error', code: 'rate_limited', message: 'Scans are busy right now. Try again tomorrow.' })
+    return
+  }
   const events: Replayable[] = []
   const record: Send = (event) => {
     if (event.type !== 'count' && event.type !== 'error' && event.type !== 'done' && event.type !== 'replay') events.push(event)
@@ -147,7 +152,10 @@ export async function POST(req: NextRequest) {
   const sentDescription =
     typeof body === 'object' && body !== null && typeof (body as { description?: unknown }).description === 'string'
   const parsed = ScanRequestSchema.safeParse(body)
-  const url = parsed.success && parsed.data.url ? normalizeSiteUrl(parsed.data.url) : null
+  // Always the site's origin: a path or query (victim.com/search?q=..., github.com/someone) must not
+  // become the cached scan every later visitor of that domain replays.
+  const normalized = parsed.success && parsed.data.url ? normalizeSiteUrl(parsed.data.url) : null
+  const url = normalized ? `${new URL(normalized).origin}/` : null
   const description = parsed.success ? parsed.data.description : undefined
   const attribution: Attribution | undefined = parsed.success ? parsed.data.attribution : undefined
   const ctx: ScanContext = { sessionId: sessionIdFrom(req), url, description }
@@ -163,10 +171,6 @@ export async function POST(req: NextRequest) {
     const ip = clientIp(req)
     if (await isLimited('free-leads-scan', `ip:${ip}`)) {
       send({ type: 'error', code: 'rate_limited', message: 'You have run a lot of scans. Try again in an hour.' })
-      return
-    }
-    if (await isLimited('free-leads-scan-global', 'global')) {
-      send({ type: 'error', code: 'rate_limited', message: 'Scans are busy right now. Try again tomorrow.' })
       return
     }
     await recordStep(ctx.sessionId, 'paste', {

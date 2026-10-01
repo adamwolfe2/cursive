@@ -191,7 +191,7 @@ describe('delivery: over-pull, fit check, preview reuse', () => {
     const preview = people(5, 100)
     const { admin, row, db } = withIcp()
     db.tables.free_leads_cache = [
-      { key: `preview:${filtersHash(row().filters)}`, value: { contacts: preview, total: 500 }, expires_at: new Date(Date.now() + 60_000).toISOString() },
+      { key: `preview-rows:${filtersHash(row().filters)}`, value: { contacts: preview, total: 500 }, expires_at: new Date(Date.now() + 60_000).toISOString() },
     ]
     searchContacts.mockResolvedValue({ contacts: people(30), totalAvailable: 500 })
     scoreLeads.mockResolvedValue(null)
@@ -212,6 +212,15 @@ describe('delivery: over-pull, fit check, preview reuse', () => {
     expect(searchContacts).toHaveBeenCalledTimes(1)
     expect(db.tables.leads).toHaveLength(25)
     expect(db.tables.leads[0].metadata).toEqual({ free_lead_claim_id: 'c1' })
+  })
+
+  it('never delivers zero after paying: an all-zero fit check falls back to unscored rows', async () => {
+    const { admin, row, db } = withIcp()
+    searchContacts.mockResolvedValue({ contacts: people(35), totalAvailable: 500 })
+    scoreLeads.mockResolvedValue(people(35).map(() => ({ score: 0, why: 'no' })))
+    await lockAndFulfill(admin, row)
+    expect(db.tables.leads).toHaveLength(25)
+    expect(row().status).toBe('fulfilled')
   })
 
   it('reads stored leads best-first with the why line', async () => {

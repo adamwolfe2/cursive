@@ -2,8 +2,9 @@
  * POST /api/start/email-icp  body: { email, website, icp }  -> EmailIcpResponse.
  * Public "Email me this profile": soft capture for visitors not ready to claim. Any mailbox
  * (personal allowed) but it must have MX; capped per IP, per mailbox and globally because it
- * sends mail to an address the caller chooses. The email holds only our template and the
- * escaped ICP fields. No credits.
+ * sends mail to an address the caller chooses. Anti-relay: the email carries only the ICP our own
+ * scan produced for this session's site (read server-side), never text from the request body.
+ * No credits.
  */
 export const runtime = 'nodejs'
 
@@ -12,7 +13,7 @@ import { EmailIcpRequestSchema, type EmailIcpResponse } from '@/lib/free-leads/c
 import { emailDomain } from '@/lib/free-leads/rules'
 import { hasMailExchanger } from '@/lib/free-leads/mx'
 import { normalizeSiteUrl, siteDomain } from '@/lib/free-leads/site'
-import { recordStep, sessionIdFrom } from '@/lib/free-leads/funnel'
+import { recordStep, sessionIcp, sessionIdFrom } from '@/lib/free-leads/funnel'
 import { badRequest, clientIp, isLimited, readJson, serverError } from '@/lib/free-leads/http'
 import { sendFreeLeadsProfileEmail } from '@/lib/email/templates/free-leads-profile'
 import { safeLog } from '@/lib/utils/log-sanitizer'
@@ -36,9 +37,12 @@ export async function POST(req: NextRequest) {
   }
 
   const domain = siteDomain(website)
-  const sent = await sendFreeLeadsProfileEmail({ to: email, domain, icp: parsed.data.icp })
+  const sessionId = sessionIdFrom(req)
+  const scanned = sessionId ? await sessionIcp(sessionId) : null
+  if (!scanned || scanned.domain !== domain) return badRequest('Scan your site first, then we can email the profile.')
+  const sent = await sendFreeLeadsProfileEmail({ to: email, domain, icp: scanned.icp })
   if (!sent.success) return serverError('We could not send the email. Please try again.')
   safeLog('[start/email-icp] profile sent', {})
-  await recordStep(sessionIdFrom(req), 'icp_emailed', { patch: { email } })
+  await recordStep(sessionId, 'icp_emailed', { patch: { email } })
   return reply({ status: 'sent' })
 }

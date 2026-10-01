@@ -371,6 +371,11 @@ export const RATE_LIMITS = {
     maxRequests: Number(process.env.FREE_LEADS_DAILY_ICP_EMAIL_CAP) || 150,
     message: 'Profile emails are paused for today.',
   },
+  'free-leads-interest': {
+    windowMs: 60 * 60 * 1000,
+    maxRequests: 20, // upgrade clicks per signed-in user per hour
+    message: 'Too many requests.',
+  },
   'free-leads-event': {
     windowMs: 60 * 60 * 1000,
     maxRequests: 120, // client-reported funnel steps (ICP approved, CSV download)

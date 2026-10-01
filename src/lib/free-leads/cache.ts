@@ -2,12 +2,14 @@
  * Shared cache for the public free-leads flow (table free_leads_cache). Keys:
  *   scan:<version>:<domain>   replayable scan result
  *   count:<filter hash>       match count
- *   preview:<filter hash>     the raw preview contacts (reused by delivery, saving credits)
+ *   preview-rows:<filter hash>        raw preview contacts (reused by delivery, saving credits)
+ *   preview-why:<filter hash>:<sum>   preview why lines for one ICP summary
  *
  * Service role: the table is server-only (RLS on, no policies); values are written only by
  * our routes from upstream responses, never from request bodies.
  * A cache failure is logged and treated as a miss; it never fails the request.
  */
+import { createHash } from 'node:crypto'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { safeWarn } from '@/lib/utils/log-sanitizer'
 import { countContacts, type GetLeadsFilters } from '@/lib/getleads/client'
@@ -49,3 +51,9 @@ export async function cachedCount(filters: GetLeadsFilters, admin?: Admin): Prom
   await cachePut(key, { total }, 24 * HOUR_MS, admin)
   return total
 }
+
+/** Raw preview rows for a filter set: written only from upstream responses; delivery reuses them. */
+export const previewRowsKey = (filters: GetLeadsFilters) => `preview-rows:${filtersHash(filters)}`
+/** Why lines depend on the ICP summary too, so one visitor's summary cannot set another's lines. */
+export const previewWhyKey = (filters: GetLeadsFilters, summary: string) =>
+  `preview-why:${filtersHash(filters)}:${createHash('sha256').update(summary).digest('hex').slice(0, 16)}`

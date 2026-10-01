@@ -62,7 +62,7 @@ export function narrowIndustries(industries: readonly string[]): string[] {
 export const EXCLUDED_TITLES = ['Assistant', 'Intern', 'Student', 'Retired', 'Former'] as const
 
 export function icpToFilters(icp: Icp): GetLeadsFilters {
-  const lists: Record<Exclude<keyof GetLeadsFilters, 'email_status'>, string[]> = {
+  const lists: Record<Exclude<keyof GetLeadsFilters, 'email_status' | 'exclude_job_titles'>, string[]> = {
     industries: narrowIndustries(icp.industries),
     job_titles: clean(icp.job_titles),
     seniority: clean(icp.seniority),

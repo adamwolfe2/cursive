@@ -30,6 +30,21 @@ export function emailDomain(email: string): string {
   return email.trim().toLowerCase().split('@').pop() ?? ''
 }
 
+// ponytail: hand-kept list of two-label public suffixes, not the full Public Suffix List.
+// Enough to stop free sub-domains of one registered domain (a@x1.acme.com, a@x2.acme.com) from
+// each claiming; add suffixes (or the tldts package) if claims come from unlisted country domains.
+const TWO_LABEL_SUFFIXES = new Set([
+  'co.uk', 'org.uk', 'ac.uk', 'gov.uk', 'ltd.uk', 'plc.uk', 'me.uk', 'com.au', 'net.au', 'org.au', 'co.nz', 'org.nz',
+  'co.za', 'com.br', 'com.mx', 'com.ar', 'co.jp', 'co.kr', 'co.in', 'com.sg', 'com.hk', 'com.tr', 'co.il', 'com.cn',
+])
+
+/** Registrable company domain of an email: "a@mail.eu.acme.co.uk" -> "acme.co.uk" (one free claim per company). */
+export function companyDomain(email: string): string {
+  const labels = emailDomain(email).split('.').filter(Boolean)
+  const lastTwo = labels.slice(-2).join('.')
+  return TWO_LABEL_SUFFIXES.has(lastTwo) ? labels.slice(-3).join('.') : lastTwo
+}
+
 export function isPersonalEmail(email: string): boolean {
   const domain = emailDomain(email)
   return PERSONAL_EMAIL_DOMAINS.has(domain) || PERSONAL_PREFIX.test(domain)

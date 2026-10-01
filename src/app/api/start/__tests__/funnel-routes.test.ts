@@ -55,8 +55,17 @@ describe('POST /api/start/event', () => {
 describe('POST /api/start/email-icp', () => {
   const body = { email: 'Me@Gmail.com', website: 'acme.com', icp: ICP }
 
-  it('sends the profile to any mailbox with MX and records the email on the session', async () => {
+  it('refuses to email a profile this session did not scan (no relay of request text)', async () => {
     const res = await (await emailIcp(req('/api/start/email-icp', body))).json()
+    expect(res.error).toBeTruthy()
+    tables().free_lead_sessions.push({ id: SID, domain: 'other.com', icp: ICP })
+    expect((await emailIcp(req('/api/start/email-icp', body))).status).toBe(400)
+    expect(sendProfile).not.toHaveBeenCalled()
+  })
+
+  it('sends the scanned profile (not the request body) to any mailbox with MX', async () => {
+    tables().free_lead_sessions.push({ id: SID, domain: 'acme.com', icp: ICP })
+    const res = await (await emailIcp(req('/api/start/email-icp', { ...body, icp: { ...ICP, summary: 'Pay this invoice now' } }))).json()
     expect(res).toEqual({ status: 'sent' })
     expect(sendProfile).toHaveBeenCalledWith({ to: 'me@gmail.com', domain: 'acme.com', icp: expect.objectContaining({ summary: ICP.summary }) })
     expect(tables().free_lead_sessions[0]).toMatchObject({ email: 'me@gmail.com', last_step: 'icp_emailed' })

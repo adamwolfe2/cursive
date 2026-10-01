@@ -11,7 +11,7 @@ export const runtime = 'nodejs'
 
 import { NextResponse, type NextRequest } from 'next/server'
 import { ClaimRequestSchema, type ClaimResponse } from '@/lib/free-leads/contract'
-import { claimDecisionFor, emailDomain, hashIp, isPersonalEmail, newClaimToken } from '@/lib/free-leads/rules'
+import { claimDecisionFor, companyDomain, emailDomain, hashIp, isPersonalEmail, newClaimToken } from '@/lib/free-leads/rules'
 import {
   claimIcp,
   findLatestClaimByEmail,
@@ -76,9 +76,10 @@ export async function POST(req: NextRequest) {
   const website = normalizeSiteUrl(parsed.data.website)
   if (!website) return badRequest('Enter a valid website.')
 
-  const domain = emailDomain(email)
+  // One free claim per registrable company domain (sub-domains of one company share it).
+  const domain = companyDomain(email)
   // Before any cap is touched, so made-up domains cannot burn the send budget.
-  if (!(await hasMailExchanger(domain))) return badRequest('Enter a valid work email.')
+  if (!(await hasMailExchanger(emailDomain(email)))) return badRequest('Enter a valid work email.')
 
   const ip = clientIp(req)
   // Per IP, and per mailbox per day, so rotating IPs cannot email-bomb one address.

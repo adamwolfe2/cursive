@@ -12,8 +12,7 @@ import { slugifyWorkspace } from '@/lib/funnel/workspace-provision'
 import { FUNNEL_TIER_FEATURES } from '@/lib/workspaces/feature-flags'
 import { assertConfigured, searchContacts, type GetLeadsFilters } from '@/lib/getleads/client'
 import { FREE_LEAD_COUNT, IcpSchema, type FullLead, type Icp } from './contract'
-import { cacheGet } from './cache'
-import { filtersHash } from './icp-to-filters'
+import { cacheGet, previewRowsKey } from './cache'
 import { OVERPULL_FACTOR, scoreLeads, selectFitLeads } from './lead-fit'
 import { claudeUsd } from './cost'
 import type { GetLeadsContact } from '@/lib/getleads/client'
@@ -280,7 +279,7 @@ export async function fulfillClaim(claim: ClaimRow, authUserId: string, admin: A
   // The anonymous preview for these exact filters already bought the first rows (upstream order is
   // stable, verified 2026-09-30): reuse them and buy only what comes after.
   const want = Math.ceil(FREE_LEAD_COUNT * OVERPULL_FACTOR)
-  const preview = await cacheGet<{ contacts: GetLeadsContact[] }>(`preview:${filtersHash(claim.filters)}`, admin)
+  const preview = await cacheGet<{ contacts: GetLeadsContact[] }>(previewRowsKey(claim.filters), admin)
   const reused = (preview?.contacts ?? []).slice(0, want - 1)
 
   let pulled: Awaited<ReturnType<typeof searchContacts>>
@@ -300,7 +299,10 @@ export async function fulfillClaim(claim: ClaimRow, authUserId: string, admin: A
   const fits = icp
     ? await scoreLeads(icp, claim.website, candidates, { onUsage: ({ usage, model }) => (fitUsd += claudeUsd(model, usage)) })
     : null
-  const rows = selectFitLeads(candidates, fits, FREE_LEAD_COUNT).map(({ item, fit }, rank) =>
+  const picked = selectFitLeads(candidates, fits, FREE_LEAD_COUNT)
+  // Credits are already spent: if the check rejected every row, deliver them unscored rather than none.
+  const chosen = picked.length || !candidates.length ? picked : selectFitLeads(candidates, null, FREE_LEAD_COUNT)
+  const rows = chosen.map(({ item, fit }, rank) =>
     toLeadInsert(item, workspaceId, claim.id, now, fit ? { fit_score: fit.score, fit_why: fit.why, fit_rank: rank } : undefined)
   )
   const { error } = rows.length ? await admin.from('leads').insert(rows) : { error: null }
@@ -338,14 +340,16 @@ export function claimIcp(claim: ClaimRow): Icp | null {
   return parsed.success ? parsed.data : null
 }
 
-export async function recordInterest(claimId: string, tier: string, admin: Admin): Promise<void> {
+/** Adds the tier to the claim's upgrade interest. Returns true only when it is new. */
+export async function recordInterest(claimId: string, tier: string, admin: Admin): Promise<boolean> {
   const { data, error } = await admin.from('free_lead_claims').select('upgrade_interest').eq('id', claimId).single()
   if (error) throw dbError('interest read failed', error)
   const current = ((data as { upgrade_interest: string[] | null }).upgrade_interest ?? []) as string[]
-  if (current.includes(tier)) return
+  if (current.includes(tier)) return false
   const { error: updErr } = await admin
     .from('free_lead_claims')
     .update({ upgrade_interest: [...current, tier] })
     .eq('id', claimId)
   if (updErr) throw dbError('interest write failed', updErr)
+  return true
 }
