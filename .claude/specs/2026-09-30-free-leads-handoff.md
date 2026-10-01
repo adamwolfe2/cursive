@@ -54,3 +54,10 @@ MillionVerifier at delivery; weekly-leads price; GetLeads product-use terms; day
     (server min 2); >4000-char description shows wrong copy; "$25 /mo" stray space; size chips use en dashes;
     email-profile hidden for description scans (ok); ?site= auto-scan spends model money when scanners open the
     profile email link (gate auto-start behind a click, or rely on the 7-day cache).
+
+## Session 3 (QA fixes, ship)
+- Fixed QA 1-10 (blocker: instrumentation re-threw uncaughtException; Node pinned 24.x), plus delivery bug found by E2E:
+  leads.hash_key is unique across all workspaces, so one overlapping person failed the whole insert after paying.
+- Deferred: two-tab session race (per-tab ids are intentional: email-icp ties the profile to the scanning session);
+  ?site= auto-scan gate (profile emails only go out for scanned domains, so scanner opens replay the 7-day scan cache).
+- Global count cap is now hourly (250) not daily. GetLeads credits after E2E: 16. Buy credits before traffic.
