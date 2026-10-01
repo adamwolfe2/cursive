@@ -75,7 +75,7 @@ function Cta({
   )
 }
 
-export function Ladder({ mock, firstLead }: { mock: Mock; firstLead: FullLead | null }) {
+export function Ladder({ mock, leads, website }: { mock: Mock; leads: FullLead[]; website: string | null }) {
   const interest = useInterest(mock)
   return (
     <>
@@ -116,7 +116,7 @@ export function Ladder({ mock, firstLead }: { mock: Mock; firstLead: FullLead | 
             <Cta tier="linkedin_outreach" label="Talk about LinkedIn outreach" tone="ink" interest={interest} />
           </div>
         </div>
-        <ApprovalQueue lead={firstLead} />
+        <ApprovalQueue lead={leads[0] ?? null} />
       </section>
 
       {/* Rung 3: flipped, the dashboard leads. */}
@@ -125,7 +125,7 @@ export function Ladder({ mock, firstLead }: { mock: Mock; firstLead: FullLead | 
         className="mt-24 grid items-center gap-10 border-t border-[#e5e7eb] pt-24 sm:mt-32 sm:pt-32 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:gap-16"
       >
         <div className="order-2 lg:order-1">
-          <DashboardPreview />
+          <DashboardPreview website={website} leads={leads} />
         </div>
         <div className="order-1 max-w-[34rem] lg:order-2">
           <h2 id="rung-dashboard" className="text-[1.75rem] font-semibold leading-[1.1] tracking-[-0.025em] text-[#111318] sm:text-[2.25rem]">

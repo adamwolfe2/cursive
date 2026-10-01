@@ -75,6 +75,48 @@
   animation: fl-fill linear both;
 }
 
+/* Column bars in the example dashboard grow up from the baseline as it scrolls into view. */
+@keyframes fl-rise-bar {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: none;
+  }
+}
+
+.fl-rise-bar {
+  transform-origin: bottom;
+  animation: fl-rise-bar 900ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@supports (animation-timeline: view()) {
+  .fl-rise-bar {
+    animation-timeline: view();
+    animation-range: entry 10% cover 40%;
+  }
+}
+
+/* The example dashboard lifts a little under the pointer. */
+.fl-tilt {
+  transition:
+    transform 300ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (hover: hover) {
+  .fl-tilt:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 40px -16px rgb(12 31 69 / 0.22);
+  }
+}
+
+/* A bar settling to its value. transform only; the width is static. */
+.fl-grow {
+  transform-origin: left;
+  animation: fl-fill 900ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
 .fl-rise {
   animation: fl-rise 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
@@ -115,13 +157,20 @@
   .fl-rise,
   .fl-fade,
   .fl-land,
-  .fl-fill {
+  .fl-fill,
+  .fl-grow,
+  .fl-rise-bar {
     animation: none !important;
   }
   .fl-sheen,
   .fl-sheen-ink,
   .fl-pulse {
     animation: none !important;
+  }
+  .fl-tilt,
+  .fl-tilt:hover {
+    transition: none;
+    transform: none;
   }
 }
 

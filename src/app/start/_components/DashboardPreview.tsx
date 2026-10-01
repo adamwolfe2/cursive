@@ -1,74 +1,95 @@
-/** Illustrative operating dashboard, drawn in CSS + SVG so it stays crisp and weighs nothing. Decorative only. */
-const STAGES: Array<[string, number]> = [
-  ['New leads', 100],
-  ['Contacted', 72],
-  ['Replied', 38],
-  ['Meeting', 21],
-  ['Won', 9],
-]
+import type { FullLead } from '@/lib/free-leads/contract'
 
-export function DashboardPreview() {
+/**
+ * What a built dashboard looks like, in the shape of the ones we run for clients: sidebar, a KPI strip,
+ * a weekly chart and a "reach out today" list. The people listed are the reader's own first leads; every
+ * pipeline number is example data and labeled so, like the client demos. Decorative for screen readers.
+ */
+const KPIS: Array<[string, string, string]> = [
+  ['New leads', '25', 'this week'],
+  ['Replies', '14', '+5'],
+  ['Meetings', '6', '+2'],
+  ['Pipeline', '$184k', '+18%'],
+]
+const WEEKS = [3, 5, 4, 7, 6, 9, 11, 14]
+const NAV = ['Today', 'Leads', 'Pipeline', 'Replies', 'Meetings']
+
+export function DashboardPreview({ website, leads }: { website: string | null; leads: FullLead[] }) {
+  const domain = website?.replace(/^https?:\/\//i, '').replace(/^www\./i, '').replace(/\/.*$/, '') || 'your company'
+  const people = leads.slice(0, 3)
+  const peak = Math.max(...WEEKS)
   return (
-    <figure aria-label="Example of a custom sales dashboard" className="select-none">
-      <div className="overflow-hidden rounded-xl border border-[#e5e7eb] bg-white shadow-enterprise-md" aria-hidden="true">
-        <div className="flex h-9 items-center gap-1.5 border-b border-[#f3f4f6] bg-[#f9fafb] px-3.5">
-          <span className="h-2 w-2 rounded-full bg-[#d1d5db]" />
-          <span className="h-2 w-2 rounded-full bg-[#d1d5db]" />
-          <span className="h-2 w-2 rounded-full bg-[#d1d5db]" />
-          <span className="ml-3 text-[11px] font-medium text-[#6b7280]">Revenue, this quarter</span>
-        </div>
-        <div className="grid grid-cols-[3rem_1fr] sm:grid-cols-[8.5rem_1fr]">
-          <div className="space-y-2 border-r border-[#f3f4f6] p-3">
-            {['Overview', 'Pipeline', 'Outreach', 'Clients'].map((item, i) => (
-              <div key={item} className={`flex items-center gap-2 rounded-md px-2 py-1.5 ${i === 0 ? 'bg-[#f0f7ff]' : ''}`}>
-                <span className={`h-2.5 w-2.5 shrink-0 rounded-sm ${i === 0 ? 'bg-[#007AFF]' : 'bg-[#d1d5db]'}`} />
-                <span className={`hidden text-[11px] font-medium sm:inline ${i === 0 ? 'text-[#0063E6]' : 'text-[#6b7280]'}`}>{item}</span>
-              </div>
-            ))}
-          </div>
-          <div className="min-w-0 p-4 sm:p-5">
-            <div className="grid grid-cols-3 gap-3">
-              {[
-                ['Pipeline', '$412k', '+18%'],
-                ['Replies', '164', '+42'],
-                ['Won', '$96k', '+11%'],
-              ].map(([label, value, delta]) => (
-                <div key={label} className="min-w-0">
-                  <p className="text-[10px] font-medium text-[#6b7280]">{label}</p>
-                  <p className="text-base font-semibold tabular-nums tracking-[-0.02em] text-[#111318] sm:text-lg">{value}</p>
-                  <p className="text-[10px] font-medium text-[#15803d]">{delta}</p>
+    <figure aria-label={`Example dashboard for ${domain}, with your first leads in it`} className="select-none">
+      <div className="fl-tilt overflow-hidden rounded-xl border border-[#e5e7eb] bg-white text-left shadow-enterprise-md" aria-hidden="true">
+        <div className="grid grid-cols-[2.75rem_1fr] sm:grid-cols-[9rem_1fr]">
+          <div className="border-r border-[#f0f1f4] bg-[#fafbfc] p-2.5 sm:p-3">
+            <div className="flex items-center gap-2">
+              <span className="grid h-6 w-6 shrink-0 place-items-center rounded-md bg-[#0063E6] text-[11px] font-semibold uppercase text-white">
+                {domain[0]}
+              </span>
+              <span className="hidden truncate text-[11px] font-semibold text-[#1d2025] sm:block">{domain}</span>
+            </div>
+            <div className="mt-4 space-y-0.5">
+              {NAV.map((item, i) => (
+                <div key={item} className={`flex items-center gap-2 rounded-md px-1.5 py-1.5 ${i === 0 ? 'bg-[#e8f1ff]' : ''}`}>
+                  <span className={`h-2 w-2 shrink-0 rounded-sm ${i === 0 ? 'bg-[#0063E6]' : 'bg-[#d1d5db]'}`} />
+                  <span className={`hidden text-[11px] font-medium sm:inline ${i === 0 ? 'text-[#084fba]' : 'text-[#6b7280]'}`}>{item}</span>
                 </div>
               ))}
             </div>
-            <svg viewBox="0 0 320 96" className="mt-4 h-24 w-full" preserveAspectRatio="none">
-              <defs>
-                <linearGradient id="fl-dash-area" x1="0" x2="0" y1="0" y2="1">
-                  <stop offset="0%" stopColor="#007AFF" stopOpacity="0.18" />
-                  <stop offset="100%" stopColor="#007AFF" stopOpacity="0" />
-                </linearGradient>
-              </defs>
-              {[24, 48, 72].map((y) => (
-                <line key={y} x1="0" x2="320" y1={y} y2={y} stroke="#f3f4f6" strokeWidth="1" />
-              ))}
-              <path d="M0 80 L40 74 L80 76 L120 60 L160 62 L200 44 L240 40 L280 26 L320 18 L320 96 L0 96 Z" fill="url(#fl-dash-area)" />
-              <path
-                d="M0 80 L40 74 L80 76 L120 60 L160 62 L200 44 L240 40 L280 26 L320 18"
-                fill="none"
-                stroke="#007AFF"
-                strokeWidth="2"
-                vectorEffect="non-scaling-stroke"
-              />
-              <path d="M0 88 L40 86 L80 84 L120 82 L160 78 L200 76 L240 70 L280 66 L320 62" fill="none" stroke="#a0a5b1" strokeWidth="1.5" strokeDasharray="4 4" vectorEffect="non-scaling-stroke" />
-            </svg>
-            <div className="mt-4 space-y-1.5">
-              {STAGES.map(([stage, pct]) => (
-                <div key={stage} className="grid grid-cols-[4.5rem_1fr] items-center gap-2 sm:grid-cols-[5.5rem_1fr]">
-                  <span className="truncate text-[10px] font-medium text-[#6b7280]">{stage}</span>
-                  <span className="h-2 rounded-sm bg-[#f3f4f6]">
-                    <span className="block h-2 rounded-sm bg-[#3d9bff]" style={{ width: `${pct}%` }} />
-                  </span>
+          </div>
+          <div className="min-w-0">
+            <div className="flex h-9 items-center justify-between gap-2 border-b border-[#f0f1f4] px-3 sm:px-4">
+              <span className="truncate text-[11px] text-[#6b7280]">
+                {domain} <span className="px-1">/</span> <span className="font-medium text-[#1d2025]">Today</span>
+              </span>
+              <span className="flex shrink-0 items-center gap-1 rounded-full border border-[#f5d9a8] bg-[#fff8eb] px-2 py-0.5 text-[10px] font-medium text-[#8a5a00]">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#d98e04]" />
+                Example data
+              </span>
+            </div>
+            <div className="p-3 sm:p-4">
+              <div className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-[#eceef2] bg-[#eceef2] sm:grid-cols-4">
+                {KPIS.map(([label, value, delta]) => (
+                  <div key={label} className="min-w-0 bg-white px-2.5 py-2">
+                    <p className="truncate text-[10px] text-[#6b7280]">{label}</p>
+                    <p className="text-[15px] font-semibold tabular-nums tracking-[-0.02em] text-[#111318]">{value}</p>
+                    <p className="truncate text-[9.5px] font-medium text-[#15803d]">{delta}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-3 rounded-lg border border-[#eceef2] p-2.5">
+                <p className="text-[10px] font-semibold text-[#1d2025]">Replies by week</p>
+                <div className="mt-2 flex h-14 items-end gap-1.5">
+                  {WEEKS.map((v, i) => (
+                    <span
+                      key={i}
+                      className={`fl-rise-bar flex-1 rounded-t-[3px] ${i === WEEKS.length - 1 ? 'bg-[#0063E6]' : 'bg-[#b8d4fb]'}`}
+                      style={{ height: `${(v / peak) * 100}%`, animationDelay: `${i * 60}ms` }}
+                    />
+                  ))}
                 </div>
-              ))}
+              </div>
+              {people.length > 0 && (
+                <div className="mt-3 rounded-lg border border-[#eceef2]">
+                  <p className="border-b border-[#f0f1f4] px-2.5 py-1.5 text-[10px] font-semibold text-[#1d2025]">Reach out today</p>
+                  {people.map((p) => (
+                    <div key={p.id} className="flex items-center gap-2 border-b border-[#f6f7f9] px-2.5 py-1.5 last:border-b-0">
+                      <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-[#e8f1ff] text-[8.5px] font-semibold text-[#084fba]">
+                        {p.first_name[0]}
+                        {p.last_name[0]}
+                      </span>
+                      <span className="min-w-0 flex-1 truncate text-[10.5px] text-[#1d2025]">
+                        <span className="font-semibold">
+                          {p.first_name} {p.last_name}
+                        </span>{' '}
+                        <span className="text-[#6b7280]">{p.company}</span>
+                      </span>
+                      <span className="shrink-0 rounded border border-[#d6e6fd] px-1.5 text-[9.5px] font-medium text-[#084fba]">New</span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>

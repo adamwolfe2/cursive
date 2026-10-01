@@ -9,6 +9,8 @@ import { AnimatedNumber, formatCount } from './AnimatedNumber'
 import { errorCopy, getJson, isAbort, StartApiError, trackStep, type Mock } from './api'
 import { leadsCsv } from './csv'
 import { Ladder } from './Ladder'
+import { matchesFilter, type LeadFilter } from './lead-stats'
+import { LeadsOverview } from './LeadsOverview'
 import { WhyLine } from './Preview'
 
 type Ready = Extract<LeadsResponse, { status: 'ready' }>
@@ -44,6 +46,7 @@ export function LeadsView({ mock, token }: { mock: Mock; token: string | null })
   const router = useRouter()
   const [state, setState] = useState<State>({ kind: 'loading' })
   const [slow, setSlow] = useState(false)
+  const [filter, setFilter] = useState<LeadFilter | null>(null)
   const ctrl = useRef<AbortController | null>(null)
 
   const load = useCallback(async () => {
@@ -82,12 +85,21 @@ export function LeadsView({ mock, token }: { mock: Mock; token: string | null })
   const data = state.kind === 'ready' ? state.data : null
   const leads = data?.leads ?? []
   const landMs = leads.length * LAND_STEP_MS
+  const visible = leads.filter((l) => matchesFilter(l, filter))
 
   return (
     <div className="mx-auto w-full max-w-[72rem] px-5 pb-24 pt-8 sm:px-8 sm:pt-14">
       <header className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
         <div className="min-w-0">
-          <p className="text-[13px] font-medium text-[#6b7280]">{data?.website ? bareDomain(data.website) : 'Your free list'}</p>
+          <p className="flex items-center gap-2 text-[13px] font-medium text-[#6b7280]">
+            {data?.website && (
+              <>
+                <span className="text-[#1d2025]">{bareDomain(data.website)}</span>
+                <span aria-hidden="true">/</span>
+              </>
+            )}
+            Your free list
+          </p>
           <h1 className="mt-1 text-[2.25rem] font-semibold leading-[1.05] tracking-[-0.04em] text-[#111318] sm:text-[3rem]">
             {state.kind === 'failed' && 'Your leads are stuck.'}
             {state.kind === 'loading' && 'Pulling your 25 leads.'}
@@ -155,8 +167,14 @@ export function LeadsView({ mock, token }: { mock: Mock; token: string | null })
         </div>
       ) : (
         <>
-          <Facts leads={data ? leads : null} />
-          <div className="relative mt-6 overflow-hidden rounded-t-xl border border-b-0 border-[#e5e7eb]">
+          <LeadsOverview
+            leads={data ? leads : null}
+            totalMatching={data?.total_matching ?? null}
+            filter={filter}
+            onFilter={setFilter}
+            shown={visible.length}
+          />
+          <div className="relative mt-2 overflow-hidden rounded-t-xl border border-b-0 border-[#e5e7eb]">
             {data && <span className="fl-fill absolute inset-x-0 top-0 h-[3px] bg-[#007AFF]" style={{ animationDuration: `${landMs}ms` }} aria-hidden="true" />}
             <table className="w-full table-fixed text-left text-sm max-sm:block">
               <caption className="sr-only">Your {FREE_LEAD_COUNT} leads</caption>
@@ -173,7 +191,10 @@ export function LeadsView({ mock, token }: { mock: Mock; token: string | null })
                 </tr>
               </thead>
               {data ? (
-                leads.map((l, i) => <LeadRow key={l.id} lead={l} index={i} />)
+                visible.map((l) => {
+                  const i = leads.indexOf(l)
+                  return <LeadRow key={l.id} lead={l} index={i} delayIndex={filter ? 0 : i} />
+                })
               ) : (
                 <tbody className="divide-y divide-[#f3f4f6] max-sm:block">
                   {Array.from({ length: FREE_LEAD_COUNT }, (_, i) => (
@@ -198,7 +219,7 @@ export function LeadsView({ mock, token }: { mock: Mock; token: string | null })
             </table>
           </div>
           {data ? (
-            <Ladder mock={mock} firstLead={leads[0] ?? null} />
+            <Ladder mock={mock} leads={leads} website={data.website} />
           ) : (
             <div className="h-24 rounded-b-xl border border-t-0 border-[#e5e7eb]" aria-hidden="true" />
           )}
@@ -208,26 +229,8 @@ export function LeadsView({ mock, token }: { mock: Mock; token: string | null })
   )
 }
 
-/** One line of what's in the list. Its slot is held while loading so the table below never moves. */
-function Facts({ leads }: { leads: FullLead[] | null }) {
-  if (!leads) {
-    return <p className="mt-8 h-5 text-sm text-[#6b7280]">Every email is checked before it lands here.</p>
-  }
-  const linkedin = leads.filter((l) => l.linkedin_url).length
-  const phone = leads.filter((l) => l.phone).length
-  return (
-    <p className="fl-fade mt-8 h-5 truncate text-sm text-[#4d5460]">
-      <span className="font-semibold text-[#1d2025]">{leads.length}</span> work emails
-      <span className="px-2 text-[#d1d5db]" aria-hidden="true">/</span>
-      <span className="font-semibold text-[#1d2025]">{linkedin}</span> LinkedIn
-      <span className="px-2 text-[#d1d5db]" aria-hidden="true">/</span>
-      <span className="font-semibold text-[#1d2025]">{phone}</span> phones
-    </p>
-  )
-}
-
 /** A lead is its own row group: the contact row, then the "why them" line under it. */
-function LeadRow({ lead, index }: { lead: FullLead; index: number }) {
+function LeadRow({ lead, index, delayIndex }: { lead: FullLead; index: number; delayIndex: number }) {
   const [copied, setCopied] = useState(false)
   const copy = async () => {
     try {
@@ -253,7 +256,7 @@ function LeadRow({ lead, index }: { lead: FullLead; index: number }) {
   return (
     <tbody
       className="fl-land border-t border-[#f3f4f6] first-of-type:border-t-0 hover:bg-[#fafbfc] max-sm:block"
-      style={{ animationDelay: `${index * LAND_STEP_MS}ms` }}
+      style={{ animationDelay: `${delayIndex * LAND_STEP_MS}ms` }}
     >
       <tr className="max-sm:flex">
         <td className={`hidden pl-4 align-top text-[13px] tabular-nums text-[#6b7280] sm:table-cell ${pad}`}>{index + 1}</td>
