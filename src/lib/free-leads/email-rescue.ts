@@ -66,7 +66,8 @@ export async function rescueThinPool(args: {
 
   let fitUsd = 0
   // The one place the email filter is intentionally absent (the type pins it for every other caller).
-  const unfiltered = { ...args.filters, email_status: undefined } as unknown as GetLeadsFilters
+  const { email_status: _required, ...unfiltered }: GetLeadsFilters = args.filters
+  void _required
   const limit = Math.min(MAX_EXTRA_PULL, shortfall * 2)
   let extra: GetLeadsContact[]
   try {

@@ -27,6 +27,9 @@ export interface GetLeadsFilters {
   email_status: ['VALID']
 }
 
+/** Same filters with no email requirement. Only the thin-pool email rescue may use this. */
+export type GetLeadsFiltersAnyEmail = Omit<GetLeadsFilters, 'email_status'>
+
 export type GetLeadsErrorCode = 'not_configured' | 'timeout' | 'network' | 'rejected' | 'invalid_response'
 
 export class GetLeadsError extends Error {
@@ -129,7 +132,7 @@ export async function countContacts(filters: GetLeadsFilters): Promise<number> {
 
 /** Costs 1 credit per returned row. Keep `limit` as small as the caller truly needs. */
 export async function searchContacts(
-  filters: GetLeadsFilters,
+  filters: GetLeadsFilters | GetLeadsFiltersAnyEmail,
   page: { limit: number; offset?: number }
 ): Promise<{ contacts: GetLeadsContact[]; totalAvailable: number }> {
   const limit = Math.max(1, Math.min(100, Math.floor(page.limit)))
