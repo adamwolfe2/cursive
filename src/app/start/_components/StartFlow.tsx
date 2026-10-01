@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { flushSync } from 'react-dom'
 import type {
   CountResponse,
   Fact,
@@ -39,6 +40,12 @@ export function normalizeUrl(raw: string): string | null {
 }
 
 const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+/** Hero <-> scan view: the site field morphs into the scan header (both carry view-transition-name fl-site). */
+function morph(update: () => void) {
+  if (typeof document.startViewTransition !== 'function' || reducedMotion()) return update()
+  document.startViewTransition(() => flushSync(update))
+}
 
 /** `initialSite` comes from `/start?site=acme.com` (links in the profile email) and starts the scan on load. */
 export function StartFlow({ mock, initialSite }: { mock: Mock; initialSite: string | null }) {
@@ -253,7 +260,7 @@ export function StartFlow({ mock, initialSite }: { mock: Mock; initialSite: stri
       if (!url) return setInputError(NOT_A_SITE)
       setInputError(null)
       setFallbackDomain(null)
-      void run({ url })
+      morph(() => void run({ url }))
     } else {
       const description = value.trim()
       if (description.length < MIN_DESCRIPTION) {
@@ -261,7 +268,7 @@ export function StartFlow({ mock, initialSite }: { mock: Mock; initialSite: stri
       }
       if (description.length > 4000) return setInputError('Keep it under 4,000 characters. A short paragraph is plenty.')
       setInputError(null)
-      void run({ description })
+      morph(() => void run({ description }))
     }
   }
 
@@ -397,7 +404,7 @@ export function StartFlow({ mock, initialSite }: { mock: Mock; initialSite: stri
           icpReady={complete}
           slow={slow}
           replayedAt={replayedAt}
-          onReset={() => toHero('url', null)}
+          onReset={() => morph(() => toHero('url', null))}
         />
         {/* Phones: room below the profile so the follow-scroll can bring it to the top, past the rail. */}
         <div className={`min-w-0 space-y-5 ${Object.keys(icp).length > 0 ? 'max-lg:min-h-[100svh]' : ''}`}>

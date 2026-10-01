@@ -8,7 +8,7 @@ export const viewport: Viewport = { maximumScale: 5 }
 export const metadata: Metadata = {
   title: 'Get 25 free leads from your website | Cursive',
   description:
-    'Paste your website. Cursive works out who buys from you and sends 25 real decision makers with checked work emails. Free.',
+    'Paste your website. Cursive works out who buys from you and finds 25 people who fit, with work emails and a reason for each one. Free, no card.',
 }
 
 export default function StartLayout({ children }: { children: React.ReactNode }) {

@@ -3,10 +3,14 @@
 import { ArrowRight, Globe, Info } from 'lucide-react'
 import { useId, type FormEvent, type RefObject } from 'react'
 import { MIN_DESCRIPTION } from './api'
+import { HeroDemo } from './HeroDemo'
+import { STEPS } from './Steps'
 
 export type InputMode = 'url' | 'description'
 
 const FOCUS = 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF]'
+/** Shared with the scan view's site header: on submit the field morphs into it (View Transitions). */
+const MORPH = { viewTransitionName: 'fl-site' } as const
 
 export function Hero({
   mode,
@@ -34,7 +38,7 @@ export function Hero({
   const button = (
     <button
       type="submit"
-      className={`inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-lg bg-[#0063E6] px-5 text-[15px] font-semibold text-white transition-[background-color,transform] duration-150 hover:bg-[#084fba] active:scale-[0.98] ${FOCUS}`}
+      className={`inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-[#0063E6] px-6 text-[16px] font-semibold text-white shadow-[0_8px_20px_-8px_rgb(0_99_230/0.6)] transition-[background-color,transform] duration-150 hover:bg-[#084fba] active:scale-[0.98] ${FOCUS}`}
     >
       Find my buyers
       <ArrowRight className="h-4 w-4" aria-hidden="true" />
@@ -43,127 +47,185 @@ export function Hero({
   const describedBy = [inputError ? errId : null, mode === 'description' ? hintId : null].filter(Boolean).join(' ') || undefined
 
   return (
-    <section className="pb-20 pt-10 sm:pb-28 sm:pt-20 lg:pt-24">
-      <h1 className="max-w-[15ch] text-[2.5rem] font-semibold leading-[1.02] tracking-[-0.045em] text-[#111318] min-[400px]:text-[2.75rem] sm:text-[4.25rem] lg:text-[5.25rem]">
-        {mode === 'url' ? 'Paste your website.' : 'Tell us what you sell.'}{' '}
-        <span className="text-[#6b7280]">Meet 25 people who should buy from you.</span>
-      </h1>
-      <p className="mt-5 max-w-[54ch] text-[17px] leading-relaxed text-[#4d5460] sm:mt-8 sm:text-lg">
-        {mode === 'url'
-          ? 'We read your site, work out who buys from you, and find them. Real names, titles, and work emails. Free, in about a minute.'
-          : 'From a few lines on what you sell, we work out who buys from you and find them. Real names, titles, and work emails. Free.'}
-      </p>
-
-      <form onSubmit={onSubmit} className="mt-9 max-w-2xl sm:mt-12" noValidate>
-        {notice && (
-          <p role="status" className="fl-fade mb-6 flex gap-2.5 rounded-xl bg-[#f0f7ff] px-4 py-3.5 text-[15px] leading-snug text-[#0c1f45]">
-            <Info className="mt-0.5 h-4 w-4 shrink-0 text-[#0063E6]" aria-hidden="true" />
-            {notice}
+    <>
+      <section className="grid grid-cols-[minmax(0,1fr)] gap-12 pb-16 pt-6 sm:pt-12 lg:grid-cols-[minmax(0,29rem)_minmax(0,1fr)] lg:items-start lg:gap-14 lg:pb-24 lg:pt-14">
+        <div className="min-w-0">
+          <h1 className="text-[2.75rem] font-semibold leading-[1.02] tracking-[-0.045em] text-[#111318] sm:text-[4rem] lg:text-[4.25rem]">
+            {mode === 'url' ? 'Your site in.' : 'What you sell in.'} <span className="block text-[#0063E6]">25 buyers out.</span>
+          </h1>
+          <p className="mt-5 max-w-[40ch] text-[17px] leading-relaxed text-[#4d5460] sm:mt-6 sm:text-lg">
+            {mode === 'url'
+              ? 'We read your site, work out who buys, and find 25 people who fit, with work emails. Free, about a minute.'
+              : 'Tell us what you sell and who buys it. We find 25 people who fit, with work emails. Free, about a minute.'}
           </p>
-        )}
-        <label htmlFor={id} className="text-sm font-medium text-[#1d2025]">
-          {mode === 'url' ? 'Your website' : 'What you sell, and who buys it'}
-        </label>
-        {mode === 'url' ? (
-          <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-0 sm:rounded-xl sm:border-[1.5px] sm:border-[#1d2025] sm:bg-white sm:p-1.5 sm:pl-4 sm:focus-within:border-[#007AFF] sm:focus-within:ring-4 sm:focus-within:ring-[#007AFF]/15">
-            <div className="flex h-14 shrink-0 items-center gap-3 sm:flex-1 rounded-xl border-[1.5px] border-[#1d2025] px-4 focus-within:border-[#007AFF] focus-within:ring-4 focus-within:ring-[#007AFF]/15 sm:h-12 sm:rounded-none sm:border-0 sm:px-0 sm:focus-within:ring-0">
-              <Globe className="h-5 w-5 shrink-0 text-[#6b7280]" aria-hidden="true" />
-              <input
-                ref={inputRef}
-                id={id}
-                type="text"
-                inputMode="url"
-                autoComplete="url"
-                autoCapitalize="none"
-                spellCheck={false}
-                autoFocus
-                maxLength={2048}
-                value={value}
-                onChange={(e) => setValue(e.target.value)}
-                placeholder="acme.com"
-                aria-invalid={inputError ? true : undefined}
-                aria-describedby={describedBy}
-                className="h-full min-w-0 flex-1 bg-transparent text-lg text-[#111318] placeholder:text-[#a0a5b1] focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-              />
-            </div>
-            {button}
-          </div>
-        ) : (
-          <div className="mt-2 space-y-2">
-            <textarea
-              ref={inputRef}
-              id={id}
-              rows={4}
-              autoFocus
-              maxLength={4000}
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) e.currentTarget.form?.requestSubmit()
-              }}
-              placeholder="We run bookkeeping for dental practices with 2 to 10 locations. Owners and office managers usually sign."
-              aria-invalid={inputError ? true : undefined}
-              aria-describedby={describedBy}
-              className="block w-full resize-none rounded-xl border-[1.5px] border-[#1d2025] bg-white px-4 py-3.5 text-base leading-relaxed text-[#111318] placeholder:text-[#a0a5b1] focus:border-[#007AFF] focus:outline-none focus:ring-4 focus:ring-[#007AFF]/15"
-            />
-            <div className="flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <p id={hintId} className="text-[13px] tabular-nums text-[#6b7280]">
-                {short > 0 ? `A sentence or two is plenty. ${short} more characters.` : 'Looks good.'}
-              </p>
-              {button}
-            </div>
-          </div>
-        )}
-        <p id={errId} role="alert" className="mt-2 min-h-5 text-sm text-[#b91c1c]">
-          {inputError}
-        </p>
-        <div className="mt-2 flex flex-col gap-3 text-sm sm:flex-row sm:items-center sm:justify-between">
-          <button
-            type="button"
-            onClick={() => setMode(mode === 'url' ? 'description' : 'url')}
-            className={`-my-2 self-start py-2 font-medium text-[#0063E6] underline decoration-[#b3d7ff] underline-offset-4 transition-colors hover:decoration-[#0063E6] ${FOCUS}`}
-          >
-            {mode === 'url' ? 'No website? Describe what you sell' : 'Use my website instead'}
-          </button>
-          <p className="text-[#6b7280]">No card. No sales call. The 25 are yours.</p>
-        </div>
-      </form>
 
-      <ExampleRows />
+          <form onSubmit={onSubmit} className="mt-8 sm:mt-10" noValidate>
+            {notice && (
+              <p role="status" className="fl-fade mb-6 flex gap-2.5 rounded-xl bg-[#f0f7ff] px-4 py-3.5 text-[15px] leading-snug text-[#0c1f45]">
+                <Info className="mt-0.5 h-4 w-4 shrink-0 text-[#0063E6]" aria-hidden="true" />
+                {notice}
+              </p>
+            )}
+            <label htmlFor={id} className="text-sm font-medium text-[#1d2025]">
+              {mode === 'url' ? 'Your website' : 'What you sell, and who buys it'}
+            </label>
+            {mode === 'url' ? (
+              <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-0 sm:rounded-2xl sm:border-[1.5px] sm:border-[#1d2025] sm:bg-white sm:p-1.5 sm:pl-4 sm:shadow-[0_12px_32px_-18px_rgb(12_31_69/0.35)] sm:transition-shadow sm:focus-within:border-[#007AFF] sm:focus-within:ring-4 sm:focus-within:ring-[#007AFF]/15">
+                <div
+                  style={MORPH}
+                  className="flex h-14 shrink-0 items-center gap-3 rounded-xl border-[1.5px] border-[#1d2025] bg-white px-4 focus-within:border-[#007AFF] focus-within:ring-4 focus-within:ring-[#007AFF]/15 sm:h-12 sm:flex-1 sm:rounded-none sm:border-0 sm:px-0 sm:focus-within:ring-0"
+                >
+                  <Globe className="h-5 w-5 shrink-0 text-[#6b7280]" aria-hidden="true" />
+                  <input
+                    ref={inputRef}
+                    id={id}
+                    type="text"
+                    inputMode="url"
+                    autoComplete="url"
+                    autoCapitalize="none"
+                    spellCheck={false}
+                    autoFocus
+                    maxLength={2048}
+                    value={value}
+                    onChange={(e) => setValue(e.target.value)}
+                    placeholder="yourcompany.com"
+                    aria-invalid={inputError ? true : undefined}
+                    aria-describedby={describedBy}
+                    className="h-full min-w-0 flex-1 bg-transparent text-lg text-[#111318] placeholder:text-[#6b7280] focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                  />
+                </div>
+                {button}
+              </div>
+            ) : (
+              <div className="mt-2 space-y-2">
+                <textarea
+                  ref={inputRef}
+                  id={id}
+                  rows={4}
+                  autoFocus
+                  maxLength={4000}
+                  value={value}
+                  onChange={(e) => setValue(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) e.currentTarget.form?.requestSubmit()
+                  }}
+                  placeholder="We run bookkeeping for dental practices with 2 to 10 locations. Owners and office managers usually sign."
+                  aria-invalid={inputError ? true : undefined}
+                  aria-describedby={describedBy}
+                  style={MORPH}
+                  className="block w-full resize-none rounded-xl border-[1.5px] border-[#1d2025] bg-white px-4 py-3.5 text-base leading-relaxed text-[#111318] placeholder:text-[#6b7280] focus:border-[#007AFF] focus:outline-none focus:ring-4 focus:ring-[#007AFF]/15"
+                />
+                <div className="flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-between">
+                  <p id={hintId} className="text-[13px] tabular-nums text-[#6b7280]">
+                    {short > 0 ? `A sentence or two is plenty. ${short} more characters.` : 'Looks good.'}
+                  </p>
+                  {button}
+                </div>
+              </div>
+            )}
+            <p id={errId} role="alert" className="mt-2 min-h-5 text-sm text-[#b91c1c]">
+              {inputError}
+            </p>
+            <div className="mt-1 flex flex-wrap items-center justify-between gap-x-6 gap-y-1 text-sm">
+              <button
+                type="button"
+                onClick={() => setMode(mode === 'url' ? 'description' : 'url')}
+                className={`-ml-1 min-h-11 rounded-md px-1 font-medium text-[#0063E6] underline decoration-[#b3d7ff] underline-offset-4 transition-colors hover:decoration-[#0063E6] ${FOCUS}`}
+              >
+                {mode === 'url' ? 'No website? Describe what you sell' : 'Use my website instead'}
+              </button>
+              <p className="text-[#4d5460]">Free. No card, no sales call.</p>
+            </div>
+          </form>
+        </div>
+
+        <HeroDemo held={value.trim().length > 0} />
+      </section>
+
+      <WhatYouGet />
+      <HowItWorks onStart={() => inputRef.current?.focus({ preventScroll: true })} />
+    </>
+  )
+}
+
+const GETS: Array<[string, string]> = [
+  ['25 people', 'Picked for what you sell, not pulled off a generic list.'],
+  ['Name, title, work email', 'Plus company, location and LinkedIn when we have it.'],
+  ['A reason for each one', 'One line on why this person fits, written from your site.'],
+  ['Yours to keep', 'Download the list as a CSV. No card, no sales call.'],
+]
+
+function WhatYouGet() {
+  return (
+    <section aria-labelledby="get-heading" className="border-t border-[#e5e7eb] py-12 sm:py-16">
+      <h2 id="get-heading" className="sr-only">
+        What you get
+      </h2>
+      <dl className="grid grid-cols-1 gap-x-10 gap-y-7 sm:grid-cols-2 lg:grid-cols-4">
+        {GETS.map(([term, detail]) => (
+          <div key={term}>
+            <dt className="text-[17px] font-semibold tracking-[-0.01em] text-[#111318]">{term}</dt>
+            <dd className="mt-1.5 max-w-[30ch] text-[15px] leading-relaxed text-[#4d5460]">{detail}</dd>
+          </div>
+        ))}
+      </dl>
     </section>
   )
 }
 
-/** Static peek at the output so the promise is concrete before anyone types. */
-function ExampleRows() {
-  const rows = [
-    ['Rachel J.', 'VP of Engineering', 'Ledgerline', 'r•••@ledgerline.com', 'Runs engineering at a 120-person fintech that just signed its first bank.'],
-    ['Marcus O.', 'CTO', 'Shipfast', 'm•••@shipfast.dev', 'CTO at a Series A dev tools company hiring its first security lead.'],
-    ['Priya R.', 'Head of Security', 'Northwind Health', 'p•••@northwindhealth.io', 'Owns vendor reviews at a health company selling into hospitals.'],
-  ]
+const HOW: Record<(typeof STEPS)[number], string> = {
+  'Read your site': 'We open your homepage and a few pages behind it, and note what you sell and who it is for.',
+  'Approve your buyers': 'You see the buyer profile: titles, industries, company size, places. Change any of it in plain words.',
+  'Check your inbox': 'We send a sign-in link to your work email. One free list per company.',
+  'Open your list': 'Your 25, each with a name, title, work email and why they fit. Download it as a CSV.',
+}
+
+function HowItWorks({ onStart }: { onStart: () => void }) {
   return (
-    <figure className="mt-16 max-w-3xl sm:mt-24" aria-label="Example of the leads you get">
-      <figcaption className="text-[13px] font-medium text-[#6b7280]">What lands in your list (example)</figcaption>
-      <ul
-        className="mt-3 divide-y divide-[#f3f4f6] overflow-hidden rounded-lg border border-[#e5e7eb] text-sm [mask-image:linear-gradient(to_bottom,black_45%,transparent)]"
-        aria-hidden="true"
-      >
-        {rows.map(([name, title, company, email, why]) => (
-          <li key={name} className="grid gap-x-4 gap-y-0.5 px-4 py-3 sm:grid-cols-[8rem_1fr_1fr_minmax(0,13rem)]">
-            <span className="font-semibold text-[#1d2025]">{name}</span>
-            <span className="text-[#4d5460]">
-              {title}
-              <span className="sm:hidden">, {company}</span>
+    <section
+      aria-labelledby="how-heading"
+      className="grid grid-cols-[minmax(0,1fr)] gap-10 rounded-3xl bg-[#f3f7fd] px-5 py-12 sm:px-10 sm:py-16 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] lg:gap-16 lg:px-14"
+    >
+      <div className="lg:sticky lg:top-10 lg:self-start">
+        <h2 id="how-heading" className="text-[2rem] font-semibold leading-[1.08] tracking-[-0.03em] text-[#111318] sm:text-[2.5rem]">
+          About a minute, start to list.
+        </h2>
+        <p className="mt-4 max-w-[34ch] text-[16px] leading-relaxed text-[#4d5460]">
+          You stay in charge of who counts as a buyer. Nothing is sent to anyone on your behalf.
+        </p>
+        <button
+          type="button"
+          onClick={() => {
+            window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })
+            onStart()
+          }}
+          className={`mt-7 inline-flex h-12 items-center gap-2 rounded-xl bg-[#0063E6] px-6 text-[16px] font-semibold text-white transition-[background-color,transform] duration-150 hover:bg-[#084fba] active:scale-[0.98] ${FOCUS}`}
+        >
+          Find my buyers
+          <ArrowRight className="h-4 w-4" aria-hidden="true" />
+        </button>
+      </div>
+      <ol className="relative">
+        {STEPS.map((label, i) => (
+          <li key={label} className="fl-step relative grid grid-cols-[2.5rem_minmax(0,1fr)] gap-x-5 pb-10 last:pb-0">
+            {i < STEPS.length - 1 && (
+              <span aria-hidden="true" className="absolute bottom-0 left-[1.1875rem] top-11 w-0.5 overflow-hidden rounded-full bg-[#d6e4f7]">
+                <span className="fl-step-line block h-full w-full bg-[#0063E6]" />
+              </span>
+            )}
+            <span
+              aria-hidden="true"
+              className="fl-step-num grid h-10 w-10 place-items-center rounded-full border-[1.5px] border-[#0063E6] bg-white text-[15px] font-semibold tabular-nums text-[#0063E6]"
+            >
+              {i + 1}
             </span>
-            <span className="hidden text-[#4d5460] sm:block">{company}</span>
-            <span className="truncate text-[13px] text-[#3a3f4b]">{email}</span>
-            <span className="text-[13px] leading-snug text-[#3a3f4b] sm:col-span-full">
-              <span className="mr-1.5 font-semibold text-[#0063E6]">Why them</span>
-              {why}
-            </span>
+            <div className="pt-1.5">
+              <h3 className="text-[19px] font-semibold tracking-[-0.015em] text-[#111318]">{label}</h3>
+              <p className="mt-1.5 max-w-[46ch] text-[15px] leading-relaxed text-[#4d5460]">{HOW[label]}</p>
+            </div>
           </li>
         ))}
-      </ul>
-    </figure>
+      </ol>
+    </section>
   )
 }

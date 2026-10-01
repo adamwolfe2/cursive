@@ -1,4 +1,4 @@
-const STEPS = ['Read your site', 'Approve your buyers', 'Check your inbox', 'Open your list'] as const
+export const STEPS = ['Read your site', 'Approve your buyers', 'Check your inbox', 'Open your list'] as const
 
 /** Where the reader is in the free-leads journey. `current` is the 0-based step being worked on now. */
 export function Steps({ current }: { current: number }) {
