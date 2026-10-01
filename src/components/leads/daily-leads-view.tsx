@@ -260,10 +260,12 @@ export function DailyLeadsView({
         <div>
           <h1 className="flex items-center gap-2 text-2xl font-bold text-foreground">
             {!managed && <Star className="h-6 w-6 fill-primary text-primary" />}
-            Your Daily Leads
+            {managed ? 'Your leads' : 'Your Daily Leads'}
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Fresh, verified leads matched to your industry and location.
+            {managed
+              ? 'Everyone we have delivered to this workspace, each with a work email. Export any time.'
+              : 'Fresh, verified leads matched to your industry and location.'}
             {industrySegment && (
               <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-xs text-primary">
                 <Target className="h-3 w-3" />
@@ -344,7 +346,7 @@ export function DailyLeadsView({
           icon={TrendingUp}
           label="This Month"
           value={monthCount}
-          sub={isFree ? `${dailyLimit * 30}/mo limit` : 'Unlimited'}
+          sub={managed ? undefined : isFree ? `${dailyLimit * 30}/mo limit` : 'Unlimited'}
         />
         {!managed && (
           <StatCard
