@@ -4,10 +4,13 @@
  * message; a GET to /auth/confirm would spend the single-use sign-in code before the person
  * clicks. Scanners do not submit forms, so the code is only used by this button's POST.
  */
+import { Check } from 'lucide-react'
+import { Steps } from '../_components/Steps'
+
 export const metadata = { title: 'Open your 25 leads | Cursive', robots: { index: false, follow: false } }
 
 const PRIMARY =
-  'inline-flex h-14 w-full items-center justify-center rounded-xl bg-[#0063E6] px-8 text-[17px] font-semibold text-white transition-colors hover:bg-[#0052bf] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF] sm:w-auto'
+  'inline-flex h-14 w-full items-center justify-center rounded-xl bg-[#0063E6] px-8 text-[17px] font-semibold text-white transition-[background-color,transform] duration-150 hover:bg-[#0052bf] active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF] sm:w-auto'
 
 export default async function OpenLeadsPage({
   searchParams,
@@ -19,9 +22,10 @@ export default async function OpenLeadsPage({
   const c = typeof params.c === 'string' ? params.c.slice(0, 200) : ''
 
   return (
-    <div className="mx-auto w-full max-w-[72rem] px-5 pb-24 pt-14 sm:px-8 sm:pt-24">
+    <div className="mx-auto w-full max-w-[72rem] px-5 pb-24 pt-8 sm:px-8 sm:pt-14">
       <div className="max-w-xl">
-        <h1 className="text-[2.5rem] font-semibold leading-[1.05] tracking-[-0.04em] text-[#111318] sm:text-[3.5rem]">
+        <Steps current={3} />
+        <h1 className="mt-10 sm:mt-14 text-[2.5rem] font-semibold leading-[1.05] tracking-[-0.04em] text-[#111318] sm:text-[3.5rem]">
           Your 25 leads are ready.
         </h1>
         {t && c ? (
@@ -36,6 +40,16 @@ export default async function OpenLeadsPage({
                 Open my 25 leads
               </button>
             </form>
+            <ul className="mt-10 grid gap-3 border-t border-[#e5e7eb] pt-6 text-[15px] text-[#3a3f4b] sm:grid-cols-3">
+              {['25 names and titles', 'A work email for each', 'Why each one fits'].map((item) => (
+                <li key={item} className="flex items-center gap-2.5">
+                  <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[#e8f1ff] text-[#0063E6]" aria-hidden="true">
+                    <Check className="h-3.5 w-3.5" />
+                  </span>
+                  {item}
+                </li>
+              ))}
+            </ul>
           </>
         ) : (
           <p className="mt-5 text-lg leading-relaxed text-[#4d5460]">

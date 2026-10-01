@@ -71,6 +71,21 @@ export function IcpCard(props: Props) {
           </p>
         )}
 
+        {/* Before the first field lands: the shape of what is coming, so the wait reads as work in progress. */}
+        {!icp.summary && rows.length === 0 && (
+          <dl className="mt-7 border-t border-white/20" aria-hidden="true">
+            {['Industries', 'Titles', 'Seniority', 'Company size', 'Locations'].map((label, i) => (
+              <div key={label} className="flex items-center gap-6 border-b border-white/15 py-3.5">
+                <dt className="w-32 shrink-0 text-sm text-white">{label}</dt>
+                <dd className="flex flex-1 gap-2">
+                  <span className="fl-sheen h-7 rounded-md" style={{ width: `${5 + ((i * 3) % 4)}rem` }} />
+                  <span className="fl-sheen h-7 rounded-md" style={{ width: `${4 + ((i * 5) % 3)}rem` }} />
+                </dd>
+              </div>
+            ))}
+          </dl>
+        )}
+
         {rows.length > 0 && (
           <dl className="mt-7 border-t border-white/20">
             {rows.map((row) => (
@@ -402,7 +417,7 @@ function CountFooter({ full, count, counting, onChange, approved, onApprove }: P
             disabled={approved || blocker !== null}
             className={`fl-fade inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-white px-6 text-base font-semibold text-[#084fba] shadow-enterprise-sm transition-[background-color,transform] duration-150 hover:bg-[#f0f7ff] active:scale-[0.98] disabled:cursor-default disabled:bg-white/15 disabled:text-white disabled:shadow-none sm:h-14 sm:px-8 sm:text-lg ${WHITE_FOCUS}`}
           >
-            {approved ? <Check className="h-5 w-5" aria-hidden="true" /> : null}
+            {approved ? <Check className="fl-pop h-5 w-5" aria-hidden="true" /> : null}
             {approved ? 'Approved' : 'Approve'}
             {approved ? null : <ArrowRight className="h-5 w-5" aria-hidden="true" />}
           </button>

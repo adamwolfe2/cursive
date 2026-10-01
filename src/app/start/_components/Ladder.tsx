@@ -75,7 +75,7 @@ function Cta({
   )
 }
 
-export function Ladder({ mock, firstLead }: { mock: Mock; firstLead: FullLead | null }) {
+export function Ladder({ mock, leads, website }: { mock: Mock; leads: FullLead[]; website: string | null }) {
   const interest = useInterest(mock)
   return (
     <>
@@ -92,6 +92,8 @@ export function Ladder({ mock, firstLead }: { mock: Mock; firstLead: FullLead | 
           </div>
           <Cta tier="weekly_leads" label="Send me 25 every Monday" tone="white" interest={interest} />
         </div>
+        <NextMondays />
+
         <p className="mt-6 border-t border-white/20 pt-5 text-[15px] text-white">
           Worried you won&apos;t get to them all?{' '}
           <a href="#rung-linkedin" className="inline-flex min-h-11 items-center font-semibold underline decoration-white/50 underline-offset-4 hover:decoration-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
@@ -116,7 +118,7 @@ export function Ladder({ mock, firstLead }: { mock: Mock; firstLead: FullLead | 
             <Cta tier="linkedin_outreach" label="Talk about LinkedIn outreach" tone="ink" interest={interest} />
           </div>
         </div>
-        <ApprovalQueue lead={firstLead} />
+        <ApprovalQueue lead={leads[0] ?? null} />
       </section>
 
       {/* Rung 3: flipped, the dashboard leads. */}
@@ -125,7 +127,7 @@ export function Ladder({ mock, firstLead }: { mock: Mock; firstLead: FullLead | 
         className="mt-24 grid items-center gap-10 border-t border-[#e5e7eb] pt-24 sm:mt-32 sm:pt-32 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:gap-16"
       >
         <div className="order-2 lg:order-1">
-          <DashboardPreview />
+          <DashboardPreview website={website} leads={leads} />
         </div>
         <div className="order-1 max-w-[34rem] lg:order-2">
           <h2 id="rung-dashboard" className="text-[1.75rem] font-semibold leading-[1.1] tracking-[-0.025em] text-[#111318] sm:text-[2.25rem]">
@@ -149,6 +151,32 @@ export function Ladder({ mock, firstLead }: { mock: Mock; firstLead: FullLead | 
         </div>
       </section>
     </>
+  )
+}
+
+/** The next four Mondays on the weekly plan, with the running total. Rendered client-side only (after the leads load). */
+function NextMondays() {
+  const day = new Date()
+  day.setHours(0, 0, 0, 0)
+  day.setDate(day.getDate() + (((8 - day.getDay()) % 7) || 7))
+  const fmt = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' })
+  const mondays = Array.from({ length: 4 }, (_, i) => fmt.format(new Date(day.getTime() + i * 7 * 86_400_000)))
+  return (
+    <ol aria-label="Your next four Mondays on the weekly plan" className="mt-7 grid grid-cols-2 gap-2 sm:grid-cols-4">
+      {mondays.map((label, i) => (
+        <li
+          key={label}
+          className="fl-rise rounded-lg bg-white/10 px-3.5 py-3 ring-1 ring-inset ring-white/20 transition-colors hover:bg-white/15"
+          style={{ animationDelay: `${200 + i * 90}ms` }}
+        >
+          <p className="text-[13px] text-white">Mon, {label}</p>
+          <p className="mt-0.5 flex items-baseline gap-1.5">
+            <span className="text-xl font-semibold tabular-nums">+25</span>
+            <span className="text-[13px] text-white">{(i + 2) * 25} total</span>
+          </p>
+        </li>
+      ))}
+    </ol>
   )
 }
 

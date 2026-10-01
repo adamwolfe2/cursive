@@ -1,7 +1,9 @@
 import { ArrowUpRight } from 'lucide-react'
 import Link from 'next/link'
 import { devMock } from '../_components/dev-mock'
+import { InboxPreview } from '../_components/InboxPreview'
 import { ResendLink } from '../_components/ResendLink'
+import { Steps } from '../_components/Steps'
 
 export const metadata = { title: 'Check your inbox | Cursive' }
 
@@ -22,9 +24,10 @@ export default async function CheckEmailPage({
   const email = typeof params.email === 'string' ? params.email.slice(0, 254) : null
 
   return (
-    <div className="mx-auto w-full max-w-[72rem] px-5 pb-24 pt-14 sm:px-8 sm:pt-24">
+    <div className="mx-auto grid w-full max-w-[72rem] gap-14 px-5 pb-24 pt-8 sm:px-8 sm:pt-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:items-start lg:gap-16">
       <div className="max-w-xl">
-        <h1 className="text-[2.5rem] font-semibold leading-[1.05] tracking-[-0.04em] text-[#111318] sm:text-[3.5rem]">
+        <Steps current={2} />
+        <h1 className="mt-10 text-[2.5rem] sm:mt-14 sm:text-[3.5rem] font-semibold leading-[1.05] tracking-[-0.04em] text-[#111318]">
           Check your inbox.
         </h1>
         <p className="mt-5 text-lg leading-relaxed text-[#4d5460]">
@@ -58,6 +61,9 @@ export default async function CheckEmailPage({
             <ResendLink mock={devMock(params.mock)} />
           </div>
         </div>
+      </div>
+      <div className="lg:pt-24">
+        <InboxPreview />
       </div>
     </div>
   )
