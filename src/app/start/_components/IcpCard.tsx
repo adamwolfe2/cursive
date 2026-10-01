@@ -1,10 +1,10 @@
 'use client'
 
 import { ArrowRight, Check, Loader2, Pencil, Plus, X } from 'lucide-react'
-import { useEffect, useId, useState, type FormEvent, type KeyboardEvent } from 'react'
-import type { Icp } from '@/lib/free-leads/contract'
+import { useEffect, useId, useRef, useState, type FormEvent, type KeyboardEvent } from 'react'
+import { FREE_LEAD_COUNT, type Icp } from '@/lib/free-leads/contract'
 import { AnimatedNumber, formatCount } from './AnimatedNumber'
-import { chipLabel, ROWS, valuesFor, widenings, withAdded, withRemoved } from './icp-edit'
+import { approveBlocker, chipLabel, matchOption, ROWS, valuesFor, widenings, withAdded, withRemoved } from './icp-edit'
 
 interface Props {
   icp: Partial<Icp>
@@ -101,9 +101,16 @@ function IcpRow({
   const [adding, setAdding] = useState(false)
   const [draft, setDraft] = useState('')
   const [industries, setIndustries] = useState<readonly string[] | null>(null)
+  /** Why a typed value was not added (industries must come from the list). */
+  const [hint, setHint] = useState<string | null>(null)
   const inputId = useId()
   const listId = useId()
+  const hintId = useId()
   const edit = Boolean(full && editing)
+  const addRef = useRef<HTMLButtonElement>(null)
+  const doneRef = useRef<HTMLButtonElement>(null)
+  /** Controls that unmount on use hand keyboard focus to the row's Add button (after React commits). */
+  const focusAdd = () => requestAnimationFrame(() => addRef.current?.focus())
 
   const openAdd = () => {
     setAdding(true)
@@ -114,19 +121,36 @@ function IcpRow({
     }
   }
 
-  const commit = () => {
-    if (full && draft.trim()) onChange(withAdded(full, row.key, draft))
+  const close = () => {
     setDraft('')
+    setHint(null)
     setAdding(false)
+  }
+
+  /** Returns false when the draft stays open (an industry that is not in the list). */
+  const commit = (): boolean => {
+    const value = draft.trim()
+    if (full && value && row.key === 'industries') {
+      const match = industries ? matchOption(industries, value) : null
+      if (!match) {
+        setHint(industries ? 'Pick an industry from the list.' : 'Loading industries. Try again in a moment.')
+        return false
+      }
+      onChange(withAdded(full, row.key, match))
+    } else if (full && value) {
+      onChange(withAdded(full, row.key, value))
+    }
+    close()
+    return true
   }
 
   const onKey = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault()
-      commit()
+      if (commit()) focusAdd()
     } else if (e.key === 'Escape') {
-      setDraft('')
-      setAdding(false)
+      close()
+      focusAdd()
     }
   }
 
@@ -147,7 +171,10 @@ function IcpRow({
               {full && edit && (
                 <button
                   type="button"
-                  onClick={() => onChange(withRemoved(full, row.key, v))}
+                  onClick={() => {
+                    onChange(withRemoved(full, row.key, v))
+                    focusAdd()
+                  }}
                   className="fl-compact grid h-6 w-6 shrink-0 max-sm:h-11 max-sm:w-11 place-items-center rounded text-[#0063E6] transition-colors hover:bg-[#f0f7ff] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#0c1f45]"
                   aria-label={`Remove ${chipLabel(row.key, v)}`}
                 >
@@ -162,7 +189,10 @@ function IcpRow({
                 <li key={o}>
                   <button
                     type="button"
-                    onClick={() => onChange(withAdded(full, row.key, o))}
+                    onClick={() => {
+                      onChange(withAdded(full, row.key, o))
+                      requestAnimationFrame(() => doneRef.current?.focus())
+                    }}
                     className={`fl-compact h-8 rounded-md border max-sm:h-11 border-dashed border-white/70 px-2.5 text-sm font-medium text-white transition-colors hover:bg-[#084fba] ${WHITE_FOCUS}`}
                   >
                     + {chipLabel(row.key, o)}
@@ -171,8 +201,12 @@ function IcpRow({
               ))}
               <li>
                 <button
+                  ref={doneRef}
                   type="button"
-                  onClick={() => setAdding(false)}
+                  onClick={() => {
+                    setAdding(false)
+                    focusAdd()
+                  }}
                   className={`fl-compact h-8 px-2 max-sm:h-11 max-sm:px-3 text-sm font-medium text-white underline underline-offset-4 ${WHITE_FOCUS}`}
                 >
                   Done
@@ -189,9 +223,14 @@ function IcpRow({
                 id={inputId}
                 autoFocus
                 value={draft}
-                onChange={(e) => setDraft(e.target.value)}
+                onChange={(e) => {
+                  setDraft(e.target.value)
+                  setHint(null)
+                }}
                 onKeyDown={onKey}
-                onBlur={commit}
+                onBlur={() => void commit()}
+                aria-invalid={hint ? true : undefined}
+                aria-describedby={hint ? hintId : undefined}
                 list={row.key === 'industries' ? listId : undefined}
                 placeholder={row.key === 'locations' ? 'Texas or Canada' : row.key === 'job_titles' ? 'Head of Growth' : 'Type to search'}
                 maxLength={80}
@@ -204,11 +243,17 @@ function IcpRow({
                   ))}
                 </datalist>
               )}
+              {hint && (
+                <p id={hintId} role="status" className="mt-1.5 text-[13px] font-medium text-white">
+                  {hint}
+                </p>
+              )}
             </li>
           )}
           {full && edit && !adding && values.length < row.max && (
             <li>
               <button
+                ref={addRef}
                 type="button"
                 onClick={openAdd}
                 className={`fl-compact inline-flex h-8 max-sm:h-11 items-center gap-1 rounded-md border border-dashed border-white/70 px-2.5 text-sm font-medium text-white transition-colors hover:bg-[#084fba] ${WHITE_FOCUS}`}
@@ -237,7 +282,7 @@ function RefineBox({ refining, refineNote, refineError, onRefine }: Props) {
   }, [refining])
   const submit = (e: FormEvent) => {
     e.preventDefault()
-    if (!text.trim() || refining) return
+    if (text.trim().length < 2 || refining) return
     onRefine(text.trim())
     setText('')
   }
@@ -258,7 +303,7 @@ function RefineBox({ refining, refineNote, refineError, onRefine }: Props) {
         />
         <button
           type="submit"
-          disabled={refining || !text.trim()}
+          disabled={refining || text.trim().length < 2}
           className="grid h-9 w-9 shrink-0 place-items-center rounded-md bg-[#0063E6] text-white transition-colors hover:bg-[#084fba] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0063E6] disabled:bg-[#b3d7ff]"
           aria-label="Apply change"
         >
@@ -275,6 +320,7 @@ function RefineBox({ refining, refineNote, refineError, onRefine }: Props) {
 function CountFooter({ full, count, counting, onChange, approved, onApprove }: Props & { full: Icp }) {
   const zero = count === 0 && !counting
   const unknown = count === null && !counting
+  const blocker = approveBlocker(full, count, counting)
   // Mobile: the count and Approve stay pinned to the bottom while the long card scrolls.
   const sticky = !zero && !approved ? 'max-sm:sticky max-sm:bottom-0 max-sm:z-10 max-sm:shadow-[0_-8px_24px_rgb(12_31_69/0.18)]' : ''
   return (
@@ -314,14 +360,20 @@ function CountFooter({ full, count, counting, onChange, approved, onApprove }: P
             </div>
             <p className="mt-1.5 text-[13px] leading-snug text-white sm:text-[15px]">
               {count === null ? (unknown ? 'Count unavailable right now.' : 'Counting people who fit') : 'people fit this profile.'}
-              <span className="hidden sm:inline">{count === null ? '' : ' Your free 25 come from this list.'}</span>
+              {blocker === 'too_broad' ? (
+                <span className="block sm:inline"> Add a title, industry or company size to approve.</span>
+              ) : (
+                <span className="hidden sm:inline">
+                  {count === null ? '' : count < FREE_LEAD_COUNT ? ` All ${count} are yours free.` : ' Your free 25 come from this list.'}
+                </span>
+              )}
             </p>
           </div>
           <button
             type="button"
             data-fl-approve=""
             onClick={onApprove}
-            disabled={approved}
+            disabled={approved || blocker !== null}
             className={`fl-fade inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-white px-6 text-base font-semibold text-[#084fba] shadow-enterprise-sm transition-[background-color,transform] duration-150 hover:bg-[#f0f7ff] active:scale-[0.98] disabled:cursor-default disabled:bg-white/15 disabled:text-white disabled:shadow-none sm:h-14 sm:px-8 sm:text-lg ${WHITE_FOCUS}`}
           >
             {approved ? <Check className="h-5 w-5" aria-hidden="true" /> : null}

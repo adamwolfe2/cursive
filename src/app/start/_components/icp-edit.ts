@@ -24,7 +24,7 @@ const COUNTRIES = new Set(
   'united states,canada,mexico,united kingdom,ireland,germany,france,spain,italy,netherlands,belgium,switzerland,austria,sweden,norway,denmark,finland,poland,portugal,australia,new zealand,india,singapore,japan,brazil,argentina,south africa,israel,united arab emirates'.split(',')
 )
 
-export const sizeLabel = (v: string) => (v === '10001+' ? '10,001+ people' : `${v.replace(' to ', '–')} people`)
+export const sizeLabel = (v: string) => (v === '10001+' ? '10,001+ people' : `${v.replace(' to ', '-')} people`)
 export const chipLabel = (key: ListKey, v: string) => (key === 'company_size' ? sizeLabel(v) : v)
 
 export function valuesFor(icp: Partial<Icp>, key: ListKey): string[] | undefined {
@@ -53,7 +53,8 @@ export function withAdded(icp: Icp, key: ListKey, raw: string): Icp {
   if (key === 'locations') {
     const lower = value.toLowerCase()
     const field = US_STATES.has(lower) ? 'states' : COUNTRIES.has(lower) ? 'countries' : 'cities'
-    const pretty = field === 'countries' ? value : value.replace(/\b\w/g, (c) => c.toUpperCase())
+    // Title case everywhere: the lead database matches countries by exact name ("United States").
+    const pretty = value.replace(/\b\w/g, (c) => c.toUpperCase())
     if (icp[field].some((v) => v.toLowerCase() === value.toLowerCase())) return icp
     if (icp[field].length >= FIELD_MAX[field]) return icp
     return { ...icp, [field]: [...icp[field], pretty] }
@@ -76,4 +77,20 @@ export function widenings(icp: Icp): Array<{ label: string; next: Icp }> {
     out.push({ label: `Drop "${icp.job_titles[icp.job_titles.length - 1]}"`, next: { ...icp, job_titles: icp.job_titles.slice(0, -1) } })
   if (icp.industries.length) out.push({ label: 'Any industry', next: { ...icp, industries: [] } })
   return out.slice(0, 3)
+}
+
+/** The list's own spelling of a typed value, matched case-insensitively; null when it is not in the list. */
+export function matchOption(options: readonly string[], raw: string): string | null {
+  const v = raw.trim().toLowerCase()
+  return options.find((o) => o.toLowerCase() === v) ?? null
+}
+
+/**
+ * Approve only a settled, non-zero count, and only a profile with at least one title, industry or
+ * company size: locations and seniority alone match tens of millions of people.
+ */
+export function approveBlocker(icp: Icp, count: number | null, counting: boolean): 'not_ready' | 'too_broad' | null {
+  if (counting || count === null || count === 0) return 'not_ready'
+  if (!icp.job_titles.length && !icp.industries.length && !icp.company_size.length) return 'too_broad'
+  return null
 }

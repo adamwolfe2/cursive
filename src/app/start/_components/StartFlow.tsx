@@ -87,6 +87,8 @@ export function StartFlow({ mock, initialSite }: { mock: Mock; initialSite: stri
   /** Phones: glide to the profile when it starts, unless the reader has scrolled on their own. */
   const followRef = useRef(false)
   const inputRef = useRef<HTMLInputElement & HTMLTextAreaElement>(null)
+  /** The results heading takes keyboard focus when the hero (and its input) unmounts. */
+  const headingRef = useRef<HTMLHeadingElement>(null)
 
   const endSession = () => {
     sessionRef.current?.abort()
@@ -197,6 +199,7 @@ export function StartFlow({ mock, initialSite }: { mock: Mock; initialSite: stri
     setPreviewTotal(null)
     setPreviewError(null)
     window.scrollTo({ top: 0 })
+    requestAnimationFrame(() => headingRef.current?.focus({ preventScroll: true }))
 
     let finalIcp: Icp | null = null
     let gotCount = false
@@ -247,6 +250,7 @@ export function StartFlow({ mock, initialSite }: { mock: Mock; initialSite: stri
       if (description.length < MIN_DESCRIPTION) {
         return setInputError('Give us a sentence or two: what you sell and who usually buys it.')
       }
+      if (description.length > 4000) return setInputError('Keep it under 4,000 characters. A short paragraph is plenty.')
       setInputError(null)
       void run({ description })
     }
@@ -371,7 +375,7 @@ export function StartFlow({ mock, initialSite }: { mock: Mock; initialSite: stri
 
   return (
     <div className={`mx-auto w-full max-w-[72rem] px-5 pb-24 pt-6 sm:px-8 sm:pt-12 ${replayedAt ? 'fl-instant' : ''}`}>
-      <h1 className="sr-only">{website ? `Who buys from ${website}` : 'Who buys from you'}</h1>
+      <h1 ref={headingRef} tabIndex={-1} className="sr-only">{website ? `Who buys from ${website}` : 'Who buys from you'}</h1>
       <div className="grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] lg:gap-14">
         <ScanFeed
           query={query}

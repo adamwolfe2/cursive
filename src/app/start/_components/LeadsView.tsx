@@ -275,7 +275,7 @@ function LeadRow({ lead, index }: { lead: FullLead; index: number }) {
         <td className={`hidden px-4 align-top md:table-cell ${pad}`}>
           <div className="truncate font-medium text-[#1d2025]">{lead.company}</div>
           <div className="truncate text-[13px] text-[#6b7280]">
-            {[lead.company_size && `${lead.company_size.replace(' to ', '–')} people`, lead.industry].filter(Boolean).join(' · ')}
+            {[lead.company_size && `${lead.company_size.replace(' to ', '-')} people`, lead.industry].filter(Boolean).join(' · ')}
           </div>
         </td>
         <td className={`hidden truncate px-4 align-top text-[#4d5460] xl:table-cell ${pad}`}>{lead.location ?? ''}</td>
