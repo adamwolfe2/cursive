@@ -6,8 +6,9 @@ import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { FREE_LEAD_COUNT, type FullLead, type LeadsResponse } from '@/lib/free-leads/contract'
 import { AnimatedNumber, formatCount } from './AnimatedNumber'
-import { errorCopy, getJson, isAbort, StartApiError, type Mock } from './api'
+import { errorCopy, getJson, isAbort, StartApiError, trackStep, type Mock } from './api'
 import { Ladder } from './Ladder'
+import { WhyLine } from './Preview'
 
 type Ready = Extract<LeadsResponse, { status: 'ready' }>
 type State =
@@ -17,6 +18,8 @@ type State =
   | { kind: 'expired' }
 
 const SLOW_AFTER_MS = 12_000
+/** Leads land one after another at this pace; the heading count and the blue rule track the same clock. */
+const LAND_STEP_MS = 38
 
 const CSV_COLUMNS: Array<[string, (l: FullLead) => string | null]> = [
   ['first_name', (l) => l.first_name],
@@ -31,6 +34,7 @@ const CSV_COLUMNS: Array<[string, (l: FullLead) => string | null]> = [
   ['email', (l) => l.email],
   ['linkedin_url', (l) => l.linkedin_url],
   ['phone', (l) => l.phone],
+  ['why_this_lead', (l) => l.why],
 ]
 
 /** Quote every cell; prefix formula-looking values so spreadsheets don't execute them. */
@@ -96,6 +100,7 @@ export function LeadsView({ mock, token }: { mock: Mock; token: string | null })
 
   const data = state.kind === 'ready' ? state.data : null
   const leads = data?.leads ?? []
+  const landMs = leads.length * LAND_STEP_MS
 
   return (
     <div className="mx-auto w-full max-w-[72rem] px-5 pb-24 pt-8 sm:px-8 sm:pt-14">
@@ -107,12 +112,14 @@ export function LeadsView({ mock, token }: { mock: Mock; token: string | null })
             {state.kind === 'loading' && 'Pulling your 25 leads.'}
             {data && (
               <>
-                <AnimatedNumber value={leads.length} className="tabular-nums" /> leads, ready.
+                <AnimatedNumber value={leads.length} from={0} duration={landMs} linear className="tabular-nums text-[#007AFF]" /> leads,
+                ready.
               </>
             )}
             <span className="sr-only">{data ? `${leads.length} leads ready.` : ''}</span>
           </h1>
-          <p className="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-[#4d5460]" role="status">
+          {/* Three lines reserved: the loading note and the profile summary swap without moving the table. */}
+          <p className="mt-3 max-w-[62ch] text-[15px] leading-relaxed text-[#4d5460] max-sm:min-h-[4.875rem]" role="status">
             {state.kind === 'loading' &&
               (slow
                 ? 'Still checking emails. We only keep addresses that pass, so this can take up to a minute.'
@@ -121,11 +128,16 @@ export function LeadsView({ mock, token }: { mock: Mock; token: string | null })
             {state.kind === 'failed' && state.message}
           </p>
         </div>
-        {data && (
+        {state.kind !== 'failed' && (
           <button
             type="button"
-            onClick={() => downloadCsv(leads, data.website)}
-            className="inline-flex h-11 shrink-0 items-center justify-center gap-2 self-start rounded-lg border border-[#1d2025] bg-white px-4 text-[15px] font-semibold text-[#1d2025] transition-colors hover:bg-[#f9fafb] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF] sm:self-auto"
+            disabled={!data}
+            onClick={() => {
+              if (!data) return
+              downloadCsv(leads, data.website)
+              trackStep('csv', mock)
+            }}
+            className="inline-flex h-11 shrink-0 items-center justify-center gap-2 self-start rounded-lg border border-[#1d2025] bg-white px-4 text-[15px] font-semibold text-[#1d2025] transition-colors hover:bg-[#f9fafb] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF] disabled:cursor-default disabled:border-[#d1d5db] disabled:text-[#a0a5b1] disabled:hover:bg-white sm:self-auto"
           >
             <Download className="h-4 w-4" aria-hidden="true" />
             Download CSV
@@ -147,8 +159,9 @@ export function LeadsView({ mock, token }: { mock: Mock; token: string | null })
         </div>
       ) : (
         <>
-          {data && <Facts leads={leads} />}
-          <div className="mt-6 overflow-hidden rounded-t-xl border border-b-0 border-[#e5e7eb]">
+          <Facts leads={data ? leads : null} />
+          <div className="relative mt-6 overflow-hidden rounded-t-xl border border-b-0 border-[#e5e7eb]">
+            {data && <span className="fl-fill absolute inset-x-0 top-0 h-[3px] bg-[#007AFF]" style={{ animationDuration: `${landMs}ms` }} aria-hidden="true" />}
             <table className="w-full table-fixed text-left text-sm max-sm:block">
               <caption className="sr-only">Your {FREE_LEAD_COUNT} leads</caption>
               <thead className="bg-[#f9fafb] text-[12px] font-medium text-[#6b7280] max-sm:hidden">
@@ -163,26 +176,28 @@ export function LeadsView({ mock, token }: { mock: Mock; token: string | null })
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#f3f4f6] max-sm:block">
-                {data
-                  ? leads.map((l, i) => <LeadRow key={l.id} lead={l} index={i} />)
-                  : Array.from({ length: FREE_LEAD_COUNT }, (_, i) => (
-                      <tr key={i} aria-hidden="true" className="fl-rise max-sm:flex" style={{ animationDelay: `${i * 160}ms` }}>
-                        <td className="hidden py-3.5 pl-4 text-[13px] tabular-nums text-[#d1d5db] sm:table-cell">{i + 1}</td>
-                        <td className="px-4 py-3.5 max-sm:flex-1" colSpan={5}>
-                          <div className="flex items-center gap-6">
-                            <div className="w-1/4 space-y-1.5">
-                              <div className="fl-sheen-ink h-3.5 w-4/5 rounded" />
-                              <div className="fl-sheen-ink h-3 w-3/5 rounded" />
-                            </div>
-                            <div className="fl-sheen-ink hidden h-3.5 w-1/5 rounded md:block" />
-                            <div className="fl-sheen-ink hidden h-3.5 w-1/4 rounded sm:block" />
+              {data ? (
+                leads.map((l, i) => <LeadRow key={l.id} lead={l} index={i} />)
+              ) : (
+                <tbody className="divide-y divide-[#f3f4f6] max-sm:block">
+                  {Array.from({ length: FREE_LEAD_COUNT }, (_, i) => (
+                    <tr key={i} aria-hidden="true" className="fl-rise max-sm:flex" style={{ animationDelay: `${i * 160}ms` }}>
+                      <td className="hidden py-3.5 pl-4 text-[13px] tabular-nums text-[#d1d5db] sm:table-cell">{i + 1}</td>
+                      <td className="px-4 py-3.5 max-sm:flex-1" colSpan={5}>
+                        <div className="flex items-center gap-6">
+                          <div className="w-1/4 space-y-1.5">
+                            <div className="fl-sheen-ink h-3.5 w-4/5 rounded" />
+                            <div className="fl-sheen-ink h-3 w-3/5 rounded" />
                           </div>
-                        </td>
-                      </tr>
-                    ))}
-                {data && <LockedRow total={data.total_matching} />}
-              </tbody>
+                          <div className="fl-sheen-ink hidden h-3.5 w-1/5 rounded md:block" />
+                          <div className="fl-sheen-ink hidden h-3.5 w-1/4 rounded sm:block" />
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              )}
+              {data && <LockedRow total={data.total_matching} delay={landMs} />}
             </table>
           </div>
           {data ? (
@@ -196,20 +211,25 @@ export function LeadsView({ mock, token }: { mock: Mock; token: string | null })
   )
 }
 
-function Facts({ leads }: { leads: FullLead[] }) {
+/** One line of what's in the list. Its slot is held while loading so the table below never moves. */
+function Facts({ leads }: { leads: FullLead[] | null }) {
+  if (!leads) {
+    return <p className="mt-8 h-5 text-sm text-[#6b7280]">Every email is checked before it lands here.</p>
+  }
   const linkedin = leads.filter((l) => l.linkedin_url).length
   const phone = leads.filter((l) => l.phone).length
   return (
-    <p className="fl-fade mt-8 text-sm text-[#4d5460]">
+    <p className="fl-fade mt-8 h-5 truncate text-sm text-[#4d5460]">
       <span className="font-semibold text-[#1d2025]">{leads.length}</span> verified work emails
       <span className="px-2 text-[#d1d5db]" aria-hidden="true">/</span>
-      <span className="font-semibold text-[#1d2025]">{linkedin}</span> LinkedIn profiles
+      <span className="font-semibold text-[#1d2025]">{linkedin}</span> LinkedIn
       <span className="px-2 text-[#d1d5db]" aria-hidden="true">/</span>
       <span className="font-semibold text-[#1d2025]">{phone}</span> phone numbers
     </p>
   )
 }
 
+/** A lead is its own row group: the contact row, then the "why them" line under it. */
 function LeadRow({ lead, index }: { lead: FullLead; index: number }) {
   const [copied, setCopied] = useState(false)
   const copy = async () => {
@@ -222,6 +242,7 @@ function LeadRow({ lead, index }: { lead: FullLead; index: number }) {
     }
   }
   const name = `${lead.first_name} ${lead.last_name}`
+  const pad = `pt-3 ${lead.why ? 'pb-1' : 'pb-3'}`
   const copyButton = (
     <button
       type="button"
@@ -233,83 +254,96 @@ function LeadRow({ lead, index }: { lead: FullLead; index: number }) {
     </button>
   )
   return (
-    <tr className="fl-rise hover:bg-[#fafbfc] max-sm:flex" style={{ animationDelay: `${index * 45}ms` }}>
-      <td className="hidden py-3 pl-4 align-top text-[13px] tabular-nums text-[#a0a5b1] sm:table-cell">{index + 1}</td>
-      <td className="px-4 py-3 align-top max-sm:min-w-0 max-sm:flex-1">
-        <div className="truncate font-semibold text-[#1d2025]">{name}</div>
-        <div className="truncate text-[13px] text-[#6b7280]">{lead.job_title}</div>
-        <div className="truncate text-[13px] text-[#6b7280] md:hidden">{lead.company}</div>
-        <div className="mt-1 flex items-center gap-1 sm:hidden">
-          <span className="truncate font-mono text-[12px] text-[#3a3f4b]">{lead.email}</span>
-          {copyButton}
-        </div>
-      </td>
-      <td className="hidden px-4 py-3 align-top md:table-cell">
-        <div className="truncate font-medium text-[#1d2025]">{lead.company}</div>
-        <div className="truncate text-[13px] text-[#6b7280]">
-          {[lead.industry, lead.company_size && `${lead.company_size.replace(' to ', '–')} people`].filter(Boolean).join(' · ')}
-        </div>
-      </td>
-      <td className="hidden truncate px-4 py-3 align-top text-[#4d5460] xl:table-cell">{lead.location ?? ''}</td>
-      <td className="hidden px-4 py-3 align-top sm:table-cell">
-        <div className="flex items-center gap-1">
-          <a href={`mailto:${lead.email}`} className="fl-compact truncate font-mono text-[13px] text-[#1d2025] hover:text-[#0063E6] hover:underline">
-            {lead.email}
-          </a>
-          {copyButton}
-        </div>
-      </td>
-      <td className="px-4 py-3 align-top max-sm:shrink-0 max-sm:pl-0">
-        <div className="flex gap-1">
-          {lead.linkedin_url ? (
-            <a
-              href={lead.linkedin_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="fl-compact grid h-7 w-7 place-items-center rounded-md bg-[#f0f7ff] text-[#0063E6] transition-colors hover:bg-[#d6eaff] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#007AFF]"
-              aria-label={`${name} on LinkedIn`}
-            >
-              <Linkedin className="h-3.5 w-3.5" aria-hidden="true" />
+    <tbody
+      className="fl-land border-t border-[#f3f4f6] first-of-type:border-t-0 hover:bg-[#fafbfc] max-sm:block"
+      style={{ animationDelay: `${index * LAND_STEP_MS}ms` }}
+    >
+      <tr className="max-sm:flex">
+        <td className={`hidden pl-4 align-top text-[13px] tabular-nums text-[#a0a5b1] sm:table-cell ${pad}`}>{index + 1}</td>
+        <td className={`px-4 align-top max-sm:min-w-0 max-sm:flex-1 ${pad}`}>
+          <div className="truncate font-semibold text-[#1d2025]">{name}</div>
+          <div className="truncate text-[13px] text-[#6b7280]">{lead.job_title}</div>
+          <div className="truncate text-[13px] text-[#6b7280] md:hidden">{lead.company}</div>
+          <div className="mt-1 flex items-center gap-1 sm:hidden">
+            <span className="truncate text-[13px] text-[#3a3f4b]">{lead.email}</span>
+            {copyButton}
+          </div>
+        </td>
+        <td className={`hidden px-4 align-top md:table-cell ${pad}`}>
+          <div className="truncate font-medium text-[#1d2025]">{lead.company}</div>
+          <div className="truncate text-[13px] text-[#6b7280]">
+            {[lead.industry, lead.company_size && `${lead.company_size.replace(' to ', '–')} people`].filter(Boolean).join(' · ')}
+          </div>
+        </td>
+        <td className={`hidden truncate px-4 align-top text-[#4d5460] xl:table-cell ${pad}`}>{lead.location ?? ''}</td>
+        <td className={`hidden px-4 align-top sm:table-cell ${pad}`}>
+          <div className="flex items-center gap-1">
+            <a href={`mailto:${lead.email}`} className="fl-compact truncate text-[13px] text-[#1d2025] hover:text-[#0063E6] hover:underline">
+              {lead.email}
             </a>
-          ) : (
-            <span className="h-7 w-7" />
-          )}
-          {lead.phone && (
-            <a
-              href={`tel:${lead.phone.replace(/[^\d+]/g, '')}`}
-              className="fl-compact grid h-7 w-7 place-items-center rounded-md bg-[#f3f4f6] text-[#3a3f4b] transition-colors hover:bg-[#e5e7eb] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#007AFF]"
-              aria-label={`Call ${name}: ${lead.phone}`}
-              title={lead.phone}
-            >
-              <Phone className="h-3.5 w-3.5" aria-hidden="true" />
-            </a>
-          )}
-        </div>
-      </td>
-    </tr>
+            {copyButton}
+          </div>
+        </td>
+        <td className={`px-4 align-top max-sm:shrink-0 max-sm:pl-0 ${pad}`}>
+          <div className="flex gap-1">
+            {lead.linkedin_url ? (
+              <a
+                href={lead.linkedin_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="fl-compact grid h-7 w-7 place-items-center rounded-md bg-[#f0f7ff] text-[#0063E6] transition-colors hover:bg-[#d6eaff] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#007AFF]"
+                aria-label={`${name} on LinkedIn`}
+              >
+                <Linkedin className="h-3.5 w-3.5" aria-hidden="true" />
+              </a>
+            ) : (
+              <span className="h-7 w-7" />
+            )}
+            {lead.phone && (
+              <a
+                href={`tel:${lead.phone.replace(/[^\d+]/g, '')}`}
+                className="fl-compact grid h-7 w-7 place-items-center rounded-md bg-[#f3f4f6] text-[#3a3f4b] transition-colors hover:bg-[#e5e7eb] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#007AFF]"
+                aria-label={`Call ${name}: ${lead.phone}`}
+                title={lead.phone}
+              >
+                <Phone className="h-3.5 w-3.5" aria-hidden="true" />
+              </a>
+            )}
+          </div>
+        </td>
+      </tr>
+      {lead.why && (
+        <tr className="max-sm:block">
+          <td className="hidden sm:table-cell" />
+          <td colSpan={5} className="px-4 pb-3 max-sm:block">
+            <WhyLine why={lead.why} className="max-w-[90ch]" />
+          </td>
+        </tr>
+      )}
+    </tbody>
   )
 }
 
-function LockedRow({ total }: { total: number }) {
+function LockedRow({ total, delay }: { total: number; delay: number }) {
   return (
-    <tr className="relative bg-[#f9fafb] max-sm:flex">
-      <td className="hidden py-4 pl-4 align-middle text-[13px] tabular-nums text-[#a0a5b1] sm:table-cell">26</td>
-      <td colSpan={5} className="px-4 py-4 max-sm:min-w-0 max-sm:flex-1">
-        <div className="flex items-center gap-3">
-          <span className="grid h-8 w-8 shrink-0 place-items-center rounded-md bg-white text-[#1d2025] shadow-enterprise-xs">
-            <Lock className="h-4 w-4" aria-hidden="true" />
-          </span>
-          <div className="min-w-0 select-none">
-            <p className="text-sm font-semibold text-[#1d2025]">
-              Lead 26 of {formatCount(total)}
-            </p>
-            <p className="truncate text-[13px] text-[#6b7280] blur-[3px]" aria-hidden="true">
-              Jordan Ellis, Head of Operations, Brightline Labs
-            </p>
+    <tbody className="fl-rise border-t border-[#f3f4f6] max-sm:block" style={{ animationDelay: `${delay}ms` }}>
+      <tr className="relative bg-[#f9fafb] max-sm:flex">
+        <td className="hidden py-4 pl-4 align-middle text-[13px] tabular-nums text-[#a0a5b1] sm:table-cell">26</td>
+        <td colSpan={5} className="px-4 py-4 max-sm:min-w-0 max-sm:flex-1">
+          <div className="flex items-center gap-3">
+            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-md bg-white text-[#1d2025] shadow-enterprise-xs">
+              <Lock className="h-4 w-4" aria-hidden="true" />
+            </span>
+            <div className="min-w-0 select-none">
+              <p className="text-sm font-semibold text-[#1d2025]">Lead 26 of {formatCount(total)}</p>
+              <p className="truncate text-[13px] text-[#6b7280] blur-[3px]" aria-hidden="true">
+                Jordan Ellis, Head of Operations, Brightline Labs
+              </p>
+            </div>
           </div>
-        </div>
-      </td>
-    </tr>
+        </td>
+      </tr>
+    </tbody>
   )
 }
 

@@ -10,34 +10,40 @@ import type {
   RefineResponse,
   ScanEvent,
 } from '@/lib/free-leads/contract'
-import { errorCopy, isAbort, MIN_DESCRIPTION, postJson, streamScan, type Mock, type ScanInput } from './api'
+import { errorCopy, isAbort, MIN_DESCRIPTION, postJson, streamScan, trackStep, type Mock, type ScanInput } from './api'
+import { EmailProfile } from './EmailProfile'
 import { Hero, type InputMode } from './Hero'
 import { IcpCard } from './IcpCard'
 import { ClaimForm, PreviewTable } from './Preview'
-import { ScanFeed, type ScanError, type Site } from './ScanFeed'
+import { ScanErrorNote, ScanFeed, type ScanError, type Site } from './ScanFeed'
+import { withPage, type PageRow } from './scan-state'
 
 const SLOW_AFTER_MS = [12_000, 25_000] as const
 const NOT_A_SITE = "That doesn't look like a website. Try something like acme.com."
 
 /** acme.com, www.acme.com, https://acme.com/about -> "acme.com/about"; null if it can't be a site. */
-function normalizeUrl(raw: string): string | null {
+export function normalizeUrl(raw: string): string | null {
   const v = raw.trim().replace(/^https?:\/\//i, '').replace(/\/+$/, '')
   return /^[^\s/.]+(\.[^\s/.]+)*\.[a-z]{2,}(\/\S*)?$/i.test(v) ? v : null
 }
 
 const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-export function StartFlow({ mock }: { mock: Mock }) {
+/** `initialSite` comes from `/start?site=acme.com` (links in the profile email) and starts the scan on load. */
+export function StartFlow({ mock, initialSite }: { mock: Mock; initialSite: string | null }) {
+  const autoUrl = initialSite ? normalizeUrl(initialSite) : null
   const [mode, setMode] = useState<InputMode>('url')
-  const [value, setValue] = useState('')
-  const [inputError, setInputError] = useState<string | null>(null)
+  const [value, setValue] = useState(initialSite && !autoUrl ? initialSite : '')
+  const [inputError, setInputError] = useState<string | null>(initialSite && !autoUrl ? NOT_A_SITE : null)
   /** The site we could not open; kept so the claim still has a website after a description scan. */
   const [fallbackDomain, setFallbackDomain] = useState<string | null>(null)
 
-  const [phase, setPhase] = useState<'idle' | 'scanning' | 'done'>('idle')
-  const [query, setQuery] = useState<ScanInput | null>(null)
+  const [phase, setPhase] = useState<'idle' | 'scanning' | 'done'>(autoUrl ? 'scanning' : 'idle')
+  const [query, setQuery] = useState<ScanInput | null>(autoUrl ? { url: autoUrl } : null)
   const [site, setSite] = useState<Site | null>(null)
-  const [findings, setFindings] = useState<Fact[]>([])
+  const [pages, setPages] = useState<PageRow[]>([])
+  const [facts, setFacts] = useState<Fact[]>([])
+  const [replayedAt, setReplayedAt] = useState<string | null>(null)
   const [icp, setIcp] = useState<Partial<Icp>>({})
   const [complete, setComplete] = useState(false)
   const [scanError, setScanError] = useState<ScanError | null>(null)
@@ -49,7 +55,7 @@ export function StartFlow({ mock }: { mock: Mock }) {
   const [refineNote, setRefineNote] = useState<string | null>(null)
   const [refineError, setRefineError] = useState<string | null>(null)
 
-  const [previewOpen, setPreviewOpen] = useState(false)
+  const [approved, setApproved] = useState(false)
   const [preview, setPreview] = useState<MaskedLead[] | null>(null)
   const [previewTotal, setPreviewTotal] = useState<number | null>(null)
   const [previewError, setPreviewError] = useState<string | null>(null)
@@ -58,15 +64,15 @@ export function StartFlow({ mock }: { mock: Mock }) {
   const sessionRef = useRef<AbortController | null>(null)
   const countSeq = useRef(0)
   const countTimer = useRef<number | undefined>(undefined)
-  const previewBusy = useRef(false)
-  const previewRef = useRef<HTMLDivElement>(null)
+  const previewSeq = useRef(0)
+  const claimRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement & HTMLTextAreaElement>(null)
 
   const endSession = () => {
     sessionRef.current?.abort()
     window.clearTimeout(countTimer.current)
     countSeq.current++
-    previewBusy.current = false
+    previewSeq.current++
   }
 
   useEffect(() => endSession, [])
@@ -89,10 +95,14 @@ export function StartFlow({ mock }: { mock: Mock }) {
 
   const onEvent = (e: ScanEvent, input: ScanInput) => {
     switch (e.type) {
+      case 'replay':
+        return setReplayedAt(e.scanned_at)
+      case 'page':
+        return setPages((p) => withPage(p, e))
       case 'site':
         return setSite(e)
       case 'fact':
-        return setFindings((f) => [...f, e.fact])
+        return setFacts((f) => [...f, e.fact])
       case 'icp_partial':
         return setIcp((prev) => ({ ...prev, ...e.icp }))
       case 'icp':
@@ -125,7 +135,9 @@ export function StartFlow({ mock }: { mock: Mock }) {
     setQuery(input)
     setPhase('scanning')
     setSite(null)
-    setFindings([])
+    setPages([])
+    setFacts([])
+    setReplayedAt(null)
     setIcp({})
     setComplete(false)
     setScanError(null)
@@ -135,7 +147,7 @@ export function StartFlow({ mock }: { mock: Mock }) {
     setRefining(false)
     setRefineNote(null)
     setRefineError(null)
-    setPreviewOpen(false)
+    setApproved(false)
     setPreview(null)
     setPreviewTotal(null)
     setPreviewError(null)
@@ -170,6 +182,12 @@ export function StartFlow({ mock }: { mock: Mock }) {
     if (finalIcp && !gotCount) recount(finalIcp, 0)
     setPhase((p) => (p === 'idle' ? 'idle' : 'done'))
   }
+
+  // `/start?site=acme.com`: start straight away. Runs once; run() aborts any earlier stream (StrictMode remounts).
+  useEffect(() => {
+    if (autoUrl) void run({ url: autoUrl })
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- mount only
+  }, [])
 
   const submit = (e: FormEvent) => {
     e.preventDefault()
@@ -210,10 +228,19 @@ export function StartFlow({ mock }: { mock: Mock }) {
     }, delay)
   }
 
+  /** Any edit after approval re-opens the decision: the preview and claim must match what was approved. */
+  const unapprove = () => {
+    previewSeq.current++
+    setApproved(false)
+    setPreview(null)
+    setPreviewTotal(null)
+  }
+
   const onChange = (next: Icp) => {
     setIcp(next)
     setRefineNote(null)
     setRefineError(null)
+    unapprove()
     recount(next)
   }
 
@@ -231,6 +258,7 @@ export function StartFlow({ mock }: { mock: Mock }) {
       setIcp(r.icp)
       setCount(r.total)
       setRefineNote(r.note)
+      unapprove()
     } catch (err) {
       if (isAbort(err)) return
       console.error('[start] refine failed', err)
@@ -243,25 +271,25 @@ export function StartFlow({ mock }: { mock: Mock }) {
     }
   }
 
-  const onPreview = async () => {
-    if (previewBusy.current || !complete) return
-    previewBusy.current = true
-    setPreviewOpen(true)
+  /** Approve goes straight to the work-email step; the 5-lead preview loads underneath it, never blocking. */
+  const onApprove = async () => {
+    if (!complete || approved) return
+    setApproved(true)
     setPreviewError(null)
+    trackStep('icp_approved', mock)
     requestAnimationFrame(() =>
-      previewRef.current?.scrollIntoView({ behavior: reducedMotion() ? 'auto' : 'smooth', block: 'start' })
+      claimRef.current?.scrollIntoView({ behavior: reducedMotion() ? 'auto' : 'smooth', block: 'start' })
     )
+    const seq = ++previewSeq.current
     try {
       const r = await postJson<PreviewResponse>('/api/start/preview', { icp }, mock, sessionRef.current?.signal)
+      if (seq !== previewSeq.current) return
       setPreview(r.leads)
       setPreviewTotal(r.total)
     } catch (err) {
       if (isAbort(err)) return
       console.error('[start] preview failed', err)
-      setPreviewError(errorCopy(err, 'Something in this profile is off. Remove a filter and try again.'))
-      setPreviewOpen(false)
-    } finally {
-      previewBusy.current = false
+      if (seq === previewSeq.current) setPreviewError(errorCopy(err, 'We could not pull a preview for this profile.'))
     }
   }
 
@@ -285,23 +313,23 @@ export function StartFlow({ mock }: { mock: Mock }) {
     )
   }
 
-  const showCard = complete || Object.keys(icp).length > 0 || !scanError
   const website = site?.domain ?? (query && 'url' in query ? query.url : fallbackDomain)
+  const showCard = complete || Object.keys(icp).length > 0 || !scanError
 
   return (
-    <div className="mx-auto w-full max-w-[72rem] px-5 pb-24 pt-6 sm:px-8 sm:pt-12">
-      <div className="grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-[minmax(0,19rem)_minmax(0,1fr)] lg:gap-12">
+    <div className={`mx-auto w-full max-w-[72rem] px-5 pb-24 pt-6 sm:px-8 sm:pt-12 ${replayedAt ? 'fl-instant' : ''}`}>
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] lg:gap-14">
         <ScanFeed
           query={query}
           site={site}
-          findings={findings}
+          pages={pages}
+          facts={facts}
           scanning={scanning}
           slow={slow}
-          error={scanError}
-          onRetry={() => query && void run(query)}
+          replayedAt={replayedAt}
           onReset={() => toHero('url', null)}
         />
-        <div className="min-w-0">
+        <div className="min-w-0 space-y-5">
           {showCard && (
             <IcpCard
               icp={icp}
@@ -313,19 +341,31 @@ export function StartFlow({ mock }: { mock: Mock }) {
               refineNote={refineNote}
               refineError={refineError}
               onRefine={onRefine}
-              onPreview={onPreview}
-              previewLoading={previewOpen && !preview}
-              previewOpen={previewOpen}
-              previewError={previewError}
+              approved={approved}
+              onApprove={() => void onApprove()}
             />
+          )}
+          {scanError && <ScanErrorNote error={scanError} onRetry={() => query && void run(query)} />}
+          {complete && !approved && website && count !== 0 && (
+            <div className="px-1">
+              <EmailProfile website={website} icp={icp as Icp} mock={mock} />
+            </div>
           )}
         </div>
       </div>
 
-      {previewOpen && complete && (
-        <div ref={previewRef} className="mt-14 scroll-mt-6 space-y-8 sm:mt-20">
-          <PreviewTable leads={preview} total={previewTotal ?? count} />
-          {preview && <ClaimForm website={website} icp={icp as Icp} mock={mock} />}
+      {approved && complete && (
+        <div ref={claimRef} className="fl-rise mt-12 scroll-mt-6 border-t border-[#e5e7eb] pt-12 sm:mt-16 sm:pt-16">
+          <ClaimForm website={website} icp={icp as Icp} mock={mock} />
+          <div className="mt-12 sm:mt-14">
+            {previewError ? (
+              <p role="status" className="text-sm text-[#4d5460]">
+                {previewError} Your 25 still come from the profile you approved.
+              </p>
+            ) : (
+              <PreviewTable leads={preview} total={previewTotal ?? count} />
+            )}
+          </div>
         </div>
       )}
     </div>
