@@ -6,7 +6,8 @@
  */
 import { inngest } from '@/inngest/client'
 import { notifySales } from '@/lib/free-leads/notify'
-import { deliverWeekly, isoWeek, weeklyCandidates } from '@/lib/free-leads/weekly'
+import { deliverWeekly, isoWeek, weeklyCandidates, workspaceOwnerEmail } from '@/lib/free-leads/weekly'
+import { sendFreeLeadsWeeklyEmail } from '@/lib/email/templates/free-leads-weekly'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
 
@@ -27,7 +28,14 @@ export const freeLeadsWeekly = inngest.createFunction(
           return { status: 'failed' as const }
         }
       })
-      if (res.status === 'delivered') delivered += 1
+      if (res.status !== 'delivered') continue
+      delivered += 1
+      if (res.leads === 0) continue
+      await step.run(`email-${order.id}-${week}`, async () => {
+        const to = await workspaceOwnerEmail(createAdminClient(), order.workspace_id)
+        if (!to) return safeLog('[free-leads-weekly] no owner email; skipped note', { order_id: order.id })
+        await sendFreeLeadsWeeklyEmail({ to, domain: res.domain, count: res.leads, top: res.top })
+      })
     }
     safeLog('[free-leads-weekly] run complete', { week, orders: orders.length, delivered })
     return { week, orders: orders.length, delivered }

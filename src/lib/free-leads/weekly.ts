@@ -17,6 +17,7 @@ import { claimIcp, findWorkspaceClaim, withoutStoredLeads } from './claims'
 import { FREE_LEAD_COUNT } from './contract'
 import { OVERPULL_FACTOR, scoreLeads, selectFitLeads } from './lead-fit'
 import { toLeadInsert, usableContacts } from './rules'
+import type { WeeklyTopLead } from '@/lib/email/templates/free-leads-weekly'
 
 type Admin = ReturnType<typeof createAdminClient>
 
@@ -31,7 +32,7 @@ export interface WeeklyOrder {
 }
 
 export type WeeklyResult =
-  | { status: 'delivered'; leads: number; credits: number }
+  | { status: 'delivered'; leads: number; credits: number; domain: string; top: WeeklyTopLead[] }
   | { status: 'already' }
   | { status: 'skipped'; reason: string }
 
@@ -145,5 +146,25 @@ export async function deliverWeekly(order: WeeklyOrder, week: string, admin: Adm
     delivered_at: now,
   })
   safeLog('[free-leads/weekly] delivered', { order_id: order.id, workspace_id: order.workspace_id, week, leads: rows.length, credits })
-  return { status: 'delivered', leads: rows.length, credits }
+  const top = chosen.slice(0, 3).map(({ item, fit }) => ({
+    name: [item.first_name, item.last_name].filter(Boolean).join(' '),
+    title: item.job_title,
+    company: item.org_company_name,
+    why: fit?.why ?? null,
+  }))
+  const domain = claim.website.replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0]
+  return { status: 'delivered', leads: rows.length, credits, domain, top }
+}
+
+/** The workspace owner's email, for the Monday note. Null when there is none. */
+export async function workspaceOwnerEmail(admin: Admin, workspaceId: string): Promise<string | null> {
+  const { data, error } = await admin
+    .from('users')
+    .select('email')
+    .eq('workspace_id', workspaceId)
+    .eq('role', 'owner')
+    .limit(1)
+    .maybeSingle()
+  if (error) throw new Error(`owner lookup failed: ${error.message}`)
+  return (data as { email: string | null } | null)?.email ?? null
 }

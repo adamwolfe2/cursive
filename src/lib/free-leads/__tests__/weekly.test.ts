@@ -145,3 +145,15 @@ describe('weeklyCandidates', () => {
     expect((await weeklyCandidates(admin)).map((o) => o.id)).toEqual(['a'])
   })
 })
+
+describe('weekly email data', () => {
+  it('returns the three best fits and the domain for the Monday note', async () => {
+    const { admin } = setup()
+    searchContacts.mockResolvedValue({ contacts: people(0, 35), totalAvailable: 900 })
+    const res = await deliverWeekly(ORDER, WEEK, admin)
+    if (res.status !== 'delivered') throw new Error('expected delivered')
+    expect(res.domain).toBe('acme.com')
+    expect(res.top).toHaveLength(3)
+    expect(res.top[0]).toMatchObject({ name: 'P0 Lee', title: 'CTO', company: 'Co0' })
+  })
+})
