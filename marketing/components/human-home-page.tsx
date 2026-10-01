@@ -5,15 +5,13 @@ import { Container } from "@/components/ui/container"
 import { motion } from "framer-motion"
 import { DashboardCTA } from "@/components/dashboard-cta"
 import { IntegrationsShowcase } from "@/components/integrations-showcase"
-import { HowItWorksSection } from "@/components/homepage/how-it-works-section"
-import { CompetitiveAdvantagesSection } from "@/components/homepage/competitive-advantages-section"
 import { TestimonialsSection } from "@/components/homepage/testimonials-section"
 import { FAQSection } from "@/components/homepage/faq-section"
-import { StartHero } from "@/components/homepage/start-hero"
-import Link from "next/link"
+import { StartExample, StartHero } from "@/components/homepage/start-hero"
+import { Stage } from "@/components/homepage/stage"
 import { useState } from "react"
 import {
-  Eye, TrendingUp, ShoppingCart,
+  Eye, ShoppingCart,
   Users, Database, Mail, Sparkles, ShieldCheck,
   BarChart3, GitBranch, Building2, Search, Flame,
   Layers, Check,
@@ -55,6 +53,9 @@ const heroFeatures: Array<{
   { id: "marketplace", label: "Marketplace", icon: ShoppingCart },
 ]
 
+/** The six the tour shows; the rest live on their product pages. */
+const TOUR_IDS = ["visitor-tracking", "audience-builder", "enrichment", "intent-heatmap", "sequences", "people-search"]
+
 // Render the active demo component lazily
 const renderDemoComponent = (activeFeatureId: string) => {
   switch (activeFeatureId) {
@@ -95,49 +96,51 @@ export function HumanHomePage() {
       <StartHero />
 
       {/* Everything else: the paid products, each with a live demo. Secondary to the free list above. */}
-      <section id="products-tour" aria-labelledby="products-tour-heading" className="border-t border-gray-100 bg-[#F7F9FB] py-16 lg:py-20">
-        <Container className="grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] lg:gap-14">
-          <div className="min-w-0">
-            <h2 id="products-tour-heading" className="text-[2rem] font-semibold leading-[1.08] tracking-[-0.03em] text-[#111827] sm:text-[2.5rem]">
-              Everything else Cursive does
-            </h2>
-            <p className="mt-4 max-w-[42ch] text-base leading-relaxed text-[#4b5563]">
-              The free list is the start. The same data runs visitor identification, audiences, enrichment and outreach. Pick one to see it work.
-            </p>
-            <div role="group" aria-label="Pick a product" className="mt-6 grid grid-cols-2 gap-1.5 sm:flex sm:flex-wrap">
-              {heroFeatures.map((feature) => {
-                const Icon = feature.icon
-                const isActive = activeFeature === feature.id
-                return (
-                  <button
-                    key={feature.id}
-                    type="button"
-                    onClick={() => setActiveFeature(feature.id)}
-                    aria-pressed={isActive}
-                    className={`inline-flex min-h-11 items-center gap-2 rounded-lg border px-3 text-left text-[13px] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF] ${
-                      isActive
-                        ? "border-[#cfe3ff] bg-white font-medium text-[#0c1f45] shadow-[0_1px_2px_rgb(12_31_69/0.08)]"
-                        : "border-gray-200 bg-white/60 text-[#4b5563] hover:bg-white hover:text-[#111827]"
-                    }`}
-                  >
-                    <Icon className={`h-4 w-4 shrink-0 ${isActive ? "text-[#0066DD]" : "text-gray-500"}`} aria-hidden="true" />
-                    {feature.label}
-                  </button>
-                )
-              })}
-            </div>
-          </div>
+      <StartExample />
 
-          <div className="min-w-0 overflow-hidden rounded-2xl border border-[#dfe7f2] bg-white shadow-[0_24px_60px_-28px_rgb(12_31_69/0.28)]">
-            <div className="h-[400px] overflow-hidden p-3 md:p-4">
-              <div key={activeFeature}>{renderDemoComponent(activeFeature)}</div>
+      {/* The paid products, each with a live demo. Secondary to the free list above. */}
+      <section id="products-tour" aria-labelledby="products-tour-heading" className="px-2 pb-20 sm:px-4 sm:pb-28">
+        <div className="mx-auto max-w-2xl px-4 text-center">
+          <h2 id="products-tour-heading" className="text-[2rem] font-semibold leading-tight tracking-[-0.025em] text-[#0c1f45] sm:text-[2.5rem]">
+            One data layer, every way to use it
+          </h2>
+          <p className="mt-3 text-[17px] leading-relaxed text-[#4b5563]">
+            The free list is the start. The same data runs visitor identification, audiences, enrichment and outreach.
+          </p>
+        </div>
+        <div role="group" aria-label="Pick a product" className="mx-auto mt-8 flex max-w-4xl flex-wrap justify-center gap-2 px-4">
+          {heroFeatures.filter((f) => TOUR_IDS.includes(f.id)).map((feature) => {
+            const Icon = feature.icon
+            const isActive = activeFeature === feature.id
+            return (
+              <button
+                key={feature.id}
+                type="button"
+                onClick={() => setActiveFeature(feature.id)}
+                aria-pressed={isActive}
+                className={`inline-flex min-h-10 items-center gap-2 rounded-full px-4 text-[13px] font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF] ${
+                  isActive ? "bg-[#0c1f45] text-white" : "border border-gray-200 bg-white text-[#4b5563] hover:border-gray-300 hover:text-[#111827]"
+                }`}
+              >
+                <Icon className={`h-4 w-4 shrink-0 ${isActive ? "text-white" : "text-gray-400"}`} aria-hidden="true" />
+                {feature.label}
+              </button>
+            )
+          })}
+        </div>
+        <Stage className="mx-auto mt-10 max-w-7xl">
+          <div className="mx-auto max-w-4xl px-4 py-10 sm:px-8 sm:py-16">
+            <div className="overflow-hidden rounded-2xl bg-white shadow-[0_30px_70px_-30px_rgb(4_22_66/0.7)]">
+              <div className="h-[420px] overflow-hidden p-3 md:p-4">
+                <div key={activeFeature}>{renderDemoComponent(activeFeature)}</div>
+              </div>
             </div>
           </div>
-        </Container>
+        </Stage>
       </section>
 
       {/* Integrations Showcase */}
-      <section id="integrations" className="py-20 bg-[#F7F9FB]">
+      <section id="integrations" className="py-20 bg-white">
         <Container>
           <IntegrationsShowcase
             title="Works With Your Existing Stack"
@@ -215,201 +218,9 @@ export function HumanHomePage() {
         </Container>
       </section>
 
-      {/* Problem → Solution (Benefit-Led) */}
-      <section id="products" className="py-20 bg-white">
-        <Container>
-          <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
-              Stop Losing Your Best Prospects
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              98% of website visitors leave without filling out a form. Cursive shows you who they are, so you can reach out while they&apos;re still interested.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {benefitPillars.map((pillar, i) => {
-              const Icon = pillar.icon
-              return (
-                <motion.div
-                  key={i}
-                  initial={false}
-                  whileInView={{ opacity: 1 }}
-                  viewport={{ once: true, margin: "-100px" }}
-                  transition={{ delay: i * 0.05, duration: 0.3 }}
-                  className="bg-white rounded-xl p-6 border border-gray-200 hover:shadow-lg transition-shadow"
-                >
-                  <div className="w-12 h-12 mb-4 flex items-center justify-center bg-gray-100 rounded-lg">
-                    <Icon className="w-6 h-6 text-gray-700" />
-                  </div>
-                  <h3 className="text-xl text-gray-900 mb-3">{pillar.title}</h3>
-                  <p className="text-gray-600 text-sm">{pillar.description}</p>
-                </motion.div>
-              )
-            })}
-          </div>
-        </Container>
-      </section>
-
-      {/* Competitive Advantages */}
-      <CompetitiveAdvantagesSection />
-
-      {/* Social proof — customer testimonials */}
       <TestimonialsSection />
 
-      {/* Core Features Grid */}
-      <section id="features" className="py-20 bg-[#F7F9FB]">
-        <Container>
-          <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-2">
-              Everything You Need to
-            </h2>
-            <p className="font-cursive text-5xl sm:text-6xl lg:text-7xl text-gray-500">
-              Fill Your Pipeline
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {coreFeatures.map((feature, index) => (
-              <motion.div
-                key={feature.title}
-                initial={false}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ delay: index * 0.03, duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                className="bg-white rounded-xl border border-gray-200 p-8 hover:shadow-lg transition-shadow"
-              >
-                <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center mb-4">
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    className="w-6 h-6 text-gray-700"
-                  >
-                    <path d={feature.icon} />
-                  </svg>
-                </div>
-                <h3 className="text-xl text-gray-900 mb-3">{feature.title}</h3>
-                <p className="text-gray-600 text-sm mb-6">{feature.description}</p>
-                <ul className="space-y-2">
-                  {feature.items.map((item, i) => (
-                    <li key={i} className="flex items-center gap-2 text-sm text-gray-600">
-                      <div className="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </motion.div>
-            ))}
-          </div>
-        </Container>
-      </section>
-
-      {/* How It Works */}
-      <HowItWorksSection />
-
-      {/* Proven Results */}
-      <section id="case-studies" className="py-20 bg-white">
-        <Container>
-          <div className="text-center mb-12">
-            <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
-              Proven Results
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Real outcomes from companies using Cursive to power their pipeline
-            </p>
-          </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-            {[
-              { metric: "$11M", label: "Revenue Generated", detail: "AI SaaS company in 30 days" },
-              { metric: "40x", label: "Return on Ad Spend", detail: "Custom audience targeting" },
-              { metric: "$24M", label: "Pipeline Created", detail: "Medical tech in 3 days" },
-              { metric: "5x", label: "CPC Reduction", detail: "Insurtech Facebook campaigns" },
-            ].map((stat, i) => (
-              <motion.div
-                key={i}
-                initial={false}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="text-center p-6 bg-[#F7F9FB] rounded-xl border border-gray-200"
-              >
-                <div className="text-3xl lg:text-4xl font-light text-primary mb-2">{stat.metric}</div>
-                <div className="text-gray-900 font-medium mb-1">{stat.label}</div>
-                <div className="text-sm text-gray-500">{stat.detail}</div>
-              </motion.div>
-            ))}
-          </div>
-          <div className="text-center">
-            <Button variant="outline" href="/case-studies">
-              View All Case Studies
-            </Button>
-          </div>
-        </Container>
-      </section>
-
-      {/* FAQ Section */}
       <FAQSection />
-
-      {/* Explore by Industry */}
-      <section id="industries" className="py-20 bg-white">
-        <Container>
-          <div className="text-center mb-12">
-            <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
-              Built for Your Industry
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Cursive powers lead generation and outbound for companies across every sector. See how teams in your industry use our platform.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-4xl mx-auto mb-12">
-            {[
-              { label: "B2B Software", href: "/industries/b2b-software" },
-              { label: "Agencies", href: "/industries/agencies" },
-              { label: "Ecommerce", href: "/industries/ecommerce" },
-              { label: "Financial Services", href: "/industries/financial-services" },
-              { label: "Home Services", href: "/industries/home-services" },
-              { label: "Education", href: "/industries/education" },
-              { label: "Franchises", href: "/industries/franchises" },
-              { label: "Retail", href: "/industries/retail" },
-              { label: "Media & Advertising", href: "/industries/media-advertising" },
-            ].map((industry) => (
-              <Link
-                key={industry.href}
-                href={industry.href}
-                className="block p-4 bg-[#F7F9FB] rounded-lg border border-gray-200 text-center text-gray-900 hover:border-primary hover:text-primary transition-all text-sm font-medium"
-              >
-                {industry.label}
-              </Link>
-            ))}
-          </div>
-
-          <div className="text-center">
-            <p className="text-gray-600 mb-4">
-              Want to see how Cursive compares to other platforms?
-            </p>
-            <div className="flex flex-wrap justify-center gap-3">
-              <Link href="/blog/clearbit-alternatives-comparison" className="text-sm text-primary hover:underline">
-                Clearbit Alternatives
-              </Link>
-              <span className="text-gray-300">|</span>
-              <Link href="/blog/zoominfo-vs-cursive-comparison" className="text-sm text-primary hover:underline">
-                ZoomInfo vs Cursive
-              </Link>
-              <span className="text-gray-300">|</span>
-              <Link href="/blog/apollo-vs-cursive-comparison" className="text-sm text-primary hover:underline">
-                Apollo vs Cursive
-              </Link>
-              <span className="text-gray-300">|</span>
-              <Link href="/blog/6sense-vs-cursive-comparison" className="text-sm text-primary hover:underline">
-                6sense vs Cursive
-              </Link>
-            </div>
-          </div>
-        </Container>
-      </section>
 
       {/* Dashboard CTA */}
       <DashboardCTA
@@ -477,95 +288,4 @@ const pricingPlans: Array<{
   },
 ]
 
-// Benefit-focused pillars
-const benefitPillars: Array<{
-  icon: LucideIcon
-  title: string
-  description: string
-}> = [
-  {
-    icon: Eye,
-    title: "Know Who's Interested",
-    description: '40–60% of anonymous visitors identified by name, company, and work email before they ever fill out a form.',
-  },
-  {
-    icon: Search,
-    title: 'Catch In-Market Buyers',
-    description: 'A fresh weekly audience of people actively searching for what you sell, delivered straight to your sheet.',
-  },
-  {
-    icon: TrendingUp,
-    title: 'Reach Them While Hot',
-    description: 'Every contact comes with a work email, ready to export to your CRM or sequence the moment intent spikes.',
-  },
-]
 
-// Core Features Data
-const coreFeatures = [
-  {
-    title: "Visitor Identification",
-    description: "Know which companies and individuals are researching your product before they fill out a form",
-    icon: "M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7",
-    items: [
-      "40–60% pixel match rate (deterministic)",
-      "Company + individual-level data",
-      "See exactly which pages they viewed",
-      "Track returning visitors across sessions",
-    ]
-  },
-  {
-    title: "Custom Audiences",
-    description: "A fresh weekly list of people actively searching for your product, delivered to your sheet",
-    icon: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z",
-    items: [
-      "Built to your exact ICP",
-      "Refreshed every week",
-      "Delivered to Google Sheets",
-      "First audience within 24 hours"
-    ]
-  },
-  {
-    title: "Intent Signals",
-    description: "Know which prospects are in-market right now, before your competitors do",
-    icon: "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z",
-    items: [
-      "60B+ behaviors & URLs scanned weekly",
-      "30,000+ commercial categories",
-      "Real-time (not monthly snapshots)",
-      "Know when prospects are in-market"
-    ]
-  },
-  {
-    title: "Audience Builder",
-    description: "Build unlimited lead lists with 280M US consumer and 140M+ business profiles",
-    icon: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z",
-    items: [
-      "No caps on audience size",
-      "Firmographic + demographic filters",
-      "Behavioral segmentation",
-      "Create segments in minutes"
-    ]
-  },
-  {
-    title: "Work Emails Included",
-    description: "Every visitor and audience record comes with a work email, checked continuously",
-    icon: "M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z",
-    items: [
-      "~20M emails validated per day",
-      "Work email + phone where available",
-      "Company firmographics included",
-      "Export-ready for your CRM or sequencer"
-    ]
-  },
-  {
-    title: "CRM Integration",
-    description: "Sync leads to Salesforce, HubSpot, and 200+ tools you already use",
-    icon: "M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z",
-    items: [
-      "200+ native integrations",
-      "Two-way sync",
-      "Automated workflows",
-      "Real-time updates"
-    ]
-  },
-]
