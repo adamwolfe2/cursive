@@ -144,7 +144,7 @@ export function StartHeroDemo({ held }: { held: boolean }) {
               className={`relative min-h-11 shrink-0 overflow-hidden rounded-lg border px-3 text-[13px] font-medium transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF] ${
                 i === index
                   ? 'border-[#cfe3ff] bg-white text-[#0c1f45] shadow-[0_1px_2px_rgb(12_31_69/0.08)]'
-                  : 'border-transparent text-[#4d5460] hover:bg-[#eef4fc] hover:text-[#1d2025]'
+                  : 'border-transparent text-[#4b5563] hover:bg-[#eef4fc] hover:text-[#111827]'
               }`}
             >
               {e.tab}
@@ -152,7 +152,7 @@ export function StartHeroDemo({ held }: { held: boolean }) {
                 <span
                   key={run}
                   aria-hidden="true"
-                  className="fl-fill absolute inset-x-0 bottom-0 h-0.5 bg-[#0063E6]"
+                  className="fl-fill absolute inset-x-0 bottom-0 h-0.5 bg-[#007AFF]"
                   style={{ animationDuration: `${CYCLE_MS}ms`, animationPlayState: stopped ? 'paused' : 'running' }}
                 />
               )}
@@ -164,7 +164,7 @@ export function StartHeroDemo({ held }: { held: boolean }) {
             type="button"
             onClick={() => setPaused((p) => !p)}
             aria-label={paused ? 'Play the example' : 'Pause the example'}
-            className="grid h-11 w-11 shrink-0 place-items-center rounded-lg text-[#4d5460] transition-colors hover:bg-[#eef4fc] hover:text-[#1d2025] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF]"
+            className="grid h-11 w-11 shrink-0 place-items-center rounded-lg text-[#4b5563] transition-colors hover:bg-[#eef4fc] hover:text-[#111827] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF]"
           >
             {paused ? <Play className="h-4 w-4" aria-hidden="true" /> : <Pause className="h-4 w-4" aria-hidden="true" />}
           </button>
@@ -178,14 +178,14 @@ export function StartHeroDemo({ held }: { held: boolean }) {
       >
         {/* Address row: the site being typed in, then what the scan is doing. */}
         <div className="flex h-12 items-center gap-3 border-b border-[#eef1f5] bg-[#fafbfd] px-4">
-          <span className="grid h-6 w-6 shrink-0 place-items-center rounded-md bg-[#0063E6] text-[11px] font-semibold uppercase text-white">
+          <span className="grid h-6 w-6 shrink-0 place-items-center rounded-md bg-[#007AFF] text-[11px] font-semibold uppercase text-white">
             {ex.domain[0]}
           </span>
-          <span className="relative min-w-0 flex-1 truncate text-[14px] font-semibold text-[#111318]">
+          <span className="relative min-w-0 flex-1 truncate text-[14px] font-semibold text-[#111827]">
             <span className={still ? '' : 'fl-type inline-block'}>{ex.domain}</span>
           </span>
           {/* Fixed width, so the label changing never moves anything. */}
-          <span className="w-24 shrink-0 text-left text-[12px] font-medium text-[#4d5460]">
+          <span className="w-24 shrink-0 text-left text-[12px] font-medium text-[#4b5563]">
             {readAll ? (step >= COUNT ? 'Done' : 'Finding buyers') : step > 0 ? 'Reading pages' : ''}
           </span>
           <span className="shrink-0 rounded-full border border-[#f5d9a8] bg-[#fff8eb] px-2 py-0.5 text-[11px] font-medium text-[#8a5a00]">
@@ -195,7 +195,7 @@ export function StartHeroDemo({ held }: { held: boolean }) {
 
         <div className="space-y-4 p-4 sm:p-5">
           <div className="min-w-0">
-            <p className="h-5 text-[12px] font-medium text-[#1d2025]">
+            <p className="h-5 text-[12px] font-medium text-[#111827]">
               {readAll ? `Read ${ex.pages.length} pages` : step > 0 ? 'Opening pages' : 'Pages'}
             </p>
             <ul className="mt-2 grid h-[5.25rem] content-start gap-x-4 gap-y-1 sm:h-6 sm:grid-cols-3">
@@ -206,7 +206,7 @@ export function StartHeroDemo({ held }: { held: boolean }) {
           </div>
 
           {/* Mirrors the real buyer profile card, shrunk. */}
-          <div className="min-w-0 rounded-xl bg-[#0063E6] px-4 py-3.5 text-white">
+          <div className="min-w-0 rounded-xl bg-[#007AFF] px-4 py-3.5 text-white">
             <p className="text-[12px] font-medium text-white">{step >= SUMMARY ? `Who buys from ${ex.domain}` : 'Building the buyer profile'}</p>
             <div className="mt-1.5 min-h-[2.75rem]">
               {step >= SUMMARY ? (
@@ -243,12 +243,12 @@ export function StartHeroDemo({ held }: { held: boolean }) {
 
         <div className="border-t border-[#eef1f5] px-4 pb-2 pt-3.5 sm:px-5">
           <div className="flex h-7 items-baseline justify-between gap-3">
-            <p className="text-[13px] font-semibold text-[#1d2025]">Your 25, first 3 shown</p>
-            <p className="text-[13px] text-[#4d5460]">
+            <p className="text-[13px] font-semibold text-[#111827]">Your 25, first 3 shown</p>
+            <p className="text-[13px] text-[#4b5563]">
               {step >= COUNT ? (
                 <>
                   from{' '}
-                  <AnimatedNumber key={`${run}-${index}`} value={ex.count} from={still ? undefined : 0} duration={900} className="inline-block w-[2.5rem] text-left font-semibold tabular-nums text-[#0063E6]" />{' '}
+                  <AnimatedNumber key={`${run}-${index}`} value={ex.count} from={still ? undefined : 0} duration={900} className="inline-block w-[2.5rem] text-left font-semibold tabular-nums text-[#0066DD]" />{' '}
                   who fit
                 </>
               ) : (
@@ -263,14 +263,14 @@ export function StartHeroDemo({ held }: { held: boolean }) {
                 {step >= FIRST_LEAD + i ? (
                   <div key="lead" className="grid gap-0.5">
                     <div className="flex min-w-0 items-baseline gap-2 text-[13px]">
-                      <span className="shrink-0 font-semibold text-[#111318]">{name}</span>
-                      <span className="min-w-0 truncate text-[#4d5460]">
+                      <span className="shrink-0 font-semibold text-[#111827]">{name}</span>
+                      <span className="min-w-0 truncate text-[#4b5563]">
                         {title}, {company}
                       </span>
-                      <span className="ml-auto hidden shrink-0 text-[12px] text-[#3a3f4b] sm:inline">{email}</span>
+                      <span className="ml-auto hidden shrink-0 text-[12px] text-[#374151] sm:inline">{email}</span>
                     </div>
-                    <p className="truncate text-[12.5px] text-[#3a3f4b]">
-                      <span className="mr-1.5 font-semibold text-[#0063E6]">Why them</span>
+                    <p className="truncate text-[12.5px] text-[#374151]">
+                      <span className="mr-1.5 font-semibold text-[#0066DD]">Why them</span>
                       {why}
                     </p>
                   </div>
@@ -311,7 +311,7 @@ function PageLine({ page }: { page: PageRow }) {
       ) : (
         <Check className="h-3.5 w-3.5 text-[#007AFF]" aria-hidden="true" />
       )}
-      <span className="truncate text-[#1d2025]">{page.path === '/' ? 'Homepage' : page.path}</span>
+      <span className="truncate text-[#111827]">{page.path === '/' ? 'Homepage' : page.path}</span>
       <span className="text-[12px] tabular-nums text-[#6b7280]">
         {page.state === 'fetching' ? 'reading' : `${compactChars(page.chars)} chars`}
       </span>

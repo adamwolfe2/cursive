@@ -98,10 +98,10 @@ export function HumanHomePage() {
       <section id="products-tour" aria-labelledby="products-tour-heading" className="border-t border-gray-100 bg-[#F7F9FB] py-16 lg:py-20">
         <Container className="grid grid-cols-[minmax(0,1fr)] gap-8 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] lg:gap-14">
           <div className="min-w-0">
-            <h2 id="products-tour-heading" className="text-[2rem] font-semibold leading-[1.08] tracking-[-0.03em] text-[#111318] sm:text-[2.5rem]">
+            <h2 id="products-tour-heading" className="text-[2rem] font-semibold leading-[1.08] tracking-[-0.03em] text-[#111827] sm:text-[2.5rem]">
               Everything else Cursive does
             </h2>
-            <p className="mt-4 max-w-[42ch] text-base leading-relaxed text-[#4d5460]">
+            <p className="mt-4 max-w-[42ch] text-base leading-relaxed text-[#4b5563]">
               The free list is the start. The same data runs visitor identification, audiences, enrichment and outreach. Pick one to see it work.
             </p>
             <div role="group" aria-label="Pick a product" className="mt-6 grid grid-cols-2 gap-1.5 sm:flex sm:flex-wrap">
@@ -117,10 +117,10 @@ export function HumanHomePage() {
                     className={`inline-flex min-h-11 items-center gap-2 rounded-lg border px-3 text-left text-[13px] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF] ${
                       isActive
                         ? "border-[#cfe3ff] bg-white font-medium text-[#0c1f45] shadow-[0_1px_2px_rgb(12_31_69/0.08)]"
-                        : "border-gray-200 bg-white/60 text-[#4d5460] hover:bg-white hover:text-[#1d2025]"
+                        : "border-gray-200 bg-white/60 text-[#4b5563] hover:bg-white hover:text-[#111827]"
                     }`}
                   >
-                    <Icon className={`h-4 w-4 shrink-0 ${isActive ? "text-[#0063E6]" : "text-gray-500"}`} aria-hidden="true" />
+                    <Icon className={`h-4 w-4 shrink-0 ${isActive ? "text-[#0066DD]" : "text-gray-500"}`} aria-hidden="true" />
                     {feature.label}
                   </button>
                 )

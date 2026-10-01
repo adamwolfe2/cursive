@@ -57,21 +57,22 @@ export function StartHero() {
         <div className="min-w-0">
           <h1
             id="hero-heading"
-            className="text-[2.75rem] font-semibold leading-[1.02] tracking-[-0.045em] text-[#111318] sm:text-[4rem] lg:text-[4.25rem]"
+            className="text-[2.75rem] font-light leading-[1.02] tracking-[-0.02em] text-[#111827] sm:text-[4rem] lg:text-[4.25rem]"
           >
-            Your site in. <span className="block text-[#0063E6]">25 buyers out.</span>
+            Your site in.{' '}
+            <span className="font-cursive fl-write mt-1 block pb-1 text-[3.5rem] leading-[1] text-[#007AFF] sm:text-[5rem] lg:text-[5.5rem]">25 buyers out.</span>
           </h1>
-          <p className="mt-5 max-w-[40ch] text-[17px] leading-relaxed text-[#4d5460] sm:mt-6 sm:text-lg">
+          <p className="mt-5 max-w-[40ch] text-[17px] leading-relaxed text-[#4b5563] sm:mt-6 sm:text-lg">
             We read your site, work out who buys, and find 25 people who fit, with work emails. Free, about a minute.
           </p>
 
           {/* A plain GET form, so a submit before hydration still lands on /start with the site and tags. */}
           <form action={START_URL} method="get" onSubmit={submit} noValidate className="mt-8 sm:mt-10">
-            <label htmlFor={id} className="text-sm font-medium text-[#1d2025]">
+            <label htmlFor={id} className="text-sm font-medium text-[#111827]">
               Your website
             </label>
-            <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-0 sm:rounded-2xl sm:border-[1.5px] sm:border-[#1d2025] sm:bg-white sm:p-1.5 sm:pl-4 sm:shadow-[0_12px_32px_-18px_rgb(12_31_69/0.35)] sm:transition-shadow sm:focus-within:border-[#007AFF] sm:focus-within:ring-4 sm:focus-within:ring-[#007AFF]/15">
-              <div className="flex h-14 shrink-0 items-center gap-3 rounded-xl border-[1.5px] border-[#1d2025] bg-white px-4 focus-within:border-[#007AFF] focus-within:ring-4 focus-within:ring-[#007AFF]/15 sm:h-12 sm:flex-1 sm:rounded-none sm:border-0 sm:px-0 sm:focus-within:ring-0">
+            <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-0 sm:rounded-2xl sm:border sm:border-[#d1d5db] sm:bg-white sm:p-1.5 sm:pl-4 sm:shadow-[0_12px_32px_-18px_rgb(12_31_69/0.35)] sm:transition-shadow sm:focus-within:border-[#007AFF] sm:focus-within:ring-4 sm:focus-within:ring-[#007AFF]/15">
+              <div className="flex h-14 shrink-0 items-center gap-3 rounded-xl border border-[#d1d5db] bg-white px-4 focus-within:border-[#007AFF] focus-within:ring-4 focus-within:ring-[#007AFF]/15 sm:h-12 sm:flex-1 sm:rounded-none sm:border-0 sm:px-0 sm:focus-within:ring-0">
                 <Globe className="h-5 w-5 shrink-0 text-[#6b7280]" aria-hidden="true" />
                 <input
                   id={id}
@@ -90,7 +91,7 @@ export function StartHero() {
                   placeholder="yourcompany.com"
                   aria-invalid={error ? true : undefined}
                   aria-describedby={error ? errId : undefined}
-                  className="h-full min-w-0 flex-1 bg-transparent text-lg text-[#111318] placeholder:text-[#6b7280] focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                  className="h-full min-w-0 flex-1 bg-transparent text-lg text-[#111827] placeholder:text-[#6b7280] focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                 />
               </div>
               <input type="hidden" name="utm_source" value="meetcursive" />
@@ -98,7 +99,7 @@ export function StartHero() {
               <input type="hidden" name="utm_content" value={PLACEMENT} />
               <button
                 type="submit"
-                className={`inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-[#0063E6] px-6 text-[16px] font-semibold text-white shadow-[0_8px_20px_-8px_rgb(0_99_230/0.6)] transition-[background-color,transform] duration-150 hover:bg-[#084fba] active:scale-[0.98] ${FOCUS}`}
+                className={`inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-[#007AFF] px-6 text-[16px] font-semibold text-white shadow-[0_8px_20px_-8px_rgb(0_99_230/0.6)] transition-[background-color,transform] duration-150 hover:bg-[#0066DD] active:scale-[0.98] ${FOCUS}`}
               >
                 Find my buyers
                 <ArrowRight className="h-4 w-4" aria-hidden="true" />
@@ -110,11 +111,11 @@ export function StartHero() {
             <div className="mt-1 flex flex-wrap items-center justify-between gap-x-6 gap-y-1 text-sm">
               <a
                 href={startUrl("home-hero-describe")}
-                className={`-ml-1 inline-flex min-h-11 items-center rounded-md px-1 font-medium text-[#0063E6] underline decoration-[#b3d7ff] underline-offset-4 transition-colors hover:decoration-[#0063E6] ${FOCUS}`}
+                className={`-ml-1 inline-flex min-h-11 items-center rounded-md px-1 font-medium text-[#0066DD] underline decoration-[#b3d7ff] underline-offset-4 transition-colors hover:decoration-[#007AFF] ${FOCUS}`}
               >
                 No website? Describe what you sell
               </a>
-              <p className="text-[#4d5460]">Free. No card, no sales call.</p>
+              <p className="text-[#4b5563]">Free. No card, no sales call.</p>
             </div>
           </form>
         </div>
