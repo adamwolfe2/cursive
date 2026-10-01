@@ -9,9 +9,9 @@ export const maxDuration = 60
 
 import type { NextRequest } from 'next/server'
 import type Anthropic from '@anthropic-ai/sdk'
-import { ScanRequestSchema, type Attribution, type Icp, type Persona, type ScanEvent } from '@/lib/free-leads/contract'
-import { normalizeSiteUrl, readSite, siteDomain, type SiteContent } from '@/lib/free-leads/site'
-import { scanIcp, ScanError, SCAN_VERSION } from '@/lib/free-leads/scan'
+import { ScanRequestSchema, type Attribution, type Icp, type Fact, type Persona, type ScanEvent } from '@/lib/free-leads/contract'
+import { normalizeSiteUrl, readSite, siteDomain, tidyPrices, type SiteContent } from '@/lib/free-leads/site'
+import { dedupeFacts, scanIcp, ScanError, SCAN_VERSION } from '@/lib/free-leads/scan'
 import { generatePersona } from '@/lib/free-leads/persona'
 import { icpToFilters } from '@/lib/free-leads/icp-to-filters'
 import { cachedCount, cacheGet, cachePut, HOUR_MS } from '@/lib/free-leads/cache'
@@ -113,10 +113,21 @@ async function finish(ctx: ScanContext, icp: Icp, send: Send, opts: FinishOpts):
   })
 }
 
+/** Cached events without the persona, facts price-tidied and one per key (older scans stored both a site and a model Pricing). */
+function replayEvents(events: readonly Replayable[]): Replayable[] {
+  const facts = dedupeFacts(events.flatMap((e) => (e.type === 'fact' ? [e.fact] : [])).map((f) => ({ ...f, text: tidyPrices(f.text) })))
+  const firstFact = events.findIndex((e) => e.type === 'fact')
+  return events.flatMap((e, i): Replayable[] => {
+    if (e.type === 'persona') return []
+    if (e.type !== 'fact') return [e]
+    return i === firstFact ? facts.map((fact) => ({ type: 'fact', fact })) : []
+  })
+}
+
 /** Replays a cached scan; a scan cached before personas existed gets one generated and written back. */
 async function replay(ctx: ScanContext, send: Send, cached: CachedScan, icp: Icp): Promise<void> {
   send({ type: 'replay', scanned_at: cached.scanned_at })
-  cached.events.filter((e) => e.type !== 'persona').forEach(send)
+  replayEvents(cached.events).forEach(send)
   const stored = cached.events.find((e): e is Extract<Replayable, { type: 'persona' }> => e.type === 'persona')?.persona
   const usage: Usage = []
   // Backfill once per cached scan (failure is remembered), and only under the global scan cap.
@@ -148,17 +159,29 @@ async function run(ctx: ScanContext, send: Send, cached: CachedScan | null): Pro
     return
   }
   const events: Replayable[] = []
-  const record: Send = (event) => {
+  const record: Send = (raw) => {
+    const event: ScanEvent = raw.type === 'fact' ? { type: 'fact', fact: { ...raw.fact, text: tidyPrices(raw.fact.text) } } : raw
     if (event.type !== 'count' && event.type !== 'error' && event.type !== 'done' && event.type !== 'replay') events.push(event)
     send(event)
   }
-  const source = await loadSource(ctx, record)
+  // Site-read pricing / location facts wait for the model's own: when it states the same key, one fact
+  // shows (the model's richer one), otherwise the site's is released after the model finishes.
+  const held: Fact[] = []
+  const modelKeys = new Set<string>()
+  const source = await loadSource(ctx, (event) => {
+    if (event.type === 'fact' && event.fact.source === 'site' && (event.fact.key === 'pricing' || event.fact.key === 'locations')) {
+      held.push(event.fact)
+    } else record(event)
+  })
   if (!source) return
   const usage: Usage = []
   let icp: Icp
   try {
     icp = await scanIcp(source.text, {
-      onFact: (fact) => record({ type: 'fact', fact }),
+      onFact: (fact) => {
+        modelKeys.add(fact.key)
+        record({ type: 'fact', fact })
+      },
       onIcpPartial: (partial) => record({ type: 'icp_partial', icp: partial }),
       onUsage: (u, model) => usage.push({ u, model }),
     })
@@ -167,6 +190,7 @@ async function run(ctx: ScanContext, send: Send, cached: CachedScan | null): Pro
     send(FAILED)
     return
   }
+  held.filter((f) => !modelKeys.has(f.key)).forEach((fact) => record({ type: 'fact', fact }))
   record({ type: 'icp', icp })
   const persona = startPersona(icp, source.text, usage)
   const cacheable = Boolean(url && !description)

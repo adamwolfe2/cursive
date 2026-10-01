@@ -37,7 +37,8 @@ export const INDUSTRY_CHILDREN: Record<string, readonly string[]> = {
     'Banking', 'Insurance', 'Investment Management', 'Venture Capital and Private Equity Principals', 'Investment Banking',
     'Capital Markets', 'Insurance Agencies and Brokerages', 'Investment Advice', 'Insurance Carriers', 'Loan Brokers', 'Credit Intermediation', 'Accounting',
   ],
-  'Real Estate': ['Leasing Non-residential Real Estate', 'Real Estate Agents and Brokers', 'Commercial Real Estate', 'Leasing Residential Real Estate'],
+  // No 'Real Estate' entry: most property managers and owners carry the plain umbrella tag, so dropping it
+  // beside 'Leasing Residential Real Estate' cut leasestack.co from 6.6k to 170 contacts (probed 2026-09-30).
   Construction: [
     'Building Construction', 'Specialty Trade Contractors', 'Residential Building Construction', 'Nonresidential Building Construction',
     'Building Equipment Contractors', 'Building Structure and Exterior Contractors', 'Building Finishing Contractors', 'Civil Engineering',
@@ -58,6 +59,38 @@ function isChildOf(parent: string, tag: string): boolean {
 export function narrowIndustries(industries: readonly string[]): string[] {
   const known = clean(industries.map((i) => canonicalIndustry(i) ?? ''))
   return known.filter((parent) => !known.some((tag) => tag !== parent && isChildOf(parent, tag)))
+}
+
+// Industry / segment words models append to a title ("VP Marketing Multifamily"). Title matching is a
+// contiguous substring, so such compounds match nobody (0 contacts, probed 2026-09-30); the industries
+// filter carries the industry instead.
+const TITLE_QUALIFIER =
+  /\s+(?:multi-?family|real estate|property management|student housing|senior living|residential|commercial|healthcare|saas|software|b2b|enterprise|hospitality|retail|manufacturing)$/i
+// "Director Marketing" matched 15 contacts, "Director of Marketing" 628.
+const TITLE_NEEDS_OF = /^(VP|Vice President|Director)\s+(?!of\b|and\b|&)([A-Za-z]+(?:\s[A-Za-z]+){0,2})$/i
+const TITLE_ROLE_WORD = /\b(manager|director|officer|lead|head|president|owner|engineer|analyst|executive)$/i
+
+/** The plain title people actually hold: trailing industry words dropped, "VP Marketing" -> "VP of Marketing". */
+export function coreTitle(title: string): string {
+  let t = title.replace(/\([^)]*\)/g, '').replace(/\s+/g, ' ').trim()
+  for (let prev = ''; prev !== t; ) {
+    prev = t
+    const stripped = t.replace(TITLE_QUALIFIER, '')
+    // "Director of Property Management" keeps its function; never reduce to a stub.
+    if (stripped.split(' ').length >= 2 && !/\b(of|and|&)$/i.test(stripped)) t = stripped
+  }
+  const m = TITLE_NEEDS_OF.exec(t)
+  if (m && !TITLE_ROLE_WORD.test(m[2])) t = `${m[1]} of ${m[2]}`
+  return t || title.trim()
+}
+
+/** Core titles, deduped case-insensitively, order kept. */
+export function coreTitles(titles: readonly string[]): string[] {
+  const seen = new Set<string>()
+  return titles.map(coreTitle).filter((t) => {
+    const k = t.toLowerCase()
+    return t && !seen.has(k) && seen.add(k)
+  })
 }
 
 /**

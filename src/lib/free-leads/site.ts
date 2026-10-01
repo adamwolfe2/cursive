@@ -260,6 +260,11 @@ function jsonLd(html: string): Array<Record<string, unknown>> {
 const PRICE = /\$\s?\d[\d,]*(?:\.\d{2})?(?![\d.,]*\s?(?:k|m|b|mm|bn|million|billion|thousand)\b)(?:\s?(?:\/|per\s)\s?(?:mo(?:nth)?|yr|year|user|seat|hour|hr))?/gi
 const PER_PERIOD = /(?:\/|per\s)/i
 
+/** "$ 499/mo" and "$25 / mo" read as "$499/mo", "$25/mo" (tags stripped between the pieces). Safe on any text. */
+export function tidyPrices(text: string): string {
+  return text.replace(/\$\s+(?=\d)/g, '$').replace(/(\$\s?\d[\d,.]*)\s*\/\s*/g, '$1/')
+}
+
 /** Prices from a pricing page; elsewhere only explicit per-period prices count. */
 export function listedPrices(text: string, fromPricingPage: boolean): string[] {
   // "$ 499/mo", "$25 / mo" and "$25 /mo" (tags stripped between them) both read as "$25/mo".
@@ -281,7 +286,7 @@ export function siteFacts(homeHtml: string, pricingText: string | null, fromPric
   const place = [addr?.addressLocality, addr?.addressRegion].filter((v) => typeof v === 'string' && v).join(', ')
   if (place) facts.push({ key: 'locations', label: 'Where', text: `Based in ${place}`.slice(0, 160), source: 'site' })
   const prices = listedPrices(pricingText ?? '', fromPricingPage)
-  if (prices.length) facts.push({ key: 'pricing', label: 'Pricing', text: `Listed prices: ${prices.join(', ')}`, source: 'site' })
+  if (prices.length) facts.push({ key: 'pricing', label: 'Pricing', text: tidyPrices(`Listed prices: ${prices.join(', ')}`), source: 'site' })
   return facts
 }
 

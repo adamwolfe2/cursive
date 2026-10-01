@@ -111,3 +111,31 @@ describe('preview: shared cache', () => {
     expect(a.leads[0].why).toBe('why 0')
   })
 })
+
+describe('scan: facts', () => {
+  const site = { domain: 'acme.com', title: 'Acme', description: null, favicon: null, text: 'x'.repeat(400), source: 'direct' }
+  const sitePricing = { key: 'pricing', label: 'Pricing', text: 'Listed prices: $499/mo', source: 'site' }
+  const facts = (evs: unknown[]) => (evs as Array<{ type: string; fact?: { key: string; source: string; text: string } }>).filter((e) => e.type === 'fact').map((e) => e.fact)
+
+  it('shows one Pricing fact, the model\'s, when both the site and the model state it', async () => {
+    fetchSite.mockImplementation(async (_u: string, send: (e: unknown) => void) => (send({ type: 'fact', fact: sitePricing }), site))
+    scanIcp.mockImplementation(async (_t: string, cb: { onFact: (f: unknown) => void }) => {
+      cb.onFact({ key: 'pricing', label: 'Pricing', text: 'Per property monthly: $499 Foundation', source: 'model' })
+      return ICP
+    })
+    countContacts.mockResolvedValue(10)
+    const first = await events(await scan(req('/api/start/scan', { url: 'acme.com' })))
+    expect(facts(first)).toEqual([expect.objectContaining({ key: 'pricing', source: 'model' })])
+    const replayed = await events(await scan(req('/api/start/scan', { url: 'acme.com' })))
+    expect(facts(replayed)).toHaveLength(1)
+  })
+
+  it('keeps the site Pricing fact when the model states none, and cleans a replayed "$ 499/mo"', async () => {
+    fetchSite.mockImplementation(async (_u: string, send: (e: unknown) => void) => (send({ type: 'fact', fact: { ...sitePricing, text: 'Listed prices: $ 499/mo, $ 899/mo' } }), site))
+    scanIcp.mockResolvedValue(ICP)
+    countContacts.mockResolvedValue(10)
+    await scan(req('/api/start/scan', { url: 'acme.com' }))
+    const replayed = await events(await scan(req('/api/start/scan', { url: 'acme.com' })))
+    expect(facts(replayed)).toEqual([expect.objectContaining({ key: 'pricing', text: 'Listed prices: $499/mo, $899/mo' })])
+  })
+})

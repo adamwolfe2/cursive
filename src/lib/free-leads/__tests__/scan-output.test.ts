@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { snapshotEmitter, toIcp, ScanError } from '../scan'
+import { dedupeFacts, snapshotEmitter, toIcp, ScanError } from '../scan'
 import type { Fact, Icp } from '../contract'
 
 const full = {
@@ -39,12 +39,27 @@ describe('snapshotEmitter', () => {
 
 describe('toIcp', () => {
   it('clamps lengths and drops non-enum industries', () => {
-    const icp = toIcp({ ...full, industries: ['Software Development', 'Made Up'], job_titles: Array(20).fill('CTO') })
+    const icp = toIcp({ ...full, industries: ['Software Development', 'Made Up'], job_titles: Array.from({ length: 20 }, (_, i) => `CTO ${i}`) })
     expect(icp.industries).toEqual(['Software Development'])
     expect(icp.job_titles).toHaveLength(12)
   })
 
   it('throws ScanError(invalid) on unusable output', () => {
     expect(() => toIcp({ ...full, summary: '' })).toThrow(ScanError)
+  })
+})
+
+describe('dedupeFacts', () => {
+  const f = (key: Fact['key'], source: Fact['source'], text: string): Fact => ({ key, label: key, text, source })
+  it('keeps one fact per key, preferring the model, in first-seen order', () => {
+    const out = dedupeFacts([f('pricing', 'site', 'Listed prices: $499/mo'), f('offer', 'model', 'a'), f('pricing', 'model', 'Per property monthly: $499'), f('offer', 'model', 'b')])
+    expect(out.map((x) => [x.key, x.text])).toEqual([['pricing', 'Per property monthly: $499'], ['offer', 'a']])
+  })
+})
+
+describe('toIcp titles', () => {
+  it('reduces compound titles to plain ones', () => {
+    const icp = toIcp({ ...full, job_titles: ['VP Marketing Multifamily', 'Director of Marketing Real Estate', 'Asset Manager'] })
+    expect(icp.job_titles).toEqual(['VP of Marketing', 'Director of Marketing', 'Asset Manager'])
   })
 })

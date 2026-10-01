@@ -81,3 +81,11 @@ describe('listedPrices', () => {
     expect(listedPrices('Team $ 499/mo', false)).toEqual(['$499/mo'])
   })
 })
+
+describe('tidyPrices', () => {
+  it('removes the stray space after $ and around the slash', async () => {
+    const { tidyPrices } = await import('../site')
+    expect(tidyPrices('Listed prices: $ 499/mo, $ 1,499 / mo, $25 /mo')).toBe('Listed prices: $499/mo, $1,499/mo, $25/mo')
+    expect(tidyPrices('Costs $5 and 10 / 20 people')).toBe('Costs $5 and 10 / 20 people')
+  })
+})
