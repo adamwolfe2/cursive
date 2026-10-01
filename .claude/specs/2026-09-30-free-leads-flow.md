@@ -53,3 +53,14 @@ Founder pastes their website -> Cursive infers their ICP -> live count -> refine
 - Test data left in prod: user adam+freeleadstest@meetcursive.com, workspace bfe2994b-454e-4a8a-8f85-95e644b4abe7 (25 leads), fulfilled claim (locks domain meetcursive.com for free claims; delete claim row to unlock).
 - #128 (magic-link fix + hardened sanitizeNext for all auth redirects) merged and promoted manually (leadme prod deploys sit in "Running Checks"; promotion is manual on this project).
 - Next: push once -> PR -> one preview -> merge -> promote. Then: weekly-leads price (Adam), GetLeads product-use terms, ICP quality for local-service niches (dentists matched eye/neuro practices), slow counts (8-24s), rate_limit_logs cleanup cron trims windows to ~2h.
+
+## Status 2026-09-30 (session 2: quality, cost, funnel, real-time UI)
+- Eval: scripts/free-leads-eval (RESULTS.md). Baseline mean fit 1.98 / fit>=2 68% -> shipped 2.28 / 83%, 92% after the fit check; local 37% -> 92%.
+- Quality: ICP `cities` for local sellers, most-specific industries + umbrella pruning, purchase-owning titles, excluded non-buying titles, Sonnet 5.5 fit check at delivery (pull 35, keep best 25, "why" per lead).
+- Cost: .claude/specs/2026-09-30-free-leads-cost.md. ~$0.56 -> ~$0.47 per signup (model -56%); measured E2E signup $0.396. Scan on Sonnet 5.5 low with the 6.5k-token schema cached; shared DB caches (scan/count/preview); delivery reuses the preview's 5 rows.
+- Funnel: free_lead_sessions/free_lead_events (prod, RLS no policies), every step + cost meta; /admin/free-leads (funnel, cost per signup, claims, claim detail); Slack on new claim + first upgrade click; "Email me this profile"; follow-up copy in 2026-09-30-free-leads-followups.md (not wired).
+- Real-time UI: page/site/fact/icp_partial events, field-by-field ICP card, one Approve -> work email; E2E: first progress 0.42s, ICP 4.8s, delivery 18.7s.
+- Security review: HIGH (sub-domain claims) + 2 MEDIUM + lows fixed. Open: whether upstream 429s are billed (a 429 fails the claim; manual path).
+- Prod DB: free_leads_cache, free_lead_sessions, free_lead_events, free_lead_claims.session_id applied.
+- Pre-existing flaky test (not this branch): tests/unit/api/ai-studio/brand-extract.test.ts fails on base 80657b2 too (unmocked rate limiter).
+- Open (Adam): MillionVerifier at delivery (~$0.12/signup; 6.4% of "VALID" emails invalid); weekly-leads price; GetLeads product-use terms (their FAQ forbids powering a product with Unlimited; per-credit needs their OK); day-14 read-only rule.
