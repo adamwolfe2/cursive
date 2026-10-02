@@ -34,7 +34,7 @@ export function DashboardCTA({
           <h2 className="text-5xl lg:text-7xl font-light text-gray-900 mb-4 leading-tight">
             {headline}
           </h2>
-          <p className="font-cursive text-6xl lg:text-7xl text-gray-500 mb-6">
+          <p className="text-5xl lg:text-7xl font-light tracking-tight text-gray-400 mb-6 leading-tight">
             {subheadline}
           </p>
           <p className="text-xl text-gray-600 mb-10 max-w-2xl mx-auto">

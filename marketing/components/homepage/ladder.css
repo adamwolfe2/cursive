@@ -1,0 +1,57 @@
+/* "recursive" dictionary entry: the section is tall, its content pins, and the words fill from pale to ink as you
+   scroll through it. --p (0..1) is the scroll progress: a scroll-driven animation where supported, otherwise
+   written by RecursiveSection's scroll listener. Each word carries --t, its place in the entry. */
+@property --p {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+.dict {
+  --p: 0;
+  height: 220vh;
+}
+
+.dict-pin {
+  position: sticky;
+  top: 0;
+  min-height: 100vh;
+  padding-block: 4rem;
+}
+
+.dict-word {
+  color: #0f172a;
+  opacity: clamp(0.14, calc((var(--p) * 1.15 - var(--t)) * 14 + 0.14), 1);
+}
+
+@keyframes dict-progress {
+  from {
+    --p: 0;
+  }
+  to {
+    --p: 1;
+  }
+}
+
+@supports (animation-timeline: view()) {
+  .dict {
+    animation: dict-progress linear both;
+    animation-timeline: view();
+    animation-range: contain 0% contain 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dict {
+    height: auto;
+    animation: none;
+  }
+  .dict-pin {
+    position: static;
+    min-height: 0;
+    padding-block: 6rem;
+  }
+  .dict-word {
+    opacity: 1;
+  }
+}

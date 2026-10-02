@@ -1,13 +1,11 @@
 'use client'
 
-import { ArrowRight, ArrowUpRight, Loader2 } from 'lucide-react'
+import { ArrowRight, Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useRef, useState } from 'react'
 import { BOOKING_URL, type FullLead, type InterestResponse, type UpgradeTier } from '@/lib/free-leads/contract'
 import { isAbort, postJson, StartApiError, type Mock } from './api'
 import { DashboardPreview } from './DashboardPreview'
-
-const DASHBOARD_EXAMPLES_URL = 'https://leads.amcollectivecapital.com'
 
 function useInterest(mock: Mock) {
   const router = useRouter()
@@ -17,6 +15,21 @@ function useInterest(mock: Mock) {
   const choose = async (tier: UpgradeTier) => {
     if (inFlight.current) return
     inFlight.current = true
+    if (tier === 'weekly_leads' && !mock) {
+      // Self-serve: straight to Stripe Checkout (same tab). The server binds it to this workspace.
+      setBusy(tier)
+      try {
+        const { url } = await postJson<{ url: string }>('/api/start/checkout', {}, mock)
+        return window.location.assign(url)
+      } catch (err) {
+        inFlight.current = false
+        setBusy(null)
+        if (err instanceof StartApiError && err.status === 409) return router.push('/dashboard')
+        if (err instanceof StartApiError && err.status === 401) return router.replace('/start')
+        console.error('[start] checkout failed, falling back to the booking page', err)
+        return window.location.assign(BOOKING_URL)
+      }
+    }
     // Open synchronously inside the click so popup blockers allow it, then point it at the booking page.
     const win = window.open('about:blank', '_blank')
     if (win) win.opener = null
@@ -55,8 +68,8 @@ function Cta({
 }) {
   const styles =
     tone === 'white'
-      ? 'bg-white text-[#084fba] hover:bg-[#f0f7ff] focus-visible:outline-white'
-      : 'bg-[#111318] text-white hover:bg-[#272c34] focus-visible:outline-[#007AFF]'
+      ? 'bg-white text-[#0066DD] hover:bg-[#f0f7ff] focus-visible:outline-white'
+      : 'bg-[#111827] text-white hover:bg-[#1f2937] focus-visible:outline-[#007AFF]'
   return (
     <div>
       <button
@@ -68,7 +81,7 @@ function Cta({
         {label}
         {interest.busy === tier ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <ArrowRight className="h-4 w-4" aria-hidden="true" />}
       </button>
-      <p role="status" className={`mt-2 min-h-5 text-[13px] ${tone === 'white' ? 'text-white' : 'text-[#4d5460]'}`}>
+      <p role="status" className={`mt-2 min-h-5 text-[13px] ${tone === 'white' ? 'text-white' : 'text-[#4b5563]'}`}>
         {interest.done === tier ? 'Booking page opened in a new tab.' : ''}
       </p>
     </div>
@@ -80,17 +93,21 @@ export function Ladder({ mock, leads, website }: { mock: Mock; leads: FullLead[]
   return (
     <>
       {/* Rung 1 sits flush under lead 26: the paywall is the next row. */}
-      <section aria-labelledby="rung-weekly" className="fl-rise rounded-b-xl bg-[#0063E6] px-5 py-8 text-white sm:px-10 sm:py-10">
+      <section aria-labelledby="rung-weekly" className="fl-rise rounded-b-xl bg-[#007AFF] px-5 py-8 text-white sm:px-10 sm:py-10">
         <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-[40rem]">
-            <h2 id="rung-weekly" className="text-[1.75rem] font-semibold leading-[1.1] tracking-[-0.025em] sm:text-[2.5rem]">
-              Get 25 new leads like these, every Monday.
+            <h2 id="rung-weekly" className="text-[1.75rem] font-bold leading-[1.1] tracking-[-0.02em] sm:text-[2.5rem]">
+              Get 25 new leads like these,
+              <span className="block pt-0.5 text-white/80">every Monday.</span>
             </h2>
             <p className="mt-3 text-base leading-relaxed text-white sm:text-[17px]">
-              Same buyer profile you approved, fresh contacts each week, work emails and LinkedIn links included.
+              Same buyer profile you approved, fresh contacts each week, never a repeat. Work emails and LinkedIn links included.
+            </p>
+            <p className="mt-3 text-[15px] text-white">
+              Starter: 14 days free, then $197/mo. <span className="text-white">Cancel anytime.</span>
             </p>
           </div>
-          <Cta tier="weekly_leads" label="Send me 25 every Monday" tone="white" interest={interest} />
+          <Cta tier="weekly_leads" label="Start free for 14 days" tone="white" interest={interest} />
         </div>
         <NextMondays />
 
@@ -108,14 +125,14 @@ export function Ladder({ mock, leads, website }: { mock: Mock; leads: FullLead[]
         className="mt-24 grid scroll-mt-8 items-center gap-10 sm:mt-32 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:gap-16"
       >
         <div className="max-w-[36rem]">
-          <h2 id="rung-linkedin" className="text-[1.75rem] font-semibold leading-[1.1] tracking-[-0.025em] text-[#111318] sm:text-[2.25rem]">
+          <h2 id="rung-linkedin" className="text-[1.75rem] font-bold leading-[1.1] tracking-[-0.02em] text-[#111827] sm:text-[2.25rem]">
             We message your leads on LinkedIn so you only take the replies.
           </h2>
-          <p className="mt-4 text-[17px] leading-relaxed text-[#4d5460]">
-            Written in your voice, sent from your profile, you approve the first batch.
+          <p className="mt-4 text-[17px] leading-relaxed text-[#4b5563]">
+            Written in your voice, sent from your profile, you approve the first batch. From $1,497/mo.
           </p>
           <div className="mt-7">
-            <Cta tier="linkedin_outreach" label="Talk about LinkedIn outreach" tone="ink" interest={interest} />
+            <Cta tier="linkedin_outreach" label="Book a call about LinkedIn outreach" tone="ink" interest={interest} />
           </div>
         </div>
         <ApprovalQueue lead={leads[0] ?? null} />
@@ -130,23 +147,14 @@ export function Ladder({ mock, leads, website }: { mock: Mock; leads: FullLead[]
           <DashboardPreview website={website} leads={leads} />
         </div>
         <div className="order-1 max-w-[34rem] lg:order-2">
-          <h2 id="rung-dashboard" className="text-[1.75rem] font-semibold leading-[1.1] tracking-[-0.025em] text-[#111318] sm:text-[2.25rem]">
+          <h2 id="rung-dashboard" className="text-[1.75rem] font-bold leading-[1.1] tracking-[-0.02em] text-[#111827] sm:text-[2.25rem]">
             One dashboard that shows where every lead, reply, and dollar stands.
           </h2>
-          <p className="mt-4 text-[17px] leading-relaxed text-[#4d5460]">
-            Connect your tools and in 14 days you get a live view built around how you sell.
+          <p className="mt-4 text-[17px] leading-relaxed text-[#4b5563]">
+            Connect your tools and get a live view built around how you sell. From $2,500 setup + $500/mo.
           </p>
-          <div className="mt-7 flex flex-col gap-1 sm:flex-row sm:items-start sm:gap-6">
+          <div className="mt-7">
             <Cta tier="ai_dashboard" label="Book a dashboard call" tone="ink" interest={interest} />
-            <a
-              href={DASHBOARD_EXAMPLES_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex h-12 items-center gap-1.5 self-start text-[15px] font-semibold text-[#0063E6] underline decoration-[#b3d7ff] underline-offset-4 hover:decoration-[#0063E6] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF]"
-            >
-              See dashboards we&apos;ve built
-              <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
-            </a>
           </div>
         </div>
       </section>
@@ -199,15 +207,15 @@ function ApprovalQueue({ lead }: { lead: FullLead | null }) {
           <span>Waiting for you</span>
         </div>
         <div className="mt-4 flex items-center gap-3">
-          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#f0f7ff] text-sm font-semibold text-[#0063E6]">
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#f0f7ff] text-sm font-semibold text-[#0066DD]">
             {initials}
           </span>
           <div className="min-w-0">
-            <p className="truncate text-sm font-semibold text-[#1d2025]">{who}</p>
+            <p className="truncate text-sm font-semibold text-[#111827]">{who}</p>
             <p className="truncate text-[13px] text-[#6b7280]">{role}</p>
           </div>
         </div>
-        <div className="mt-4 rounded-lg bg-[#f3f4f6] p-4 text-[14px] leading-relaxed text-[#1d2025]">
+        <div className="mt-4 rounded-lg bg-[#f3f4f6] p-4 text-[14px] leading-relaxed text-[#111827]">
           <p>Hi {first}, quick one.</p>
           <div className="mt-2.5 space-y-2">
             <div className="h-2.5 w-full rounded bg-[#d1d5db]" />
@@ -216,10 +224,10 @@ function ApprovalQueue({ lead }: { lead: FullLead | null }) {
           </div>
         </div>
         <div className="mt-4 flex gap-2">
-          <span className="inline-flex h-9 flex-1 items-center justify-center rounded-md bg-[#0063E6] text-sm font-semibold text-white">
+          <span className="inline-flex h-9 flex-1 items-center justify-center rounded-md bg-[#007AFF] text-sm font-semibold text-white">
             Approve
           </span>
-          <span className="inline-flex h-9 flex-1 items-center justify-center rounded-md border border-[#d1d5db] text-sm font-semibold text-[#1d2025]">
+          <span className="inline-flex h-9 flex-1 items-center justify-center rounded-md border border-[#d1d5db] text-sm font-semibold text-[#111827]">
             Edit
           </span>
         </div>

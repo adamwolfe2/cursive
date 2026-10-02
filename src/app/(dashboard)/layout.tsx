@@ -20,6 +20,12 @@ import { TierProvider } from '@/lib/hooks/use-tier'
 import { BrandThemeWrapper } from '@/components/layout/brand-theme-wrapper'
 import { DashboardProvider } from '@/lib/contexts/dashboard-context'
 
+/** The company's own site icon, so a workspace without an uploaded logo still carries its brand. */
+function siteIcon(websiteUrl: string | null | undefined): string | null {
+  const domain = websiteUrl?.replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0]
+  return domain ? `https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=128` : null
+}
+
 export default async function DashboardLayout({
   children,
 }: {
@@ -254,7 +260,7 @@ export default async function DashboardLayout({
             workspace
               ? {
                   name: workspace.name,
-                  logoUrl: workspace.branding?.logo_url || workspace.branding?.favicon_url || null,
+                  logoUrl: workspace.branding?.logo_url || workspace.branding?.favicon_url || siteIcon(workspace.website_url),
                 }
               : undefined
           }

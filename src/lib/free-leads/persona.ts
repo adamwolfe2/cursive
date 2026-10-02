@@ -19,16 +19,19 @@ export class PersonaError extends Error {
   }
 }
 
-const SYSTEM = `You write one fictional person: a believable buyer, as a colleague would describe her to you over coffee.
-You get a description of the kind of people who buy in some market. Invent one decision maker who fits it: her job title, the size and kind of company and its place must match the titles, industries, company size and locations given.
+const SYSTEM = `You write one fictional person: a believable buyer, as a colleague would describe them to you over coffee.
+You get a description of the kind of people who buy in some market. Invent one decision maker who fits it: their job title, the size and kind of company and its place must match the titles, industries, company size and locations given.
 
 Fields. The limits are hard: count characters and stay at least 15% under each one, especially replies_when and company.
-- name: a fictional first name only, max 20 characters. Never a real public figure.
-- role: her job title, max 60 characters.
+- gender: "woman" or "man". Whichever is more common in this role in this market; do not default to either. Use the matching pronouns in every field.
+- age: a whole number from 27 to 63 that fits the seniority.
+- name: a fictional first name that fits the gender, max 20 characters. Never a real public figure.
+- role: their job title, max 60 characters.
 - company: one short phrase describing her employer, max 90 characters (shorter is better), e.g. "a 12-property student-housing operator in Austin". Describe the kind of company with a size and a place. Never use a real company name.
-- day: 2-3 sentences, max 320 characters. Her week as it actually goes: the recurring meetings, the tools she opens, the numbers she checks, the one task that always runs over.
-- measured_on: 2-3 items, each max 70 characters. What her boss or board judges her on, with a number or target where it fits.
-- replies_when: 1-2 sentences, max 220 characters. What makes her answer a cold message from a stranger, and what makes her ignore it.
+- day: 2-3 sentences, max 320 characters. Their week as it actually goes: the recurring meetings, the tools she opens, the numbers she checks, the one task that always runs over.
+- measured_on: 2-3 items, each max 70 characters. What their boss or board judges them on, with a number or target where it fits.
+- replies_when: 1-2 sentences, max 220 characters. What makes them answer a cold message from a stranger, and what makes them ignore it.
+- look: max 140 characters. What a candid portrait of them at work would show: hair, the clothes people in this job actually wear, and the workplace behind them, e.g. "short grey beard, navy quarter-zip, a warehouse office with a window onto the loading docks". No brand names, no text.
 
 Style:
 - Plain, specific, concrete. Name numbers, tools, the real meetings and the real annoyances of that job.
@@ -38,7 +41,7 @@ Style:
 - Do not mention the seller, a product, data, leads or emails, except that replies_when may say what kind of message she answers.
 - Do not claim to be real. Do not add a disclaimer.
 
-Examples of the style (a different persona, for tone only). Do not copy their wording or sentence shapes; vary how each field opens.
+Examples of the style (a different persona, a woman, for tone only). Do not copy their wording or sentence shapes; vary how each field opens.
 day, good: "Mondays she walks the three buildings with the maintenance lead, then spends the afternoon on the occupancy report her regional VP wants by 4. Work orders older than five days are what she gets asked about."
 day, bad: "She juggles a fast-paced portfolio and leverages technology to streamline operations across the landscape."
 replies_when, good: "If the first line is about her own renewals or vacancy numbers she reads on. She answers on her phone between property tours, so anything she can reply to in one line gets a reply."
@@ -47,14 +50,17 @@ replies_when, bad: "She is open to innovative solutions that drive synergy and v
 const SCHEMA = {
   type: 'object',
   additionalProperties: false,
-  required: ['name', 'role', 'company', 'day', 'measured_on', 'replies_when'],
+  required: ['gender', 'age', 'name', 'role', 'company', 'day', 'measured_on', 'replies_when', 'look'],
   properties: {
+    gender: { type: 'string', enum: ['woman', 'man'] },
+    age: { type: 'integer' },
     name: { type: 'string' },
     role: { type: 'string' },
     company: { type: 'string' },
     day: { type: 'string' },
     measured_on: { type: 'array', items: { type: 'string' } },
     replies_when: { type: 'string' },
+    look: { type: 'string' },
   },
 }
 
@@ -65,6 +71,9 @@ const PersonaSchema = z.object({
   day: z.string().min(1).max(320),
   measured_on: z.array(z.string().min(1).max(70)).min(2).max(3),
   replies_when: z.string().min(1).max(220),
+  gender: z.enum(['woman', 'man']),
+  age: z.number().int().min(22).max(70),
+  look: z.string().min(1).max(160),
 })
 
 /** Em/en dashes become commas, emojis and exclamation marks go. */
@@ -94,6 +103,9 @@ export function parsePersona(text: string): Persona {
     day: clean(o.day),
     measured_on: Array.isArray(o.measured_on) ? o.measured_on.map(clean) : o.measured_on,
     replies_when: clean(o.replies_when),
+    gender: o.gender,
+    age: o.age,
+    look: clean(o.look),
   })
   if (!parsed.success) throw new PersonaError(`Persona failed validation: ${parsed.error.message.slice(0, 200)}`, 'invalid')
   return parsed.data

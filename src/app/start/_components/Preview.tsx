@@ -17,7 +17,7 @@ import { CLAIM_STORAGE_KEY, errorCopy, postJson, StartApiError, type Mock } from
 function Indicator({ on, label, children }: { on: boolean; label: string; children: React.ReactNode }) {
   if (!on) return <span className="h-7 w-7" />
   return (
-    <span className="grid h-7 w-7 place-items-center rounded-md bg-[#f0f7ff] text-[#0063E6]" title={label}>
+    <span className="grid h-7 w-7 place-items-center rounded-md bg-[#f0f7ff] text-[#0066DD]" title={label}>
       {children}
       <span className="sr-only">Has {label}</span>
     </span>
@@ -28,8 +28,8 @@ function Indicator({ on, label, children }: { on: boolean; label: string; childr
 export function WhyLine({ why, className = '' }: { why: string | null; className?: string }) {
   if (!why) return null
   return (
-    <p className={`text-[13px] leading-snug text-[#3a3f4b] ${className}`}>
-      <span className="mr-1.5 font-semibold text-[#0063E6]">Why them</span>
+    <p className={`text-[13px] leading-snug text-[#374151] ${className}`}>
+      <span className="mr-1.5 font-semibold text-[#0066DD]">Why them</span>
       {why}
     </p>
   )
@@ -40,8 +40,8 @@ export function PreviewTable({ leads, total }: { leads: MaskedLead[] | null; tot
   return (
     <section aria-labelledby="preview-heading" aria-busy={!leads}>
       <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
-        <h3 id="preview-heading" className="flex items-center gap-2 text-lg font-semibold tracking-[-0.01em] text-[#1d2025]">
-          {!leads && <Loader2 className="h-4 w-4 animate-spin text-[#007AFF]" aria-hidden="true" />}
+        <h3 id="preview-heading" className="flex items-center gap-2 text-lg font-semibold tracking-[-0.01em] text-[#111827]">
+          {!leads && <Loader2 className="h-4 w-4 animate-spin text-[#0066DD]" aria-hidden="true" />}
           {leads ? `A first look: 5 of ${formatCount(total ?? leads.length)}` : 'Pulling 5 of them to show you'}
         </h3>
         <p className="text-sm text-[#6b7280]">Full names and emails unlock with your work email.</p>
@@ -56,7 +56,7 @@ export function PreviewTable({ leads, total }: { leads: MaskedLead[] | null; tot
               style={{ animationDelay: `${i * 60}ms` }}
             >
               <div className="min-w-0">
-                <p className="truncate font-semibold text-[#1d2025]">
+                <p className="truncate font-semibold text-[#111827]">
                   {lead.first_name}
                   {lead.last_initial ? ` ${lead.last_initial.replace(/\.$/, '')}.` : ''}
                 </p>
@@ -66,10 +66,10 @@ export function PreviewTable({ leads, total }: { leads: MaskedLead[] | null; tot
                 </p>
               </div>
               <div className="hidden min-w-0 sm:block">
-                <p className="truncate text-sm font-medium text-[#1d2025]">{lead.company}</p>
+                <p className="truncate text-sm font-medium text-[#111827]">{lead.company}</p>
                 <p className="truncate text-[13px] text-[#6b7280]">{lead.location ?? lead.company_domain}</p>
               </div>
-              <p className="truncate text-[13px] text-[#3a3f4b] sm:self-center sm:text-sm">{lead.email_masked}</p>
+              <p className="truncate text-[13px] text-[#374151] sm:self-center sm:text-sm">{lead.email_masked}</p>
               <div className="hidden gap-1 self-center sm:flex">
                 <Indicator on={lead.has_linkedin} label="LinkedIn">
                   <Linkedin className="h-3.5 w-3.5" aria-hidden="true" />
@@ -155,14 +155,15 @@ export function ClaimForm({ website, icp, mock }: { website: string | null; icp:
 
   return (
     <form onSubmit={submit} noValidate aria-labelledby="claim-heading">
-      <h2 id="claim-heading" className="text-[1.75rem] font-semibold leading-[1.1] tracking-[-0.025em] text-[#111318] sm:text-[2.5rem]">
-        Get {FREE_LEAD_COUNT} leads like this.
+      <h2 id="claim-heading" className="text-[1.75rem] font-bold leading-[1.1] tracking-[-0.02em] text-[#111827] sm:text-[2.5rem]">
+        Get {FREE_LEAD_COUNT} leads
+        <span className="block text-[#007AFF] pt-0.5">just like these.</span>
       </h2>
-      <p className="mt-3 max-w-[58ch] text-[15px] leading-relaxed text-[#4d5460] sm:text-[17px]">
+      <p className="mt-3 max-w-[58ch] text-[15px] leading-relaxed text-[#4b5563] sm:text-[17px]">
         We send a sign-in link to your work email. Open it and your {FREE_LEAD_COUNT} are waiting: names, titles, work emails,
         and why each one fits.
       </p>
-      <label htmlFor={id} className="mt-7 block text-sm font-medium text-[#1d2025]">
+      <label htmlFor={id} className="mt-7 block text-sm font-medium text-[#111827]">
         Work email
       </label>
       <div className="mt-2 flex max-w-2xl flex-col gap-2 sm:flex-row">
@@ -181,12 +182,12 @@ export function ClaimForm({ website, icp, mock }: { website: string | null; icp:
           placeholder="you@company.com"
           aria-invalid={invalid || undefined}
           aria-describedby={message ? msgId : undefined}
-          className="h-14 w-full min-w-0 rounded-xl border-[1.5px] border-[#1d2025] bg-white px-4 text-base text-[#1d2025] placeholder:text-[#a0a5b1] transition-colors focus:border-[#007AFF] focus:outline-none focus:ring-4 focus:ring-[#007AFF]/15 aria-[invalid]:border-[#dc2626] sm:flex-1"
+          className="h-14 w-full min-w-0 rounded-xl border border-[#d1d5db] bg-white px-4 text-base text-[#111827] placeholder:text-[#a0a5b1] transition-colors focus:border-[#007AFF] focus:outline-none focus:ring-4 focus:ring-[#007AFF]/15 aria-[invalid]:border-[#dc2626] sm:flex-1"
         />
         <button
           type="submit"
           disabled={state.kind === 'sending'}
-          className="inline-flex h-14 shrink-0 items-center justify-center gap-2 rounded-xl bg-[#0063E6] px-6 text-base font-semibold text-white transition-[background-color,transform] duration-150 hover:bg-[#084fba] active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF] disabled:opacity-70"
+          className="inline-flex h-14 shrink-0 items-center justify-center gap-2 rounded-xl bg-[#007AFF] px-6 text-base font-semibold text-white transition-[background-color,transform] duration-150 hover:bg-[#0066DD] active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF] disabled:opacity-70"
         >
           Send my {FREE_LEAD_COUNT} leads
           {state.kind === 'sending' ? (
@@ -199,14 +200,14 @@ export function ClaimForm({ website, icp, mock }: { website: string | null; icp:
       {/* One slot: the reassurance line gives way to any message, so a one-line message never moves the preview. */}
       <div className="mt-3 min-h-5 max-w-2xl text-sm">
         <div id={msgId} role="alert">
-          {message && <p className={invalid ? 'text-[#b91c1c]' : 'text-[#3a3f4b]'}>{message}</p>}
+          {message && <p className={invalid ? 'text-[#b91c1c]' : 'text-[#374151]'}>{message}</p>}
         </div>
         {state.kind === 'already_claimed' && (
           <a
             href={BOOKING_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-1 inline-flex h-11 items-center gap-1.5 font-semibold text-[#0063E6] underline decoration-[#b3d7ff] underline-offset-4 hover:decoration-[#0063E6] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF]"
+            className="mt-1 inline-flex h-11 items-center gap-1.5 font-semibold text-[#0066DD] underline decoration-[#b3d7ff] underline-offset-4 hover:decoration-[#007AFF] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF]"
           >
             Book a call
             <ArrowUpRight className="h-4 w-4" aria-hidden="true" />

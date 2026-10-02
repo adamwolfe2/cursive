@@ -85,6 +85,20 @@ export async function findLatestClaimByEmail(email: string, admin: Admin = creat
   return (data as ClaimRow | null) ?? null
 }
 
+/** The latest fulfilled claim delivered into this workspace (scoped by workspace id, never by email). */
+export async function findWorkspaceClaim(workspaceId: string, admin: Admin): Promise<ClaimRow | null> {
+  const { data, error } = await admin
+    .from('free_lead_claims')
+    .select(CLAIM_COLUMNS)
+    .eq('workspace_id', workspaceId)
+    .eq('status', 'fulfilled')
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+  if (error) throw dbError('workspace claim lookup failed', error)
+  return (data as ClaimRow | null) ?? null
+}
+
 /** True when a colleague at the same company already got (or is getting) the free leads. */
 export async function isDomainTaken(domain: string, admin: Admin = createAdminClient()): Promise<boolean> {
   const { count, error } = await admin
@@ -390,7 +404,7 @@ async function mergeRescued(admin: Admin, chosen: Picked, rescued: Picked): Prom
  * Service role, cross-workspace by necessity: reads only hash_key, nothing reaches the caller.
  * A lookup error is logged and the insert proceeds (it then reports any conflict itself).
  */
-async function withoutStoredLeads(admin: Admin, contacts: GetLeadsContact[]): Promise<GetLeadsContact[]> {
+export async function withoutStoredLeads(admin: Admin, contacts: GetLeadsContact[]): Promise<GetLeadsContact[]> {
   if (!contacts.length) return contacts
   const hashes = contacts.map(leadHashKey)
   const { data, error } = await admin.from('leads').select('hash_key').in('hash_key', hashes)

@@ -456,6 +456,7 @@ export function StartFlow({ mock, initialSite }: { mock: Mock; initialSite: stri
               onRefine={onRefine}
               approved={approved}
               onApprove={() => void onApprove()}
+              onRecount={() => complete && recount(icp as Icp, 0)}
               secondary={
                 complete && !approved && website && count !== 0 ? (
                   <EmailProfile website={website} icp={icp as Icp} mock={mock} edited={edited} />
@@ -475,7 +476,7 @@ export function StartFlow({ mock, initialSite }: { mock: Mock; initialSite: stri
           <ClaimForm website={website} icp={icp as Icp} mock={mock} />
           <div className="mt-12 sm:mt-14">
             {previewError ? (
-              <p role="status" className="text-sm text-[#4d5460]">
+              <p role="status" className="text-sm text-[#4b5563]">
                 {previewError} Your 25 still come from the profile you approved.
               </p>
             ) : (

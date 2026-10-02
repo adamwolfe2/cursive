@@ -14,6 +14,7 @@ const GOOD = {
   name: 'Dana', role: 'VP Operations', company: 'a 12-property student-housing operator in Austin',
   day: 'Mondays she walks two buildings with the maintenance lead.', measured_on: ['Occupancy above 94%', 'Work orders closed in 3 days'],
   replies_when: 'A short note with one number she can check.',
+  gender: 'woman', age: 44, look: 'shoulder-length dark hair, blazer over a t-shirt, a leasing office behind her',
 }
 const message = (body: unknown, stop_reason = 'end_turn') => ({
   model: 'claude-sonnet-5-5', stop_reason, usage: { input_tokens: 10, output_tokens: 10 },

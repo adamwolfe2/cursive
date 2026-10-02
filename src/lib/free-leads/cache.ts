@@ -48,7 +48,12 @@ export async function cachePut(key: string, value: unknown, ttlMs: number, admin
 }
 
 /** Free upstream count, shared across instances for a day (counts with city/title filters take 5-20s). */
-export async function cachedCount(filters: GetLeadsFilters, admin?: Admin): Promise<number> {
+export async function cachedCount(fullFilters: GetLeadsFilters, admin?: Admin): Promise<number> {
+  // The title exclusion forces a full scan upstream: setmore.ai's profile timed out at 45s with it and
+  // counted 13,037 in 3.6s without (probed 2026-10-01). It trims a few percent, so the count drops it;
+  // searches and deliveries keep it.
+  // ponytail: count is a slight overestimate; send exclusions again if upstream indexes them.
+  const { exclude_job_titles: _excluded, ...filters } = fullFilters
   const key = `count:${filtersHash(filters)}`
   const hit = await cacheGet<{ total: number }>(key, admin)
   if (hit && typeof hit.total === 'number') return hit.total

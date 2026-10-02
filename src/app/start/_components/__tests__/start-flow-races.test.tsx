@@ -69,7 +69,8 @@ describe('StartFlow count and refine races', () => {
     await waitFor(() => expect(screen.getByRole('button', { name: /Approve/ })).toBeEnabled())
 
     fireEvent.click(screen.getByRole('button', { name: 'Remove CTO' }))
-    await waitFor(() => expect(screen.getByText('Count unavailable right now.')).toBeInTheDocument())
+    await waitFor(() => expect(screen.getByText('The count did not load.')).toBeInTheDocument())
+    expect(screen.getByRole('button', { name: 'Count again' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Approve/ })).toBeDisabled()
   })
 

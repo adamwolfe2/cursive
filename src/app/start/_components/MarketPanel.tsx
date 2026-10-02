@@ -24,6 +24,8 @@ interface Props {
   onApprove: () => void
   /** The secondary action ("Email me this profile"); its row is held so it never moves the panel. */
   secondary: ReactNode
+  /** Retries a count that failed; offered only while the count is unknown. */
+  onRecount: () => void
 }
 
 const WHITE_FOCUS = 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white'
@@ -35,7 +37,7 @@ const TICKS = ['100', '1k', '10k', '100k', '1M+']
  * and Approve. Every height here is fixed across states (building, counted, zero, narrow) so the count landing
  * never pushes the targeting panel below it.
  */
-export function MarketPanel({ full, count, counting, delta, onChange, approved, onApprove, secondary }: Props) {
+export function MarketPanel({ full, count, counting, delta, onChange, approved, onApprove, secondary, onRecount }: Props) {
   const approveRef = useRef<HTMLButtonElement>(null)
   const settled = count !== null && !counting
   const band = settled ? marketBand(count) : null
@@ -43,7 +45,7 @@ export function MarketPanel({ full, count, counting, delta, onChange, approved, 
   const unknown = count === null && !counting && full !== null
 
   return (
-    <section aria-label="People who fit" className="rounded-2xl bg-[#0063E6] px-5 pb-5 pt-5 text-white shadow-enterprise-md sm:px-8 sm:pb-7 sm:pt-7">
+    <section aria-label="People who fit" className="rounded-2xl bg-[#007AFF] px-5 pb-5 pt-5 text-white shadow-enterprise-md sm:px-8 sm:pb-7 sm:pt-7">
       <p className="sr-only" aria-live="polite">
         {count === null ? '' : `${formatCount(count)} people match.`}
       </p>
@@ -53,7 +55,7 @@ export function MarketPanel({ full, count, counting, delta, onChange, approved, 
           People who fit
         </p>
         {band && (
-          <span key={band} className="fl-fade rounded-full bg-white px-2.5 py-0.5 text-[12px] font-semibold text-[#084fba]">
+          <span key={band} className="fl-fade rounded-full bg-white px-2.5 py-0.5 text-[12px] font-semibold text-[#0066DD]">
             {BAND_LABEL[band]}
           </span>
         )}
@@ -66,14 +68,19 @@ export function MarketPanel({ full, count, counting, delta, onChange, approved, 
           <AnimatedNumber
             value={count}
             duration={900}
-            className={`block text-[3.25rem] font-semibold leading-none tabular-nums tracking-[-0.04em] transition-opacity duration-200 sm:text-[4.25rem] ${counting ? 'opacity-60' : ''}`}
+            className={`block text-[3.25rem] font-light leading-none tabular-nums tracking-[-0.02em] transition-opacity duration-200 sm:text-[4.25rem] ${counting ? 'opacity-60' : ''}`}
           />
         )}
       </div>
       <div className="mt-2 flex h-7 min-w-0 items-center gap-3 text-[14px] sm:text-[15px]">
         <span className="shrink-0">
-          {count === null ? (unknown ? 'Count unavailable right now.' : 'Counting people who fit') : 'people fit this profile'}
+          {count === null ? (unknown ? 'The count did not load.' : 'Counting people who fit') : 'people fit this profile'}
         </span>
+        {unknown && (
+          <button type="button" onClick={onRecount} className={`rounded-full bg-white px-3 py-1 text-[13px] font-semibold text-[#0066DD] transition-colors hover:bg-[#f0f7ff] ${WHITE_FOCUS}`}>
+            Count again
+          </button>
+        )}
         {delta && settled && <DeltaPill key={deltaKey(delta)} delta={delta} />}
       </div>
 
@@ -88,7 +95,7 @@ export function MarketPanel({ full, count, counting, delta, onChange, approved, 
             data-fl-approve=""
             onClick={onApprove}
             disabled={approved || blocker !== null}
-            className={`inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-white px-6 text-base font-semibold text-[#084fba] shadow-enterprise-sm transition-[background-color,transform] duration-150 hover:bg-[#f0f7ff] active:scale-[0.98] disabled:cursor-default disabled:bg-white/15 disabled:text-white disabled:shadow-none max-sm:w-full sm:h-14 sm:px-8 sm:text-lg ${WHITE_FOCUS}`}
+            className={`inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-white px-6 text-base font-semibold text-[#0066DD] shadow-enterprise-sm transition-[background-color,transform] duration-150 hover:bg-[#f0f7ff] active:scale-[0.98] disabled:cursor-default disabled:bg-white/15 disabled:text-white disabled:shadow-none max-sm:w-full sm:h-14 sm:px-8 sm:text-lg ${WHITE_FOCUS}`}
           >
             {approved ? <Check className="fl-pop h-5 w-5" aria-hidden="true" /> : null}
             {approved ? 'Approved' : 'Approve this profile'}
@@ -110,7 +117,7 @@ function DeltaPill({ delta, compact = false }: { delta: CountDelta; compact?: bo
   const text = `${delta.diff > 0 ? '+' : '-'}${formatCount(Math.abs(delta.diff))}`
   return (
     <span
-      className={`fl-pop inline-flex min-w-0 items-center gap-1 rounded-full font-semibold ${compact ? 'bg-[#e8f1ff] px-2 py-0.5 text-[12px] text-[#084fba]' : 'bg-white px-2.5 py-1 text-[13px] text-[#084fba]'}`}
+      className={`fl-pop inline-flex min-w-0 items-center gap-1 rounded-full font-semibold ${compact ? 'bg-[#e8f1ff] px-2 py-0.5 text-[12px] text-[#0066DD]' : 'bg-white px-2.5 py-1 text-[13px] text-[#0066DD]'}`}
     >
       <Icon className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
       <span className="shrink-0 tabular-nums">{text}</span>
@@ -139,7 +146,7 @@ function Meter({ count }: { count: number | null }) {
           className={`fl-meter absolute inset-0 ${pct === null ? 'opacity-0' : 'opacity-100'}`}
           style={{ transform: `translateX(${pct ?? 0}%)` }}
         >
-          <span className="absolute left-0 top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-[3px] border-[#0063E6] bg-white shadow-[0_0_0_2px_rgb(255_255_255/0.5)]" />
+          <span className="absolute left-0 top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-[3px] border-[#007AFF] bg-white shadow-[0_0_0_2px_rgb(255_255_255/0.5)]" />
         </div>
       </div>
       </div>
@@ -197,7 +204,7 @@ function Guidance({
               key={w.label}
               type="button"
               onClick={() => onChange(w.next)}
-              className={`fl-fade h-11 shrink-0 whitespace-nowrap rounded-lg bg-white px-3.5 text-sm font-semibold text-[#084fba] transition-colors hover:bg-[#f0f7ff] sm:h-9 ${WHITE_FOCUS}`}
+              className={`fl-fade h-11 shrink-0 whitespace-nowrap rounded-lg bg-white px-3.5 text-sm font-semibold text-[#0066DD] transition-colors hover:bg-[#f0f7ff] sm:h-9 ${WHITE_FOCUS}`}
             >
               {w.label}
             </button>
@@ -246,7 +253,7 @@ function StickyApprove({
     <div
       aria-hidden={!visible}
       inert={!visible}
-      className={`fl-dock fixed inset-x-0 bottom-0 z-30 border-t border-[#e5e7eb] bg-white px-5 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 text-[#111318] shadow-[0_-8px_24px_rgb(12_31_69/0.12)] lg:inset-x-auto lg:bottom-5 lg:right-5 lg:w-[26rem] lg:rounded-2xl lg:border lg:p-4 ${visible ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-[calc(100%+1.5rem)] opacity-0'}`}
+      className={`fl-dock fixed inset-x-0 bottom-0 z-30 border-t border-[#e5e7eb] bg-white px-5 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3 text-[#111827] shadow-[0_-8px_24px_rgb(12_31_69/0.12)] lg:inset-x-auto lg:bottom-5 lg:right-5 lg:w-[26rem] lg:rounded-2xl lg:border lg:p-4 ${visible ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-[calc(100%+1.5rem)] opacity-0'}`}
     >
       <div className="flex items-center justify-between gap-4">
         <div className="min-w-0">
@@ -256,7 +263,7 @@ function StickyApprove({
             ) : (
               <AnimatedNumber value={count} className={`text-[1.375rem] font-semibold tabular-nums tracking-[-0.02em] transition-opacity ${counting ? 'opacity-60' : ''}`} />
             )}
-            <span className="text-[13px] text-[#4d5460]">people fit</span>
+            <span className="text-[13px] text-[#4b5563]">people fit</span>
           </p>
           <p className="mt-0.5 h-5 truncate">{delta && !counting && <DeltaPill key={deltaKey(delta)} delta={delta} compact />}</p>
         </div>
@@ -264,7 +271,7 @@ function StickyApprove({
           type="button"
           onClick={onApprove}
           disabled={disabled}
-          className="inline-flex h-12 shrink-0 items-center gap-2 rounded-xl bg-[#0063E6] px-5 text-[15px] font-semibold text-white transition-colors hover:bg-[#084fba] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF] disabled:bg-[#e5e7eb] disabled:text-[#4d5460]"
+          className="inline-flex h-12 shrink-0 items-center gap-2 rounded-xl bg-[#007AFF] px-5 text-[15px] font-semibold text-white transition-colors hover:bg-[#0066DD] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF] disabled:bg-[#e5e7eb] disabled:text-[#4b5563]"
         >
           Approve
           <ArrowRight className="h-4 w-4" aria-hidden="true" />

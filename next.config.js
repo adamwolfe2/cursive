@@ -36,6 +36,12 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'meetcursive.com',
       },
+      // Workspace site icons (header fallback when no logo is uploaded).
+      {
+        protocol: 'https',
+        hostname: 'www.google.com',
+        pathname: '/s2/favicons',
+      },
       {
         protocol: 'http',
         hostname: 'localhost',
@@ -138,7 +144,8 @@ const nextConfig = {
               //   injecting its own <script> tag). Older browsers fall back to 'unsafe-inline'.
               // 'unsafe-eval' has been intentionally omitted — nothing in this codebase
               //   requires it (Stripe.js, Sentry, Crisp, and Next.js all work without it).
-              "script-src 'self' 'unsafe-inline' https://js.stripe.com https://client.crisp.chat https://browser.sentry-cdn.com https://*.vercel-scripts.com https://us-assets.i.posthog.com",
+              // Dev only: React Refresh evaluates modules with eval; without it nothing hydrates locally.
+              `script-src 'self' 'unsafe-inline'${process.env.NODE_ENV === 'development' ? " 'unsafe-eval'" : ''} https://js.stripe.com https://client.crisp.chat https://browser.sentry-cdn.com https://*.vercel-scripts.com https://us-assets.i.posthog.com`,
               // 'unsafe-inline' is required for Tailwind utility classes applied as inline
               //   styles and for any CSS-in-JS style injections from third-party widgets.
               "style-src 'self' 'unsafe-inline'",

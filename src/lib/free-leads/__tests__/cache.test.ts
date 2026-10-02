@@ -47,4 +47,14 @@ describe('cachedCount', () => {
     await expect(cachedCount({ countries: ['Atlantis'] }, admin)).rejects.toThrow('401')
     spy.mockRestore()
   })
+
+  it('counts without the title exclusion, which times the upstream count out', async () => {
+    const client = await import('@/lib/getleads/client')
+    const { cachedCount } = await import('../cache')
+    const db = fakeSupabase({ free_leads_cache: [] })
+    const spy = vi.spyOn(client, 'countContacts').mockResolvedValueOnce(13_037)
+    expect(await cachedCount({ job_titles: ['Owner'], exclude_job_titles: ['Intern'] }, db as unknown as Admin)).toBe(13_037)
+    expect(spy).toHaveBeenCalledWith({ job_titles: ['Owner'] })
+    spy.mockRestore()
+  })
 })

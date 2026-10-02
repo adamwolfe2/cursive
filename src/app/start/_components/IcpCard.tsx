@@ -4,6 +4,7 @@ import { ArrowRight, Briefcase, Building2, Check, Factory, Layers, Loader2, MapP
 import { useEffect, useId, useRef, useState, type FormEvent, type KeyboardEvent, type ReactNode } from 'react'
 import type { Icp } from '@/lib/free-leads/contract'
 import { chipLabel, matchOption, ROWS, valuesFor, withAdded, withRemoved, type ListKey } from './icp-edit'
+import { AgentOrb, Words } from './Agent'
 import { MarketPanel, type CountDelta } from './MarketPanel'
 
 interface Props {
@@ -21,6 +22,7 @@ interface Props {
   onApprove: () => void
   /** "Email me this profile", rendered in the decision panel's reserved secondary slot. */
   secondary: ReactNode
+  onRecount: () => void
 }
 
 /** Titles beyond this fold behind "+N more" so a long list does not bury the rest of the targeting. */
@@ -50,13 +52,13 @@ export function IcpCard(props: Props) {
   return (
     <section aria-labelledby="icp-heading" aria-busy={!complete} className="fl-rise space-y-5">
       <div>
-        <h2 id="icp-heading" className="flex h-6 items-center gap-2 text-sm font-medium text-[#4d5460]">
-          {!complete && <span className="fl-pulse h-1.5 w-1.5 rounded-full bg-[#007AFF]" aria-hidden="true" />}
+        <h2 id="icp-heading" className="flex h-8 items-center gap-3 text-sm font-medium text-[#4b5563]">
+          <AgentOrb size={30} working={!complete || props.counting} />
           {complete ? 'Who buys from you' : 'Building your buyer profile'}
         </h2>
         {icp.summary && (
-          <p className="mt-2 max-w-[44ch] text-[1.5rem] font-semibold leading-[1.2] tracking-[-0.02em] text-[#111318] sm:text-[1.875rem]">
-            {icp.summary}
+          <p key={icp.summary} className="mt-3 max-w-[44ch] text-[1.5rem] font-semibold leading-[1.2] tracking-[-0.02em] text-[#0c1f45] sm:text-[1.875rem]">
+            <Words text={icp.summary} />
           </p>
         )}
       </div>
@@ -69,6 +71,7 @@ export function IcpCard(props: Props) {
         approved={props.approved}
         onApprove={props.onApprove}
         secondary={props.secondary}
+        onRecount={props.onRecount}
       />
       <Targeting {...props} full={full} />
     </section>
@@ -78,21 +81,21 @@ export function IcpCard(props: Props) {
 function Placeholder() {
   return (
     <div className="max-lg:hidden" aria-hidden="true">
-      <p className="flex h-6 items-center gap-2 text-sm font-medium text-[#4d5460]">
-        <span className="fl-pulse h-1.5 w-1.5 rounded-full bg-[#007AFF]" />
+      <p className="flex h-8 items-center gap-3 text-sm font-medium text-[#4b5563]">
+        <AgentOrb size={30} working />
         Your buyer profile
       </p>
-      <p className="mt-2 max-w-[44ch] text-[15px] leading-relaxed text-[#4d5460]">
+      <p className="mt-2 max-w-[44ch] text-[15px] leading-relaxed text-[#4b5563]">
         Fills in here, one field at a time, as we work out who buys from you.
       </p>
-      <div className="mt-5 h-52 rounded-2xl bg-[#0063E6] p-8">
+      <div className="mt-5 h-52 rounded-2xl bg-[#007AFF] p-8">
         <span className="fl-sheen block h-14 w-56 rounded-lg" />
         <span className="mt-6 block h-2 rounded-full bg-white/20" />
       </div>
       <div className="mt-5 rounded-2xl border border-[#e5e7eb] px-6">
         {ROWS.map((row, i) => (
           <div key={row.key} className="flex items-center gap-6 border-b border-[#f0f1f3] py-4 last:border-b-0">
-            <span className="w-32 shrink-0 text-sm text-[#4d5460]">{row.label}</span>
+            <span className="w-32 shrink-0 text-sm text-[#4b5563]">{row.label}</span>
             <span className="fl-sheen-ink h-7 rounded-md" style={{ width: `${5 + ((i * 3) % 4)}rem` }} />
             <span className="fl-sheen-ink h-7 rounded-md" style={{ width: `${4 + ((i * 5) % 3)}rem` }} />
           </div>
@@ -108,7 +111,7 @@ function Targeting(props: Props & { full: Icp | null }) {
   return (
     <section aria-labelledby="targeting-heading" className="rounded-2xl border border-[#e5e7eb] bg-white">
       <div className="flex h-14 items-center justify-between gap-4 border-b border-[#f0f1f3] px-5 py-3 sm:px-6">
-        <h3 id="targeting-heading" className="flex items-center gap-2 text-sm font-semibold text-[#1d2025]">
+        <h3 id="targeting-heading" className="flex items-center gap-2 text-sm font-semibold text-[#111827]">
           <SlidersHorizontal className="h-4 w-4 text-[#6b7280]" aria-hidden="true" />
           Targeting
         </h3>
@@ -118,7 +121,7 @@ function Targeting(props: Props & { full: Icp | null }) {
         {rows.length === 0
           ? ROWS.map((row, i) => (
               <div key={row.key} className="flex items-center gap-6 border-b border-[#f0f1f3] py-4 last:border-b-0" aria-hidden="true">
-                <span className="w-32 shrink-0 text-sm text-[#4d5460]">{row.label}</span>
+                <span className="w-32 shrink-0 text-sm text-[#4b5563]">{row.label}</span>
                 <span className="fl-sheen-ink h-7 rounded-md" style={{ width: `${5 + ((i * 3) % 4)}rem` }} />
               </div>
             ))
@@ -144,7 +147,7 @@ function Row({
   const Icon = ICONS[row.key]
   return (
     <div className="fl-rise grid gap-2.5 border-b border-[#f0f1f3] py-4 last:border-b-0 sm:grid-cols-[10rem_1fr] sm:gap-6">
-      <dt className="flex items-center gap-2 text-[13px] font-medium text-[#1d2025] sm:h-8">
+      <dt className="flex items-center gap-2 text-[13px] font-medium text-[#111827] sm:h-8">
         <Icon className="h-4 w-4 shrink-0 text-[#6b7280]" aria-hidden="true" />
         {row.label}
         {values.length === 0 && <span className="font-normal text-[#6b7280]">any</span>}
@@ -190,8 +193,8 @@ function Toggles({
               onClick={() => full && onChange(on ? withRemoved(full, row.key, o) : withAdded(full, row.key, o))}
               className={`fl-compact inline-flex h-8 items-center gap-1.5 rounded-md px-2.5 text-sm font-medium transition-colors duration-150 max-sm:h-11 ${
                 on
-                  ? 'bg-[#e8f1ff] text-[#084fba] ring-1 ring-inset ring-[#b3d7ff] hover:bg-[#dbeaff]'
-                  : 'bg-white text-[#4d5460] ring-1 ring-inset ring-[#e5e7eb] enabled:hover:text-[#1d2025] enabled:hover:ring-[#a0a5b1]'
+                  ? 'bg-[#e8f1ff] text-[#0066DD] ring-1 ring-inset ring-[#b3d7ff] hover:bg-[#dbeaff]'
+                  : 'bg-white text-[#4b5563] ring-1 ring-inset ring-[#e5e7eb] enabled:hover:text-[#111827] enabled:hover:ring-[#a0a5b1]'
               } disabled:cursor-default ${FOCUS}`}
             >
               {on ? <Check className="fl-pop h-3.5 w-3.5" aria-hidden="true" /> : <Plus className="h-3.5 w-3.5" aria-hidden="true" />}
@@ -282,13 +285,13 @@ function Tokens({
 
   return (
     <ul className="flex flex-wrap items-center gap-2" aria-label={row.label}>
-      {values.length === 0 && !adding && !restorable.length && <li className="flex h-8 items-center text-sm text-[#4d5460] max-sm:h-11">Anyone</li>}
+      {values.length === 0 && !adding && !restorable.length && <li className="flex h-8 items-center text-sm text-[#4b5563] max-sm:h-11">Anyone</li>}
       {values.slice(0, cap).map((v, i) => (
         <li
           key={v}
           ref={i === TITLE_CAP ? firstHiddenRef : undefined}
           tabIndex={i === TITLE_CAP ? -1 : undefined}
-          className={`fl-rise inline-flex min-h-8 max-w-full items-center gap-0.5 rounded-md bg-[#e8f1ff] py-1 pl-2.5 pr-1 text-sm font-medium leading-tight text-[#084fba] ring-1 ring-inset ring-[#b3d7ff] max-sm:min-h-11 max-sm:py-0 max-sm:pr-0 ${FOCUS}`}
+          className={`fl-rise inline-flex min-h-8 max-w-full items-center gap-0.5 rounded-md bg-[#e8f1ff] py-1 pl-2.5 pr-1 text-sm font-medium leading-tight text-[#0066DD] ring-1 ring-inset ring-[#b3d7ff] max-sm:min-h-11 max-sm:py-0 max-sm:pr-0 ${FOCUS}`}
         >
           <span className="min-w-0 [overflow-wrap:anywhere]">{chipLabel(row.key, v)}</span>
           <button
@@ -300,7 +303,7 @@ function Tokens({
                 setRemoved((r) => [...r.filter((x) => x !== v), v])
                 focusAdd()
               }}
-              className="fl-compact grid h-6 w-6 shrink-0 place-items-center rounded text-[#0063E6] transition-colors enabled:hover:bg-[#cfe2ff] disabled:cursor-default disabled:text-[#7fb0f0] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#007AFF] max-sm:h-11 max-sm:w-11"
+              className="fl-compact grid h-6 w-6 shrink-0 place-items-center rounded text-[#0066DD] transition-colors enabled:hover:bg-[#cfe2ff] disabled:cursor-default disabled:text-[#7fb0f0] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#007AFF] max-sm:h-11 max-sm:w-11"
               aria-label={`Remove ${chipLabel(row.key, v)}`}
             >
               <X className="h-3.5 w-3.5" aria-hidden="true" />
@@ -317,7 +320,7 @@ function Tokens({
               requestAnimationFrame(() => firstHiddenRef.current?.focus())
             }}
             aria-label={`Show ${hidden} more ${row.label.toLowerCase()}`}
-            className={`fl-compact h-8 rounded-md px-2 text-sm font-semibold text-[#0063E6] underline underline-offset-4 transition-colors hover:bg-[#f0f7ff] max-lg:h-11 max-lg:px-3 ${FOCUS}`}
+            className={`fl-compact h-8 rounded-md px-2 text-sm font-semibold text-[#0066DD] underline underline-offset-4 transition-colors hover:bg-[#f0f7ff] max-lg:h-11 max-lg:px-3 ${FOCUS}`}
           >
             +{hidden} more
           </button>
@@ -334,7 +337,7 @@ function Tokens({
                 focusAdd()
               }}
               aria-label={`Add back ${chipLabel(row.key, v)}`}
-              className={`fl-fade fl-compact inline-flex h-8 items-center gap-1 rounded-md border border-dashed border-[#c4c9d2] px-2.5 text-sm text-[#6b7280] transition-colors hover:border-[#0063E6] hover:text-[#084fba] max-sm:h-11 ${FOCUS}`}
+              className={`fl-fade fl-compact inline-flex h-8 items-center gap-1 rounded-md border border-dashed border-[#c4c9d2] px-2.5 text-sm text-[#6b7280] transition-colors hover:border-[#007AFF] hover:text-[#0066DD] max-sm:h-11 ${FOCUS}`}
             >
               <Plus className="h-3.5 w-3.5" aria-hidden="true" />
               <span className="line-through decoration-[#a0a5b1]">{chipLabel(row.key, v)}</span>
@@ -361,7 +364,7 @@ function Tokens({
             list={row.key === 'industries' ? listId : undefined}
             placeholder={row.key === 'locations' ? 'Texas or Canada' : row.key === 'job_titles' ? 'Head of Growth' : 'Type to search'}
             maxLength={80}
-            className="h-8 w-52 max-w-full rounded-md border border-[#d1d5db] bg-white px-2.5 text-sm text-[#1d2025] placeholder:text-[#6b7280] focus:border-[#007AFF] focus:outline-none focus:ring-4 focus:ring-[#007AFF]/15 max-sm:h-11"
+            className="h-8 w-52 max-w-full rounded-md border border-[#d1d5db] bg-white px-2.5 text-sm text-[#111827] placeholder:text-[#6b7280] focus:border-[#007AFF] focus:outline-none focus:ring-4 focus:ring-[#007AFF]/15 max-sm:h-11"
           />
           {row.key === 'industries' && industries && (
             <datalist id={listId}>
@@ -384,7 +387,7 @@ function Tokens({
             type="button"
             onClick={openAdd}
             disabled={!full}
-            className={`fl-compact inline-flex h-8 items-center gap-1 rounded-md px-2 text-sm font-semibold text-[#0063E6] transition-colors enabled:hover:bg-[#f0f7ff] disabled:cursor-default disabled:text-[#7fb0f0] max-sm:h-11 ${FOCUS}`}
+            className={`fl-compact inline-flex h-8 items-center gap-1 rounded-md px-2 text-sm font-semibold text-[#0066DD] transition-colors enabled:hover:bg-[#f0f7ff] disabled:cursor-default disabled:text-[#7fb0f0] max-sm:h-11 ${FOCUS}`}
             aria-label={`Add to ${row.label}`}
           >
             <Plus className="h-3.5 w-3.5" aria-hidden="true" />
@@ -414,8 +417,8 @@ function RefineBox({ refining, refineNote, refineError, onRefine }: Props) {
   }
   return (
     <form onSubmit={submit} className="fl-fade rounded-b-2xl border-t border-[#f0f1f3] bg-[#f8fafd] px-5 pb-3 pt-4 sm:px-6">
-      <label htmlFor={id} className="flex items-center gap-2 text-[13px] font-medium text-[#1d2025]">
-        <Sparkles className="h-4 w-4 text-[#0063E6]" aria-hidden="true" />
+      <label htmlFor={id} className="flex items-center gap-2 text-[13px] font-medium text-[#111827]">
+        <Sparkles className="h-4 w-4 text-[#0066DD]" aria-hidden="true" />
         Or say what to change
       </label>
       <div className="mt-2 flex h-12 items-center rounded-lg border border-[#d1d5db] bg-white pl-4 pr-1.5 focus-within:border-[#007AFF] focus-within:ring-4 focus-within:ring-[#007AFF]/15">
@@ -426,18 +429,18 @@ function RefineBox({ refining, refineNote, refineError, onRefine }: Props) {
           disabled={refining}
           maxLength={500}
           placeholder="Only Texas, add CMOs"
-          className="h-full min-w-0 flex-1 bg-transparent text-base text-[#1d2025] placeholder:text-[#6b7280] focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 disabled:opacity-60 sm:text-[15px]"
+          className="h-full min-w-0 flex-1 bg-transparent text-base text-[#111827] placeholder:text-[#6b7280] focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 disabled:opacity-60 sm:text-[15px]"
         />
         <button
           type="submit"
           disabled={refining || text.trim().length < 2}
-          className="grid h-9 w-9 shrink-0 place-items-center rounded-md bg-[#0063E6] text-white transition-colors hover:bg-[#084fba] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0063E6] disabled:bg-[#b3d7ff]"
+          className="grid h-9 w-9 shrink-0 place-items-center rounded-md bg-[#007AFF] text-white transition-colors hover:bg-[#0066DD] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF] disabled:bg-[#b3d7ff]"
           aria-label="Apply change"
         >
           {refining ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <ArrowRight className="h-4 w-4" aria-hidden="true" />}
         </button>
       </div>
-      <p className="mt-2 min-h-5 text-[13px] text-[#4d5460]" role="status">
+      <p className="mt-2 min-h-5 text-[13px] text-[#4b5563]" role="status">
         {refining ? (slow ? 'Rewriting your profile and recounting. A few more seconds.' : 'Updating your list...') : refineError ?? refineNote ?? ''}
       </p>
     </form>

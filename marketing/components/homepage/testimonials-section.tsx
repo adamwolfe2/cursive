@@ -143,7 +143,7 @@ export function TestimonialsSection() {
               5.0/5 · {REVIEW_COUNT} reviews
             </span>
           </div>
-          <h2 className="text-3xl font-light tracking-tight text-gray-900 sm:text-4xl">
+          <h2 className="text-[2rem] font-semibold leading-tight tracking-[-0.025em] text-[#0f172a] sm:text-[2.5rem]">
             Teams turning anonymous traffic into pipeline
           </h2>
         </div>

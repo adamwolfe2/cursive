@@ -104,12 +104,12 @@ export function EmailProfile({ website, icp, mock, edited }: { website: string; 
           placeholder="you@anywhere.com"
           aria-invalid={message ? true : undefined}
           aria-describedby={message ? msgId : undefined}
-          className="h-11 min-w-0 flex-1 rounded-lg border border-white bg-white px-3.5 text-base text-[#1d2025] placeholder:text-[#6b7280] focus:outline-none focus:ring-4 focus:ring-white/40"
+          className="h-11 min-w-0 flex-1 rounded-lg border border-white bg-white px-3.5 text-base text-[#111827] placeholder:text-[#6b7280] focus:outline-none focus:ring-4 focus:ring-white/40"
         />
         <button
           type="submit"
           disabled={state === 'sending'}
-          className={`inline-flex h-11 shrink-0 items-center gap-1.5 rounded-lg px-4 text-[15px] font-semibold text-white ring-1 ring-inset ring-white transition-colors hover:bg-[#084fba] disabled:opacity-60 ${WHITE_FOCUS}`}
+          className={`inline-flex h-11 shrink-0 items-center gap-1.5 rounded-lg px-4 text-[15px] font-semibold text-white ring-1 ring-inset ring-white transition-colors hover:bg-[#0066DD] disabled:opacity-60 ${WHITE_FOCUS}`}
         >
           Send
           {state === 'sending' ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <ArrowRight className="h-4 w-4" aria-hidden="true" />}
