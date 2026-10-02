@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Dancing_Script } from "next/font/google";
+import { Inter } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import { Header } from "@/components/header";
@@ -16,18 +16,12 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
-const dancingScript = Dancing_Script({
-  variable: "--font-dancing-script",
-  subsets: ["latin"],
-  weight: ['400'],
-});
-
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.meetcursive.com'),
   ...generateMetadata({
-    title: "Identity & Intent Infrastructure for Outbound",
-    description: "Cursive is the identity layer for outbound, intent, and enrichment — 280M+ verified consumer profiles refreshed every 30 days, a 15M-domain organic intent network, and a closed feedback loop validated against real conversions.",
-    keywords: ['identity infrastructure', 'B2B intent data', 'visitor identification', 'enrichment', 'outbound automation', 'AI SDR', 'pixel match rate', 'NCOA refresh', 'intent network'],
+    title: "Find your buyers, reach them, run it",
+    description: "Cursive finds your buyers, reaches them for you, and gives you the system to run it. Paste your website and get 25 free leads: decision makers with checked work emails and why each one fits. No card.",
+    keywords: ['B2B leads', 'free leads', 'lead generation', 'decision makers', 'work emails', 'LinkedIn outreach', 'done-for-you outreach', 'visitor pixel'],
     canonical: 'https://www.meetcursive.com',
   }),
   icons: {
@@ -69,11 +63,17 @@ export default function RootLayout({
         </Script>
       </head>
       <body
-        className={`${inter.variable} ${dancingScript.variable} font-sans antialiased`}
+        className={`${inter.variable} font-sans antialiased`}
       >
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-[#007AFF] focus:px-4 focus:py-2.5 focus:text-sm focus:font-semibold focus:text-white focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-[#007AFF] focus:ring-offset-2"
+        >
+          Skip to content
+        </a>
         <ClientLayout>
           <Header />
-          <main className="pt-16">{children}</main>
+          <main id="main-content" tabIndex={-1} className="pt-16 focus:outline-none">{children}</main>
           <Footer />
           <ExitIntentPopup />
           <CookieConsent />

@@ -3,306 +3,200 @@
 import { Button } from "@/components/ui/button"
 import { Container } from "@/components/ui/container"
 import Link from "next/link"
-import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
-import { useState } from "react"
-import { Menu, X, ChevronDown, Eye, Users, Mail, Target, Database, Shield, Building2, ShoppingCart, Code, Briefcase, Home, Store, BookOpen, BarChart3, FileText, Sparkles } from "lucide-react"
-import { BOOKING_URL, START_CTA_LABEL, startUrl } from "@/lib/cta"
+import { usePathname } from "next/navigation"
+import { AnimatePresence, motion } from "framer-motion"
+import { useCallback, useEffect, useRef, useState } from "react"
+import { ChevronDown, Menu, X } from "lucide-react"
+import { START_CTA_LABEL, startUrl } from "@/lib/cta"
+import { BOOK_CALL, NAV_LINKS, type NavItem, type NavLink } from "@/components/header/nav-config"
+import { FOCUS_RING, NAV_ICONS } from "@/components/header/nav-icons"
+import { MobileMenu } from "@/components/header/mobile-menu"
 
-interface DropdownItem {
-  href: string
-  label: string
-  description: string
-  icon: React.ComponentType<{ className?: string }>
+const MOBILE_MENU_ID = "mobile-menu"
+
+function MenuItem({ item, onNavigate }: { item: NavItem; onNavigate: () => void }) {
+  const Icon = NAV_ICONS[item.icon]
+  return (
+    <Link
+      href={item.href}
+      onClick={onNavigate}
+      className={`group flex items-start gap-3 rounded-lg p-2.5 transition-colors hover:bg-[#f3f8ff] ${FOCUS_RING}`}
+    >
+      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-[#f3f8ff] text-[#007AFF] transition-colors group-hover:bg-white">
+        <Icon className="h-[18px] w-[18px]" aria-hidden="true" />
+      </span>
+      <span className="min-w-0">
+        <span className="block text-[14px] font-semibold text-[#0f172a]">{item.label}</span>
+        <span className="mt-0.5 block text-[13px] leading-snug text-[#475569]">{item.description}</span>
+      </span>
+    </Link>
+  )
 }
 
-interface NavLink {
-  href?: string
-  label: string
-  dropdown?: DropdownItem[]
+function DesktopDropdown({ link, onNavigate }: { link: NavLink; onNavigate: () => void }) {
+  const groups = link.groups ?? []
+  const wide = groups.length > 1
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.15, ease: "easeOut" }}
+      className={`absolute left-1/2 top-full z-50 -translate-x-1/2 pt-3 ${wide ? "w-[760px]" : "w-[360px]"}`}
+    >
+      <div className="rounded-2xl border border-[#e3eeff] bg-white p-4 shadow-[0_24px_60px_-20px_rgb(15_23_42/0.25)]">
+        <div className={wide ? "grid grid-cols-3 gap-2" : "grid gap-1"}>
+          {groups.map((group) => (
+            <div key={group.title}>
+              {wide && <p className="px-2.5 pb-1 pt-1 text-[12px] font-semibold text-[#0066DD]">{group.title}</p>}
+              {group.items.map((item) => (
+                <MenuItem key={item.href} item={item} onNavigate={onNavigate} />
+              ))}
+            </div>
+          ))}
+        </div>
+        {link.footer && (
+          <div className="mt-3 border-t border-[#e3eeff] pt-3">
+            <MenuItem item={link.footer} onNavigate={onNavigate} />
+          </div>
+        )}
+      </div>
+    </motion.div>
+  )
 }
 
-const navLinks: NavLink[] = [
-  {
-    label: "Products",
-    dropdown: [
-      {
-        href: startUrl("nav-products"),
-        label: "25 Free Leads",
-        description: "Paste your website, get 25 buyers with work emails",
-        icon: Sparkles,
-      },
-      {
-        href: "/superpixel",
-        label: "Super Pixel V4",
-        description: "Turn anonymous visitors into named leads",
-        icon: Eye,
-      },
-      {
-        href: "/pixel",
-        label: "Visitor Pixel",
-        description: "Learn how the pixel identifies visitors",
-        icon: Target,
-      },
-      {
-        href: "/custom-audiences",
-        label: "Custom Audiences",
-        description: "We build targeted lists to your exact spec",
-        icon: Users,
-      },
-      {
-        href: "/platform",
-        label: "Platform Overview",
-        description: "The complete Cursive platform",
-        icon: Database,
-      },
-    ],
-  },
-  { href: "/pricing", label: "Pricing" },
-  {
-    label: "Resources",
-    dropdown: [
-      {
-        href: "/case-studies",
-        label: "Case Studies",
-        description: "Real results from Cursive customers",
-        icon: BarChart3,
-      },
-      {
-        href: "/blog",
-        label: "Blog",
-        description: "Guides, strategies, and industry insights",
-        icon: FileText,
-      },
-      {
-        href: "/integrations",
-        label: "Integrations",
-        description: "Connect with your existing tools",
-        icon: Code,
-      },
-      {
-        href: "/about",
-        label: "About Cursive",
-        description: "Our mission and team",
-        icon: BookOpen,
-      },
-    ],
-  },
-]
+function DesktopNavEntry({
+  link,
+  open,
+  onOpen,
+  onClose,
+}: {
+  link: NavLink
+  open: boolean
+  onOpen: () => void
+  onClose: () => void
+}) {
+  const buttonRef = useRef<HTMLButtonElement>(null)
+  const linkClass = `rounded-md px-1 py-1 text-[15px] font-medium text-[#334155] transition-colors hover:text-[#007AFF] ${FOCUS_RING}`
+
+  if (!link.groups) {
+    return (
+      <Link href={link.href!} className={linkClass}>
+        {link.label}
+      </Link>
+    )
+  }
+
+  return (
+    <div
+      className="relative"
+      onMouseEnter={onOpen}
+      onMouseLeave={onClose}
+      onBlur={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node | null)) onClose()
+      }}
+      onKeyDown={(e) => {
+        if (e.key === "Escape" && open) {
+          onClose()
+          buttonRef.current?.focus()
+        }
+      }}
+    >
+      <button
+        ref={buttonRef}
+        type="button"
+        className={`flex items-center gap-1 ${linkClass}`}
+        aria-haspopup="true"
+        aria-expanded={open}
+        onClick={() => (open ? onClose() : onOpen())}
+      >
+        {link.label}
+        <ChevronDown
+          className={`h-4 w-4 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+          aria-hidden="true"
+        />
+      </button>
+      {open && <DesktopDropdown link={link} onNavigate={onClose} />}
+    </div>
+  )
+}
 
 export function Header() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [openDropdown, setOpenDropdown] = useState<string | null>(null)
+  const pathname = usePathname()
+  const [mobileOpen, setMobileOpen] = useState(false)
+  const [openMenu, setOpenMenu] = useState<string | null>(null)
+  const toggleRef = useRef<HTMLButtonElement>(null)
+
+  const closeMobile = useCallback(() => setMobileOpen(false), [])
+
+  // Any navigation closes every menu (state reset during render, keyed on the route).
+  const [menuPath, setMenuPath] = useState(pathname)
+  if (menuPath !== pathname) {
+    setMenuPath(pathname)
+    setMobileOpen(false)
+    setOpenMenu(null)
+  }
+
+  useEffect(() => {
+    if (!mobileOpen) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setMobileOpen(false)
+        toggleRef.current?.focus()
+      }
+    }
+    document.addEventListener("keydown", onKey)
+    return () => document.removeEventListener("keydown", onKey)
+  }, [mobileOpen])
 
   return (
     <>
-      <motion.header
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-lg border-b border-gray-200"
-      >
+      <header className="fixed inset-x-0 top-0 z-50 border-b border-[#e3eeff] bg-white/85 backdrop-blur-lg">
         <Container>
-          <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <Link href="/" className="flex items-center gap-2.5">
-              <Image
-                src="/cursive-logo.png"
-                alt=""
-                width={32}
-                height={32}
-                className="w-8 h-8"
-                priority
-              />
+          <div className="flex h-16 items-center justify-between">
+            <Link href="/" aria-label="Cursive home" className={`flex items-center gap-2.5 rounded-md ${FOCUS_RING}`}>
+              <Image src="/cursive-logo.png" alt="" width={32} height={32} className="h-8 w-8" priority />
               <span className="text-[17px] font-semibold tracking-[-0.01em] text-[#0f172a]">Cursive</span>
             </Link>
 
-            {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center gap-8">
-              {navLinks.map((link) => (
-                <div
+            <nav aria-label="Primary" className="hidden items-center gap-8 md:flex">
+              {NAV_LINKS.map((link) => (
+                <DesktopNavEntry
                   key={link.label}
-                  className="relative"
-                  onMouseEnter={() => link.dropdown && setOpenDropdown(link.label)}
-                  onMouseLeave={() => setOpenDropdown(null)}
-                >
-                  {link.dropdown ? (
-                    <button
-                      className="flex items-center gap-1 text-gray-700 hover:text-primary transition-colors"
-                      aria-haspopup="true"
-                      aria-expanded={openDropdown === link.label}
-                    >
-                      {link.label}
-                      <ChevronDown className="w-4 h-4" />
-                    </button>
-                  ) : (
-                    <Link href={link.href!} className="text-gray-700 hover:text-primary transition-colors">
-                      {link.label}
-                    </Link>
-                  )}
-
-                  {/* Dropdown Menu - Mega Menu Style */}
-                  {link.dropdown && openDropdown === link.label && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 10 }}
-                      className="absolute top-full left-1/2 -translate-x-1/2 pt-2 w-[600px] z-50"
-                    >
-                      {/* Invisible bridge to prevent dropdown from closing */}
-                      <div className="absolute top-0 left-0 right-0 h-2" />
-
-                      <div className="bg-white rounded-xl shadow-2xl border border-gray-200 p-6">
-                      <div className="grid grid-cols-2 gap-3">
-                        {link.dropdown.map((item) => {
-                          const Icon = item.icon
-                          return (
-                            <Link
-                              key={item.href}
-                              href={item.href}
-                              className="flex items-start gap-3 p-3 rounded-lg hover:bg-[#F7F9FB] transition-colors group"
-                            >
-                              <div className="w-10 h-10 flex-shrink-0 bg-gray-100 rounded-lg flex items-center justify-center group-hover:bg-primary/5 transition-colors">
-                                <Icon className="w-5 h-5 text-gray-600 group-hover:text-primary transition-colors" />
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <div className="font-medium text-gray-900 mb-0.5 group-hover:text-primary transition-colors">
-                                  {item.label}
-                                </div>
-                                <div className="text-sm text-gray-600 leading-snug">
-                                  {item.description}
-                                </div>
-                              </div>
-                            </Link>
-                          )
-                        })}
-                      </div>
-                      </div>
-                    </motion.div>
-                  )}
-                </div>
+                  link={link}
+                  open={openMenu === link.label}
+                  onOpen={() => setOpenMenu(link.label)}
+                  onClose={() => setOpenMenu(null)}
+                />
               ))}
             </nav>
 
-            {/* Desktop CTA Buttons */}
-            <div className="hidden md:flex items-center gap-4">
-              <Button size="sm" variant="outline" href={BOOKING_URL} target="_blank">
-                Book a call
+            <div className="hidden items-center gap-3 md:flex">
+              <Button size="sm" variant="outline" href={BOOK_CALL.href} target="_blank" className={FOCUS_RING}>
+                {BOOK_CALL.label}
               </Button>
-              <Button size="sm" href={startUrl("nav")}>
+              <Button size="sm" href={startUrl("nav")} className={FOCUS_RING}>
                 {START_CTA_LABEL}
               </Button>
             </div>
 
-            {/* Mobile Menu Button */}
             <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 text-gray-700 hover:text-primary transition-colors"
-              aria-label="Toggle menu"
+              ref={toggleRef}
+              type="button"
+              onClick={() => setMobileOpen((v) => !v)}
+              className={`-mr-2 grid h-11 w-11 place-items-center rounded-lg text-[#334155] transition-colors hover:text-[#007AFF] md:hidden ${FOCUS_RING}`}
+              aria-label={mobileOpen ? "Close menu" : "Open menu"}
+              aria-expanded={mobileOpen}
+              aria-controls={MOBILE_MENU_ID}
             >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {mobileOpen ? <X className="h-6 w-6" aria-hidden="true" /> : <Menu className="h-6 w-6" aria-hidden="true" />}
             </button>
           </div>
         </Container>
-      </motion.header>
+      </header>
 
-      {/* Mobile Menu Panel */}
       <AnimatePresence>
-        {mobileMenuOpen && (
-          <>
-            {/* Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setMobileMenuOpen(false)}
-              className="fixed inset-0 bg-black/50 z-40 md:hidden"
-            />
-
-            {/* Menu Panel */}
-            <motion.div
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ type: "spring", damping: 20, stiffness: 300, mass: 0.8 }}
-              className="fixed top-16 left-0 right-0 bottom-0 w-full bg-white z-50 md:hidden overflow-y-auto shadow-2xl"
-            >
-              <nav className="flex flex-col p-6 space-y-1">
-                {navLinks.map((link) => (
-                  <div key={link.label}>
-                    {link.dropdown ? (
-                      <div>
-                        <button
-                          onClick={() => setOpenDropdown(openDropdown === link.label ? null : link.label)}
-                          className="w-full px-4 py-3 text-left text-gray-900 hover:bg-[#F7F9FB] hover:text-primary rounded-lg transition-colors flex items-center justify-between"
-                          aria-haspopup="true"
-                          aria-expanded={openDropdown === link.label}
-                        >
-                          {link.label}
-                          <ChevronDown className={`w-4 h-4 transition-transform ${openDropdown === link.label ? 'rotate-180' : ''}`} />
-                        </button>
-                        {openDropdown === link.label && (
-                          <div className="ml-2 mt-2 space-y-2">
-                            {link.dropdown.map((item) => {
-                              const Icon = item.icon
-                              return (
-                                <Link
-                                  key={item.href}
-                                  href={item.href}
-                                  onClick={() => setMobileMenuOpen(false)}
-                                  className="flex items-start gap-3 px-3 py-2 rounded-lg hover:bg-[#F7F9FB] transition-colors"
-                                >
-                                  <div className="w-8 h-8 flex-shrink-0 bg-gray-100 rounded-lg flex items-center justify-center">
-                                    <Icon className="w-4 h-4 text-gray-600" />
-                                  </div>
-                                  <div className="flex-1 min-w-0">
-                                    <div className="font-medium text-gray-900 text-sm mb-0.5">
-                                      {item.label}
-                                    </div>
-                                    <div className="text-xs text-gray-600 leading-snug">
-                                      {item.description}
-                                    </div>
-                                  </div>
-                                </Link>
-                              )
-                            })}
-                          </div>
-                        )}
-                      </div>
-                    ) : (
-                      <Link
-                        href={link.href!}
-                        onClick={() => setMobileMenuOpen(false)}
-                        className="block px-4 py-3 text-gray-900 hover:bg-[#F7F9FB] hover:text-primary rounded-lg transition-colors"
-                      >
-                        {link.label}
-                      </Link>
-                    )}
-                  </div>
-                ))}
-
-                <div className="border-t border-gray-200 my-4" />
-
-                {/* Mobile CTA Buttons */}
-                <Button
-                  variant="outline"
-                  className="w-full"
-                  href={BOOKING_URL}
-                  target="_blank"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Book a call
-                </Button>
-                <Button
-                  className="w-full"
-                  href={startUrl("nav-mobile")}
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  {START_CTA_LABEL}
-                </Button>
-              </nav>
-            </motion.div>
-          </>
-        )}
+        {mobileOpen && <MobileMenu key="mobile-menu" id={MOBILE_MENU_ID} onClose={closeMobile} />}
       </AnimatePresence>
     </>
   )
