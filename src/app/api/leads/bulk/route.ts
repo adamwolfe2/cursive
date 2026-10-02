@@ -4,7 +4,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { z } from 'zod'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized, forbidden, success, badRequest } from '@/lib/utils/api-error-handler'
 
@@ -32,7 +32,8 @@ export async function POST(request: NextRequest) {
     }
 
     const { action, lead_ids, status, assigned_to, tag_ids, tag_name, note } = validationResult.data
-    const supabase = await createClient()
+    // Service role: these RPCs are not callable by end users; workspace_id below comes from the session, never the body.
+    const supabase = createAdminClient()
     let result: { affected: number; message: string }
 
     switch (action) {
