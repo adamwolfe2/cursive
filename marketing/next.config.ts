@@ -67,12 +67,9 @@ const nextConfig: NextConfig = {
 
   // Explicit non-www → www redirect (belt-and-suspenders alongside Vercel domain settings)
   async redirects() {
-    // Legacy offer pages — we now sell only the self-serve Visitor Pixel ($97),
-    // Custom Audience ($197), and Pixel + Audience Bundle ($247). These pages
-    // described retired models (marketplace credit packs, Cursive
-    // Data/Outbound/Pipeline managed tiers, Venture Studio, standalone data
-    // products). 301 them to /pricing so the funnel is the single source of
-    // truth and the inbound SEO/link equity consolidates onto the live offer.
+    // Legacy offer pages describing retired models (marketplace credit packs, managed tiers,
+    // Venture Studio, the $197 Custom Audience and $247 bundle). 301 them to /pricing (the
+    // find/reach/run ladder) so link equity lands on the live offer.
     const RETIRED_OFFER_PAGES = [
       '/direct-mail',
       '/marketplace',
@@ -81,6 +78,14 @@ const nextConfig: NextConfig = {
       '/data-access',
       '/clean-room',
       '/demos',
+      '/custom-audiences',
+      '/audience-builder',
+      '/intent-audiences',
+    ]
+    // Retired pages with a better home than /pricing. /case-studies made results claims we cannot verify.
+    const MOVED_PAGES: Array<[string, string]> = [
+      ['/case-studies', '/'],
+      ['/visitor-identification', '/pixel'],
     ]
 
     return [
@@ -93,6 +98,10 @@ const nextConfig: NextConfig = {
       ...RETIRED_OFFER_PAGES.flatMap((path) => [
         { source: path, destination: '/pricing', permanent: true },
         { source: `${path}/:slug*`, destination: '/pricing', permanent: true },
+      ]),
+      ...MOVED_PAGES.flatMap(([path, destination]) => [
+        { source: path, destination, permanent: true },
+        { source: `${path}/:slug*`, destination, permanent: true },
       ]),
     ]
   },

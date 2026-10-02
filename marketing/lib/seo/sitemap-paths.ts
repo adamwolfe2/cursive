@@ -2,7 +2,7 @@
  * Static path lists for sitemap.xml. Plain module (no path aliases) so tests can check it against the app directory.
  *
  * Left out on purpose:
- * - /case-studies: results we cannot verify are not something to promote in search.
+ * - /case-studies, /visitor-identification: 301 elsewhere (see next.config.ts).
  * - /call-booked, /deck, /enterprise-deck, /partners/terms, /affiliates: private, thank-you or partner-only pages.
  * - Retired offer pages (/marketplace, /services, ...): 301 to /pricing (see next.config.ts).
  * - /api, /admin, /dashboard, /popup-test, /test: blocked in robots.ts.
@@ -31,12 +31,8 @@ export const PRODUCT_PATHS: SitemapPath[] = entries(
   [
     '/platform',
     '/superpixel',
-    '/custom-audiences',
     '/free-audit',
-    '/visitor-identification',
-    '/audience-builder',
     '/data-partnerships',
-    '/intent-audiences',
   ],
   0.6,
   'monthly',
