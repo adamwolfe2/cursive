@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 import { motion, useReducedMotion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { START_CTA_LABEL, startUrl } from "@/lib/cta"
@@ -35,6 +35,15 @@ function MobileItem({ item, onClose }: { item: NavItem; onClose: () => void }) {
 /** Full-height mobile panel under the header: every destination visible, no nested toggles, CTAs pinned to the bottom. */
 export function MobileMenu({ id, onClose }: MobileMenuProps) {
   const reduce = useReducedMotion()
+  const panelRef = useRef<HTMLDivElement>(null)
+
+  // Focus the first link on open; make the page behind the panel inert so Tab cannot reach it.
+  useEffect(() => {
+    panelRef.current?.querySelector<HTMLElement>("nav a")?.focus()
+    const behind = Array.from(document.querySelectorAll<HTMLElement>("main#main-content, footer"))
+    behind.forEach((el) => el.setAttribute("inert", ""))
+    return () => behind.forEach((el) => el.removeAttribute("inert"))
+  }, [])
 
   // Lock page scroll while open; close if the viewport grows past the mobile breakpoint.
   useEffect(() => {
@@ -54,11 +63,12 @@ export function MobileMenu({ id, onClose }: MobileMenuProps) {
   return (
     <motion.div
       id={id}
+      ref={panelRef}
       initial={reduce ? false : { opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}
       exit={reduce ? { opacity: 0 } : { opacity: 0, y: -8 }}
       transition={{ duration: reduce ? 0 : 0.18, ease: "easeOut" }}
-      className="fixed inset-x-0 bottom-0 top-16 z-40 flex flex-col bg-white md:hidden"
+      className="fixed inset-x-0 bottom-0 top-16 z-[60] flex flex-col bg-white md:hidden"
     >
       <nav aria-label="Mobile" className="flex-1 overflow-y-auto overscroll-contain px-4 pb-6 pt-4">
         {NAV_LINKS.map((link) =>

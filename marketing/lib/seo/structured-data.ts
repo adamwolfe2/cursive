@@ -44,10 +44,15 @@ interface PricedOffer {
 /** Approved list prices (pivot spec, 2026-10-01). Keep in step with /pricing. */
 export const PUBLISHED_OFFERS: PricedOffer[] = [
   { name: 'Free: 25 leads', price: '0', monthly: false },
+  { name: 'Lead credits: 100', price: '49', monthly: false },
+  { name: 'Lead credits: 500', price: '199', monthly: false },
+  { name: 'Lead credits: 2,000', price: '599', monthly: false },
   { name: 'Starter', price: '197', monthly: true },
   { name: 'Growth', price: '497', monthly: true },
   { name: 'LinkedIn outreach', price: '1497', monthly: true },
   { name: 'LinkedIn and email outreach', price: '2497', monthly: true },
+  { name: 'Cursive OS: monthly', price: '500', monthly: true },
+  { name: 'Cursive OS: setup', price: '2500', monthly: false },
   { name: 'Visitor Pixel add-on', price: '97', monthly: true },
 ]
 

@@ -96,7 +96,14 @@ describe('structured data', () => {
       'LinkedIn outreach': '1497',
       'LinkedIn and email outreach': '2497',
       'Visitor Pixel add-on': '97',
+      'Lead credits: 100': '49',
+      'Lead credits: 500': '199',
+      'Lead credits: 2,000': '599',
+      'Cursive OS: setup': '2500',
+      'Cursive OS: monthly': '500',
     })
+    const os = PUBLISHED_OFFERS.find((o) => o.name === 'Cursive OS: monthly')
+    expect(os?.monthly).toBe(true)
   })
   it('links the website to the organization by id', () => {
     const org = generateOrganizationSchema()
