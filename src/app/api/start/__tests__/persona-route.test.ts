@@ -102,3 +102,18 @@ describe('scan: persona', () => {
     expect(generatePersona).toHaveBeenCalledTimes(1)
   })
 })
+
+describe('scan: failures are recorded', () => {
+  it('an unreachable site records scan_failed with its code', async () => {
+    fetchSite.mockRejectedValue(new Error('site unreachable or empty'))
+    const sid = '6f1c2a4e-8b7d-4c3a-9e2f-1a2b3c4d5e6f'
+    const r = new NextRequest('http://localhost/api/start/scan', {
+      method: 'POST', body: JSON.stringify({ url: 'acme.com' }), headers: { 'x-forwarded-for': '1.2.3.4', 'x-fl-session': sid },
+    })
+    const es = await events(await scan(r))
+    expect(es.at(-1)).toMatchObject({ type: 'error', code: 'unreachable' })
+    const rows = (db.current as ReturnType<typeof fakeSupabase>).tables.free_lead_events
+    expect(rows.map((e) => e.step)).toEqual(['paste', 'scan_failed'])
+    expect(rows[1].meta).toMatchObject({ code: 'unreachable', domain: 'acme.com' })
+  })
+})

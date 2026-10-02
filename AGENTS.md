@@ -1,0 +1,1 @@
+- Never verify by running live /api/start scan/preview/claim or GetLeads search in prod: they spend real money. Use tests, cached data, DB reads.
