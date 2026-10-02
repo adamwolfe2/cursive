@@ -104,7 +104,7 @@ export function Ladder({ mock, leads, website }: { mock: Mock; leads: FullLead[]
               Same buyer profile you approved, fresh contacts each week, never a repeat. Work emails and LinkedIn links included.
             </p>
             <p className="mt-3 text-[15px] text-white">
-              Starter: 14 days free, then $197/mo. <span className="text-white/80">Cancel anytime.</span>
+              Starter: 14 days free, then $197/mo. <span className="text-white">Cancel anytime.</span>
             </p>
           </div>
           <Cta tier="weekly_leads" label="Start free for 14 days" tone="white" interest={interest} />
@@ -151,7 +151,7 @@ export function Ladder({ mock, leads, website }: { mock: Mock; leads: FullLead[]
             One dashboard that shows where every lead, reply, and dollar stands.
           </h2>
           <p className="mt-4 text-[17px] leading-relaxed text-[#4b5563]">
-            Connect your tools and in 14 days you get a live view built around how you sell. From $2,500 setup + $500/mo.
+            Connect your tools and get a live view built around how you sell. From $2,500 setup + $500/mo.
           </p>
           <div className="mt-7">
             <Cta tier="ai_dashboard" label="Book a dashboard call" tone="ink" interest={interest} />

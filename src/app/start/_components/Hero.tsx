@@ -50,7 +50,7 @@ export function Hero({
     <>
       <section className="grid grid-cols-[minmax(0,1fr)] gap-12 pb-16 pt-6 sm:pt-12 lg:grid-cols-[minmax(0,29rem)_minmax(0,1fr)] lg:items-start lg:gap-14 lg:pb-24 lg:pt-14">
         <div className="min-w-0">
-          <h1 className="text-[2.375rem] font-semibold leading-[1.08] tracking-[-0.035em] text-[#0f172a] sm:text-[3.25rem]">
+          <h1 className="text-[2.375rem] font-bold leading-[1.08] tracking-[-0.035em] text-[#0f172a] sm:text-[3.25rem]">
             Find the 25 people most likely to buy from you
           </h1>
           <p className="mt-5 max-w-[42ch] text-[17px] leading-relaxed text-[#475569] sm:mt-6 sm:text-lg">

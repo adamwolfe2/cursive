@@ -57,7 +57,7 @@ export function IcpCard(props: Props) {
           {complete ? 'Who buys from you' : 'Building your buyer profile'}
         </h2>
         {icp.summary && (
-          <p key={icp.summary} className="mt-3 max-w-[44ch] text-[1.5rem] font-light leading-[1.2] tracking-[-0.02em] text-[#0c1f45] sm:text-[1.875rem]">
+          <p key={icp.summary} className="mt-3 max-w-[44ch] text-[1.5rem] font-semibold leading-[1.2] tracking-[-0.02em] text-[#0c1f45] sm:text-[1.875rem]">
             <Words text={icp.summary} />
           </p>
         )}

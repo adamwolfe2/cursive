@@ -279,7 +279,7 @@ export function ScanErrorNote({ error, onRetry }: { error: ScanError; onRetry: (
   const limited = error.code === 'rate_limited'
   return (
     <div role="alert" className="fl-rise rounded-2xl border border-[#e5e7eb] bg-[#f9fafb] px-5 py-7 sm:px-10 sm:py-9">
-      <h2 className="text-xl font-normal tracking-[-0.01em] text-[#111827] sm:text-2xl">
+      <h2 className="text-xl font-bold tracking-[-0.01em] text-[#111827] sm:text-2xl">
         {limited ? 'That is the scan limit for now.' : 'The scan stopped partway.'}
       </h2>
       <p className="mt-2 max-w-[52ch] text-[15px] leading-relaxed text-[#4b5563]">
