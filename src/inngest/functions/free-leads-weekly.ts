@@ -1,26 +1,14 @@
 /**
- * Free leads — weekly delivery. Mondays 14:00 UTC (~9-10am ET).
- * Each weekly-leads order bound to a free-leads workspace gets 25 new people for the profile it
- * approved. Idempotent per order and ISO week (src/lib/free-leads/weekly.ts), so a retried step or
- * a manual re-run buys nothing twice. Anything short of a full delivery alerts sales; one order's
- * failure never stops the others.
+ * Free leads — weekly delivery, Inngest path. The production trigger is the Vercel cron at
+ * /api/cron/free-leads-weekly (Mondays 14:00 UTC); this function stays for manual re-runs
+ * (event free-leads/weekly.run) and as a second trigger when Inngest is synced. Both call the same
+ * service in src/lib/free-leads/weekly.ts, and the unique (order_id, week) lock in
+ * free_lead_weekly_deliveries makes an overlapping cron + Inngest run buy nothing twice.
  */
 import { inngest } from '@/inngest/client'
-import { sendFreeLeadsWeeklyEmail } from '@/lib/email/templates/free-leads-weekly'
-import { FREE_LEAD_COUNT } from '@/lib/free-leads/contract'
-import { notifySales } from '@/lib/free-leads/notify'
-import { deliverWeekly, isoWeek, weeklyCandidates, workspaceOwnerEmail, type WeeklyOrder } from '@/lib/free-leads/weekly'
-import { getStripeClient } from '@/lib/stripe/client'
+import { isoWeek, processOrderWeek, reportOutcome, sendWeeklyNote, weeklyCandidates } from '@/lib/free-leads/weekly'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
-
-/** A 'paused' order cancelled at period end is still owed leads until Stripe ends the subscription. */
-async function stillPaidUp(order: WeeklyOrder): Promise<boolean> {
-  if (order.subscription_state === 'active') return true
-  if (!order.stripe_subscription_id) return false
-  const sub = await getStripeClient().subscriptions.retrieve(order.stripe_subscription_id)
-  return sub.status === 'active' || sub.status === 'trialing'
-}
+import { safeLog } from '@/lib/utils/log-sanitizer'
 
 export const freeLeadsWeekly = inngest.createFunction(
   { id: 'free-leads-weekly', name: 'Free leads — weekly delivery', retries: 1, concurrency: { limit: 1 } },
@@ -32,40 +20,11 @@ export const freeLeadsWeekly = inngest.createFunction(
     let delivered = 0
 
     for (const order of orders) {
-      const res = await step.run(`deliver-${order.id}-${week}`, async () => {
-        try {
-          if (!(await stillPaidUp(order))) return { status: 'skipped' as const, reason: 'subscription ended' }
-          return await deliverWeekly(order, week, createAdminClient())
-        } catch (err) {
-          safeError('[free-leads-weekly] delivery failed', { order_id: order.id, week, err })
-          await notifySales(`Weekly leads failed for order ${order.id} (${week}). Not retried; check the logs.`)
-          return { status: 'failed' as const }
-        }
-      })
-
-      if (res.status === 'already' && res.stuck) {
-        await notifySales(`Weekly leads for order ${order.id} (${week}) started but never finished. Credits may be spent; check the delivery row.`)
-      }
-      if (res.status === 'skipped' && res.reason !== 'subscription ended') {
-        await notifySales(`Weekly leads skipped for order ${order.id} (${week}): ${res.reason}.`)
-      }
+      const res = await step.run(`deliver-${order.id}-${week}`, () => processOrderWeek(order, week, createAdminClient()))
+      await reportOutcome(order, week, res)
       if (res.status !== 'delivered') continue
       delivered += 1
-      if (res.leads < FREE_LEAD_COUNT) {
-        await notifySales(`Weekly leads short for order ${order.id} (${week}): ${res.leads} of ${FREE_LEAD_COUNT}. The market may be running dry; widen the profile.`)
-      }
-      if (res.leads === 0) continue
-
-      await step.run(`email-${order.id}-${week}`, async () => {
-        try {
-          const to = await workspaceOwnerEmail(createAdminClient(), order.workspace_id)
-          if (!to) return safeLog('[free-leads-weekly] no owner email; skipped note', { order_id: order.id })
-          await sendFreeLeadsWeeklyEmail({ to, domain: res.domain, count: res.leads, top: res.top })
-        } catch (err) {
-          // The leads are delivered; a missing note must not stop the other orders.
-          safeError('[free-leads-weekly] weekly email failed', { order_id: order.id, err })
-        }
-      })
+      await step.run(`email-${order.id}-${week}`, () => sendWeeklyNote(order, res, createAdminClient()))
     }
 
     safeLog('[free-leads-weekly] run complete', { week, orders: orders.length, delivered })

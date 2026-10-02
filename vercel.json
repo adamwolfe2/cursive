@@ -41,6 +41,14 @@
     {
       "path": "/api/cron/retry-webhook-deliveries",
       "schedule": "*/10 * * * *"
+    },
+    {
+      "path": "/api/cron/free-leads-weekly",
+      "schedule": "0 14 * * 1"
+    },
+    {
+      "path": "/api/cron/free-leads-weekly",
+      "schedule": "0 16 * * 1"
     }
   ]
 }

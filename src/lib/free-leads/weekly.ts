@@ -13,6 +13,9 @@
 import type { createAdminClient } from '@/lib/supabase/admin'
 import { assertConfigured, searchContacts } from '@/lib/getleads/client'
 import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
+import { sendFreeLeadsWeeklyEmail } from '@/lib/email/templates/free-leads-weekly'
+import { getStripeClient } from '@/lib/stripe/client'
+import { notifySales } from './notify'
 import { claimIcp, findWorkspaceClaim, withoutStoredLeads } from './claims'
 import { FREE_LEAD_COUNT } from './contract'
 import { OVERPULL_FACTOR, scoreLeads, selectFitLeads } from './lead-fit'
@@ -181,4 +184,89 @@ export async function workspaceOwnerEmail(admin: Admin, workspaceId: string): Pr
     .maybeSingle()
   if (error) throw new Error(`owner lookup failed: ${error.message}`)
   return (data as { email: string | null } | null)?.email ?? null
+}
+
+/** Outcome of one order's week. 'failed' means an error was logged and sales alerted; never re-bought. */
+export type WeeklyOutcome = WeeklyResult | { status: 'failed' }
+
+/** A 'paused' order cancelled at period end is still owed leads until Stripe ends the subscription. */
+export async function stillPaidUp(order: WeeklyOrder): Promise<boolean> {
+  if (order.subscription_state === 'active') return true
+  if (!order.stripe_subscription_id) return false
+  const sub = await getStripeClient().subscriptions.retrieve(order.stripe_subscription_id)
+  return sub.status === 'active' || sub.status === 'trialing'
+}
+
+/**
+ * One order's delivery for one week, shared by the Vercel cron and the Inngest function. The paid-up
+ * check runs BEFORE the lock, so an ended subscription buys nothing and writes no row. Never throws:
+ * one order's failure must not stop the others.
+ */
+export async function processOrderWeek(order: WeeklyOrder, week: string, admin: Admin): Promise<WeeklyOutcome> {
+  try {
+    if (!(await stillPaidUp(order))) return { status: 'skipped', reason: 'subscription ended' }
+    return await deliverWeekly(order, week, admin)
+  } catch (err) {
+    safeError('[free-leads-weekly] delivery failed', { order_id: order.id, week, err })
+    await notifySales(`Weekly leads failed for order ${order.id} (${week}). Not retried; check the logs.`)
+    return { status: 'failed' }
+  }
+}
+
+/** Sales alerts for anything short of a clean delivery. */
+export async function reportOutcome(order: WeeklyOrder, week: string, res: WeeklyOutcome): Promise<void> {
+  if (res.status === 'already' && res.stuck) {
+    await notifySales(`Weekly leads for order ${order.id} (${week}) started but never finished. Credits may be spent; check the delivery row.`)
+  }
+  if (res.status === 'skipped' && res.reason !== 'subscription ended') {
+    await notifySales(`Weekly leads skipped for order ${order.id} (${week}): ${res.reason}.`)
+  }
+  if (res.status === 'delivered' && res.leads < FREE_LEAD_COUNT) {
+    await notifySales(`Weekly leads short for order ${order.id} (${week}): ${res.leads} of ${FREE_LEAD_COUNT}. The market may be running dry; widen the profile.`)
+  }
+}
+
+/** The Monday note. The leads are already delivered, so a failure here is logged and swallowed. */
+export async function sendWeeklyNote(order: WeeklyOrder, res: Extract<WeeklyResult, { status: 'delivered' }>, admin: Admin): Promise<void> {
+  if (res.leads === 0) return
+  try {
+    const to = await workspaceOwnerEmail(admin, order.workspace_id)
+    if (!to) return safeLog('[free-leads-weekly] no owner email; skipped note', { order_id: order.id })
+    await sendFreeLeadsWeeklyEmail({ to, domain: res.domain, count: res.leads, top: res.top })
+  } catch (err) {
+    safeError('[free-leads-weekly] weekly email failed', { order_id: order.id, err })
+  }
+}
+
+export interface WeeklyRunSummary {
+  week: string
+  orders: number
+  delivered: number
+  failed: number
+  /** Orders not attempted because the time budget ran out; the next run (locks make it safe) takes them. */
+  deferred: number
+}
+
+/** The whole Monday run, sequential so spend stays bounded. `deadline` is epoch ms. */
+export async function runWeekly(admin: Admin, now: Date, deadline: number): Promise<WeeklyRunSummary> {
+  const week = isoWeek(now)
+  const orders = await weeklyCandidates(admin)
+  const summary = { week, orders: orders.length, delivered: 0, failed: 0, deferred: 0 }
+  for (const order of orders) {
+    if (Date.now() >= deadline) {
+      summary.deferred += 1
+      continue
+    }
+    const res = await processOrderWeek(order, week, admin)
+    await reportOutcome(order, week, res)
+    if (res.status === 'failed') summary.failed += 1
+    if (res.status !== 'delivered') continue
+    summary.delivered += 1
+    await sendWeeklyNote(order, res, admin)
+  }
+  if (summary.deferred) {
+    await notifySales(`Weekly leads ${week}: ${summary.deferred} of ${orders.length} orders deferred to the next run (time budget).`)
+  }
+  safeLog('[free-leads-weekly] run complete', summary)
+  return summary
 }
