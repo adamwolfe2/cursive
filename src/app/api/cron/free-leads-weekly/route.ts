@@ -1,5 +1,5 @@
 /**
- * Free leads weekly delivery (Vercel Cron, Mondays 14:00 UTC, catch-up 16:00 UTC).
+ * Free leads weekly delivery (Vercel Cron `0 14,16 * * 1`: Mondays 14:00 UTC, catch-up 16:00 UTC).
  *
  * Replaces the Inngest cron as the production trigger (Inngest is not synced in prod). Calls the same
  * service as the Inngest function. Spend safety lives in src/lib/free-leads/weekly.ts: the paid-up

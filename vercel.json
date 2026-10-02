@@ -44,11 +44,7 @@
     },
     {
       "path": "/api/cron/free-leads-weekly",
-      "schedule": "0 14 * * 1"
-    },
-    {
-      "path": "/api/cron/free-leads-weekly",
-      "schedule": "0 16 * * 1"
+      "schedule": "0 14,16 * * 1"
     }
   ]
 }
