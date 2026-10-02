@@ -12,6 +12,7 @@ import {
 } from '@/lib/affiliate/commission'
 import { safeLog, safeError } from '@/lib/utils/log-sanitizer'
 import { STRIPE_CONFIG } from '@/lib/stripe/config'
+import { existingEventAction } from './event-lease'
 import {
   getStripe,
   handleCheckoutSessionCompleted,
@@ -78,37 +79,49 @@ export async function POST(request: NextRequest) {
     const adminClient = createAdminClient()
     const processingStartTime = Date.now()
 
-    // Check if this event has already been processed
-    // IMPORTANT: Only skip if error_message IS NULL (meaning it succeeded or is in-progress).
-    // If error_message is set, the previous attempt failed — delete it and allow Stripe to retry,
-    // otherwise Stripe gets a 200 "duplicate" response and never retries failed payments.
-    const { data: existingEvent } = await adminClient
+    // Has this event been seen? See event-lease.ts for why an unfinished row is not a duplicate.
+    const { data: existingEvent, error: lookupError } = await adminClient
       .from('webhook_events')
-      .select('id, processed_at, error_message')
+      .select('id, processed_at, error_message, processing_duration_ms, created_at')
       .eq('stripe_event_id', event.id)
       .maybeSingle()
 
-    if (existingEvent && existingEvent.error_message === null) {
-      // Previously processed successfully (or currently in-progress) — skip
+    if (lookupError) {
+      safeError('[Stripe Webhook] Failed to look up webhook event', lookupError)
+      return NextResponse.json({ error: 'Webhook lookup failed' }, { status: 500 })
+    }
+
+    const action = existingEventAction(existingEvent, Date.now())
+
+    if (action === 'duplicate') {
       safeLog('[Stripe Webhook] Duplicate event detected, skipping', {
         eventId: event.id,
         eventType: event.type,
-        originallyProcessedAt: existingEvent.processed_at,
+        originallyProcessedAt: existingEvent?.processed_at,
       })
       return NextResponse.json({
         received: true,
         duplicate: true,
-        originallyProcessedAt: existingEvent.processed_at,
+        originallyProcessedAt: existingEvent?.processed_at,
       })
     }
 
-    // If a previous attempt failed (error_message set), delete it so we can retry cleanly
-    if (existingEvent?.error_message) {
-      safeLog('[Stripe Webhook] Previous attempt failed, retrying', {
+    if (action === 'in_progress') {
+      safeLog('[Stripe Webhook] Event still processing elsewhere, asking Stripe to retry', { eventId: event.id })
+      return NextResponse.json({ error: 'Event is being processed; retry later' }, { status: 503 })
+    }
+
+    if (action === 'reclaim' && existingEvent) {
+      safeLog('[Stripe Webhook] Reclaiming failed or abandoned event', {
         eventId: event.id,
         previousError: existingEvent.error_message,
       })
-      await adminClient.from('webhook_events').delete().eq('stripe_event_id', event.id)
+      // Delete by row id so a row another instance just re-inserted is left alone.
+      const { error: deleteError } = await adminClient.from('webhook_events').delete().eq('id', existingEvent.id)
+      if (deleteError) {
+        safeError('[Stripe Webhook] Failed to reclaim webhook event', deleteError)
+        return NextResponse.json({ error: 'Webhook reclaim failed' }, { status: 500 })
+      }
     }
 
     // Record that we're processing this event
@@ -127,11 +140,8 @@ export async function POST(request: NextRequest) {
         safeLog('[Stripe Webhook] Race condition detected, another instance processing', {
           eventId: event.id,
         })
-        return NextResponse.json({
-          received: true,
-          duplicate: true,
-          raceCondition: true,
-        })
+        // Not a 200: if that instance crashes, Stripe must still retry this event.
+        return NextResponse.json({ error: 'Event is being processed; retry later' }, { status: 503 })
       }
 
       // Other insert errors are unexpected
@@ -216,7 +226,7 @@ export async function POST(request: NextRequest) {
     // ========================================================================
     const processingDuration = Date.now() - processingStartTime
 
-    await adminClient
+    const { error: finishError } = await adminClient
       .from('webhook_events')
       .update({
         processing_duration_ms: processingDuration,
@@ -227,6 +237,11 @@ export async function POST(request: NextRequest) {
           : null,
       })
       .eq('stripe_event_id', event.id)
+
+    if (finishError) {
+      // The row stays unfinished, so a Stripe retry after the lease reprocesses it (handlers are idempotent).
+      safeError('[Stripe Webhook] Failed to mark webhook event finished', finishError)
+    }
 
     // If processing failed, return 500 so Stripe retries
     if (processingError) {
