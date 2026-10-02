@@ -1,1 +1,2 @@
 - Never verify by running live /api/start scan/preview/claim or GetLeads search in prod: they spend real money. Use tests, cached data, DB reads.
+- Add Vercel env vars with `printf '%s' "$V" | vercel env add NAME production`, never `echo` (21 prod vars had trailing newlines, 2026-10-02).

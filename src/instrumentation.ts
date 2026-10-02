@@ -26,6 +26,11 @@ export async function register() {
     // Module not available (e.g. marketing site) — skip validation
   }
 
+  // @sentry/nextjs 8+ does not load sentry.*.config.ts by itself: without these imports the server never
+  // initialized Sentry and every server-side error was invisible.
+  if (process.env.NEXT_RUNTIME === 'nodejs') await import('../sentry.server.config')
+  if (process.env.NEXT_RUNTIME === 'edge') await import('../sentry.edge.config')
+
   if (process.env.NEXT_RUNTIME === 'nodejs') {
     process.on('unhandledRejection', (reason: unknown) => {
       const message =
@@ -60,4 +65,10 @@ export async function register() {
     // mid-request emits ECONNRESET "aborted" on the IncomingMessage, which then killed the whole
     // instance (and every in-flight request on it).
   }
+}
+
+/** Uncaught errors in route handlers, server components and middleware go to Sentry. */
+export async function onRequestError(...args: Parameters<typeof import('@sentry/nextjs').captureRequestError>) {
+  const Sentry = await import('@sentry/nextjs')
+  Sentry.captureRequestError(...args)
 }
