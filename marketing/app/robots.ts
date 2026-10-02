@@ -1,74 +1,13 @@
 import { MetadataRoute } from 'next'
+import { DISALLOWED_PATHS, NAMED_CRAWLERS, SITE_URL } from '@/lib/seo/robots-rules'
 
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
-      // Default: allow all crawlers
-      {
-        userAgent: '*',
-        allow: '/',
-        disallow: ['/api/', '/admin/', '/dashboard/', '/_next/', '/popup-test', '/clean-room', '/test/'],
-      },
-      // AI Crawlers — explicitly allow full access
-      {
-        userAgent: 'GPTBot',
-        allow: '/',
-      },
-      {
-        userAgent: 'ChatGPT-User',
-        allow: '/',
-      },
-      {
-        userAgent: 'ClaudeBot',
-        allow: '/',
-      },
-      {
-        userAgent: 'Claude-Web',
-        allow: '/',
-      },
-      {
-        userAgent: 'anthropic-ai',
-        allow: '/',
-      },
-      {
-        userAgent: 'PerplexityBot',
-        allow: '/',
-      },
-      {
-        userAgent: 'Google-Extended',
-        allow: '/',
-      },
-      {
-        userAgent: 'Applebot-Extended',
-        allow: '/',
-      },
-      {
-        userAgent: 'Omgilibot',
-        allow: '/',
-      },
-      {
-        userAgent: 'FacebookBot',
-        allow: '/',
-      },
-      // Traditional search engines
-      {
-        userAgent: 'Googlebot',
-        allow: '/',
-      },
-      {
-        userAgent: 'Bingbot',
-        allow: '/',
-      },
-      {
-        userAgent: 'Slurp',
-        allow: '/',
-      },
-      {
-        userAgent: 'DuckDuckBot',
-        allow: '/',
-      },
+      { userAgent: '*', allow: '/', disallow: DISALLOWED_PATHS },
+      // A bot with its own group ignores the '*' group, so repeat the blocked paths here.
+      { userAgent: NAMED_CRAWLERS, allow: '/', disallow: DISALLOWED_PATHS },
     ],
-    sitemap: 'https://www.meetcursive.com/sitemap.xml',
-    host: 'https://www.meetcursive.com',
+    sitemap: `${SITE_URL}/sitemap.xml`,
   }
 }
