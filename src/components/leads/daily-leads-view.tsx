@@ -101,14 +101,18 @@ export function DailyLeadsView({
   })
 
   // Week leads
-  const { data: weekData, isLoading: weekLoading } = useQuery({
+  const {
+    data: weekData,
+    isLoading: weekLoading,
+    isError: weekError,
+  } = useQuery({
     queryKey: ['leads-week'],
     queryFn: async () => {
       const since = new Date(Date.now() - 7 * 86_400_000).toISOString()
       const res = await fetch(
         `/api/leads?date_from=${encodeURIComponent(since)}&per_page=50`
       )
-      if (!res.ok) throw new Error('Failed')
+      if (!res.ok) throw new Error(`Failed to load this week's leads (${res.status})`)
       return res.json()
     },
     enabled: tab === 'week',
@@ -577,6 +581,15 @@ export function DailyLeadsView({
                 className="h-36 animate-pulse rounded-xl border border-border bg-card p-5"
               />
             ))}
+          </div>
+        ) : weekError ? (
+          <div className="rounded-xl border border-dashed border-border bg-card py-12 text-center">
+            <p className="mb-1 font-medium text-foreground">
+              We couldn&apos;t load your leads
+            </p>
+            <p className="mx-auto max-w-xs text-sm text-muted-foreground">
+              Refresh the page to try again.
+            </p>
           </div>
         ) : weekLeads.length === 0 ? (
           <div className="rounded-xl border border-dashed border-border bg-card py-12 text-center">

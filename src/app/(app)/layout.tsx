@@ -13,6 +13,7 @@ export const metadata: Metadata = {
 import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
+import { verifyWorkspaceCookie } from '@/lib/auth/workspace-cookie'
 import { AppShell } from '@/components/layout'
 import { ImpersonationBanner } from '@/components/admin'
 import { TierProvider } from '@/lib/hooks/use-tier'
@@ -85,7 +86,8 @@ export default async function AppLayout({
     redirect('/login')
   }
 
-  const cachedWorkspaceId = cookieStore.get('x-workspace-id')?.value
+  // The cookie holds `<workspaceId>.<hmac>`; only the verified bare id is a usable workspace id.
+  const cachedWorkspaceId = verifyWorkspaceCookie(user.id, cookieStore.get('x-workspace-id')?.value)
   const today = new Date().toISOString().split('T')[0]
 
   const [userProfileResult, adminResult, creditsResult, leadsResult, hotLeadsResult] = await Promise.all([
@@ -161,7 +163,8 @@ export default async function AppLayout({
   let todayLeadCount = (leadsResult as { count: number | null })?.count ?? 0
   let hotLeadCount = (hotLeadsResult as { count: number | null })?.count ?? 0
 
-  if (!cachedWorkspaceId && userProfile.workspace_id) {
+  // Missing cookie, or one left over from a previous workspace: count against the current one.
+  if (userProfile.workspace_id && cachedWorkspaceId !== userProfile.workspace_id) {
     const [fallbackCredits, fallbackLeads, fallbackHotLeads] = await Promise.all([
       supabase
         .from('workspace_credits')

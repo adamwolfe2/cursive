@@ -249,3 +249,6 @@ export type FunnelStep = (typeof FUNNEL_STEPS)[number]
 /** Steps only the browser can observe. POST /api/start/event { step } with SESSION_HEADER. */
 export const CLIENT_STEPS = ['icp_approved', 'csv'] as const
 export const ClientEventSchema = z.object({ step: z.enum(CLIENT_STEPS) })
+
+/** Funnel offers that carry weekly free-leads deliveries (the Starter subscription). */
+export const WEEKLY_OFFERS = ['audience_197', 'bundle_247']

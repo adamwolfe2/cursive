@@ -301,6 +301,9 @@ interface AppShellProps {
   // Workspace nav allowlist. NULL/empty = show all (existing behavior).
   // Populated = strict allowlist, precedence over role/plan/adminOnly gating.
   visibleFeatures?: string[] | null
+  // Workspace bought the pixel. Free-leads workspaces have not, so they get no
+  // Website Visitors / Your Audience / Pixel nav.
+  hasPixel?: boolean
   user?: {
     name?: string | null
     email: string
@@ -334,6 +337,7 @@ export function AppShell({
   todayLeadCount,
   hotLeadCount,
   visibleFeatures,
+  hasPixel = false,
 }: AppShellProps) {
   const [sidebarOpen, setSidebarOpen] = React.useState(false)
   const { dismissed: creditsBannerDismissed, dismiss: dismissCreditsBanner } =
@@ -389,10 +393,13 @@ export function AppShell({
     .map((item) => {
       // Funnel buyers: reshape Leads → Website Visitors + Your Audience.
       if (isManagedBuyer && item.href === '/leads') {
-        return { ...item, children: MANAGED_LEADS_CHILDREN }
+        return { ...item, children: hasPixel ? MANAGED_LEADS_CHILDREN : undefined }
       }
       if (isManagedBuyer && item.href === '/settings') {
-        return { ...item, children: MANAGED_SETTINGS_CHILDREN }
+        const children = hasPixel
+          ? MANAGED_SETTINGS_CHILDREN
+          : MANAGED_SETTINGS_CHILDREN.filter((c) => c.href !== '/settings/pixel')
+        return { ...item, children }
       }
       if (item.href === '/dashboard' && todayLeadCount && todayLeadCount > 0) {
         return { ...item, badge: todayLeadCount }

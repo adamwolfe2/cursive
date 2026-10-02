@@ -17,7 +17,7 @@ import { sendFreeLeadsWeeklyEmail } from '@/lib/email/templates/free-leads-weekl
 import { getStripeClient } from '@/lib/stripe/client'
 import { notifySales } from './notify'
 import { claimIcp, findWorkspaceClaim, insertLeadsSkippingDuplicates, withoutStoredLeads } from './claims'
-import { FREE_LEAD_COUNT } from './contract'
+import { FREE_LEAD_COUNT, WEEKLY_OFFERS } from './contract'
 import { OVERPULL_FACTOR, scoreLeads, selectFitLeads } from './lead-fit'
 import { toLeadInsert, usableContacts } from './rules'
 import type { WeeklyTopLead } from '@/lib/email/templates/free-leads-weekly'
@@ -27,7 +27,6 @@ type Admin = ReturnType<typeof createAdminClient>
 const WANT = Math.ceil(FREE_LEAD_COUNT * OVERPULL_FACTOR)
 /** The free claim consumed the first WANT rows of the same filters; week one starts after them. */
 export const FIRST_WEEKLY_OFFSET = WANT
-const WEEKLY_OFFERS = ['audience_197', 'bundle_247']
 
 export interface WeeklyOrder {
   id: string

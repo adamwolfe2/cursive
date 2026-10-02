@@ -124,10 +124,10 @@ const getCachedRecentEnrichments = unstable_cache(
     const admin = createAdminClient()
     const { data } = await admin
       .from('leads')
-      .select('id, full_name, first_name, last_name, company_name, updated_at, source')
+      .select('id, full_name, first_name, last_name, company_name, enriched_at, source')
       .eq('workspace_id', wsId)
       .eq('enrichment_status', 'enriched')
-      .order('updated_at', { ascending: false })
+      .order('enriched_at', { ascending: false, nullsFirst: false })
       .limit(5)
     return data ?? []
   },
@@ -244,7 +244,7 @@ async function DashboardMainGrid(props: MainGridProps) {
             .select('id, full_name, first_name, last_name, company_name, job_title, city, state, intent_score_calculated')
             .eq('workspace_id', workspaceId)
             .eq('enrichment_status', 'enriched')
-            .order('updated_at', { ascending: false })
+            .order('enriched_at', { ascending: false, nullsFirst: false })
             .limit(1)
             .maybeSingle()
           return lead ?? null
@@ -260,7 +260,7 @@ async function DashboardMainGrid(props: MainGridProps) {
 
   const typedEnrichments = (recentEnrichments ?? []) as Array<{
     id: string; full_name: string | null; first_name: string | null; last_name: string | null
-    company_name: string | null; updated_at: string | null; source: string | null
+    company_name: string | null; enriched_at: string | null; source: string | null
   }>
 
   const pipeline = pipelineStats ?? { new: 0, contacted: 0, qualified: 0, proposal: 0, negotiation: 0, won: 0, lost: 0 }
@@ -277,7 +277,7 @@ async function DashboardMainGrid(props: MainGridProps) {
   }
   for (const e of typedEnrichments) {
     const name = e.full_name || [e.first_name, e.last_name].filter(Boolean).join(' ') || 'Lead'
-    activityLog.push({ type: 'enrich', leadName: name, company: e.company_name, time: e.updated_at ?? new Date().toISOString() })
+    activityLog.push({ type: 'enrich', leadName: name, company: e.company_name, time: e.enriched_at ?? new Date().toISOString() })
   }
   activityLog.sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime())
 

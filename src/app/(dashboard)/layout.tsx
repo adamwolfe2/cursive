@@ -14,6 +14,9 @@ import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { verifyWorkspaceCookie } from '@/lib/auth/workspace-cookie'
+import { WEEKLY_OFFERS } from '@/lib/free-leads/contract'
+import { safeError } from '@/lib/utils/log-sanitizer'
 import { AppShell } from '@/components/layout'
 import { ImpersonationBanner } from '@/components/admin'
 import { TierProvider } from '@/lib/hooks/use-tier'
@@ -94,7 +97,8 @@ export default async function DashboardLayout({
     redirect('/login')
   }
 
-  const cachedWorkspaceId = cookieStore.get('x-workspace-id')?.value
+  // The cookie holds `<workspaceId>.<hmac>`; only the verified bare id is a usable workspace id.
+  const cachedWorkspaceId = verifyWorkspaceCookie(user.id, cookieStore.get('x-workspace-id')?.value)
 
   // Cache the user profile for 5 minutes — it changes rarely (plan upgrades, name edits).
   // Key includes auth user ID so each user gets their own cache slot.
@@ -103,7 +107,7 @@ export default async function DashboardLayout({
       const admin = createAdminClient()
       const { data } = await admin
         .from('users')
-        .select('id, auth_user_id, full_name, email, plan, role, workspace_id, daily_credit_limit, daily_credits_used, is_partner, workspaces(id, name, subdomain, website_url, branding, visible_features)')
+        .select('id, auth_user_id, full_name, email, plan, role, workspace_id, daily_credit_limit, daily_credits_used, is_partner, workspaces(id, name, subdomain, website_url, branding, visible_features, has_pixel_access)')
         .eq('auth_user_id', authUserId)
         .maybeSingle()
       return data
@@ -174,14 +178,41 @@ export default async function DashboardLayout({
     { revalidate: 120, tags: [`workspace-stats-${cachedWorkspaceId ?? 'unknown'}`] }
   )
 
+  // A live weekly-leads order (trial or paid) shows as Starter in the header badge.
+  // Display only: users.plan is left alone so plan-gated features do not change.
+  // Throws on a DB error so unstable_cache never stores a failure; callers fall back to false.
+  const getHasActiveOrderCached = unstable_cache(
+    async (wsId: string) => {
+      const admin = createAdminClient()
+      const { data, error } = await admin
+        .from('funnel_orders')
+        .select('id')
+        .eq('workspace_id', wsId)
+        .eq('subscription_state', 'active')
+        .in('offer_slug', WEEKLY_OFFERS)
+        .limit(1)
+        .maybeSingle()
+      if (error) throw new Error(`active order lookup failed: ${error.message}`)
+      return !!data
+    },
+    ['has-active-weekly-order'],
+    { revalidate: 300 }
+  )
+  const getHasActiveOrder = (wsId: string) =>
+    getHasActiveOrderCached(wsId).catch((err: unknown) => {
+      safeError('[dashboard-layout] active order lookup failed', err)
+      return false
+    })
+
   const workspaceIdForQueries = cachedWorkspaceId ?? ''
 
-  const [userProfileData, userIsAdmin, creditsData, todayLeadsFromStats, hotLeadsFromStats] = await Promise.all([
+  const [userProfileData, userIsAdmin, creditsData, todayLeadsFromStats, hotLeadsFromStats, hasActiveOrderFromCache] = await Promise.all([
     getUserProfile(user.id),
     user.email ? getIsAdmin(user.email) : Promise.resolve(false),
     workspaceIdForQueries ? getCredits(workspaceIdForQueries) : Promise.resolve(null),
     workspaceIdForQueries ? getTodayLeads(workspaceIdForQueries) : Promise.resolve(0),
     workspaceIdForQueries ? getHotLeads(workspaceIdForQueries) : Promise.resolve(0),
+    workspaceIdForQueries ? getHasActiveOrder(workspaceIdForQueries) : Promise.resolve(false),
   ])
 
   const userProfile = userProfileData as {
@@ -199,6 +230,7 @@ export default async function DashboardLayout({
       subdomain?: string
       website_url?: string | null
       visible_features?: string[] | null
+      has_pixel_access?: boolean | null
       branding?: {
         logo_url?: string | null
         favicon_url?: string | null
@@ -214,24 +246,32 @@ export default async function DashboardLayout({
   let creditBalance = creditsData?.balance ?? 0
   let todayLeadCount = todayLeadsFromStats ?? 0
   let hotLeadCount = hotLeadsFromStats ?? 0
+  let hasActiveOrder = hasActiveOrderFromCache
 
-  // Fallback: if no cached workspace_id but user has one, fetch now
-  if (!cachedWorkspaceId && userProfile.workspace_id) {
-    const [fallbackCredits, fallbackLeads, fallbackHotLeads] = await Promise.all([
+  // Fallback: no cookie, or one signed for a workspace the user has since left. Never show
+  // another workspace's counts: re-read against the user's current workspace.
+  if (userProfile.workspace_id && cachedWorkspaceId !== userProfile.workspace_id) {
+    const [fallbackCredits, fallbackLeads, fallbackHotLeads, fallbackActiveOrder] = await Promise.all([
       getCredits(userProfile.workspace_id),
       getTodayLeads(userProfile.workspace_id),
       getHotLeads(userProfile.workspace_id),
+      getHasActiveOrder(userProfile.workspace_id),
     ])
     creditBalance = fallbackCredits?.balance ?? 0
     todayLeadCount = fallbackLeads ?? 0
     hotLeadCount = fallbackHotLeads ?? 0
+    hasActiveOrder = fallbackActiveOrder
   }
+
+  const basePlan = userProfile.plan || 'free'
+  const displayPlan = hasActiveOrder && basePlan === 'free' ? 'starter' : basePlan
 
   const workspace = userProfile.workspaces as {
     name: string
     subdomain?: string
     website_url?: string | null
     visible_features?: string[] | null
+    has_pixel_access?: boolean | null
     branding?: {
       logo_url?: string | null
       favicon_url?: string | null
@@ -249,7 +289,7 @@ export default async function DashboardLayout({
           user={{
             name: userProfile.full_name || 'User',
             email: userProfile.email,
-            plan: userProfile.plan || 'free',
+            plan: displayPlan,
             role: userProfile.role,
             creditsRemaining: creditBalance,
             totalCredits: creditBalance,
@@ -267,6 +307,7 @@ export default async function DashboardLayout({
           todayLeadCount={todayLeadCount}
           hotLeadCount={hotLeadCount > 0 ? hotLeadCount : undefined}
           visibleFeatures={workspace?.visible_features ?? null}
+          hasPixel={!!workspace?.has_pixel_access}
         >
           <DashboardProvider
             value={{

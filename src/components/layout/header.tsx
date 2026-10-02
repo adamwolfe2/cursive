@@ -26,6 +26,8 @@ import {
   LogOut,
 } from 'lucide-react'
 
+const PLAN_LABEL: Record<string, string> = { pro: 'Pro', starter: 'Starter' }
+
 interface HeaderProps {
   user?: {
     name?: string | null
@@ -136,7 +138,7 @@ export function Header({
             variant={user.plan === 'pro' ? 'default' : 'muted'}
             className="hidden sm:inline-flex"
           >
-            {user.plan === 'pro' ? 'Pro' : 'Free'}
+            {PLAN_LABEL[user.plan] ?? 'Free'}
           </Badge>
         )}
 
