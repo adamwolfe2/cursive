@@ -50,7 +50,7 @@ export function Hero({
     <>
       <section className="grid grid-cols-[minmax(0,1fr)] gap-12 pb-16 pt-6 sm:pt-12 lg:grid-cols-[minmax(0,29rem)_minmax(0,1fr)] lg:items-start lg:gap-14 lg:pb-24 lg:pt-14">
         <div className="min-w-0">
-          <h1 className="text-[2.375rem] font-semibold leading-[1.08] tracking-[-0.035em] text-[#0f172a] sm:text-[3.25rem]">
+          <h1 className="text-[2.375rem] font-bold leading-[1.08] tracking-[-0.035em] text-[#0f172a] sm:text-[3.25rem]">
             Find the 25 people most likely to buy from you
           </h1>
           <p className="mt-5 max-w-[42ch] text-[17px] leading-relaxed text-[#475569] sm:mt-6 sm:text-lg">
@@ -194,7 +194,7 @@ function HowItWorks({ onStart }: { onStart: () => void }) {
       className="grid grid-cols-[minmax(0,1fr)] gap-10 rounded-3xl bg-[#F7F9FB] px-5 py-12 sm:px-10 sm:py-16 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] lg:gap-16 lg:px-14"
     >
       <div className="lg:sticky lg:top-24 lg:self-start">
-        <h2 id="how-heading" className="text-[2rem] font-light leading-[1.08] tracking-[-0.02em] text-[#111827] sm:text-[2.5rem]">
+        <h2 id="how-heading" className="text-[2rem] font-bold leading-[1.08] tracking-[-0.02em] text-[#111827] sm:text-[2.5rem]">
           About a minute,
           <span className="block text-[#6b7280] pt-0.5">start to list.</span>
         </h2>

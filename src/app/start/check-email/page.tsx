@@ -27,7 +27,7 @@ export default async function CheckEmailPage({
     <div className="mx-auto grid w-full max-w-[72rem] gap-14 px-5 pb-24 pt-8 sm:px-8 sm:pt-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:items-start lg:gap-16">
       <div className="max-w-xl">
         <Steps current={2} />
-        <h1 className="mt-10 text-[2.5rem] sm:mt-14 sm:text-[3.5rem] font-light leading-[1.05] tracking-[-0.02em] text-[#111827]">
+        <h1 className="mt-10 text-[2.5rem] sm:mt-14 sm:text-[3.5rem] font-bold leading-[1.05] tracking-[-0.02em] text-[#111827]">
           Check your
           <span className="block text-[#007AFF] pt-0.5">inbox.</span>
         </h1>

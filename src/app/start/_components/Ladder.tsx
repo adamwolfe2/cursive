@@ -1,13 +1,11 @@
 'use client'
 
-import { ArrowRight, ArrowUpRight, Loader2 } from 'lucide-react'
+import { ArrowRight, Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useRef, useState } from 'react'
 import { BOOKING_URL, type FullLead, type InterestResponse, type UpgradeTier } from '@/lib/free-leads/contract'
 import { isAbort, postJson, StartApiError, type Mock } from './api'
 import { DashboardPreview } from './DashboardPreview'
-
-const DASHBOARD_EXAMPLES_URL = 'https://leads.amcollectivecapital.com'
 
 function useInterest(mock: Mock) {
   const router = useRouter()
@@ -98,15 +96,15 @@ export function Ladder({ mock, leads, website }: { mock: Mock; leads: FullLead[]
       <section aria-labelledby="rung-weekly" className="fl-rise rounded-b-xl bg-[#007AFF] px-5 py-8 text-white sm:px-10 sm:py-10">
         <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-[40rem]">
-            <h2 id="rung-weekly" className="text-[1.75rem] font-light leading-[1.1] tracking-[-0.02em] sm:text-[2.5rem]">
+            <h2 id="rung-weekly" className="text-[1.75rem] font-bold leading-[1.1] tracking-[-0.02em] sm:text-[2.5rem]">
               Get 25 new leads like these,
-              <span className="block text-[#007AFF] pt-0.5">every Monday.</span>
+              <span className="block pt-0.5 text-white/80">every Monday.</span>
             </h2>
             <p className="mt-3 text-base leading-relaxed text-white sm:text-[17px]">
               Same buyer profile you approved, fresh contacts each week, never a repeat. Work emails and LinkedIn links included.
             </p>
             <p className="mt-3 text-[15px] text-white">
-              14 days free, then $197/mo. <span className="text-white/80">Cancel anytime.</span>
+              Starter: 14 days free, then $197/mo. <span className="text-white">Cancel anytime.</span>
             </p>
           </div>
           <Cta tier="weekly_leads" label="Start free for 14 days" tone="white" interest={interest} />
@@ -127,14 +125,14 @@ export function Ladder({ mock, leads, website }: { mock: Mock; leads: FullLead[]
         className="mt-24 grid scroll-mt-8 items-center gap-10 sm:mt-32 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:gap-16"
       >
         <div className="max-w-[36rem]">
-          <h2 id="rung-linkedin" className="text-[1.75rem] font-light leading-[1.1] tracking-[-0.02em] text-[#111827] sm:text-[2.25rem]">
+          <h2 id="rung-linkedin" className="text-[1.75rem] font-bold leading-[1.1] tracking-[-0.02em] text-[#111827] sm:text-[2.25rem]">
             We message your leads on LinkedIn so you only take the replies.
           </h2>
           <p className="mt-4 text-[17px] leading-relaxed text-[#4b5563]">
-            Written in your voice, sent from your profile, you approve the first batch.
+            Written in your voice, sent from your profile, you approve the first batch. From $1,497/mo.
           </p>
           <div className="mt-7">
-            <Cta tier="linkedin_outreach" label="Talk about LinkedIn outreach" tone="ink" interest={interest} />
+            <Cta tier="linkedin_outreach" label="Book a call about LinkedIn outreach" tone="ink" interest={interest} />
           </div>
         </div>
         <ApprovalQueue lead={leads[0] ?? null} />
@@ -149,23 +147,14 @@ export function Ladder({ mock, leads, website }: { mock: Mock; leads: FullLead[]
           <DashboardPreview website={website} leads={leads} />
         </div>
         <div className="order-1 max-w-[34rem] lg:order-2">
-          <h2 id="rung-dashboard" className="text-[1.75rem] font-light leading-[1.1] tracking-[-0.02em] text-[#111827] sm:text-[2.25rem]">
+          <h2 id="rung-dashboard" className="text-[1.75rem] font-bold leading-[1.1] tracking-[-0.02em] text-[#111827] sm:text-[2.25rem]">
             One dashboard that shows where every lead, reply, and dollar stands.
           </h2>
           <p className="mt-4 text-[17px] leading-relaxed text-[#4b5563]">
-            Connect your tools and in 14 days you get a live view built around how you sell.
+            Connect your tools and get a live view built around how you sell. From $2,500 setup + $500/mo.
           </p>
-          <div className="mt-7 flex flex-col gap-1 sm:flex-row sm:items-start sm:gap-6">
+          <div className="mt-7">
             <Cta tier="ai_dashboard" label="Book a dashboard call" tone="ink" interest={interest} />
-            <a
-              href={DASHBOARD_EXAMPLES_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex h-12 items-center gap-1.5 self-start text-[15px] font-semibold text-[#0066DD] underline decoration-[#b3d7ff] underline-offset-4 hover:decoration-[#007AFF] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF]"
-            >
-              See dashboards we&apos;ve built
-              <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
-            </a>
           </div>
         </div>
       </section>

@@ -25,7 +25,7 @@ export default async function OpenLeadsPage({
     <div className="mx-auto w-full max-w-[72rem] px-5 pb-24 pt-8 sm:px-8 sm:pt-14">
       <div className="max-w-xl">
         <Steps current={3} />
-        <h1 className="mt-10 sm:mt-14 text-[2.5rem] font-light leading-[1.05] tracking-[-0.02em] text-[#111827] sm:text-[3.5rem]">
+        <h1 className="mt-10 sm:mt-14 text-[2.5rem] font-bold leading-[1.05] tracking-[-0.02em] text-[#111827] sm:text-[3.5rem]">
           Your 25 leads
           <span className="block text-[#007AFF] pt-0.5">are ready.</span>
         </h1>
