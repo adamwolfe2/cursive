@@ -1,42 +1,12 @@
 "use client"
 
 import { useState } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { ChevronDown } from "lucide-react"
-import { Container } from "@/components/ui/container"
+import { ArrowRight, Plus } from "lucide-react"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateFAQSchema } from "@/lib/seo/faq-schema"
 import { trackDemoBooked } from "@/lib/analytics"
 import { BOOKING_URL } from "@/lib/cta"
-
-interface FAQ {
-  question: string
-  answer: string
-}
-
-// Short, sourced answers only. Claims here must match the pricing cards and the homepage FAQ schema in app/page.tsx.
-const faqs: FAQ[] = [
-  {
-    question: "Where do the 25 people come from?",
-    answer: "We read your website, work out who buys from you, and match that profile against 400M+ business contacts, multi-sourced and enriched across several databases. You get 25 decision makers who fit, each with a work email and a reason they fit.",
-  },
-  {
-    question: "How accurate are the emails?",
-    answer: "Every email is checked before it reaches you. If we cannot verify a work email, that person is left out of your list.",
-  },
-  {
-    question: "What happens after the free 25?",
-    answer: "Nothing, unless you want more. Buy credits (100 leads for $49), take 100 leads a month on Starter for $197, or have us run LinkedIn and email outreach to your list from $1,497 a month. All month-to-month.",
-  },
-  {
-    question: "How is Cursive different from ZoomInfo or Apollo?",
-    answer: "Databases sell you contacts and leave the rest to you. Cursive starts from who actually buys from you, learns from the leads you like and your past customers, and can run the outreach for you.",
-  },
-  {
-    question: "Is Cursive compliant?",
-    answer: "We follow GDPR and CCPA, honor opt-outs, and never sell your data to third parties.",
-  },
-]
+import { faqs } from "./faq-data"
 
 export function FAQSection() {
   const [openIndex, setOpenIndex] = useState<number | null>(null)
@@ -55,107 +25,64 @@ export function FAQSection() {
     <>
       <StructuredData data={faqSchema} />
 
-      <section id="faq" className="py-20 bg-white">
-        <Container>
-          <motion.div
-            initial={false}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-[2rem] font-semibold leading-tight tracking-[-0.025em] text-[#0f172a] sm:text-[2.5rem] mb-4">
+      <section id="faq" aria-labelledby="faq-heading" className="scroll-mt-20 bg-white px-6 py-20 sm:py-28">
+        <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)] lg:gap-20">
+          <div className="lg:sticky lg:top-28 lg:self-start">
+            <h2 id="faq-heading" className="text-[2rem] font-semibold leading-[1.1] tracking-[-0.025em] text-[#0f172a] sm:text-[2.75rem]">
               Questions, answered
             </h2>
-            <p className="text-[17px] text-[#475569] max-w-2xl mx-auto">
-              Short answers. Book a call for the rest.
+            <p className="mt-4 max-w-[34ch] text-[17px] leading-relaxed text-[#475569]">
+              Short answers here. For anything else, talk to the team that builds your list.
             </p>
-          </motion.div>
-
-          <div className="max-w-4xl mx-auto space-y-4">
-            {faqs.map((faq, index) => {
-              const isOpen = openIndex === index
-
-              return (
-                <motion.div
-                  key={index}
-                  initial={false}
-                  whileInView={{ opacity: 1 }}
-                  viewport={{ once: true, margin: "-50px" }}
-                  transition={{
-                    delay: index * 0.05,
-                    duration: 0.3,
-                    ease: [0.22, 1, 0.36, 1]
-                  }}
-                  className="border border-gray-200 rounded-xl overflow-hidden bg-white hover:shadow-lg transition-shadow"
-                >
-                  <button
-                    onClick={() => toggleFAQ(index)}
-                    className="w-full text-left px-6 py-5 flex items-start justify-between gap-4 hover:bg-gray-50 transition-colors"
-                    aria-expanded={isOpen}
-                    aria-controls={`faq-answer-${index}`}
-                  >
-                    <h3 className="text-lg font-medium text-gray-900 flex-1">
-                      {faq.question}
-                    </h3>
-                    <motion.div
-                      animate={{ rotate: isOpen ? 180 : 0 }}
-                      transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                      className="flex-shrink-0"
-                    >
-                      <ChevronDown className="h-5 w-5 text-gray-500" aria-hidden="true" />
-                    </motion.div>
-                  </button>
-
-                  <AnimatePresence initial={false}>
-                    {isOpen && (
-                      <motion.div
-                        id={`faq-answer-${index}`}
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{
-                          duration: 0.3,
-                          ease: [0.22, 1, 0.36, 1]
-                        }}
-                        className="overflow-hidden"
-                      >
-                        <div className="px-6 pb-5 pt-2 bg-gray-50">
-                          <p className="text-gray-700 leading-relaxed">
-                            {faq.answer}
-                          </p>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </motion.div>
-              )
-            })}
-          </div>
-
-          {/* CTA after FAQs */}
-          <motion.div
-            initial={false}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.3, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            className="text-center mt-12"
-          >
-            <p className="text-gray-600 mb-4">Still have questions?</p>
             <a
               href={BOOKING_URL}
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => trackDemoBooked("faq_section")}
-              className="inline-flex min-h-11 items-center gap-2 font-medium text-[#0066DD] underline decoration-[#b3d7ff] underline-offset-4 transition-colors hover:decoration-[#007AFF]"
+              className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-md text-[15px] font-semibold text-[#0066DD] underline decoration-[#b3d7ff] underline-offset-4 transition-colors hover:decoration-[#007AFF] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF]"
             >
-              Book a call with our team
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-              </svg>
+              Book a call
+              <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </a>
-          </motion.div>
-        </Container>
+          </div>
+
+          <ul className="border-t border-[#e2e8f0]">
+            {faqs.map((faq, index) => {
+              const isOpen = openIndex === index
+              return (
+                <li key={faq.question} className="border-b border-[#e2e8f0]">
+                  <h3>
+                    <button
+                      type="button"
+                      onClick={() => toggleFAQ(index)}
+                      aria-expanded={isOpen}
+                      aria-controls={`faq-answer-${index}`}
+                      id={`faq-question-${index}`}
+                      className="group flex w-full items-center justify-between gap-6 py-6 text-left text-[17px] font-semibold text-[#0f172a] transition-colors hover:text-[#0066DD] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF] sm:text-[19px]"
+                    >
+                      {faq.question}
+                      <Plus
+                        className={`h-5 w-5 shrink-0 text-[#94a3b8] transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:text-[#007AFF] ${isOpen ? "rotate-45" : ""}`}
+                        aria-hidden="true"
+                      />
+                    </button>
+                  </h3>
+                  {/* Opens by animating grid rows, not height, so nothing measures layout. */}
+                  <div
+                    id={`faq-answer-${index}`}
+                    role="region"
+                    aria-labelledby={`faq-question-${index}`}
+                    className={`grid transition-[grid-template-rows] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none ${isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
+                  >
+                    <div className="overflow-hidden" inert={!isOpen}>
+                      <p className="max-w-[62ch] pb-6 text-[16px] leading-relaxed text-[#475569]">{faq.answer}</p>
+                    </div>
+                  </div>
+                </li>
+              )
+            })}
+          </ul>
+        </div>
       </section>
     </>
   )

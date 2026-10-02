@@ -60,7 +60,7 @@ const BATCH: Array<[name: string, role: string, vote: "up" | "down"]> = [
   ["Marcus O.", "CTO, Shipfast · Series A", "up"],
   ["Priya R.", "Head of Engineering, Northwind · 210 people", "up"],
 ]
-const LEARNED = ["More Series A to C", "51 to 500 people", "Fewer agencies", "Like your 212 customers"]
+const LEARNED = ["More Series A–C", "51–500 people", "Fewer agencies", "Like your 212 customers"]
 
 export function DemoFind() {
   // 0: list in · 1-4: votes land · 5: CSV added · 6-9: learned chips · 10: next batch ready
@@ -126,7 +126,7 @@ export function DemoFind() {
 
 const THREAD: Array<{ ch: "in" | "mail" | "reply"; when: string; text: string }> = [
   { ch: "in", when: "Mon", text: "Connection request sent to Rachel J." },
-  { ch: "in", when: "Tue", text: "Rachel accepted. First message sent, written for her team's growth." },
+  { ch: "in", when: "Tue", text: "Rachel accepted. First message sent, written for her team’s growth." },
   { ch: "mail", when: "Thu", text: "Email follow-up with a two-line case for a call." },
   { ch: "reply", when: "Thu", text: "Thursday at 2 works. Send the invite." },
 ]

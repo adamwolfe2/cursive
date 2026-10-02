@@ -38,13 +38,13 @@ const EXAMPLES: Example[] = [
     summary: 'Software companies of 51 to 500 people whose engineering teams have outgrown their issue tracker.',
     rows: [
       ['Titles', ['CTO', 'VP of Engineering', 'Head of Engineering']],
-      ['Size', ['51-200 people', '201-500 people']],
+      ['Size', ['51–200 people', '201–500 people']],
       ['Where', ['United States']],
     ],
     count: 4449,
     leads: [
       ['Rachel J.', 'VP of Engineering', 'Ledgerline', 'r•••@ledgerline.com', 'Grew her team from 30 to 90 engineers in a year; planning runs on spreadsheets.'],
-      ['Marcus O.', 'CTO', 'Shipfast', 'm•••@shipfast.dev', 'Series A dev tools company splitting into its first product squads.'],
+      ['Marcus O.', 'CTO', 'Shipfast', 'm•••@shipfast.dev', 'Series A dev-tools company splitting into its first product squads.'],
       ['Priya R.', 'Head of Engineering', 'Northwind Health', 'p•••@northwindhealth.io', 'Runs four teams shipping weekly to hospital customers.'],
     ],
   },
@@ -57,7 +57,7 @@ const EXAMPLES: Example[] = [
     rows: [
       ['Titles', ['VP of Marketing', 'Head of Marketing', 'Marketing Director']],
       ['Industry', ['Software', 'IT services']],
-      ['Size', ['11-50 people', '51-200 people']],
+      ['Size', ['11–50 people', '51–200 people']],
     ],
     count: 3445,
     leads: [
@@ -75,7 +75,7 @@ const EXAMPLES: Example[] = [
     rows: [
       ['Titles', ['Founder', 'Owner', 'Head of Ecommerce']],
       ['Industry', ['Apparel', 'Personal care']],
-      ['Size', ['1-10 people', '11-50 people']],
+      ['Size', ['1–10 people', '11–50 people']],
     ],
     count: 14300,
     leads: [
@@ -93,7 +93,7 @@ const EXAMPLES: Example[] = [
     rows: [
       ['Titles', ['Creative Director', 'Founder', 'Head of Design']],
       ['Industry', ['Design', 'Advertising', 'Marketing']],
-      ['Size', ['1-10 people', '11-50 people']],
+      ['Size', ['1–10 people', '11–50 people']],
     ],
     count: 44639,
     leads: [

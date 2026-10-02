@@ -153,7 +153,7 @@ export function StartExample() {
             <StartHeroDemo held={false} />
           </div>
           <p className="mt-4 text-center text-[13px] text-[#64748b]">
-            Counts are real matches in our database on October 1, 2026. Lead names are illustrative.
+            Counts are real matches in our database on October 1, 2026. Lead names are illustrative.
           </p>
           <div className="mt-8 text-center">
             <a href={startUrl("home-example")} className={`inline-flex h-11 items-center gap-2 rounded-xl bg-[#007AFF] px-5 text-[15px] font-semibold text-white transition-colors hover:bg-[#0066DD] ${FOCUS}`}>

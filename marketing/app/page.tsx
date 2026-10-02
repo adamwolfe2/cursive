@@ -1,37 +1,14 @@
 import { Metadata } from "next"
 import { StructuredData } from "@/components/seo/structured-data"
-import { generateOrganizationSchema, generateWebSiteSchema, generateSoftwareApplicationSchema, generateFAQSchema } from "@/lib/seo/structured-data"
-import { HumanView, MachineView, MachineContent, MachineSection, MachineLink, MachineList } from "@/components/view-wrapper"
+import { generateOrganizationSchema, generateWebSiteSchema, generateSoftwareApplicationSchema } from "@/lib/seo/structured-data"
+import { HumanView, MachineView, MachineContent, MachineSection, MachineList } from "@/components/view-wrapper"
 import { HumanHomePage } from "@/components/human-home-page"
-import { FAQSection } from "@/components/homepage/faq-section"
-
-const homepageFAQs = [
-  {
-    question: 'How does Cursive identify website visitors?',
-    answer: 'Cursive uses a proprietary identity graph built from offline-rooted consumer data, layered with intent signals from major ad exchanges and our own 15-million-domain organic network. When someone visits your site, our pixel matches their footprint against 280M+ consumer profiles. Pixel match rates are typically 40–60%, with 60–80% pixel-level accuracy.',
-  },
-  {
-    question: 'How fresh is the data?',
-    answer: 'The full consumer data set is refreshed every 30 days against the National Change of Address database. Most providers run NCOA reconciliation annually; serious providers do it quarterly. With ~15% of the U.S. population moving each year, our 30-day cycle keeps records meaningfully more current than industry norms. Email checks run continuously, at roughly 20 million emails per day.',
-  },
-  {
-    question: 'How is Cursive different from Bombora, 6sense, ZoomInfo, or Apollo?',
-    answer: 'Most intent providers pull from the same finite pool of feeds — roughly 700,000 SSP publisher sites, only ~40,000 of which actually generate the underlying signals. Cursive ingests from substantially all of them, then layers a proprietary 15M-domain organic network on top, then validates every signal through a closed feedback loop that maps conversions back to source. The result is broader coverage, deterministic match accuracy (not modeled), and a data set that compounds over time rather than degrading.',
-  },
-  {
-    question: 'What does Cursive cost?',
-    answer: 'Your first 25 leads are free: paste your website at leads.meetcursive.com/start, no card and no sales call. After that: lead credits (100 for $49, 500 for $199, 2,000 for $599), Starter at $197/month for 100 leads, or Growth at $497/month for 500 leads. Done-for-you outreach is $1,497/month for LinkedIn or $2,497/month for LinkedIn and email. A custom operating-system dashboard starts at $2,500 setup plus $500/month. The Visitor Pixel is a $97/month add-on. All month-to-month.',
-  },
-  {
-    question: 'What can I do with Cursive beyond visitor identification?',
-    answer: 'Cursive is an identity and intent infrastructure layer, not a single tool. The same data powers (1) visitor identification via the pixel, (2) audience enrichment in waterfalls — bulk append or real-time API, (3) ~50,000 white-label intent segments via taxonomy endpoint, (4) closed-loop pixel feedback for compounding segment quality, and (5) 200+ native integrations into major CRMs, marketing automation, and ad platforms.',
-  },
-]
+import { faqs } from "@/components/homepage/faq-data"
 
 export const metadata: Metadata = {
   title: "Cursive | Get 25 free leads from your website",
   description: "Your site in, 25 buyers out. Cursive reads your website, works out who buys, and finds 25 people who fit, with work emails and why each one fits. Free, about a minute, no card.",
-  keywords: "identity graph, intent data, B2B data infrastructure, pixel identification, consumer data, audience enrichment, NCOA, lead generation, AI SDR, intent provider, Bombora alternative, 6sense alternative",
+  keywords: "B2B leads, free leads, lead generation, ICP, decision makers, work emails, LinkedIn outreach, done-for-you outreach, sales pipeline dashboard, ZoomInfo alternative, Apollo alternative",
   openGraph: {
     title: "Cursive | Get 25 free leads from your website",
     description: "Your site in, 25 buyers out. Cursive reads your website, works out who buys, and finds 25 people who fit, with work emails and why each one fits. Free, about a minute, no card.",
@@ -60,234 +37,51 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <>
-      {/* Structured Data — renders as proper <script type="application/ld+json"> */}
-      <StructuredData data={[
-        generateOrganizationSchema(),
-        generateWebSiteSchema(),
-        generateSoftwareApplicationSchema(),
-        generateFAQSchema(homepageFAQs),
-      ]} />
+      {/* Structured data. The FAQ schema comes from FAQSection, built from the same answers visitors see. */}
+      <StructuredData data={[generateOrganizationSchema(), generateWebSiteSchema(), generateSoftwareApplicationSchema()]} />
 
-      {/* Human View - Beautiful Design */}
       <HumanView>
         <HumanHomePage />
       </HumanView>
 
-      {/* Machine View - AEO-Optimized (always in DOM for crawlers via sr-only) */}
+      {/* Machine view (sr-only, for crawlers and AI assistants). Mirrors the visible page: same claims, same prices. */}
       <MachineView>
         <MachineContent>
-          {/* Header */}
           <div className="mb-12 pb-6 border-b border-gray-200">
             <h1 className="text-2xl text-gray-900 font-bold mb-4">Cursive | Get 25 free leads from your website</h1>
             <p className="text-gray-700 leading-relaxed">
-              Cursive is the identity and intent data infrastructure powering pixel identification, audience enrichment, and intent segmentation for enterprise data teams. Built on offline-rooted consumer sources, refreshed every 30 days against the National Change of Address database, and continuously validated against real conversion outcomes through a closed feedback loop. 280M+ consumer profiles, 15M-domain organic network, ~50,000 white-label intent segments.
+              Cursive finds your buyers, reaches them for you, and gives you the system to run it. Paste your website and
+              Cursive works out who buys from you, then finds 25 decision makers who fit, each with a checked work email
+              and a reason they fit. Free, about a minute, no card. Leads come from 400M+ business contacts,
+              multi-sourced and enriched across several databases. Every batch learns from the leads you like, the
+              ones you skip and the past customers you upload.
             </p>
           </div>
 
-          {/* Key Stats */}
-          <MachineSection title="Key Stats">
+          <MachineSection title="How Cursive works">
             <MachineList items={[
-              "280M+: US consumer profiles in our identity graph",
-              "15M+ — Domains in our proprietary organic network (vs ~40K signal-source domains used industry-wide)",
-              "30 days — NCOA refresh cycle, vs annual or quarterly at most providers",
-              "40–60% — Pixel match rate, vs 2–5% for cookies and 10–15% for IP databases",
-              "60–80% — Pixel-level accuracy (deterministic, not modeled or probabilistic)",
-              "20M / day: email records checked",
-              "~50,000 — Intent segments available for white-label use via taxonomy endpoint",
-              "200+ — Native CRM and marketing-tool integrations",
+              { label: "1. Find them", href: "https://leads.meetcursive.com/start", description: "25 free leads from your website, then credits or a weekly plan. Like or skip leads and upload past customers; each next batch gets closer to your ideal buyer." },
+              { label: "2. Reach them", href: "https://cal.com/cursiveteam/30min", description: "Done-for-you LinkedIn and email outreach to the same list. Copy written and run by the Cursive team, inside each platform's limits." },
+              { label: "3. Run it", href: "https://cal.com/cursiveteam/30min", description: "A custom company dashboard that ties together leads, replies, site visitors, site chat, your CRM and any API. Built and hosted by Cursive." },
             ]} />
           </MachineSection>
 
-          {/* Core Products & Solutions */}
-          <MachineSection title="Products & Solutions">
-            <MachineList items={[
-              {
-                label: "Visitor Identification",
-                href: "https://www.meetcursive.com/visitor-identification",
-                description: "Reveal up to 70% of anonymous website visitors in real-time. See which companies viewed your pricing page, feature pages, or comparison content before they fill out a form."
-              },
-              {
-                label: "Custom Audiences",
-                href: "https://www.meetcursive.com/custom-audiences",
-                description: "A fresh weekly list of people actively searching for your product, built to your ICP and delivered to Google Sheets. First audience within 24 hours."
-              },
-              {
-                label: "Intent Data Audiences",
-                href: "https://www.meetcursive.com/intent-audiences",
-                description: "Pre-built segments across 8 high-value verticals with verified purchase intent signals. Updated weekly with 60B+ behaviors & URLs scanned weekly."
-              },
-              {
-                label: "Audience Builder",
-                href: "https://www.meetcursive.com/audience-builder",
-                description: "Build unlimited custom audiences using 280M US consumer and 140M+ business profiles. No size limits or restrictive licensing."
-              },
-              {
-                label: "Direct Mail Automation",
-                href: "https://www.meetcursive.com/direct-mail",
-                description: "Send physical postcards triggered by digital behavior. Automated triggers based on website visits, email engagement, or custom events."
-              },
-              {
-                label: "Pixel + Audience Bundle",
-                href: "https://www.meetcursive.com/pricing",
-                description: "Site traffic and in-market intent in one feed: the Visitor Pixel plus a weekly Custom Audience for $247/month, month-to-month."
-              },
-              {
-                label: "Intelligence Layer",
-                href: "https://www.meetcursive.com/platform",
-                description: "Intelligence Layer: 3-tier AI enrichment — Auto (free tech stack + email quality), Intelligence Pack ($1: LinkedIn + social + news), Deep Research ($5: AI research brief + personalized outreach angle)"
-              },
-              {
-                label: "Natural Language Querying",
-                href: "https://www.meetcursive.com/platform",
-                description: "Ask questions about your visitor database in plain English — powered by GPT-4o. No SQL. No analyst."
-              },
-              {
-                label: "Outreach Angle Generation",
-                href: "https://www.meetcursive.com/platform",
-                description: "Perplexity AI analyzes each lead and writes a personalized reason to reach out, based on LinkedIn history, news mentions, and tech stack."
-              }
-            ]} />
-          </MachineSection>
-
-          {/* Key Features */}
-          <MachineSection title="Key Features">
-            <div className="space-y-6">
-              <div>
-                <p className="text-gray-900 font-semibold mb-2">Visitor Identification:</p>
-                <MachineList items={[
-                  "70% visitor identification rate",
-                  "Real-time identification (not batch processing)",
-                  "Company + individual-level data",
-                  "Page-level tracking showing browsing behavior",
-                  "Return visitor detection across sessions"
-                ]} />
-              </div>
-
-              <div>
-                <p className="text-gray-900 font-semibold mb-2">AI Studio:</p>
-                <MachineList items={[
-                  "Brand voice training using your best emails",
-                  "Multi-channel outreach (email, LinkedIn, SMS)",
-                  "Autonomous follow-up sequences",
-                  "Meeting booking and qualification",
-                  "24/7 automated operation"
-                ]} />
-              </div>
-
-              <div>
-                <p className="text-gray-900 font-semibold mb-2">Intent Data:</p>
-                <MachineList items={[
-                  "60B+ behaviors & URLs scanned weekly",
-                  "30,000+ commercial categories",
-                  "Real-time data (not monthly snapshots)",
-                  "3 intent levels: Hot (7-day), Warm (14-day), Scale (30-day)",
-                  "Weekly audience refreshes"
-                ]} />
-              </div>
-
-              <div>
-                <p className="text-gray-900 font-semibold mb-2">Integrations:</p>
-                <MachineList items={[
-                  "200+ native integrations",
-                  "CRMs: Salesforce, HubSpot, Pipedrive",
-                  "Marketing: Marketo, Pardot, ActiveCampaign",
-                  "Ad platforms: Google Ads, Facebook, LinkedIn",
-                  "Two-way sync with real-time updates"
-                ]} />
-              </div>
-            </div>
-          </MachineSection>
-
-          {/* Plans */}
           <MachineSection title="Plans & Pricing">
             <MachineList items={[
-              { label: "Free — 25 leads", href: "https://leads.meetcursive.com/start", description: "Paste your website, get 25 decision makers with verified work emails. No card." },
-              { label: "Lead credits — 100 for $49, 500 for $199, 2,000 for $599", href: "https://www.meetcursive.com/#pricing", description: "Pay as you go; credits roll over." },
-              { label: "Starter — $197/month", href: "https://www.meetcursive.com/#pricing", description: "100 leads a month, 25 every Monday, 14-day trial." },
-              { label: "Growth — $497/month", href: "https://www.meetcursive.com/#pricing", description: "500 leads a month, tuned by the leads you like and your customer list." },
-              { label: "Outreach — $1,497/month (LinkedIn) or $2,497/month (LinkedIn + email)", href: "https://www.meetcursive.com/#pricing", description: "Done-for-you outreach to your list, copy written and run by Cursive." },
-              { label: "Operating system — from $2,500 setup + $500/month", href: "https://www.meetcursive.com/#pricing", description: "A custom company dashboard for leads, outreach, visitors, chat and CRM." },
-              { label: "Visitor Pixel — $97/month add-on", href: "https://www.meetcursive.com/pricing", description: "Identify the people visiting your site." }
+              { label: "Free: 25 leads", href: "https://leads.meetcursive.com/start", description: "Paste your website, get 25 decision makers with checked work emails. No card." },
+              { label: "Lead credits: 100 for $49, 500 for $199, 2,000 for $599", href: "https://www.meetcursive.com/#pricing", description: "Pay as you go; unused credits roll over. Early access." },
+              { label: "Starter: $197/month", href: "https://www.meetcursive.com/#pricing", description: "100 leads a month, 25 every Monday, 14-day trial." },
+              { label: "Growth: $497/month", href: "https://www.meetcursive.com/#pricing", description: "500 leads a month, tuned by the leads you like and your customer list. Early access." },
+              { label: "Outreach: $1,497/month (LinkedIn) or $2,497/month (LinkedIn + email)", href: "https://www.meetcursive.com/#pricing", description: "Done-for-you outreach to your list. Month-to-month." },
+              { label: "Operating system: from $2,500 setup + $500/month", href: "https://www.meetcursive.com/#pricing", description: "A custom company dashboard for leads, outreach, visitors, chat and CRM." },
+              { label: "Visitor Pixel: $97/month add-on", href: "https://www.meetcursive.com/pixel", description: "See which companies visit your site." },
             ]} />
           </MachineSection>
 
-          {/* Use Cases */}
-          <MachineSection title="Use Cases">
-            <div className="space-y-4">
-              <div>
-                <p className="text-gray-900 font-semibold mb-2">B2B SaaS Companies:</p>
-                <p className="text-gray-600">
-                  Identify anonymous visitors viewing pricing and feature pages. Sales teams receive alerts with company details and browsing behavior for warm outreach within hours.
-                </p>
-              </div>
-
-              <div>
-                <p className="text-gray-900 font-semibold mb-2">Digital Marketing Agencies:</p>
-                <p className="text-gray-600">
-                  White-label visitor identification and intent audiences to offer premium services. Improve client results and prove attribution across anonymous and known traffic.
-                </p>
-              </div>
-
-              <div>
-                <p className="text-gray-900 font-semibold mb-2">Enterprise Sales Teams:</p>
-                <p className="text-gray-600">
-                  Track when target accounts visit your website and comparison pages. Reach out while prospects are actively evaluating alternatives to close deals faster.
-                </p>
-              </div>
-            </div>
-          </MachineSection>
-
-          {/* Industries */}
-          <MachineSection title="Industries We Serve">
-            <MachineList items={[
-              { label: "B2B Software", href: "https://www.meetcursive.com/industries/b2b-software", description: "Visitor identification and intent data for SaaS companies." },
-              { label: "Agencies", href: "https://www.meetcursive.com/industries/agencies", description: "White-label visitor identification for client services." },
-              { label: "Ecommerce", href: "https://www.meetcursive.com/industries/ecommerce", description: "Identify anonymous shoppers and retarget cart abandoners." },
-              { label: "Financial Services", href: "https://www.meetcursive.com/industries/financial-services", description: "Compliant lead generation for financial advisors and lenders." },
-              { label: "Home Services", href: "https://www.meetcursive.com/industries/home-services", description: "Reach homeowners searching for HVAC, plumbing, roofing services." },
-              { label: "Education", href: "https://www.meetcursive.com/industries/education", description: "Identify prospective students researching programs." },
-              { label: "Franchises", href: "https://www.meetcursive.com/industries/franchises", description: "Multi-location lead generation with centralized management." },
-              { label: "Retail", href: "https://www.meetcursive.com/industries/retail", description: "Identify in-market shoppers and drive foot traffic." },
-              { label: "Media & Advertising", href: "https://www.meetcursive.com/industries/media-advertising", description: "Audience intelligence for media buyers and publishers." },
-            ]} />
-          </MachineSection>
-
-          {/* Getting Started */}
-          <MachineSection title="Getting Started">
-            <div className="space-y-4">
-              <p className="text-gray-700">
-                Most teams are live within 24 hours. Installation takes 5 minutes, integrations 10-15 minutes.
-              </p>
-              <MachineList items={[
-                {
-                  label: "Book a Demo",
-                  href: "https://cal.com/cursiveteam/30min",
-                  description: "See Cursive identify your website visitors in real-time with a personalized walkthrough"
-                },
-                {
-                  label: "See the Super Pixel",
-                  href: "https://www.meetcursive.com/superpixel",
-                  description: "Learn how the Cursive Super Pixel V4 turns anonymous visitors into verified leads"
-                },
-                {
-                  label: "Explore Platform Features",
-                  href: "https://www.meetcursive.com/platform",
-                  description: "Deep dive into visitor identification, AI Studio, and intent audiences"
-                },
-                {
-                  label: "View Pricing",
-                  href: "https://www.meetcursive.com/pricing",
-                  description: "Free 25 leads, credits from $49, Starter $197/mo, Growth $497/mo, outreach from $1,497/mo, Visitor Pixel $97/mo add-on."
-                }
-              ]} />
-            </div>
-          </MachineSection>
-
-          {/* FAQ */}
           <MachineSection title="Frequently Asked Questions">
             <div className="space-y-6">
-              {homepageFAQs.map((faq, i) => (
-                <div key={i}>
+              {faqs.map((faq) => (
+                <div key={faq.question}>
                   <h3 className="text-gray-900 font-semibold mb-1">{faq.question}</h3>
                   <p className="text-gray-600">{faq.answer}</p>
                 </div>
@@ -295,62 +89,16 @@ export default function HomePage() {
             </div>
           </MachineSection>
 
-          {/* Competitive Advantages */}
-          <MachineSection title="Why Choose Cursive">
-            <div className="space-y-4">
-              <div>
-                <p className="text-gray-900 font-semibold mb-2">vs. Traditional Visitor ID Tools:</p>
-                <MachineList items={[
-                  "Real-time identification (not batch processing)",
-                  "AI-powered activation (not just data delivery)",
-                  "70% identification rate (industry-leading)",
-                  "Unified B2B and B2C data"
-                ]} />
-              </div>
-
-              <div>
-                <p className="text-gray-900 font-semibold mb-2">vs. Data Providers (Clearbit, ZoomInfo):</p>
-                <MachineList items={[
-                  "Activation included with data delivery",
-                  "60B+ behaviors & URLs scanned weekly across 30,000+ categories",
-                  "Anonymous visitor identification built-in",
-                  "Multi-channel campaigns included"
-                ]} />
-              </div>
-
-              <div>
-                <p className="text-gray-900 font-semibold mb-2">vs. Marketing Automation (HubSpot, Marketo):</p>
-                <MachineList items={[
-                  "Visitor identification for anonymous traffic",
-                  "External intent data from 30,000+ categories",
-                  "AI agents (no manual workflow building)",
-                  "Pre-built audiences (no manual list building)"
-                ]} />
-              </div>
-            </div>
-          </MachineSection>
-
-          {/* Contact & Support */}
-          <MachineSection title="Contact & Support">
+          <MachineSection title="Contact">
             <MachineList items={[
-              { label: "Website", href: "https://www.meetcursive.com" },
+              { label: "Get 25 free leads", href: "https://leads.meetcursive.com/start" },
+              { label: "Book a call", href: "https://cal.com/cursiveteam/30min" },
               { label: "Email", href: "mailto:hey@meetcursive.com" },
-              { label: "Schedule Demo", href: "https://cal.com/cursiveteam/30min" },
               { label: "LinkedIn", href: "https://linkedin.com/company/cursive" },
-            ]} />
-          </MachineSection>
-
-          {/* Privacy & Compliance */}
-          <MachineSection title="Privacy & Compliance">
-            <p className="text-gray-700 mb-4">
-              Cursive is fully compliant with GDPR, CCPA, and other privacy regulations. We provide opt-out mechanisms, respect Do Not Track signals, and maintain strict data handling policies.
-            </p>
-            <MachineList items={[
               { label: "Privacy Policy", href: "https://www.meetcursive.com/privacy" },
               { label: "Terms of Service", href: "https://www.meetcursive.com/terms" },
             ]} />
           </MachineSection>
-
         </MachineContent>
       </MachineView>
     </>

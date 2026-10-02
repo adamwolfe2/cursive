@@ -81,14 +81,14 @@ export function DatabaseSection() {
   const { ref, n } = useCountOnView(400)
   return (
     <section aria-labelledby="db-heading" className="px-6 py-20 sm:py-28">
-      <div className="mx-auto grid max-w-6xl items-end gap-8 lg:grid-cols-[1.2fr_1fr] lg:gap-16">
+      <div className="mx-auto grid max-w-6xl items-end gap-6 xl:grid-cols-[1.25fr_1fr] xl:gap-16">
         <p
           className="text-[clamp(5.5rem,22vw,15rem)] font-semibold leading-[0.85] tracking-[-0.06em] text-[#007AFF] tabular-nums"
           aria-hidden="true"
         >
           <span ref={ref}>{n}</span>M+
         </p>
-        <div className="pb-2 lg:pb-6">
+        <div className="max-w-xl xl:pb-6">
           <h2 id="db-heading" className={H2}>
             <span className="sr-only">400 million plus </span>
             business contacts behind every list
@@ -130,8 +130,8 @@ const RUNGS: Array<{
     n: "2",
     kicker: "Reach them",
     title: "We run the outreach for you",
-    body: "LinkedIn, email or both, sent to the same list you already shaped. We write the copy, run the sequences inside each platform's limits and hand you the replies.",
-    points: ["One LinkedIn sender profile, about 400 requests a month", "Email domain and inboxes on the combined plan", "From $1,497 a month, month-to-month"],
+    body: "LinkedIn, email or both, sent to the same list you already shaped. We write the copy, run the sequences inside each platform’s limits and hand you the replies.",
+    points: ["One LinkedIn sender profile, about 400 requests a month", "Email domain and inboxes on the combined plan", "From $1,497 a month, month‑to‑month"],
     demo: <DemoReach />,
     cta: <SecondaryLink href={BOOKING_URL}>Book a call about outreach</SecondaryLink>,
   },
@@ -141,7 +141,7 @@ const RUNGS: Array<{
     kicker: "Run it",
     title: "One dashboard for your whole pipeline",
     body: "We build your company a dashboard that ties together leads, replies, site visitors, your site chat, your CRM and any API you use. Built for you, hosted and kept up by us.",
-    points: ["Leads, outreach and site visitors in one place", "Connects your CRM and tools", "From $2,500 setup, then $500 a month"],
+    points: ["Leads, outreach and site visitors in one place", "Connects your CRM and tools", "From $2,500 setup, then $500 a month"],
     demo: <DemoRun />,
     cta: <SecondaryLink href={BOOKING_URL}>Book a call about a dashboard</SecondaryLink>,
   },
@@ -156,7 +156,7 @@ export function RungsSection() {
         </h2>
         <p className={`mt-4 ${LEAD}`}>
           Cursive finds your buyers, reaches them for you, and gives you the system to run it. Start with the free 25;
-          climb when you are ready.
+          climb when you’re ready.
         </p>
       </div>
       <ol className="mx-auto mt-14 max-w-7xl space-y-6 sm:mt-20 sm:space-y-10">
@@ -183,7 +183,7 @@ export function RungsSection() {
                   </ul>
                   <div className="mt-8">{r.cta}</div>
                 </div>
-                <div className={`mx-auto w-full min-w-0 max-w-[34rem] ${i % 2 ? "lg:order-1" : ""}`}>{r.demo}</div>
+                <div className={`w-full min-w-0 max-w-[34rem] lg:mx-auto ${i % 2 ? "lg:order-1" : ""}`}>{r.demo}</div>
               </div>
             </Stage>
           </li>
@@ -290,8 +290,8 @@ const PRICING: Array<{ n: string; rung: string; lead: string; lines: Line[]; cta
     lead: "Leads to your exact buyer, as credits or every week.",
     lines: [
       { name: "Free", price: "$0", note: "25 leads from your website, no card" },
-      { name: "Credits", price: "$49", unit: "100 leads", note: "500 for $199 · 2,000 for $599 · credits roll over", tag: "Early access" },
-      { name: "Starter", price: "$197", unit: "/mo", note: "100 fresh leads a month, 25 every Monday, picked and checked for you. 14-day trial" },
+      { name: "Credits", price: "$49", unit: "100 leads", note: "500 for $199 · 2,000 for $599 · unused credits roll over", tag: "Early access" },
+      { name: "Starter", price: "$197", unit: "/mo", note: "100 fresh leads a month, 25 every Monday, picked and checked for you. 14‑day trial" },
       { name: "Growth", price: "$497", unit: "/mo", note: "500 leads a month, tuned by your likes and customer list", tag: "Early access" },
     ],
     cta: <PrimaryLink placement="home-pricing-find">Get my 25 leads</PrimaryLink>,
@@ -301,7 +301,7 @@ const PRICING: Array<{ n: string; rung: string; lead: string; lines: Line[]; cta
     rung: "Reach them",
     lead: "Done-for-you outreach to the list you shaped. Growth leads included.",
     lines: [
-      { name: "LinkedIn", price: "$1,497", unit: "/mo", note: "1 sender profile, about 400 connection requests a month, copy written and run by us" },
+      { name: "LinkedIn", price: "$1,497", unit: "/mo", note: "One sender profile, about 400 connection requests a month, copy written and run by us" },
       { name: "LinkedIn + email", price: "$2,497", unit: "/mo", note: "Everything in LinkedIn, plus an email domain and inboxes" },
     ],
     cta: <SecondaryLink href={BOOKING_URL}>Book a call</SecondaryLink>,
@@ -311,7 +311,7 @@ const PRICING: Array<{ n: string; rung: string; lead: string; lines: Line[]; cta
     rung: "Run it",
     lead: "Your own dashboard for leads, outreach, visitors, chat and CRM.",
     lines: [
-      { name: "Operating system", price: "$2,500+", unit: "setup", note: "Built to how you sell, then $500 a month to host and maintain" },
+      { name: "Operating system", price: "$2,500+", unit: "setup", note: "Built around how you sell, then $500 a month to host and maintain" },
       { name: "Visitor Pixel", price: "$97", unit: "/mo", note: "Add-on at any step: see which companies visit your site" },
     ],
     cta: <SecondaryLink href={BOOKING_URL}>Book a call</SecondaryLink>,
@@ -323,9 +323,9 @@ export function LadderPricing() {
     <section id="pricing" aria-labelledby="pricing-heading" className="scroll-mt-20 px-6 py-20 sm:py-28">
       <div className="mx-auto max-w-2xl text-center">
         <h2 id="pricing-heading" className={H2}>
-          Start free. Add outreach or a dashboard when you are ready.
+          Start free. Add outreach or a dashboard when you’re ready.
         </h2>
-        <p className={`mt-4 ${LEAD}`}>Month-to-month on every plan, no long contract.</p>
+        <p className={`mt-4 ${LEAD}`}>Month‑to‑month on every plan. No long contract.</p>
       </div>
       <div className="mx-auto mt-14 grid max-w-6xl gap-px overflow-hidden rounded-[28px] border border-[#e3eeff] bg-[#e3eeff] lg:grid-cols-3">
         {PRICING.map((col) => (
@@ -338,14 +338,14 @@ export function LadderPricing() {
             <dl className="mt-6 flex-1 divide-y divide-[#eef1f5] border-t border-[#eef1f5]">
               {col.lines.map((l) => (
                 <div key={l.name} className="py-4">
-                  <dt className="flex items-baseline justify-between gap-3">
+                  <dt className="flex items-baseline justify-between gap-3 lg:flex-col lg:gap-1 xl:flex-row xl:gap-3">
                     <span className="flex items-center gap-2 text-[15px] font-semibold text-[#0f172a]">
                       {l.name}
                       {l.tag && (
                         <span className="rounded-full bg-[#eef5ff] px-2 py-0.5 text-[11px] font-semibold text-[#0066DD]">{l.tag}</span>
                       )}
                     </span>
-                    <span className="shrink-0 whitespace-nowrap text-[#0f172a]">
+                    <span className="shrink-0 whitespace-nowrap tabular-nums text-[#0f172a]">
                       <span className="text-[22px] font-semibold tracking-[-0.02em]">{l.price}</span>
                       {l.unit && <span className="ml-1 text-[13px] text-[#64748b]">{l.unit}</span>}
                     </span>
