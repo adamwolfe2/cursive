@@ -351,12 +351,6 @@
   min-width: 0;
 }
 
-/* Script accent, same family the marketing site sets under its headlines. */
-.fl-script {
-  font-family: var(--font-script), cursive;
-  font-weight: 500;
-  letter-spacing: 0;
-}
 
 /* Handwriting: the accent is revealed left to right, as if written. Padding keeps swashes unclipped. */
 @keyframes fl-write {
