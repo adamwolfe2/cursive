@@ -11,7 +11,6 @@ import { PageContainer, PageHeader } from '@/components/layout'
 import { Button } from '@/components/ui/button'
 import { ExportButton } from '@/components/leads/export-button'
 import Link from 'next/link'
-import { DataClientComponents } from './data-client'
 
 // Dynamically import LeadsTable to reduce initial bundle size
 const LeadsTable = dynamic(() => import('@/components/leads/leads-table').then(mod => ({ default: mod.LeadsTable })), {
@@ -80,7 +79,6 @@ export default async function DataPage({
       <LeadsTable initialFilters={initialFilters} />
 
       {/* Ask Your Data — floating AI query button */}
-      <DataClientComponents />
     </PageContainer>
   )
 }

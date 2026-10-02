@@ -74,7 +74,8 @@ export function guardedLookup(resolve: Resolve = systemResolve): LookupFunction 
   }
 }
 
-const pinnedAgent = new Agent({ connect: { lookup: guardedLookup() } })
+/** Connects only to public addresses (DNS answers checked at connect time). Reused by any user-supplied-URL fetch. */
+export const pinnedAgent = new Agent({ connect: { lookup: guardedLookup() } })
 
 /** True when the error (or its fetch-wrapped cause) is our SSRF refusal. */
 export function isBlockedError(err: unknown): boolean {
@@ -171,7 +172,7 @@ export function upgradeRedirect(location: string, current: string): string {
   return next.toString()
 }
 
-async function directFetch(url: string, timeoutMs = 4_000): Promise<{ html: string; url: string }> {
+export async function directFetch(url: string, timeoutMs = 4_000): Promise<{ html: string; url: string }> {
   let current = url
   for (let hop = 0; hop < 4; hop++) {
     const parsed = new URL(current)

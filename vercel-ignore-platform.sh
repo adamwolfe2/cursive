@@ -6,21 +6,18 @@
 
 echo "🔍 Checking if platform files changed..."
 
-# Use Vercel's last deployed SHA if available, otherwise fall back to HEAD^
-if [ -n "$VERCEL_GIT_PREVIOUS_SHA" ]; then
+# Compare against the last deployed commit. Without one (first push of a branch), build: HEAD^ alone
+# misses earlier commits on the branch and skipped real app changes.
+if [ -n "$VERCEL_GIT_PREVIOUS_SHA" ] && git cat-file -e "$VERCEL_GIT_PREVIOUS_SHA" 2>/dev/null; then
   COMPARE_SHA="$VERCEL_GIT_PREVIOUS_SHA"
   echo "📌 Comparing against last deployed commit: $COMPARE_SHA"
-elif git rev-parse HEAD^ >/dev/null 2>&1; then
-  COMPARE_SHA="HEAD^"
-  echo "📌 No VERCEL_GIT_PREVIOUS_SHA, comparing against HEAD^"
 else
-  # First deployment - always build
-  echo "🎉 First deployment - proceeding with build"
+  echo "🚀 No usable previous deploy SHA - proceeding with build"
   exit 1
 fi
 
 # Compare current commit with last deployed commit
-if git diff --quiet "$COMPARE_SHA" HEAD -- src/ supabase/ package.json tsconfig.json next.config.ts next.config.js; then
+if git diff --quiet "$COMPARE_SHA" HEAD -- src/ supabase/ package.json tsconfig.json next.config.ts next.config.js vercel.json pnpm-lock.yaml vercel-ignore-platform.sh; then
   echo "✅ No changes in platform files since last deploy - skipping build"
   exit 0
 else

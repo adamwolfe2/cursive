@@ -18,12 +18,9 @@ if [ -n "$VERCEL_GIT_PREVIOUS_SHA" ]; then
     echo "🚀 Proceeding with build (cannot compare)"
     exit 1
   fi
-elif git rev-parse HEAD^ >/dev/null 2>&1; then
-  COMPARE_SHA="HEAD^"
-  echo "📌 No VERCEL_GIT_PREVIOUS_SHA, comparing against HEAD^"
 else
-  # First deployment - always build
-  echo "🎉 First deployment - proceeding with build"
+  # First push of a branch: HEAD^ alone misses earlier commits on the branch, so build.
+  echo "🚀 No previous deploy SHA - proceeding with build"
   exit 1
 fi
 
