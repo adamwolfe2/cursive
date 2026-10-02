@@ -194,7 +194,7 @@ function HowItWorks({ onStart }: { onStart: () => void }) {
       className="grid grid-cols-[minmax(0,1fr)] gap-10 rounded-3xl bg-[#F7F9FB] px-5 py-12 sm:px-10 sm:py-16 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] lg:gap-16 lg:px-14"
     >
       <div className="lg:sticky lg:top-24 lg:self-start">
-        <h2 id="how-heading" className="text-[2rem] font-light leading-[1.08] tracking-[-0.02em] text-[#111827] sm:text-[2.5rem]">
+        <h2 id="how-heading" className="text-[2rem] font-bold leading-[1.08] tracking-[-0.02em] text-[#111827] sm:text-[2.5rem]">
           About a minute,
           <span className="block text-[#6b7280] pt-0.5">start to list.</span>
         </h2>

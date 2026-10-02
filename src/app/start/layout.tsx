@@ -1,7 +1,6 @@
 import Image from 'next/image'
 import type { Metadata, Viewport } from 'next'
 import { BOOKING_URL } from '@/lib/free-leads/contract'
-import { scriptFont } from './_components/script-font'
 import './start.css'
 
 
@@ -18,7 +17,7 @@ const FOCUS = 'focus-visible:outline focus-visible:outline-2 focus-visible:outli
 
 export default function StartLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className={`fl-root ${scriptFont.variable} min-h-screen bg-white text-[#111827]`}>
+    <div className={`fl-root min-h-screen bg-white text-[#111827]`}>
       <header className="sticky top-0 z-30 border-b border-[#e5e7eb]/80 bg-white/85 backdrop-blur-md">
         <div className="mx-auto flex h-16 w-full max-w-[72rem] items-center justify-between gap-4 px-5 sm:px-8">
           <a href="https://meetcursive.com" className={`flex items-center gap-2.5 rounded-md ${FOCUS}`}>

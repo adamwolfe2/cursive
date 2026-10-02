@@ -155,7 +155,7 @@ export function ClaimForm({ website, icp, mock }: { website: string | null; icp:
 
   return (
     <form onSubmit={submit} noValidate aria-labelledby="claim-heading">
-      <h2 id="claim-heading" className="text-[1.75rem] font-light leading-[1.1] tracking-[-0.02em] text-[#111827] sm:text-[2.5rem]">
+      <h2 id="claim-heading" className="text-[1.75rem] font-bold leading-[1.1] tracking-[-0.02em] text-[#111827] sm:text-[2.5rem]">
         Get {FREE_LEAD_COUNT} leads
         <span className="block text-[#007AFF] pt-0.5">just like these.</span>
       </h2>

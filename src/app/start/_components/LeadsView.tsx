@@ -100,7 +100,7 @@ export function LeadsView({ mock, token }: { mock: Mock; token: string | null })
             )}
             Your free list
           </p>
-          <h1 className="mt-1 text-[2.25rem] font-light leading-[1.05] tracking-[-0.02em] text-[#111827] sm:text-[3rem]">
+          <h1 className="mt-1 text-[2.25rem] font-bold leading-[1.05] tracking-[-0.02em] text-[#111827] sm:text-[3rem]">
             {state.kind === 'failed' && 'Your leads are stuck.'}
             {state.kind === 'loading' && 'Pulling your 25 leads.'}
             {data && (
@@ -357,7 +357,7 @@ function Expired() {
   return (
     <div className="mx-auto w-full max-w-[72rem] px-5 pb-24 pt-14 sm:px-8 sm:pt-24">
       <div className="max-w-xl">
-        <h1 className="text-[2.25rem] font-light leading-[1.05] tracking-[-0.02em] text-[#111827] sm:text-[3rem]">
+        <h1 className="text-[2.25rem] font-bold leading-[1.05] tracking-[-0.02em] text-[#111827] sm:text-[3rem]">
           This link has expired or was already used.
         </h1>
         <p className="mt-4 text-[17px] leading-relaxed text-[#4b5563]">
