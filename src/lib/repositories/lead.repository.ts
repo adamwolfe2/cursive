@@ -125,28 +125,6 @@ export class LeadRepository {
   }
 
   /**
-   * Get leads by intent score
-   */
-  async findByIntentScore(
-    workspaceId: string,
-    score: 'hot' | 'warm' | 'cold'
-  ): Promise<Lead[]> {
-    const supabase = await createClient()
-
-    const { data, error } = await supabase.rpc('get_leads_by_intent_score', {
-      p_workspace_id: workspaceId,
-      p_score: score,
-    })
-
-    if (error) {
-      safeError('[LeadRepository] Find by intent score error:', error)
-      throw new Error(`Failed to fetch leads by intent score: ${error.message}`)
-    }
-
-    return (data as Lead[]) || []
-  }
-
-  /**
    * Get leads ready for platform upload
    */
   async findReadyForUpload(

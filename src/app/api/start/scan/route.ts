@@ -267,7 +267,7 @@ export async function POST(req: NextRequest) {
   const attribution: Attribution | undefined = parsed.success ? parsed.data.attribution : undefined
   const ctx: ScanContext = { sessionId: sessionIdFrom(req), url, description }
 
-  return sseResponse(async (send) => {
+  const scan = async (send: Send) => {
     if (!parsed.success || (!url && !description)) {
       const message = sentDescription
         ? 'Tell us a bit more: what you sell and who buys it (a sentence or two).'
@@ -292,5 +292,17 @@ export async function POST(req: NextRequest) {
     })
     await run(ctx, send, cached)
     await ctx.pasted // early returns (unreachable, failed scan) must still record the paste
+  }
+
+  return sseResponse(async (send) => {
+    // Every error the visitor sees becomes a funnel step, so failed scans are not mistaken for drop-offs.
+    let failure: string | null = null
+    await scan((event) => {
+      if (event.type === 'error') failure = event.code
+      send(event)
+    })
+    if (failure && failure !== 'invalid_url') {
+      await recordStep(ctx.sessionId, 'scan_failed', { meta: { code: failure, ...(url ? { domain: siteDomain(url) } : {}) } })
+    }
   })
 }

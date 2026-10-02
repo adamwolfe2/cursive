@@ -220,11 +220,6 @@ export async function POST(req: NextRequest) {
     logDedupRejections(workspaceId, 'api_ingest', dedupCandidates, dedupIndices, allLeads.length)
       .catch((err: unknown) => safeError('[Lead Ingest] Dedup log failed:', err))
 
-    // Update source statistics
-    if (ingestRequest.source_id) {
-      await updateSourceStats(supabase, ingestRequest.source_id, results)
-    }
-
     // Fan out with bounded concurrency: a batch waits for the slowest few
     // endpoints rather than the sum of every lead, without firing a hundred
     // simultaneous deliveries at one customer. Each records its own failure;
@@ -365,23 +360,4 @@ async function createLeadFromPush(
   }))
 
   return { id: data.id, wasDuplicate: false }
-}
-
-/**
- * Update source statistics
- */
-async function updateSourceStats(
-  supabase: Awaited<ReturnType<typeof createClient>>,
-  sourceId: string,
-  results: Array<{ matched: boolean }>
-) {
-  const matched = results.filter((r) => r.matched).length
-  const unroutable = results.filter((r) => !r.matched).length
-
-  await supabase.rpc('update_source_stats', {
-    p_source_id: sourceId,
-    p_received: results.length,
-    p_matched: matched,
-    p_unroutable: unroutable,
-  })
 }

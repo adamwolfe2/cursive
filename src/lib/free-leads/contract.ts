@@ -230,6 +230,7 @@ export const SessionIdSchema = z.string().uuid()
 export const FUNNEL_STEPS = [
   'paste', // scan requested
   'scan_done', // ICP shown
+  'scan_failed', // visitor saw a scan error (meta.code: unreachable, failed, rate_limited)
   'icp_approved', // client: primary Approve
   'icp_emailed', // "Email me this profile" sent
   'preview', // masked preview shown
