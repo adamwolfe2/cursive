@@ -134,7 +134,7 @@ export function HeroDemo({ held }: { held: boolean }) {
       onPointerLeave={() => setHovered(false)}
     >
       <div className="flex items-center gap-2">
-        <div role="group" aria-label="Pick an example" className="flex min-w-0 flex-1 gap-1 overflow-x-auto [scrollbar-width:none]">
+        <div role="group" aria-label="Pick an example" className="flex min-w-0 flex-1 gap-1 overflow-x-auto [scrollbar-width:none] max-sm:[mask-image:linear-gradient(to_right,black_80%,transparent)]">
           {EXAMPLES.map((e, i) => (
             <button
               key={e.domain}
@@ -142,7 +142,7 @@ export function HeroDemo({ held }: { held: boolean }) {
               onClick={() => pick(i)}
               aria-pressed={i === index}
               className={`relative min-h-11 shrink-0 overflow-hidden rounded-full px-4 text-[13px] font-medium transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF] ${
-                i === index ? 'bg-[#0c1f45] text-white' : 'text-[#4b5563] hover:bg-[#eef4fc] hover:text-[#111827]'
+                i === index ? 'bg-[#007AFF] text-white' : 'text-[#4b5563] hover:bg-[#eef4fc] hover:text-[#111827]'
               }`}
             >
               {e.tab}
@@ -176,17 +176,17 @@ export function HeroDemo({ held }: { held: boolean }) {
       >
         {/* The site being read: its address types in, then the agent says what it is doing. */}
         <div className="flex h-14 items-center gap-3 border-b border-[#eef1f5] px-5">
-          <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg border border-[#e5e7eb] text-[12px] font-semibold uppercase text-[#0c1f45]">
+          <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg border border-[#e5e7eb] text-[12px] font-semibold uppercase text-[#0f172a]">
             {ex.domain[0]}
           </span>
           <span className="relative min-w-0 flex-1 truncate text-[14px] font-semibold text-[#111827]">
             <span className={still ? '' : 'fl-type inline-block'}>{ex.domain}</span>
           </span>
           {/* Fixed width, so the label changing never moves anything. */}
-          <span className="w-28 shrink-0 text-right text-[12px] text-[#6b7280]">
+          <span className="w-24 shrink-0 text-right text-[12px] text-[#6b7280] sm:w-28">
             {step >= COUNT ? 'Done' : readAll ? 'Finding buyers' : step > 0 ? 'Reading pages' : ''}
           </span>
-          <span className="shrink-0 text-[11px] font-medium uppercase tracking-[0.08em] text-[#9ca3af]">Example</span>
+          <span className="shrink-0 text-[11px] font-medium uppercase tracking-[0.08em] text-[#9ca3af] max-sm:hidden">Example</span>
         </div>
 
         <div className="px-5 pt-4">
@@ -205,9 +205,9 @@ export function HeroDemo({ held }: { held: boolean }) {
               {step >= SUMMARY ? `Who buys from ${ex.domain}` : step > 0 ? 'Working out who buys' : 'Cursive'}
             </p>
           </div>
-          <div className="mt-2.5 min-h-[3.25rem]">
+          <div className="mt-2 min-h-[2.75rem]">
             {step >= SUMMARY ? (
-              <p className="text-[19px] font-light leading-[1.3] tracking-[-0.015em] text-[#0c1f45]">
+              <p className="text-[19px] font-light leading-[1.3] tracking-[-0.015em] text-[#0f172a]">
                 {still ? ex.summary : <Words text={ex.summary} />}
               </p>
             ) : (
@@ -217,7 +217,7 @@ export function HeroDemo({ held }: { held: boolean }) {
               </div>
             )}
           </div>
-          <dl className="mt-4 space-y-1.5">
+          <dl className="mt-3 space-y-1.5">
             {ex.rows.map(([label, values], i) => (
               <div key={label} className="flex h-7 items-center gap-3">
                 <dt className="w-[3.75rem] shrink-0 text-[12px] text-[#6b7280] sm:w-[4.5rem]">{label}</dt>
@@ -226,7 +226,7 @@ export function HeroDemo({ held }: { held: boolean }) {
                     ? values.map((v, j) => (
                         <span
                           key={v}
-                          className="fl-rise shrink-0 rounded-full border border-[#d6e6ff] bg-[#f3f8ff] px-2.5 py-0.5 text-[12px] font-medium text-[#0c1f45]"
+                          className="fl-rise shrink-0 rounded-full border border-[#d6e6ff] bg-[#f3f8ff] px-2.5 py-0.5 text-[12px] font-medium text-[#0f172a]"
                           style={{ animationDelay: `${j * 70}ms` }}
                         >
                           {v}

@@ -27,7 +27,7 @@ export default async function OpenLeadsPage({
         <Steps current={3} />
         <h1 className="mt-10 sm:mt-14 text-[2.5rem] font-light leading-[1.05] tracking-[-0.02em] text-[#111827] sm:text-[3.5rem]">
           Your 25 leads
-          <span className="fl-script fl-write block pt-1 text-[3rem] leading-[1.05] text-[#007AFF] sm:text-[4rem]">are ready.</span>
+          <span className="block text-[#007AFF] pt-0.5">are ready.</span>
         </h1>
         {t && c ? (
           <>

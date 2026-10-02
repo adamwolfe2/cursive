@@ -47,18 +47,42 @@ interface IntegrationsShowcaseProps {
   title?: string
   subtitle?: string
   className?: string
+  /** Show just these, as larger named tiles (the homepage's short list). Omit for the full logo wall. */
+  only?: string[]
 }
 
 export function IntegrationsShowcase({
   title = "Integrates With Everything You Use",
   subtitle,
   className = "",
+  only,
 }: IntegrationsShowcaseProps) {
+  if (only) {
+    const picked = only.flatMap((name) => integrations.filter((i) => i.name === name))
+    return (
+      <section className={className}>
+        <div className="mb-10 text-center">
+          {title && (
+            <h2 className="text-[2rem] font-semibold leading-tight tracking-[-0.025em] text-[#0f172a] sm:text-[2.5rem]">{title}</h2>
+          )}
+          {subtitle && <p className="mx-auto mt-3 max-w-xl text-[17px] leading-relaxed text-[#475569]">{subtitle}</p>}
+        </div>
+        <ul className="mx-auto grid max-w-4xl grid-cols-2 gap-3 sm:grid-cols-4">
+          {picked.map((integration) => (
+            <li key={integration.name} className="flex h-16 items-center gap-3 rounded-xl border border-[#e2e8f0] bg-white px-4">
+              <Image src={integration.logo} alt="" width={24} height={24} className="h-6 w-6 object-contain" loading="lazy" />
+              <span className="text-[15px] font-medium text-[#0f172a]">{integration.name}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
   return (
     <section className={className}>
       <div className="text-center mb-12">
         {title && (
-          <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
+          <h2 className="text-[2rem] font-semibold leading-tight tracking-[-0.025em] text-[#0f172a] sm:text-[2.5rem] mb-4">
             {title}
           </h2>
         )}

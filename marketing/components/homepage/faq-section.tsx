@@ -6,7 +6,6 @@ import { ChevronDown } from "lucide-react"
 import { Container } from "@/components/ui/container"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateFAQSchema } from "@/lib/seo/faq-schema"
-import { cn } from "@/lib/utils"
 import { trackDemoBooked } from "@/lib/analytics"
 import { BOOKING_URL } from "@/lib/cta"
 
@@ -15,51 +14,32 @@ interface FAQ {
   answer: string
 }
 
+// Short, sourced answers only. Claims here must match the pricing cards and the homepage FAQ schema in app/page.tsx.
 const faqs: FAQ[] = [
   {
-    question: "How does visitor identification work?",
-    answer: "Cursive's deterministic pixel resolves anonymous visitors against an identity graph of 280M+ consumer and 140M+ business profiles, refreshed every 30 days via NCOA. The result is a 40–60% match rate driven by our proprietary geo-framing methodology, significantly higher than cookie-based tools (2–5%) or IP databases (10–15%), with 60–80% pixel-level accuracy. Visitors are resolved the moment they land, so your sales team can reach out while they're still engaged."
+    question: "Where do the 25 people come from?",
+    answer: "We read your website, work out who buys from you, and match that profile against our identity graph of 280M+ consumer and 140M+ business profiles, refreshed every 30 days. You get 25 decision makers who fit, each with a work email and a reason they fit.",
   },
   {
-    question: "How accurate is the data?",
-    answer: "Cursive's pixel is fully deterministic, not modeled or probabilistic. We deliver a 40–60% match rate with 60–80% pixel-level accuracy on identified visitors, backed by an identity graph of 280M+ consumer and 140M+ business profiles refreshed every 30 days via NCOA. Email checks run in-house on ~20 million records per day. Our closed feedback loop maps signals back to source URLs, apps, and exchanges and validates against real conversions."
+    question: "How accurate are the emails?",
+    answer: "Every email is checked before it reaches you. Our checks run on about 20 million emails a day, and the full data set is refreshed against change-of-address records every 30 days.",
   },
   {
-    question: "What pricing plans are available?",
-    answer: "Start free: paste your website at leads.meetcursive.com/start and get 25 leads with work emails, no card and no sales call. After that, three self-serve plans, all month-to-month. The Visitor Pixel is $97/month and identifies the companies and people visiting your site. The Custom Audience is $197/month and delivers a fresh weekly list of people actively searching for your product. The Pixel + Audience Bundle is $247/month and includes both. No setup fee, no long-term contract, cancel anytime. Enterprise teams that need direct API access to the underlying identity infrastructure can reach out about a committed data partnership."
+    question: "What happens after the free 25?",
+    answer: "Nothing, unless you want more. Plans start at $97 a month for the Visitor Pixel, $197 for a weekly Custom Audience, or $247 for both. All month-to-month, no setup fee.",
   },
   {
-    question: "What integrations does Cursive support?",
-    answer: "Cursive natively integrates with 200+ tools including all major CRMs (Salesforce, HubSpot, Pipedrive), marketing automation platforms (Marketo, Pardot, ActiveCampaign), and ad platforms (Google Ads, Facebook, LinkedIn). Our two-way sync updates records in real-time, so identified visitors automatically flow into your existing workflows. Setup takes 10-15 minutes per integration, and our team provides hands-on support to ensure seamless data flow between Cursive and your tech stack."
+    question: "How is Cursive different from ZoomInfo or Apollo?",
+    answer: "Static databases sell you contacts. Cursive starts from who actually buys from you, then adds who is visiting your site and who is in-market this week, from one identity graph that refreshes every 30 days.",
   },
   {
-    question: "Is Cursive compliant with privacy regulations?",
-    answer: "Yes, Cursive is fully compliant with GDPR, CCPA, and other major privacy regulations. We only collect and process data in accordance with legal frameworks, provide opt-out mechanisms, respect Do Not Track signals, and maintain strict data handling policies. Our infrastructure is SOC 2 Type II certified, and we conduct regular security audits. All data is encrypted in transit and at rest, and we never sell or share your data with third parties."
+    question: "Is Cursive compliant?",
+    answer: "Yes. We follow GDPR and CCPA, honor opt-outs, and never sell your data to third parties.",
   },
-  {
-    question: "How long does implementation take?",
-    answer: "Most teams are live within 24 hours. Implementation consists of three quick steps: 1) Install our tracking pixel (5 minutes), 2) Connect your CRM and other tools (10-15 minutes per integration), and 3) Configure your AI outreach campaigns (15-20 minutes). Our team provides hands-on setup support, and you'll start seeing identified visitors immediately after installing the pixel. Full onboarding with AI training and custom audiences typically completes within 1-2 weeks."
-  },
-  {
-    question: "What data sources does Cursive use?",
-    answer: "Cursive aggregates data from multiple authoritative sources including business registries, public records, professional networks, and real-time intent signals. Our database includes 280M consumer profiles, 140M+ business profiles, and 60B+ behaviors & URLs scanned weekly tracked across 30,000+ commercial categories. We continuously refresh data to maintain accuracy, with weekly updates to intent audiences and real-time enrichment for visitor identification. All data sources are vetted for compliance and quality."
-  },
-  {
-    question: "What support and onboarding is included?",
-    answer: "Every Cursive customer receives hands-on onboarding with a dedicated success manager who helps with technical setup, integration configuration, and campaign strategy. We provide ongoing support via email, chat, and scheduled strategy calls to optimize your campaigns and maximize ROI. Our team also offers training on AI voice configuration, audience building, and advanced features. Documentation, video tutorials, and best practices are available 24/7 in our knowledge base."
-  },
-  {
-    question: "What kind of ROI can I expect?",
-    answer: "Most customers see 3-5x ROI within the first 90 days. Typical results include converting 20-30% of previously anonymous traffic into qualified leads, reducing customer acquisition costs by 40-60%, and booking 10-20 qualified meetings per month on autopilot. B2B SaaS companies report going from 3 leads per week to 50+ qualified conversations per month. ROI comes from converting existing traffic without additional ad spend, automating manual outreach work, and reaching in-market buyers at the right time."
-  },
-  {
-    question: "How is Cursive different from competitors?",
-    answer: "Unlike traditional visitor ID tools that resolve 2–5% of visitors, Cursive's deterministic pixel resolves 40–60% with person-level detail. Compared to data providers like Clearbit or ZoomInfo, Cursive adds anonymous visitor identification plus a fresh weekly audience of people actively searching for your product, drawn from 60B+ behaviors and URLs scanned weekly. Every identified visitor and audience record comes with a work email, ready to export to your CRM or sequencer. You get visitor identification, in-market audiences, and contact data in one place. Your first 25 leads are free."
-  }
 ]
 
 export function FAQSection() {
-  const [openIndex, setOpenIndex] = useState<number | null>(0)
+  const [openIndex, setOpenIndex] = useState<number | null>(null)
 
   const toggleFAQ = (index: number) => {
     setOpenIndex(openIndex === index ? null : index)
@@ -84,11 +64,11 @@ export function FAQSection() {
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
-              Frequently Asked Questions
+            <h2 className="text-[2rem] font-semibold leading-tight tracking-[-0.025em] text-[#0f172a] sm:text-[2.5rem] mb-4">
+              Questions, answered
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Everything you need to know about visitor identification and AI-powered outreach
+            <p className="text-[17px] text-[#475569] max-w-2xl mx-auto">
+              Short answers. Book a call for the rest.
             </p>
           </motion.div>
 
@@ -167,10 +147,10 @@ export function FAQSection() {
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => trackDemoBooked("faq_section")}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg font-medium hover:bg-primary-dark transition-colors"
+              className="inline-flex min-h-11 items-center gap-2 font-medium text-[#0066DD] underline decoration-[#b3d7ff] underline-offset-4 transition-colors hover:decoration-[#007AFF]"
             >
-              Book a call
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              Book a call with our team
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
               </svg>
             </a>

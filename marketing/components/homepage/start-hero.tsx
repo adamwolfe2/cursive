@@ -1,9 +1,9 @@
 "use client"
 
-import { ArrowRight, Globe } from "lucide-react"
+import { ArrowRight, Check, Globe } from "lucide-react"
 import { useId, useState, type FormEvent } from "react"
 import { Container } from "@/components/ui/container"
-import { BOOKING_URL, START_URL, startUrl } from "@/lib/cta"
+import { START_URL, startUrl } from "@/lib/cta"
 import { trackCTAClick } from "@/lib/analytics"
 import { StartHeroDemo } from "./start-hero-demo"
 import { Stage } from "./stage"
@@ -15,10 +15,7 @@ import "./start-hero.css"
  * Copy changes here must land there too.
  */
 
-const PLACEMENT = "home-hero-input"
 const NOT_A_SITE = "That doesn't look like a website. Try something like acme.com."
-const CHIP =
-  "inline-flex min-h-10 items-center rounded-full bg-white/95 px-4 text-[13px] font-medium text-[#0c1f45] shadow-sm transition-colors hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
 const FOCUS = "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF]"
 
 /**
@@ -35,7 +32,8 @@ export function normalizeSite(raw: string): string | null {
   return url.hostname + url.pathname.replace(/\/+$/, "")
 }
 
-export function StartHero() {
+/** The website field and button, shared by the hero and the closing call to action. */
+export function SiteForm({ placement, className = "" }: { placement: string; className?: string }) {
   const id = useId()
   const errId = useId()
   const [value, setValue] = useState("")
@@ -50,83 +48,85 @@ export function StartHero() {
       return
     }
     setError(null)
-    trackCTAClick("Find my buyers", PLACEMENT)
-    window.location.assign(startUrl(PLACEMENT, site))
+    trackCTAClick("Get my 25 leads", placement)
+    window.location.assign(startUrl(placement, site))
   }
 
+  // A plain GET form, so a submit before hydration still lands on /start with the site and tags.
+  return (
+    <form action={START_URL} method="get" onSubmit={submit} noValidate className={`w-full max-w-[36rem] ${className}`}>
+      <label htmlFor={id} className="sr-only">
+        Your website
+      </label>
+      <div className="flex flex-col gap-2 rounded-2xl border border-[#d6e4f7] bg-white p-2 shadow-[0_18px_40px_-24px_rgb(15_23_42/0.35)] transition-[border-color,box-shadow] focus-within:border-[#007AFF] focus-within:ring-4 focus-within:ring-[#007AFF]/15 sm:flex-row sm:items-center sm:pl-4">
+        <div className="flex min-w-0 flex-1 items-center gap-3 px-2 sm:px-0">
+          <Globe className="h-5 w-5 shrink-0 text-[#94a3b8]" aria-hidden="true" />
+          <input
+            id={id}
+            name="site"
+            type="text"
+            inputMode="url"
+            autoComplete="url"
+            autoCapitalize="none"
+            spellCheck={false}
+            maxLength={2048}
+            value={value}
+            onChange={(e) => {
+              setValue(e.target.value)
+              if (error) setError(null)
+            }}
+            placeholder="yourcompany.com"
+            aria-invalid={error ? true : undefined}
+            aria-describedby={error ? errId : undefined}
+            className="h-12 min-w-0 flex-1 bg-transparent text-left text-[17px] text-[#0f172a] placeholder:text-[#94a3b8] focus:outline-none"
+          />
+        </div>
+        <input type="hidden" name="utm_source" value="meetcursive" />
+        <input type="hidden" name="utm_medium" value="website" />
+        <input type="hidden" name="utm_content" value={placement} />
+        <button
+          type="submit"
+          className={`inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-[#007AFF] px-6 text-[16px] font-semibold text-white transition-[background-color,transform] duration-150 hover:bg-[#0066DD] active:scale-[0.98] ${FOCUS}`}
+        >
+          Get my 25 leads
+          <ArrowRight className="h-4 w-4" aria-hidden="true" />
+        </button>
+      </div>
+      <p id={errId} role="alert" className="mt-2 min-h-5 text-sm text-[#b91c1c]">
+        {error}
+      </p>
+    </form>
+  )
+}
+
+export function StartHero() {
   return (
     <section id="hero" aria-labelledby="hero-heading" className="px-2 pt-2 sm:px-4 sm:pt-3">
       <Stage>
-        <Container className="flex min-h-[calc(100svh-5.5rem)] flex-col items-center justify-center py-20 text-center sm:py-24">
-          <h1 id="hero-heading" className="text-[2.5rem] font-light leading-[1.05] tracking-[-0.025em] text-white sm:text-[3.5rem] lg:text-[4.25rem]">
-            <span className="block sm:inline">Your site in.</span>{" "}
-            <span className="fl-orb relative mx-2 inline-grid h-[0.9em] w-[0.9em] translate-y-[0.08em] place-items-center rounded-full bg-white align-baseline shadow-[0_8px_24px_-8px_rgb(4_22_66/0.6)] max-sm:hidden" aria-hidden="true">
-              {/* eslint-disable-next-line @next/next/no-img-element -- static brand mark */}
-              <img src="/cursive-logo.png" alt="" width={48} height={48} className="fl-float h-[70%] w-[70%] object-contain" />
-            </span>{" "}
-            <span className="font-cursive block text-[1.2em] leading-[1] sm:inline">25 buyers out.</span>
+        <Container className="flex flex-col items-center py-16 text-center sm:py-28">
+          <h1 id="hero-heading" className="max-w-[18ch] text-[2.375rem] font-semibold leading-[1.08] tracking-[-0.035em] text-[#0f172a] sm:text-[3.5rem] lg:text-[4rem]">
+            Find the 25 people most likely to buy from you
           </h1>
-          <p className="mt-5 max-w-[46ch] text-[17px] leading-relaxed text-white/80 sm:text-lg">
-            We read your site, work out who buys, and find 25 people who fit, with work emails. Free, about a minute.
+          <p className="mt-5 max-w-[44ch] text-[17px] leading-relaxed text-[#475569] sm:text-[19px]">
+            Paste your website. We work out who buys from you and find 25 decision makers with verified work emails.
           </p>
 
-          {/* A plain GET form, so a submit before hydration still lands on /start with the site and tags. */}
-          <form action={START_URL} method="get" onSubmit={submit} noValidate className="mt-9 w-full max-w-[40rem]">
-            <label htmlFor={id} className="sr-only">
-              Your website
-            </label>
-            <div className="flex items-center gap-3 rounded-2xl bg-white p-2 pl-5 shadow-[0_24px_60px_-20px_rgb(4_22_66/0.6)] ring-1 ring-white/40 transition-shadow focus-within:ring-4 focus-within:ring-white/50">
-              <Globe className="h-5 w-5 shrink-0 text-[#6b7280]" aria-hidden="true" />
-              <input
-                id={id}
-                name="site"
-                type="text"
-                inputMode="url"
-                autoComplete="url"
-                autoCapitalize="none"
-                spellCheck={false}
-                maxLength={2048}
-                value={value}
-                onChange={(e) => {
-                  setValue(e.target.value)
-                  if (error) setError(null)
-                }}
-                placeholder="yourcompany.com"
-                aria-invalid={error ? true : undefined}
-                aria-describedby={error ? errId : undefined}
-                className="h-14 min-w-0 flex-1 bg-transparent text-left text-lg text-[#111827] placeholder:text-[#9ca3af] focus:outline-none"
-              />
-              <input type="hidden" name="utm_source" value="meetcursive" />
-              <input type="hidden" name="utm_medium" value="website" />
-              <input type="hidden" name="utm_content" value={PLACEMENT} />
-              <button
-                type="submit"
-                className={`inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-[#007AFF] px-5 text-[16px] font-semibold text-white transition-[background-color,transform] duration-150 hover:bg-[#0066DD] active:scale-[0.98] ${FOCUS}`}
-              >
-                <span className="max-sm:sr-only">Find my buyers</span>
-                <ArrowRight className="h-5 w-5" aria-hidden="true" />
-              </button>
-            </div>
-            <p id={errId} role="alert" className="mt-2 min-h-5 text-sm font-medium text-white">
-              {error}
-            </p>
-          </form>
+          <SiteForm placement="home-hero-input" className="mt-9" />
 
-          <div className="mt-1 flex flex-wrap items-center justify-center gap-2">
-            <a href={startUrl("home-hero-describe")} className={CHIP}>
-              No website? Describe what you sell
-            </a>
-            <a href="#example" className={CHIP}>
-              See an example
-            </a>
-            <a href={BOOKING_URL} className={CHIP}>
-              Book a call
-            </a>
-          </div>
-
-          <p className="mt-16 text-[13px] text-white/60">
-            Free. No card, no sales call. Built on 280M verified profiles, refreshed every 30 days.
-          </p>
+          <ul className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[14px] text-[#475569]">
+            {["Free, no card", "No sales call", "Verified work emails"].map((t) => (
+              <li key={t} className="flex items-center gap-1.5">
+                <Check className="h-4 w-4 text-[#007AFF]" aria-hidden="true" />
+                {t}
+              </li>
+            ))}
+          </ul>
+          <a
+            href={startUrl("home-hero-describe")}
+            className={`mt-6 inline-flex min-h-11 items-center rounded-md px-1 text-[14px] font-medium text-[#0066DD] underline decoration-[#b3d7ff] underline-offset-4 transition-colors hover:decoration-[#007AFF] ${FOCUS}`}
+          >
+            No website? Describe what you sell
+          </a>
         </Container>
       </Stage>
     </section>
@@ -138,20 +138,20 @@ export function StartExample() {
   return (
     <section id="example" aria-labelledby="example-heading" className="scroll-mt-20 px-2 py-20 sm:px-4 sm:py-28">
       <div className="mx-auto max-w-2xl px-4 text-center">
-        <h2 id="example-heading" className="text-[2rem] font-semibold leading-tight tracking-[-0.025em] text-[#0c1f45] sm:text-[2.5rem]">
-          Watch it find your buyers
+        <h2 id="example-heading" className="text-[2rem] font-semibold leading-tight tracking-[-0.025em] text-[#0f172a] sm:text-[2.5rem]">
+          See who you would get
         </h2>
-        <p className="mt-3 text-[17px] leading-relaxed text-[#4b5563]">
-          A sample scan, start to finish. Yours runs the same way on your own site.
+        <p className="mt-3 text-[17px] leading-relaxed text-[#475569]">
+          A sample scan, start to finish. Yours runs the same way.
         </p>
-        <a href={startUrl("home-example")} className={`mt-6 inline-flex h-11 items-center gap-2 rounded-full bg-[#0c1f45] px-5 text-[15px] font-semibold text-white transition-colors hover:bg-[#13306b] ${FOCUS}`}>
-          Get 25 free leads
+        <a href={startUrl("home-example")} className={`mt-6 inline-flex h-11 items-center gap-2 rounded-xl bg-[#007AFF] px-5 text-[15px] font-semibold text-white transition-colors hover:bg-[#0066DD] ${FOCUS}`}>
+          Get my 25 leads
           <ArrowRight className="h-4 w-4" aria-hidden="true" />
         </a>
       </div>
       <Stage className="mx-auto mt-12 max-w-7xl">
         <div className="mx-auto max-w-3xl px-3 py-10 sm:px-8 sm:py-16">
-          <div className="rounded-[26px] bg-white p-3 shadow-[0_30px_70px_-30px_rgb(4_22_66/0.7)] sm:p-4">
+          <div className="rounded-[26px] bg-white p-3 border border-[#e3eeff] shadow-[0_24px_50px_-30px_rgb(15_23_42/0.35)] sm:p-4">
             <StartHeroDemo held={false} />
           </div>
         </div>

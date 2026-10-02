@@ -104,15 +104,16 @@ export function Header() {
         <Container>
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <Link href="/" className="flex items-center">
+            <Link href="/" className="flex items-center gap-2.5">
               <Image
                 src="/cursive-logo.png"
-                alt="Cursive logo"
+                alt=""
                 width={32}
                 height={32}
                 className="w-8 h-8"
                 priority
               />
+              <span className="text-[17px] font-semibold tracking-[-0.01em] text-[#0f172a]">Cursive</span>
             </Link>
 
             {/* Desktop Navigation */}
@@ -185,7 +186,7 @@ export function Header() {
             {/* Desktop CTA Buttons */}
             <div className="hidden md:flex items-center gap-4">
               <Button size="sm" variant="outline" href={BOOKING_URL} target="_blank">
-                Book a Call
+                Book a call
               </Button>
               <Button size="sm" href={startUrl("nav")}>
                 {START_CTA_LABEL}
@@ -289,7 +290,7 @@ export function Header() {
                   target="_blank"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  Book a Call
+                  Book a call
                 </Button>
                 <Button
                   className="w-full"

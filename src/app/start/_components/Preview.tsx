@@ -157,7 +157,7 @@ export function ClaimForm({ website, icp, mock }: { website: string | null; icp:
     <form onSubmit={submit} noValidate aria-labelledby="claim-heading">
       <h2 id="claim-heading" className="text-[1.75rem] font-light leading-[1.1] tracking-[-0.02em] text-[#111827] sm:text-[2.5rem]">
         Get {FREE_LEAD_COUNT} leads
-        <span className="fl-script fl-write block pt-1 leading-[1.05] text-[2.5rem] text-[#007AFF] sm:text-[3.25rem]">just like these.</span>
+        <span className="block text-[#007AFF] pt-0.5">just like these.</span>
       </h2>
       <p className="mt-3 max-w-[58ch] text-[15px] leading-relaxed text-[#4b5563] sm:text-[17px]">
         We send a sign-in link to your work email. Open it and your {FREE_LEAD_COUNT} are waiting: names, titles, work emails,

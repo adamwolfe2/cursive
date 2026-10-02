@@ -21,14 +21,11 @@ export function Footer() {
               className="w-8 h-8"
             />
           </div>
-          <p className="text-xl text-gray-900 mb-2 leading-tight">
-            We know who's searching for what
+          <p className="text-lg font-semibold text-[#0f172a] mb-2 leading-tight">
+            Cursive
           </p>
-          <p className="font-cursive text-3xl text-gray-500 mb-4">
-            With Cursive
-          </p>
-          <p className="text-gray-600 text-sm mb-6">
-            Paste your website and get 25 people who should buy from you, with work emails. Free, no card, no call.
+          <p className="text-gray-600 text-sm mb-6 max-w-md">
+            Identity and intent data for B2B teams. Start with 25 free leads from your website.
           </p>
 
           {/* View Toggle */}

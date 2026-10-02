@@ -114,7 +114,7 @@ export function LeadsView({ mock, token }: { mock: Mock; token: string | null })
                   pad={String(leads.length).length}
                   className="whitespace-pre tabular-nums tracking-normal text-[#007AFF]"
                 /> leads,{' '}
-                <span className="fl-script fl-write inline-block pl-1 text-[2.75rem] leading-none text-[#007AFF] sm:text-[3.75rem]">ready.</span>
+                <span className="inline text-[#007AFF]">ready.</span>
               </>
             )}
             <span className="sr-only">{data ? `${leads.length} leads ready.` : ''}</span>

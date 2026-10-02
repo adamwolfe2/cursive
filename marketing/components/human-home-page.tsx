@@ -3,18 +3,16 @@
 import { Button } from "@/components/ui/button"
 import { Container } from "@/components/ui/container"
 import { motion } from "framer-motion"
-import { DashboardCTA } from "@/components/dashboard-cta"
 import { IntegrationsShowcase } from "@/components/integrations-showcase"
-import { TestimonialsSection } from "@/components/homepage/testimonials-section"
 import { FAQSection } from "@/components/homepage/faq-section"
-import { StartExample, StartHero } from "@/components/homepage/start-hero"
+import { SiteForm, StartExample, StartHero } from "@/components/homepage/start-hero"
 import { Stage } from "@/components/homepage/stage"
 import { useState } from "react"
 import {
   Eye, ShoppingCart,
   Users, Database, Mail, Sparkles, ShieldCheck,
   BarChart3, GitBranch, Building2, Search, Flame,
-  Layers, Check,
+  Check,
   type LucideIcon,
 } from "lucide-react"
 import { GET_LEADS_URL } from "@/lib/cta"
@@ -53,8 +51,8 @@ const heroFeatures: Array<{
   { id: "marketplace", label: "Marketplace", icon: ShoppingCart },
 ]
 
-/** The six the tour shows; the rest live on their product pages. */
-const TOUR_IDS = ["visitor-tracking", "audience-builder", "enrichment", "intent-heatmap", "sequences", "people-search"]
+/** The three the tour shows; the rest live on their product pages. */
+const TOUR_IDS = ["visitor-tracking", "audience-builder", "enrichment"]
 
 // Render the active demo component lazily
 const renderDemoComponent = (activeFeatureId: string) => {
@@ -101,11 +99,11 @@ export function HumanHomePage() {
       {/* The paid products, each with a live demo. Secondary to the free list above. */}
       <section id="products-tour" aria-labelledby="products-tour-heading" className="px-2 pb-20 sm:px-4 sm:pb-28">
         <div className="mx-auto max-w-2xl px-4 text-center">
-          <h2 id="products-tour-heading" className="text-[2rem] font-semibold leading-tight tracking-[-0.025em] text-[#0c1f45] sm:text-[2.5rem]">
-            One data layer, every way to use it
+          <h2 id="products-tour-heading" className="text-[2rem] font-semibold leading-tight tracking-[-0.025em] text-[#0f172a] sm:text-[2.5rem]">
+            Then put the same data to work
           </h2>
-          <p className="mt-3 text-[17px] leading-relaxed text-[#4b5563]">
-            The free list is the start. The same data runs visitor identification, audiences, enrichment and outreach.
+          <p className="mt-3 text-[17px] leading-relaxed text-[#475569]">
+            Identify your website visitors, build audiences and enrich lists from one data layer.
           </p>
         </div>
         <div role="group" aria-label="Pick a product" className="mx-auto mt-8 flex max-w-4xl flex-wrap justify-center gap-2 px-4">
@@ -119,7 +117,7 @@ export function HumanHomePage() {
                 onClick={() => setActiveFeature(feature.id)}
                 aria-pressed={isActive}
                 className={`inline-flex min-h-10 items-center gap-2 rounded-full px-4 text-[13px] font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF] ${
-                  isActive ? "bg-[#0c1f45] text-white" : "border border-gray-200 bg-white text-[#4b5563] hover:border-gray-300 hover:text-[#111827]"
+                  isActive ? "border border-[#007AFF] bg-[#007AFF] text-white" : "border border-[#e2e8f0] bg-white text-[#475569] hover:border-[#cbd5e1] hover:text-[#0f172a]"
                 }`}
               >
                 <Icon className={`h-4 w-4 shrink-0 ${isActive ? "text-white" : "text-gray-400"}`} aria-hidden="true" />
@@ -130,7 +128,7 @@ export function HumanHomePage() {
         </div>
         <Stage className="mx-auto mt-10 max-w-7xl">
           <div className="mx-auto max-w-4xl px-4 py-10 sm:px-8 sm:py-16">
-            <div className="overflow-hidden rounded-2xl bg-white shadow-[0_30px_70px_-30px_rgb(4_22_66/0.7)]">
+            <div className="overflow-hidden rounded-2xl border border-[#e3eeff] bg-white shadow-[0_24px_50px_-30px_rgb(15_23_42/0.35)]">
               <div className="h-[420px] overflow-hidden p-3 md:p-4">
                 <div key={activeFeature}>{renderDemoComponent(activeFeature)}</div>
               </div>
@@ -140,30 +138,30 @@ export function HumanHomePage() {
       </section>
 
       {/* Integrations Showcase */}
-      <section id="integrations" className="py-20 bg-white">
+      <section id="integrations" className="py-20 bg-[#f8fafc] sm:py-28">
         <Container>
           <IntegrationsShowcase
-            title="Works With Your Existing Stack"
-            subtitle="200+ native integrations. Sync leads to your CRM, trigger campaigns, and automate workflows."
+            title="Send leads where you already work"
+            subtitle="Push every lead to your CRM, inbox or sequencer. Webhooks and an API cover the rest."
+            only={["Salesforce", "HubSpot", "Gmail", "Outlook", "Slack", "Zapier", "Instantly", "LinkedIn"]}
           />
         </Container>
       </section>
 
       {/* Pricing — three self-serve plans */}
-      <section id="pricing" className="py-20 bg-[#F7F9FB]">
+      <section id="pricing" className="py-20 bg-white sm:py-28">
         <Container>
           <div className="text-center mb-12">
-            <h2 className="text-4xl lg:text-5xl font-light text-gray-900 mb-4">
-              Pick Your Plan
+            <h2 className="text-[2rem] font-semibold leading-tight tracking-[-0.025em] text-[#0f172a] sm:text-[2.5rem] mb-4">
+              When you want more than 25
             </h2>
-            <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto">
-              Start with 25 free leads. When you want a steady flow, these plans are month-to-month and cancel anytime.
+            <p className="text-[17px] leading-relaxed text-[#475569] max-w-xl mx-auto">
+              Month-to-month plans. No setup fee, cancel anytime.
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto items-stretch">
             {pricingPlans.map((plan, i) => {
-              const Icon = plan.icon
               return (
                 <motion.div
                   key={plan.name}
@@ -179,15 +177,12 @@ export function HumanHomePage() {
                 >
                   {plan.highlight && (
                     <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white whitespace-nowrap">
-                      Most Popular
+                      Best value
                     </span>
                   )}
-                  <div className="w-12 h-12 bg-primary/5 rounded-xl flex items-center justify-center mb-5">
-                    <Icon className="w-6 h-6 text-primary" />
-                  </div>
-                  <h3 className="text-lg font-medium text-gray-900">{plan.name}</h3>
+                  <h3 className="text-[17px] font-semibold text-[#0f172a]">{plan.name}</h3>
                   <div className="mt-2 flex items-baseline gap-1">
-                    <span className="text-4xl font-light text-gray-900">{plan.price}</span>
+                    <span className="text-4xl font-semibold tracking-[-0.03em] text-[#0f172a]">{plan.price}</span>
                     <span className="text-sm text-gray-500">/mo</span>
                   </div>
                   <p className="mt-3 text-sm text-gray-600 leading-relaxed">{plan.description}</p>
@@ -212,22 +207,23 @@ export function HumanHomePage() {
             })}
           </div>
 
-          <p className="mt-8 text-center text-sm text-gray-500">
-            No setup fee. No long-term contract. Cancel anytime.
-          </p>
         </Container>
       </section>
-
-      <TestimonialsSection />
 
       <FAQSection />
 
       {/* Dashboard CTA */}
-      <DashboardCTA
-        headline="See who should"
-        subheadline="buy from you"
-        description="Paste your website and get 25 real leads with work emails in about a minute. Free, no card, no call."
-      />
+      <section aria-labelledby="final-cta-heading" className="px-2 pb-20 pt-4 sm:px-4 sm:pb-28">
+        <Stage className="mx-auto max-w-7xl">
+          <div className="mx-auto max-w-2xl px-6 py-16 text-center sm:py-20">
+            <h2 id="final-cta-heading" className="text-[2rem] font-semibold leading-tight tracking-[-0.025em] text-[#0f172a] sm:text-[2.5rem]">
+              Get your 25 leads in about a minute
+            </h2>
+            <p className="mt-3 text-[17px] leading-relaxed text-[#475569]">Free, no card, no sales call.</p>
+            <SiteForm placement="home-final-cta" className="mx-auto mt-8" />
+          </div>
+        </Stage>
+      </section>
     </main>
   )
 }
@@ -239,7 +235,6 @@ const pricingPlans: Array<{
   name: string
   price: string
   description: string
-  icon: LucideIcon
   items: string[]
   cta: string
   highlight: boolean
@@ -247,44 +242,41 @@ const pricingPlans: Array<{
   {
     name: 'Visitor Pixel',
     price: '$97',
-    description: 'Identify the companies and people visiting your site. Installs in 60 seconds.',
-    icon: Eye,
+    description: 'See the companies and people visiting your site. Installs in a minute.',
     items: [
-      '40–60% deterministic match rate',
-      'Company + person-level detail',
-      'One-snippet install, no engineering',
-      'Identified visitors synced to your portal',
+      '40 to 60% of visitors matched to a person',
+      'Company and contact details',
+      'One snippet, no engineering',
+      'Synced to your Cursive workspace',
     ],
     cta: 'Get the Pixel',
     highlight: false,
   },
   {
-    name: 'Pixel + Audience Bundle',
-    price: '$247',
-    description: 'Your full top-of-funnel intel layer: site traffic and in-market intent in one feed.',
-    icon: Layers,
-    items: [
-      'Everything in Visitor Pixel',
-      'Everything in Custom Audience',
-      'Priority audience updates within 24h',
-      'Best value vs. buying separately',
-    ],
-    cta: 'Get the Bundle',
-    highlight: true,
-  },
-  {
     name: 'Custom Audience',
     price: '$197',
-    description: 'A fresh weekly list of people actively searching for your product, delivered to Sheets.',
-    icon: Users,
+    description: 'A fresh list of in-market buyers every week, built to your profile.',
     items: [
-      'Weekly list of in-market prospects',
-      'Built to your exact ICP',
+      'New buyers every week',
+      'Built to your exact profile',
       'Delivered to Google Sheets',
-      'First audience within 24 hours',
+      'First list within 24 hours',
     ],
     cta: 'Get an Audience',
     highlight: false,
+  },
+  {
+    name: 'Pixel + Audience',
+    price: '$247',
+    description: 'Site visitors and in-market buyers in one weekly list.',
+    items: [
+      'Everything in Visitor Pixel',
+      'Everything in Custom Audience',
+      'Audience updates within 24 hours',
+      'Saves $47 a month',
+    ],
+    cta: 'Get both',
+    highlight: true,
   },
 ]
 

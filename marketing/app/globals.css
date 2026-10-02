@@ -87,10 +87,11 @@ body {
   color: #111827;
 }
 
-/* Cursive font utility */
+/* Second line of a two-tone headline. Was a script face; the site is sans only now. */
 .font-cursive {
-  font-family: 'Dancing Script', cursive !important;
-  font-weight: 400 !important;
+  font-family: inherit !important;
+  font-weight: 300 !important;
+  letter-spacing: -0.02em;
 }
 
 /* Handwriting reveal for script accents (same as the app's /start). Padding keeps swashes unclipped. */

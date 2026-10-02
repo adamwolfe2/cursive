@@ -29,7 +29,7 @@ export default async function CheckEmailPage({
         <Steps current={2} />
         <h1 className="mt-10 text-[2.5rem] sm:mt-14 sm:text-[3.5rem] font-light leading-[1.05] tracking-[-0.02em] text-[#111827]">
           Check your
-          <span className="fl-script fl-write block pt-1 text-[3rem] leading-[1.05] text-[#007AFF] sm:text-[4rem]">inbox.</span>
+          <span className="block text-[#007AFF] pt-0.5">inbox.</span>
         </h1>
         <p className="mt-5 text-lg leading-relaxed text-[#4b5563]">
           We sent a sign-in link to{' '}

@@ -100,7 +100,7 @@ export function Ladder({ mock, leads, website }: { mock: Mock; leads: FullLead[]
           <div className="max-w-[40rem]">
             <h2 id="rung-weekly" className="text-[1.75rem] font-light leading-[1.1] tracking-[-0.02em] sm:text-[2.5rem]">
               Get 25 new leads like these,
-              <span className="fl-script fl-write block pt-1 leading-[1.05] text-[2.5rem] sm:text-[3.25rem]">every Monday.</span>
+              <span className="block text-[#007AFF] pt-0.5">every Monday.</span>
             </h2>
             <p className="mt-3 text-base leading-relaxed text-white sm:text-[17px]">
               Same buyer profile you approved, fresh contacts each week, never a repeat. Work emails and LinkedIn links included.

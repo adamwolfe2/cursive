@@ -18,7 +18,7 @@ export const startUrl = (placement: string, site?: string) =>
   `${START_URL}?${site ? `site=${encodeURIComponent(site)}&` : ''}utm_source=meetcursive&utm_medium=website&utm_content=${encodeURIComponent(placement)}`
 
 /** Primary offer line, used in CTAs and hero copy. */
-export const START_CTA_LABEL = 'Get 25 free leads'
+export const START_CTA_LABEL = 'Get my 25 leads'
 
 /**
  * Self-serve checkout for the paid Visitor Pixel ($97), Custom Audience ($197),

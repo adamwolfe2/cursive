@@ -40,7 +40,7 @@ export function Hero({
       type="submit"
       className={`inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-[#007AFF] px-6 text-[16px] font-semibold text-white shadow-[0_8px_20px_-8px_rgb(0_99_230/0.6)] transition-[background-color,transform] duration-150 hover:bg-[#0066DD] active:scale-[0.98] ${FOCUS}`}
     >
-      Find my buyers
+      Get my 25 leads
       <ArrowRight className="h-4 w-4" aria-hidden="true" />
     </button>
   )
@@ -50,18 +50,13 @@ export function Hero({
     <>
       <section className="grid grid-cols-[minmax(0,1fr)] gap-12 pb-16 pt-6 sm:pt-12 lg:grid-cols-[minmax(0,29rem)_minmax(0,1fr)] lg:items-start lg:gap-14 lg:pb-24 lg:pt-14">
         <div className="min-w-0">
-          <span className="fl-orb relative mb-6 inline-grid h-11 w-11 place-items-center" data-working="" aria-hidden="true">
-            <span className="fl-halo absolute -inset-[45%] rounded-full" />
-            {/* eslint-disable-next-line @next/next/no-img-element -- static brand mark */}
-            <img src="/cursive-logo.png" alt="" width={44} height={44} className="fl-float relative h-11 w-11 object-contain" />
-          </span>
-          <h1 className="text-[2.75rem] font-light leading-[1.02] tracking-[-0.02em] text-[#111827] sm:text-[4rem] lg:text-[4.25rem]">
-            {mode === 'url' ? 'Your site in.' : 'What you sell in.'} <span className="fl-script fl-write mt-1 block pb-1 text-[3.5rem] leading-[1] text-[#007AFF] sm:text-[5rem] lg:text-[5.5rem]">25 buyers out.</span>
+          <h1 className="text-[2.375rem] font-semibold leading-[1.08] tracking-[-0.035em] text-[#0f172a] sm:text-[3.25rem]">
+            Find the 25 people most likely to buy from you
           </h1>
-          <p className="mt-5 max-w-[40ch] text-[17px] leading-relaxed text-[#4b5563] sm:mt-6 sm:text-lg">
+          <p className="mt-5 max-w-[42ch] text-[17px] leading-relaxed text-[#475569] sm:mt-6 sm:text-lg">
             {mode === 'url'
-              ? 'We read your site, work out who buys, and find 25 people who fit, with work emails. Free, about a minute.'
-              : 'Tell us what you sell and who buys it. We find 25 people who fit, with work emails. Free, about a minute.'}
+              ? 'Paste your website. We work out who buys from you and find 25 decision makers with verified work emails.'
+              : 'Tell us what you sell and who buys it. We find 25 decision makers with verified work emails.'}
           </p>
 
           <form onSubmit={onSubmit} className="mt-8 sm:mt-10" noValidate>
@@ -131,7 +126,7 @@ export function Hero({
             <p id={errId} role="alert" className="mt-2 min-h-5 text-sm text-[#b91c1c]">
               {inputError}
             </p>
-            <div className="mt-1 flex flex-wrap items-center justify-between gap-x-6 gap-y-1 text-sm">
+            <div className="mt-1 flex flex-col items-start gap-1 text-sm">
               <button
                 type="button"
                 onClick={() => setMode(mode === 'url' ? 'description' : 'url')}
@@ -139,7 +134,7 @@ export function Hero({
               >
                 {mode === 'url' ? 'No website? Describe what you sell' : 'Use my website instead'}
               </button>
-              <p className="text-[#4b5563]">Free. No card, no sales call.</p>
+              <p className="text-[#475569]">Free, no card, no sales call.</p>
             </div>
           </form>
         </div>
@@ -201,7 +196,7 @@ function HowItWorks({ onStart }: { onStart: () => void }) {
       <div className="lg:sticky lg:top-24 lg:self-start">
         <h2 id="how-heading" className="text-[2rem] font-light leading-[1.08] tracking-[-0.02em] text-[#111827] sm:text-[2.5rem]">
           About a minute,
-          <span className="fl-script block pt-1 text-[2.75rem] leading-[1.05] text-[#6b7280] sm:text-[3.25rem]">start to list.</span>
+          <span className="block text-[#6b7280] pt-0.5">start to list.</span>
         </h2>
         <p className="mt-4 max-w-[34ch] text-[16px] leading-relaxed text-[#4b5563]">
           You stay in charge of who counts as a buyer. Nothing is sent to anyone on your behalf.
