@@ -18,23 +18,23 @@ interface FAQ {
 const faqs: FAQ[] = [
   {
     question: "Where do the 25 people come from?",
-    answer: "We read your website, work out who buys from you, and match that profile against our identity graph of 280M+ consumer and 140M+ business profiles, refreshed every 30 days. You get 25 decision makers who fit, each with a work email and a reason they fit.",
+    answer: "We read your website, work out who buys from you, and match that profile against 400M+ business contacts, multi-sourced and enriched across several databases. You get 25 decision makers who fit, each with a work email and a reason they fit.",
   },
   {
     question: "How accurate are the emails?",
-    answer: "Every email is checked before it reaches you. Our checks run on about 20 million emails a day, and the full data set is refreshed against change-of-address records every 30 days.",
+    answer: "Every email is checked before it reaches you. If we cannot verify a work email, that person is left out of your list.",
   },
   {
     question: "What happens after the free 25?",
-    answer: "Nothing, unless you want more. Plans start at $97 a month for the Visitor Pixel, $197 for a weekly Custom Audience, or $247 for both. All month-to-month, no setup fee.",
+    answer: "Nothing, unless you want more. Buy credits (100 leads for $49), take 100 leads a month on Starter for $197, or have us run LinkedIn and email outreach to your list from $1,497 a month. All month-to-month.",
   },
   {
     question: "How is Cursive different from ZoomInfo or Apollo?",
-    answer: "Static databases sell you contacts. Cursive starts from who actually buys from you, then adds who is visiting your site and who is in-market this week, from one identity graph that refreshes every 30 days.",
+    answer: "Databases sell you contacts and leave the rest to you. Cursive starts from who actually buys from you, learns from the leads you like and your past customers, and can run the outreach for you.",
   },
   {
     question: "Is Cursive compliant?",
-    answer: "Yes. We follow GDPR and CCPA, honor opt-outs, and never sell your data to third parties.",
+    answer: "We follow GDPR and CCPA, honor opt-outs, and never sell your data to third parties.",
   },
 ]
 

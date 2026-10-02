@@ -5,6 +5,7 @@ import { useId, useState, type FormEvent } from "react"
 import { Container } from "@/components/ui/container"
 import { START_URL, startUrl } from "@/lib/cta"
 import { trackCTAClick } from "@/lib/analytics"
+import { HeroField } from "./hero-field"
 import { StartHeroDemo } from "./start-hero-demo"
 import { Stage } from "./stage"
 import "./start-hero.css"
@@ -103,18 +104,19 @@ export function StartHero() {
   return (
     <section id="hero" aria-labelledby="hero-heading" className="px-2 pt-2 sm:px-4 sm:pt-3">
       <Stage>
+        <HeroField />
         <Container className="flex flex-col items-center py-16 text-center sm:py-28">
           <h1 id="hero-heading" className="max-w-[18ch] text-[2.375rem] font-semibold leading-[1.08] tracking-[-0.035em] text-[#0f172a] sm:text-[3.5rem] lg:text-[4rem]">
             Find the 25 people most likely to buy from you
           </h1>
           <p className="mt-5 max-w-[44ch] text-[17px] leading-relaxed text-[#475569] sm:text-[19px]">
-            Paste your website. We work out who buys from you and find 25 decision makers with verified work emails.
+            Paste your website. We work out who buys from you and send 25 decision makers, each with a checked work email and why they fit. Want them contacted? We run the outreach too.
           </p>
 
           <SiteForm placement="home-hero-input" className="mt-9" />
 
           <ul className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[14px] text-[#475569]">
-            {["Free, no card", "No sales call", "Verified work emails"].map((t) => (
+            {["Free, no card", "No sales call", "Checked work emails"].map((t) => (
               <li key={t} className="flex items-center gap-1.5">
                 <Check className="h-4 w-4 text-[#007AFF]" aria-hidden="true" />
                 {t}
@@ -139,20 +141,25 @@ export function StartExample() {
     <section id="example" aria-labelledby="example-heading" className="scroll-mt-20 px-2 py-20 sm:px-4 sm:py-28">
       <div className="mx-auto max-w-2xl px-4 text-center">
         <h2 id="example-heading" className="text-[2rem] font-semibold leading-tight tracking-[-0.025em] text-[#0f172a] sm:text-[2.5rem]">
-          See who you would get
+          Watch a scan, start to finish
         </h2>
         <p className="mt-3 text-[17px] leading-relaxed text-[#475569]">
-          A sample scan, start to finish. Yours runs the same way.
+          Example scans of well-known companies, not our customers. Yours runs the same way on your site.
         </p>
-        <a href={startUrl("home-example")} className={`mt-6 inline-flex h-11 items-center gap-2 rounded-xl bg-[#007AFF] px-5 text-[15px] font-semibold text-white transition-colors hover:bg-[#0066DD] ${FOCUS}`}>
-          Get my 25 leads
-          <ArrowRight className="h-4 w-4" aria-hidden="true" />
-        </a>
       </div>
       <Stage className="mx-auto mt-12 max-w-7xl">
         <div className="mx-auto max-w-3xl px-3 py-10 sm:px-8 sm:py-16">
           <div className="rounded-[26px] bg-white p-3 border border-[#e3eeff] shadow-[0_24px_50px_-30px_rgb(15_23_42/0.35)] sm:p-4">
             <StartHeroDemo held={false} />
+          </div>
+          <p className="mt-4 text-center text-[13px] text-[#64748b]">
+            Counts are real matches in our database on October 1, 2026. Lead names are illustrative.
+          </p>
+          <div className="mt-8 text-center">
+            <a href={startUrl("home-example")} className={`inline-flex h-11 items-center gap-2 rounded-xl bg-[#007AFF] px-5 text-[15px] font-semibold text-white transition-colors hover:bg-[#0066DD] ${FOCUS}`}>
+              Get my 25 leads
+              <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            </a>
           </div>
         </div>
       </Stage>

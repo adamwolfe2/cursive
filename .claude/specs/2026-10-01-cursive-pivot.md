@@ -1,6 +1,6 @@
 # Cursive pivot: find them, reach them, run it (2026-10-01)
 
-Status: positioning agreed in chat with Adam; pricing below is a PROPOSAL awaiting his yes. Nothing built yet.
+Status: positioning agreed; pricing APPROVED by Adam 2026-10-01 as written (outbound equal billing, not featured).
 Branch: `feat/free-leads-fun` (PR #138), worktree `~/cursive-worktrees/free-leads-fun`. Marketing site = `marketing/`
 (separate Next app, meetcursive.com, Vercel project `cursive`); app = `src/` (leads.meetcursive.com, Vercel `leadme`).
 
@@ -22,7 +22,7 @@ App today already has 1-4 (/start scan, IcpCard edit + refine box, count, approv
 delivery). Missing: lead feedback (like/dislike), customer-list upload, ICP agent that rescoring/re-filters from them,
 credits billing, outbound handoff.
 
-## Pricing PROPOSAL (Adam to approve or change)
+## Pricing (APPROVED 2026-10-01)
 Comps: done-for-you LinkedIn/email agencies run $2k to $5k/mo; tools like HeyReach ~$79/seat; lead credits $0.30-$1.
 - Free: 25 leads, no card (live).
 - Credits (pay as you go, roll over): 100 leads $49 · 500 leads $199 · 2,000 leads $599.

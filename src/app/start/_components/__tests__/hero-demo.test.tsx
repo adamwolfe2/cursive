@@ -43,6 +43,6 @@ it('shows the finished example, with no autoplay controls, under reduced motion'
   render(<HeroDemo held={false} />)
   expect(leadVisible()).toBe(true)
   expect(screen.queryByRole('button', { name: /Pause the example/ })).toBeNull()
-  fireEvent.click(screen.getByRole('button', { name: 'Freight' }))
+  fireEvent.click(screen.getByRole('button', { name: 'Example scan of webflow.com' }))
   expect(screen.getByText('Greg M.')).toBeTruthy()
 })

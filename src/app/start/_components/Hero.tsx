@@ -55,8 +55,8 @@ export function Hero({
           </h1>
           <p className="mt-5 max-w-[42ch] text-[17px] leading-relaxed text-[#475569] sm:mt-6 sm:text-lg">
             {mode === 'url'
-              ? 'Paste your website. We work out who buys from you and find 25 decision makers with verified work emails.'
-              : 'Tell us what you sell and who buys it. We find 25 decision makers with verified work emails.'}
+              ? 'Paste your website. We work out who buys from you and send 25 decision makers, each with a checked work email and why they fit. Want them contacted? We run the outreach too.'
+              : 'Tell us what you sell and who buys it. We find 25 decision makers with checked work emails.'}
           </p>
 
           <form onSubmit={onSubmit} className="mt-8 sm:mt-10" noValidate>

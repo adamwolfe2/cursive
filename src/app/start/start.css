@@ -57,6 +57,19 @@
   }
 }
 
+@keyframes fl-ring {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.fl-ring {
+  animation: fl-ring linear both;
+}
+
 @keyframes fl-fill {
   from {
     transform: scaleX(0);

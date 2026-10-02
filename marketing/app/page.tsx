@@ -20,7 +20,7 @@ const homepageFAQs = [
   },
   {
     question: 'What does Cursive cost?',
-    answer: 'Your first 25 leads are free: paste your website at leads.meetcursive.com/start, no card and no sales call. After that, three self-serve plans, all month-to-month: the Visitor Pixel is $97/month, a weekly Custom Audience is $197/month, and the Pixel + Audience Bundle is $247/month. No setup fee and no long-term contract. Enterprise teams that need direct API access to the underlying identity infrastructure can reach out about a committed data partnership.',
+    answer: 'Your first 25 leads are free: paste your website at leads.meetcursive.com/start, no card and no sales call. After that: lead credits (100 for $49, 500 for $199, 2,000 for $599), Starter at $197/month for 100 leads, or Growth at $497/month for 500 leads. Done-for-you outreach is $1,497/month for LinkedIn or $2,497/month for LinkedIn and email. A custom operating-system dashboard starts at $2,500 setup plus $500/month. The Visitor Pixel is a $97/month add-on. All month-to-month.',
   },
   {
     question: 'What can I do with Cursive beyond visitor identification?',
@@ -201,21 +201,13 @@ export default function HomePage() {
           {/* Plans */}
           <MachineSection title="Plans & Pricing">
             <MachineList items={[
-              {
-                label: "Visitor Pixel — $97/month",
-                href: "https://www.meetcursive.com/pricing",
-                description: "Identify the companies and people visiting your site. 40–60% deterministic match rate, company and person-level detail, installs in 60 seconds."
-              },
-              {
-                label: "Custom Audience — $197/month",
-                href: "https://www.meetcursive.com/pricing",
-                description: "A fresh weekly list of people actively searching for your product, built to your ICP and delivered to Google Sheets within 24 hours."
-              },
-              {
-                label: "Pixel + Audience Bundle — $247/month",
-                href: "https://www.meetcursive.com/pricing",
-                description: "Both the Visitor Pixel and the weekly Custom Audience in one feed. Month-to-month, no setup fee, cancel anytime."
-              }
+              { label: "Free — 25 leads", href: "https://leads.meetcursive.com/start", description: "Paste your website, get 25 decision makers with verified work emails. No card." },
+              { label: "Lead credits — 100 for $49, 500 for $199, 2,000 for $599", href: "https://www.meetcursive.com/#pricing", description: "Pay as you go; credits roll over." },
+              { label: "Starter — $197/month", href: "https://www.meetcursive.com/#pricing", description: "100 leads a month, 25 every Monday, 14-day trial." },
+              { label: "Growth — $497/month", href: "https://www.meetcursive.com/#pricing", description: "500 leads a month, tuned by the leads you like and your customer list." },
+              { label: "Outreach — $1,497/month (LinkedIn) or $2,497/month (LinkedIn + email)", href: "https://www.meetcursive.com/#pricing", description: "Done-for-you outreach to your list, copy written and run by Cursive." },
+              { label: "Operating system — from $2,500 setup + $500/month", href: "https://www.meetcursive.com/#pricing", description: "A custom company dashboard for leads, outreach, visitors, chat and CRM." },
+              { label: "Visitor Pixel — $97/month add-on", href: "https://www.meetcursive.com/pricing", description: "Identify the people visiting your site." }
             ]} />
           </MachineSection>
 
@@ -285,7 +277,7 @@ export default function HomePage() {
                 {
                   label: "View Pricing",
                   href: "https://www.meetcursive.com/pricing",
-                  description: "Visitor Pixel $97/mo, Custom Audience $197/mo, or both for $247/mo. Month-to-month, no setup fee."
+                  description: "Free 25 leads, credits from $49, Starter $197/mo, Growth $497/mo, outreach from $1,497/mo, Visitor Pixel $97/mo add-on."
                 }
               ]} />
             </div>

@@ -16,65 +16,90 @@ type PageRow = { path: string; state: 'fetching' | 'read'; chars: number }
  * labeled so. Pauses while the reader types, hovers or presses pause; static under reduced motion.
  */
 type Example = {
-  tab: string
+  name: string
   domain: string
+  logo: string
   pages: Array<[path: string, chars: number]>
   summary: string
   rows: Array<[label: string, values: string[]]>
+  /** Real count of matching contacts for these filters (GetLeads, 2026-10-01). */
   count: number
+  /** Illustrative people: names and companies are made up, emails masked. */
   leads: Array<[name: string, title: string, company: string, email: string, why: string]>
 }
 
+/** Example scans of well-known companies' public sites. None of them are Cursive customers. */
 const EXAMPLES: Example[] = [
   {
-    tab: 'SOC 2 audits',
-    domain: 'vantacheck.io',
-    pages: [['/', 12_408], ['/pricing', 3_221], ['/customers', 5_870]],
-    summary: 'Software companies getting ready for their first enterprise security review.',
+    name: 'Linear',
+    domain: 'linear.app',
+    logo: '/logos/linear.svg',
+    pages: [['/', 11_802], ['/pricing', 3_406], ['/customers', 6_115]],
+    summary: 'Software companies of 51 to 500 people whose engineering teams have outgrown their issue tracker.',
     rows: [
-      ['Titles', ['CTO', 'Head of Security', 'VP of Engineering']],
-      ['Size', ['11-50 people', '51-200 people', '201-500 people']],
+      ['Titles', ['CTO', 'VP of Engineering', 'Head of Engineering']],
+      ['Size', ['51-200 people', '201-500 people']],
       ['Where', ['United States']],
     ],
-    count: 3947,
+    count: 4449,
     leads: [
-      ['Rachel J.', 'VP of Engineering', 'Ledgerline', 'r•••@ledgerline.com', 'Runs engineering at a 120-person fintech that just signed its first bank.'],
-      ['Marcus O.', 'CTO', 'Shipfast', 'm•••@shipfast.dev', 'Series A dev tools company hiring its first security lead.'],
-      ['Priya R.', 'Head of Security', 'Northwind Health', 'p•••@northwindhealth.io', 'Owns vendor reviews at a health company selling into hospitals.'],
+      ['Rachel J.', 'VP of Engineering', 'Ledgerline', 'r•••@ledgerline.com', 'Grew her team from 30 to 90 engineers in a year; planning runs on spreadsheets.'],
+      ['Marcus O.', 'CTO', 'Shipfast', 'm•••@shipfast.dev', 'Series A dev tools company splitting into its first product squads.'],
+      ['Priya R.', 'Head of Engineering', 'Northwind Health', 'p•••@northwindhealth.io', 'Runs four teams shipping weekly to hospital customers.'],
     ],
   },
   {
-    tab: 'Bookkeeping',
-    domain: 'brightledger.com',
-    pages: [['/', 8_912], ['/services', 4_105], ['/about', 2_640]],
-    summary: 'Dental practices with 2 to 10 locations, where the owner still signs payroll.',
+    name: 'HubSpot',
+    domain: 'hubspot.com',
+    logo: '/logos/hubspot.svg',
+    pages: [['/', 14_230], ['/pricing', 7_918], ['/products/marketing', 9_064]],
+    summary: 'B2B software and IT services firms of 11 to 200 people where one marketing leader owns the whole funnel.',
     rows: [
-      ['Titles', ['COO', 'Practice Owner', 'Office Manager']],
-      ['Industry', ['Dental offices']],
-      ['Where', ['Ohio', 'Indiana', 'Michigan']],
+      ['Titles', ['VP of Marketing', 'Head of Marketing', 'Marketing Director']],
+      ['Industry', ['Software', 'IT services']],
+      ['Size', ['11-50 people', '51-200 people']],
     ],
-    count: 2316,
+    count: 3445,
     leads: [
-      ['Hannah K.', 'Practice Owner', 'Lakeside Family Dental', 'h•••@lakesidefamilydental.com', 'Owns four practices around Columbus and still runs payroll herself.'],
-      ['Tomas R.', 'Office Manager', 'Brightpath Orthodontics', 't•••@brightpathortho.com', 'Runs billing and the front desk across three locations.'],
-      ['Ravi S.', 'Founder', 'Summit Smiles', 'r•••@summitsmiles.com', 'Opened a third location this spring, so the books just got harder.'],
+      ['Dana W.', 'Head of Marketing', 'Stackpoint', 'd•••@stackpoint.io', 'First marketing hire at a 60-person SaaS company, still on spreadsheets.'],
+      ['Leo K.', 'VP of Marketing', 'Brightwire IT', 'l•••@brightwireit.com', 'Owns demand gen and the website for a managed services firm.'],
+      ['Aisha B.', 'Marketing Director', 'Quotely', 'a•••@quotely.com', 'Just hired two SDRs and needs leads routed to them.'],
     ],
   },
   {
-    tab: 'Freight',
-    domain: 'loadwell.co',
-    pages: [['/', 10_377], ['/how-it-works', 6_214], ['/pricing', 2_958]],
-    summary: 'Manufacturers shipping hundreds of loads a month who pay freight invoices by hand.',
+    name: 'Shopify',
+    domain: 'shopify.com',
+    logo: '/logos/shopify.svg',
+    pages: [['/', 10_377], ['/pricing', 5_214], ['/start', 2_958]],
+    summary: 'Independent apparel and beauty brands under 50 people, still run day to day by the founder.',
     rows: [
-      ['Titles', ['Controller', 'VP of Supply Chain', 'Logistics Director']],
-      ['Size', ['201-500 people', '501-1,000 people']],
-      ['Industry', ['Manufacturing']],
+      ['Titles', ['Founder', 'Owner', 'Head of Ecommerce']],
+      ['Industry', ['Apparel', 'Personal care']],
+      ['Size', ['1-10 people', '11-50 people']],
     ],
-    count: 6104,
+    count: 14300,
     leads: [
-      ['Greg M.', 'VP of Supply Chain', 'Hartline Fabrication', 'g•••@hartlinefab.com', 'Ships out of three plants in Ohio and owns the carrier contracts.'],
-      ['Nadia F.', 'Logistics Director', 'Coastal Packaging', 'n•••@coastalpack.com', 'Switched 3PLs this year; the freight invoices land on her desk.'],
-      ['Owen P.', 'Controller', 'Ridgeway Components', 'o•••@ridgewaycomp.com', 'Signs off on freight spend, which keeps growing as a share of cost.'],
+      ['Hannah K.', 'Founder', 'Saltwater Goods', 'h•••@saltwatergoods.co', 'Sells swimwear wholesale and wants her own online store.'],
+      ['Tomas R.', 'Head of Ecommerce', 'Kindred Skin', 't•••@kindredskin.com', 'Moving a skincare line off a marketplace and onto its own site.'],
+      ['Ravi S.', 'Owner', 'Thread & Pine', 'r•••@threadandpine.com', 'Opened a second shop this spring and needs one place to sell.'],
+    ],
+  },
+  {
+    name: 'Webflow',
+    domain: 'webflow.com',
+    logo: '/logos/webflow.svg',
+    pages: [['/', 12_408], ['/pricing', 4_221], ['/enterprise', 5_870]],
+    summary: 'Design, ad and marketing agencies under 50 people that build websites for their clients.',
+    rows: [
+      ['Titles', ['Creative Director', 'Founder', 'Head of Design']],
+      ['Industry', ['Design', 'Advertising', 'Marketing']],
+      ['Size', ['1-10 people', '11-50 people']],
+    ],
+    count: 44639,
+    leads: [
+      ['Greg M.', 'Creative Director', 'Fieldnote Studio', 'g•••@fieldnote.studio', 'Twelve-person studio that hands every site build to a contractor.'],
+      ['Nadia F.', 'Founder', 'Northpaw Creative', 'n•••@northpaw.co', 'Agency of eight that just signed three website retainers.'],
+      ['Owen P.', 'Head of Design', 'Loudmouth Ads', 'o•••@loudmouthads.com', 'Wants clients editing their own pages without a developer.'],
     ],
   },
 ]
@@ -129,30 +154,43 @@ export function HeroDemo({ held }: { held: boolean }) {
   return (
     <figure
       className="relative min-w-0"
-      aria-label={`Example scan of ${ex.domain}, a sample company, and the buyers it finds`}
+      aria-label={`Example scan of ${ex.domain} (${ex.name} is not a Cursive customer) and the buyers it finds`}
       onPointerEnter={(e) => e.pointerType === 'mouse' && setHovered(true)}
       onPointerLeave={() => setHovered(false)}
     >
-      <div className="flex items-center gap-2">
-        <div role="group" aria-label="Pick an example" className="flex min-w-0 flex-1 gap-1 overflow-x-auto [scrollbar-width:none] max-sm:[mask-image:linear-gradient(to_right,black_80%,transparent)]">
+      <div className="flex flex-wrap items-center gap-x-2">
+        <p className="min-w-0 flex-1 truncate text-[13px] text-[#4b5563] max-sm:order-last max-sm:basis-full max-sm:pt-1 max-sm:text-center">
+          Example scan of <span className="font-semibold text-[#111827]">{ex.domain}</span> · not a customer
+        </p>
+        <div role="group" aria-label="Pick an example" className="flex shrink-0 items-center max-sm:mx-auto sm:gap-1">
           {EXAMPLES.map((e, i) => (
             <button
               key={e.domain}
               type="button"
               onClick={() => pick(i)}
               aria-pressed={i === index}
-              className={`relative min-h-11 shrink-0 overflow-hidden rounded-full px-4 text-[13px] font-medium transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF] ${
-                i === index ? 'bg-[#007AFF] text-white' : 'text-[#4b5563] hover:bg-[#eef4fc] hover:text-[#111827]'
+              aria-label={`Example scan of ${e.domain}`}
+              className={`relative grid h-11 w-11 place-items-center overflow-hidden rounded-full transition-[background-color,opacity] duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF] ${
+                i === index ? 'bg-white shadow-[0_0_0_1.5px_#007AFF]' : 'opacity-45 grayscale hover:opacity-100 hover:grayscale-0'
               }`}
             >
-              {e.tab}
+              {/* eslint-disable-next-line @next/next/no-img-element -- tiny static logo */}
+              <img src={e.logo} alt="" width={20} height={20} className="h-5 w-5 object-contain" />
               {i === index && !still && (
-                <span
-                  key={run}
-                  aria-hidden="true"
-                  className="fl-fill absolute inset-x-4 bottom-1.5 h-px bg-white/60"
-                  style={{ animationDuration: `${CYCLE_MS}ms`, animationPlayState: stopped ? 'paused' : 'running' }}
-                />
+                <svg key={run} aria-hidden="true" viewBox="0 0 44 44" className="absolute inset-0 -rotate-90">
+                  <circle
+                    cx="22"
+                    cy="22"
+                    r="20.5"
+                    fill="none"
+                    stroke="#007AFF"
+                    strokeWidth="1.5"
+                    pathLength={1}
+                    strokeDasharray="1"
+                    className="fl-ring"
+                    style={{ animationDuration: `${CYCLE_MS}ms`, animationPlayState: stopped ? 'paused' : 'running' }}
+                  />
+                </svg>
               )}
             </button>
           ))}
@@ -176,8 +214,9 @@ export function HeroDemo({ held }: { held: boolean }) {
       >
         {/* The site being read: its address types in, then the agent says what it is doing. */}
         <div className="flex h-14 items-center gap-3 border-b border-[#eef1f5] px-5">
-          <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg border border-[#e5e7eb] text-[12px] font-semibold uppercase text-[#0f172a]">
-            {ex.domain[0]}
+          <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg border border-[#e5e7eb] bg-white">
+            {/* eslint-disable-next-line @next/next/no-img-element -- tiny static logo */}
+            <img src={ex.logo} alt="" width={16} height={16} className="h-4 w-4 object-contain" />
           </span>
           <span className="relative min-w-0 flex-1 truncate text-[14px] font-semibold text-[#111827]">
             <span className={still ? '' : 'fl-type inline-block'}>{ex.domain}</span>
@@ -289,8 +328,8 @@ export function HeroDemo({ held }: { held: boolean }) {
         </div>
       </div>
       <p className="sr-only">
-        For {ex.domain}, we read {ex.pages.length} pages, describe its buyers as: {ex.summary} Then {ex.count} people match, and
-        each lead comes with a name, title, company, work email and a reason they fit.
+        Example scan of {ex.domain}: we read {ex.pages.length} pages and describe its buyers as: {ex.summary} Then {ex.count} people in
+        our database match, and each lead comes with a name, title, company, work email and a reason they fit. Lead names shown are illustrative.
       </p>
     </figure>
   )
