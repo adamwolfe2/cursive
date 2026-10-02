@@ -7,6 +7,9 @@
 
 import { hmacSha256Hex, timingSafeEqual } from '@/lib/utils/crypto'
 import { getErrorMessage } from '@/lib/utils/error-helpers'
+import { fetch as undiciFetch } from 'undici'
+import { pinnedAgent } from '@/lib/free-leads/site'
+import { isValidWebhookUrl } from '@/lib/utils/ssrf-guard'
 import { publicLeadSource } from '@/lib/leads/public-source'
 
 export interface WebhookPayload {
@@ -82,7 +85,11 @@ export async function deliverWebhook(
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
 
-    const response = await fetch(url, {
+    // SSRF: user-configured URL. Validate, connect only to public addresses, never follow redirects.
+    if (!isValidWebhookUrl(url)) return { success: false, error: 'Webhook URL is not allowed' }
+    const response = await undiciFetch(url, {
+      dispatcher: pinnedAgent,
+      redirect: 'error',
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

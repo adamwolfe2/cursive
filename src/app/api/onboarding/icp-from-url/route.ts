@@ -18,6 +18,7 @@ import Anthropic from '@anthropic-ai/sdk'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { withRateLimit } from '@/lib/middleware/rate-limiter'
 import { safeError } from '@/lib/utils/log-sanitizer'
+import { directFetch, upgradeRedirect } from '@/lib/free-leads/site'
 import { checkSpendLimit, recordSpend } from '@/lib/services/api-spend-guard'
 
 const MODEL = 'claude-sonnet-4-20250514'
@@ -118,21 +119,8 @@ async function fetchSiteMetadata(domain: string): Promise<{
 /** Fetch the landing page HTML and strip to plain text (first ~6KB). */
 async function fetchLandingPageText(url: string): Promise<string | null> {
   try {
-    const controller = new AbortController()
-    const timeout = setTimeout(() => controller.abort(), 6000)
-
-    const res = await fetch(url, {
-      signal: controller.signal,
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; CursiveBot/1.0; +https://meetcursive.com)',
-      },
-      next: { revalidate: 3600 },
-    })
-    clearTimeout(timeout)
-
-    if (!res.ok) return null
-
-    const html = await res.text()
+    // SSRF: user-supplied URL, so only public hosts, https-only redirects, each hop re-checked.
+    const { html } = await directFetch(upgradeRedirect(url, url), 6000)
     // Strip scripts/styles, then tags, then collapse whitespace
     const text = html
       .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, ' ')
