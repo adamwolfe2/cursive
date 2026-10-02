@@ -40,13 +40,22 @@ function useScript(last: number, every: number, hold = 3200) {
   return { ref, step: still ? last : step }
 }
 
+/** Illustrative people have AI-generated portraits (not real people): "Rachel J." -> /people/rachel-j.webp. */
+const faceSrc = (name: string) => `/people/${name.toLowerCase().replace(/[^a-z]+/g, "-").replace(/-+$/, "")}.webp`
+
 const FRAME =
   "overflow-hidden rounded-[22px] border border-[#e3e9f2] bg-white shadow-[0_30px_70px_-34px_rgb(12_31_69/0.35),0_2px_6px_-2px_rgb(12_31_69/0.06)]"
 
-function FrameHead({ title, note }: { title: string; note: string }) {
+function FrameHead({ title, note, face }: { title: string; note: string; face?: string }) {
   return (
     <div className="flex h-12 items-center justify-between gap-3 border-b border-[#eef1f5] px-5">
-      <span className="truncate text-[13px] font-semibold text-[#111827]">{title}</span>
+      <span className="flex min-w-0 items-center gap-2.5">
+        {face && (
+          // eslint-disable-next-line @next/next/no-img-element -- 3KB static portrait, sized exactly
+          <img src={faceSrc(face)} alt="" width={24} height={24} className="h-6 w-6 shrink-0 rounded-full object-cover ring-1 ring-black/5" />
+        )}
+        <span className="truncate text-[13px] font-semibold text-[#111827]">{title}</span>
+      </span>
       <span className="shrink-0 text-[11px] font-medium uppercase tracking-[0.08em] text-[#9ca3af]">{note}</span>
     </div>
   )
@@ -58,7 +67,7 @@ const BATCH: Array<[name: string, role: string, vote: "up" | "down"]> = [
   ["Rachel J.", "VP of Engineering, Ledgerline · 120 people", "up"],
   ["Sam T.", "Founder, Pixelcraft Agency · 8 people", "down"],
   ["Marcus O.", "CTO, Shipfast · Series A", "up"],
-  ["Priya R.", "Head of Engineering, Northwind · 210 people", "up"],
+  ["Priya R.", "Head of Engineering, Northwind Health · 210 people", "up"],
 ]
 const LEARNED = ["More Series A–C", "51–500 people", "Fewer agencies", "Like your 212 customers"]
 
@@ -72,13 +81,23 @@ export function DemoFind() {
         {BATCH.map(([name, role, vote], i) => {
           const voted = step >= i + 1
           return (
-            <li key={name} className="flex h-14 items-center gap-3">
-              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#e8f1ff] text-[12px] font-semibold text-[#0066DD]">
-                {name[0]}
-              </span>
+            <li key={name} className="flex min-h-14 items-center gap-3 py-2">
+              {/* eslint-disable-next-line @next/next/no-img-element -- 3KB static portrait, sized exactly */}
+              <img
+                src={faceSrc(name)}
+                alt=""
+                width={32}
+                height={32}
+                loading="lazy"
+                decoding="async"
+                className={`h-8 w-8 shrink-0 rounded-full bg-[#e8f1ff] object-cover ring-1 ring-black/5 transition-[filter,opacity] duration-500 ${voted && vote === "down" ? "opacity-50 grayscale" : ""}`}
+              />
               <span className={`min-w-0 flex-1 transition-opacity duration-500 ${voted && vote === "down" ? "opacity-40" : ""}`}>
                 <span className="block truncate text-[13px] font-semibold text-[#111827]">{name}</span>
-                <span className="block truncate text-[12px] text-[#6b7280]">{role}</span>
+                <span className="line-clamp-2 text-[12px] leading-snug text-[#6b7280]">
+                  {role.split(" · ")[0]}
+                  <span className="max-sm:hidden"> · {role.split(" · ")[1]}</span>
+                </span>
               </span>
               <span
                 className={`grid h-8 w-8 place-items-center rounded-full transition-colors duration-300 ${
@@ -135,24 +154,26 @@ export function DemoReach() {
   const { ref, step } = useScript(THREAD.length, 1000)
   return (
     <div ref={ref} className={FRAME} aria-hidden="true">
-      <FrameHead title="Outreach to Rachel J., Ledgerline" note="Example" />
+      <FrameHead title="Outreach to Rachel J., Ledgerline" note="Example" face="Rachel J." />
       <ol className="relative px-5 py-5">
-        <span className="absolute bottom-8 left-[2.15rem] top-8 w-px bg-[#e3e9f2]" />
+        <span className="absolute bottom-[4.25rem] left-[2.15rem] top-8 w-px bg-[#e3e9f2]" />
         {THREAD.map((m, i) => {
           const shown = step >= i + 1
-          const Icon = m.ch === "mail" ? Mail : m.ch === "in" ? Linkedin : Check
+          const Icon = m.ch === "mail" ? Mail : Linkedin
           return (
             <li key={i} className={`relative flex min-h-[4.5rem] gap-3 transition-opacity duration-500 ${shown ? "opacity-100" : "opacity-0"}`}>
-              <span
-                className={`relative z-10 grid h-8 w-8 shrink-0 place-items-center rounded-full border ${
-                  m.ch === "reply" ? "border-[#007AFF] bg-[#007AFF] text-white" : "border-[#e3e9f2] bg-white text-[#4b5563]"
-                }`}
-              >
-                <Icon className="h-4 w-4" />
-              </span>
+              {m.ch === "reply" ? (
+                // The reply comes from Rachel, so her face marks it on the timeline.
+                // eslint-disable-next-line @next/next/no-img-element -- 3KB static portrait, sized exactly
+                <img src={faceSrc("Rachel J.")} alt="" width={32} height={32} className="relative z-10 h-8 w-8 shrink-0 rounded-full object-cover ring-2 ring-[#007AFF]" />
+              ) : (
+                <span className="relative z-10 grid h-8 w-8 shrink-0 place-items-center rounded-full border border-[#e3e9f2] bg-white text-[#4b5563]">
+                  <Icon className="h-4 w-4" />
+                </span>
+              )}
               <div className="min-w-0 flex-1 pt-1">
                 <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-[#9ca3af]">
-                  {m.ch === "reply" ? "Reply" : m.ch === "in" ? "LinkedIn" : "Email"} · {m.when}
+                  {m.ch === "reply" ? "Rachel replied" : m.ch === "in" ? "LinkedIn" : "Email"} · {m.when}
                 </p>
                 {m.ch === "reply" ? (
                   <p className="mt-1.5 inline-block rounded-2xl rounded-tl-md bg-[#007AFF] px-3.5 py-2 text-[14px] font-medium text-white">

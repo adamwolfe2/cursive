@@ -14,8 +14,7 @@ import "./ladder.css"
  */
 
 const FOCUS = "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#007AFF]"
-const H2 = "text-[2rem] font-semibold leading-[1.1] tracking-[-0.025em] text-[#0f172a] sm:text-[2.75rem]"
-const LEAD = "text-[17px] leading-relaxed text-[#475569]"
+import { H2, LEAD } from "./type"
 
 function PrimaryLink({ href, placement, children }: { href?: string; placement: string; children: ReactNode }) {
   return (
@@ -81,12 +80,19 @@ export function DatabaseSection() {
   const { ref, n } = useCountOnView(400)
   return (
     <section aria-labelledby="db-heading" className="px-6 py-20 sm:py-28">
-      <div className="mx-auto grid max-w-6xl items-end gap-6 xl:grid-cols-[1.25fr_1fr] xl:gap-16">
+      <div className="mx-auto grid max-w-6xl items-end gap-6 xl:grid-cols-[auto_minmax(0,1fr)] xl:gap-16">
         <p
-          className="text-[clamp(5.5rem,22vw,15rem)] font-semibold leading-[0.85] tracking-[-0.06em] text-[#007AFF] tabular-nums"
+          className="whitespace-nowrap text-[clamp(5.5rem,22vw,15rem)] font-semibold leading-[0.85] tracking-[-0.06em] text-[#007AFF] tabular-nums xl:text-[12rem]"
           aria-hidden="true"
         >
-          <span ref={ref}>{n}</span>M+
+          {/* The final number holds the width, so counting up never reflows the text beside it. */}
+          <span className="relative inline-block">
+            <span className="invisible">400</span>
+            <span ref={ref} className="absolute inset-0 text-left">
+              {n}
+            </span>
+          </span>
+          M+
         </p>
         <div className="max-w-xl xl:pb-6">
           <h2 id="db-heading" className={H2}>
@@ -129,7 +135,7 @@ const RUNGS: Array<{
     id: "reach",
     n: "2",
     kicker: "Reach them",
-    title: "We run the outreach for you",
+    title: "We run the outreach. You take the meetings.",
     body: "LinkedIn, email or both, sent to the same list you already shaped. We write the copy, run the sequences inside each platform’s limits and hand you the replies.",
     points: ["One LinkedIn sender profile, about 400 requests a month", "Email domain and inboxes on the combined plan", "From $1,497 a month, month‑to‑month"],
     demo: <DemoReach />,
@@ -154,7 +160,7 @@ export function RungsSection() {
         <h2 id="rungs-heading" className={H2}>
           Find them. Reach them. Run it.
         </h2>
-        <p className={`mt-4 ${LEAD}`}>
+        <p className={`mt-4 text-balance ${LEAD}`}>
           Cursive finds your buyers, reaches them for you, and gives you the system to run it. Start with the free 25;
           climb when you’re ready.
         </p>
@@ -169,7 +175,7 @@ export function RungsSection() {
                     <span className="grid h-8 w-8 place-items-center rounded-full bg-[#007AFF] text-[14px] text-white">{r.n}</span>
                     {r.kicker}
                   </p>
-                  <h3 className="mt-5 max-w-[20ch] text-[1.75rem] font-semibold leading-[1.12] tracking-[-0.025em] text-[#0f172a] sm:text-[2.25rem]">
+                  <h3 className="mt-5 max-w-[22ch] text-[1.75rem] font-semibold leading-[1.12] tracking-[-0.025em] text-[#0f172a] sm:text-[2.25rem]">
                     {r.title}
                   </h3>
                   <p className={`mt-4 max-w-[48ch] ${LEAD}`}>{r.body}</p>
@@ -248,7 +254,7 @@ export function RecursiveSection() {
 
   return (
     <section ref={ref} aria-labelledby="dict-heading" className="dict px-6">
-      <div className="dict-pin mx-auto flex max-w-4xl flex-col justify-center">
+      <div className="dict-pin mx-auto flex max-w-6xl flex-col justify-center">
         <p className="text-[15px] font-medium text-[#64748b]">Why we are called Cursive</p>
         <h2 id="dict-heading" className="mt-6 text-[clamp(3.25rem,10vw,7rem)] font-semibold leading-none tracking-[-0.045em] text-[#0f172a]">
           re<span className="text-[#007AFF]">cursive</span>
@@ -258,10 +264,10 @@ export function RecursiveSection() {
           <span className="text-[#64748b]">/rɪˈkɜr.sɪv/</span>
           <span className="font-medium italic text-[#0f172a]">adjective</span>
         </p>
-        <ol className="mt-10 space-y-6">
+        <ol className="mt-10 max-w-4xl space-y-6">
           {SENSES.map((s, i) => (
             <li key={i} className="grid grid-cols-[2rem_1fr] gap-2 sm:grid-cols-[2.75rem_1fr]">
-              <span className="pt-1 text-[18px] font-semibold text-[#007AFF] sm:text-[22px]">{i + 1}</span>
+              <span className="pt-1 text-[18px] font-medium tabular-nums text-[#007AFF] sm:text-[22px]">{i + 1}.</span>
               <p className="text-[1.375rem] font-medium leading-[1.35] tracking-[-0.015em] sm:text-[2rem]">
                 <FillWords text={s} from={starts[i]} total={total} />
               </p>
@@ -272,7 +278,7 @@ export function RecursiveSection() {
           See also: <span className="font-semibold text-[#0f172a]">Cursive</span>, the lead list that learns.
         </p>
         <div className="mt-8">
-          <PrimaryLink placement="home-recursive">Get my first 25 leads</PrimaryLink>
+          <PrimaryLink placement="home-recursive">Get my 25 leads</PrimaryLink>
         </div>
       </div>
     </section>
@@ -318,16 +324,10 @@ const PRICING: Array<{ n: string; rung: string; lead: string; lines: Line[]; cta
   },
 ]
 
-export function LadderPricing() {
+/** The three pricing columns, shared by the homepage and /pricing. */
+export function PricingGrid({ className = "" }: { className?: string }) {
   return (
-    <section id="pricing" aria-labelledby="pricing-heading" className="scroll-mt-20 px-6 py-20 sm:py-28">
-      <div className="mx-auto max-w-2xl text-center">
-        <h2 id="pricing-heading" className={H2}>
-          Start free. Add outreach or a dashboard when you’re ready.
-        </h2>
-        <p className={`mt-4 ${LEAD}`}>Month‑to‑month on every plan. No long contract.</p>
-      </div>
-      <div className="mx-auto mt-14 grid max-w-6xl gap-px overflow-hidden rounded-[28px] border border-[#e3eeff] bg-[#e3eeff] lg:grid-cols-3">
+      <div className={`mx-auto grid max-w-2xl gap-px overflow-hidden lg:max-w-6xl rounded-[28px] border border-[#e3eeff] bg-[#e3eeff] lg:grid-cols-3 ${className}`}>
         {PRICING.map((col) => (
           <div key={col.rung} className="flex flex-col bg-white p-6 sm:p-8">
             <p className="flex items-center gap-2.5 text-[15px] font-semibold text-[#0066DD]">
@@ -358,6 +358,19 @@ export function LadderPricing() {
           </div>
         ))}
       </div>
+  )
+}
+
+export function LadderPricing() {
+  return (
+    <section id="pricing" aria-labelledby="pricing-heading" className="scroll-mt-20 px-6 py-20 sm:py-28">
+      <div className="mx-auto max-w-2xl text-center">
+        <h2 id="pricing-heading" className={H2}>
+          Start free. Add outreach or a dashboard when you’re ready.
+        </h2>
+        <p className={`mt-4 ${LEAD}`}>Month‑to‑month on every plan. No long contract.</p>
+      </div>
+      <PricingGrid className="mt-14" />
     </section>
   )
 }

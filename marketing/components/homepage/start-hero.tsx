@@ -1,13 +1,14 @@
 "use client"
 
 import { ArrowRight, Check, Globe } from "lucide-react"
-import { useId, useState, type FormEvent } from "react"
+import { useEffect, useId, useRef, useState, type FormEvent } from "react"
 import { Container } from "@/components/ui/container"
 import { START_URL, startUrl } from "@/lib/cta"
 import { trackCTAClick } from "@/lib/analytics"
 import { HeroField } from "./hero-field"
 import { StartHeroDemo } from "./start-hero-demo"
 import { Stage } from "./stage"
+import { H2 } from "./type"
 import "./start-hero.css"
 
 /*
@@ -135,25 +136,43 @@ export function StartHero() {
   )
 }
 
-/** The sample scan, framed like every other product moment on the page. */
+/** The sample scan, framed like every other product moment on the page. It waits until it is on screen, so
+ * visitors see the scan from its first step instead of mid-cycle. */
 export function StartExample() {
+  const ref = useRef<HTMLDivElement>(null)
+  const [seen, setSeen] = useState(false)
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (!e.isIntersecting) return
+        setSeen(true)
+        io.disconnect()
+      },
+      { threshold: 0.4 },
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }, [])
+
   return (
     <section id="example" aria-labelledby="example-heading" className="scroll-mt-20 px-2 py-20 sm:px-4 sm:py-28">
       <div className="mx-auto max-w-2xl px-4 text-center">
-        <h2 id="example-heading" className="text-[2rem] font-semibold leading-tight tracking-[-0.025em] text-[#0f172a] sm:text-[2.5rem]">
+        <h2 id="example-heading" className={H2}>
           Watch a scan, start to finish
         </h2>
-        <p className="mt-3 text-[17px] leading-relaxed text-[#475569]">
+        <p className="mt-3 text-balance text-[17px] leading-relaxed text-[#475569]">
           Example scans of well-known companies, not our customers. Yours runs the same way on your site.
         </p>
       </div>
       <Stage className="mx-auto mt-12 max-w-7xl">
         <div className="mx-auto max-w-3xl px-3 py-10 sm:px-8 sm:py-16">
-          <div className="rounded-[26px] bg-white p-3 border border-[#e3eeff] shadow-[0_24px_50px_-30px_rgb(15_23_42/0.35)] sm:p-4">
-            <StartHeroDemo held={false} />
+          <div ref={ref} className="rounded-[26px] bg-white p-3 border border-[#e3eeff] shadow-[0_24px_50px_-30px_rgb(15_23_42/0.35)] sm:p-4">
+            <StartHeroDemo held={!seen} />
           </div>
-          <p className="mt-4 text-center text-[13px] text-[#64748b]">
-            Counts are real matches in our database on October 1, 2026. Lead names are illustrative.
+          <p className="mx-auto mt-4 max-w-[62ch] text-center text-[13px] leading-relaxed text-[#64748b]">
+            Counts are real matches in our database on October 1, 2026. Lead names are illustrative and portraits are AI-generated.
           </p>
           <div className="mt-8 text-center">
             <a href={startUrl("home-example")} className={`inline-flex h-11 items-center gap-2 rounded-xl bg-[#007AFF] px-5 text-[15px] font-semibold text-white transition-colors hover:bg-[#0066DD] ${FOCUS}`}>

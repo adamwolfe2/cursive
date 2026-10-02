@@ -6,9 +6,20 @@ import { StructuredData } from "@/components/seo/structured-data"
 import { generateFAQSchema } from "@/lib/seo/faq-schema"
 import { trackDemoBooked } from "@/lib/analytics"
 import { BOOKING_URL } from "@/lib/cta"
-import { faqs } from "./faq-data"
+import { H2 } from "./type"
+import { faqs as homeFaqs, type FAQ } from "./faq-data"
 
-export function FAQSection() {
+export function FAQSection({
+  items = homeFaqs,
+  pageUrl = "https://www.meetcursive.com",
+  title = "Questions, answered",
+  intro = "Short answers here. For anything else, talk to the team that builds your list.",
+}: {
+  items?: FAQ[]
+  pageUrl?: string
+  title?: string
+  intro?: string
+}) {
   const [openIndex, setOpenIndex] = useState<number | null>(null)
 
   const toggleFAQ = (index: number) => {
@@ -16,10 +27,7 @@ export function FAQSection() {
   }
 
   // Generate FAQ schema markup
-  const faqSchema = generateFAQSchema({
-    faqs,
-    pageUrl: "https://www.meetcursive.com"
-  })
+  const faqSchema = generateFAQSchema({ faqs: items, pageUrl })
 
   return (
     <>
@@ -28,11 +36,11 @@ export function FAQSection() {
       <section id="faq" aria-labelledby="faq-heading" className="scroll-mt-20 bg-white px-6 py-20 sm:py-28">
         <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)] lg:gap-20">
           <div className="lg:sticky lg:top-28 lg:self-start">
-            <h2 id="faq-heading" className="text-[2rem] font-semibold leading-[1.1] tracking-[-0.025em] text-[#0f172a] sm:text-[2.75rem]">
-              Questions, answered
+            <h2 id="faq-heading" className={H2}>
+              {title}
             </h2>
             <p className="mt-4 max-w-[34ch] text-[17px] leading-relaxed text-[#475569]">
-              Short answers here. For anything else, talk to the team that builds your list.
+              {intro}
             </p>
             <a
               href={BOOKING_URL}
@@ -47,7 +55,7 @@ export function FAQSection() {
           </div>
 
           <ul className="border-t border-[#e2e8f0]">
-            {faqs.map((faq, index) => {
+            {items.map((faq, index) => {
               const isOpen = openIndex === index
               return (
                 <li key={faq.question} className="border-b border-[#e2e8f0]">

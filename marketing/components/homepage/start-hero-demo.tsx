@@ -38,7 +38,7 @@ const EXAMPLES: Example[] = [
     summary: 'Software companies of 51 to 500 people whose engineering teams have outgrown their issue tracker.',
     rows: [
       ['Titles', ['CTO', 'VP of Engineering', 'Head of Engineering']],
-      ['Size', ['51–200 people', '201–500 people']],
+      ['Employees', ['51–200', '201–500']],
       ['Where', ['United States']],
     ],
     count: 4449,
@@ -57,7 +57,7 @@ const EXAMPLES: Example[] = [
     rows: [
       ['Titles', ['VP of Marketing', 'Head of Marketing', 'Marketing Director']],
       ['Industry', ['Software', 'IT services']],
-      ['Size', ['11–50 people', '51–200 people']],
+      ['Employees', ['11–50', '51–200']],
     ],
     count: 3445,
     leads: [
@@ -75,7 +75,7 @@ const EXAMPLES: Example[] = [
     rows: [
       ['Titles', ['Founder', 'Owner', 'Head of Ecommerce']],
       ['Industry', ['Apparel', 'Personal care']],
-      ['Size', ['1–10 people', '11–50 people']],
+      ['Employees', ['1–10', '11–50']],
     ],
     count: 14300,
     leads: [
@@ -93,7 +93,7 @@ const EXAMPLES: Example[] = [
     rows: [
       ['Titles', ['Creative Director', 'Founder', 'Head of Design']],
       ['Industry', ['Design', 'Advertising', 'Marketing']],
-      ['Size', ['1–10 people', '11–50 people']],
+      ['Employees', ['1–10', '11–50']],
     ],
     count: 44639,
     leads: [
@@ -103,6 +103,9 @@ const EXAMPLES: Example[] = [
     ],
   },
 ]
+
+/** Illustrative people have AI-generated portraits (not real people): "Rachel J." -> /people/rachel-j.webp. */
+const faceSrc = (name: string) => `/people/${name.toLowerCase().replace(/[^a-z]+/g, '-').replace(/-+$/, '')}.webp`
 
 /** ms from the start of an example at which each step begins; the last entry hands over to the next example. */
 const AT = [0, 750, 1150, 1550, 1950, 2400, 2800, 3100, 3400, 3800, 4400, 4900, 5400, 10_500]
@@ -225,7 +228,6 @@ export function StartHeroDemo({ held }: { held: boolean }) {
           <span className="w-24 shrink-0 text-right text-[12px] text-[#6b7280] sm:w-28">
             {step >= COUNT ? 'Done' : readAll ? 'Finding buyers' : step > 0 ? 'Reading pages' : ''}
           </span>
-          <span className="shrink-0 text-[11px] font-medium uppercase tracking-[0.08em] text-[#9ca3af] max-sm:hidden">Example</span>
         </div>
 
         <div className="px-5 pt-4">
@@ -244,7 +246,7 @@ export function StartHeroDemo({ held }: { held: boolean }) {
               {step >= SUMMARY ? `Who buys from ${ex.domain}` : step > 0 ? 'Working out who buys' : 'Cursive'}
             </p>
           </div>
-          <div className="mt-2 min-h-[2.75rem]">
+          <div className="mt-2 min-h-[4.9rem] sm:min-h-[3.25rem]">
             {step >= SUMMARY ? (
               <p className="text-[19px] font-light leading-[1.3] tracking-[-0.015em] text-[#0f172a]">
                 {still ? ex.summary : <Words text={ex.summary} />}
@@ -259,7 +261,7 @@ export function StartHeroDemo({ held }: { held: boolean }) {
           <dl className="mt-3 space-y-1.5">
             {ex.rows.map(([label, values], i) => (
               <div key={label} className="flex h-7 items-center gap-3">
-                <dt className="w-[3.75rem] shrink-0 text-[12px] text-[#6b7280] sm:w-[4.5rem]">{label}</dt>
+                <dt className="w-[4.5rem] shrink-0 text-[12px] text-[#6b7280] sm:w-[4.75rem]">{label}</dt>
                 <dd className="flex min-w-0 gap-1.5 overflow-hidden max-sm:[&>*:nth-child(n+3)]:hidden">
                   {step >= FIRST_ROW + i
                     ? values.map((v, j) => (
@@ -301,7 +303,8 @@ export function StartHeroDemo({ held }: { held: boolean }) {
                 {/* Keyed wrappers: the row is replaced, not patched, so the placeholder never counts as a layout shift. */}
                 {step >= FIRST_LEAD + i ? (
                   <div key="lead" className="grid grid-cols-[2.25rem_minmax(0,1fr)] items-center gap-3">
-                    <span className="grid h-9 w-9 place-items-center rounded-full bg-[#e8f1ff] text-[13px] font-semibold text-[#0066DD]">{name[0]}</span>
+                    {/* eslint-disable-next-line @next/next/no-img-element -- 3KB static portrait, sized exactly */}
+                    <img src={faceSrc(name)} alt="" width={36} height={36} loading="lazy" decoding="async" className="h-9 w-9 rounded-full bg-[#e8f1ff] object-cover ring-1 ring-black/5" />
                     <div className="grid min-w-0 gap-0.5">
                       <div className="flex min-w-0 items-baseline gap-2 text-[13px]">
                         <span className="shrink-0 font-semibold text-[#111827]">{name}</span>

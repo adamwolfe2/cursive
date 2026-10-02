@@ -103,12 +103,15 @@ body {
   .fl-write { animation: fl-write 1100ms cubic-bezier(0.65, 0, 0.35, 1) 250ms both; }
 }
 
-/* Typesetting details: headings balance their lines, running text avoids one-word last lines. */
-h1, h2, h3 {
-  text-wrap: balance;
-}
-p, li, dd, dt, figcaption, blockquote {
-  text-wrap: pretty;
+/* Typesetting details: headings balance their lines, running text avoids one-word last lines. In the base layer so
+   utilities like truncate (white-space: nowrap) still win; unlayered rules would beat every Tailwind utility. */
+@layer base {
+  h1, h2, h3 {
+    text-wrap: balance;
+  }
+  p, li, dd, dt, figcaption, blockquote {
+    text-wrap: pretty;
+  }
 }
 
 ::selection {

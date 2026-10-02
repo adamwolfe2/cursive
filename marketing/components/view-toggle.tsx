@@ -34,6 +34,7 @@ export function ViewToggle() {
     <div className="inline-flex items-center bg-gray-100 rounded-full p-1 gap-1 border border-gray-200">
       <button
         onClick={(e) => handleViewChange(e, 'human')}
+        aria-pressed={view === 'human'}
         className={`relative px-4 py-1.5 text-sm font-medium rounded-full transition-colors ${
           view === 'human'
             ? 'text-white'
@@ -45,13 +46,14 @@ export function ViewToggle() {
           <motion.div
             layoutId="activeView"
             className="absolute inset-0 bg-primary rounded-full shadow-sm"
-            transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
+            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
           />
         )}
-        <span className="relative z-10">HUMAN</span>
+        <span className="relative z-10">Human</span>
       </button>
       <button
         onClick={(e) => handleViewChange(e, 'machine')}
+        aria-pressed={view === 'machine'}
         className={`relative px-4 py-1.5 text-sm font-medium rounded-full transition-colors ${
           view === 'machine'
             ? 'text-white'
@@ -63,10 +65,10 @@ export function ViewToggle() {
           <motion.div
             layoutId="activeView"
             className="absolute inset-0 bg-primary rounded-full shadow-sm"
-            transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
+            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
           />
         )}
-        <span className="relative z-10">MACHINE</span>
+        <span className="relative z-10">Machine</span>
       </button>
     </div>
   )
