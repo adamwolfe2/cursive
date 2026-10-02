@@ -18,7 +18,6 @@ import {
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/design-system'
 import { EnrichLeadPanel } from '@/components/leads/EnrichLeadPanel'
-import { AskYourDataSlideOver } from '@/components/intelligence'
 import type { VisitorLead, VisitorStats, PixelInfo, VisitorsResponse } from './visitor-types'
 import { exportVisitorsCSV } from './visitor-types'
 import { VisitorStatsCards } from './VisitorStatsCards'
@@ -254,7 +253,6 @@ export function WebsiteVisitorsClient({ initialStats, initialPixel, initialVisit
       )}
 
       {/* Ask Your Data — floating AI query button */}
-      <AskYourDataSlideOver />
     </div>
   )
 }

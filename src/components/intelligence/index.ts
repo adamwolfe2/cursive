@@ -1,5 +1,3 @@
 export { IntelligenceTab } from './IntelligenceTab'
-export { AskYourDataPanel } from './AskYourDataPanel'
-export { AskYourDataSlideOver } from './AskYourDataSlideOver'
 export { BulkIntelligenceAction } from './BulkIntelligenceAction'
 export { TechStackChips } from './TechStackChips'
