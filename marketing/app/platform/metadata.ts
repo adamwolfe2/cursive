@@ -2,17 +2,9 @@ import { Metadata } from "next"
 import { generateMetadata } from "@/lib/seo/metadata"
 
 export const metadata: Metadata = generateMetadata({
-  title: "AI-Powered B2B Lead Generation Platform",
-  description: "Explore Cursive's AI-powered platform: visitor identification, audience builder, intent data, direct mail automation, and 200+ integrations for B2B lead generation.",
-  keywords: [
-    "AI lead generation platform",
-    "B2B visitor identification",
-    "intent data",
-    "audience builder",
-    "direct mail automation",
-    "lead generation integrations",
-    "AI outbound platform",
-    "B2B sales platform",
-  ],
+  title: "The Cursive platform: find buyers, reach them, run it",
+  description:
+    "One platform in three steps. Find your buyers from your website, have Cursive reach them with LinkedIn and email outreach, and run it all from a dashboard built for your company. Start with 25 free leads.",
+  keywords: ["B2B lead generation platform", "done-for-you outreach", "sales dashboard", "lead credits", "ICP leads from website"],
   canonical: "https://www.meetcursive.com/platform",
 })
