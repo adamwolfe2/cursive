@@ -1,11 +1,14 @@
+const SITE_URL = 'https://www.meetcursive.com'
+
 export function generateOrganizationSchema() {
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
+    '@id': `${SITE_URL}/#organization`,
     name: 'Cursive',
-    url: 'https://www.meetcursive.com',
-    logo: 'https://www.meetcursive.com/cursive-logo.png',
-    description: 'AI-powered B2B lead generation and outbound automation. Identify 60–70% of anonymous website visitors and automate personalized outreach.',
+    url: SITE_URL,
+    logo: `${SITE_URL}/cursive-logo.png`,
+    description: 'Cursive finds your buyers, reaches them for you, and gives you the system to run it.',
     sameAs: [
       'https://linkedin.com/company/cursive',
     ],
@@ -22,14 +25,48 @@ export function generateWebSiteSchema() {
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
+    '@id': `${SITE_URL}/#website`,
     name: 'Cursive',
-    url: 'https://www.meetcursive.com',
-    description: 'AI-powered visitor identification and outbound automation platform for B2B companies.',
-    publisher: {
-      '@type': 'Organization',
-      name: 'Cursive',
-      url: 'https://www.meetcursive.com',
-    },
+    url: SITE_URL,
+    description: 'Get 25 free B2B leads from your website. Cursive finds your buyers, reaches them for you, and gives you the system to run it.',
+    inLanguage: 'en-US',
+    publisher: { '@id': `${SITE_URL}/#organization` },
+  }
+}
+
+interface PricedOffer {
+  name: string
+  price: string
+  /** Billed monthly when true; otherwise a one-off price. */
+  monthly: boolean
+}
+
+/** Approved list prices (pivot spec, 2026-10-01). Keep in step with /pricing. */
+export const PUBLISHED_OFFERS: PricedOffer[] = [
+  { name: 'Free: 25 leads', price: '0', monthly: false },
+  { name: 'Starter', price: '197', monthly: true },
+  { name: 'Growth', price: '497', monthly: true },
+  { name: 'LinkedIn outreach', price: '1497', monthly: true },
+  { name: 'LinkedIn and email outreach', price: '2497', monthly: true },
+  { name: 'Visitor Pixel add-on', price: '97', monthly: true },
+]
+
+function offerSchema(offer: PricedOffer) {
+  return {
+    '@type': 'Offer',
+    name: offer.name,
+    price: offer.price,
+    priceCurrency: 'USD',
+    ...(offer.monthly
+      ? {
+          priceSpecification: {
+            '@type': 'UnitPriceSpecification',
+            price: offer.price,
+            priceCurrency: 'USD',
+            referenceQuantity: { '@type': 'QuantitativeValue', value: '1', unitCode: 'MON' },
+          },
+        }
+      : {}),
   }
 }
 
@@ -40,36 +77,16 @@ export function generateSoftwareApplicationSchema() {
     name: 'Cursive',
     applicationCategory: 'BusinessApplication',
     operatingSystem: 'Web',
-    offers: {
-      '@type': 'Offer',
-      price: '1000',
-      priceCurrency: 'USD',
-      priceSpecification: {
-        '@type': 'UnitPriceSpecification',
-        price: '1000.00',
-        priceCurrency: 'USD',
-        referenceQuantity: {
-          '@type': 'QuantitativeValue',
-          value: '1',
-          unitCode: 'MON',
-        },
-      },
-    },
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: '4.8',
-      ratingCount: '127',
-      bestRating: '5',
-      worstRating: '1',
-    },
-    description: 'AI-powered B2B lead generation platform that identifies anonymous website visitors and automates multi-channel outreach.',
+    url: SITE_URL,
+    publisher: { '@id': `${SITE_URL}/#organization` },
+    offers: PUBLISHED_OFFERS.map(offerSchema),
+    description: 'Paste your website and get 25 free B2B leads with checked work emails. Then credits or a plan for more, done-for-you LinkedIn and email outreach, and a custom operating-system dashboard.',
     featureList: [
-      'Visitor Identification',
-      'AI-Powered Outreach',
-      'Intent Data',
-      'Audience Builder',
-      'CRM Integration',
-      'Direct Mail Automation',
+      'Free 25 leads from your website',
+      'Lead credits and weekly plans',
+      'Done-for-you LinkedIn and email outreach',
+      'Custom company dashboard',
+      'Visitor Pixel add-on',
     ],
   }
 }

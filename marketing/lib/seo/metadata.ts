@@ -37,7 +37,7 @@ export function generateMetadata({
           url: fullOgImage,
           width: 1314,
           height: 1129,
-          alt: 'Cursive — Identity & Intent Infrastructure for Outbound, Intent, and Enrichment',
+          alt: 'Cursive: find your buyers, reach them, run it',
         }
       ],
       locale: 'en_US',
