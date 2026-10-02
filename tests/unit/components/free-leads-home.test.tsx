@@ -14,7 +14,7 @@ vi.mock('@/app/start/_components/api', () => ({
 }))
 
 import { FreeLeadsHome } from '@/app/(dashboard)/dashboard/FreeLeadsHome'
-import { nextMonday, icpChips, leadStats, brandName } from '@/app/(dashboard)/dashboard/home-helpers'
+import { nextMonday, deliveryStatus, icpChips, leadStats, brandName } from '@/app/(dashboard)/dashboard/home-helpers'
 
 const lead = (n: number, over: Partial<FullLead> = {}): FullLead => ({
   id: `l${n}`,
@@ -92,15 +92,47 @@ describe('FreeLeadsHome', () => {
     expect(screen.getByText('No leads in this workspace yet.')).toBeTruthy()
     expect(screen.getByRole('link', { name: 'Get my 25 leads' }).getAttribute('href')).toBe('/start')
     expect(screen.queryByRole('link', { name: /Download CSV/ })).toBeNull()
+    const text = document.body.textContent ?? ''
+    expect(document.querySelector('dl')).toBeNull()
+    expect(text).not.toMatch(/Picked from|stay here|stay in this workspace|You have the first one/)
+    expect(text).toContain('Weekly leads are off.')
+    expect(text).toContain('Find, reach, run. Start with your free 25.')
   })
 
   it('shows the next Monday delivery and trial end when subscribed', () => {
     vi.useFakeTimers()
     vi.setSystemTime(new Date('2026-10-02T12:00:00Z'))
     render(<FreeLeadsHome {...base} leads={[lead(1)]} weekly={{ state: 'active', trialEndsAt: '2026-10-10T00:00:00Z' }} />)
-    expect(screen.getByText('Your next 25 arrive Mon, Oct 5.').getAttribute('role')).toBe('status')
+    expect(screen.getByText('Your next 25 arrive Mon, Oct 5.')).toBeTruthy()
     expect(screen.getByText(/Free until Oct 10/)).toBeTruthy()
     expect(screen.getByText('On')).toBeTruthy()
+  })
+
+  it('deliveryStatus mirrors what the weekly job delivers to', () => {
+    expect(deliveryStatus(null)).toBe('off')
+    expect(deliveryStatus({ state: 'active' })).toBe('delivering')
+    expect(deliveryStatus({ state: 'paused' })).toBe('delivering')
+    expect(deliveryStatus({ state: 'past_due' })).toBe('payment_issue')
+    expect(deliveryStatus({ state: 'incomplete' })).toBe('setting_up')
+    expect(deliveryStatus({ state: 'canceled' })).toBe('off')
+  })
+
+  it('does not promise Monday leads to past_due or incomplete orders', () => {
+    const { unmount } = render(<FreeLeadsHome {...base} leads={[lead(1)]} weekly={{ state: 'past_due', trialEndsAt: null }} />)
+    expect(document.body.textContent).not.toMatch(/next 25 arrive/)
+    expect(screen.getByText(/last payment didn.t go through/)).toBeTruthy()
+    expect(screen.getByText('Update payment')).toBeTruthy()
+    unmount()
+    render(<FreeLeadsHome {...base} leads={[lead(1)]} weekly={{ state: 'incomplete', trialEndsAt: null }} />)
+    expect(document.body.textContent).not.toMatch(/next 25 arrive/)
+    expect(screen.getByText('Finishing setup.')).toBeTruthy()
+  })
+
+  it('paused orders say the plan ends and do not offer cancel', () => {
+    render(<FreeLeadsHome {...base} leads={[lead(1)]} weekly={{ state: 'paused', trialEndsAt: null }} />)
+    expect(screen.getByText('Manage billing')).toBeTruthy()
+    expect(document.body.textContent).toMatch(/Ends at the end of this billing period/)
+    expect(document.body.textContent).not.toMatch(/Cancel anytime/)
   })
 
   it('uses only approved prices and never names the data provider', () => {

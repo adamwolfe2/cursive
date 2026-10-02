@@ -50,3 +50,23 @@ export function icpChips(icp: Icp | null, max = 8): string[] {
   ]
   return Array.from(new Set(all)).slice(0, max)
 }
+
+export type DeliveryStatus = 'delivering' | 'payment_issue' | 'setting_up' | 'off'
+
+/**
+ * What the weekly job will actually do for this order. Mirrors src/lib/free-leads/weekly.ts,
+ * which only delivers to 'active' and 'paused' (cancelled at period end) orders.
+ */
+export function deliveryStatus(weekly: { state: string } | null): DeliveryStatus {
+  switch (weekly?.state) {
+    case 'active':
+    case 'paused':
+      return 'delivering'
+    case 'past_due':
+      return 'payment_issue'
+    case 'incomplete':
+      return 'setting_up'
+    default:
+      return 'off'
+  }
+}
