@@ -16,7 +16,7 @@ import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
 import { sendFreeLeadsWeeklyEmail } from '@/lib/email/templates/free-leads-weekly'
 import { getStripeClient } from '@/lib/stripe/client'
 import { notifySales } from './notify'
-import { claimIcp, findWorkspaceClaim, withoutStoredLeads } from './claims'
+import { claimIcp, findWorkspaceClaim, insertLeadsSkippingDuplicates, withoutStoredLeads } from './claims'
 import { FREE_LEAD_COUNT } from './contract'
 import { OVERPULL_FACTOR, scoreLeads, selectFitLeads } from './lead-fit'
 import { toLeadInsert, usableContacts } from './rules'
@@ -147,22 +147,22 @@ export async function deliverWeekly(order: WeeklyOrder, week: string, admin: Adm
     const lead = toLeadInsert(item, order.workspace_id, claim.id, now, fit ? { fit_score: fit.score, fit_why: fit.why, fit_rank: rank } : undefined)
     return { ...lead, metadata: { ...lead.metadata, weekly: week } }
   })
-  if (rows.length) {
-    const { error } = await admin.from('leads').insert(rows)
-    if (error) {
-      await finish(admin, deliveryId, { status: 'failed', credits })
-      throw new Error(`weekly leads insert failed for order ${order.id}: ${error.message}`)
-    }
+  let stored = 0
+  try {
+    stored = (await insertLeadsSkippingDuplicates(admin, rows)).stored
+  } catch (err) {
+    await finish(admin, deliveryId, { status: 'failed', credits })
+    throw new Error(`weekly leads insert failed for order ${order.id}: ${err instanceof Error ? err.message : String(err)}`)
   }
 
   await finish(admin, deliveryId, {
     status: 'delivered',
     offset_end: offsetStart + credits,
-    leads: rows.length,
+    leads: stored,
     credits,
     delivered_at: now,
   })
-  safeLog('[free-leads/weekly] delivered', { order_id: order.id, workspace_id: order.workspace_id, week, leads: rows.length, credits })
+  safeLog('[free-leads/weekly] delivered', { order_id: order.id, workspace_id: order.workspace_id, week, leads: stored, credits })
   const top = chosen.slice(0, 3).map(({ item, fit }) => ({
     name: [item.first_name, item.last_name].filter(Boolean).join(' '),
     title: item.job_title,
@@ -170,7 +170,7 @@ export async function deliverWeekly(order: WeeklyOrder, week: string, admin: Adm
     why: fit?.why ?? null,
   }))
   const domain = claim.website.replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0]
-  return { status: 'delivered', leads: rows.length, credits, domain, top }
+  return { status: 'delivered', leads: stored, credits, domain, top }
 }
 
 /** The workspace owner's email, for the Monday note. Null when there is none. */

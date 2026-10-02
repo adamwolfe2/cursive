@@ -7,7 +7,7 @@
  * workspace_id.
  */
 import { createAdminClient } from '@/lib/supabase/admin'
-import { safeError, safeLog } from '@/lib/utils/log-sanitizer'
+import { safeError, safeLog, safeWarn } from '@/lib/utils/log-sanitizer'
 import { slugifyWorkspace } from '@/lib/funnel/workspace-provision'
 import { FUNNEL_TIER_FEATURES } from '@/lib/workspaces/feature-flags'
 import { assertConfigured, searchContacts, type GetLeadsFilters } from '@/lib/getleads/client'
@@ -371,8 +371,10 @@ export async function fulfillClaim(claim: ClaimRow, authUserId: string, admin: A
   const rows = ranked.map(({ item, fit }, rank) =>
     toLeadInsert(item, workspaceId, claim.id, now, fit ? { fit_score: fit.score, fit_why: fit.why, fit_rank: rank } : undefined)
   )
-  const { error } = rows.length ? await admin.from('leads').insert(rows) : { error: null }
-  if (error) {
+  let stored = 0
+  try {
+    stored = (await insertLeadsSkippingDuplicates(admin, rows)).stored
+  } catch (error) {
     safeError('[free-leads/claims] leads insert failed after pull', error)
     await setStatus(admin, claim.id, 'failed', { workspace_id: workspaceId, credits_used: spent })
     throw new ClaimError('storing leads failed', 'store', spent)
@@ -383,8 +385,32 @@ export async function fulfillClaim(claim: ClaimRow, authUserId: string, admin: A
     total_matching: pulled.totalAvailable,
     fulfilled_at: now,
   })
-  safeLog('[free-leads/claims] fulfilled', { claim_id: claim.id, workspace_id: workspaceId, leads: rows.length })
+  safeLog('[free-leads/claims] fulfilled', { claim_id: claim.id, workspace_id: workspaceId, leads: stored })
   return { credits: spent, usd, reused_preview: reused.length, extra_credits: extraCredits, email_lookups: lookups }
+}
+
+/**
+ * Stores leads after a paid pull. leads.hash_key is unique across all workspaces, so a person stored by
+ * another claim at the same moment would fail a bulk insert and waste the credits already spent. On a
+ * duplicate, fall back to row-by-row and skip only the duplicates. Throws if nothing could be stored.
+ */
+export async function insertLeadsSkippingDuplicates(
+  admin: Admin,
+  rows: Record<string, unknown>[],
+): Promise<{ stored: number; skipped: number }> {
+  if (!rows.length) return { stored: 0, skipped: 0 }
+  const { error } = await admin.from('leads').insert(rows as never)
+  if (!error) return { stored: rows.length, skipped: 0 }
+  if (error.code !== '23505') throw new Error(`leads insert failed: ${error.message}`)
+  let stored = 0
+  for (const row of rows) {
+    const { error: rowError } = await admin.from('leads').insert(row as never)
+    if (!rowError) stored += 1
+    else if (rowError.code !== '23505') throw new Error(`leads insert failed: ${rowError.message}`)
+  }
+  if (!stored) throw new Error('no leads stored: every row was already stored elsewhere')
+  safeWarn('[free-leads/claims] skipped leads stored elsewhere during insert', { skipped: rows.length - stored })
+  return { stored, skipped: rows.length - stored }
 }
 
 type Picked = ReturnType<typeof selectFitLeads<GetLeadsContact>>
