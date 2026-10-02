@@ -8,14 +8,25 @@ import { integrationsFaqs } from "./faq-data"
 
 /* Integrations: where leads go, then a plain index of setup guides grouped by category. */
 
+/* Only categories that match the homepage line (where leads go). Other guides stay reachable by URL but are not promoted here. */
+const GUIDE_CATEGORIES: Array<[source: string, label: string]> = [
+  ["CRM", "CRM"],
+  ["Sales Engagement", "Sales engagement"],
+  ["Communication", "Communication"],
+  ["Automation Platform", "Automation"],
+  ["Spreadsheets", "Spreadsheets"],
+]
+
 function groupByCategory(items: Integration[]): Array<{ category: string; items: Integration[] }> {
-  const map = new Map<string, Integration[]>()
-  for (const item of items) map.set(item.category, [...(map.get(item.category) ?? []), item])
-  return Array.from(map, ([category, list]) => ({ category, items: list }))
+  return GUIDE_CATEGORIES.map(([source, label]) => ({
+    category: label,
+    items: items.filter((i) => i.category === source),
+  })).filter((g) => g.items.length > 0)
 }
 
 export default function IntegrationsPage() {
   const groups = groupByCategory(integrations)
+  const guideCount = groups.reduce((n, g) => n + g.items.length, 0)
   return (
     <div className="bg-white">
       <PageHero
@@ -34,7 +45,7 @@ export default function IntegrationsPage() {
       <Section
         id="guides"
         title="Setup guides"
-        lead={`${integrations.length} tools with a guide for the field mapping and the steps. Most connect through a webhook or Zapier.`}
+        lead={`${guideCount} tools with a guide for the field mapping and the steps. Most connect through a webhook or Zapier.`}
       >
         {groups.map((g) => (
           <div key={g.category} className="mt-12">
@@ -51,7 +62,12 @@ export default function IntegrationsPage() {
                         // eslint-disable-next-line @next/next/no-img-element -- small static logo
                         <img src={i.logo} alt="" width={24} height={24} className="h-6 w-6 object-contain" />
                       ) : (
-                        <span aria-hidden="true" className="w-6 text-center text-xl leading-none">{i.logo}</span>
+                        <span
+                          aria-hidden="true"
+                          className="flex h-6 w-6 items-center justify-center rounded-md bg-[#eef4ff] text-[12px] font-semibold text-[#0066DD]"
+                        >
+                          {i.name.charAt(0).toUpperCase()}
+                        </span>
                       )}
                       {i.name}
                     </span>

@@ -25,6 +25,6 @@ export const platformFaqs: FAQ[] = [
   {
     question: "How much does each step cost?",
     answer:
-      "Find starts free, then credits from $49 for 100 leads, Starter at $197 a month or Growth at $497 a month. Outreach is $1,497 a month for LinkedIn or $2,497 a month with email. The operating system starts at $2,500 setup plus $500 a month.",
+      "Find starts free, then credits from $49 for 100 leads (early access), Starter at $197 a month or Growth at $497 a month (early access). Outreach is $1,497 a month for LinkedIn or $2,497 a month with email. The operating system starts at $2,500 setup plus $500 a month.",
   },
 ]

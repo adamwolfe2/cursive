@@ -36,5 +36,29 @@ const EXTRA: FAQ[] = [
   },
 ]
 
+/** Finds a FAQ by its exact question text. Throws when missing so a rename upstream fails loudly. */
+export function pick(list: FAQ[], question: string): FAQ {
+  const found = list.find((f) => f.question === question)
+  if (!found) throw new Error(`FAQ not found: ${question}`)
+  return found
+}
+
+const home = (q: string) => pick(homeFaqs, q)
+const extra = (q: string) => pick(EXTRA, q)
+
 /** Questions in reading order: getting started, how it works, what it costs, then the rest. */
-export const allFaqs: FAQ[] = [homeFaqs[0], EXTRA[0], EXTRA[1], homeFaqs[1], EXTRA[2], EXTRA[3], EXTRA[4], EXTRA[5], ...pricingFaqs, homeFaqs[2], homeFaqs[3], homeFaqs[4], EXTRA[6]]
+export const allFaqs: FAQ[] = [
+  home("Where do the 25 people come from?"),
+  extra("How long does it take to get my 25 leads?"),
+  extra("What if I do not have a website?"),
+  home("How accurate are the emails?"),
+  extra("Can I tell Cursive which leads are right?"),
+  extra("Who runs the outreach?"),
+  extra("What does the Visitor Pixel do?"),
+  extra("Which tools does Cursive connect to?"),
+  ...pricingFaqs,
+  home("What happens after the free 25?"),
+  home("How is Cursive different from ZoomInfo or Apollo?"),
+  home("Is Cursive compliant?"),
+  extra("How do I talk to a person?"),
+]
