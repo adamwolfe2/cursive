@@ -11,6 +11,7 @@ import { z } from 'zod'
 import { safeError } from '@/lib/utils/log-sanitizer'
 import { fastAuth } from '@/lib/auth/fast-auth'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { handleApiError, unauthorized } from '@/lib/utils/api-error-handler'
 
 // Zod validation schema
@@ -160,7 +161,7 @@ export async function POST(request: NextRequest) {
         segmentUpdate.location_segment = primaryState.toLowerCase()
       }
 
-      const { error: userUpdateError } = await supabase
+      const { error: userUpdateError } = await createAdminClient()
         .from('users')
         .update(segmentUpdate)
         .eq('id', userProfile.userId)

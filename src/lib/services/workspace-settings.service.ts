@@ -4,6 +4,7 @@
  */
 
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 // Edge-compatible crypto helpers (no Node.js 'crypto' import)
 
@@ -231,7 +232,8 @@ export async function updateWorkspaceSettings(
     updateData.name = updates.companyName
   }
 
-  const { error: updateError } = await supabase
+  // workspaces.settings is service-role-only (S0 column grants); caller authorizes workspaceId
+  const { error: updateError } = await createAdminClient()
     .from('workspaces')
     .update(updateData)
     .eq('id', workspaceId)

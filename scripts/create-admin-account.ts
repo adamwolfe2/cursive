@@ -24,7 +24,11 @@ async function createAdminAccount() {
   console.log('Creating admin account...')
 
   const adminEmail = 'adam@meetcursive.com'
-  const adminPassword = 'Idie9epla!'
+  const adminPassword = process.env.ADMIN_PASSWORD
+  if (!adminPassword || adminPassword.length < 16) {
+    console.error('ADMIN_PASSWORD env var is required (min 16 chars). Never commit a password.')
+    process.exit(1)
+  }
   const adminName = 'Adam Wolfe'
 
   try {
@@ -200,7 +204,7 @@ async function createAdminAccount() {
     console.log('✅ ADMIN ACCOUNT CREATED SUCCESSFULLY')
     console.log('='.repeat(60))
     console.log(`Email:     ${adminEmail}`)
-    console.log(`Password:  ${adminPassword}`)
+    console.log('Password:  (from ADMIN_PASSWORD env)')
     console.log(`Role:      owner`)
     console.log(`Plan:      pro`)
     console.log(`Workspace: ${workspaceId}`)

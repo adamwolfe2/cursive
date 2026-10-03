@@ -2,6 +2,7 @@
 // Manages user credits and daily limits
 
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { safeError } from '@/lib/utils/log-sanitizer'
 
 export type CreditAction = 'lead_generation' | 'email_reveal' | 'export' | 'people_search'
@@ -67,7 +68,8 @@ export class CreditService {
       const nextReset = new Date(now)
       nextReset.setHours(24, 0, 0, 0) // Reset at midnight
 
-      const { error: resetError } = await supabase
+      // users billing columns are service-role-only (S0 column grants)
+      const { error: resetError } = await createAdminClient()
         .from('users')
         .update({
           daily_credits_used: 0,
