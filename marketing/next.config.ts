@@ -88,6 +88,18 @@ const nextConfig: NextConfig = {
       ['/case-studies', '/'],
       ['/visitor-identification', '/pixel'],
     ]
+    // Pages whose backing API lived in the old app and is gone since the 2026-10-03 cutover.
+    // Temporary (307) so they can come back if the programs return.
+    // /affiliates and /partners posted applications to a removed endpoint, so every one was lost.
+    // /visitor-estimate was the old app's estimate funnel; blog CTAs still link to it.
+    const RETIRED_FUNNELS: Array<[string, string]> = [
+      ['/affiliates', '/contact'],
+      ['/partners', '/contact'],
+      [
+        '/visitor-estimate',
+        'https://leads.meetcursive.com/start?utm_source=meetcursive&utm_medium=blog&utm_content=visitor-estimate',
+      ],
+    ]
 
     return [
       {
@@ -103,6 +115,10 @@ const nextConfig: NextConfig = {
       ...MOVED_PAGES.flatMap(([path, destination]) => [
         { source: path, destination, permanent: true },
         { source: `${path}/:slug*`, destination, permanent: true },
+      ]),
+      ...RETIRED_FUNNELS.flatMap(([path, destination]) => [
+        { source: path, destination, permanent: false },
+        { source: `${path}/:slug*`, destination, permanent: false },
       ]),
     ]
   },

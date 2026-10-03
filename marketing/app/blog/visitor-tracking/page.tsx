@@ -429,9 +429,8 @@ export default function VisitorTrackingPage() {
     c[i]=c[i]||function(){(c[i].q=c[i].q||[]).push(arguments)};
     v=u.createElement(r);v.async=1;v.src=s;
     e=u.getElementsByTagName(r)[0];e.parentNode.insertBefore(v,e);
-  })(window,document,'script','https://cdn.meetcursive.com/track.js','cursive');
-  cursive('init', 'YOUR_SITE_ID');
-  cursive('track', 'pageview');
+  })(window,document,'script','https://cdn.meetcursive.com/pixel.js','cursive');
+  cursive('init', 'YOUR_PIXEL_ID');
 </script>`}
               </pre>
             </div>
