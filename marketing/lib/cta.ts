@@ -8,7 +8,8 @@
  * Do NOT use ?ref= for this: ref is the affiliate code param and the app stores
  * it first-touch in the cursive_ref cookie, which would block real partner credit.
  */
-export const START_URL = 'https://leads.meetcursive.com/start'
+// Preview builds point at a preview app; production stays on the live front door.
+export const START_URL = process.env.NEXT_PUBLIC_START_URL || 'https://leads.meetcursive.com/start'
 
 /**
  * /start link tagged with where on the site the click came from (e.g. "nav", "home-hero").
