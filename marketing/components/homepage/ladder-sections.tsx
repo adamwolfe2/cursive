@@ -172,7 +172,7 @@ export function RungsSection() {
               <div className="grid grid-cols-1 items-center gap-10 px-6 py-12 sm:px-10 sm:py-16 lg:grid-cols-2 lg:gap-16 lg:px-16">
                 <div className={`min-w-0 ${i % 2 ? "lg:order-2" : ""}`}>
                   <p className="flex items-center gap-3 text-[15px] font-semibold text-[#0066DD]">
-                    <span className="grid h-8 w-8 place-items-center rounded-full bg-[#007AFF] text-[14px] text-white">{r.n}</span>
+                    <span className="grid h-8 w-8 place-items-center rounded-full bg-[#0066DD] text-[14px] text-white">{r.n}</span>
                     {r.kicker}
                   </p>
                   <h3 className="mt-5 max-w-[22ch] text-[1.75rem] font-semibold leading-[1.12] tracking-[-0.025em] text-[#0f172a] sm:text-[2.25rem]">
@@ -331,7 +331,7 @@ export function PricingGrid({ className = "" }: { className?: string }) {
         {PRICING.map((col) => (
           <div key={col.rung} className="flex flex-col bg-white p-6 sm:p-8">
             <p className="flex items-center gap-2.5 text-[15px] font-semibold text-[#0066DD]">
-              <span className="grid h-7 w-7 place-items-center rounded-full bg-[#007AFF] text-[13px] text-white">{col.n}</span>
+              <span className="grid h-7 w-7 place-items-center rounded-full bg-[#0066DD] text-[13px] text-white">{col.n}</span>
               {col.rung}
             </p>
             <p className="mt-3 text-[15px] leading-relaxed text-[#475569]">{col.lead}</p>

@@ -2,9 +2,11 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 
-// At 390x844 the old banner (p-5 + heading row, ~254px tall) sat on top of the hero trust chips
-// (577-627px). The phone layout drops the heading row and tightens spacing (~162px, top at 674px);
-// from sm up the original desktop layout is unchanged.
+// The hero trust chips sit at a fixed 577-627px from the top (no viewport-height layout). Phone
+// visible height varies with Safari's toolbars (~660px on first load up to 844px), and a
+// bottom-anchored banner whose top must clear 627px at a 664px viewport would have to be under ~29px
+// tall. So no banner height is safe for every viewport: on phones the banner waits until #hero has
+// scrolled out of view. These tests assert that gate, not a single viewport height.
 const src = readFileSync('components/cookie-consent.tsx', 'utf8')
 const classes = [...src.matchAll(/className="([^"]*)"/g)].map((m) => m[1].split(/\s+/))
 const find = (...needles) => classes.find((c) => needles.every((n) => c.includes(n)))
@@ -29,4 +31,18 @@ test('consent copy and both choices stay visible on phones', () => {
   assert.match(src, />\s*Accept\s*</)
   assert.match(src, />\s*Decline\s*</)
   assert.match(src, /aria-label="Close cookie banner"/)
+})
+
+test('on phones the banner waits until #hero has scrolled out of view', () => {
+  const fn = src.slice(src.indexOf('export function scheduleBanner'), src.indexOf('export function CookieConsent'))
+  assert.ok(fn.length > 0, 'scheduleBanner exists')
+  assert.match(src, /PHONE_QUERY = "\(max-width: 639px\)"/, 'phone query matches Tailwind sm breakpoint')
+  assert.match(fn, /document\.getElementById\("hero"\)/)
+  assert.match(fn, /window\.matchMedia\(PHONE_QUERY\)\.matches/)
+  assert.match(fn, /new IntersectionObserver/)
+  assert.match(fn, /!entry\.isIntersecting[\s\S]*show\(\)/, 'shows only once the hero is out of view')
+  assert.match(fn, /observer\.disconnect\(\)/, 'observer is cleaned up')
+  // Pages without a hero, larger screens, and old browsers keep the short delay.
+  assert.match(fn, /if \(!hero \|\| !isPhone \|\| typeof IntersectionObserver === "undefined"\)[\s\S]*setTimeout\(show, 1500\)/)
+  assert.match(src, /return scheduleBanner\(\(\) => setVisible\(true\)\)/, 'component uses the gate')
 })

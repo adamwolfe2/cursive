@@ -7,6 +7,8 @@ import { Cookie, X } from "lucide-react"
 
 const CONSENT_KEY = "cursive-cookie-consent"
 const CONSENT_VERSION = "2" // Bump when consent notice text changes materially
+/** Below Tailwind `sm` (640px): the phone layout. */
+const PHONE_QUERY = "(max-width: 639px)"
 
 export type ConsentDecision = "accepted" | "declined"
 
@@ -45,19 +47,37 @@ function saveConsent(decision: ConsentDecision) {
   localStorage.setItem(CONSENT_KEY, JSON.stringify(record))
 }
 
+/**
+ * Decide when the banner may appear. On phones a bottom-anchored banner covers the hero's trust
+ * chips at any realistic visible height (Safari toolbars shrink 844px to ~660px), so when the page
+ * has a #hero we wait until it has scrolled out of view. Everywhere else: a short delay so it
+ * doesn't flash on page load. Nothing non-essential runs before an explicit accept either way.
+ */
+export function scheduleBanner(show: () => void): () => void {
+  const hero = document.getElementById("hero")
+  const isPhone = window.matchMedia(PHONE_QUERY).matches
+  if (!hero || !isPhone || typeof IntersectionObserver === "undefined") {
+    const timer = setTimeout(show, 1500)
+    return () => clearTimeout(timer)
+  }
+  const observer = new IntersectionObserver(([entry]) => {
+    if (entry && !entry.isIntersecting) {
+      observer.disconnect()
+      show()
+    }
+  })
+  observer.observe(hero)
+  return () => observer.disconnect()
+}
+
 export function CookieConsent() {
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {
-    // Small delay so it doesn't flash on page load
-    const timer = setTimeout(() => {
-      const record = getConsentRecord()
-      // Re-show if never decided OR if the notice version changed
-      if (!record || record.version !== CONSENT_VERSION) {
-        setVisible(true)
-      }
-    }, 1500)
-    return () => clearTimeout(timer)
+    const record = getConsentRecord()
+    // Re-show if never decided OR if the notice version changed
+    if (record && record.version === CONSENT_VERSION) return
+    return scheduleBanner(() => setVisible(true))
   }, [])
 
   const accept = useCallback(() => {

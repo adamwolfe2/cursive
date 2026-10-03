@@ -36,3 +36,20 @@ test('homepage has no #007AFF text below the 24px large-text threshold', () => {
   }
   assert.deepEqual(offenders, [])
 })
+
+// White text on a #007AFF fill is the same 4.02:1 pair (numeral badges were missed by the check above).
+test('homepage has no white-on-#007AFF numeral badges below 24px', () => {
+  assert.ok(contrast('ffffff', '0066DD') >= 4.5)
+  const dir = 'components/homepage'
+  const offenders = []
+  for (const file of readdirSync(dir).filter((f) => f.endsWith('.tsx'))) {
+    const src = readFileSync(join(dir, file), 'utf8')
+    for (const m of src.matchAll(/<span className=(?:"([^"]*)"|\{`([^`]*)`\})>\s*\{[^}]*\}\s*<\/span>/g)) {
+      const cls = (m[1] ?? m[2]).split(/\s+/)
+      if (!cls.includes('bg-[#007AFF]') || !cls.includes('text-white')) continue
+      const sizes = cls.map((c) => /^(?:sm:|md:|lg:|xl:)?text-\[(\d+(?:\.\d+)?)px\]$/.exec(c)?.[1]).filter(Boolean).map(Number)
+      if (!sizes.length || Math.min(...sizes) < 24) offenders.push(`${file}: ${m[0].slice(0, 90)}`)
+    }
+  }
+  assert.deepEqual(offenders, [])
+})
