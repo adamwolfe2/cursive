@@ -1,3 +1,4 @@
+import { START_URL } from "@/lib/cta"
 import { Metadata } from "next"
 import { StructuredData } from "@/components/seo/structured-data"
 import { generateOrganizationSchema, generateWebSiteSchema, generateSoftwareApplicationSchema } from "@/lib/seo/structured-data"
@@ -60,7 +61,7 @@ export default function HomePage() {
 
           <MachineSection title="How Cursive works">
             <MachineList items={[
-              { label: "1. Find them", href: "https://leads.meetcursive.com/start", description: "25 free leads from your website, then credits or a weekly plan. Like or skip leads and upload past customers; each next batch gets closer to your ideal buyer." },
+              { label: "1. Find them", href: START_URL, description: "25 free leads from your website, then credits or a weekly plan. Like or skip leads and upload past customers; each next batch gets closer to your ideal buyer." },
               { label: "2. Reach them", href: "https://cal.com/cursiveteam/30min", description: "Done-for-you LinkedIn and email outreach to the same list. Copy written and run by the Cursive team, inside each platform's limits." },
               { label: "3. Run it", href: "https://cal.com/cursiveteam/30min", description: "A custom company dashboard that ties together leads, replies, site visitors, site chat, your CRM and any API. Built and hosted by Cursive." },
             ]} />
@@ -68,7 +69,7 @@ export default function HomePage() {
 
           <MachineSection title="Plans & Pricing">
             <MachineList items={[
-              { label: "Free: 25 leads", href: "https://leads.meetcursive.com/start", description: "Paste your website, get 25 decision makers with checked work emails. No card." },
+              { label: "Free: 25 leads", href: START_URL, description: "Paste your website, get 25 decision makers with checked work emails. No card." },
               { label: "Lead credits: 100 for $49, 500 for $199, 2,000 for $599", href: "https://www.meetcursive.com/#pricing", description: "Pay as you go; unused credits roll over. Early access." },
               { label: "Starter: $197/month", href: "https://www.meetcursive.com/#pricing", description: "100 leads a month, 25 every Monday, 14-day trial." },
               { label: "Growth: $497/month", href: "https://www.meetcursive.com/#pricing", description: "500 leads a month, tuned by the leads you like and your customer list. Early access." },
@@ -91,7 +92,7 @@ export default function HomePage() {
 
           <MachineSection title="Contact">
             <MachineList items={[
-              { label: "Get 25 free leads", href: "https://leads.meetcursive.com/start" },
+              { label: "Get 25 free leads", href: START_URL },
               { label: "Book a call", href: "https://cal.com/cursiveteam/30min" },
               { label: "Email", href: "mailto:hey@meetcursive.com" },
               { label: "LinkedIn", href: "https://linkedin.com/company/cursive" },
