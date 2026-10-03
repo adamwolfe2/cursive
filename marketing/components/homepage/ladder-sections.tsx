@@ -267,7 +267,7 @@ export function RecursiveSection() {
         <ol className="mt-10 max-w-4xl space-y-6">
           {SENSES.map((s, i) => (
             <li key={i} className="grid grid-cols-[2rem_1fr] gap-2 sm:grid-cols-[2.75rem_1fr]">
-              <span className="pt-1 text-[18px] font-medium tabular-nums text-[#007AFF] sm:text-[22px]">{i + 1}.</span>
+              <span className="pt-1 text-[18px] font-medium tabular-nums text-[#0066DD] sm:text-[22px]">{i + 1}.</span>
               <p className="text-[1.375rem] font-medium leading-[1.35] tracking-[-0.015em] sm:text-[2rem]">
                 <FillWords text={s} from={starts[i]} total={total} />
               </p>

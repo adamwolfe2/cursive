@@ -81,9 +81,9 @@ export function CookieConsent() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 20 }}
           transition={{ duration: 0.3, ease: "easeOut" }}
-          className="fixed bottom-4 left-4 z-50 max-w-sm w-[calc(100%-2rem)] sm:w-auto"
+          className="fixed bottom-2 left-2 z-50 max-w-sm w-[calc(100%-1rem)] sm:bottom-4 sm:left-4 sm:w-auto"
         >
-          <div className="bg-white rounded-xl border border-gray-200 shadow-2xl p-5">
+          <div className="bg-white rounded-xl border border-gray-200 shadow-2xl p-4 sm:p-5">
             {/* Close button — treated as decline */}
             <button
               onClick={decline}
@@ -93,8 +93,8 @@ export function CookieConsent() {
               <X className="w-4 h-4" />
             </button>
 
-            {/* Icon + heading */}
-            <div className="flex items-center gap-2.5 mb-3">
+            {/* Icon + heading (hidden on phones so the banner stays short and clears the hero) */}
+            <div className="hidden sm:flex items-center gap-2.5 mb-3">
               <div className="w-8 h-8 bg-primary/5 rounded-lg flex items-center justify-center flex-shrink-0">
                 <Cookie className="w-4 h-4 text-primary" />
               </div>
@@ -104,7 +104,7 @@ export function CookieConsent() {
             </div>
 
             {/* Description */}
-            <p className="text-sm text-gray-600 leading-relaxed mb-4">
+            <p className="pr-6 text-xs text-gray-600 leading-relaxed mb-3 sm:pr-0 sm:text-sm sm:mb-4">
               We use cookies, visitor identification pixels, and analytics to
               understand site traffic and improve your experience. Declining
               disables non-essential tracking. See our{" "}
