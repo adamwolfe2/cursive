@@ -40,7 +40,7 @@ export class LeadRepository {
     // Reduces data transfer from ~250KB to ~20KB per page
     let query = supabase
       .from('leads')
-      .select('id, first_name, last_name, full_name, email, phone, company_name, company_domain, job_title, city, state, country, source, status, intent_score_calculated, freshness_score, enrichment_status, verification_status, delivery_status, delivered_at, tags, created_at, updated_at, query_id, queries(name)', {
+      .select('id, first_name, last_name, full_name, email, phone, company_name, company_domain, job_title, city, state, country, source, status, intent_score_calculated, freshness_score, enrichment_status, verification_status, delivery_status, delivered_at, tags, created_at, query_id, queries(name)', {
         count: 'estimated',  // Faster than 'exact' for large tables
       })
       .eq('workspace_id', workspaceId)
