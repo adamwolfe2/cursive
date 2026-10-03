@@ -2,6 +2,7 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync, readdirSync, statSync } from 'node:fs'
 import path from 'node:path'
+import { createRequire } from 'node:module'
 import { loadTs } from './load-ts.mjs'
 
 const ROOT = path.resolve(import.meta.dirname, '..')
@@ -12,12 +13,19 @@ async function redirectFor(source) {
 }
 
 test('/affiliates and /partners redirect to /contact (their apply API is gone)', async () => {
-  for (const p of ['/affiliates', '/affiliates/:slug*', '/partners', '/partners/:slug*']) {
+  for (const p of ['/affiliates', '/affiliates/:slug*', '/partners']) {
     const r = await redirectFor(p)
     assert.ok(r, `missing redirect for ${p}`)
     assert.equal(r.destination, '/contact')
     assert.equal(r.permanent, false)
   }
+})
+
+test('/partners/terms (signed partner agreement) is not redirected', async () => {
+  const { pathToRegexp } = createRequire(import.meta.url)('next/dist/compiled/path-to-regexp')
+  const redirects = await loadTs('next.config.ts').default.redirects()
+  const hits = redirects.filter((r) => !r.has && pathToRegexp(r.source).test('/partners/terms'))
+  assert.deepEqual(hits.map((r) => r.source), [])
 })
 
 test('/visitor-estimate redirects to the app signup with utm_content', async () => {

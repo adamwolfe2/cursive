@@ -21,10 +21,9 @@ export default function PartnerTermsPage() {
             Outbound Distribution Partner Agreement
           </h1>
           <p className="mt-3 text-sm text-gray-500">
-            Version {AGREEMENT_VERSION}. This is the public summary. Approved partners review and sign
-            the full agreement inside their{" "}
-            <Link href="https://leads.meetcursive.com/partners/portal" className="text-primary hover:underline">
-              partner portal
+            Version {AGREEMENT_VERSION}. This is the public summary. For a copy of the full agreement,{" "}
+            <Link href="/contact" className="text-primary hover:underline">
+              contact us
             </Link>
             .
           </p>

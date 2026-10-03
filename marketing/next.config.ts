@@ -92,12 +92,15 @@ const nextConfig: NextConfig = {
     // Temporary (307) so they can come back if the programs return.
     // /affiliates and /partners posted applications to a removed endpoint, so every one was lost.
     // /visitor-estimate was the old app's estimate funnel; blog CTAs still link to it.
-    const RETIRED_FUNNELS: Array<[string, string]> = [
-      ['/affiliates', '/contact'],
-      ['/partners', '/contact'],
+    // The third flag also redirects sub-paths. /partners keeps it off: /partners/terms is the
+    // public copy of the partner agreement that existing partners signed, so it must stay up.
+    const RETIRED_FUNNELS: Array<[string, string, boolean]> = [
+      ['/affiliates', '/contact', true],
+      ['/partners', '/contact', false],
       [
         '/visitor-estimate',
         'https://leads.meetcursive.com/start?utm_source=meetcursive&utm_medium=blog&utm_content=visitor-estimate',
+        true,
       ],
     ]
 
@@ -116,9 +119,9 @@ const nextConfig: NextConfig = {
         { source: path, destination, permanent: true },
         { source: `${path}/:slug*`, destination, permanent: true },
       ]),
-      ...RETIRED_FUNNELS.flatMap(([path, destination]) => [
+      ...RETIRED_FUNNELS.flatMap(([path, destination, withSubpaths]) => [
         { source: path, destination, permanent: false },
-        { source: `${path}/:slug*`, destination, permanent: false },
+        ...(withSubpaths ? [{ source: `${path}/:slug*`, destination, permanent: false }] : []),
       ]),
     ]
   },
