@@ -59,9 +59,12 @@ interface MachineSectionProps {
 }
 
 export function MachineSection({ title, children }: MachineSectionProps) {
+  const { view } = useView()
   return (
     <section className="mb-10">
-      <h2 className="text-lg text-gray-900 mb-4 font-bold">## {title}</h2>
+      <h2 className="text-lg text-gray-900 mb-4 font-bold">
+        {view === 'machine' ? `## ${title}` : title}
+      </h2>
       <div className="space-y-3">{children}</div>
     </section>
   )
@@ -72,10 +75,13 @@ interface MachineLinkProps {
   children: React.ReactNode
 }
 
+// Markdown link syntax is only for the visible ?view=machine mode. In the default
+// human view this block is sr-only, so screen readers must hear just the label.
 export function MachineLink({ href, children }: MachineLinkProps) {
+  const { view } = useView()
   return (
     <a href={href} className="text-primary hover:text-primary-dark transition-colors underline">
-      [{children}]({href})
+      {view === 'machine' ? <>[{children}]({href})</> : children}
     </a>
   )
 }

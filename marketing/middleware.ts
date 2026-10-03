@@ -8,15 +8,16 @@ export async function middleware(req: NextRequest) {
 
   // Security headers
   const headers = {
-    // Content Security Policy - allows GA4, Cal.com, and necessary scripts
+    // Content Security Policy - allows GA4, Cal.com, Crisp chat, and necessary scripts
     'Content-Security-Policy': [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://cal.com https://app.cal.com https://va.vercel-scripts.com",
-      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://cal.com https://app.cal.com https://va.vercel-scripts.com https://client.crisp.chat https://settings.crisp.chat",
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://client.crisp.chat",
       "img-src 'self' data: https: blob:",
-      "font-src 'self' data: https://fonts.gstatic.com",
-      "connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://cal.com https://app.cal.com https://va.vercel-scripts.com https://vitals.vercel-analytics.com https://leads.meetcursive.com",
-      "frame-src 'self' https://cal.com https://app.cal.com https://player.mux.com",
+      "font-src 'self' data: https://fonts.gstatic.com https://client.crisp.chat",
+      "connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://cal.com https://app.cal.com https://va.vercel-scripts.com https://vitals.vercel-analytics.com https://leads.meetcursive.com https://client.crisp.chat wss://client.relay.crisp.chat wss://stream.relay.crisp.chat https://storage.crisp.chat",
+      "frame-src 'self' https://cal.com https://app.cal.com https://player.mux.com https://game.crisp.chat",
+      "media-src 'self' https://client.crisp.chat",
       "frame-ancestors 'self'",
       "form-action 'self' https://cal.com https://app.cal.com",
       "base-uri 'self'",
