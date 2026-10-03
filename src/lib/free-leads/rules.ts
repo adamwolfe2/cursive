@@ -66,7 +66,7 @@ export function maskEmail(email: string): string {
 
 /**
  * Keyed hash of the caller IP: a plain sha256 of an IPv4 address is brute-forceable, so the key is a
- * server secret (FREE_LEADS_IP_SALT, else the service-role key, which every server instance has).
+ * server secret (FREE_LEADS_IP_SALT, required; throws when missing).
  */
 /** Short stable id for an email in rate-limit keys (keys are VARCHAR(255); emails can be 254 chars). */
 export function emailKey(email: string): string {
@@ -74,7 +74,10 @@ export function emailKey(email: string): string {
 }
 
 export function hashIp(ip: string): string {
-  const key = process.env.FREE_LEADS_IP_SALT || process.env.SUPABASE_SERVICE_ROLE_KEY || 'free-leads'
+  const key = process.env.FREE_LEADS_IP_SALT
+  if (!key) {
+    throw new Error('FREE_LEADS_IP_SALT is required: set a random 32+ char secret (fail closed, no fallback)')
+  }
   return createHmac('sha256', key).update(`free-leads:${ip}`).digest('hex').slice(0, 32)
 }
 

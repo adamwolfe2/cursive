@@ -7,6 +7,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { cancelSubscription, resumeSubscription } from '@/lib/stripe/client'
 import { z } from 'zod'
 import { getCurrentUser } from '@/lib/auth/helpers'
@@ -89,7 +90,7 @@ export async function POST(req: NextRequest) {
             updated_at: new Date().toISOString(),
           })
           .eq('id', workspace.id),
-        supabase
+        createAdminClient()
           .from('users')
           .update({ cancel_at_period_end: true })
           .eq('workspace_id', workspace.id),
@@ -115,7 +116,7 @@ export async function POST(req: NextRequest) {
             updated_at: new Date().toISOString(),
           })
           .eq('id', workspace.id),
-        supabase
+        createAdminClient()
           .from('users')
           .update({ cancel_at_period_end: false })
           .eq('workspace_id', workspace.id),

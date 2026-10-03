@@ -9,6 +9,9 @@ import { expect, afterEach, vi, beforeAll, afterAll } from 'vitest'
 import { cleanup } from '@testing-library/react'
 import '@testing-library/jest-dom/vitest'
 
+// hashIp() fails closed without a salt; tests use a fixed non-secret value
+process.env.FREE_LEADS_IP_SALT ||= 'test-only-free-leads-ip-salt-0000000000'
+
 // ============================================
 // CLEANUP
 // ============================================

@@ -5,6 +5,7 @@
 import { NextRequest } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { getCurrentUser } from '@/lib/auth/helpers'
 import { handleApiError, unauthorized, success, validationError } from '@/lib/utils/api-error-handler'
 import { DAILY_CREDIT_LIMITS } from '@/lib/services/credit.service'
@@ -70,7 +71,7 @@ export async function GET(_request: NextRequest) {
 
         if (!existingUser) {
           // Code is unique, save it
-          const { data: updatedUser, error } = await (supabase as any)
+          const { data: updatedUser, error } = await createAdminClient()
             .from('users')
             .update({ referral_code: newCode })
             .eq('id', user.id)
