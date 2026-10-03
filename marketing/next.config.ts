@@ -1,15 +1,7 @@
-import path from "node:path";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-
-  // Pin the workspace root to marketing/. Without this, Turbopack sees the app's lockfile one level up,
-  // treats the repo root as the project, and compiles the app's src/instrumentation.ts (Sentry), which
-  // fails here because marketing does not install @sentry/nextjs.
-  turbopack: {
-    root: path.join(__dirname),
-  },
 
   async headers() {
     return [
