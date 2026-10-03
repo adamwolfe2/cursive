@@ -13,12 +13,16 @@ export const faqs: FAQ[] = [
     answer: "We read your website, work out who buys from you, and match that profile against 400M+ business contacts, multi-sourced and enriched across several databases. You get 25 decision makers who fit, each with a work email and a reason they fit.",
   },
   {
-    question: "How accurate are the emails?",
-    answer: "Every email is checked before it reaches you. If we cannot verify a work email, that person is left out of your list.",
+    question: "What happens after the free 25? Will I be charged?",
+    answer: "No charge. Your 25 are yours to keep, and you never enter a card to get them. If you want more, Starter sends 25 fresh people every Monday from the same profile: 14 days free, then $197/mo, cancel anytime.",
   },
   {
-    question: "What happens after the free 25?",
-    answer: "Nothing, unless you want more. Buy credits (100 leads for $49), take 100 leads a month on Starter for $197, or have us run LinkedIn and email outreach to your list from $1,497 a month. All month-to-month.",
+    question: "Why do you ask for a work email?",
+    answer: "Your free list is tied to your company, one per company, so we match leads to what your business sells. Use your work email or work Google account. No company email yet? Book a call and we will set you up.",
+  },
+  {
+    question: "How accurate are the emails?",
+    answer: "Every email is checked before it reaches you. If we cannot verify a work email, that person is left out of your list.",
   },
   {
     question: "How is Cursive different from ZoomInfo or Apollo?",

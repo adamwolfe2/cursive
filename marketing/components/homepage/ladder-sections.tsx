@@ -127,7 +127,7 @@ const RUNGS: Array<{
     kicker: "Find them",
     title: "Leads that get closer to your buyer every batch",
     body: "Start with 25 free from your website. Like the good ones, skip the rest and add your past customers. Cursive learns from all three and tunes the next batch.",
-    points: ["25 free, no card", "Thumbs up or down on every lead", "Upload past customers to sharpen the match"],
+    points: ["25 free, no card", "Thumbs up or down on every lead", "Upload past customers to sharpen the match", "Then 25 fresh every Monday on Starter"],
     demo: <DemoFind />,
     cta: <PrimaryLink placement="home-rung-find">Get my 25 leads</PrimaryLink>,
   },
@@ -297,7 +297,7 @@ const PRICING: Array<{ n: string; rung: string; lead: string; lines: Line[]; cta
     lines: [
       { name: "Free", price: "$0", note: "25 leads from your website, no card" },
       { name: "Credits", price: "$49", unit: "100 leads", note: "500 for $199 · 2,000 for $599 · unused credits roll over", tag: "Early access" },
-      { name: "Starter", price: "$197", unit: "/mo", note: "100 fresh leads a month, 25 every Monday, picked and checked for you. 14‑day trial" },
+      { name: "Starter", price: "$197", unit: "/mo", note: "25 fresh leads every Monday (about 100 a month), picked and checked for you.", tag: "14‑day free trial" },
       { name: "Growth", price: "$497", unit: "/mo", note: "500 leads a month, tuned by your likes and customer list", tag: "Early access" },
     ],
     cta: <PrimaryLink placement="home-pricing-find">Get my 25 leads</PrimaryLink>,

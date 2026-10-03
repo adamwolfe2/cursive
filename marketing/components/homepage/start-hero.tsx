@@ -111,13 +111,13 @@ export function StartHero() {
             Find the 25 people most likely to buy from you
           </h1>
           <p className="mt-5 max-w-[44ch] text-[17px] leading-relaxed text-[#475569] sm:text-[19px]">
-            Paste your website. We work out who buys from you and send 25 decision makers, each with a checked work email and why they fit. Want them contacted? We run the outreach too.
+            Paste your website. We work out who buys from you and send 25 decision makers, each with a checked work email and why they fit.
           </p>
 
           <SiteForm placement="home-hero-input" className="mt-9" />
 
           <ul className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[14px] text-[#475569]">
-            {["Free, no card", "No sales call", "Checked work emails"].map((t) => (
+            {["Free, no card", "No sales call", "About a minute"].map((t) => (
               <li key={t} className="flex items-center gap-1.5">
                 <Check className="h-4 w-4 text-[#007AFF]" aria-hidden="true" />
                 {t}
